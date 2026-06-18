@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERCADITO — Yavaya</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc, setDoc, deleteDoc, where }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  // ─── CONFIG ───────────────────────────────────────────────
+  // NOTE TO ADMIN: Replace with your Firebase project config
+  // Get it from console.firebase.google.com > Project Settings
+  const firebaseConfig = {
+        apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
+    authDomain: "yavayago-ef281.firebaseapp.com",
+    projectId: "yavayago-ef281",
+    storageBucket: "yavayago-ef281.firebasestorage.app",
+    messagingSenderId: "592402476016",
+    appId: "1:592402476016:web:424456516968dfc7284b35",
+    measurementId: "G-0DBRC5NZQW"
+  };
+
+  const MASTER_ADMIN_EMAIL = "junoagattis@gmail.com";
+  const MASTER_ADMIN_PASSWORD = "@Blackie662026"; // stored only client-side for UI gating
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  window._yavaya = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged,
+    collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc, setDoc,
+    deleteDoc, where, MASTER_ADMIN_EMAIL };
+</script>
+
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --gold-dim: #8a6c2a;
+  --gold-glow: rgba(201,168,76,0.3);
+  --black: #050404;
+  --dark: #0a0807;
+  --dark-mid: #110e0b;
+  --dark-warm: #1a1410;
+  --text-muted: #7a6a50;
+  --text-light: #c8b882;
+  --success: #3a7a3a;
+  --danger: #7a2020;
+  --surface: #14100c;
+  --surface2: #1c1610;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--black);
+  color: var(--gold-light);
+  font-family: 'Cormorant Garamond', serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ════ DIVIDER ════ */
+.divider {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; padding: 6px 0;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.divider-icon { color: var(--gold); font-size: 11px; opacity: 0.55; }
+
+/* ════ NAV ════ */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 40px;
+  background: rgba(5,4,4,0.97);
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+  backdrop-filter: blur(8px);
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.nav-y {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1px solid var(--gold-dim);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel Decorative', serif; font-size: 13px; color: var(--gold);
+}
+.nav-title {
+  font-family: 'Cinzel Decorative', serif; font-size: 16px;
+  color: var(--gold-light); letter-spacing: 0.08em;
+}
+.nav-subtitle {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 4px; color: var(--text-muted); text-transform: uppercase;
+}
+
+.nav-right { display: flex; align-items: center; gap: 16px; }
+
+.btn-google-login {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold-dim);
+  border: 1px solid rgba(201,168,76,0.25);
+  padding: 8px 18px; background: rgba(10,8,4,0.8);
+  cursor: pointer; transition: all 0.3s; border-radius: 1px;
+}
+.btn-google-login:hover {
+  color: var(--gold); border-color: rgba(201,168,76,0.5);
+  background: rgba(201,168,76,0.07);
+}
+.google-icon { width: 16px; height: 16px; }
+
+.user-badge {
+  display: none; align-items: center; gap: 10px;
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 2px; color: var(--text-light);
+}
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid var(--gold-dim); object-fit: cover;
+}
+.btn-logout {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+  border: none; background: none; cursor: pointer;
+  transition: color 0.2s; padding: 4px 0;
+}
+.btn-logout:hover { color: var(--gold); }
+
+.admin-badge {
+  display: none;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.4);
+  padding: 3px 10px; background: rgba(201,168,76,0.07);
+}
+
+/* ════ HERO BANNER ════ */
+.mercadito-hero {
+  position: relative;
+  padding: 120px 40px 60px;
+  background: linear-gradient(180deg, #06040a 0%, #0e0906 40%, #1a1005 70%, var(--black) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+.mercadito-hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(60,30,5,0.4) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 30% at 50% 20%, rgba(201,168,76,0.04) 0%, transparent 60%);
+}
+.mercadito-hero-content { position: relative; z-index: 2; }
+
+.hero-icon-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 1.5px solid rgba(201,168,76,0.35);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  background: rgba(8,6,3,0.7);
+  font-size: 26px; color: var(--gold);
+  box-shadow: 0 0 30px rgba(201,168,76,0.18);
+}
+
+.mercadito-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(36px, 6vw, 72px); font-weight: 900;
+  letter-spacing: 0.12em;
+  background: linear-gradient(180deg, #f0d880 0%, #c9a84c 40%, #7a5018 80%, #c9a84c 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(201,168,76,0.3));
+  margin-bottom: 12px;
+}
+.mercadito-tagline {
+  font-family: 'Cinzel', serif; font-size: clamp(10px, 1.5vw, 13px);
+  letter-spacing: 7px; text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 32px;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex; align-items: center; gap: 0;
+  max-width: 600px; margin: 0 auto 16px;
+  border: 1px solid rgba(201,168,76,0.25);
+  background: rgba(12,9,5,0.9);
+  overflow: hidden;
+}
+.search-input {
+  flex: 1; padding: 14px 20px;
+  background: transparent; border: none; outline: none;
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  color: var(--text-light); letter-spacing: 1px;
+}
+.search-input::placeholder { color: var(--text-muted); }
+.search-btn {
+  padding: 14px 24px; background: rgba(201,168,76,0.1);
+  border: none; border-left: 1px solid rgba(201,168,76,0.2);
+  color: var(--gold); font-size: 16px; cursor: pointer;
+  transition: background 0.2s;
+}
+.search-btn:hover { background: rgba(201,168,76,0.2); }
+
+.hero-stats {
+  display: flex; justify-content: center; gap: 40px;
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase;
+  margin-top: 20px;
+}
+.stat-num {
+  display: block; font-size: 20px; color: var(--gold-light);
+  font-family: 'Cinzel Decorative', serif; margin-bottom: 4px;
+}
+
+/* ════ CATEGORIES BAR ════ */
+.categories-bar {
+  position: sticky; top: 61px; z-index: 400;
+  background: rgba(10,8,5,0.98);
+  border-bottom: 1px solid rgba(201,168,76,0.07);
+  backdrop-filter: blur(6px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.categories-bar::-webkit-scrollbar { display: none; }
+
+.cats-inner {
+  display: flex; align-items: center; gap: 0;
+  min-width: max-content; padding: 0 30px;
+}
+
+.cat-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 22px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+  border: none; background: none; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s; white-space: nowrap;
+}
+.cat-btn:hover, .cat-btn.active {
+  color: var(--gold); border-bottom-color: var(--gold);
+}
+.cat-icon { font-size: 16px; }
+
+/* ════ MAIN LAYOUT ════ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  align-items: start;
+}
+
+/* ════ SIDEBAR FILTERS ════ */
+.sidebar {
+  position: sticky; top: 130px;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.1);
+  padding: 24px 20px;
+}
+
+.sidebar-section { margin-bottom: 28px; }
+.sidebar-title {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.filter-list { display: flex; flex-direction: column; gap: 6px; }
+.filter-item {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Cormorant Garamond', serif; font-size: 14px;
+  color: var(--text-muted); cursor: pointer;
+  padding: 5px 0; transition: color 0.2s;
+}
+.filter-item:hover { color: var(--gold-light); }
+.filter-check {
+  width: 14px; height: 14px;
+  border: 1px solid rgba(201,168,76,0.3);
+  background: transparent;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.price-range {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.price-inputs {
+  display: flex; gap: 8px;
+}
+.price-inp {
+  flex: 1; padding: 7px 10px;
+  background: rgba(12,9,5,0.8);
+  border: 1px solid rgba(201,168,76,0.15);
+  color: var(--text-light);
+  font-family: 'Cormorant Garamond', serif; font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.price-inp:focus { border-color: rgba(201,168,76,0.4); }
+
+.location-input-wrap {
+  display: flex; gap: 0; border: 1px solid rgba(201,168,76,0.15);
+  background: rgba(12,9,5,0.8);
+}
+.location-inp {
+  flex: 1; padding: 8px 10px;
+  background: transparent; border: none; outline: none;
+  font-family: 'Cormorant Garamond', serif; font-size: 14px;
+  color: var(--text-light);
+}
+.location-btn {
+  padding: 8px 12px; background: none;
+  border: none; border-left: 1px solid rgba(201,168,76,0.12);
+  color: var(--gold-dim); cursor: pointer; font-size: 14px;
+  transition: color 0.2s;
+}
+.location-btn:hover { color: var(--gold); }
+
+.btn-apply-filter {
+  width: 100%; padding: 10px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.3);
+  background: rgba(201,168,76,0.05);
+  cursor: pointer; transition: all 0.25s; margin-top: 8px;
+}
+.btn-apply-filter:hover {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.55);
+}
+
+/* ════ LISTINGS AREA ════ */
+.listings-area { padding-left: 30px; }
+
+.listings-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
+}
+
+.listings-count {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted);
+}
+
+.toolbar-right { display: flex; align-items: center; gap: 12px; }
+
+.sort-select {
+  padding: 8px 14px; background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--text-light); font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 2px; cursor: pointer; outline: none;
+}
+
+.btn-post-listing {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--black);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border: none; padding: 10px 22px; cursor: pointer;
+  transition: all 0.3s; font-weight: 600;
+}
+.btn-post-listing:hover {
+  background: linear-gradient(135deg, #f0e090, #d4aa55);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+}
+
+/* ════ LISTINGS GRID ════ */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.listing-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+.listing-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201,168,76,0.35);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+
+.listing-img {
+  width: 100%; height: 200px;
+  object-fit: cover; display: block;
+  background: linear-gradient(135deg, var(--dark-warm) 0%, var(--dark-mid) 100%);
+  position: relative; overflow: hidden;
+}
+
+.listing-img-placeholder {
+  width: 100%; height: 200px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #14100c, #0e0b07);
+  font-size: 44px; opacity: 0.5;
+}
+
+.listing-badge {
+  position: absolute; top: 12px; left: 12px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; padding: 4px 10px;
+}
+.badge-demo {
+  background: rgba(201,168,76,0.15); color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.3);
+}
+.badge-new {
+  background: rgba(50,100,50,0.2); color: #7aca7a;
+  border: 1px solid rgba(100,180,100,0.25);
+}
+.badge-hot {
+  background: rgba(180,60,10,0.2); color: #e87a40;
+  border: 1px solid rgba(180,80,20,0.3);
+}
+
+.listing-expire {
+  position: absolute; top: 12px; right: 12px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
+  color: #e87a40; background: rgba(10,8,4,0.85);
+  border: 1px solid rgba(180,80,20,0.3); padding: 3px 8px;
+}
+
+.listing-body { padding: 16px; }
+
+.listing-category {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px;
+}
+
+.listing-title {
+  font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 1px;
+  color: var(--text-light); margin-bottom: 6px; line-height: 1.4;
+}
+
+.listing-desc {
+  font-family: 'Cormorant Garamond', serif; font-size: 13px;
+  color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.listing-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid rgba(201,168,76,0.08);
+}
+
+.listing-price {
+  font-family: 'Cinzel Decorative', serif; font-size: 18px;
+  color: var(--gold);
+}
+.listing-currency {
+  font-size: 12px; color: var(--gold-dim); margin-left: 3px;
+}
+
+.listing-meta {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+.listing-location {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.listing-seller {
+  font-family: 'Cormorant Garamond', serif; font-size: 11px;
+  color: var(--text-muted); font-style: italic;
+}
+
+.btn-contact {
+  width: 100%; padding: 9px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold);
+  border: 1px solid rgba(201,168,76,0.25);
+  background: rgba(201,168,76,0.04);
+  cursor: pointer; transition: all 0.25s; margin-top: 12px;
+}
+.btn-contact:hover {
+  background: rgba(201,168,76,0.1);
+  border-color: rgba(201,168,76,0.5);
+}
+
+/* ════ MAP SECTION ════ */
+.map-section {
+  padding: 60px 20px;
+  background: var(--dark-warm);
+}
+.map-header { text-align: center; margin-bottom: 30px; }
+.map-header h2 {
+  font-family: 'Cinzel', serif; font-size: clamp(12px, 1.5vw, 14px);
+  letter-spacing: 7px; text-transform: uppercase; color: var(--text-muted);
+  margin: 10px 0;
+}
+#mercadito-map {
+  width: 100%; height: 480px;
+  border: 1px solid rgba(201,168,76,0.15);
+  background: var(--dark);
+}
+.map-placeholder {
+  width: 100%; height: 480px;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  background: var(--dark); border: 1px solid rgba(201,168,76,0.1);
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+
+/* ════ POST LISTING MODAL ════ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--dark-warm);
+  border: 1px solid rgba(201,168,76,0.2);
+  width: 100%; max-width: 580px;
+  max-height: 90vh; overflow-y: auto;
+  padding: 36px 32px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  font-size: 20px; color: var(--text-muted);
+  cursor: pointer; background: none; border: none;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--gold); }
+
+.modal-title {
+  font-family: 'Cinzel Decorative', serif; font-size: 20px;
+  color: var(--gold-light); margin-bottom: 6px;
+}
+.modal-sub {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 28px;
+}
+
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block; font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dim);
+  margin-bottom: 7px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 11px 14px;
+  background: rgba(10,8,4,0.8);
+  border: 1px solid rgba(201,168,76,0.18);
+  color: var(--text-light);
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  outline: none; transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: rgba(201,168,76,0.45);
+}
+.form-textarea { resize: vertical; min-height: 90px; }
+.form-select { cursor: pointer; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.btn-submit {
+  width: 100%; padding: 14px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--black);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border: none; cursor: pointer; transition: all 0.3s; font-weight: 700;
+  margin-top: 8px;
+}
+.btn-submit:hover {
+  background: linear-gradient(135deg, #f0e090, #d4aa55);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+}
+
+/* ════ LISTING DETAIL MODAL ════ */
+.detail-modal {
+  background: var(--dark-warm);
+  border: 1px solid rgba(201,168,76,0.2);
+  width: 100%; max-width: 720px;
+  max-height: 92vh; overflow-y: auto;
+  position: relative;
+}
+.detail-img {
+  width: 100%; height: 300px; object-fit: cover;
+  display: block;
+  background: linear-gradient(135deg, var(--dark-warm), var(--dark));
+}
+.detail-img-placeholder {
+  width: 100%; height: 300px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #14100c, #0e0b07);
+  font-size: 72px; opacity: 0.35;
+}
+.detail-body { padding: 32px; }
+.detail-category {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px;
+}
+.detail-title {
+  font-family: 'Cinzel', serif; font-size: clamp(18px, 3vw, 26px);
+  color: var(--gold-light); margin-bottom: 10px; line-height: 1.3;
+}
+.detail-price {
+  font-family: 'Cinzel Decorative', serif; font-size: 32px;
+  color: var(--gold); margin-bottom: 16px;
+}
+.detail-desc {
+  font-family: 'Cormorant Garamond', serif; font-size: 16px;
+  color: var(--text-light); line-height: 1.7; margin-bottom: 22px;
+}
+.detail-meta-row {
+  display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 24px;
+}
+.detail-meta-item {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.detail-meta-label {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.detail-meta-value {
+  font-family: 'Cormorant Garamond', serif; font-size: 15px;
+  color: var(--text-light);
+}
+.detail-map { width: 100%; height: 200px; margin-bottom: 22px; }
+.btn-contact-seller {
+  width: 100%; padding: 14px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--black);
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border: none; cursor: pointer; transition: all 0.3s; font-weight: 700;
+}
+.btn-contact-seller:hover {
+  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
+}
+
+/* ════ ADMIN PANEL ════ */
+.admin-panel {
+  display: none;
+  position: fixed; bottom: 20px; right: 20px; z-index: 600;
+  background: var(--dark-warm);
+  border: 1px solid rgba(201,168,76,0.3);
+  padding: 16px 20px; min-width: 200px;
+}
+.admin-panel.visible { display: block; }
+.admin-panel-title {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
+}
+.btn-admin {
+  display: block; width: 100%; padding: 8px 12px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-muted);
+  border: 1px solid rgba(201,168,76,0.15); background: none;
+  cursor: pointer; transition: all 0.2s; margin-bottom: 6px; text-align: left;
+}
+.btn-admin:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
+.btn-admin.danger { color: #e87a7a; border-color: rgba(180,60,60,0.2); }
+.btn-admin.danger:hover { background: rgba(180,60,60,0.08); }
+
+/* ════ TOAST ════ */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--dark-warm); border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 3px; text-transform: uppercase; padding: 14px 28px;
+  z-index: 2000; opacity: 0; transition: all 0.35s;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ════ EMPTY STATE ════ */
+.empty-state {
+  grid-column: 1/-1; text-align: center; padding: 60px 20px;
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.empty-state-text {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--text-muted);
+}
+
+/* ════ FOOTER ════ */
+.site-footer {
+  border-top: 1px solid rgba(201,168,76,0.07);
+  padding: 28px 40px 20px; text-align: center;
+  background: var(--black);
+}
+.footer-back {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
+  text-transform: uppercase; color: var(--gold-dim);
+  text-decoration: none; transition: color 0.2s;
+}
+.footer-back:hover { color: var(--gold); }
+.footer-copy {
+  font-family: 'Cormorant Garamond', serif; font-size: 11px;
+  color: rgba(80,62,28,0.4); margin-top: 12px; letter-spacing: 2px;
+}
+
+/* ════ RESPONSIVE ════ */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .listings-area { padding-left: 0; margin-top: 20px; }
+  .top-nav { padding: 12px 20px; }
+}
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .hero-stats { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand" style="text-decoration:none;">
+    <div class="nav-y">Y</div>
+    <div>
+      <div class="nav-title">MERCADITO</div>
+      <div class="nav-subtitle">por Yavaya</div>
+    </div>
+  </a>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">⚡ Admin</span>
+    <div class="user-badge" id="userBadge">
+      <img src="" alt="" class="user-avatar" id="userAvatar">
+      <span id="userName"></span>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+    <button class="btn-google-login" id="loginBtn" onclick="doGoogleLogin()">
+      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>
+      Entrar con Google
+    </button>
+  </div>
+</nav>
+
+<!-- ════ HERO ════ -->
+<section class="mercadito-hero">
+  <div class="mercadito-hero-bg"></div>
+  <div class="mercadito-hero-content">
+    <div class="hero-icon-ring">⚖</div>
+    <h1 class="mercadito-title">MERCADITO</h1>
+    <p class="mercadito-tagline">Comercio · Confianza · Oportunidad</p>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="searchInput" placeholder="Buscar en Mercadito...">
+      <button class="search-btn" onclick="doSearch()">🔍</button>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-num" id="totalListings">5</span>Anuncios</div>
+      <div><span class="stat-num">8</span>Países</div>
+      <div><span class="stat-num" id="totalSellers">1</span>Vendedores</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CATEGORIES BAR ════ -->
+<div class="categories-bar">
+  <div class="cats-inner">
+    <button class="cat-btn active" onclick="filterCat('all',this)">
+      <span class="cat-icon">🏛</span>Todo
+    </button>
+    <button class="cat-btn" onclick="filterCat('Inmuebles',this)">
+      <span class="cat-icon">🏠</span>Inmuebles
+    </button>
+    <button class="cat-btn" onclick="filterCat('Vehículos',this)">
+      <span class="cat-icon">🚗</span>Vehículos
+    </button>
+    <button class="cat-btn" onclick="filterCat('Electrónica',this)">
+      <span class="cat-icon">📱</span>Electrónica
+    </button>
+    <button class="cat-btn" onclick="filterCat('Ropa & Moda',this)">
+      <span class="cat-icon">👗</span>Ropa & Moda
+    </button>
+    <button class="cat-btn" onclick="filterCat('Servicios',this)">
+      <span class="cat-icon">⚙</span>Servicios
+    </button>
+    <button class="cat-btn" onclick="filterCat('Hogar',this)">
+      <span class="cat-icon">🛋</span>Hogar
+    </button>
+    <button class="cat-btn" onclick="filterCat('Animales',this)">
+      <span class="cat-icon">🐾</span>Animales
+    </button>
+    <button class="cat-btn" onclick="filterCat('Trabajo',this)">
+      <span class="cat-icon">💼</span>Trabajo
+    </button>
+    <button class="cat-btn" onclick="filterCat('Comida & Bebida',this)">
+      <span class="cat-icon">🍽</span>Comida
+    </button>
+    <button class="cat-btn" onclick="filterCat('Arte & Coleccionables',this)">
+      <span class="cat-icon">🎨</span>Arte
+    </button>
+    <button class="cat-btn" onclick="filterCat('Deportes',this)">
+      <span class="cat-icon">⚽</span>Deportes
+    </button>
+    <button class="cat-btn" onclick="filterCat('Tecnología',this)">
+      <span class="cat-icon">💻</span>Tecnología
+    </button>
+    <button class="cat-btn" onclick="filterCat('Salud & Belleza',this)">
+      <span class="cat-icon">💊</span>Salud
+    </button>
+    <button class="cat-btn" onclick="filterCat('Educación',this)">
+      <span class="cat-icon">📚</span>Educación
+    </button>
+    <button class="cat-btn" onclick="filterCat('Eventos',this)">
+      <span class="cat-icon">🎉</span>Eventos
+    </button>
+  </div>
+</div>
+
+<!-- ════ MAIN LAYOUT ════ -->
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">País</div>
+      <div class="filter-list">
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Guatemala" onchange="applyFilters()"> Guatemala</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Honduras" onchange="applyFilters()"> Honduras</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="El Salvador" onchange="applyFilters()"> El Salvador</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Nicaragua" onchange="applyFilters()"> Nicaragua</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Costa Rica" onchange="applyFilters()"> Costa Rica</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Panamá" onchange="applyFilters()"> Panamá</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="México" onchange="applyFilters()"> México</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Belice" onchange="applyFilters()"> Belice</label>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Precio</div>
+      <div class="price-range">
+        <div class="price-inputs">
+          <input type="number" class="price-inp" id="priceMin" placeholder="Mín" onchange="applyFilters()">
+          <input type="number" class="price-inp" id="priceMax" placeholder="Máx" onchange="applyFilters()">
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Condición</div>
+      <div class="filter-list">
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Nuevo" onchange="applyFilters()"> Nuevo</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Usado" onchange="applyFilters()"> Usado</label>
+        <label class="filter-item"><input type="checkbox" class="filter-check" value="Reacondicionado" onchange="applyFilters()"> Reacondicionado</label>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Ubicación</div>
+      <div class="location-input-wrap">
+        <input type="text" class="location-inp" id="locationFilter" placeholder="Ciudad o país...">
+        <button class="location-btn" onclick="applyFilters()">📍</button>
+      </div>
+      <button class="btn-apply-filter" onclick="applyFilters()">Aplicar Filtros</button>
+    </div>
+
+  </aside>
+
+  <!-- LISTINGS -->
+  <div class="listings-area">
+    <div class="listings-toolbar">
+      <span class="listings-count" id="listingsCount">Cargando...</span>
+      <div class="toolbar-right">
+        <select class="sort-select" onchange="sortListings(this.value)">
+          <option value="recent">Más reciente</option>
+          <option value="price-asc">Precio: menor</option>
+          <option value="price-desc">Precio: mayor</option>
+        </select>
+        <button class="btn-post-listing" id="postBtn" onclick="openPostModal()" style="display:none;">
+          + Publicar Anuncio
+        </button>
+      </div>
+    </div>
+
+    <div class="listings-grid" id="listingsGrid">
+      <div class="empty-state">
+        <div class="empty-state-icon">⚖</div>
+        <div class="empty-state-text">Cargando Mercadito...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════ MAP SECTION ════ -->
+<section class="map-section">
+  <div class="map-header">
+    <div class="divider" style="max-width:800px;margin:0 auto 12px;"><span class="divider-icon">◆</span></div>
+    <h2>Mapa del Mercadito</h2>
+    <div class="divider" style="max-width:800px;margin:12px auto 0;"><span class="divider-icon">◆</span></div>
+  </div>
+  <div style="max-width:1100px;margin:0 auto;">
+    <div id="mercadito-map">
+      <div class="map-placeholder">
+        <span style="font-size:40px;opacity:0.3;">🗺</span>
+        <span>Mapa de Anuncios — Centroamérica</span>
+        <span style="font-size:9px;letter-spacing:2px;opacity:0.5;">Google Maps se cargará con tu API key</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ POST LISTING MODAL ════ -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePostModal()">✕</button>
+    <div class="modal-title">Publicar Anuncio</div>
+    <div class="modal-sub">Mercadito · Yavaya</div>
+    <div class="divider" style="margin-bottom:22px;"><span class="divider-icon">◆</span></div>
+
+    <div class="form-group">
+      <label class="form-label">Título del anuncio</label>
+      <input type="text" class="form-input" id="f_title" placeholder="Ej: iPhone 15 Pro Max — como nuevo">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Categoría</label>
+        <select class="form-select" id="f_cat">
+          <option>Electrónica</option>
+          <option>Inmuebles</option>
+          <option>Vehículos</option>
+          <option>Ropa & Moda</option>
+          <option>Servicios</option>
+          <option>Hogar</option>
+          <option>Animales</option>
+          <option>Trabajo</option>
+          <option>Comida & Bebida</option>
+          <option>Arte & Coleccionables</option>
+          <option>Deportes</option>
+          <option>Tecnología</option>
+          <option>Salud & Belleza</option>
+          <option>Educación</option>
+          <option>Eventos</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Condición</label>
+        <select class="form-select" id="f_condition">
+          <option>Nuevo</option>
+          <option>Usado</option>
+          <option>Reacondicionado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-textarea" id="f_desc" placeholder="Describe tu producto o servicio..."></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Precio (USD)</label>
+        <input type="number" class="form-input" id="f_price" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Moneda</label>
+        <select class="form-select" id="f_currency">
+          <option>USD</option>
+          <option>GTQ</option>
+          <option>HNL</option>
+          <option>NIO</option>
+          <option>CRC</option>
+          <option>MXN</option>
+          <option>PAB</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">País</label>
+        <select class="form-select" id="f_country">
+          <option>Guatemala</option>
+          <option>Honduras</option>
+          <option>El Salvador</option>
+          <option>Nicaragua</option>
+          <option>Costa Rica</option>
+          <option>Panamá</option>
+          <option>México</option>
+          <option>Belice</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ciudad</label>
+        <input type="text" class="form-input" id="f_city" placeholder="Ej: Guatemala City">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contacto (WhatsApp / Email)</label>
+      <input type="text" class="form-input" id="f_contact" placeholder="+502 0000-0000 o tu@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL de Imagen (opcional)</label>
+      <input type="text" class="form-input" id="f_img" placeholder="https://...imagen.jpg">
+    </div>
+    <button class="btn-submit" onclick="submitListing()">✦ Publicar Ahora</button>
+  </div>
+</div>
+
+<!-- ════ LISTING DETAIL MODAL ════ -->
+<div class="modal-overlay" id="detailModal">
+  <div class="detail-modal">
+    <button class="modal-close" style="position:absolute;top:16px;right:18px;" onclick="closeDetailModal()">✕</button>
+    <div id="detailContent"></div>
+  </div>
+</div>
+
+<!-- ════ ADMIN PANEL ════ -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-panel-title">⚡ Panel Admin</div>
+  <button class="btn-admin" onclick="openPostModal()">+ Agregar Anuncio</button>
+  <button class="btn-admin" onclick="toggleDemoMode()">Demo: Activar/Desactivar</button>
+  <button class="btn-admin danger" onclick="deleteAllDemo()">✕ Borrar Demo Listings</button>
+</div>
+
+<!-- ════ TOAST ════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ════ FOOTER ════ -->
+<footer class="site-footer">
+  <div class="divider" style="max-width:400px;margin:0 auto 18px;"><span class="divider-icon">◆</span></div>
+  <a href="index.html" class="footer-back">← Volver a Yavaya</a>
+  <p class="footer-copy">© 2026 YAVAYA — La Civilización Digital de Centroamérica.</p>
+</footer>
+
+<!-- ════ GOOGLE MAPS (replace YOUR_MAPS_API_KEY) ════ -->
+<script>
+function initMap() {
+  if (typeof google === 'undefined') return;
+  const mapEl = document.getElementById('mercadito-map');
+  mapEl.innerHTML = '';
+  const map = new google.maps.Map(mapEl, {
+    center: { lat: 14.0, lng: -87.0 },
+    zoom: 6,
+    styles: [
+      { elementType: 'geometry', stylers: [{ color: '#0a0807' }] },
+      { elementType: 'labels.text.stroke', stylers: [{ color: '#0a0807' }] },
+      { elementType: 'labels.text.fill', stylers: [{ color: '#7a6a50' }] },
+      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1a1410' }] },
+      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#050408' }] },
+      { featureType: 'poi', stylers: [{ visibility: 'off' }] }
+    ]
+  });
+  window._yavaya._map = map;
+  // Pin all listings on map
+  const listings = window._yavaya._allListings || [];
+  listings.forEach(l => {
+    if (l.lat && l.lng) {
+      new google.maps.Marker({
+        position: { lat: l.lat, lng: l.lng },
+        map,
+        title: l.title,
+        icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="#c9a84c" opacity="0.85"/></svg>'), scaledSize: new google.maps.Size(20,20) }
+      });
+    }
+  });
+}
+</script>
+<!-- Uncomment and add your key:
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_MAPS_API_KEY&callback=initMap">
+</script>
+-->
+
+<!-- ════ MAIN APP SCRIPT ════ -->
+<script type="module">
+const { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged,
+  collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc,
+  setDoc, deleteDoc, where, MASTER_ADMIN_EMAIL } = window._yavaya;
+
+const ADMIN_EMAIL = MASTER_ADMIN_EMAIL;
+
+let currentUser = null;
+let isAdmin = false;
+let allListings = [];
+let filteredListings = [];
+let currentCategory = 'all';
+let firstUserJoinDate = null;
+
+// ─── DEMO LISTINGS ────────────────────────────────────────────────────────────
+const demoListings = [
+  {
+    id: 'demo_1', isDemo: true,
+    title: 'Casa Colonial en Antigua Guatemala',
+    category: 'Inmuebles', condition: 'Usado',
+    desc: 'Hermosa casa colonial en el corazón de Antigua Guatemala. 3 habitaciones, 2 baños, jardín interior con fuente, techos originales del siglo XVIII. Ideal para residencia o Airbnb de lujo.',
+    price: 185000, currency: 'USD',
+    country: 'Guatemala', city: 'Antigua Guatemala',
+    contact: '+502 5555-1234', seller: 'Yavaya Demo',
+    emoji: '🏠', lat: 14.5586, lng: -90.7295,
+    badge: 'demo'
+  },
+  {
+    id: 'demo_2', isDemo: true,
+    title: 'Toyota Hilux 2022 — 4x4 Full',
+    category: 'Vehículos', condition: 'Usado',
+    desc: 'Toyota Hilux 2022, 4x4 doble cabina, color negro, 45,000 km. A/C, asientos de cuero, sistema de navegación, cámara trasera. Sin accidentes. Impecable.',
+    price: 32000, currency: 'USD',
+    country: 'Honduras', city: 'Tegucigalpa',
+    contact: '+504 9999-5678', seller: 'Yavaya Demo',
+    emoji: '🚗', lat: 14.0723, lng: -87.1921,
+    badge: 'hot'
+  },
+  {
+    id: 'demo_3', isDemo: true,
+    title: 'MacBook Pro M3 Max — Nuevo sellado',
+    category: 'Electrónica', condition: 'Nuevo',
+    desc: 'MacBook Pro 16" con chip M3 Max, 36GB RAM, 1TB SSD. Color Space Black. Comprado en Apple Store Miami. Caja sellada con factura original. Garantía Apple 1 año.',
+    price: 3800, currency: 'USD',
+    country: 'Costa Rica', city: 'San José',
+    contact: '+506 8888-9012', seller: 'Yavaya Demo',
+    emoji: '💻', lat: 9.9281, lng: -84.0907,
+    badge: 'new'
+  },
+  {
+    id: 'demo_4', isDemo: true,
+    title: 'Diseño Web Profesional — Sitios Completos',
+    category: 'Servicios', condition: 'Nuevo',
+    desc: 'Ofrezco diseño de sitios web profesionales para negocios, tiendas, restaurantes, y más. Incluye dominio, hosting 1 año, SEO básico y diseño a medida. Entrega en 7 días.',
+    price: 350, currency: 'USD',
+    country: 'Nicaragua', city: 'Managua',
+    contact: '+505 7777-3456', seller: 'Yavaya Demo',
+    emoji: '⚙', lat: 12.1364, lng: -86.2514,
+    badge: 'demo'
+  },
+  {
+    id: 'demo_5', isDemo: true,
+    title: 'Colección Textiles Mayas — 25 piezas únicas',
+    category: 'Arte & Coleccionables', condition: 'Nuevo',
+    desc: 'Colección de 25 textiles mayas auténticos elaborados a mano por artesanas de Chichicastenango. Incluye huipiles, cortes y tapices. Ideales para coleccionistas o decoración de alto valor.',
+    price: 1200, currency: 'USD',
+    country: 'Guatemala', city: 'Chichicastenango',
+    contact: '+502 4444-7890', seller: 'Yavaya Demo',
+    emoji: '🎨', lat: 15.1177, lng: -91.0068,
+    badge: 'demo'
+  }
+];
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+  if (user) {
+    isAdmin = user.email === ADMIN_EMAIL;
+    document.getElementById('userBadge').style.display = 'flex';
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('postBtn').style.display = 'flex';
+    document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+    document.getElementById('userAvatar').src = user.photoURL || '';
+
+    if (isAdmin) {
+      document.getElementById('adminBadge').style.display = 'block';
+      document.getElementById('adminPanel').classList.add('visible');
+    }
+
+    // Track first non-admin user join date
+    if (!isAdmin) {
+      await trackFirstUserJoin();
+    }
+
+    await loadListings();
+  } else {
+    isAdmin = false;
+    document.getElementById('userBadge').style.display = 'none';
+    document.getElementById('loginBtn').style.display = 'flex';
+    document.getElementById('postBtn').style.display = 'none';
+    document.getElementById('adminBadge').style.display = 'none';
+    document.getElementById('adminPanel').classList.remove('visible');
+    loadListings(); // still show listings when logged out
+  }
+});
+
+async function trackFirstUserJoin() {
+  try {
+    const ref = doc(db, 'meta', 'firstUserJoin');
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, { date: serverTimestamp(), email: currentUser.email });
+    } else {
+      firstUserJoinDate = snap.data().date?.toDate();
+    }
+  } catch(e) { /* Firebase not configured yet */ }
+}
+
+window.doGoogleLogin = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) { showToast('Error al iniciar sesión. Configura Firebase primero.'); }
+};
+
+window.doLogout = async () => {
+  await signOut(auth);
+  showToast('Sesión cerrada.');
+};
+
+// ─── LOAD LISTINGS ────────────────────────────────────────────────────────────
+async function loadListings() {
+  let listings = [];
+
+  // Load from Firestore
+  try {
+    const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    snap.forEach(d => listings.push({ id: d.id, ...d.data() }));
+  } catch(e) { /* Firebase not configured yet, use demo only */ }
+
+  // Add demo listings (check expiry)
+  const demosToShow = getDemosToShow();
+  listings = [...demosToShow, ...listings.filter(l => !l.isDemo)];
+
+  allListings = listings;
+  window._yavaya._allListings = allListings;
+  filteredListings = [...allListings];
+
+  document.getElementById('totalListings').textContent = allListings.length;
+  document.getElementById('totalSellers').textContent = [...new Set(allListings.map(l => l.seller))].length;
+
+  renderListings(filteredListings);
+}
+
+function getDemosToShow() {
+  if (!firstUserJoinDate) return demoListings;
+  const daysSinceFirstUser = (Date.now() - firstUserJoinDate.getTime()) / (1000 * 60 * 60 * 24);
+  if (daysSinceFirstUser > 5) return [];
+  return demoListings;
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderListings(listings) {
+  const grid = document.getElementById('listingsGrid');
+  document.getElementById('listingsCount').textContent =
+    listings.length + (listings.length === 1 ? ' anuncio' : ' anuncios');
+
+  if (!listings.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚖</div><div class="empty-state-text">Sin anuncios en esta categoría</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = listings.map(l => {
+    const badgeMap = { demo: 'Demo', new: 'Nuevo', hot: '🔥 Popular' };
+    const badge = l.badge ? `<span class="listing-badge badge-${l.badge}">${badgeMap[l.badge] || l.badge}</span>` : '';
+    const expireTag = l.isDemo ? `<span class="listing-expire">Demo</span>` : '';
+    const imgHtml = l.imgUrl
+      ? `<img src="${l.imgUrl}" alt="" class="listing-img" onerror="this.style.display='none'">`
+      : `<div class="listing-img-placeholder">${l.emoji || '📦'}</div>`;
+
+    return `
+      <div class="listing-card" onclick="openDetail('${l.id}')">
+        <div style="position:relative;">
+          ${imgHtml}
+          ${badge}${expireTag}
+        </div>
+        <div class="listing-body">
+          <div class="listing-category">${l.category || 'Mercadito'}</div>
+          <div class="listing-title">${l.title}</div>
+          <div class="listing-desc">${l.desc || ''}</div>
+          <div class="listing-footer">
+            <div>
+              <span class="listing-price">${l.price ? Number(l.price).toLocaleString() : 'A Convenir'}</span>
+              <span class="listing-currency">${l.currency || 'USD'}</span>
+            </div>
+            <div class="listing-meta">
+              <span class="listing-location">📍 ${l.city || ''}, ${l.country || ''}</span>
+              <span class="listing-seller">${l.seller || ''}</span>
+            </div>
+          </div>
+          <button class="btn-contact" onclick="event.stopPropagation();contactSeller('${encodeURIComponent(l.contact||'')}','${encodeURIComponent(l.title||'')}')">Contactar Vendedor</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ─── DETAIL MODAL ─────────────────────────────────────────────────────────────
+window.openDetail = (id) => {
+  const l = allListings.find(x => x.id === id);
+  if (!l) return;
+
+  const imgHtml = l.imgUrl
+    ? `<img src="${l.imgUrl}" alt="" class="detail-img">`
+    : `<div class="detail-img-placeholder">${l.emoji || '📦'}</div>`;
+
+  const adminDelete = isAdmin
+    ? `<button onclick="deleteListing('${l.id}')" style="width:100%;padding:10px;background:rgba(180,60,60,0.1);border:1px solid rgba(180,60,60,0.2);color:#e87a7a;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;cursor:pointer;margin-top:8px;text-transform:uppercase;">✕ Admin: Eliminar Anuncio</button>` : '';
+
+  document.getElementById('detailContent').innerHTML = `
+    ${imgHtml}
+    <div class="detail-body">
+      <div class="detail-category">${l.category || 'Mercadito'}</div>
+      <div class="detail-title">${l.title}</div>
+      <div class="detail-price">${l.price ? Number(l.price).toLocaleString() : 'A Convenir'} <span style="font-size:18px;color:var(--gold-dim)">${l.currency||'USD'}</span></div>
+      <div class="detail-desc">${l.desc || ''}</div>
+      <div class="detail-meta-row">
+        <div class="detail-meta-item">
+          <span class="detail-meta-label">Condición</span>
+          <span class="detail-meta-value">${l.condition || '—'}</span>
+        </div>
+        <div class="detail-meta-item">
+          <span class="detail-meta-label">País</span>
+          <span class="detail-meta-value">${l.country || '—'}</span>
+        </div>
+        <div class="detail-meta-item">
+          <span class="detail-meta-label">Ciudad</span>
+          <span class="detail-meta-value">${l.city || '—'}</span>
+        </div>
+        <div class="detail-meta-item">
+          <span class="detail-meta-label">Vendedor</span>
+          <span class="detail-meta-value">${l.seller || '—'}</span>
+        </div>
+      </div>
+      <button class="btn-contact-seller" onclick="contactSeller('${encodeURIComponent(l.contact||'')}','${encodeURIComponent(l.title||'')}')">
+        Contactar al Vendedor
+      </button>
+      ${adminDelete}
+    </div>`;
+
+  document.getElementById('detailModal').classList.add('open');
+};
+
+window.closeDetailModal = () => document.getElementById('detailModal').classList.remove('open');
+
+// ─── CONTACT ──────────────────────────────────────────────────────────────────
+window.contactSeller = (contact, title) => {
+  const c = decodeURIComponent(contact);
+  const t = decodeURIComponent(title);
+  if (c.includes('@')) {
+    window.open(`mailto:${c}?subject=Interesado en: ${t}`);
+  } else if (c.match(/^\+?\d/)) {
+    const num = c.replace(/[^+\d]/g,'');
+    window.open(`https://wa.me/${num}?text=Hola! Vi tu anuncio en Yavaya Mercadito: "${t}". Quisiera más información.`);
+  } else {
+    showToast('Contacto: ' + c);
+  }
+};
+
+// ─── POST LISTING ─────────────────────────────────────────────────────────────
+window.openPostModal = () => {
+  if (!currentUser) { showToast('Inicia sesión para publicar.'); return; }
+  document.getElementById('postModal').classList.add('open');
+};
+window.closePostModal = () => document.getElementById('postModal').classList.remove('open');
+
+window.submitListing = async () => {
+  if (!currentUser) { showToast('Inicia sesión primero.'); return; }
+  const title = document.getElementById('f_title').value.trim();
+  if (!title) { showToast('Escribe un título para tu anuncio.'); return; }
+
+  const listing = {
+    title, isDemo: false,
+    category: document.getElementById('f_cat').value,
+    condition: document.getElementById('f_condition').value,
+    desc: document.getElementById('f_desc').value,
+    price: parseFloat(document.getElementById('f_price').value) || 0,
+    currency: document.getElementById('f_currency').value,
+    country: document.getElementById('f_country').value,
+    city: document.getElementById('f_city').value,
+    contact: document.getElementById('f_contact').value,
+    imgUrl: document.getElementById('f_img').value,
+    seller: currentUser.displayName || currentUser.email.split('@')[0],
+    sellerEmail: currentUser.email,
+    badge: 'new',
+    emoji: '📦',
+    createdAt: serverTimestamp()
+  };
+
+  try {
+    await addDoc(collection(db, 'listings'), listing);
+    showToast('¡Anuncio publicado!');
+    closePostModal();
+    await loadListings();
+  } catch(e) {
+    showToast('Error: configura Firebase para guardar anuncios.');
+  }
+};
+
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+window.deleteListing = async (id) => {
+  if (!isAdmin) return;
+  try {
+    if (!id.startsWith('demo_')) await deleteDoc(doc(db, 'listings', id));
+    allListings = allListings.filter(l => l.id !== id);
+    filteredListings = filteredListings.filter(l => l.id !== id);
+    renderListings(filteredListings);
+    closeDetailModal();
+    showToast('Anuncio eliminado.');
+  } catch(e) { showToast('Error al eliminar.'); }
+};
+
+window.deleteAllDemo = async () => {
+  if (!isAdmin) return;
+  allListings = allListings.filter(l => !l.isDemo);
+  filteredListings = filteredListings.filter(l => !l.isDemo);
+  renderListings(filteredListings);
+  showToast('Anuncios demo eliminados.');
+};
+
+window.toggleDemoMode = () => { loadListings(); showToast('Demo actualizado.'); };
+
+// ─── FILTERS & SEARCH ─────────────────────────────────────────────────────────
+window.filterCat = (cat, btn) => {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+};
+
+window.applyFilters = () => {
+  const countries = [...document.querySelectorAll('.filter-check[value]:checked')]
+    .filter(c => ['Guatemala','Honduras','El Salvador','Nicaragua','Costa Rica','Panamá','México','Belice'].includes(c.value))
+    .map(c => c.value);
+  const conditions = [...document.querySelectorAll('.filter-check[value]:checked')]
+    .filter(c => ['Nuevo','Usado','Reacondicionado'].includes(c.value))
+    .map(c => c.value);
+  const minP = parseFloat(document.getElementById('priceMin').value) || 0;
+  const maxP = parseFloat(document.getElementById('priceMax').value) || Infinity;
+  const loc = document.getElementById('locationFilter').value.toLowerCase().trim();
+
+  filteredListings = allListings.filter(l => {
+    if (currentCategory !== 'all' && l.category !== currentCategory) return false;
+    if (countries.length && !countries.includes(l.country)) return false;
+    if (conditions.length && !conditions.includes(l.condition)) return false;
+    if (l.price < minP || l.price > maxP) return false;
+    if (loc && !((l.city||'').toLowerCase().includes(loc) || (l.country||'').toLowerCase().includes(loc))) return false;
+    return true;
+  });
+  renderListings(filteredListings);
+};
+
+window.doSearch = () => {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  filteredListings = allListings.filter(l =>
+    (l.title||'').toLowerCase().includes(q) ||
+    (l.desc||'').toLowerCase().includes(q) ||
+    (l.category||'').toLowerCase().includes(q)
+  );
+  renderListings(filteredListings);
+};
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+window.sortListings = (by) => {
+  if (by === 'price-asc') filteredListings.sort((a,b) => a.price - b.price);
+  else if (by === 'price-desc') filteredListings.sort((a,b) => b.price - a.price);
+  else filteredListings.sort((a,b) => 0); // keep order
+  renderListings(filteredListings);
+};
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+window.showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// Initial load
+loadListings();
+</script>
+
+</body>
+</html>
