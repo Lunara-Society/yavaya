@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YAVAYA — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, collection, query, orderBy, limit,
+    onSnapshot, doc, updateDoc, where, getDocs, getDoc }
+    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
+    authDomain: "yavayago-ef281.firebaseapp.com",
+    projectId: "yavayago-ef281",
+    storageBucket: "yavayago-ef281.firebasestorage.app",
+    messagingSenderId: "592402476016",
+    appId: "1:592402476016:web:424456516968dfc7284b35",
+    measurementId: "G-0DBRC5NZQW"
+  };
+
+  const MASTER_ADMIN = "junoagattis@gmail.com";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let currentUser = null;
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user || user.email !== MASTER_ADMIN) {
+      document.getElementById('accessDenied').style.display = 'flex';
+      document.getElementById('adminPanel').style.display = 'none';
+      return;
+    }
+    currentUser = user;
+    document.getElementById('accessDenied').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadDashboard();
+    startLiveFeeds();
+  });
+
+  async function loadDashboard() {
+    // Count users
+    const usersSnap = await getDocs(collection(db, 'users'));
+    document.getElementById('statTotal').textContent = usersSnap.size;
+
+    let newToday = 0, blocked = 0, totalTokensSpent = 0;
+    const watching = [];
+    const now = new Date();
+
+    usersSnap.forEach(d => {
+      const data = d.data();
+      const joined = data.joinedAt?.toDate ? data.joinedAt.toDate() : new Date(data.joinedAt || 0);
+      const daysSince = (now - joined) / (1000 * 60 * 60 * 24);
+      if (daysSince < 1) newToday++;
+      if (data.isBlocked) blocked++;
+      totalTokensSpent += data.totalTokensSpent || 0;
+      if (daysSince <= 3) watching.push({ ...data, joinedAgo: daysSince });
+    });
+
+    document.getElementById('statNew').textContent = newToday;
+    document.getElementById('statBlocked').textContent = blocked;
+    document.getElementById('statSpent').textContent = totalTokensSpent;
+
+    renderWatchList(watching);
+    renderAllUsers(usersSnap);
+  }
+
+  function renderWatchList(users) {
+    const el = document.getElementById('watchList');
+    if (!users.length) {
+      el.innerHTML = '<div class="empty-state">Sin usuarios nuevos en los últimos 3 días</div>';
+      return;
+    }
+    el.innerHTML = users.sort((a,b) => a.joinedAgo - b.joinedAgo).map(u => `
+      <div class="user-row watch">
+        <div class="user-avatar">${u.photoURL ? '<img src="'+u.photoURL+'" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(201,168,76,.3);">' : '👤'}</div>
+        <div class="user-info">
+          <div class="user-name">${u.displayName || 'Sin nombre'}</div>
+          <div class="user-email">${u.email}</div>
+          <div class="user-meta">
+            <span class="meta-tag tag-gold">${u.yavayaId}</span>
+            <span class="meta-tag tag-blue">Hace ${Math.round(u.joinedAgo * 24)}h</span>
+            <span class="meta-tag tag-green">⚡ ${u.tokens || 0} tokens</span>
+            ${u.freeTokensActive ? '<span class="meta-tag tag-muted">Día libre '+u.tokensFreeDay+'/5</span>' : ''}
+            ${u.deviceIds?.length > 1 ? '<span class="meta-tag tag-orange">⚠ '+u.deviceIds.length+' dispositivos</span>' : ''}
+          </div>
+          <div class="user-devices">Dispositivos: ${(u.deviceIds||[]).join(', ').substr(0,80)}</div>
+        </div>
+        <div class="user-actions">
+          <div class="token-editor">
+            <input type="number" id="tkn_${u.uid}" value="${u.tokens||0}" min="0" max="999" 
+              style="width:60px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);color:#e8c97a;padding:5px;font-family:Cinzel,serif;font-size:12px;text-align:center;">
+            <button onclick="setTokens('${u.uid}')" class="btn-sm btn-gold">Set</button>
+          </div>
+          <button onclick="blockUser('${u.uid}','${u.email}',${!u.isBlocked})" 
+            class="btn-sm ${u.isBlocked ? 'btn-green' : 'btn-red'}">
+            ${u.isBlocked ? 'Desbloquear' : 'Bloquear'}
+          </button>
+          <button onclick="viewActivity('${u.uid}')" class="btn-sm btn-blue">Actividad</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderAllUsers(usersSnap) {
+    const el = document.getElementById('allUsersList');
+    const rows = [];
+    usersSnap.forEach(d => rows.push({ id: d.id, ...d.data() }));
+    rows.sort((a,b) => {
+      const aT = a.joinedAt?.toDate ? a.joinedAt.toDate() : new Date(a.joinedAt||0);
+      const bT = b.joinedAt?.toDate ? b.joinedAt.toDate() : new Date(b.joinedAt||0);
+      return bT - aT;
+    });
+    el.innerHTML = rows.map(u => `
+      <div class="user-row">
+        <div class="user-info">
+          <div class="user-name">${u.displayName||'—'} <span class="meta-tag tag-gold">${u.yavayaId||'—'}</span> ${u.isBlocked?'<span class="meta-tag tag-red">BLOQUEADO</span>':''}</div>
+          <div class="user-email">${u.email}</div>
+          <div class="user-meta">
+            <span class="meta-tag tag-green">⚡ ${u.tokens||0}</span>
+            <span class="meta-tag tag-muted">Gastados: ${u.totalTokensSpent||0}</span>
+            <span class="meta-tag tag-muted">${u.deviceIds?.length||1} dispositivo(s)</span>
+            <span class="meta-tag tag-blue">${u.freeTokensActive?'Día libre '+u.tokensFreeDay+'/5':'Sin tokens gratis'}</span>
+          </div>
+        </div>
+        <div class="user-actions">
+          <input type="number" id="tkn2_${u.uid}" value="${u.tokens||0}" min="0" max="999"
+            style="width:55px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);color:#e8c97a;padding:4px;font-family:Cinzel,serif;font-size:11px;text-align:center;">
+          <button onclick="setTokens2('${u.uid}')" class="btn-sm btn-gold">✓</button>
+          <button onclick="blockUser('${u.uid}','${u.email}',${!u.isBlocked})" 
+            class="btn-sm ${u.isBlocked?'btn-green':'btn-red'}">
+            ${u.isBlocked?'↑ Unlock':'✕ Block'}
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function startLiveFeeds() {
+    // Live activity log
+    const q = query(collection(db, 'activityLogs'), orderBy('timestamp','desc'), limit(50));
+    onSnapshot(q, snap => {
+      const el = document.getElementById('activityFeed');
+      const rows = [];
+      snap.forEach(d => rows.push(d.data()));
+      el.innerHTML = rows.map(r => `
+        <div class="activity-row">
+          <span class="act-time">${r.timestamp?.toDate ? r.timestamp.toDate().toLocaleTimeString() : '—'}</span>
+          <span class="meta-tag tag-gold">${r.yavayaId||'?'}</span>
+          <span class="act-email">${r.email||''}</span>
+          <span class="meta-tag tag-blue">${r.action||'?'}</span>
+          <span class="act-tokens">⚡${r.tokensAfter??'?'}</span>
+        </div>`).join('') || '<div class="empty-state">Sin actividad</div>';
+    });
+
+    // Live device registrations
+    const q2 = query(collection(db, 'deviceRegistrations'), orderBy('registeredAt','desc'), limit(30));
+    onSnapshot(q2, snap => {
+      const el = document.getElementById('deviceFeed');
+      const rows = [];
+      snap.forEach(d => rows.push(d.data()));
+      el.innerHTML = rows.map(r => `
+        <div class="activity-row">
+          <span class="act-time">${r.registeredAt?.toDate ? r.registeredAt.toDate().toLocaleString() : '—'}</span>
+          <span class="act-email">${r.email||''}</span>
+          <span class="meta-tag tag-muted">${(r.deviceId||'').substr(0,20)}...</span>
+        </div>`).join('') || '<div class="empty-state">Sin registros</div>';
+    });
+  }
+
+  window.setTokens = async (uid) => {
+    const val = parseInt(document.getElementById('tkn_'+uid).value);
+    if (isNaN(val)) return;
+    await updateDoc(doc(db, 'users', uid), { tokens: val });
+    showToast('Tokens actualizados: ' + val);
+  };
+  window.setTokens2 = async (uid) => {
+    const val = parseInt(document.getElementById('tkn2_'+uid).value);
+    if (isNaN(val)) return;
+    await updateDoc(doc(db, 'users', uid), { tokens: val });
+    showToast('Tokens actualizados: ' + val);
+  };
+  window.blockUser = async (uid, email, block) => {
+    await updateDoc(doc(db, 'users', uid), { isBlocked: block });
+    showToast((block ? 'Bloqueado: ' : 'Desbloqueado: ') + email);
+    loadDashboard();
+  };
+  window.viewActivity = async (uid) => {
+    const snap = await getDoc(doc(db, 'users', uid));
+    const log = snap.data()?.activityLog || [];
+    alert(log.length ? JSON.stringify(log.slice(-10), null, 2) : 'Sin actividad registrada');
+  };
+  window.doLogout = async () => { await signOut(auth); location.href='index.html'; };
+</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --gold:#c9a84c;--gold-l:#e8c97a;--gold-d:#8a6c2a;
+  --black:#050404;--warm:#1a1410;--surface:#13100c;
+  --muted:#7a6a50;--light:#c8b882;
+  --green:#3db87a;--red:#d94040;--blue:#4090d9;--orange:#e87240;
+}
+body{background:var(--black);color:var(--gold-l);font-family:"Cormorant Garamond",serif;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--gold-d);}
+
+.top-nav{
+  position:fixed;top:0;left:0;right:0;z-index:600;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 32px;background:rgba(5,4,4,.97);
+  border-bottom:1px solid rgba(201,168,76,.1);
+}
+.nav-title{font-family:"Cinzel Decorative",serif;font-size:16px;color:var(--gold-l);}
+.nav-sub{font-family:"Cinzel",serif;font-size:8px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;}
+.btn-sm{
+  padding:5px 12px;font-family:"Cinzel",serif;font-size:8px;letter-spacing:2px;
+  text-transform:uppercase;border:none;cursor:pointer;transition:all .2s;
+}
+.btn-gold{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.btn-gold:hover{background:rgba(201,168,76,.25);}
+.btn-red{background:rgba(217,64,64,.12);color:var(--red);border:1px solid rgba(217,64,64,.25);}
+.btn-green{background:rgba(61,184,122,.12);color:var(--green);border:1px solid rgba(61,184,122,.25);}
+.btn-blue{background:rgba(64,144,217,.1);color:var(--blue);border:1px solid rgba(64,144,217,.2);}
+.btn-out{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--muted);border:1px solid rgba(201,168,76,.15);padding:7px 14px;background:none;cursor:pointer;}
+.btn-out:hover{color:var(--gold);}
+
+.main{padding:80px 24px 60px;max-width:1200px;margin:0 auto;}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.stat-box{padding:20px;background:var(--surface);border:1px solid rgba(201,168,76,.1);text-align:center;}
+.stat-val{font-family:"Cinzel Decorative",serif;font-size:32px;color:var(--gold);margin-bottom:4px;}
+.stat-label{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+
+/* Section */
+.section{margin-bottom:32px;}
+.section-title{
+  font-family:"Cinzel",serif;font-size:10px;letter-spacing:5px;text-transform:uppercase;
+  color:var(--gold-d);padding:12px 0;
+  border-bottom:1px solid rgba(201,168,76,.08);margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;color:var(--green);}
+.live-dot::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);animation:lp 1.4s ease-in-out infinite;}
+@keyframes lp{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.user-row{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px;background:var(--surface);
+  border:1px solid rgba(201,168,76,.07);margin-bottom:8px;flex-wrap:wrap;
+}
+.user-row.watch{border-color:rgba(201,168,76,.18);}
+.user-avatar{flex-shrink:0;width:34px;height:34px;border-radius:50%;
+  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;}
+.user-info{flex:1;min-width:200px;}
+.user-name{font-family:"Cinzel",serif;font-size:12px;letter-spacing:1px;color:var(--light);margin-bottom:3px;}
+.user-email{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.user-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+.user-devices{font-family:"Cormorant Garamond",serif;font-size:11px;color:rgba(120,100,60,.5);}
+.user-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.token-editor{display:flex;align-items:center;gap:6px;}
+
+.meta-tag{
+  font-family:"Cinzel",serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;
+  padding:2px 8px;
+}
+.tag-gold{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);}
+.tag-blue{background:rgba(64,144,217,.08);color:var(--blue);border:1px solid rgba(64,144,217,.18);}
+.tag-green{background:rgba(61,184,122,.08);color:var(--green);border:1px solid rgba(61,184,122,.18);}
+.tag-red{background:rgba(217,64,64,.1);color:var(--red);border:1px solid rgba(217,64,64,.2);}
+.tag-muted{background:rgba(120,100,60,.08);color:var(--muted);border:1px solid rgba(120,100,60,.15);}
+.tag-orange{background:rgba(232,114,64,.1);color:var(--orange);border:1px solid rgba(232,114,64,.2);}
+
+.activity-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:8px 12px;border-bottom:1px solid rgba(201,168,76,.04);
+  font-size:13px;
+}
+.act-time{font-family:"Cinzel",serif;font-size:9px;color:var(--muted);min-width:70px;}
+.act-email{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--muted);}
+.act-tokens{font-family:"Cinzel",serif;font-size:10px;color:var(--gold);margin-left:auto;}
+
+.empty-state{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--muted);
+  text-align:center;padding:30px;font-style:italic;}
+
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid rgba(201,168,76,.1);}
+.tab{
+  padding:10px 20px;font-family:"Cinzel",serif;font-size:9px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all .2s;
+  background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab.active,.tab:hover{color:var(--gold);border-bottom-color:var(--gold);}
+
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+#accessDenied{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;gap:16px;text-align:center;
+  font-family:"Cinzel",serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);
+}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--warm);border:1px solid rgba(201,168,76,.3);color:var(--gold-l);
+  font-family:"Cinzel",serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  padding:14px 28px;z-index:9999;opacity:0;transition:all .35s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:700px){.stats-row{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- ACCESS DENIED -->
+<div id="accessDenied">
+  <div style="font-size:40px;">🔒</div>
+  <div>Acceso Restringido</div>
+  <div style="font-family:Cormorant Garamond,serif;font-size:15px;color:var(--muted);font-style:italic;">Solo el administrador puede acceder a este panel</div>
+  <a href="index.html" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);text-decoration:none;border:1px solid rgba(201,168,76,.2);padding:8px 18px;">← Volver</a>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <nav class="top-nav">
+    <div>
+      <div class="nav-title">⚡ Admin Panel</div>
+      <div class="nav-sub">YAVAYA — Control Total</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="live-dot">EN VIVO</span>
+      <button class="btn-out" onclick="location.reload()">↺ Refresh</button>
+      <button class="btn-out" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val" id="statTotal">—</div>
+        <div class="stat-label">Usuarios Totales</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statNew" style="color:var(--green);">—</div>
+        <div class="stat-label">Nuevos Hoy</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statBlocked" style="color:var(--red);">—</div>
+        <div class="stat-label">Bloqueados</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="statSpent" style="color:var(--gold);">—</div>
+        <div class="stat-label">Tokens Gastados</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('watch')">🔍 Vigilancia 3 Días</button>
+      <button class="tab" onclick="switchTab('activity')">⚡ Actividad en Vivo</button>
+      <button class="tab" onclick="switchTab('devices')">📱 Dispositivos</button>
+      <button class="tab" onclick="switchTab('users')">👥 Todos los Usuarios</button>
+    </div>
+
+    <!-- Watch List -->
+    <div id="tab-watch" class="tab-content active">
+      <div class="section-title">
+        Usuarios Nuevos — Primeros 3 Días (Monitoreo Total)
+        <span class="live-dot">En Vivo</span>
+      </div>
+      <div id="watchList"><div class="empty-state">Cargando...</div></div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div id="tab-activity" class="tab-content">
+      <div class="section-title">
+        Feed de Actividad — Tiempo Real
+        <span class="live-dot">En Vivo</span>
+      </div>
+      <div id="activityFeed" style="max-height:600px;overflow-y:auto;"><div class="empty-state">Cargando...</div></div>
+    </div>
+
+    <!-- Devices -->
+    <div id="tab-devices" class="tab-content">
+      <div class="section-title">Registro de Dispositivos</div>
+      <div id="deviceFeed" style="max-height:500px;overflow-y:auto;"><div class="empty-state">Cargando...</div></div>
+    </div>
+
+    <!-- All Users -->
+    <div id="tab-users" class="tab-content">
+      <div class="section-title">Todos los Usuarios</div>
+      <div id="allUsersList" style="max-height:600px;overflow-y:auto;"><div class="empty-state">Cargando...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
