@@ -33,6 +33,149 @@
   const db    = getFirestore(app);
   const prov  = new GoogleAuthProvider();
 
+  
+// ════ TOKEN SYSTEM INJECTION ════
+const FIREBASE_TOKEN_CONFIG = {
+  apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
+  authDomain: "yavayago-ef281.firebaseapp.com",
+  projectId: "yavayago-ef281",
+};
+
+let _userTokens = 0;
+let _userYavayaId = '';
+let _userFreeActive = false;
+let _userFreeDay = 1;
+let _userId = null;
+
+function getDeviceId() {
+  let id = localStorage.getItem('_yvyd');
+  if (!id) { id = 'dv-'+Date.now().toString(36)+'-'+Math.random().toString(36).substr(2,9); localStorage.setItem('_yvyd',id); }
+  return id;
+}
+function genYavayaId(uid) {
+  const p = uid.replace(/[^a-zA-Z0-9]/g,'');
+  return 'YVY-'+p.substr(0,4).toUpperCase()+'-'+p.substr(4,4).toUpperCase();
+}
+
+async function tokenSystemInit(user, db, { updateDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, collection }) {
+  _userId = user.uid;
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  const deviceId = getDeviceId();
+
+  if (!snap.exists()) {
+    const yavayaId = genYavayaId(user.uid);
+    const now = new Date();
+    const nextR = new Date(now); nextR.setHours(23,0,0,0);
+    if (nextR <= now) nextR.setDate(nextR.getDate()+1);
+    await setDoc(ref, {
+      uid:user.uid, email:user.email, displayName:user.displayName,
+      photoURL:user.photoURL, yavayaId, tokens:2,
+      tokensFreeDay:1, freeTokensActive:true,
+      joinedAt:serverTimestamp(), lastTokenRenewal:serverTimestamp(),
+      nextRenewal:nextR.toISOString(),
+      deviceId, deviceIds:[deviceId],
+      isBlocked:false, role:'user', activityLog:[],
+      totalTokensSpent:0, totalTokensBought:0,
+      adminWatchUntil:new Date(Date.now()+3*24*60*60*1000).toISOString()
+    });
+    try { await addDoc(collection(db,'deviceRegistrations'),{uid:user.uid,deviceId,email:user.email,registeredAt:serverTimestamp()}); } catch(e){}
+    _userTokens=2; _userYavayaId=yavayaId; _userFreeActive=true; _userFreeDay=1;
+  } else {
+    const d = snap.data();
+    if (d.isBlocked) { alert('Esta cuenta ha sido bloqueada por el administrador.'); throw new Error('blocked'); }
+    
+    // Add device if new
+    const known = d.deviceIds||[];
+    if (!known.includes(deviceId)) {
+      try { await updateDoc(ref,{deviceIds:[...known,deviceId]}); } catch(e){}
+    }
+
+    // Token renewal check
+    if (d.freeTokensActive && d.nextRenewal) {
+      const now = new Date();
+      const nextR = new Date(d.nextRenewal);
+      if (now >= nextR) {
+        const freeDay = (d.tokensFreeDay||1)+1;
+        const newTokens = (d.tokens||0)<2 ? 2 : (d.tokens||0);
+        const nextRDate = new Date(now); nextRDate.setHours(23,0,0,0);
+        if (nextRDate<=now) nextRDate.setDate(nextRDate.getDate()+1);
+        try { await updateDoc(ref,{tokens:newTokens,tokensFreeDay:freeDay,freeTokensActive:freeDay<=5,lastTokenRenewal:serverTimestamp(),nextRenewal:nextRDate.toISOString()}); } catch(e){}
+        _userTokens=newTokens; _userFreeActive=freeDay<=5; _userFreeDay=freeDay;
+      } else {
+        _userTokens=d.tokens||0; _userFreeActive=d.freeTokensActive; _userFreeDay=d.tokensFreeDay||1;
+      }
+    } else {
+      _userTokens=d.tokens||0; _userFreeActive=false; _userFreeDay=d.tokensFreeDay||1;
+    }
+    _userYavayaId=d.yavayaId||genYavayaId(user.uid);
+  }
+  updateTokenWidget();
+}
+
+function updateTokenWidget() {
+  const w = document.getElementById('tokenWidget');
+  if (!w) return;
+  const countEl = w.querySelector('.tw-count');
+  if (countEl) { 
+    countEl.textContent = _userTokens;
+    countEl.style.color = _userTokens === 0 ? 'var(--red)' : 'var(--gold)';
+  }
+  const freeEl = w.querySelector('.tw-free');
+  if (freeEl) freeEl.textContent = _userFreeActive ? 'Gratis día '+_userFreeDay+'/5' : '';
+  w.style.display = 'flex';
+}
+
+async function spendTokenGate(action, details, db, { updateDoc, doc, getDoc, addDoc, collection, serverTimestamp }) {
+  if (!_userId) { showNoTokensModal(''); return false; }
+  if (_userTokens < 1) { showNoTokensModal(_userYavayaId); return false; }
+  
+  try {
+    const ref = doc(db, 'users', _userId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return false;
+    const d = snap.data();
+    if (d.isBlocked) { alert('Tu cuenta está bloqueada.'); return false; }
+    if ((d.tokens||0) < 1) { _userTokens=0; updateTokenWidget(); showNoTokensModal(_userYavayaId); return false; }
+    
+    const newTokens = d.tokens - 1;
+    const logEntry = { action, details, tokensAfter:newTokens, timestamp:new Date().toISOString() };
+    await updateDoc(ref, {
+      tokens:newTokens,
+      totalTokensSpent:(d.totalTokensSpent||0)+1,
+      activityLog:[...(d.activityLog||[]).slice(-49),logEntry]
+    });
+    try { await addDoc(collection(db,'activityLogs'),{uid:_userId,email:d.email,yavayaId:d.yavayaId,action,details,tokensAfter:newTokens,deviceId:getDeviceId(),timestamp:serverTimestamp()}); } catch(e){}
+    _userTokens = newTokens;
+    updateTokenWidget();
+    return true;
+  } catch(e) { console.error(e); return false; }
+}
+
+function showNoTokensModal(yavayaId) {
+  const existing = document.getElementById('noTokensModal');
+  if (existing) existing.remove();
+  const m = document.createElement('div');
+  m.id='noTokensModal';
+  m.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(5,4,4,.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px;';
+  m.innerHTML=`<div style="max-width:460px;width:100%;background:#13100c;border:1px solid rgba(201,168,76,.25);padding:36px 28px;text-align:center;">
+    <div style="font-size:38px;margin-bottom:14px;">⚡</div>
+    <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:#e8c97a;margin-bottom:8px;">Sin Tokens</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#7a6a50;line-height:1.6;margin-bottom:20px;">Cada acción en Yavaya cuesta 1 token. Adquiere más para continuar.</div>
+    ${yavayaId ? `<div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);padding:12px;margin-bottom:20px;">
+      <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a6c2a;margin-bottom:5px;">Tu Yavaya ID — Preséntalo al pagar</div>
+      <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:#c9a84c;">${yavayaId}</div>
+    </div>` : ''}
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <a href="tokens.html" style="flex:1;padding:13px;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(135deg,#e8c97a,#c9a84c);color:#050404;text-decoration:none;font-weight:700;">Ver Tokens →</a>
+      <button onclick="document.getElementById('noTokensModal').remove()" style="flex:1;padding:13px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.2);color:#7a6a50;cursor:pointer;">Cerrar</button>
+    </div>
+  </div>`;
+  document.body.appendChild(m);
+}
+
+window._tokenSystem = { init: tokenSystemInit, spend: spendTokenGate, getTokens:()=>_userTokens, getYavayaId:()=>_userYavayaId };
+
   window._go = {
     auth, db, prov, MASTER_ADMIN,
     signInWithPopup, signOut, onAuthStateChanged,
@@ -760,6 +903,40 @@ body {
   .top-nav{padding:12px 16px;}
   .rdash-stats{grid-template-columns:1fr 1fr;}
 }
+
+/* ════ TOKEN WIDGET ════ */
+.token-widget{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 16px;
+  background:rgba(201,168,76,.07);
+  border:1px solid rgba(201,168,76,.2);
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+}
+.token-widget:hover{border-color:rgba(201,168,76,.4);}
+.tw-tokens{display:flex;align-items:center;gap:5px;}
+.tw-icon{font-size:14px;}
+.tw-count{font-family:"Cinzel Decorative",serif;font-size:17px;color:var(--gold);min-width:20px;}
+.tw-label{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.tw-free{font-family:"Cinzel",serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--green);border-left:1px solid rgba(201,168,76,.15);padding-left:10px;}
+.tw-buy{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);text-decoration:none;transition:color .2s;border-left:1px solid rgba(201,168,76,.12);padding-left:10px;}
+.tw-buy:hover{color:var(--gold);}
+.tw-no-tokens{color:var(--red) !important;}
+
+/* Token warning banner */
+.token-warning{
+  position:fixed;bottom:80px;right:20px;z-index:800;
+  background:rgba(5,4,4,.97);border:1px solid rgba(201,168,76,.3);
+  padding:16px 20px;max-width:300px;
+  font-family:"Cinzel",serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gold-d);display:none;
+  box-shadow:0 8px 30px rgba(0,0,0,.6);
+}
+.token-warning.show{display:block;}
+.tw-warn-title{color:var(--red);margin-bottom:6px;font-size:10px;}
+.tw-warn-desc{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;letter-spacing:0;}
+
 </style>
 </head>
 <body>
@@ -777,6 +954,11 @@ body {
     </div>
   </a>
   <div class="nav-right">
+    <a href="tokens.html" class="token-widget" id="tokenWidget" style="display:none;">
+      <div class="tw-tokens"><span class="tw-icon">⚡</span><span class="tw-count">0</span><span class="tw-label">Tokens</span></div>
+      <span class="tw-free"></span>
+      <span class="tw-buy">+ Comprar</span>
+    </a>
     <span class="admin-tag" id="adminTag">⚡ Admin</span>
     <div class="role-switcher" id="roleSwitcher">
       <button class="role-btn active" id="roleCustomer" onclick="setRole('customer')">Cliente</button>
@@ -1276,6 +1458,13 @@ const demoRestaurants = [
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   if (user) {
+    // Token system init
+    if (window._tokenSystem) {
+      try {
+        const { updateDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, collection } = window._go;
+        await window._tokenSystem.init(user, db, {updateDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, collection});
+      } catch(e) { if(e.message !== 'blocked') console.error(e); }
+    }
     isAdmin = user.email === MASTER_ADMIN;
     document.getElementById('userPill').style.display = 'flex';
     document.getElementById('loginBtn').style.display = 'none';
@@ -1466,6 +1655,12 @@ window.selectPay = (btn) => {
 
 // ─── PLACE ORDER ────────────────────────────────────────────────────────────
 window.placeOrder = async () => {
+  // Token gate
+  if (currentUser && window._tokenSystem) {
+    const { updateDoc, doc, getDoc, addDoc, collection, serverTimestamp } = window._go;
+    const ok = await window._tokenSystem.spend('place_order',{restaurant:currentRestaurant?.name||'?'}, db, {updateDoc, doc, getDoc, addDoc, collection, serverTimestamp});
+    if (!ok) return;
+  }
   if (!currentUser) { showToast('Inicia sesión para ordenar.'); return; }
   const items = Object.entries(cart);
   if (!items.length) { showToast('Agrega algo al carrito.'); return; }
