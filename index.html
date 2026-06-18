@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YAVAYA — La Civilización Digital de Centroamérica</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+
+  /* ═══════════════════════════════════════════
+     RESET & BASE
+  ═══════════════════════════════════════════ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #8a6c2a;
+    --gold-glow: rgba(201,168,76,0.35);
+    --black: #050404;
+    --dark: #0a0807;
+    --dark-mid: #110e0b;
+    --dark-warm: #1a1410;
+    --text-muted: #7a6a50;
+    --text-light: #c8b882;
+    --ember: #c94a0a;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--black);
+    color: var(--gold-light);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* ═══ ORNAMENTAL DIVIDER ═══ */
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 0 auto;
+    width: 80%;
+    padding: 8px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+  .divider-icon { color: var(--gold); font-size: 12px; opacity: 0.6; }
+
+  /* ═══ CORNER ORNAMENTS ═══ */
+  .corner-ornament {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .corner-tl { top: 10px; left: 10px; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner-tr { top: 10px; right: 10px; border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+  .corner-bl { bottom: 10px; left: 10px; border-bottom: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner-br { bottom: 10px; right: 10px; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+
+  /* ═══ FADE UP ═══ */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.85s ease, transform 0.85s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .s1 { transition-delay: 0.05s; }
+  .s2 { transition-delay: 0.15s; }
+  .s3 { transition-delay: 0.25s; }
+  .s4 { transition-delay: 0.35s; }
+  .s5 { transition-delay: 0.45s; }
+  .s6 { transition-delay: 0.55s; }
+  .s7 { transition-delay: 0.65s; }
+  .s8 { transition-delay: 0.75s; }
+
+  /* ══════════════════════════════════════════════════
+     TOP NAV
+  ══════════════════════════════════════════════════ */
+  .top-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 48px;
+    background: linear-gradient(180deg, rgba(5,4,4,0.96) 0%, transparent 100%);
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .nav-y {
+    width: 34px; height: 34px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    color: var(--gold);
+    box-shadow: 0 0 12px rgba(201,168,76,0.15);
+  }
+
+  .nav-word {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+  }
+
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ══════════════════════════════════════════════════
+     HERO
+  ══════════════════════════════════════════════════ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 120px;
+    overflow: hidden;
+  }
+
+  /* Deep night sky background */
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 85%, rgba(60,30,5,0.5) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 30% 40%, rgba(180,50,5,0.08) 0%, transparent 50%),
+      linear-gradient(185deg, #02020a 0%, #060408 25%, #0e0a04 55%, #1a0e04 75%, #0a0806 100%);
+  }
+
+  /* Star field */
+  .stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,240,200,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 8%, rgba(255,240,200,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 20%, rgba(255,240,200,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 6%, rgba(255,240,200,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 12%, rgba(255,240,200,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 18%, rgba(255,240,200,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 10%, rgba(255,240,200,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 35%, rgba(255,240,200,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 28%, rgba(255,240,200,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 30%, rgba(255,240,200,0.3) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* Architecture columns */
+  .hero-arch {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 85%;
+    pointer-events: none;
+  }
+
+  .arch-col {
+    position: absolute;
+    bottom: 0;
+    width: 48px;
+    background: linear-gradient(180deg,
+      rgba(201,168,76,0.0) 0%,
+      rgba(201,168,76,0.04) 15%,
+      rgba(100,70,20,0.2) 60%,
+      rgba(60,40,10,0.5) 100%
+    );
+    border-left: 1px solid rgba(201,168,76,0.06);
+    border-right: 1px solid rgba(201,168,76,0.06);
+  }
+  .arch-col-1 { left: 2%; height: 85%; }
+  .arch-col-2 { left: 8%; height: 78%; }
+  .arch-col-3 { left: 14%; height: 65%; }
+  .arch-col-4 { right: 2%; height: 85%; }
+  .arch-col-5 { right: 8%; height: 78%; }
+  .arch-col-6 { right: 14%; height: 65%; }
+
+  /* Torch left */
+  .torch {
+    position: absolute;
+    bottom: 26%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 3;
+  }
+  .torch-left { left: 7%; }
+  .torch-right { right: 7%; }
+
+  .flame-wrap {
+    width: 30px; height: 56px;
+    position: relative;
+    animation: flick 2s ease-in-out infinite alternate;
+  }
+  .flame-outer {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 50px;
+    background: radial-gradient(ellipse at 50% 90%, #ff8c00 0%, #e83a00 35%, rgba(180,20,0,0.5) 65%, transparent 100%);
+    border-radius: 50% 50% 35% 35% / 55% 55% 45% 45%;
+    filter: blur(2.5px);
+  }
+  .flame-inner {
+    position: absolute;
+    bottom: 4px; left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 32px;
+    background: radial-gradient(ellipse at 50% 85%, #ffe080 0%, #ff8800 45%, transparent 100%);
+    border-radius: 50% 50% 35% 35% / 55% 55% 45% 45%;
+    filter: blur(1px);
+  }
+
+  @keyframes flick {
+    0%   { transform: scaleX(1)    scaleY(1)    skewX(0deg);    opacity: 1; }
+    20%  { transform: scaleX(0.93) scaleY(1.06) skewX(-1.5deg); opacity: 0.95; }
+    50%  { transform: scaleX(1.05) scaleY(0.96) skewX(1.2deg);  opacity: 1; }
+    80%  { transform: scaleX(0.96) scaleY(1.04) skewX(-0.8deg); opacity: 0.97; }
+    100% { transform: scaleX(1.03) scaleY(1.01) skewX(0.5deg);  opacity: 0.99; }
+  }
+
+  .torch-bowl {
+    width: 34px; height: 16px;
+    background: linear-gradient(180deg, var(--gold-dim) 0%, #2e1d08 100%);
+    clip-path: polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+  }
+  .torch-stem {
+    width: 5px; height: 90px;
+    background: linear-gradient(180deg, var(--gold-dim) 0%, #1e1005 100%);
+    border-radius: 3px;
+  }
+
+  /* Ember glow under torches */
+  .torch-glow {
+    position: absolute;
+    width: 120px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 30%, rgba(200,80,5,0.25) 0%, transparent 70%);
+    filter: blur(8px);
+    bottom: 26%; left: 5%;
+    pointer-events: none;
+  }
+  .torch-glow-r {
+    position: absolute;
+    width: 120px; height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 30%, rgba(200,80,5,0.25) 0%, transparent 70%);
+    filter: blur(8px);
+    bottom: 26%; right: 5%;
+    pointer-events: none;
+  }
+
+  /* Volcano glow in background */
+  .volcano {
+    position: absolute;
+    top: 18%; left: 36%;
+    width: 250px; height: 100px;
+    background: radial-gradient(ellipse at 50% 100%, rgba(160,45,5,0.28) 0%, transparent 70%);
+    filter: blur(18px);
+    pointer-events: none;
+  }
+
+  /* Cityscape horizon glow */
+  .city-horizon {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background:
+      linear-gradient(180deg,
+        transparent 0%,
+        rgba(40,22,4,0.25) 40%,
+        rgba(25,15,3,0.7) 70%,
+        rgba(5,4,4,0.98) 100%
+      );
+    pointer-events: none;
+  }
+
+  /* City light dots */
+  .city-dots {
+    position: absolute;
+    bottom: 8%; left: 0; right: 0;
+    height: 30%;
+    background-image:
+      radial-gradient(1.5px 1.5px at 15% 70%, rgba(255,190,60,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 22% 55%, rgba(255,160,40,0.5) 0%, transparent 100%),
+      radial-gradient(2px 2px at 30% 65%, rgba(255,190,60,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 38% 72%, rgba(255,200,70,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 45% 60%, rgba(255,190,60,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 52% 68%, rgba(255,160,40,0.5) 0%, transparent 100%),
+      radial-gradient(2px 2px at 58% 62%, rgba(255,190,60,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 64% 70%, rgba(255,200,70,0.4) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 72% 65%, rgba(255,190,60,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 58%, rgba(255,160,40,0.4) 0%, transparent 100%),
+      radial-gradient(2px 2px at 86% 68%, rgba(255,190,60,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 92% 63%, rgba(255,200,70,0.4) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* Hero content */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero-y-circle {
+    width: 58px; height: 58px;
+    border: 1.5px solid rgba(201,168,76,0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+    background: radial-gradient(ellipse at 40% 40%, rgba(201,168,76,0.07) 0%, transparent 70%);
+    box-shadow: 0 0 30px rgba(201,168,76,0.2), inset 0 0 20px rgba(201,168,76,0.04);
+    animation: breathe 4s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 20px rgba(201,168,76,0.15), inset 0 0 15px rgba(201,168,76,0.03); }
+    50%       { box-shadow: 0 0 50px rgba(201,168,76,0.35), inset 0 0 25px rgba(201,168,76,0.10); }
+  }
+
+  .hero-y-circle span {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 24px;
+    color: var(--gold);
+    filter: drop-shadow(0 0 8px rgba(201,168,76,0.4));
+  }
+
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(56px, 10vw, 108px);
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    background: linear-gradient(180deg,
+      #f5e090 0%,
+      #d4aa55 25%,
+      #c9a84c 50%,
+      #7a5018 75%,
+      #c9a84c 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,0.35));
+    margin-bottom: 20px;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(11px, 1.6vw, 15px);
+    letter-spacing: 9px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-bottom: 50px;
+  }
+
+  /* ══════════════════════════════════════════════════
+     TRES REINOS
+  ══════════════════════════════════════════════════ */
+  .tres-reinos {
+    position: relative;
+    padding: 80px 0;
+    background: linear-gradient(180deg, var(--black) 0%, #0c0906 50%, var(--black) 100%);
+  }
+
+  .section-head {
+    text-align: center;
+    margin-bottom: 52px;
+    padding: 0 20px;
+  }
+
+  .section-head h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(12px, 1.8vw, 15px);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 12px 0;
+  }
+
+  .reinos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .reino-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 460px;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: var(--dark);
+  }
+
+  .reino-card:hover { transform: translateY(-6px); z-index: 2; }
+
+  /* Arch top shape */
+  .reino-arch-frame {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .reino-arch-frame svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  .reino-bg-gradient {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(15,10,4,0.96) 0%,
+      rgba(10,7,3,0.85) 40%,
+      rgba(5,4,2,0.97) 100%
+    );
+    transition: opacity 0.4s;
+  }
+
+  .reino-card:hover .reino-bg-gradient { opacity: 0.7; }
+
+  .reino-glow-scene {
+    position: absolute; inset: 0;
+    opacity: 0.2;
+    transition: opacity 0.4s;
+  }
+
+  .reino-yavaya .reino-glow-scene {
+    background: radial-gradient(ellipse at 50% 65%, rgba(100,60,10,0.8) 0%, transparent 60%);
+  }
+  .reino-mercadito .reino-glow-scene {
+    background: radial-gradient(ellipse at 50% 60%, rgba(120,75,15,0.7) 0%, transparent 55%);
+  }
+  .reino-yavayago .reino-glow-scene {
+    background: radial-gradient(ellipse at 50% 65%, rgba(80,50,10,0.8) 0%, transparent 60%);
+  }
+
+  .reino-card:hover .reino-glow-scene { opacity: 0.5; }
+
+  .reino-body {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 44px 28px 40px;
+    min-height: 460px;
+    justify-content: space-between;
+  }
+
+  .reino-top { display: flex; flex-direction: column; align-items: center; }
+
+  .reino-icon-ring {
+    width: 54px; height: 54px;
+    border: 1px solid rgba(201,168,76,0.28);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(8,6,3,0.7);
+    margin-bottom: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  .reino-card:hover .reino-icon-ring {
+    border-color: rgba(201,168,76,0.65);
+    box-shadow: 0 0 22px rgba(201,168,76,0.22);
+  }
+
+  .reino-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(15px, 2vw, 21px);
+    font-weight: 700;
+    color: var(--gold-light);
+    text-align: center;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    text-shadow: 0 0 25px rgba(201,168,76,0.2);
+  }
+
+  .reino-tagline {
+    font-family: 'Cinzel', serif;
+    font-size: 8.5px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .reino-visual {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .reino-visual-glow {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 70%);
+    border: 1px solid rgba(201,168,76,0.08);
+  }
+
+  /* Perspective lines to simulate depth */
+  .reino-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(201,168,76,0.03) 50%, transparent 100%);
+  }
+
+  .btn-entrar {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.22);
+    padding: 9px 30px;
+    background: rgba(5,4,2,0.8);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    letter-spacing: 4px;
+  }
+
+  .btn-entrar:hover {
+    color: var(--gold-light);
+    border-color: rgba(201,168,76,0.55);
+    background: rgba(201,168,76,0.07);
+    box-shadow: 0 0 18px rgba(201,168,76,0.12);
+  }
+
+  /* ══════════════════════════════════════════════════
+     PILARES
+  ══════════════════════════════════════════════════ */
+  .pilares {
+    position: relative;
+    padding: 80px 0;
+    background: linear-gradient(180deg, var(--dark-warm) 0%, #120e0a 100%);
+  }
+
+  .pilares-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .pilar-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+    cursor: pointer;
+    background: var(--dark-warm);
+    transition: transform 0.35s ease;
+  }
+
+  .pilar-card:hover { transform: translateY(-4px); z-index: 2; }
+
+  .pilar-bg-grad {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(20,14,7,0.94) 0%, rgba(8,6,3,0.98) 100%);
+    transition: opacity 0.3s;
+  }
+
+  .pilar-card:hover .pilar-bg-grad { opacity: 0.72; }
+
+  .pilar-scene-glow {
+    position: absolute; inset: 0;
+    opacity: 0.25;
+    transition: opacity 0.3s;
+  }
+
+  .pilar-iglesias .pilar-scene-glow {
+    background: radial-gradient(ellipse at 50% 40%, rgba(80,45,10,0.7) 0%, transparent 60%);
+  }
+  .pilar-animales .pilar-scene-glow {
+    background: radial-gradient(ellipse at 50% 40%, rgba(30,60,15,0.5) 0%, transparent 60%);
+  }
+  .pilar-empleos .pilar-scene-glow {
+    background: radial-gradient(ellipse at 50% 50%, rgba(70,45,10,0.6) 0%, transparent 60%);
+  }
+  .pilar-salud .pilar-scene-glow {
+    background: radial-gradient(ellipse at 50% 40%, rgba(10,50,55,0.4) 0%, transparent 60%);
+  }
+
+  .pilar-card:hover .pilar-scene-glow { opacity: 0.5; }
+
+  .pilar-border-frame {
+    position: absolute; inset: 0;
+    border: 1px solid rgba(201,168,76,0.1);
+    pointer-events: none;
+    z-index: 4;
+    transition: border-color 0.3s;
+  }
+  .pilar-card:hover .pilar-border-frame { border-color: rgba(201,168,76,0.35); }
+
+  .pilar-body {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 30px;
+    min-height: 340px;
+    justify-content: space-between;
+  }
+
+  .pilar-visual-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .pilar-icon {
+    font-size: 52px;
+    color: var(--gold-dim);
+    opacity: 0.65;
+    transition: opacity 0.3s, color 0.3s, filter 0.3s;
+    filter: drop-shadow(0 0 10px rgba(201,168,76,0.15));
+    line-height: 1;
+  }
+
+  .pilar-card:hover .pilar-icon {
+    opacity: 0.95;
+    color: var(--gold);
+    filter: drop-shadow(0 0 22px rgba(201,168,76,0.45));
+  }
+
+  .pilar-info { text-align: center; }
+
+  .pilar-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(12px, 1.4vw, 15px);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+
+  .pilar-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .btn-explorar {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid rgba(201,168,76,0.18);
+    padding: 7px 22px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-explorar:hover {
+    color: var(--gold);
+    border-color: rgba(201,168,76,0.5);
+    background: rgba(201,168,76,0.05);
+  }
+
+  /* ══════════════════════════════════════════════════
+     TERRITORIO
+  ══════════════════════════════════════════════════ */
+  .territorio {
+    position: relative;
+    padding: 80px 20px 90px;
+    background: var(--black);
+    text-align: center;
+  }
+
+  .territorio-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: rgba(122, 106, 80, 0.65);
+    margin-bottom: 50px;
+    margin-top: 10px;
+  }
+
+  .paises-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 36px;
+    max-width: 960px;
+    margin: 0 auto 50px;
+  }
+
+  .pais {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+
+  .pais:hover { transform: translateY(-5px); }
+
+  .pais-seal {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(201,168,76,0.2);
+    background: radial-gradient(ellipse at 38% 38%, rgba(201,168,76,0.1) 0%, rgba(8,6,3,0.85) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    transition: all 0.3s;
+  }
+
+  .pais:hover .pais-seal {
+    border-color: rgba(201,168,76,0.55);
+    box-shadow: 0 0 24px rgba(201,168,76,0.2), 0 0 8px rgba(201,168,76,0.1);
+    background: radial-gradient(ellipse at 38% 38%, rgba(201,168,76,0.18) 0%, rgba(12,9,4,0.9) 100%);
+  }
+
+  .pais-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.3s;
+  }
+
+  .pais:hover .pais-label { color: var(--gold); }
+
+  /* ══════════════════════════════════════════════════
+     FOOTER
+  ══════════════════════════════════════════════════ */
+  .site-footer {
+    border-top: 1px solid rgba(201,168,76,0.07);
+    padding: 32px 20px 24px;
+    text-align: center;
+    background: var(--black);
+  }
+
+  .footer-motto {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin: 16px 0 20px;
+  }
+
+  .footer-copy {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(80,62,28,0.45);
+  }
+
+  /* ══════════════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════════════ */
+  @media (max-width: 960px) {
+    .reinos-grid { grid-template-columns: 1fr; padding: 0 12px; }
+    .reino-card { min-height: 320px; }
+    .pilares-grid { grid-template-columns: repeat(2, 1fr); padding: 0 12px; }
+    .top-nav { padding: 12px 24px; }
+    .torch { display: none; }
+    .torch-glow, .torch-glow-r { display: none; }
+  }
+
+  @media (max-width: 580px) {
+    .pilares-grid { grid-template-columns: 1fr 1fr; }
+    .paises-row { gap: 20px; }
+    .pais-seal { width: 54px; height: 54px; font-size: 22px; }
+    .nav-links { gap: 16px; }
+    .nav-links a { font-size: 9px; letter-spacing: 2px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAV
+════════════════════════════════════════ -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-y">Y</div>
+    <span class="nav-word">Civilización</span>
+  </div>
+  <div class="nav-links">
+    <a href="#">Legado</a>
+    <a href="#">Comunidad</a>
+    <a href="#">Futuro</a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="stars"></div>
+
+  <!-- Architecture -->
+  <div class="hero-arch">
+    <div class="arch-col arch-col-1"></div>
+    <div class="arch-col arch-col-2"></div>
+    <div class="arch-col arch-col-3"></div>
+    <div class="arch-col arch-col-4"></div>
+    <div class="arch-col arch-col-5"></div>
+    <div class="arch-col arch-col-6"></div>
+  </div>
+
+  <!-- Volcano glow -->
+  <div class="volcano"></div>
+
+  <!-- Torches -->
+  <div class="torch torch-left">
+    <div class="flame-wrap">
+      <div class="flame-outer"></div>
+      <div class="flame-inner"></div>
+    </div>
+    <div class="torch-bowl"></div>
+    <div class="torch-stem"></div>
+  </div>
+  <div class="torch-glow"></div>
+
+  <div class="torch torch-right">
+    <div class="flame-wrap">
+      <div class="flame-outer"></div>
+      <div class="flame-inner"></div>
+    </div>
+    <div class="torch-bowl"></div>
+    <div class="torch-stem"></div>
+  </div>
+  <div class="torch-glow-r"></div>
+
+  <!-- City panorama -->
+  <div class="city-horizon"></div>
+  <div class="city-dots"></div>
+
+  <!-- Main hero content -->
+  <div class="hero-content">
+    <div class="hero-y-circle fade-up">
+      <span>Y</span>
+    </div>
+    <h1 class="hero-title fade-up s1">YAVAYA</h1>
+    <p class="hero-subtitle fade-up s2">
+      La Civilización Digital<br>de Centroamérica.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     TRES REINOS
+════════════════════════════════════════ -->
+<section class="tres-reinos">
+  <div class="section-head fade-up">
+    <div class="divider"><span class="divider-icon">◆</span></div>
+    <h2>Tres Reinos. Un Solo Propósito.</h2>
+    <div class="divider"><span class="divider-icon">◆</span></div>
+  </div>
+
+  <div class="reinos-grid">
+
+    <!-- YAVAYA -->
+    <div class="reino-card reino-yavaya fade-up s1">
+      <div class="reino-bg-gradient"></div>
+      <div class="reino-glow-scene"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+      <!-- Arch SVG frame -->
+      <div class="reino-arch-frame">
+        <svg viewBox="0 0 400 460" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,460 L20,140 Q200,30 380,140 L380,460" stroke="rgba(201,168,76,0.18)" stroke-width="1" fill="none"/>
+          <path d="M40,460 L40,150 Q200,55 360,150 L360,460" stroke="rgba(201,168,76,0.08)" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="reino-body">
+        <div class="reino-top">
+          <div class="reino-icon-ring">&#9770;</div>
+          <div class="reino-name">YAVAYA</div>
+          <div class="reino-tagline">Comunidad &middot; Apoyo &middot; Pertenencia</div>
+        </div>
+        <div class="reino-visual">
+          <div class="reino-visual-glow"></div>
+        </div>
+        <a href="#" class="btn-entrar">Entrar</a>
+      </div>
+    </div>
+
+    <!-- MERCADITO -->
+    <div class="reino-card reino-mercadito fade-up s2">
+      <div class="reino-bg-gradient"></div>
+      <div class="reino-glow-scene"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+      <div class="reino-arch-frame">
+        <svg viewBox="0 0 400 460" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,460 L20,140 Q200,30 380,140 L380,460" stroke="rgba(201,168,76,0.18)" stroke-width="1" fill="none"/>
+          <path d="M40,460 L40,150 Q200,55 360,150 L360,460" stroke="rgba(201,168,76,0.08)" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="reino-body">
+        <div class="reino-top">
+          <div class="reino-icon-ring">⚖</div>
+          <div class="reino-name">MERCADITO</div>
+          <div class="reino-tagline">Comercio &middot; Confianza &middot; Oportunidad</div>
+        </div>
+        <div class="reino-visual">
+          <div class="reino-visual-glow"></div>
+        </div>
+        <a href="#" class="btn-entrar">Entrar</a>
+      </div>
+    </div>
+
+    <!-- YAVAYAGO -->
+    <div class="reino-card reino-yavayago fade-up s3">
+      <div class="reino-bg-gradient"></div>
+      <div class="reino-glow-scene"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="corner-ornament corner-bl"></div>
+      <div class="corner-ornament corner-br"></div>
+      <div class="reino-arch-frame">
+        <svg viewBox="0 0 400 460" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20,460 L20,140 Q200,30 380,140 L380,460" stroke="rgba(201,168,76,0.18)" stroke-width="1" fill="none"/>
+          <path d="M40,460 L40,150 Q200,55 360,150 L360,460" stroke="rgba(201,168,76,0.08)" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="reino-body">
+        <div class="reino-top">
+          <div class="reino-icon-ring">✦</div>
+          <div class="reino-name">YAVAYAGO</div>
+          <div class="reino-tagline">Movimiento &middot; Velocidad &middot; Eficiencia</div>
+        </div>
+        <div class="reino-visual">
+          <div class="reino-visual-glow"></div>
+        </div>
+        <a href="#" class="btn-entrar">Entrar</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     PILARES
+════════════════════════════════════════ -->
+<section class="pilares">
+  <div class="section-head fade-up">
+    <div class="divider"><span class="divider-icon">◆</span></div>
+    <h2>Pilares de Nuestra Civilización</h2>
+    <div class="divider"><span class="divider-icon">◆</span></div>
+  </div>
+
+  <div class="pilares-grid">
+
+    <div class="pilar-card pilar-iglesias fade-up s1">
+      <div class="pilar-bg-grad"></div>
+      <div class="pilar-scene-glow"></div>
+      <div class="pilar-border-frame"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="pilar-body">
+        <div class="pilar-visual-area">
+          <div class="pilar-icon">✝</div>
+        </div>
+        <div class="pilar-info">
+          <div class="pilar-name">Iglesias</div>
+          <div class="pilar-sub">Fe &middot; Unión &middot; Propósito</div>
+          <a href="#" class="btn-explorar">Explorar</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pilar-card pilar-animales fade-up s2">
+      <div class="pilar-bg-grad"></div>
+      <div class="pilar-scene-glow"></div>
+      <div class="pilar-border-frame"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="pilar-body">
+        <div class="pilar-visual-area">
+          <div class="pilar-icon">🐾</div>
+        </div>
+        <div class="pilar-info">
+          <div class="pilar-name">Animales</div>
+          <div class="pilar-sub">Vida &middot; Respeto &middot; Protección</div>
+          <a href="#" class="btn-explorar">Explorar</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pilar-card pilar-empleos fade-up s3">
+      <div class="pilar-bg-grad"></div>
+      <div class="pilar-scene-glow"></div>
+      <div class="pilar-border-frame"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="pilar-body">
+        <div class="pilar-visual-area">
+          <div class="pilar-icon">⚔</div>
+        </div>
+        <div class="pilar-info">
+          <div class="pilar-name">Empleos</div>
+          <div class="pilar-sub">Trabajo &middot; Desarrollo &middot; Futuro</div>
+          <a href="#" class="btn-explorar">Explorar</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pilar-card pilar-salud fade-up s4">
+      <div class="pilar-bg-grad"></div>
+      <div class="pilar-scene-glow"></div>
+      <div class="pilar-border-frame"></div>
+      <div class="corner-ornament corner-tl"></div>
+      <div class="corner-ornament corner-tr"></div>
+      <div class="pilar-body">
+        <div class="pilar-visual-area">
+          <div class="pilar-icon">☤</div>
+        </div>
+        <div class="pilar-info">
+          <div class="pilar-name">Salud</div>
+          <div class="pilar-sub">Bienestar &middot; Cuidado &middot; Vida</div>
+          <a href="#" class="btn-explorar">Explorar</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     TERRITORIO
+════════════════════════════════════════ -->
+<section class="territorio">
+  <div class="section-head fade-up">
+    <div class="divider"><span class="divider-icon">◆</span></div>
+    <h2>Elegí Tu Territorio</h2>
+    <p class="territorio-sub">Detectaremos tu ubicación para ofrecerte contenido personalizado.</p>
+    <div class="divider"><span class="divider-icon">◆</span></div>
+  </div>
+
+  <div class="paises-row">
+
+    <div class="pais fade-up s1">
+      <div class="pais-seal">🇲🇽</div>
+      <span class="pais-label">México</span>
+    </div>
+
+    <div class="pais fade-up s2">
+      <div class="pais-seal">🇳🇮</div>
+      <span class="pais-label">Nicaragua</span>
+    </div>
+
+    <div class="pais fade-up s3">
+      <div class="pais-seal">🇨🇷</div>
+      <span class="pais-label">Costa Rica</span>
+    </div>
+
+    <div class="pais fade-up s4">
+      <div class="pais-seal">🇭🇳</div>
+      <span class="pais-label">Honduras</span>
+    </div>
+
+    <div class="pais fade-up s5">
+      <div class="pais-seal">🇸🇻</div>
+      <span class="pais-label">El Salvador</span>
+    </div>
+
+    <div class="pais fade-up s6">
+      <div class="pais-seal">🇬🇹</div>
+      <span class="pais-label">Guatemala</span>
+    </div>
+
+    <div class="pais fade-up s7">
+      <div class="pais-seal">🇵🇦</div>
+      <span class="pais-label">Panamá</span>
+    </div>
+
+    <div class="pais fade-up s8">
+      <div class="pais-seal">🇧🇿</div>
+      <span class="pais-label">Belice</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="divider"><span class="divider-icon">◆</span></div>
+  <p class="footer-motto">Tu Civilización. Tu Legado. Tu Futuro.</p>
+  <p class="footer-copy">© 2026 YAVAYA &mdash; La Civilización Digital de Centroamérica.</p>
+</footer>
+
+<script>
+  // Scroll animations
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+  // Country selector
+  document.querySelectorAll('.pais').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.pais').forEach(i => {
+        i.style.opacity = '0.4';
+        i.querySelector('.pais-seal').style.boxShadow = 'none';
+      });
+      p.style.opacity = '1';
+      p.querySelector('.pais-seal').style.boxShadow = '0 0 32px rgba(201,168,76,0.55)';
+    });
+  });
+</script>
+
+</body>
+</html>
