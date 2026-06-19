@@ -549,6 +549,13 @@ body {
 [data-theme="light"] [style*="background:rgba(201,168,76,.0"],
 [data-theme="light"] [style*="background: rgba(201,168,76,.0"] { background: var(--input-bg) !important; }
 
+
+.lang-toggle{display:flex;align-items:center;border:1px solid var(--border-gold);overflow:hidden;flex-shrink:0;}
+.lang-btn{padding:7px 11px;font-family:'Cinzel',serif;font-size:10px;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .2s;}
+.lang-btn.active{background:rgba(201,168,76,.15);color:var(--gold);}
+.lang-btn:hover:not(.active){background:rgba(201,168,76,.07);color:var(--gold-l);}
+@media(max-width:480px){.lang-btn{padding:6px 8px;font-size:9px;}}
+
 </style>
 </head>
 <body>
@@ -565,7 +572,11 @@ body {
     </div>
   </a>
   <div class="nav-right">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
+    <div class="lang-toggle" id="langToggle">
+    <button class="lang-btn active" id="btnTkEs" onclick="setTkLang('es')">🇪🇸 ES</button>
+    <button class="lang-btn" id="btnTkEn" onclick="setTkLang('en')">🇺🇸 EN</button>
+  </div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
   <span class="icon-dark">🌙</span>
   <span class="icon-light">☀️</span>
 </button>
@@ -778,6 +789,28 @@ function handleBuyClick(e, btn) {
     window.open(url, '_blank');
   }
 }
+</script>
+
+
+<script>
+(function() {
+  var lang = localStorage.getItem('yavaya_lang') || 'es';
+  function setTkLang(l) {
+    lang = l; localStorage.setItem('yavaya_lang', l);
+    document.getElementById('btnTkEs').classList.toggle('active', l==='es');
+    document.getElementById('btnTkEn').classList.toggle('active', l==='en');
+    var t = {
+      es: { title: 'YAVAYA Tokens', sub: 'Tu Acceso a la Civilización Digital', sectionTitle: 'Elige tu Paquete' },
+      en: { title: 'YAVAYA Tokens', sub: 'Your Access to the Digital Civilization', sectionTitle: 'Choose Your Package' }
+    };
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[l] && t[l][key]) el.textContent = t[l][key];
+    });
+  }
+  window.setTkLang = setTkLang;
+  document.addEventListener('DOMContentLoaded', function() { setTkLang(lang); });
+})();
 </script>
 
 </body>
