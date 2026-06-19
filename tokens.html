@@ -1,19 +1,389 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-<script>
-(function() {
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.documentElement.style.colorScheme = saved;
-})();
-</script>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-<title>YAVAYA Tokens — Acceso a la Civilización Digital</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Tokens — Yavaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<style>
+/* YAVAYA Design System v4 — God Tier Modern */
+:root {
+  --bg: #070b10;
+  --bg2: #0c1118;
+  --bg3: #101820;
+  --surface: #141c27;
+  --surface2: #1c2636;
+  --border: rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.11);
+  --accent: #4f8eff;
+  --accent2: #7aabff;
+  --accent-glow: rgba(79,142,255,.2);
+  --accent-soft: rgba(79,142,255,.09);
+  --gold: #f0c96a;
+  --gold2: #fad98a;
+  --gold-soft: rgba(240,201,106,.09);
+  --green: #30d68c;
+  --green-soft: rgba(48,214,140,.09);
+  --red: #ff5f57;
+  --text: #e8eef8;
+  --text2: #7e90aa;
+  --text3: rgba(232,238,248,.28);
+  --nav-h: 62px;
+  --r: 14px;
+  --r-lg: 22px;
+  --shadow: 0 4px 24px rgba(0,0,0,.5);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
+}
+[data-theme="light"] {
+  --bg: #f2f5fb;
+  --bg2: #e8edf7;
+  --bg3: #dde4f0;
+  --surface: #ffffff;
+  --surface2: #f7f9fd;
+  --border: rgba(0,0,0,.07);
+  --border2: rgba(0,0,0,.13);
+  --accent: #2563eb;
+  --accent2: #1e50c8;
+  --accent-glow: rgba(37,99,235,.15);
+  --accent-soft: rgba(37,99,235,.08);
+  --gold: #a16207;
+  --gold2: #ca8a04;
+  --gold-soft: rgba(161,98,7,.08);
+  --green: #16a34a;
+  --green-soft: rgba(22,163,74,.08);
+  --red: #dc2626;
+  --text: #0d1626;
+  --text2: #4a5c78;
+  --text3: rgba(13,22,38,.35);
+  --shadow: 0 4px 24px rgba(0,0,0,.09);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
+}
+
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
+input,textarea,select{font-family:inherit}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
+[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
+.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
+.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
+.nav-a:hover{background:var(--surface);color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:7px}
+.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
+.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
+.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
+.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
+.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
+.nav-mob.open{display:flex}
+.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
+.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
+
+/* ── SECTION WRAPPERS ── */
+.section{padding:96px 24px}
+.section-sm{padding:64px 24px}
+.container{max-width:1200px;margin:0 auto}
+.container-sm{max-width:860px;margin:0 auto}
+
+/* ── SECTION HEADER ── */
+.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
+.sec-p{font-size:16px;color:var(--text2);max-width:480px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.card-lift:hover{transform:translateY(-4px)}
+
+/* ── BUTTONS ── */
+.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
+.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
+.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+
+/* ── FORM ── */
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:96px;resize:vertical}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
+.modal-wide{max-width:540px}
+@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
+.modal-x:hover{background:var(--surface2);color:var(--text)}
+.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+
+/* ── AUTH TABS ── */
+.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
+.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
+.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
+.input-wrap{position:relative}
+.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
+.forgot{font-size:12px;color:var(--text3);transition:color .2s}
+.forgot:hover{color:var(--accent)}
+
+/* ── BADGE / TAG ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
+.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
+.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FADE-UP ── */
+.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
+.fade-up.vis{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
+
+
+.tok-hero{padding:calc(var(--nav-h)+52px) 24px 32px;text-align:center;background:var(--bg);position:relative;overflow:hidden}
+.tok-blob{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 45% at 50% 0%,rgba(240,201,106,.07) 0%,transparent 60%);animation:tb 7s ease-in-out infinite}
+@keyframes tb{0%,100%{opacity:.6}50%{opacity:1}}
+.tok-h{font-size:clamp(30px,6vw,52px);font-weight:800;letter-spacing:-1.5px;color:var(--text);position:relative;z-index:1;margin-bottom:6px}
+.tok-p{font-size:15px;color:var(--text2);position:relative;z-index:1;margin-bottom:28px}
+
+/* ID CARD */
+.id-card{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border2);border-radius:var(--r-lg);padding:24px 28px;max-width:420px;margin:0 auto 40px;position:relative;z-index:1;box-shadow:var(--shadow)}
+.id-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,var(--gold-soft),transparent 60%);pointer-events:none}
+.id-pre{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.id-num{font-size:24px;font-weight:800;letter-spacing:3px;color:var(--text);margin-bottom:14px;font-family:monospace}
+.id-warn{font-size:12px;color:var(--text2);line-height:1.5;padding:10px 14px;background:var(--bg2);border-radius:9px;border:1px solid var(--border2)}
+.id-warn b{color:var(--gold)}
+.btn-copy{margin-top:12px;padding:9px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;transition:all .2s}
+.btn-copy:hover{border-color:var(--accent);color:var(--accent)}
+
+/* FREE TOKENS */
+.free-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:24px}
+.free-h{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
+.free-p{font-size:13px;color:var(--text2);margin-bottom:18px}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:11px;background:var(--bg2);border:1px solid var(--border)}
+.task-info{display:flex;align-items:center;gap:10px}
+.task-ico{font-size:18px}
+.task-label{font-size:13px;font-weight:600;color:var(--text)}
+.task-done{font-size:12px;color:var(--green);display:flex;align-items:center;gap:4px}
+.btn-task{padding:7px 14px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.15);font-size:12px;font-weight:600;transition:all .2s}
+.btn-task:hover{background:var(--accent);color:#fff}
+
+/* BUY PACKS */
+.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:28px}
+.pack{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 16px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.pack:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.pack.featured{border-color:rgba(240,201,106,.25)}
+.pack-hot{position:absolute;top:0;right:0;font-size:9px;font-weight:700;padding:4px 10px;background:var(--gold);color:#1a0f00;border-bottom-left-radius:8px;text-transform:uppercase;letter-spacing:.5px}
+.pack-ico{font-size:32px;margin-bottom:10px}
+.pack-tokens{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text)}
+.pack-label{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text2);margin-bottom:4px}
+.pack-price{font-size:22px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.pack-bonus{font-size:11px;color:var(--green);font-weight:600;margin-bottom:14px}
+.btn-pack{width:100%;padding:9px;border-radius:9px;border:1px solid var(--border2);background:none;color:var(--text);font-size:12px;font-weight:600;transition:all .2s}
+.btn-pack:hover{border-color:var(--accent);color:var(--accent)}
+.pack.featured .btn-pack{background:var(--gold);color:#1a0f00;border-color:var(--gold)}
+
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.how-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;text-align:center}
+.how-n{font-size:36px;font-weight:800;letter-spacing:-1px;color:var(--border2);margin-bottom:10px}
+.how-h{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.how-p{font-size:12px;color:var(--text2);line-height:1.5}
+
+@media(max-width:600px){.pack-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-brand">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px">
+      <div class="nav-dot"></div>
+      <span class="nav-logo">Yavaya</span>
+    </a>
+    <span class="nav-tag">Tokens</span>
+  </div>
+  <div class="nav-links"><a href="mercadito.html" class="nav-a" >Mercadito</a><a href="yavayago.html" class="nav-a" >YavayaGo</a><a href="church.html" class="nav-a" >Santuario</a><a href="tokens.html" class="nav-a" style="color:var(--accent)">Tokens</a></div>
+  <div class="nav-r">
+    <div class="lang-sw">
+      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
+    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
+    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
+      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
+      <span id="userName" style="font-size:13px;font-weight:600"></span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
+    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+</div>
+
+<section class="tok-hero">
+  <div class="tok-blob"></div>
+  <div class="sec-pre" style="position:relative;z-index:1">⚡ Sistema de Tokens</div>
+  <h1 class="tok-h">Yavaya Tokens</h1>
+  <p class="tok-p">Tu acceso a la Plataforma</p>
+  <div class="id-card" id="idCard">
+    <div class="id-pre">Tu Yavaya ID</div>
+    <div class="id-num" id="idNum">YVY-????-????</div>
+    <div class="id-warn">⚠ <b>Importante:</b> Preséntalo al comprar tokens. Sin tu ID no podemos acreditar tu compra.</div>
+    <button class="btn-copy" onclick="copyId()">Copiar ID</button>
+    <div style="margin-top:12px;font-size:13px;color:var(--text2)" id="tokBalance"></div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--bg2)">
+  <div class="container-sm">
+    <div class="fade-up" style="margin-bottom:24px">
+      <div class="sec-pre">Gratis</div>
+      <h2 class="sec-h">Tokens Gratuitos</h2>
+      <p class="sec-p">Completa tareas simples y gana tokens sin pagar nada.</p>
+    </div>
+    <div class="free-section fade-up">
+      <div class="free-h">🎁 Disponibles ahora</div>
+      <div class="free-p">Nuevos usuarios reciben 2 tokens gratis al registrarse.</div>
+      <div class="task-list">
+        <div class="task">
+          <div class="task-info"><div class="task-ico">✅</div><div><div class="task-label">Registrar cuenta</div><div style="font-size:11px;color:var(--text3)">+2 tokens</div></div></div>
+          <div class="task-done">✓ Completado</div>
+        </div>
+        <div class="task">
+          <div class="task-info"><div class="task-ico">📝</div><div><div class="task-label">Publicar tu primer anuncio</div><div style="font-size:11px;color:var(--text3)">+1 token</div></div></div>
+          <button class="btn-task" onclick="location.href='mercadito.html'">Ir a Mercadito →</button>
+        </div>
+        <div class="task">
+          <div class="task-info"><div class="task-ico">🤝</div><div><div class="task-label">Invitar a un amigo</div><div style="font-size:11px;color:var(--text3)">+3 tokens</div></div></div>
+          <button class="btn-task" onclick="shareInvite()">Compartir link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container-sm">
+    <div class="fade-up" style="margin-bottom:8px">
+      <div class="sec-pre">Comprar</div>
+      <h2 class="sec-h">Paquetes de Tokens</h2>
+      <p class="sec-p">Más tokens = más visibilidad en Mercadito y funciones premium.</p>
+    </div>
+    <div class="pack-grid fade-up">
+      <div class="pack" onclick="buyPack(5,2.99)"><div class="pack-ico">⚡</div><div class="pack-tokens">5</div><div class="pack-label">Tokens</div><div class="pack-price">$2.99</div><div class="pack-bonus" style="visibility:hidden">—</div><button class="btn-pack">Comprar</button></div>
+      <div class="pack featured" onclick="buyPack(20,8.99)"><div class="pack-hot">Popular</div><div class="pack-ico">⚡⚡</div><div class="pack-tokens">20</div><div class="pack-label">Tokens</div><div class="pack-price">$8.99</div><div class="pack-bonus">+3 bonus</div><button class="btn-pack">Comprar</button></div>
+      <div class="pack" onclick="buyPack(50,18.99)"><div class="pack-ico">⚡⚡⚡</div><div class="pack-tokens">50</div><div class="pack-label">Tokens</div><div class="pack-price">$18.99</div><div class="pack-bonus">+10 bonus</div><button class="btn-pack">Comprar</button></div>
+      <div class="pack" onclick="buyPack(100,29.99)"><div class="pack-ico">🔥</div><div class="pack-tokens">100</div><div class="pack-label">Tokens</div><div class="pack-price">$29.99</div><div class="pack-bonus">+25 bonus</div><button class="btn-pack">Comprar</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-sm" style="background:var(--bg2)">
+  <div class="container-sm">
+    <div class="fade-up" style="text-align:center;margin-bottom:28px">
+      <div class="sec-pre">Guía</div>
+      <h2 class="sec-h">¿Cómo funciona?</h2>
+    </div>
+    <div class="how-grid fade-up">
+      <div class="how-step"><div class="how-n">01</div><div class="how-h">Crea tu cuenta</div><div class="how-p">Regístrate en Yavaya y recibe tu ID único.</div></div>
+      <div class="how-step"><div class="how-n">02</div><div class="how-h">Compra tokens</div><div class="how-p">Elige tu paquete e incluye tu ID en el pago.</div></div>
+      <div class="how-step"><div class="how-n">03</div><div class="how-h">Úsalos en la plataforma</div><div class="how-p">Destacar anuncios, funciones premium y más.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer style="padding:40px 24px;border-top:1px solid var(--border);background:var(--bg)">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="font-size:16px;font-weight:800;color:var(--text)">Yavaya</div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="mercadito.html" style="font-size:13px;color:var(--text2)">Mercadito</a>
+      <a href="yavayago.html" style="font-size:13px;color:var(--text2)">YavayaGo</a>
+      <a href="church.html" style="font-size:13px;color:var(--text2)">Santuario</a>
+      <a href="tokens.html" style="font-size:13px;color:var(--text2)">Tokens</a>
+    </div>
+    <div style="font-size:12px;color:var(--text3)">© 2026 Yavaya · Centroamérica</div>
+  </div>
+</footer>
+<div class="overlay" id="authModal" style="display:none;">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAuthModal()">✕</button>
+    <div class="modal-h">Bienvenido</div>
+    <div class="modal-sub">Yavaya · Centroamérica</div>
+    <div class="tab-row">
+      <button class="tab-b on" id="tabLogin" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+      <button class="tab-b" id="tabReg" onclick="switchAuthTab('reg')">Registrarse</button>
+    </div>
+    <div id="panel_login">
+      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label>
+        <div class="input-wrap"><input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('loginPass')">👁</button></div>
+        <div style="text-align:right;margin-top:5px"><span class="forgot" onclick="forgotPass()" style="cursor:pointer">¿Olvidaste tu contraseña?</span></div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center" id="btnLogin" onclick="doLogin()">Iniciar sesión</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    </div>
+    <div id="panel_reg" style="display:none">
+      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="regName" placeholder="Tu nombre"></div>
+      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="regEmail" placeholder="tu@email.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label>
+        <div class="input-wrap"><input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('regPass')">👁</button></div>
+      </div>
+      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña"></div>
+      <button class="btn-primary" style="width:100%;justify-content:center" id="btnReg" onclick="doRegister()">Crear cuenta</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script type="module">
+
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
   import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -53,776 +423,10 @@
     return 'YVY-' + uid.substr(0,4).toUpperCase() + '-' + uid.substr(4,4).toUpperCase();
   }
   window.generateYavayaId = generateYavayaId;
+
 </script>
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --gold:#c9a84c;--gold-l:#e8c97a;--gold-d:#8a6c2a;
-  --black:#050404;--dark:#0a0807;--warm:#1a1410;
-  --surface:#13100c;--surface2:#1c1710;
-  --muted:#7a6a50;--light:#c8b882;
-  --green:#3db87a;--red:#d94040;--blue:#4090d9;
-  --bronze:#cd7f32;--silver:#a8a9ad;--platinum:#e5e4e2;
-}
-html{scroll-behavior:smooth;}
-body{background:var(--black);color:var(--gold-l);font-family:"Cormorant Garamond",serif;min-height:100vh;overflow-x:hidden;}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-track{background:var(--black);}
-::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
-
-/* NAV */
-.top-nav{
-  position:fixed;top:0;left:0;right:0;z-index:600;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 40px;
-  background:rgba(5,4,4,.97);
-  border-bottom:1px solid rgba(201,168,76,.08);
-  backdrop-filter:blur(8px);
-}
-.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-y{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--gold-d);
-  display:flex;align-items:center;justify-content:center;
-  font-family:"Cinzel Decorative",serif;font-size:13px;color:var(--gold);}
-.nav-name{font-family:"Cinzel Decorative",serif;font-size:17px;color:var(--gold-l);letter-spacing:.08em;}
-.nav-sub{font-family:"Cinzel",serif;font-size:9px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;}
-.nav-right{display:flex;align-items:center;gap:16px;}
-.token-pill{
-  display:flex;align-items:center;gap:7px;
-  padding:7px 16px;
-  background:rgba(201,168,76,.07);
-  border:1px solid rgba(201,168,76,.22);
-}
-.token-pill-icon{font-size:14px;}
-.token-pill-count{font-family:"Cinzel Decorative",serif;font-size:16px;color:var(--gold);}
-.token-pill-label{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
-.btn-back{
-  font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);border:1px solid rgba(201,168,76,.15);
-  padding:8px 16px;background:none;cursor:pointer;transition:all .2s;text-decoration:none;
-}
-.btn-back:hover{color:var(--gold);border-color:rgba(201,168,76,.4);}
-
-/* HERO */
-.page-hero{
-  padding:120px 20px 60px;text-align:center;
-  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,.06) 0%,transparent 60%);
-  border-bottom:1px solid rgba(201,168,76,.06);
-}
-.page-hero-title{
-  font-family:"Cinzel Decorative",serif;
-  font-size:clamp(28px,5vw,56px);font-weight:900;letter-spacing:.1em;
-  background:linear-gradient(180deg,#f5e090 0%,#d4aa55 35%,#c9a84c 60%,#7a5018 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  margin-bottom:14px;
-}
-.page-hero-sub{
-  font-family:"Cinzel",serif;font-size:11px;letter-spacing:6px;
-  text-transform:uppercase;color:var(--muted);margin-bottom:32px;
-}
-.divider{display:flex;align-items:center;gap:14px;width:100%;max-width:500px;margin:0 auto 40px;}
-.divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);}
-.divider-icon{color:var(--gold);font-size:11px;opacity:.5;}
-
-/* USER SECTION */
-#userSection{display:none;}
-#loginPrompt{
-  display:none;flex-direction:column;align-items:center;gap:16px;
-  padding:40px;margin:0 auto 40px;max-width:480px;
-  background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.12);
-}
-.login-prompt-text{
-  font-family:"Cinzel",serif;font-size:11px;letter-spacing:4px;
-  text-transform:uppercase;color:var(--muted);text-align:center;
-}
-.yavaya-id-box{
-  max-width:560px;margin:0 auto 50px;padding:22px 28px;
-  background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.2);
-  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
-}
-.yid-label{font-family:"Cinzel",serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);}
-.yid-value{
-  font-family:"Cinzel Decorative",serif;font-size:22px;color:var(--gold);
-  letter-spacing:.08em;cursor:pointer;
-}
-.yid-copy{
-  font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;
-  padding:7px 14px;border:1px solid rgba(201,168,76,.25);background:none;
-  color:var(--gold-d);cursor:pointer;transition:all .2s;
-}
-.yid-copy:hover{color:var(--gold);border-color:rgba(201,168,76,.5);}
-.yid-warning{
-  font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--muted);
-  font-style:italic;margin-top:8px;line-height:1.5;
-}
-
-/* FREE TOKENS INFO */
-.free-tokens-banner{
-  max-width:760px;margin:0 auto 60px;
-  padding:24px 32px;
-  background:linear-gradient(135deg,rgba(61,184,122,.06),rgba(201,168,76,.06));
-  border:1px solid rgba(61,184,122,.18);
-  display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;
-}
-.ftb-icon{font-size:28px;flex-shrink:0;margin-top:2px;}
-.ftb-title{font-family:"Cinzel",serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
-.ftb-desc{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--muted);line-height:1.6;}
-.ftb-desc b{color:var(--light);}
-
-/* PACKAGES */
-.packages-section{padding:0 20px 80px;max-width:1100px;margin:0 auto;}
-.packages-title{
-  font-family:"Cinzel",serif;font-size:11px;letter-spacing:6px;
-  text-transform:uppercase;color:var(--muted);
-  text-align:center;margin-bottom:40px;
-}
-
-.packages-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:24px;
-}
-
-/* PACKAGE CARDS */
-.pkg-card{
-  position:relative;
-  border:1px solid;
-  padding:0;overflow:hidden;
-  transition:transform .3s,box-shadow .3s;
-  display:flex;flex-direction:column;
-}
-.pkg-card:hover{transform:translateY(-6px);}
-
-/* Bronze — Starter */
-.pkg-bronze{
-  background:linear-gradient(170deg,#1a1108 0%,#0e0b06 100%);
-  border-color:rgba(205,127,50,.3);
-}
-.pkg-bronze:hover{box-shadow:0 12px 40px rgba(205,127,50,.18);}
-
-/* Gold — Popular */
-.pkg-gold{
-  background:linear-gradient(170deg,#1c1508 0%,#140f05 100%);
-  border-color:rgba(201,168,76,.45);
-}
-.pkg-gold:hover{box-shadow:0 12px 50px rgba(201,168,76,.28);}
-
-/* Platinum — Elite */
-.pkg-platinum{
-  background:linear-gradient(170deg,#16141a 0%,#0e0c12 100%);
-  border-color:rgba(229,228,226,.25);
-}
-.pkg-platinum:hover{box-shadow:0 12px 50px rgba(229,228,226,.12);}
-
-.pkg-badge{
-  position:absolute;top:16px;right:16px;
-  font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;
-  padding:4px 10px;
-}
-.pkg-bronze .pkg-badge{background:rgba(205,127,50,.15);color:var(--bronze);border:1px solid rgba(205,127,50,.3);}
-.pkg-gold .pkg-badge{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.4);}
-.pkg-platinum .pkg-badge{background:rgba(229,228,226,.08);color:var(--platinum);border:1px solid rgba(229,228,226,.2);}
-
-.pkg-top{
-  padding:32px 28px 24px;
-  border-bottom:1px solid;
-}
-.pkg-bronze .pkg-top{border-color:rgba(205,127,50,.12);}
-.pkg-gold .pkg-top{border-color:rgba(201,168,76,.15);}
-.pkg-platinum .pkg-top{border-color:rgba(229,228,226,.08);}
-
-.pkg-icon{font-size:36px;margin-bottom:14px;display:block;}
-.pkg-tier{
-  font-family:"Cinzel",serif;font-size:9px;letter-spacing:5px;
-  text-transform:uppercase;margin-bottom:6px;
-}
-.pkg-bronze .pkg-tier{color:var(--bronze);}
-.pkg-gold .pkg-tier{color:var(--gold);}
-.pkg-platinum .pkg-tier{color:var(--platinum);}
-
-.pkg-name{
-  font-family:"Cinzel Decorative",serif;
-  font-size:clamp(18px,2vw,24px);margin-bottom:14px;line-height:1.2;
-}
-.pkg-bronze .pkg-name{color:#d4956a;}
-.pkg-gold .pkg-name{color:var(--gold-l);}
-.pkg-platinum .pkg-name{color:var(--platinum);}
-
-.pkg-tokens{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
-.pkg-token-num{
-  font-family:"Cinzel Decorative",serif;font-size:52px;line-height:1;
-}
-.pkg-bronze .pkg-token-num{color:var(--bronze);}
-.pkg-gold .pkg-token-num{color:var(--gold);}
-.pkg-platinum .pkg-token-num{color:var(--platinum);}
-
-.pkg-token-label{
-  font-family:"Cinzel",serif;font-size:9px;letter-spacing:4px;
-  text-transform:uppercase;color:var(--muted);
-}
-.pkg-per-token{
-  font-family:"Cormorant Garamond",serif;font-size:13px;
-  color:var(--muted);margin-bottom:0;font-style:italic;
-}
-.pkg-bronze .pkg-per-token{color:rgba(205,127,50,.6);}
-.pkg-gold .pkg-per-token{color:rgba(201,168,76,.6);}
-.pkg-platinum .pkg-per-token{color:rgba(229,228,226,.4);}
-
-.pkg-body{padding:22px 28px;flex:1;display:flex;flex-direction:column;gap:16px;}
-
-.pkg-price{
-  display:flex;align-items:baseline;gap:6px;
-}
-.pkg-currency{font-family:"Cinzel",serif;font-size:16px;}
-.pkg-bronze .pkg-currency{color:var(--bronze);}
-.pkg-gold .pkg-currency{color:var(--gold);}
-.pkg-platinum .pkg-currency{color:var(--platinum);}
-
-.pkg-amount{
-  font-family:"Cinzel Decorative",serif;font-size:38px;line-height:1;
-}
-.pkg-bronze .pkg-amount{color:#d4956a;}
-.pkg-gold .pkg-amount{color:var(--gold-l);}
-.pkg-platinum .pkg-amount{color:var(--platinum);}
-
-.pkg-features{list-style:none;display:flex;flex-direction:column;gap:8px;flex:1;}
-.pkg-features li{
-  font-family:"Cormorant Garamond",serif;font-size:14px;color:var(--muted);
-  display:flex;align-items:flex-start;gap:8px;line-height:1.4;
-}
-.feat-icon{flex-shrink:0;font-size:12px;margin-top:2px;}
-.pkg-bronze .feat-icon{color:var(--bronze);}
-.pkg-gold .feat-icon{color:var(--gold);}
-.pkg-platinum .feat-icon{color:var(--platinum);}
-
-.pkg-yid-reminder{
-  padding:10px 14px;font-family:"Cinzel",serif;font-size:8px;
-  letter-spacing:2px;text-transform:uppercase;
-  background:rgba(217,64,64,.07);border:1px solid rgba(217,64,64,.15);
-  color:rgba(217,64,64,.7);
-  display:flex;align-items:flex-start;gap:8px;line-height:1.5;
-}
-
-.btn-buy{
-  display:block;width:100%;padding:16px;text-align:center;
-  font-family:"Cinzel",serif;font-size:10px;letter-spacing:5px;
-  text-transform:uppercase;font-weight:700;
-  text-decoration:none;cursor:pointer;
-  transition:all .3s;border:none;
-}
-.pkg-bronze .btn-buy{
-  background:linear-gradient(135deg,#cd7f32,#a0621e);color:var(--black);
-}
-.pkg-bronze .btn-buy:hover{background:linear-gradient(135deg,#e09040,#cd7f32);box-shadow:0 4px 20px rgba(205,127,50,.3);}
-.pkg-gold .btn-buy{
-  background:linear-gradient(135deg,var(--gold-l),var(--gold));color:var(--black);
-}
-.pkg-gold .btn-buy:hover{background:linear-gradient(135deg,#f0e090,#d4aa55);box-shadow:0 4px 24px rgba(201,168,76,.4);}
-.pkg-platinum .btn-buy{
-  background:linear-gradient(135deg,var(--platinum),#c8c8c8);color:#0a0807;
-}
-.pkg-platinum .btn-buy:hover{background:linear-gradient(135deg,#ffffff,var(--platinum));box-shadow:0 4px 24px rgba(229,228,226,.2);}
-
-/* NO REFUND NOTICE */
-.refund-notice{
-  max-width:760px;margin:0 auto 30px;
-  padding:20px 28px;
-  background:rgba(217,64,64,.05);border:1px solid rgba(217,64,64,.15);
-  display:flex;align-items:flex-start;gap:14px;
-}
-.rn-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
-.rn-title{font-family:"Cinzel",serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:6px;}
-.rn-text{font-family:"Cormorant Garamond",serif;font-size:14px;color:var(--muted);line-height:1.6;}
-.rn-text b{color:var(--light);}
-
-/* TOAST */
-.toast{
-  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--warm);border:1px solid rgba(201,168,76,.3);
-  color:var(--gold-l);font-family:"Cinzel",serif;font-size:10px;
-  letter-spacing:3px;text-transform:uppercase;padding:14px 28px;
-  z-index:9999;opacity:0;transition:all .35s;pointer-events:none;
-  box-shadow:0 8px 30px rgba(0,0,0,.6);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* RESPONSIVE */
-@media(max-width:860px){.packages-grid{grid-template-columns:1fr;max-width:480px;margin:0 auto;}}
-@media(max-width:600px){.top-nav{padding:12px 16px;}.yavaya-id-box{flex-direction:column;}}
-
-/* ══════════════════════════════════════════════════
-   YAVAYA THEME SYSTEM — Dark (default) + Light mode
-   ══════════════════════════════════════════════════ */
-
-/* ─── DARK MODE (default) ─── */
-:root,
-[data-theme="dark"] {
-  --bg:          #050404;
-  --bg2:         #0a0807;
-  --bg3:         #110e0b;
-  --surface:     #13100c;
-  --surface2:    #1c1710;
-  --border:      rgba(201,168,76,.12);
-  --border-gold: rgba(201,168,76,.28);
-
-  --text-primary:  #e8d8a8;
-  --text-secondary:#c8b882;
-  --text-muted:    #7a6a50;
-  --text-faint:    #4a3e2c;
-
-  --gold:       #c9a84c;
-  --gold-l:     #e8c97a;
-  --gold-d:     #8a6c2a;
-  --gold-glow:  rgba(201,168,76,.3);
-
-  --green:  #3db87a;
-  --red:    #d94040;
-  --blue:   #4090d9;
-  --orange: #e87240;
-  --bronze: #cd7f32;
-  --silver: #a8a9ad;
-  --platinum:#e5e4e2;
-
-  --nav-bg:     rgba(5,4,4,.97);
-  --card-bg:    #13100c;
-  --card-hover: #1c1810;
-  --input-bg:   rgba(201,168,76,.05);
-  --overlay:    rgba(5,4,4,.94);
-  --shadow:     0 8px 32px rgba(0,0,0,.6);
-
-  --ember: #c94a0a;
-
-  /* Legacy aliases — keeps old var() calls working */
-  --black:     #050404;
-  --dark:      #0a0807;
-  --dark-mid:  #110e0b;
-  --dark-warm: #1a1410;
-  --warm:      #1a1410;
-  --text-light:#c8b882;
-  --light:     #c8b882;
-  --muted:     #7a6a50;
-  --success:   #3db87a;
-  --danger:    #d94040;
-  --gold-dim:  #8a6c2a;
-}
-
-/* ─── LIGHT MODE ─── */
-[data-theme="light"] {
-  --bg:          #f5f0e8;
-  --bg2:         #ede6d6;
-  --bg3:         #e4dccb;
-  --surface:     #faf6ee;
-  --surface2:    #f0e9d8;
-  --border:      rgba(139,105,30,.15);
-  --border-gold: rgba(139,105,30,.35);
-
-  --text-primary:  #2a1f0a;
-  --text-secondary:#4a3510;
-  --text-muted:    #7a6030;
-  --text-faint:    #b8a070;
-
-  --gold:       #8b6914;
-  --gold-l:     #a07820;
-  --gold-d:     #6b4e0a;
-  --gold-glow:  rgba(139,105,20,.2);
-
-  --green:  #1e7a4a;
-  --red:    #b02020;
-  --blue:   #1a5fa8;
-  --orange: #b05018;
-  --bronze: #8b5010;
-  --silver: #606060;
-  --platinum:#404040;
-
-  --nav-bg:     rgba(245,240,232,.97);
-  --card-bg:    #faf6ee;
-  --card-hover: #f0e8d4;
-  --input-bg:   rgba(139,105,20,.06);
-  --overlay:    rgba(245,240,232,.95);
-  --shadow:     0 8px 32px rgba(0,0,0,.12);
-
-  --ember: #c94a0a;
-
-  /* Legacy aliases */
-  --black:     #f5f0e8;
-  --dark:      #ede6d6;
-  --dark-mid:  #e4dccb;
-  --dark-warm: #ddd4be;
-  --warm:      #ddd4be;
-  --text-light:#4a3510;
-  --light:     #4a3510;
-  --muted:     #7a6030;
-  --success:   #1e7a4a;
-  --danger:    #b02020;
-  --gold-dim:  #6b4e0a;
-}
-
-/* ─── BODY TRANSITIONS ─── */
-body {
-  background: var(--bg) !important;
-  color: var(--text-primary) !important;
-  transition: background .35s ease, color .35s ease;
-}
-
-/* ─── GLOBAL OVERRIDES for light mode ─── */
-[data-theme="light"] .top-nav {
-  background: var(--nav-bg) !important;
-  border-bottom-color: var(--border-gold) !important;
-  box-shadow: 0 2px 16px rgba(0,0,0,.08);
-}
-[data-theme="light"] .hero,
-[data-theme="light"] [class*="section"],
-[data-theme="light"] [class*="-section"] {
-  background: transparent !important;
-}
-[data-theme="light"] [class*="-card"],
-[data-theme="light"] [class*="card-"],
-[data-theme="light"] .modal-box,
-[data-theme="light"] .pkg-card,
-[data-theme="light"] .user-row,
-[data-theme="light"] .stat-box {
-  background: var(--card-bg) !important;
-  border-color: var(--border-gold) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06) !important;
-}
-[data-theme="light"] input,
-[data-theme="light"] textarea,
-[data-theme="light"] select {
-  background: var(--input-bg) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-gold) !important;
-}
-[data-theme="light"] input::placeholder,
-[data-theme="light"] textarea::placeholder {
-  color: var(--text-muted) !important;
-  opacity: .7;
-}
-[data-theme="light"] .footer,
-[data-theme="light"] footer {
-  background: var(--bg2) !important;
-  border-top-color: var(--border-gold) !important;
-}
-/* Scrollbar for light */
-[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg2); }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--gold-d); }
-
-/* ─── THEME TOGGLE BUTTON ─── */
-.theme-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--border-gold);
-  background: var(--input-bg);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  transition: all .25s;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-}
-.theme-toggle:hover {
-  border-color: var(--gold);
-  background: rgba(201,168,76,.12);
-  transform: rotate(18deg);
-}
-.theme-toggle .icon-dark { display: block; }
-.theme-toggle .icon-light { display: none; }
-[data-theme="light"] .theme-toggle .icon-dark { display: none; }
-[data-theme="light"] .theme-toggle .icon-light { display: block; }
-
-/* ─── FIX: text that was hardcoded white/light ─── */
-[data-theme="light"] [style*="color:#e8"] { color: var(--text-primary) !important; }
-[data-theme="light"] [style*="color: #e8"] { color: var(--text-primary) !important; }
-[data-theme="light"] [style*="color:#7a6a50"] { color: var(--text-muted) !important; }
-[data-theme="light"] [style*="color:#c8b882"] { color: var(--text-secondary) !important; }
-[data-theme="light"] [style*="color:#c9a84c"],
-[data-theme="light"] [style*="color: #c9a84c"] { color: var(--gold) !important; }
-[data-theme="light"] [style*="color:#e8c97a"] { color: var(--gold-l) !important; }
-[data-theme="light"] [style*="background:#050404"],
-[data-theme="light"] [style*="background: #050404"],
-[data-theme="light"] [style*="background:#13100c"],
-[data-theme="light"] [style*="background: #13100c"] { background: var(--card-bg) !important; }
-[data-theme="light"] [style*="background:rgba(5,4,4"],
-[data-theme="light"] [style*="background: rgba(5,4,4"] { background: var(--overlay) !important; }
-[data-theme="light"] [style*="background:rgba(201,168,76,.0"],
-[data-theme="light"] [style*="background: rgba(201,168,76,.0"] { background: var(--input-bg) !important; }
-
-
-.lang-toggle{display:flex;align-items:center;border:1px solid var(--border-gold);overflow:hidden;flex-shrink:0;}
-.lang-btn{padding:7px 11px;font-family:'Cinzel',serif;font-size:10px;background:none;border:none;cursor:pointer;color:var(--muted);transition:all .2s;}
-.lang-btn.active{background:rgba(201,168,76,.15);color:var(--gold);}
-.lang-btn:hover:not(.active){background:rgba(201,168,76,.07);color:var(--gold-l);}
-@media(max-width:480px){.lang-btn{padding:6px 8px;font-size:9px;}}
-
-
-/* ════ AUTH MODAL ════ */
-.auth-tab {
-  flex:1; padding:12px 8px;
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; text-transform:uppercase;
-  background:none; border:none; cursor:pointer; color:var(--text-muted);
-  border-bottom:2px solid transparent; transition:all .2s;
-}
-.auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-.auth-tab:hover:not(.active) { color:var(--text-light); }
-
-
-/* ════ NAV OVERFLOW FIX ════ */
-.top-nav { flex-wrap: nowrap !important; overflow: visible !important; }
-.nav-right, .nav-links { flex-wrap: nowrap !important; gap:8px !important; }
-.nav-brand { flex-shrink: 0 !important; }
-.lang-toggle { flex-shrink: 0; }
-.btn-nav-login {
-  display:flex; align-items:center; gap:6px;
-  padding:8px 14px; background:none;
-  border:1px solid rgba(201,168,76,.25); color:var(--gold);
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0;
-}
-.btn-nav-login:hover { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.5); }
-@media(max-width:768px) {
-  .login-btn-label { display:none; }
-  .btn-nav-login { padding:8px 10px; }
-  .lang-btn { padding:5px 8px !important; font-size:8px !important; }
-  .nav-word, .nav-subtitle { display:none !important; }
-}
-@media(max-width:480px) {
-  .top-nav { padding:10px 12px !important; }
-  .nav-y { width:32px !important; height:32px !important; font-size:13px !important; }
-  .theme-toggle { width:32px !important; height:32px !important; }
-}
-
-/* ════ HERO LIGHT MODE FIX ════ */
-[data-theme="light"] .yg-hero,
-[data-theme="light"] .hero-section,
-[data-theme="light"] .page-hero {
-  background: linear-gradient(180deg, #faf5e4 0%, #f5edcc 40%, #ede2b8 100%) !important;
-}
-[data-theme="light"] body { background: var(--bg) !important; color: var(--text-primary) !important; }
-[data-theme="light"] .hero-title,
-[data-theme="light"] .yg-title { color: #5a2d08 !important; text-shadow: none !important; }
-[data-theme="light"] .hero-subtitle,
-[data-theme="light"] .yg-subtitle { color: #7a4a10 !important; }
-[data-theme="light"] .card, [data-theme="light"] .restaurant-card, [data-theme="light"] .order-card {
-  background: #fffdf5 !important; border-color: rgba(107,58,8,.12) !important;
-}
-[data-theme="light"] .card-title, [data-theme="light"] .rest-name { color: #2a1f0a !important; }
-[data-theme="light"] .card-desc, [data-theme="light"] .rest-desc { color: #5a3a18 !important; }
-[data-theme="light"] .section-title { color: #3a1e06 !important; }
-[data-theme="light"] .modal { background: #faf6ee !important; border-color: rgba(107,58,8,.2) !important; }
-[data-theme="light"] .form-input, [data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select {
-  background: #f5edd8 !important; border-color: rgba(107,58,8,.2) !important; color: #2a1f0a !important;
-}
-[data-theme="light"] .search-bar, [data-theme="light"] .search-wrap { background: rgba(255,255,255,.8) !important; border-color: rgba(107,58,8,.2) !important; }
-[data-theme="light"] .hero-bg, [data-theme="light"] .yg-hero-bg { opacity: .08 !important; }
-
-</style>
-</head>
-<body>
-
-<div class="toast" id="toast"></div>
-
-<!-- NAV -->
-<nav class="top-nav">
-  <a href="index.html" class="nav-brand">
-    <div class="nav-y">Y</div>
-    <div>
-      <div class="nav-name">YAVAYA</div>
-      <div class="nav-sub">Tokens</div>
-    </div>
-  </a>
-  <div class="nav-right">
-    <div class="lang-toggle" id="langToggle">
-    <button class="lang-btn active" id="btnTkEs" onclick="setTkLang('es')">🇪🇸 ES</button>
-    <button class="lang-btn" id="btnTkEn" onclick="setTkLang('en')">🇺🇸 EN</button>
-  </div>
-  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
-  <span class="icon-dark">🌙</span>
-  <span class="icon-light">☀️</span>
-</button>
-    <div class="token-pill" id="tokenPillNav" style="display:none;">
-      <span class="token-pill-icon">⚡</span>
-      <span class="token-pill-count" id="currentTokens">0</span>
-      <span class="token-pill-label">Tokens</span>
-    </div>
-    <a href="index.html" class="btn-back">← Volver</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<div class="page-hero">
-  <div class="page-hero-title">YAVAYA Tokens</div>
-  <div class="page-hero-sub">Tu Acceso a la Civilización Digital</div>
-  <div class="divider"><span class="divider-icon">◆</span></div>
-
-  <!-- User ID Box -->
-  <div id="userSection">
-    <div class="yavaya-id-box">
-      <div>
-        <div class="yid-label">Tu Yavaya ID — Preséntalo al comprar</div>
-        <div class="yid-value" id="yavayaIdDisplay" onclick="copyYavayaId()">YVY-XXXX-XXXX</div>
-        <div class="yid-warning">⚠ Sin tu Yavaya ID no podemos acreditar tus tokens. Sin excepciones.</div>
-      </div>
-      <button class="yid-copy" onclick="copyYavayaId()">Copiar ID</button>
-    </div>
-  </div>
-
-  <div id="loginPrompt">
-    <div class="login-prompt-text">Inicia sesión para ver tu Yavaya ID y comprar tokens</div>
-  </div>
-</div>
-
-<!-- FREE TOKENS INFO -->
-<div style="padding:0 20px 0;max-width:1100px;margin:0 auto;">
-  <div class="free-tokens-banner">
-    <div class="ftb-icon">🎁</div>
-    <div>
-      <div class="ftb-title">Tokens Gratuitos</div>
-      <div class="ftb-desc">
-        Todos los nuevos usuarios reciben <b>2 tokens gratis cada día</b> — durante tus primeros <b>5 días</b>.
-        Se renuevan automáticamente a las <b>11:00 PM</b> si tienes menos de 2.
-        Después del día 5, necesitarás comprar tokens para seguir activo.
-      </div>
-    </div>
-  </div>
-
-  <!-- Refund notice -->
-  <div class="refund-notice">
-    <div class="rn-icon">⚠</div>
-    <div>
-      <div class="rn-title">Sin Reembolsos — Leer Antes de Comprar</div>
-      <div class="rn-text">
-        Todas las compras de tokens son <b>finales e irrevocables</b>. Yavaya no puede verificar 
-        quién realizó un pago ni a qué cuenta corresponde <b>sin un Yavaya ID válido</b>. 
-        Si no presentas tu ID al pagar, los tokens no serán acreditados y no hay forma de rastrear la transacción. 
-        <b>No hay excepciones.</b>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PACKAGES -->
-<div class="packages-section" style="padding-top:40px;">
-  <div class="packages-title">Elige tu Paquete</div>
-
-  <div class="packages-grid">
-
-    <!-- BRONZE — Starter -->
-    <div class="pkg-card pkg-bronze">
-      <span class="pkg-badge">Inicio</span>
-      <div class="pkg-top">
-        <span class="pkg-icon">🥉</span>
-        <div class="pkg-tier">Nivel Bronce</div>
-        <div class="pkg-name">El Primer Paso</div>
-        <div class="pkg-tokens">
-          <span class="pkg-token-num">2</span>
-          <span class="pkg-token-label">Tokens</span>
-        </div>
-        <div class="pkg-per-token">$0.50 por token</div>
-      </div>
-      <div class="pkg-body">
-        <div class="pkg-price">
-          <span class="pkg-currency">USD</span>
-          <span class="pkg-amount">$1</span>
-        </div>
-        <ul class="pkg-features">
-          <li><span class="feat-icon">◆</span>2 acciones en la plataforma</li>
-          <li><span class="feat-icon">◆</span>1 listado en Mercadito o 1 pedido en YavayaGo</li>
-          <li><span class="feat-icon">◆</span>Para nuevos usuarios o uso esporádico</li>
-        </ul>
-        <div class="pkg-yid-reminder">
-          <span>⚠</span>
-          <span>Incluye tu Yavaya ID en el pago: <b id="yavayaIdDisplay2">YVY-XXXX-XXXX</b></span>
-        </div>
-        <a href="https://checkout.revolut.com/pay/f0d478e5-33a7-433d-92e9-71de6cfa516d" 
-           target="_blank" class="btn-buy" onclick="handleBuyClick(event,this)">
-          Obtener 2 Tokens →
-        </a>
-      </div>
-    </div>
-
-    <!-- GOLD — Popular -->
-    <div class="pkg-card pkg-gold">
-      <span class="pkg-badge">⭐ Más Popular</span>
-      <div class="pkg-top">
-        <span class="pkg-icon">🏆</span>
-        <div class="pkg-tier">Nivel Oro</div>
-        <div class="pkg-name">El Explorador</div>
-        <div class="pkg-tokens">
-          <span class="pkg-token-num">11</span>
-          <span class="pkg-token-label">Tokens</span>
-        </div>
-        <div class="pkg-per-token">$0.45 por token — ahorra 10%</div>
-      </div>
-      <div class="pkg-body">
-        <div class="pkg-price">
-          <span class="pkg-currency">USD</span>
-          <span class="pkg-amount">$5</span>
-        </div>
-        <ul class="pkg-features">
-          <li><span class="feat-icon">◆</span>11 acciones en la plataforma</li>
-          <li><span class="feat-icon">◆</span>Ideal para uso semanal activo</li>
-          <li><span class="feat-icon">◆</span>Mercadito + YavayaGo ilimitado</li>
-          <li><span class="feat-icon">◆</span>Mejor relación precio-valor</li>
-        </ul>
-        <div class="pkg-yid-reminder">
-          <span>⚠</span>
-          <span>Incluye tu Yavaya ID en el pago: <b id="yavayaIdDisplay3">YVY-XXXX-XXXX</b></span>
-        </div>
-        <a href="https://checkout.revolut.com/pay/ab77e4d4-cc56-4ca4-807d-fc716302a3e1" 
-           target="_blank" class="btn-buy" onclick="handleBuyClick(event,this)">
-          Obtener 11 Tokens →
-        </a>
-      </div>
-    </div>
-
-    <!-- PLATINUM — Elite -->
-    <div class="pkg-card pkg-platinum">
-      <span class="pkg-badge">Elite</span>
-      <div class="pkg-top">
-        <span class="pkg-icon">💎</span>
-        <div class="pkg-tier">Nivel Platino</div>
-        <div class="pkg-name">El Ciudadano</div>
-        <div class="pkg-tokens">
-          <span class="pkg-token-num">24</span>
-          <span class="pkg-token-label">Tokens</span>
-        </div>
-        <div class="pkg-per-token">$0.42 por token — ahorra 17%</div>
-      </div>
-      <div class="pkg-body">
-        <div class="pkg-price">
-          <span class="pkg-currency">USD</span>
-          <span class="pkg-amount">$10</span>
-        </div>
-        <ul class="pkg-features">
-          <li><span class="feat-icon">◆</span>24 acciones en la plataforma</li>
-          <li><span class="feat-icon">◆</span>Para usuarios comprometidos</li>
-          <li><span class="feat-icon">◆</span>Máximo ahorro por token</li>
-          <li><span class="feat-icon">◆</span>Acceso completo a todos los reinos</li>
-          <li><span class="feat-icon">◆</span>Suficiente para 3-4 semanas activas</li>
-        </ul>
-        <div class="pkg-yid-reminder">
-          <span>⚠</span>
-          <span>Incluye tu Yavaya ID en el pago: <b id="yavayaIdDisplay4">YVY-XXXX-XXXX</b></span>
-        </div>
-        <a href="https://checkout.revolut.com/pay/5aab3f05-5273-4e35-9b6a-d0d4ccf7d17c" 
-           target="_blank" class="btn-buy" onclick="handleBuyClick(event,this)">
-          Obtener 24 Tokens →
-        </a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<footer style="border-top:1px solid rgba(201,168,76,.07);padding:28px 40px 20px;text-align:center;background:var(--black);margin-top:60px;">
-  <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);">
-    © 2026 YAVAYA — La Civilización Digital de Centroamérica
-  </div>
-</footer>
-
 <script>
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -850,10 +454,10 @@ function handleBuyClick(e, btn) {
     window.open(url, '_blank');
   }
 }
+
 </script>
-
-
 <script>
+
 (function() {
   var lang = localStorage.getItem('yavaya_lang') || 'es';
   function setTkLang(l) {
@@ -861,7 +465,7 @@ function handleBuyClick(e, btn) {
     document.getElementById('btnTkEs').classList.toggle('active', l==='es');
     document.getElementById('btnTkEn').classList.toggle('active', l==='en');
     var t = {
-      es: { title: 'YAVAYA Tokens', sub: 'Tu Acceso a la Civilización Digital', sectionTitle: 'Elige tu Paquete' },
+      es: { title: 'YAVAYA Tokens', sub: 'Tu Acceso a la Plataforma', sectionTitle: 'Elige tu Paquete' },
       en: { title: 'YAVAYA Tokens', sub: 'Your Access to the Digital Civilization', sectionTitle: 'Choose Your Package' }
     };
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -872,239 +476,150 @@ function handleBuyClick(e, btn) {
   window.setTkLang = setTkLang;
   document.addEventListener('DOMContentLoaded', function() { setTkLang(lang); });
 })();
+
 </script>
-
 <script>
-/* ══════════════════════════════════════════
-   YAVAYA — Core UI System (all pages)
-   Theme toggle + Lang toggle + Auth modal
-══════════════════════════════════════════ */
 
-// ─── THEME TOGGLE ──────────────────────────────────
+/* ═══ YAVAYA CORE JS ═══ */
 window.toggleTheme = function() {
-  var current = document.documentElement.getAttribute('data-theme') || 'dark';
-  var next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  document.documentElement.style.colorScheme = next;
-  localStorage.setItem('yavaya_theme', next);
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('yavaya_theme', t);
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+};
+(function() {
+  var t = localStorage.getItem('yavaya_theme') || 'dark';
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+
+var _lang = localStorage.getItem('yavaya_lang') || 'es';
+window.setLang = function(l) {
+  _lang = l; localStorage.setItem('yavaya_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.l === l);
+  });
+  if (window._applyLang) window._applyLang(l);
+};
+(function() { window.setLang(_lang); })();
+
+window.toggleMob = function() {
+  var m = document.getElementById('navMob');
+  if (m) m.classList.toggle('open');
 };
 
-// ─── LANG TOGGLE (unified across all pages) ────────
-window._yavayaLang = localStorage.getItem('yavaya_lang') || 'es';
+// Scroll animations
+var _obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
 
-window.setLang = window.setIdxLang = window.setYgLang = window.setTkLang = function(lang) {
-  window._yavayaLang = lang;
-  localStorage.setItem('yavaya_lang', lang);
-  // Update all lang buttons on page
-  document.querySelectorAll('.lang-btn').forEach(function(btn) {
-    var btnLang = btn.textContent.trim().toLowerCase().includes('es') ? 'es' : 'en';
-    btn.classList.toggle('active', btnLang === lang);
-  });
-  // Update all data-i18n elements
-  document.querySelectorAll('[data-i18n], [data-i18n-idx], [data-yg-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n') || el.getAttribute('data-i18n-idx') || el.getAttribute('data-yg-i18n');
-    var t = window._i18nStrings || {};
-    if (t[lang] && t[lang][key]) el.textContent = t[lang][key];
-  });
-  // Placeholders
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-placeholder');
-    var t = window._i18nStrings || {};
-    if (t[lang] && t[lang][key]) el.placeholder = t[lang][key];
-  });
+// Toast
+window.showToast = function(msg, dur) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
 };
 
-// Apply on load
-document.addEventListener('DOMContentLoaded', function() {
-  // Re-apply theme (belt + suspenders)
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  // Apply lang
-  if (window.setLang) window.setLang(window._yavayaLang);
-});
-</script>
+// Nav scroll effect
+window.addEventListener('scroll', function() {
+  var n = document.getElementById('nav');
+  if (!n) return;
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  n.style.background = window.scrollY > 50
+    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
+    : '';
+}, { passive: true });
 
-<!-- ════ AUTH MODAL ════ -->
-<div class="modal-overlay" id="authModal" style="display:none;z-index:300;">
-  <div class="modal" style="max-width:400px;">
-    <button class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div id="authTabBar" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;">
-      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
-        <span data-i18n="auth_login">Iniciar Sesión</span>
-      </button>
-      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">
-        <span data-i18n="auth_register">Registrarse</span>
-      </button>
-    </div>
-
-    <!-- LOGIN -->
-    <div id="authPanelLogin">
-      <div class="modal-title" data-i18n="auth_login">Iniciar Sesión</div>
-      <div class="modal-sub">Yavaya · Tu Civilización</div>
-      <div style="margin:24px 0 16px;">
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_email">Correo</label>
-          <input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_password">Contraseña</label>
-          <div style="position:relative;">
-            <input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:44px;">
-            <button onclick="togglePassVis('loginPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
-          </div>
-        </div>
-        <div style="text-align:right;margin-top:6px;margin-bottom:18px;">
-          <a href="#" onclick="forgotPassword()" style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);text-decoration:none;" data-i18n="auth_forgot">¿Olvidaste tu contraseña?</a>
-        </div>
-        <button class="btn-submit" onclick="doLogin()" id="btnLogin" data-i18n="auth_login_btn">Entrar →</button>
-        <div style="margin-top:16px;text-align:center;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
-          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
-            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- REGISTER -->
-    <div id="authPanelRegister" style="display:none;">
-      <div class="modal-title" data-i18n="auth_register">Crear Cuenta</div>
-      <div class="modal-sub">Yavaya · Tu Civilización</div>
-      <div style="margin:24px 0 16px;">
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_name">Tu nombre</label>
-          <input type="text" class="form-input" id="regName" placeholder="Ana Sofía">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_email">Correo</label>
-          <input type="email" class="form-input" id="regEmail" placeholder="tu@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_password">Contraseña</label>
-          <div style="position:relative;">
-            <input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:44px;">
-            <button onclick="togglePassVis('regPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_confirm">Confirmar contraseña</label>
-          <input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña">
-        </div>
-        <div style="padding:10px 14px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);margin-bottom:18px;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);line-height:1.6;" data-i18n="auth_terms">
-            Al registrarte aceptas los Términos de Yavaya. Tu información está protegida y nunca será vendida.
-          </div>
-        </div>
-        <button class="btn-submit" onclick="doRegister()" id="btnRegister" data-i18n="auth_register_btn">Crear Mi Cuenta →</button>
-        <div style="margin-top:16px;text-align:center;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
-          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
-            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ════ AUTH MODAL SYSTEM ════ */
-
-window.openAuthModal = function(tab) {
-  document.getElementById('authModal').style.display = 'flex';
-  if (tab) switchAuthTab(tab);
+// Auth modal shared
+window.openAuthModal = window.openAuthModal || function(tab) {
+  var m = document.getElementById('authModal');
+  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
 };
 window.closeAuthModal = function() {
-  document.getElementById('authModal').style.display = 'none';
+  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
 };
 window.switchAuthTab = function(tab) {
-  document.getElementById('authPanelLogin').style.display = tab==='login' ? 'block' : 'none';
-  document.getElementById('authPanelRegister').style.display = tab==='register' ? 'block' : 'none';
-  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
-  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  ['login','reg'].forEach(function(p) {
+    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
+  });
+  ['Login','Reg'].forEach(function(p) {
+    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
+  });
 };
-window.togglePassVis = function(id) {
-  var el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-};
-window.doGoogleLogin = async function() {
-  if (typeof firebase !== 'undefined' && window._go) {
-    try {
-      var { signInWithPopup, GoogleAuthProvider } = window._go;
-      var provider = new GoogleAuthProvider();
-      await signInWithPopup(window._auth, provider);
-      closeAuthModal();
-    } catch(e) { showToast && showToast('Error Google: ' + e.message); }
-  } else {
-    showToast && showToast('Google Sign-In — Firebase no configurado');
-  }
+window.toggleVis = function(id) {
+  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
 };
 window.doLogin = async function() {
-  var email = (document.getElementById('loginEmail').value||'').trim();
-  var pass = document.getElementById('loginPass').value;
-  if (!email || !pass) { showToast && showToast('Ingresa correo y contraseña'); return; }
-  var btn = document.getElementById('btnLogin');
-  btn.disabled = true; btn.textContent = 'Entrando...';
-  if (window._go) {
-    try {
-      var { signInWithEmailAndPassword } = window._go;
-      await signInWithEmailAndPassword(window._auth, email, pass);
-      closeAuthModal();
-    } catch(e) {
-      var msgs = { 'auth/wrong-password':'Contraseña incorrecta', 'auth/user-not-found':'Cuenta no encontrada', 'auth/invalid-email':'Correo inválido' };
-      showToast && showToast(msgs[e.code] || e.message);
-    }
-  } else {
-    showToast && showToast('Firebase no configurado');
+  var e = (document.getElementById('loginEmail') || {}).value || '';
+  var p = (document.getElementById('loginPass') || {}).value || '';
+  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
+  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+  try {
+    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
+    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
+  } catch(err) {
+    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
+    showToast(map[err.code] || err.message);
   }
-  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Sign In →':'Entrar →');
+  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
 };
 window.doRegister = async function() {
-  var name = (document.getElementById('regName').value||'').trim();
-  var email = (document.getElementById('regEmail').value||'').trim();
-  var pass = document.getElementById('regPass').value;
-  var pass2 = document.getElementById('regPass2').value;
-  if (!name) { showToast && showToast('Escribe tu nombre'); return; }
-  if (!email) { showToast && showToast('Ingresa tu correo'); return; }
-  if (pass.length < 8) { showToast && showToast('Contraseña mín. 8 caracteres'); return; }
-  if (pass !== pass2) { showToast && showToast('Las contraseñas no coinciden'); return; }
-  var btn = document.getElementById('btnRegister');
-  btn.disabled = true; btn.textContent = 'Creando cuenta...';
-  if (window._go) {
-    try {
-      var { createUserWithEmailAndPassword, updateProfile } = window._go;
-      var cred = await createUserWithEmailAndPassword(window._auth, email, pass);
-      await updateProfile(cred.user, { displayName: name });
-      closeAuthModal();
-      showToast && showToast('¡Bienvenido/a ' + name + '! 🎉');
-    } catch(e) {
-      var msgs = { 'auth/email-already-in-use':'Este correo ya tiene cuenta', 'auth/invalid-email':'Correo inválido', 'auth/weak-password':'Contraseña muy débil' };
-      showToast && showToast(msgs[e.code] || e.message);
+  var n = (document.getElementById('regName') || {}).value || '';
+  var e = (document.getElementById('regEmail') || {}).value || '';
+  var p = (document.getElementById('regPass') || {}).value || '';
+  var p2 = (document.getElementById('regPass2') || {}).value || '';
+  n = n.trim(); e = e.trim();
+  if (!n) { showToast('Escribe tu nombre'); return; }
+  if (!e) { showToast('Ingresa tu correo'); return; }
+  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
+  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
+  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
+  try {
+    if (window._goAuth && window._auth) {
+      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
+      await window._goAuth.updateProfile(c.user, { displayName: n });
     }
-  } else {
-    showToast && showToast('Firebase no configurado');
+    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
+  } catch(err) {
+    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
+    showToast(map2[err.code] || err.message);
   }
-  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Create Account →':'Crear Mi Cuenta →');
+  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
 };
-window.forgotPassword = async function() {
-  var email = (document.getElementById('loginEmail').value||'').trim();
-  if (!email) { showToast && showToast('Primero ingresa tu correo'); return; }
-  if (window._go) {
-    try {
-      var { sendPasswordResetEmail } = window._go;
-      await sendPasswordResetEmail(window._auth, email);
-      showToast && showToast('Correo de recuperación enviado ✓');
-    } catch(e) { showToast && showToast(e.message); }
-  }
+window.doGoogle = function() {
+  if (window._goAuth && window._auth) {
+    var pr = new window._goAuth.GoogleAuthProvider();
+    window._goAuth.signInWithPopup(window._auth, pr)
+      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
+      .catch(function(e) { showToast(e.message); });
+  } else { showToast('Google auth no configurado'); }
 };
-// Close on backdrop click
-document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('authModal');
-  if (modal) modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeAuthModal();
-  });
-});
-</script>
+window.forgotPass = function() {
+  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
+  if (!e) { showToast('Ingresa tu correo primero'); return; }
+  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
+};
 
+window.copyId = function() {
+  var id = document.getElementById('idNum').textContent;
+  if (navigator.clipboard) { navigator.clipboard.writeText(id).then(function(){showToast('ID copiado ✓');}).catch(function(){showToast(id);}); }
+  else { showToast(id); }
+};
+window.shareInvite = function() {
+  var url = window.location.origin + '/index.html';
+  if(navigator.share) { navigator.share({title:'Yavaya',text:'Únete a Yavaya — La plataforma de Centroamérica',url:url}); }
+  else if(navigator.clipboard) { navigator.clipboard.writeText(url).then(function(){showToast('Link copiado ✓');}); }
+  else { showToast('Comparte: ' + url); }
+};
+window.buyPack = function(tokens, price) {
+  showToast('Redirigiendo a pago de $' + price + ' (' + tokens + ' tokens)...');
+  setTimeout(function(){window.open('https://www.paypal.com/paypalme/junoagattis/' + price + 'USD','_blank');},1200);
+};
+document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
+</script>
 </body>
 </html>
