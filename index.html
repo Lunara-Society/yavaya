@@ -10,7 +10,7 @@
 </script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <title>YAVAYA — La Civilización Digital de Centroamérica</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -1109,6 +1109,17 @@ body {
   .reino-name { font-size: 16px !important; }
 }
 
+
+/* ════ AUTH MODAL ════ */
+.auth-tab {
+  flex:1; padding:12px 8px;
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  background:none; border:none; cursor:pointer; color:var(--text-muted);
+  border-bottom:2px solid transparent; transition:all .2s;
+}
+.auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.auth-tab:hover:not(.active) { color:var(--text-light); }
+
 </style>
 </head>
 <body>
@@ -1125,11 +1136,13 @@ body {
     <a href="mercadito.html" style="letter-spacing:2px;font-size:9px;">Mercadito</a>
     <a href="yavayago.html" style="letter-spacing:2px;font-size:9px;">YavayaGo</a>
     <a href="tokens.html" style="letter-spacing:2px;font-size:9px;">⚡ Tokens</a>
+    <a href="church.html" style="letter-spacing:2px;font-size:9px;">⛪ Santuario</a>
     <a href="admin.html" style="opacity:.35;letter-spacing:2px;font-size:9px;" title="Admin">Admin</a>
     <div class="lang-toggle" id="langToggle">
       <button class="lang-btn active" id="btnIdxEs" onclick="setIdxLang('es')">🇪🇸 ES</button>
       <button class="lang-btn" id="btnIdxEn" onclick="setIdxLang('en')">🇺🇸 EN</button>
     </div>
+    <button onclick="openAuthModal('login')" id="navAuthBtn" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.25);color:var(--gold-dim);padding:7px 14px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(201,168,76,.6)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,168,76,.25)';this.style.color='var(--gold-dim)'">Entrar</button>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
       <span class="icon-dark">🌙</span>
       <span class="icon-light">☀️</span>
@@ -1142,6 +1155,7 @@ body {
 ════════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-bg"></div>
+  <div class="hero-img-overlay" style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&q=80&auto=format') center/cover no-repeat;opacity:.06;mix-blend-mode:luminosity;pointer-events:none;"></div>
   <div class="stars"></div>
 
   <!-- Architecture -->
@@ -1204,7 +1218,14 @@ body {
     <div class="divider"><span class="divider-icon">◆</span></div>
   </div>
 
-  <div class="reinos-grid">
+  
+<!-- VISUAL INTRO STRIP -->
+<div style="padding:0 20px 48px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">
+  <div style="height:140px;background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
+  <div style="height:140px;background:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
+  <div style="height:140px;background:url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
+</div>
+<div class="reinos-grid">
 
     <!-- YAVAYA -->
     <div class="reino-card reino-yavaya fade-up s1" onclick="window.location='mercadito.html'">
@@ -1526,6 +1547,238 @@ body {
     setIdxLang(lang);
   });
 })();
+</script>
+
+<script>
+/* ══════════════════════════════════════════
+   YAVAYA — Core UI System (all pages)
+   Theme toggle + Lang toggle + Auth modal
+══════════════════════════════════════════ */
+
+// ─── THEME TOGGLE ──────────────────────────────────
+window.toggleTheme = function() {
+  var current = document.documentElement.getAttribute('data-theme') || 'dark';
+  var next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  document.documentElement.style.colorScheme = next;
+  localStorage.setItem('yavaya_theme', next);
+};
+
+// ─── LANG TOGGLE (unified across all pages) ────────
+window._yavayaLang = localStorage.getItem('yavaya_lang') || 'es';
+
+window.setLang = window.setIdxLang = window.setYgLang = window.setTkLang = function(lang) {
+  window._yavayaLang = lang;
+  localStorage.setItem('yavaya_lang', lang);
+  // Update all lang buttons on page
+  document.querySelectorAll('.lang-btn').forEach(function(btn) {
+    var btnLang = btn.textContent.trim().toLowerCase().includes('es') ? 'es' : 'en';
+    btn.classList.toggle('active', btnLang === lang);
+  });
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n], [data-i18n-idx], [data-yg-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n') || el.getAttribute('data-i18n-idx') || el.getAttribute('data-yg-i18n');
+    var t = window._i18nStrings || {};
+    if (t[lang] && t[lang][key]) el.textContent = t[lang][key];
+  });
+  // Placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    var t = window._i18nStrings || {};
+    if (t[lang] && t[lang][key]) el.placeholder = t[lang][key];
+  });
+};
+
+// Apply on load
+document.addEventListener('DOMContentLoaded', function() {
+  // Re-apply theme (belt + suspenders)
+  var saved = localStorage.getItem('yavaya_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  // Apply lang
+  if (window.setLang) window.setLang(window._yavayaLang);
+});
+</script>
+
+<!-- ════ AUTH MODAL ════ -->
+<div class="modal-overlay" id="authModal" style="display:none;z-index:300;">
+  <div class="modal" style="max-width:400px;">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div id="authTabBar" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
+        <span data-i18n="auth_login">Iniciar Sesión</span>
+      </button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">
+        <span data-i18n="auth_register">Registrarse</span>
+      </button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="authPanelLogin">
+      <div class="modal-title" data-i18n="auth_login">Iniciar Sesión</div>
+      <div class="modal-sub">Yavaya · Tu Civilización</div>
+      <div style="margin:24px 0 16px;">
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_email">Correo</label>
+          <input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_password">Contraseña</label>
+          <div style="position:relative;">
+            <input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:44px;">
+            <button onclick="togglePassVis('loginPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right;margin-top:6px;margin-bottom:18px;">
+          <a href="#" onclick="forgotPassword()" style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);text-decoration:none;" data-i18n="auth_forgot">¿Olvidaste tu contraseña?</a>
+        </div>
+        <button class="btn-submit" onclick="doLogin()" id="btnLogin" data-i18n="auth_login_btn">Entrar →</button>
+        <div style="margin-top:16px;text-align:center;">
+          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
+          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
+            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="authPanelRegister" style="display:none;">
+      <div class="modal-title" data-i18n="auth_register">Crear Cuenta</div>
+      <div class="modal-sub">Yavaya · Tu Civilización</div>
+      <div style="margin:24px 0 16px;">
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_name">Tu nombre</label>
+          <input type="text" class="form-input" id="regName" placeholder="Ana Sofía">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_email">Correo</label>
+          <input type="email" class="form-input" id="regEmail" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_password">Contraseña</label>
+          <div style="position:relative;">
+            <input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:44px;">
+            <button onclick="togglePassVis('regPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth_confirm">Confirmar contraseña</label>
+          <input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña">
+        </div>
+        <div style="padding:10px 14px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);margin-bottom:18px;">
+          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);line-height:1.6;" data-i18n="auth_terms">
+            Al registrarte aceptas los Términos de Yavaya. Tu información está protegida y nunca será vendida.
+          </div>
+        </div>
+        <button class="btn-submit" onclick="doRegister()" id="btnRegister" data-i18n="auth_register_btn">Crear Mi Cuenta →</button>
+        <div style="margin-top:16px;text-align:center;">
+          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
+          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
+            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════ AUTH MODAL SYSTEM ════ */
+
+window.openAuthModal = function(tab) {
+  document.getElementById('authModal').style.display = 'flex';
+  if (tab) switchAuthTab(tab);
+};
+window.closeAuthModal = function() {
+  document.getElementById('authModal').style.display = 'none';
+};
+window.switchAuthTab = function(tab) {
+  document.getElementById('authPanelLogin').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('authPanelRegister').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+};
+window.togglePassVis = function(id) {
+  var el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+};
+window.doGoogleLogin = async function() {
+  if (typeof firebase !== 'undefined' && window._go) {
+    try {
+      var { signInWithPopup, GoogleAuthProvider } = window._go;
+      var provider = new GoogleAuthProvider();
+      await signInWithPopup(window._auth, provider);
+      closeAuthModal();
+    } catch(e) { showToast && showToast('Error Google: ' + e.message); }
+  } else {
+    showToast && showToast('Google Sign-In — Firebase no configurado');
+  }
+};
+window.doLogin = async function() {
+  var email = (document.getElementById('loginEmail').value||'').trim();
+  var pass = document.getElementById('loginPass').value;
+  if (!email || !pass) { showToast && showToast('Ingresa correo y contraseña'); return; }
+  var btn = document.getElementById('btnLogin');
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  if (window._go) {
+    try {
+      var { signInWithEmailAndPassword } = window._go;
+      await signInWithEmailAndPassword(window._auth, email, pass);
+      closeAuthModal();
+    } catch(e) {
+      var msgs = { 'auth/wrong-password':'Contraseña incorrecta', 'auth/user-not-found':'Cuenta no encontrada', 'auth/invalid-email':'Correo inválido' };
+      showToast && showToast(msgs[e.code] || e.message);
+    }
+  } else {
+    showToast && showToast('Firebase no configurado');
+  }
+  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Sign In →':'Entrar →');
+};
+window.doRegister = async function() {
+  var name = (document.getElementById('regName').value||'').trim();
+  var email = (document.getElementById('regEmail').value||'').trim();
+  var pass = document.getElementById('regPass').value;
+  var pass2 = document.getElementById('regPass2').value;
+  if (!name) { showToast && showToast('Escribe tu nombre'); return; }
+  if (!email) { showToast && showToast('Ingresa tu correo'); return; }
+  if (pass.length < 8) { showToast && showToast('Contraseña mín. 8 caracteres'); return; }
+  if (pass !== pass2) { showToast && showToast('Las contraseñas no coinciden'); return; }
+  var btn = document.getElementById('btnRegister');
+  btn.disabled = true; btn.textContent = 'Creando cuenta...';
+  if (window._go) {
+    try {
+      var { createUserWithEmailAndPassword, updateProfile } = window._go;
+      var cred = await createUserWithEmailAndPassword(window._auth, email, pass);
+      await updateProfile(cred.user, { displayName: name });
+      closeAuthModal();
+      showToast && showToast('¡Bienvenido/a ' + name + '! 🎉');
+    } catch(e) {
+      var msgs = { 'auth/email-already-in-use':'Este correo ya tiene cuenta', 'auth/invalid-email':'Correo inválido', 'auth/weak-password':'Contraseña muy débil' };
+      showToast && showToast(msgs[e.code] || e.message);
+    }
+  } else {
+    showToast && showToast('Firebase no configurado');
+  }
+  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Create Account →':'Crear Mi Cuenta →');
+};
+window.forgotPassword = async function() {
+  var email = (document.getElementById('loginEmail').value||'').trim();
+  if (!email) { showToast && showToast('Primero ingresa tu correo'); return; }
+  if (window._go) {
+    try {
+      var { sendPasswordResetEmail } = window._go;
+      await sendPasswordResetEmail(window._auth, email);
+      showToast && showToast('Correo de recuperación enviado ✓');
+    } catch(e) { showToast && showToast(e.message); }
+  }
+};
+// Close on backdrop click
+document.addEventListener('DOMContentLoaded', function() {
+  var modal = document.getElementById('authModal');
+  if (modal) modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeAuthModal();
+  });
+});
 </script>
 
 </body>
