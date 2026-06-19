@@ -1186,6 +1186,56 @@ body {
 .auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
 .auth-tab:hover:not(.active) { color:var(--text-light); }
 
+
+/* ════ NAV OVERFLOW FIX ════ */
+.top-nav { flex-wrap: nowrap !important; overflow: visible !important; }
+.nav-right, .nav-links { flex-wrap: nowrap !important; gap:8px !important; }
+.nav-brand { flex-shrink: 0 !important; }
+.lang-toggle { flex-shrink: 0; }
+.btn-nav-login {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px; background:none;
+  border:1px solid rgba(201,168,76,.25); color:var(--gold);
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0;
+}
+.btn-nav-login:hover { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.5); }
+@media(max-width:768px) {
+  .login-btn-label { display:none; }
+  .btn-nav-login { padding:8px 10px; }
+  .lang-btn { padding:5px 8px !important; font-size:8px !important; }
+  .nav-word, .nav-subtitle { display:none !important; }
+}
+@media(max-width:480px) {
+  .top-nav { padding:10px 12px !important; }
+  .nav-y { width:32px !important; height:32px !important; font-size:13px !important; }
+  .theme-toggle { width:32px !important; height:32px !important; }
+}
+
+/* ════ HERO LIGHT MODE FIX ════ */
+[data-theme="light"] .yg-hero,
+[data-theme="light"] .hero-section,
+[data-theme="light"] .page-hero {
+  background: linear-gradient(180deg, #faf5e4 0%, #f5edcc 40%, #ede2b8 100%) !important;
+}
+[data-theme="light"] body { background: var(--bg) !important; color: var(--text-primary) !important; }
+[data-theme="light"] .hero-title,
+[data-theme="light"] .yg-title { color: #5a2d08 !important; text-shadow: none !important; }
+[data-theme="light"] .hero-subtitle,
+[data-theme="light"] .yg-subtitle { color: #7a4a10 !important; }
+[data-theme="light"] .card, [data-theme="light"] .restaurant-card, [data-theme="light"] .order-card {
+  background: #fffdf5 !important; border-color: rgba(107,58,8,.12) !important;
+}
+[data-theme="light"] .card-title, [data-theme="light"] .rest-name { color: #2a1f0a !important; }
+[data-theme="light"] .card-desc, [data-theme="light"] .rest-desc { color: #5a3a18 !important; }
+[data-theme="light"] .section-title { color: #3a1e06 !important; }
+[data-theme="light"] .modal { background: #faf6ee !important; border-color: rgba(107,58,8,.2) !important; }
+[data-theme="light"] .form-input, [data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select {
+  background: #f5edd8 !important; border-color: rgba(107,58,8,.2) !important; color: #2a1f0a !important;
+}
+[data-theme="light"] .search-bar, [data-theme="light"] .search-wrap { background: rgba(255,255,255,.8) !important; border-color: rgba(107,58,8,.2) !important; }
+[data-theme="light"] .hero-bg, [data-theme="light"] .yg-hero-bg { opacity: .08 !important; }
+
 </style>
 </head>
 <body>
