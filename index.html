@@ -1187,6 +1187,31 @@ body {
 .section-title { text-align:center; }
 .section-eyebrow { text-align:center; }
 
+
+/* ════ INDEX NAV FIX ════ */
+.top-nav { flex-wrap:nowrap !important; overflow:visible !important; }
+.nav-links { flex-wrap:nowrap !important; gap:8px !important; overflow:visible !important; }
+@media(max-width:900px) {
+  .nav-links a:not([href*="tokens"]):not([href*="church"]) { display:none !important; }
+}
+@media(max-width:600px) {
+  .nav-links a { display:none !important; }
+  .nav-word { display:none !important; }
+  .top-nav { padding:10px 14px !important; }
+  .nav-y { width:32px !important; height:32px !important; font-size:13px !important; }
+}
+.btn-nav-login {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; background:none;
+  border:1px solid rgba(201,168,76,.25); color:var(--gold);
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0;
+  white-space:nowrap;
+}
+.btn-nav-login:hover { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.5); }
+[data-theme="light"] .btn-nav-login { border-color:rgba(107,58,8,.25); color:#6b3a08; }
+@media(max-width:480px) { .login-btn-label { display:none; } .btn-nav-login { padding:7px 10px; } }
+
 </style>
 </head>
 <body>
@@ -1209,7 +1234,10 @@ body {
       <button class="lang-btn active" id="btnIdxEs" onclick="setIdxLang('es')">🇪🇸 ES</button>
       <button class="lang-btn" id="btnIdxEn" onclick="setIdxLang('en')">🇺🇸 EN</button>
     </div>
-    <button onclick="openAuthModal('login')" id="navAuthBtn" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.25);color:var(--gold-dim);padding:7px 14px;cursor:pointer;transition:all .2s;" onmouseover="this.style.borderColor='rgba(201,168,76,.6)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,168,76,.25)';this.style.color='var(--gold-dim)'">Entrar</button>
+    <button class="btn-nav-login" id="navAuthBtn" onclick="openAuthModal('login')" title="Iniciar sesión">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="login-btn-label">Entrar</span>
+    </button>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
       <span class="icon-dark">🌙</span>
       <span class="icon-light">☀️</span>
