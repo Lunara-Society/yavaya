@@ -1081,6 +1081,74 @@ body {
 .auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
 .auth-tab:hover:not(.active) { color:var(--text-light); }
 
+
+/* ════ NAV OVERFLOW FIX ════ */
+.top-nav { flex-wrap: nowrap; min-height:64px; overflow: visible; }
+.nav-right { flex-wrap: nowrap; gap:8px; align-items:center; overflow:visible; }
+.nav-brand { flex-shrink: 0; }
+.lang-toggle { flex-shrink: 0; }
+.btn-nav-login {
+  display:flex; align-items:center; gap:6px;
+  padding:8px 14px; background:none;
+  border:1px solid rgba(201,168,76,.25); color:var(--gold);
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
+  text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0;
+}
+.btn-nav-login:hover { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.5); }
+[data-theme="light"] .btn-nav-login { border-color:rgba(107,58,8,.25); color:#6b3a08; }
+@media(max-width:768px) {
+  .login-btn-label { display:none; }
+  .btn-nav-login { padding:8px 10px; }
+  .nav-title { font-size:12px !important; letter-spacing:2px !important; }
+  .nav-subtitle { display:none; }
+  .lang-btn { padding:5px 8px !important; font-size:8px !important; }
+  .token-widget .tw-label { display:none; }
+}
+@media(max-width:480px) {
+  .top-nav { padding:10px 12px !important; }
+  .nav-y { width:32px !important; height:32px !important; font-size:13px !important; }
+  .theme-toggle { width:32px !important; height:32px !important; font-size:14px !important; }
+}
+
+/* ════ HERO BACKGROUND FIX ════ */
+.mercadito-hero {
+  background: linear-gradient(180deg, #06040a 0%, #0e0906 40%, #1a1005 70%, #080604 100%) !important;
+  transition: background .5s;
+}
+[data-theme="light"] .mercadito-hero {
+  background: linear-gradient(180deg, #faf5e4 0%, #f5edcc 40%, #ede2b8 70%, #faf5e4 100%) !important;
+}
+.mercadito-hero-bg { transition: opacity .5s; }
+[data-theme="light"] .mercadito-hero-bg { opacity: .12 !important; }
+[data-theme="light"] .mercadito-title { color: #5a2d08 !important; text-shadow: none !important; }
+[data-theme="light"] .mercadito-subtitle { color: #8b5e20 !important; }
+[data-theme="light"] .search-bar { background: rgba(255,255,255,.8) !important; border-color: rgba(107,58,8,.2) !important; }
+[data-theme="light"] .search-input { color: #2a1f0a !important; }
+[data-theme="light"] .search-input::placeholder { color: rgba(42,31,10,.4) !important; }
+[data-theme="light"] .stat-number { color: #6b3a08 !important; }
+[data-theme="light"] .stat-label { color: #8b5e20 !important; }
+[data-theme="light"] .hero-icon-ring { border-color: rgba(107,58,8,.3) !important; background: rgba(255,245,220,.5) !important; }
+
+/* ════ SIDEBAR + LISTINGS LIGHT MODE ════ */
+[data-theme="light"] .sidebar { background: #faf6ee !important; border-color: rgba(107,58,8,.12) !important; }
+[data-theme="light"] .filter-label { color: #6b3a08 !important; }
+[data-theme="light"] .filter-section-title { color: #5a2d08 !important; border-color: rgba(107,58,8,.12) !important; }
+[data-theme="light"] .checkbox-label { color: #4a2a06 !important; }
+[data-theme="light"] .custom-checkbox { border-color: rgba(107,58,8,.3) !important; background:transparent !important; }
+[data-theme="light"] body { background: var(--bg) !important; color: var(--text-primary) !important; }
+[data-theme="light"] .listing-card { background: #fffdf5 !important; border-color: rgba(107,58,8,.12) !important; }
+[data-theme="light"] .listing-title { color: #2a1f0a !important; }
+[data-theme="light"] .listing-price { color: #6b3a08 !important; }
+[data-theme="light"] .listing-desc { color: #5a3a18 !important; }
+[data-theme="light"] .category-bar { background: #2a1f0a !important; }
+[data-theme="light"] .cat-item.active { background: rgba(107,58,8,.15) !important; }
+[data-theme="light"] .cat-name { color: #e8d08a !important; }
+[data-theme="light"] .section-title { color: #3a1e06 !important; }
+[data-theme="light"] .modal { background: #faf6ee !important; border-color: rgba(107,58,8,.2) !important; }
+[data-theme="light"] .form-input { background: #f5edd8 !important; border-color: rgba(107,58,8,.2) !important; color: #2a1f0a !important; }
+[data-theme="light"] .modal-title { color: #3a1e06 !important; }
+[data-theme="light"] .modal-close { color: #6b3a08 !important; }
+
 </style>
 </head>
 <body>
@@ -1114,9 +1182,9 @@ body {
       <span id="userName"></span>
       <button class="btn-logout" onclick="doLogout()">Salir</button>
     </div>
-    <button class="btn-google-login" id="loginBtn" onclick="doGoogleLogin()">
-      <svg class="google-icon" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>
-      Entrar con Google
+    <button class="btn-nav-login" id="loginBtn" onclick="openAuthModal && openAuthModal('login') || doGoogleLogin()" title="Iniciar sesión">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="login-btn-label">Entrar</span>
     </button>
   </div>
 </nav>
