@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script>
+(function() {
+  var saved = localStorage.getItem('yavaya_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.documentElement.style.colorScheme = saved;
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YAVAYA — La Civilización Digital de Centroamérica</title>
@@ -844,6 +852,207 @@
     .nav-links a { font-size: 9px; letter-spacing: 2px; }
   }
 
+
+/* ══════════════════════════════════════════════════
+   YAVAYA THEME SYSTEM — Dark (default) + Light mode
+   ══════════════════════════════════════════════════ */
+
+/* ─── DARK MODE (default) ─── */
+:root,
+[data-theme="dark"] {
+  --bg:          #050404;
+  --bg2:         #0a0807;
+  --bg3:         #110e0b;
+  --surface:     #13100c;
+  --surface2:    #1c1710;
+  --border:      rgba(201,168,76,.12);
+  --border-gold: rgba(201,168,76,.28);
+
+  --text-primary:  #e8d8a8;
+  --text-secondary:#c8b882;
+  --text-muted:    #7a6a50;
+  --text-faint:    #4a3e2c;
+
+  --gold:       #c9a84c;
+  --gold-l:     #e8c97a;
+  --gold-d:     #8a6c2a;
+  --gold-glow:  rgba(201,168,76,.3);
+
+  --green:  #3db87a;
+  --red:    #d94040;
+  --blue:   #4090d9;
+  --orange: #e87240;
+  --bronze: #cd7f32;
+  --silver: #a8a9ad;
+  --platinum:#e5e4e2;
+
+  --nav-bg:     rgba(5,4,4,.97);
+  --card-bg:    #13100c;
+  --card-hover: #1c1810;
+  --input-bg:   rgba(201,168,76,.05);
+  --overlay:    rgba(5,4,4,.94);
+  --shadow:     0 8px 32px rgba(0,0,0,.6);
+
+  --ember: #c94a0a;
+
+  /* Legacy aliases — keeps old var() calls working */
+  --black:     #050404;
+  --dark:      #0a0807;
+  --dark-mid:  #110e0b;
+  --dark-warm: #1a1410;
+  --warm:      #1a1410;
+  --text-light:#c8b882;
+  --light:     #c8b882;
+  --muted:     #7a6a50;
+  --success:   #3db87a;
+  --danger:    #d94040;
+  --gold-dim:  #8a6c2a;
+}
+
+/* ─── LIGHT MODE ─── */
+[data-theme="light"] {
+  --bg:          #f5f0e8;
+  --bg2:         #ede6d6;
+  --bg3:         #e4dccb;
+  --surface:     #faf6ee;
+  --surface2:    #f0e9d8;
+  --border:      rgba(139,105,30,.15);
+  --border-gold: rgba(139,105,30,.35);
+
+  --text-primary:  #2a1f0a;
+  --text-secondary:#4a3510;
+  --text-muted:    #7a6030;
+  --text-faint:    #b8a070;
+
+  --gold:       #8b6914;
+  --gold-l:     #a07820;
+  --gold-d:     #6b4e0a;
+  --gold-glow:  rgba(139,105,20,.2);
+
+  --green:  #1e7a4a;
+  --red:    #b02020;
+  --blue:   #1a5fa8;
+  --orange: #b05018;
+  --bronze: #8b5010;
+  --silver: #606060;
+  --platinum:#404040;
+
+  --nav-bg:     rgba(245,240,232,.97);
+  --card-bg:    #faf6ee;
+  --card-hover: #f0e8d4;
+  --input-bg:   rgba(139,105,20,.06);
+  --overlay:    rgba(245,240,232,.95);
+  --shadow:     0 8px 32px rgba(0,0,0,.12);
+
+  --ember: #c94a0a;
+
+  /* Legacy aliases */
+  --black:     #f5f0e8;
+  --dark:      #ede6d6;
+  --dark-mid:  #e4dccb;
+  --dark-warm: #ddd4be;
+  --warm:      #ddd4be;
+  --text-light:#4a3510;
+  --light:     #4a3510;
+  --muted:     #7a6030;
+  --success:   #1e7a4a;
+  --danger:    #b02020;
+  --gold-dim:  #6b4e0a;
+}
+
+/* ─── BODY TRANSITIONS ─── */
+body {
+  background: var(--bg) !important;
+  color: var(--text-primary) !important;
+  transition: background .35s ease, color .35s ease;
+}
+
+/* ─── GLOBAL OVERRIDES for light mode ─── */
+[data-theme="light"] .top-nav {
+  background: var(--nav-bg) !important;
+  border-bottom-color: var(--border-gold) !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+}
+[data-theme="light"] .hero,
+[data-theme="light"] [class*="section"],
+[data-theme="light"] [class*="-section"] {
+  background: transparent !important;
+}
+[data-theme="light"] [class*="-card"],
+[data-theme="light"] [class*="card-"],
+[data-theme="light"] .modal-box,
+[data-theme="light"] .pkg-card,
+[data-theme="light"] .user-row,
+[data-theme="light"] .stat-box {
+  background: var(--card-bg) !important;
+  border-color: var(--border-gold) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06) !important;
+}
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select {
+  background: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-gold) !important;
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
+  color: var(--text-muted) !important;
+  opacity: .7;
+}
+[data-theme="light"] .footer,
+[data-theme="light"] footer {
+  background: var(--bg2) !important;
+  border-top-color: var(--border-gold) !important;
+}
+/* Scrollbar for light */
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg2); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--gold-d); }
+
+/* ─── THEME TOGGLE BUTTON ─── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-gold);
+  background: var(--input-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition: all .25s;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.theme-toggle:hover {
+  border-color: var(--gold);
+  background: rgba(201,168,76,.12);
+  transform: rotate(18deg);
+}
+.theme-toggle .icon-dark { display: block; }
+.theme-toggle .icon-light { display: none; }
+[data-theme="light"] .theme-toggle .icon-dark { display: none; }
+[data-theme="light"] .theme-toggle .icon-light { display: block; }
+
+/* ─── FIX: text that was hardcoded white/light ─── */
+[data-theme="light"] [style*="color:#e8"] { color: var(--text-primary) !important; }
+[data-theme="light"] [style*="color: #e8"] { color: var(--text-primary) !important; }
+[data-theme="light"] [style*="color:#7a6a50"] { color: var(--text-muted) !important; }
+[data-theme="light"] [style*="color:#c8b882"] { color: var(--text-secondary) !important; }
+[data-theme="light"] [style*="color:#c9a84c"],
+[data-theme="light"] [style*="color: #c9a84c"] { color: var(--gold) !important; }
+[data-theme="light"] [style*="color:#e8c97a"] { color: var(--gold-l) !important; }
+[data-theme="light"] [style*="background:#050404"],
+[data-theme="light"] [style*="background: #050404"],
+[data-theme="light"] [style*="background:#13100c"],
+[data-theme="light"] [style*="background: #13100c"] { background: var(--card-bg) !important; }
+[data-theme="light"] [style*="background:rgba(5,4,4"],
+[data-theme="light"] [style*="background: rgba(5,4,4"] { background: var(--overlay) !important; }
+[data-theme="light"] [style*="background:rgba(201,168,76,.0"],
+[data-theme="light"] [style*="background: rgba(201,168,76,.0"] { background: var(--input-bg) !important; }
+
 </style>
 </head>
 <body>
@@ -857,6 +1066,10 @@
     <span class="nav-word">Civilización</span>
   </div>
   <div class="nav-links">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
+  <span class="icon-dark">🌙</span>
+  <span class="icon-light">☀️</span>
+</button>
       <a href="tokens.html">⚡ Tokens</a>
       <a href="admin.html" style="opacity:.35;" title="Admin">Admin</a>
     <a href="#">Legado</a>
