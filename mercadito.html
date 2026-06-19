@@ -1,2650 +1,717 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-<script>
-(function() {
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.documentElement.style.colorScheme = saved;
-})();
-</script>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-<title>MERCADITO — Yavaya</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
-
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc, setDoc, deleteDoc, where }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-  // ─── CONFIG ───────────────────────────────────────────────
-  // NOTE TO ADMIN: Replace with your Firebase project config
-  // Get it from console.firebase.google.com > Project Settings
-  const firebaseConfig = {
-        apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
-    authDomain: "yavayago-ef281.firebaseapp.com",
-    projectId: "yavayago-ef281",
-    storageBucket: "yavayago-ef281.firebasestorage.app",
-    messagingSenderId: "592402476016",
-    appId: "1:592402476016:web:424456516968dfc7284b35",
-    measurementId: "G-0DBRC5NZQW"
-  };
-
-  const MASTER_ADMIN_EMAIL = "junoagattis@gmail.com";
-  const MASTER_ADMIN_PASSWORD = "@Blackie662026"; // stored only client-side for UI gating
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
-
-  window._yavaya = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged,
-    collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc, setDoc,
-    deleteDoc, where, MASTER_ADMIN_EMAIL };
-</script>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Mercadito — Yavaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 <style>
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+/* YAVAYA Design System v4 — God Tier Modern */
 :root {
-  --gold: #c9a84c;
-  --gold-light: #e8c97a;
-  --gold-dim: #8a6c2a;
-  --gold-glow: rgba(201,168,76,0.3);
-  --black: #050404;
-  --dark: #0a0807;
-  --dark-mid: #110e0b;
-  --dark-warm: #1a1410;
-  --text-muted: #7a6a50;
-  --text-light: #c8b882;
-  --success: #3a7a3a;
-  --danger: #7a2020;
-  --surface: #14100c;
-  --surface2: #1c1610;
+  --bg: #070b10;
+  --bg2: #0c1118;
+  --bg3: #101820;
+  --surface: #141c27;
+  --surface2: #1c2636;
+  --border: rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.11);
+  --accent: #4f8eff;
+  --accent2: #7aabff;
+  --accent-glow: rgba(79,142,255,.2);
+  --accent-soft: rgba(79,142,255,.09);
+  --gold: #f0c96a;
+  --gold2: #fad98a;
+  --gold-soft: rgba(240,201,106,.09);
+  --green: #30d68c;
+  --green-soft: rgba(48,214,140,.09);
+  --red: #ff5f57;
+  --text: #e8eef8;
+  --text2: #7e90aa;
+  --text3: rgba(232,238,248,.28);
+  --nav-h: 62px;
+  --r: 14px;
+  --r-lg: 22px;
+  --shadow: 0 4px 24px rgba(0,0,0,.5);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
 }
-
-html { scroll-behavior: smooth; }
-body {
-  background: var(--black);
-  color: var(--gold-light);
-  font-family: 'Cormorant Garamond', serif;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--black); }
-::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
-
-/* ════ DIVIDER ════ */
-.divider {
-  display: flex; align-items: center; gap: 14px;
-  width: 100%; padding: 6px 0;
-}
-.divider::before, .divider::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-}
-.divider-icon { color: var(--gold); font-size: 11px; opacity: 0.55; }
-
-/* ════ NAV ════ */
-.top-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 40px;
-  background: rgba(5,4,4,0.97);
-  border-bottom: 1px solid rgba(201,168,76,0.08);
-  backdrop-filter: blur(8px);
-}
-
-.nav-brand {
-  display: flex; align-items: center; gap: 12px;
-  text-decoration: none;
-}
-.nav-y {
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 1px solid var(--gold-dim);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cinzel Decorative', serif; font-size: 13px; color: var(--gold);
-}
-.nav-title {
-  font-family: 'Cinzel Decorative', serif; font-size: 16px;
-  color: var(--gold-light); letter-spacing: 0.08em;
-}
-.nav-subtitle {
-  font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: 4px; color: var(--text-muted); text-transform: uppercase;
-}
-
-.nav-right { display: flex; align-items: center; gap: 16px; }
-
-.btn-google-login {
-  display: flex; align-items: center; gap: 8px;
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold-dim);
-  border: 1px solid rgba(201,168,76,0.25);
-  padding: 8px 18px; background: rgba(10,8,4,0.8);
-  cursor: pointer; transition: all 0.3s; border-radius: 1px;
-}
-.btn-google-login:hover {
-  color: var(--gold); border-color: rgba(201,168,76,0.5);
-  background: rgba(201,168,76,0.07);
-}
-.google-icon { width: 16px; height: 16px; }
-
-.user-badge {
-  display: none; align-items: center; gap: 10px;
-  font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: 2px; color: var(--text-light);
-}
-.user-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  border: 1px solid var(--gold-dim); object-fit: cover;
-}
-.btn-logout {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-muted);
-  border: none; background: none; cursor: pointer;
-  transition: color 0.2s; padding: 4px 0;
-}
-.btn-logout:hover { color: var(--gold); }
-
-.admin-badge {
-  display: none;
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.4);
-  padding: 3px 10px; background: rgba(201,168,76,0.07);
-}
-
-/* ════ HERO BANNER ════ */
-.mercadito-hero {
-  position: relative;
-  padding: 120px 40px 60px;
-  background: linear-gradient(180deg, #06040a 0%, #0e0906 40%, #1a1005 70%, var(--black) 100%);
-  text-align: center;
-  overflow: hidden;
-}
-.mercadito-hero-bg {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 80%, rgba(60,30,5,0.4) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 30% at 50% 20%, rgba(201,168,76,0.04) 0%, transparent 60%);
-}
-.mercadito-hero-content { position: relative; z-index: 2; }
-
-.hero-icon-ring {
-  width: 64px; height: 64px; border-radius: 50%;
-  border: 1.5px solid rgba(201,168,76,0.35);
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px;
-  background: rgba(8,6,3,0.7);
-  font-size: 26px; color: var(--gold);
-  box-shadow: 0 0 30px rgba(201,168,76,0.18);
-}
-
-.mercadito-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(36px, 6vw, 72px); font-weight: 900;
-  letter-spacing: 0.12em;
-  background: linear-gradient(180deg, #f0d880 0%, #c9a84c 40%, #7a5018 80%, #c9a84c 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 30px rgba(201,168,76,0.3));
-  margin-bottom: 12px;
-}
-.mercadito-tagline {
-  font-family: 'Cinzel', serif; font-size: clamp(10px, 1.5vw, 13px);
-  letter-spacing: 7px; text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 32px;
-}
-
-/* Search bar */
-.search-bar {
-  display: flex; align-items: center; gap: 0;
-  max-width: 600px; margin: 0 auto 16px;
-  border: 1px solid rgba(201,168,76,0.25);
-  background: rgba(12,9,5,0.9);
-  overflow: hidden;
-}
-.search-input {
-  flex: 1; padding: 14px 20px;
-  background: transparent; border: none; outline: none;
-  font-family: 'Cormorant Garamond', serif; font-size: 15px;
-  color: var(--text-light); letter-spacing: 1px;
-}
-.search-input::placeholder { color: var(--text-muted); }
-.search-btn {
-  padding: 14px 24px; background: rgba(201,168,76,0.1);
-  border: none; border-left: 1px solid rgba(201,168,76,0.2);
-  color: var(--gold); font-size: 16px; cursor: pointer;
-  transition: background 0.2s;
-}
-.search-btn:hover { background: rgba(201,168,76,0.2); }
-
-.hero-stats {
-  display: flex; justify-content: center; gap: 40px;
-  font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase;
-  margin-top: 20px;
-}
-.stat-num {
-  display: block; font-size: 20px; color: var(--gold-light);
-  font-family: 'Cinzel Decorative', serif; margin-bottom: 4px;
-}
-
-/* ════ CATEGORIES BAR ════ */
-.categories-bar {
-  position: sticky; top: 61px; z-index: 400;
-  background: rgba(10,8,5,0.98);
-  border-bottom: 1px solid rgba(201,168,76,0.07);
-  backdrop-filter: blur(6px);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.categories-bar::-webkit-scrollbar { display: none; }
-
-.cats-inner {
-  display: flex; align-items: center; gap: 0;
-  min-width: max-content; padding: 0 30px;
-}
-
-.cat-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 12px 22px;
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-muted);
-  border: none; background: none; cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.25s; white-space: nowrap;
-}
-.cat-btn:hover, .cat-btn.active {
-  color: var(--gold); border-bottom-color: var(--gold);
-}
-.cat-icon { font-size: 16px; }
-
-/* ════ MAIN LAYOUT ════ */
-.main-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 0;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px 20px;
-  align-items: start;
-}
-
-/* ════ SIDEBAR FILTERS ════ */
-.sidebar {
-  position: sticky; top: 130px;
-  background: var(--surface);
-  border: 1px solid rgba(201,168,76,0.1);
-  padding: 24px 20px;
-}
-
-.sidebar-section { margin-bottom: 28px; }
-.sidebar-title {
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(201,168,76,0.1);
-}
-
-.filter-list { display: flex; flex-direction: column; gap: 6px; }
-.filter-item {
-  display: flex; align-items: center; gap: 10px;
-  font-family: 'Cormorant Garamond', serif; font-size: 14px;
-  color: var(--text-muted); cursor: pointer;
-  padding: 5px 0; transition: color 0.2s;
-}
-.filter-item:hover { color: var(--gold-light); }
-.filter-check {
-  width: 14px; height: 14px;
-  border: 1px solid rgba(201,168,76,0.3);
-  background: transparent;
-  accent-color: var(--gold);
-  cursor: pointer;
-}
-
-.price-range {
-  display: flex; flex-direction: column; gap: 8px;
-}
-.price-inputs {
-  display: flex; gap: 8px;
-}
-.price-inp {
-  flex: 1; padding: 7px 10px;
-  background: rgba(12,9,5,0.8);
-  border: 1px solid rgba(201,168,76,0.15);
-  color: var(--text-light);
-  font-family: 'Cormorant Garamond', serif; font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.price-inp:focus { border-color: rgba(201,168,76,0.4); }
-
-.location-input-wrap {
-  display: flex; gap: 0; border: 1px solid rgba(201,168,76,0.15);
-  background: rgba(12,9,5,0.8);
-}
-.location-inp {
-  flex: 1; padding: 8px 10px;
-  background: transparent; border: none; outline: none;
-  font-family: 'Cormorant Garamond', serif; font-size: 14px;
-  color: var(--text-light);
-}
-.location-btn {
-  padding: 8px 12px; background: none;
-  border: none; border-left: 1px solid rgba(201,168,76,0.12);
-  color: var(--gold-dim); cursor: pointer; font-size: 14px;
-  transition: color 0.2s;
-}
-.location-btn:hover { color: var(--gold); }
-
-.btn-apply-filter {
-  width: 100%; padding: 10px;
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.3);
-  background: rgba(201,168,76,0.05);
-  cursor: pointer; transition: all 0.25s; margin-top: 8px;
-}
-.btn-apply-filter:hover {
-  background: rgba(201,168,76,0.1);
-  border-color: rgba(201,168,76,0.55);
-}
-
-/* ════ LISTINGS AREA ════ */
-.listings-area { padding-left: 30px; }
-
-.listings-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px; gap: 16px; flex-wrap: wrap;
-}
-
-.listings-count {
-  font-family: 'Cinzel', serif; font-size: 10px;
-  letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted);
-}
-
-.toolbar-right { display: flex; align-items: center; gap: 12px; }
-
-.sort-select {
-  padding: 8px 14px; background: var(--surface);
-  border: 1px solid rgba(201,168,76,0.2);
-  color: var(--text-light); font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: 2px; cursor: pointer; outline: none;
-}
-
-.btn-post-listing {
-  display: flex; align-items: center; gap: 8px;
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--black);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  border: none; padding: 10px 22px; cursor: pointer;
-  transition: all 0.3s; font-weight: 600;
-}
-.btn-post-listing:hover {
-  background: linear-gradient(135deg, #f0e090, #d4aa55);
-  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
-}
-
-/* ════ LISTINGS GRID ════ */
-.listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.listing-card {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid rgba(201,168,76,0.1);
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-}
-.listing-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(201,168,76,0.35);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-}
-
-.listing-img {
-  width: 100%; height: 200px;
-  object-fit: cover; display: block;
-  background: linear-gradient(135deg, var(--dark-warm) 0%, var(--dark-mid) 100%);
-  position: relative; overflow: hidden;
-}
-
-.listing-img-placeholder {
-  width: 100%; height: 200px;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #14100c, #0e0b07);
-  font-size: 44px; opacity: 0.5;
-}
-
-.listing-badge {
-  position: absolute; top: 12px; left: 12px;
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; padding: 4px 10px;
-}
-.badge-demo {
-  background: rgba(201,168,76,0.15); color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.3);
-}
-.badge-new {
-  background: rgba(50,100,50,0.2); color: #7aca7a;
-  border: 1px solid rgba(100,180,100,0.25);
-}
-.badge-hot {
-  background: rgba(180,60,10,0.2); color: #e87a40;
-  border: 1px solid rgba(180,80,20,0.3);
-}
-
-.listing-expire {
-  position: absolute; top: 12px; right: 12px;
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
-  color: #e87a40; background: rgba(10,8,4,0.85);
-  border: 1px solid rgba(180,80,20,0.3); padding: 3px 8px;
-}
-
-.listing-body { padding: 16px; }
-
-.listing-category {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px;
-}
-
-.listing-title {
-  font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 1px;
-  color: var(--text-light); margin-bottom: 6px; line-height: 1.4;
-}
-
-.listing-desc {
-  font-family: 'Cormorant Garamond', serif; font-size: 13px;
-  color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-
-.listing-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 12px; border-top: 1px solid rgba(201,168,76,0.08);
-}
-
-.listing-price {
-  font-family: 'Cinzel Decorative', serif; font-size: 18px;
-  color: var(--gold);
-}
-.listing-currency {
-  font-size: 12px; color: var(--gold-dim); margin-left: 3px;
-}
-
-.listing-meta {
-  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
-}
-.listing-location {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
-  text-transform: uppercase; color: var(--text-muted);
-}
-.listing-seller {
-  font-family: 'Cormorant Garamond', serif; font-size: 11px;
-  color: var(--text-muted); font-style: italic;
-}
-
-.btn-contact {
-  width: 100%; padding: 9px;
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold);
-  border: 1px solid rgba(201,168,76,0.25);
-  background: rgba(201,168,76,0.04);
-  cursor: pointer; transition: all 0.25s; margin-top: 12px;
-}
-.btn-contact:hover {
-  background: rgba(201,168,76,0.1);
-  border-color: rgba(201,168,76,0.5);
-}
-
-/* ════ MAP SECTION ════ */
-.map-section {
-  padding: 60px 20px;
-  background: var(--dark-warm);
-}
-.map-header { text-align: center; margin-bottom: 30px; }
-.map-header h2 {
-  font-family: 'Cinzel', serif; font-size: clamp(12px, 1.5vw, 14px);
-  letter-spacing: 7px; text-transform: uppercase; color: var(--text-muted);
-  margin: 10px 0;
-}
-#mercadito-map {
-  width: 100%; height: 480px;
-  border: 1px solid rgba(201,168,76,0.15);
-  background: var(--dark);
-}
-.map-placeholder {
-  width: 100%; height: 480px;
-  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
-  background: var(--dark); border: 1px solid rgba(201,168,76,0.1);
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--text-muted);
-}
-
-/* ════ POST LISTING MODAL ════ */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
-  display: none; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--dark-warm);
-  border: 1px solid rgba(201,168,76,0.2);
-  width: 100%; max-width: 580px;
-  max-height: 90vh; overflow-y: auto;
-  padding: 36px 32px;
-  position: relative;
-}
-
-.modal-close {
-  position: absolute; top: 16px; right: 18px;
-  font-size: 20px; color: var(--text-muted);
-  cursor: pointer; background: none; border: none;
-  transition: color 0.2s;
-}
-.modal-close:hover { color: var(--gold); }
-
-.modal-title {
-  font-family: 'Cinzel Decorative', serif; font-size: 20px;
-  color: var(--gold-light); margin-bottom: 6px;
-}
-.modal-sub {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--text-muted); margin-bottom: 28px;
-}
-
-.form-group { margin-bottom: 18px; }
-.form-label {
-  display: block; font-family: 'Cinzel', serif; font-size: 9px;
-  letter-spacing: 3px; text-transform: uppercase; color: var(--gold-dim);
-  margin-bottom: 7px;
-}
-.form-input, .form-select, .form-textarea {
-  width: 100%; padding: 11px 14px;
-  background: rgba(10,8,4,0.8);
-  border: 1px solid rgba(201,168,76,0.18);
-  color: var(--text-light);
-  font-family: 'Cormorant Garamond', serif; font-size: 15px;
-  outline: none; transition: border-color 0.2s;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  border-color: rgba(201,168,76,0.45);
-}
-.form-textarea { resize: vertical; min-height: 90px; }
-.form-select { cursor: pointer; }
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-.btn-submit {
-  width: 100%; padding: 14px;
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
-  text-transform: uppercase; color: var(--black);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  border: none; cursor: pointer; transition: all 0.3s; font-weight: 700;
-  margin-top: 8px;
-}
-.btn-submit:hover {
-  background: linear-gradient(135deg, #f0e090, #d4aa55);
-  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
-}
-
-/* ════ LISTING DETAIL MODAL ════ */
-.detail-modal {
-  background: var(--dark-warm);
-  border: 1px solid rgba(201,168,76,0.2);
-  width: 100%; max-width: 720px;
-  max-height: 92vh; overflow-y: auto;
-  position: relative;
-}
-.detail-img {
-  width: 100%; height: 300px; object-fit: cover;
-  display: block;
-  background: linear-gradient(135deg, var(--dark-warm), var(--dark));
-}
-.detail-img-placeholder {
-  width: 100%; height: 300px;
-  display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #14100c, #0e0b07);
-  font-size: 72px; opacity: 0.35;
-}
-.detail-body { padding: 32px; }
-.detail-category {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold-dim); margin-bottom: 8px;
-}
-.detail-title {
-  font-family: 'Cinzel', serif; font-size: clamp(18px, 3vw, 26px);
-  color: var(--gold-light); margin-bottom: 10px; line-height: 1.3;
-}
-.detail-price {
-  font-family: 'Cinzel Decorative', serif; font-size: 32px;
-  color: var(--gold); margin-bottom: 16px;
-}
-.detail-desc {
-  font-family: 'Cormorant Garamond', serif; font-size: 16px;
-  color: var(--text-light); line-height: 1.7; margin-bottom: 22px;
-}
-.detail-meta-row {
-  display: flex; gap: 30px; flex-wrap: wrap; margin-bottom: 24px;
-}
-.detail-meta-item {
-  display: flex; flex-direction: column; gap: 4px;
-}
-.detail-meta-label {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-muted);
-}
-.detail-meta-value {
-  font-family: 'Cormorant Garamond', serif; font-size: 15px;
-  color: var(--text-light);
-}
-.detail-map { width: 100%; height: 200px; margin-bottom: 22px; }
-.btn-contact-seller {
-  width: 100%; padding: 14px;
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
-  text-transform: uppercase; color: var(--black);
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  border: none; cursor: pointer; transition: all 0.3s; font-weight: 700;
-}
-.btn-contact-seller:hover {
-  box-shadow: 0 4px 20px rgba(201,168,76,0.35);
-}
-
-/* ════ ADMIN PANEL ════ */
-.admin-panel {
-  display: none;
-  position: fixed; bottom: 20px; right: 20px; z-index: 600;
-  background: var(--dark-warm);
-  border: 1px solid rgba(201,168,76,0.3);
-  padding: 16px 20px; min-width: 200px;
-}
-.admin-panel.visible { display: block; }
-.admin-panel-title {
-  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold); margin-bottom: 12px;
-}
-.btn-admin {
-  display: block; width: 100%; padding: 8px 12px;
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--text-muted);
-  border: 1px solid rgba(201,168,76,0.15); background: none;
-  cursor: pointer; transition: all 0.2s; margin-bottom: 6px; text-align: left;
-}
-.btn-admin:hover { color: var(--gold); border-color: rgba(201,168,76,0.4); }
-.btn-admin.danger { color: #e87a7a; border-color: rgba(180,60,60,0.2); }
-.btn-admin.danger:hover { background: rgba(180,60,60,0.08); }
-
-/* ════ TOAST ════ */
-.toast {
-  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--dark-warm); border: 1px solid rgba(201,168,76,0.3);
-  color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 10px;
-  letter-spacing: 3px; text-transform: uppercase; padding: 14px 28px;
-  z-index: 2000; opacity: 0; transition: all 0.35s;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-  pointer-events: none;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ════ EMPTY STATE ════ */
-.empty-state {
-  grid-column: 1/-1; text-align: center; padding: 60px 20px;
-}
-.empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
-.empty-state-text {
-  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--text-muted);
-}
-
-/* ════ FOOTER ════ */
-.site-footer {
-  border-top: 1px solid rgba(201,168,76,0.07);
-  padding: 28px 40px 20px; text-align: center;
-  background: var(--black);
-}
-.footer-back {
-  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 5px;
-  text-transform: uppercase; color: var(--gold-dim);
-  text-decoration: none; transition: color 0.2s;
-}
-.footer-back:hover { color: var(--gold); }
-.footer-copy {
-  font-family: 'Cormorant Garamond', serif; font-size: 11px;
-  color: rgba(80,62,28,0.4); margin-top: 12px; letter-spacing: 2px;
-}
-
-/* ════ RESPONSIVE ════ */
-@media (max-width: 900px) {
-  .main-layout { grid-template-columns: 1fr; }
-  .sidebar { position: static; }
-  .listings-area { padding-left: 0; margin-top: 20px; }
-  .top-nav { padding: 12px 20px; }
-}
-@media (max-width: 600px) {
-  .form-row { grid-template-columns: 1fr; }
-  .hero-stats { gap: 20px; }
-}
-
-/* ════ TOKEN WIDGET ════ */
-.token-widget{
-  display:flex;align-items:center;gap:10px;
-  padding:7px 16px;
-  background:rgba(201,168,76,.07);
-  border:1px solid rgba(201,168,76,.2);
-  cursor:pointer;
-  transition:all .2s;
-  text-decoration:none;
-}
-.token-widget:hover{border-color:rgba(201,168,76,.4);}
-.tw-tokens{display:flex;align-items:center;gap:5px;}
-.tw-icon{font-size:14px;}
-.tw-count{font-family:"Cinzel Decorative",serif;font-size:17px;color:var(--gold);min-width:20px;}
-.tw-label{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
-.tw-free{font-family:"Cinzel",serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--green);border-left:1px solid rgba(201,168,76,.15);padding-left:10px;}
-.tw-buy{font-family:"Cinzel",serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-d);text-decoration:none;transition:color .2s;border-left:1px solid rgba(201,168,76,.12);padding-left:10px;}
-.tw-buy:hover{color:var(--gold);}
-.tw-no-tokens{color:var(--red) !important;}
-
-/* Token warning banner */
-.token-warning{
-  position:fixed;bottom:80px;right:20px;z-index:800;
-  background:rgba(5,4,4,.97);border:1px solid rgba(201,168,76,.3);
-  padding:16px 20px;max-width:300px;
-  font-family:"Cinzel",serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  color:var(--gold-d);display:none;
-  box-shadow:0 8px 30px rgba(0,0,0,.6);
-}
-.token-warning.show{display:block;}
-.tw-warn-title{color:var(--red);margin-bottom:6px;font-size:10px;}
-.tw-warn-desc{font-family:"Cormorant Garamond",serif;font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;letter-spacing:0;}
-
-
-/* ══════════════════════════════════════════════════
-   YAVAYA THEME SYSTEM — Dark (default) + Light mode
-   ══════════════════════════════════════════════════ */
-
-/* ─── DARK MODE (default) ─── */
-:root,
-[data-theme="dark"] {
-  --bg:          #050404;
-  --bg2:         #0a0807;
-  --bg3:         #110e0b;
-  --surface:     #13100c;
-  --surface2:    #1c1710;
-  --border:      rgba(201,168,76,.12);
-  --border-gold: rgba(201,168,76,.28);
-
-  --text-primary:  #e8d8a8;
-  --text-secondary:#c8b882;
-  --text-muted:    #7a6a50;
-  --text-faint:    #4a3e2c;
-
-  --gold:       #c9a84c;
-  --gold-l:     #e8c97a;
-  --gold-d:     #8a6c2a;
-  --gold-glow:  rgba(201,168,76,.3);
-
-  --green:  #3db87a;
-  --red:    #d94040;
-  --blue:   #4090d9;
-  --orange: #e87240;
-  --bronze: #cd7f32;
-  --silver: #a8a9ad;
-  --platinum:#e5e4e2;
-
-  --nav-bg:     rgba(5,4,4,.97);
-  --card-bg:    #13100c;
-  --card-hover: #1c1810;
-  --input-bg:   rgba(201,168,76,.05);
-  --overlay:    rgba(5,4,4,.94);
-  --shadow:     0 8px 32px rgba(0,0,0,.6);
-
-  --ember: #c94a0a;
-
-  /* Legacy aliases — keeps old var() calls working */
-  --black:     #050404;
-  --dark:      #0a0807;
-  --dark-mid:  #110e0b;
-  --dark-warm: #1a1410;
-  --warm:      #1a1410;
-  --text-light:#c8b882;
-  --light:     #c8b882;
-  --muted:     #7a6a50;
-  --success:   #3db87a;
-  --danger:    #d94040;
-  --gold-dim:  #8a6c2a;
-}
-
-/* ─── LIGHT MODE ─── */
 [data-theme="light"] {
-  --bg:          #f5f0e8;
-  --bg2:         #ede6d6;
-  --bg3:         #e4dccb;
-  --surface:     #faf6ee;
-  --surface2:    #f0e9d8;
-  --border:      rgba(139,105,30,.15);
-  --border-gold: rgba(139,105,30,.35);
-
-  --text-primary:  #2a1f0a;
-  --text-secondary:#4a3510;
-  --text-muted:    #7a6030;
-  --text-faint:    #b8a070;
-
-  --gold:       #8b6914;
-  --gold-l:     #a07820;
-  --gold-d:     #6b4e0a;
-  --gold-glow:  rgba(139,105,20,.2);
-
-  --green:  #1e7a4a;
-  --red:    #b02020;
-  --blue:   #1a5fa8;
-  --orange: #b05018;
-  --bronze: #8b5010;
-  --silver: #606060;
-  --platinum:#404040;
-
-  --nav-bg:     rgba(245,240,232,.97);
-  --card-bg:    #faf6ee;
-  --card-hover: #f0e8d4;
-  --input-bg:   rgba(139,105,20,.06);
-  --overlay:    rgba(245,240,232,.95);
-  --shadow:     0 8px 32px rgba(0,0,0,.12);
-
-  --ember: #c94a0a;
-
-  /* Legacy aliases */
-  --black:     #f5f0e8;
-  --dark:      #ede6d6;
-  --dark-mid:  #e4dccb;
-  --dark-warm: #ddd4be;
-  --warm:      #ddd4be;
-  --text-light:#4a3510;
-  --light:     #4a3510;
-  --muted:     #7a6030;
-  --success:   #1e7a4a;
-  --danger:    #b02020;
-  --gold-dim:  #6b4e0a;
-}
-
-/* ─── BODY TRANSITIONS ─── */
-body {
-  background: var(--bg) !important;
-  color: var(--text-primary) !important;
-  transition: background .35s ease, color .35s ease;
-}
-
-/* ─── GLOBAL OVERRIDES for light mode ─── */
-[data-theme="light"] .top-nav {
-  background: var(--nav-bg) !important;
-  border-bottom-color: var(--border-gold) !important;
-  box-shadow: 0 2px 16px rgba(0,0,0,.08);
-}
-[data-theme="light"] .hero,
-[data-theme="light"] [class*="section"],
-[data-theme="light"] [class*="-section"] {
-  background: transparent !important;
-}
-[data-theme="light"] [class*="-card"],
-[data-theme="light"] [class*="card-"],
-[data-theme="light"] .modal-box,
-[data-theme="light"] .pkg-card,
-[data-theme="light"] .user-row,
-[data-theme="light"] .stat-box {
-  background: var(--card-bg) !important;
-  border-color: var(--border-gold) !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,.06) !important;
-}
-[data-theme="light"] input,
-[data-theme="light"] textarea,
-[data-theme="light"] select {
-  background: var(--input-bg) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-gold) !important;
-}
-[data-theme="light"] input::placeholder,
-[data-theme="light"] textarea::placeholder {
-  color: var(--text-muted) !important;
-  opacity: .7;
-}
-[data-theme="light"] .footer,
-[data-theme="light"] footer {
-  background: var(--bg2) !important;
-  border-top-color: var(--border-gold) !important;
-}
-/* Scrollbar for light */
-[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg2); }
-[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--gold-d); }
-
-/* ─── THEME TOGGLE BUTTON ─── */
-.theme-toggle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--border-gold);
-  background: var(--input-bg);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  transition: all .25s;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
-}
-.theme-toggle:hover {
-  border-color: var(--gold);
-  background: rgba(201,168,76,.12);
-  transform: rotate(18deg);
-}
-.theme-toggle .icon-dark { display: block; }
-.theme-toggle .icon-light { display: none; }
-[data-theme="light"] .theme-toggle .icon-dark { display: none; }
-[data-theme="light"] .theme-toggle .icon-light { display: block; }
-
-/* ─── FIX: text that was hardcoded white/light ─── */
-[data-theme="light"] [style*="color:#e8"] { color: var(--text-primary) !important; }
-[data-theme="light"] [style*="color: #e8"] { color: var(--text-primary) !important; }
-[data-theme="light"] [style*="color:#7a6a50"] { color: var(--text-muted) !important; }
-[data-theme="light"] [style*="color:#c8b882"] { color: var(--text-secondary) !important; }
-[data-theme="light"] [style*="color:#c9a84c"],
-[data-theme="light"] [style*="color: #c9a84c"] { color: var(--gold) !important; }
-[data-theme="light"] [style*="color:#e8c97a"] { color: var(--gold-l) !important; }
-[data-theme="light"] [style*="background:#050404"],
-[data-theme="light"] [style*="background: #050404"],
-[data-theme="light"] [style*="background:#13100c"],
-[data-theme="light"] [style*="background: #13100c"] { background: var(--card-bg) !important; }
-[data-theme="light"] [style*="background:rgba(5,4,4"],
-[data-theme="light"] [style*="background: rgba(5,4,4"] { background: var(--overlay) !important; }
-[data-theme="light"] [style*="background:rgba(201,168,76,.0"],
-[data-theme="light"] [style*="background: rgba(201,168,76,.0"] { background: var(--input-bg) !important; }
-
-
-/* ════ PHOTO UPLOAD ════ */
-.photo-upload-area {
-  border: 2px dashed rgba(201,168,76,.3);
-  background: var(--input-bg);
-  min-height: 140px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .25s;
-  position: relative; overflow: hidden;
-  flex-direction: column; text-align: center; padding: 20px;
-}
-.photo-upload-area:hover { border-color: var(--gold); background: rgba(201,168,76,.08); }
-.photo-upload-area.has-photo { border-style: solid; border-color: rgba(201,168,76,.4); padding: 0; }
-.photo-upload-area.uploading { opacity: .7; pointer-events: none; }
-
-/* ════ INPUT COUNTER ════ */
-.input-counter {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
-  color: var(--text-muted); text-align: right; margin-top: 4px;
-}
-
-/* ════ FORM VALIDATION STATES ════ */
-.form-input.error, .form-select.error, .form-textarea.error {
-  border-color: var(--red) !important;
-  box-shadow: 0 0 0 2px rgba(217,64,64,.15) !important;
-}
-.form-input.success { border-color: var(--green) !important; }
-.field-error {
-  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
-  color: var(--red); margin-top: 5px; text-transform: uppercase;
-}
-
-/* ════ WHATSAPP BADGE on listing card ════ */
-.wa-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(37,211,102,.1); border: 1px solid rgba(37,211,102,.25);
-  color: #25D366; font-family: 'Cinzel', serif; font-size: 8px;
-  letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px;
-  text-decoration: none; cursor: pointer; transition: all .2s;
-}
-.wa-badge:hover { background: rgba(37,211,102,.2); }
-
-/* ════ LANGUAGE TOGGLE ════ */
-.lang-toggle {
-  display: flex; align-items: center; gap: 0;
-  border: 1px solid var(--border-gold);
-  overflow: hidden; flex-shrink: 0;
-}
-.lang-btn {
-  padding: 7px 12px; font-family: 'Cinzel', serif; font-size: 10px;
-  letter-spacing: 1px; background: none; border: none; cursor: pointer;
-  color: var(--text-muted); transition: all .2s; white-space: nowrap;
-}
-.lang-btn.active { background: rgba(201,168,76,.15); color: var(--gold); }
-.lang-btn:hover:not(.active) { background: rgba(201,168,76,.07); color: var(--gold-l); }
-
-/* ════ FRAUD BADGE ════ */
-.listing-card.suspected-fraud {
-  opacity: .4; pointer-events: none; filter: grayscale(.8);
-}
-.verified-badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: rgba(64,144,217,.1); border: 1px solid rgba(64,144,217,.2);
-  color: var(--blue); font-family: 'Cinzel', serif; font-size: 7px;
-  letter-spacing: 2px; padding: 3px 8px;
-}
-
-/* ════ RESPONSIVE FIXES ════ */
-@media (max-width: 768px) {
-  .listings-layout { flex-direction: column !important; }
-  .sidebar { width: 100% !important; position: static !important; }
-  .listings-area { padding-left: 0 !important; }
-  .hero-title { font-size: clamp(24px,8vw,52px) !important; }
-  .modal { width: 95vw !important; max-width: 95vw !important; padding: 24px 18px !important; }
-  .form-row { flex-direction: column !important; }
-  .toolbar-right { flex-wrap: wrap; }
-  .listings-count { font-size: 9px; }
-  .listing-card { min-width: 0 !important; }
-  .top-nav { padding: 10px 16px !important; }
-  .nav-links, .nav-right { gap: 8px !important; }
-  .token-widget { padding: 6px 10px !important; }
-  .token-widget .tw-buy { display: none; }
-  .hero { padding: 110px 16px 40px !important; }
-  .map-section { margin: 0 -16px !important; }
-}
-@media (max-width: 480px) {
-  .lang-toggle .lang-btn { padding: 6px 8px; font-size: 9px; }
-  .theme-toggle { width: 34px; height: 34px; font-size: 15px; }
-  .nav-name { font-size: 14px !important; }
-  .listings-grid { grid-template-columns: 1fr !important; }
-  .pkg-card { margin-bottom: 16px; }
-  .form-row { gap: 10px !important; }
-  .detail-modal { padding: 24px 16px !important; }
+  --bg: #f2f5fb;
+  --bg2: #e8edf7;
+  --bg3: #dde4f0;
+  --surface: #ffffff;
+  --surface2: #f7f9fd;
+  --border: rgba(0,0,0,.07);
+  --border2: rgba(0,0,0,.13);
+  --accent: #2563eb;
+  --accent2: #1e50c8;
+  --accent-glow: rgba(37,99,235,.15);
+  --accent-soft: rgba(37,99,235,.08);
+  --gold: #a16207;
+  --gold2: #ca8a04;
+  --gold-soft: rgba(161,98,7,.08);
+  --green: #16a34a;
+  --green-soft: rgba(22,163,74,.08);
+  --red: #dc2626;
+  --text: #0d1626;
+  --text2: #4a5c78;
+  --text3: rgba(13,22,38,.35);
+  --shadow: 0 4px 24px rgba(0,0,0,.09);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
 }
 
 
-/* ════ AUTH MODAL ════ */
-.auth-tab {
-  flex:1; padding:12px 8px;
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; text-transform:uppercase;
-  background:none; border:none; cursor:pointer; color:var(--text-muted);
-  border-bottom:2px solid transparent; transition:all .2s;
-}
-.auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-.auth-tab:hover:not(.active) { color:var(--text-light); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
+input,textarea,select{font-family:inherit}
+
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
+[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
+.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
+.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
+.nav-a:hover{background:var(--surface);color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:7px}
+.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
+.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
+.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
+.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
+.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
+.nav-mob.open{display:flex}
+.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
+.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
+
+/* ── SECTION WRAPPERS ── */
+.section{padding:96px 24px}
+.section-sm{padding:64px 24px}
+.container{max-width:1200px;margin:0 auto}
+.container-sm{max-width:860px;margin:0 auto}
+
+/* ── SECTION HEADER ── */
+.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
+.sec-p{font-size:16px;color:var(--text2);max-width:480px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.card-lift:hover{transform:translateY(-4px)}
+
+/* ── BUTTONS ── */
+.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
+.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
+.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+
+/* ── FORM ── */
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:96px;resize:vertical}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
+.modal-wide{max-width:540px}
+@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
+.modal-x:hover{background:var(--surface2);color:var(--text)}
+.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+
+/* ── AUTH TABS ── */
+.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
+.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
+.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
+.input-wrap{position:relative}
+.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
+.forgot{font-size:12px;color:var(--text3);transition:color .2s}
+.forgot:hover{color:var(--accent)}
+
+/* ── BADGE / TAG ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
+.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
+.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FADE-UP ── */
+.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
+.fade-up.vis{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
 
 
-/* ════ NAV OVERFLOW FIX ════ */
-.top-nav { flex-wrap: nowrap; min-height:64px; overflow: visible; }
-.nav-right { flex-wrap: nowrap; gap:8px; align-items:center; overflow:visible; }
-.nav-brand { flex-shrink: 0; }
-.lang-toggle { flex-shrink: 0; }
-.btn-nav-login {
-  display:flex; align-items:center; gap:6px;
-  padding:8px 14px; background:none;
-  border:1px solid rgba(201,168,76,.25); color:var(--gold);
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px;
-  text-transform:uppercase; cursor:pointer; transition:all .2s; flex-shrink:0;
-}
-.btn-nav-login:hover { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.5); }
-[data-theme="light"] .btn-nav-login { border-color:rgba(107,58,8,.25); color:#6b3a08; }
-@media(max-width:768px) {
-  .login-btn-label { display:none; }
-  .btn-nav-login { padding:8px 10px; }
-  .nav-title { font-size:12px !important; letter-spacing:2px !important; }
-  .nav-subtitle { display:none; }
-  .lang-btn { padding:5px 8px !important; font-size:8px !important; }
-  .token-widget .tw-label { display:none; }
-}
-@media(max-width:480px) {
-  .top-nav { padding:10px 12px !important; }
-  .nav-y { width:32px !important; height:32px !important; font-size:13px !important; }
-  .theme-toggle { width:32px !important; height:32px !important; font-size:14px !important; }
-}
+/* HERO */
+.mh{padding:calc(var(--nav-h)+52px) 24px 0;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--bg);position:relative;overflow:hidden}
+.mh-blob{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(79,142,255,.07) 0%,transparent 65%);animation:bp 7s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.mh-h{font-size:clamp(30px,6vw,54px);font-weight:800;letter-spacing:-1.5px;color:var(--text);position:relative;z-index:1;margin-bottom:6px}
+.mh-p{font-size:15px;color:var(--text2);position:relative;z-index:1;margin-bottom:24px}
+.search-wrap{display:flex;max-width:540px;margin:0 auto 20px;background:var(--surface);border:1.5px solid var(--border2);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);transition:border-color .2s;position:relative;z-index:1}
+.search-wrap:focus-within{border-color:var(--accent)}
+.search-inp{flex:1;padding:13px 17px;background:none;border:none;color:var(--text);font-size:15px;outline:none}
+.search-inp::placeholder{color:var(--text3)}
+.search-go{padding:11px 18px;background:var(--accent);border:none;color:#fff;font-size:18px;cursor:pointer;transition:filter .2s}
+.search-go:hover{filter:brightness(1.12)}
+.mh-stats{display:flex;gap:24px;justify-content:center;position:relative;z-index:1;padding-bottom:28px;flex-wrap:wrap}
+.mstat{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);font-weight:500}
+.mstat b{color:var(--text);font-weight:700}
 
-/* ════ HERO BACKGROUND FIX ════ */
-.mercadito-hero {
-  background: linear-gradient(180deg, #06040a 0%, #0e0906 40%, #1a1005 70%, #080604 100%) !important;
-  transition: background .5s;
-}
-[data-theme="light"] .mercadito-hero {
-  background: linear-gradient(180deg, #faf5e4 0%, #f5edcc 40%, #ede2b8 70%, #faf5e4 100%) !important;
-}
-.mercadito-hero-bg { transition: opacity .5s; }
-[data-theme="light"] .mercadito-hero-bg { opacity: .12 !important; }
-[data-theme="light"] .mercadito-title { color: #5a2d08 !important; text-shadow: none !important; }
-[data-theme="light"] .mercadito-subtitle { color: #8b5e20 !important; }
-[data-theme="light"] .search-bar { background: rgba(255,255,255,.8) !important; border-color: rgba(107,58,8,.2) !important; }
-[data-theme="light"] .search-input { color: #2a1f0a !important; }
-[data-theme="light"] .search-input::placeholder { color: rgba(42,31,10,.4) !important; }
-[data-theme="light"] .stat-number { color: #6b3a08 !important; }
-[data-theme="light"] .stat-label { color: #8b5e20 !important; }
-[data-theme="light"] .hero-icon-ring { border-color: rgba(107,58,8,.3) !important; background: rgba(255,245,220,.5) !important; }
+/* CAT BAR */
+.cat-bar{position:sticky;top:var(--nav-h);z-index:200;background:var(--bg);border-bottom:1px solid var(--border);display:flex;gap:3px;padding:0 16px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-b{display:flex;align-items:center;gap:5px;padding:10px 13px;border-radius:8px;background:none;border:1px solid transparent;font-size:12px;font-weight:600;color:var(--text2);white-space:nowrap;transition:all .2s;flex-shrink:0}
+.cat-b:hover{background:var(--surface);color:var(--text)}
+.cat-b.on{background:var(--accent-soft);border-color:rgba(79,142,255,.15);color:var(--accent)}
 
-/* ════ SIDEBAR + LISTINGS LIGHT MODE ════ */
-[data-theme="light"] .sidebar { background: #faf6ee !important; border-color: rgba(107,58,8,.12) !important; }
-[data-theme="light"] .filter-label { color: #6b3a08 !important; }
-[data-theme="light"] .filter-section-title { color: #5a2d08 !important; border-color: rgba(107,58,8,.12) !important; }
-[data-theme="light"] .checkbox-label { color: #4a2a06 !important; }
-[data-theme="light"] .custom-checkbox { border-color: rgba(107,58,8,.3) !important; background:transparent !important; }
-[data-theme="light"] body { background: var(--bg) !important; color: var(--text-primary) !important; }
-[data-theme="light"] .listing-card { background: #fffdf5 !important; border-color: rgba(107,58,8,.12) !important; }
-[data-theme="light"] .listing-title { color: #2a1f0a !important; }
-[data-theme="light"] .listing-price { color: #6b3a08 !important; }
-[data-theme="light"] .listing-desc { color: #5a3a18 !important; }
-[data-theme="light"] .category-bar { background: #2a1f0a !important; }
-[data-theme="light"] .cat-item.active { background: rgba(107,58,8,.15) !important; }
-[data-theme="light"] .cat-name { color: #e8d08a !important; }
-[data-theme="light"] .section-title { color: #3a1e06 !important; }
-[data-theme="light"] .modal { background: #faf6ee !important; border-color: rgba(107,58,8,.2) !important; }
-[data-theme="light"] .form-input { background: #f5edd8 !important; border-color: rgba(107,58,8,.2) !important; color: #2a1f0a !important; }
-[data-theme="light"] .modal-title { color: #3a1e06 !important; }
-[data-theme="light"] .modal-close { color: #6b3a08 !important; }
+/* LAYOUT */
+.m-wrap{display:flex;gap:18px;max-width:1280px;margin:0 auto;padding:18px 16px 60px}
+.m-side{width:232px;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + 52px);height:fit-content}
+.side-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.side-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:-.2px}
+.fg{margin-bottom:18px}
+.fl{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:9px}
+.fi{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--text2);cursor:pointer;transition:color .2s}
+.fi:hover{color:var(--text)}
+.fi input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;flex-shrink:0}
+.price-row{display:flex;gap:8px;align-items:center}
+.price-inp{flex:1;padding:9px 10px;border-radius:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;outline:none;transition:border-color .2s}
+.price-inp:focus{border-color:var(--accent)}
+.price-inp::placeholder{color:var(--text3)}
+
+/* CONTENT */
+.m-main{flex:1;min-width:0}
+.m-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.m-count{font-size:13px;color:var(--text2)}
+.sort-sel{padding:8px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;outline:none}
+.btn-post{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s}
+.btn-post:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+/* GRID */
+.listing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px}
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .3s}
+.lcard:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.lcard-img{width:100%;height:170px;object-fit:cover;background:var(--bg3)}
+.lcard-ph{width:100%;height:170px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:38px;color:var(--text3)}
+.lcard-body{padding:14px}
+.lcard-cat{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+.lcard-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px}
+.lcard-desc{font-size:12px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard-foot{padding:9px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.lcard-price{font-size:14px;font-weight:700;color:var(--text)}
+.lcard-price em{color:var(--accent);font-style:normal}
+.lcard-wa{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:7px;background:var(--green-soft);color:var(--green);font-size:11px;font-weight:600;border:none;transition:all .2s}
+.lcard-wa:hover{background:rgba(48,214,140,.18)}
+.empty{text-align:center;padding:80px 24px;display:none}
+.empty.show{display:block}
+
+/* POST MODAL */
+.photo-drop{border:2px dashed var(--border2);border-radius:12px;padding:26px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
+.photo-drop:hover{border-color:var(--accent);background:var(--accent-soft)}
+.char-c{font-size:11px;color:var(--text3);text-align:right;margin-top:3px}
+
+/* DETAIL MODAL */
+.det-img{width:100%;max-height:260px;object-fit:cover;border-radius:14px;margin-bottom:18px}
+.det-price{font-size:28px;font-weight:800;color:var(--text);margin-bottom:10px}
+.det-price em{color:var(--accent);font-style:normal}
+.det-meta{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.det-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:18px}
+.btn-wa{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;font-size:15px;font-weight:700;border:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.btn-wa:hover{filter:brightness(1.06);transform:translateY(-1px)}
+
+@media(max-width:900px){.m-side{display:none}}
+@media(max-width:480px){.listing-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
 <body>
 
-<!-- ════ NAV ════ -->
-<nav class="top-nav">
-  <a href="index.html" class="nav-brand" style="text-decoration:none;">
-    <div class="nav-y">Y</div>
-    <div>
-      <div class="nav-title">MERCADITO</div>
-      <div class="nav-subtitle">por Yavaya</div>
-    </div>
-  </a>
-  <div class="nav-right">
-    <div class="lang-toggle" id="langToggle">
-    <button class="lang-btn active" id="btnEs" onclick="setLang('es')">🇪🇸 ES</button>
-    <button class="lang-btn" id="btnEn" onclick="setLang('en')">🇺🇸 EN</button>
-  </div>
-  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
-  <span class="icon-dark">🌙</span>
-  <span class="icon-light">☀️</span>
-</button>
-    <a href="tokens.html" class="token-widget" id="tokenWidget" style="display:none;">
-      <div class="tw-tokens"><span class="tw-icon">⚡</span><span class="tw-count">0</span><span class="tw-label">Tokens</span></div>
-      <span class="tw-free"></span>
-      <span class="tw-buy">+ Comprar</span>
+<nav class="nav" id="nav">
+  <div class="nav-brand">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px">
+      <div class="nav-dot"></div>
+      <span class="nav-logo">Yavaya</span>
     </a>
-    <span class="admin-badge" id="adminBadge">⚡ Admin</span>
-    <div class="user-badge" id="userBadge">
-      <img src="" alt="" class="user-avatar" id="userAvatar">
-      <span id="userName"></span>
-      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    <span class="nav-tag">Mercadito</span>
+  </div>
+  <div class="nav-links"><a href="mercadito.html" class="nav-a" style="color:var(--accent)">Mercadito</a><a href="yavayago.html" class="nav-a" >YavayaGo</a><a href="church.html" class="nav-a" >Santuario</a><a href="tokens.html" class="nav-a" >Tokens</a></div>
+  <div class="nav-r">
+    <div class="lang-sw">
+      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="btn-nav-login" id="loginBtn" onclick="openAuthModal && openAuthModal('login') || doGoogleLogin()" title="Iniciar sesión">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-      <span class="login-btn-label">Entrar</span>
-    </button>
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
+    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
+    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
+      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
+      <span id="userName" style="font-size:13px;font-weight:600"></span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
+    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
 </nav>
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+</div>
 
-<!-- ════ HERO ════ -->
-<section class="mercadito-hero">
-  <div class="mercadito-hero-bg"></div>
-  <div class="mercadito-hero-content">
-    <div class="hero-icon-ring">⚖</div>
-    <h1 class="mercadito-title">MERCADITO</h1>
-    <p class="mercadito-tagline">Comercio · Confianza · Oportunidad</p>
-    <div class="search-bar">
-      <input type="text" class="search-input" id="searchInput" placeholder="Buscar en Mercadito...">
-      <button class="search-btn" onclick="doSearch()">🔍</button>
-    </div>
-    <div class="hero-stats">
-      <div><span class="stat-num" id="totalListings">5</span>Anuncios</div>
-      <div><span class="stat-num">8</span>Países</div>
-      <div><span class="stat-num" id="totalSellers">1</span>Vendedores</div>
-    </div>
+<!-- HERO -->
+<section class="mh">
+  <div class="mh-blob"></div>
+  <h1 class="mh-h">Mercadito</h1>
+  <p class="mh-p">Comercio · Confianza · Oportunidad</p>
+  <div class="search-wrap">
+    <input type="text" class="search-inp" id="searchInput" placeholder="Buscar en Mercadito..." oninput="filterListings()">
+    <button class="search-go" onclick="filterListings()">🔍</button>
+  </div>
+  <div class="mh-stats">
+    <div class="mstat"><b id="cntL">0</b> Anuncios</div>
+    <div class="mstat"><b>8</b> Países</div>
+    <div class="mstat"><b id="cntV">0</b> Vendedores</div>
   </div>
 </section>
 
-<!-- ════ CATEGORIES BAR ════ -->
-<div class="categories-bar">
-  <div class="cats-inner">
-    <button class="cat-btn active" onclick="filterCat('all',this)">
-      <span class="cat-icon">🏛</span>Todo
-    </button>
-    <button class="cat-btn" onclick="filterCat('Inmuebles',this)">
-      <span class="cat-icon">🏠</span>Inmuebles
-    </button>
-    <button class="cat-btn" onclick="filterCat('Vehículos',this)">
-      <span class="cat-icon">🚗</span>Vehículos
-    </button>
-    <button class="cat-btn" onclick="filterCat('Electrónica',this)">
-      <span class="cat-icon">📱</span>Electrónica
-    </button>
-    <button class="cat-btn" onclick="filterCat('Ropa & Moda',this)">
-      <span class="cat-icon">👗</span>Ropa & Moda
-    </button>
-    <button class="cat-btn" onclick="filterCat('Servicios',this)">
-      <span class="cat-icon">⚙</span>Servicios
-    </button>
-    <button class="cat-btn" onclick="filterCat('Hogar',this)">
-      <span class="cat-icon">🛋</span>Hogar
-    </button>
-    <button class="cat-btn" onclick="filterCat('Animales',this)">
-      <span class="cat-icon">🐾</span>Animales
-    </button>
-    <button class="cat-btn" onclick="filterCat('Trabajo',this)">
-      <span class="cat-icon">💼</span>Trabajo
-    </button>
-    <button class="cat-btn" onclick="filterCat('Comida & Bebida',this)">
-      <span class="cat-icon">🍽</span>Comida
-    </button>
-    <button class="cat-btn" onclick="filterCat('Arte & Coleccionables',this)">
-      <span class="cat-icon">🎨</span>Arte
-    </button>
-    <button class="cat-btn" onclick="filterCat('Deportes',this)">
-      <span class="cat-icon">⚽</span>Deportes
-    </button>
-    <button class="cat-btn" onclick="filterCat('Tecnología',this)">
-      <span class="cat-icon">💻</span>Tecnología
-    </button>
-    <button class="cat-btn" onclick="filterCat('Salud & Belleza',this)">
-      <span class="cat-icon">💊</span>Salud
-    </button>
-    <button class="cat-btn" onclick="filterCat('Educación',this)">
-      <span class="cat-icon">📚</span>Educación
-    </button>
-    <button class="cat-btn" onclick="filterCat('Eventos',this)">
-      <span class="cat-icon">🎉</span>Eventos
-    </button>
-  </div>
+<!-- CATEGORIES -->
+<div class="cat-bar" id="catBar">
+  <button class="cat-b on" data-cat="all" onclick="selCat(this,'all')">🏛 Todo</button>
+  <button class="cat-b" data-cat="Inmuebles" onclick="selCat(this,'Inmuebles')">🏠 Inmuebles</button>
+  <button class="cat-b" data-cat="Vehículos" onclick="selCat(this,'Vehículos')">🚗 Vehículos</button>
+  <button class="cat-b" data-cat="Electrónica" onclick="selCat(this,'Electrónica')">📱 Electrónica</button>
+  <button class="cat-b" data-cat="Ropa & Moda" onclick="selCat(this,'Ropa & Moda')">👗 Moda</button>
+  <button class="cat-b" data-cat="Servicios" onclick="selCat(this,'Servicios')">⚙ Servicios</button>
+  <button class="cat-b" data-cat="Hogar" onclick="selCat(this,'Hogar')">🛋 Hogar</button>
+  <button class="cat-b" data-cat="Animales" onclick="selCat(this,'Animales')">🐾 Animales</button>
+  <button class="cat-b" data-cat="Trabajo" onclick="selCat(this,'Trabajo')">💼 Trabajo</button>
+  <button class="cat-b" data-cat="Comida" onclick="selCat(this,'Comida')">🍽 Comida</button>
+  <button class="cat-b" data-cat="Arte" onclick="selCat(this,'Arte')">🎨 Arte</button>
+  <button class="cat-b" data-cat="Deportes" onclick="selCat(this,'Deportes')">⚽ Deportes</button>
+  <button class="cat-b" data-cat="Tecnología" onclick="selCat(this,'Tecnología')">💻 Tecnología</button>
+  <button class="cat-b" data-cat="Salud" onclick="selCat(this,'Salud')">💊 Salud</button>
+  <button class="cat-b" data-cat="Educación" onclick="selCat(this,'Educación')">📚 Educación</button>
+  <button class="cat-b" data-cat="Eventos" onclick="selCat(this,'Eventos')">🎉 Eventos</button>
 </div>
 
-<!-- ════ MAIN LAYOUT ════ -->
-<div class="main-layout">
-
+<!-- MAIN LAYOUT -->
+<div class="m-wrap">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-
-    <div class="sidebar-section">
-      <div class="sidebar-title">País</div>
-      <div class="filter-list">
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Guatemala" onchange="applyFilters()"> Guatemala</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Honduras" onchange="applyFilters()"> Honduras</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="El Salvador" onchange="applyFilters()"> El Salvador</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Nicaragua" onchange="applyFilters()"> Nicaragua</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Costa Rica" onchange="applyFilters()"> Costa Rica</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Panamá" onchange="applyFilters()"> Panamá</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="México" onchange="applyFilters()"> México</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Belice" onchange="applyFilters()"> Belice</label>
+  <aside class="m-side">
+    <div class="side-card">
+      <div class="side-title">Filtros</div>
+      <div class="fg">
+        <div class="fl">País</div>
+        <label class="fi"><input type="checkbox" value="Guatemala" onchange="filterListings()"> <span>🇬🇹 Guatemala</span></label>
+        <label class="fi"><input type="checkbox" value="Honduras" onchange="filterListings()"> <span>🇭🇳 Honduras</span></label>
+        <label class="fi"><input type="checkbox" value="El Salvador" onchange="filterListings()"> <span>🇸🇻 El Salvador</span></label>
+        <label class="fi"><input type="checkbox" value="Nicaragua" onchange="filterListings()"> <span>🇳🇮 Nicaragua</span></label>
+        <label class="fi"><input type="checkbox" value="Costa Rica" onchange="filterListings()"> <span>🇨🇷 Costa Rica</span></label>
+        <label class="fi"><input type="checkbox" value="Panamá" onchange="filterListings()"> <span>🇵🇦 Panamá</span></label>
+        <label class="fi"><input type="checkbox" value="México" onchange="filterListings()"> <span>🇲🇽 México</span></label>
+        <label class="fi"><input type="checkbox" value="Belice" onchange="filterListings()"> <span>🇧🇿 Belice</span></label>
       </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-title">Precio</div>
-      <div class="price-range">
-        <div class="price-inputs">
-          <input type="number" class="price-inp" id="priceMin" placeholder="Mín" onchange="applyFilters()">
-          <input type="number" class="price-inp" id="priceMax" placeholder="Máx" onchange="applyFilters()">
+      <div class="fg">
+        <div class="fl">Precio (USD)</div>
+        <div class="price-row">
+          <input type="number" class="price-inp" id="minPrice" placeholder="Min" oninput="filterListings()">
+          <span style="color:var(--text3);font-size:12px">—</span>
+          <input type="number" class="price-inp" id="maxPrice" placeholder="Max" oninput="filterListings()">
         </div>
       </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-title">Condición</div>
-      <div class="filter-list">
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Nuevo" onchange="applyFilters()"> Nuevo</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Usado" onchange="applyFilters()"> Usado</label>
-        <label class="filter-item"><input type="checkbox" class="filter-check" value="Reacondicionado" onchange="applyFilters()"> Reacondicionado</label>
+      <div class="fg">
+        <div class="fl">Condición</div>
+        <label class="fi"><input type="checkbox" value="Nuevo" onchange="filterListings()"> <span>Nuevo</span></label>
+        <label class="fi"><input type="checkbox" value="Usado" onchange="filterListings()"> <span>Usado</span></label>
+        <label class="fi"><input type="checkbox" value="Reacondicionado" onchange="filterListings()"> <span>Reacondicionado</span></label>
       </div>
+      <button class="btn-primary btn-sm" style="width:100%;justify-content:center" onclick="clearFilters()">Limpiar filtros</button>
     </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-title">Ubicación</div>
-      <div class="location-input-wrap">
-        <input type="text" class="location-inp" id="locationFilter" placeholder="Ciudad o país...">
-        <button class="location-btn" onclick="applyFilters()">📍</button>
-      </div>
-      <button class="btn-apply-filter" onclick="applyFilters()">Aplicar Filtros</button>
-    </div>
-
   </aside>
 
-  <!-- LISTINGS -->
-  <div class="listings-area">
-    <div class="listings-toolbar">
-      <span class="listings-count" id="listingsCount">Cargando...</span>
-      <div class="toolbar-right">
-        <select class="sort-select" onchange="sortListings(this.value)">
-          <option value="recent">Más reciente</option>
-          <option value="price-asc">Precio: menor</option>
-          <option value="price-desc">Precio: mayor</option>
+  <!-- CONTENT -->
+  <div class="m-main">
+    <div class="m-topbar">
+      <div class="m-count" id="listCount">Cargando...</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="sort-sel" id="sortSel" onchange="filterListings()">
+          <option value="newest">Más reciente</option>
+          <option value="price_asc">Precio ↑</option>
+          <option value="price_desc">Precio ↓</option>
         </select>
-        <button class="btn-post-listing" id="postBtn" onclick="openPostModal()" style="display:none;">
-          + Publicar Anuncio
+        <button class="btn-post" onclick="openPost()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          Publicar
         </button>
       </div>
     </div>
-
-    <div class="listings-grid" id="listingsGrid">
-      <div class="empty-state">
-        <div class="empty-state-icon">⚖</div>
-        <div class="empty-state-text">Cargando Mercadito...</div>
-      </div>
+    <div class="listing-grid" id="listGrid"></div>
+    <div class="empty" id="emptyState">
+      <div style="font-size:44px;margin-bottom:14px">🔍</div>
+      <div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px">Sin resultados</div>
+      <div style="font-size:14px;color:var(--text2)">Cambia los filtros o sé el primero en publicar.</div>
     </div>
   </div>
-
 </div>
 
-<!-- ════ MAP SECTION ════ -->
-<section class="map-section">
-  <div class="map-header">
-    <div class="divider" style="max-width:800px;margin:0 auto 12px;"><span class="divider-icon">◆</span></div>
-    <h2>Mapa del Mercadito</h2>
-    <div class="divider" style="max-width:800px;margin:12px auto 0;"><span class="divider-icon">◆</span></div>
-  </div>
-  <div style="max-width:1100px;margin:0 auto;">
-    <div id="mercadito-map">
-      <div class="map-placeholder">
-        <span style="font-size:40px;opacity:0.3;">🗺</span>
-        <span>Mapa de Anuncios — Centroamérica</span>
-        <span style="font-size:9px;letter-spacing:2px;opacity:0.5;">Google Maps se cargará con tu API key</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ════ POST LISTING MODAL ════ -->
-<div class="modal-overlay" id="postModal">
-  <div class="modal" style="max-height:92vh;overflow-y:auto;">
-    <button class="modal-close" onclick="closePostModal()">✕</button>
-    <div class="modal-title" data-i18n="modal_post_title">Publicar Anuncio</div>
-    <div class="modal-sub">Mercadito · Yavaya</div>
-    <div class="divider" style="margin-bottom:22px;"><span class="divider-icon">◆</span></div>
-
-    <!-- PHOTO UPLOAD — required -->
+<!-- POST MODAL -->
+<div class="overlay" id="postModal" style="display:none">
+  <div class="modal modal-wide">
+    <button class="modal-x" onclick="closePost()">✕</button>
+    <div class="modal-h">Publicar Anuncio</div>
     <div class="form-group">
-      <label class="form-label">
-        <span data-i18n="label_photo">Foto del Producto</span>
-        <span style="color:var(--red);margin-left:4px;">★ Obligatorio</span>
-      </label>
-      <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('f_photo_file').click()">
-        <input type="file" id="f_photo_file" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-        <div id="photoPreview" style="display:none;position:relative;">
-          <img id="photoPreviewImg" style="width:100%;max-height:200px;object-fit:cover;border-radius:2px;" src="" alt="">
-          <button onclick="event.stopPropagation();clearPhoto()" style="position:absolute;top:8px;right:8px;background:rgba(5,4,4,.8);border:none;color:#e8c97a;cursor:pointer;padding:4px 10px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;">✕ Cambiar</button>
-        </div>
-        <div id="photoUploadPlaceholder">
-          <div style="font-size:32px;margin-bottom:8px;">📷</div>
-          <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);" data-i18n="upload_photo_btn">Toca para subir foto</div>
-          <div style="font-family:Cormorant Garamond,serif;font-size:12px;color:var(--text-muted);margin-top:6px;" data-i18n="upload_photo_hint">JPG, PNG o WEBP — máx 5 MB</div>
-        </div>
+      <label class="form-label">Foto <span style="color:var(--red)">★</span></label>
+      <div class="photo-drop" id="photoDrop" onclick="document.getElementById('photoFile').click()">
+        <div style="font-size:26px;margin-bottom:8px">📷</div>
+        <div style="font-size:13px;color:var(--text2)">Toca para subir</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">JPG, PNG, WEBP — máx 5MB</div>
       </div>
-      <div id="photoUploadStatus" style="font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;color:var(--gold-dim);margin-top:6px;display:none;"></div>
+      <div id="photoPreviewWrap" style="display:none;position:relative;display:none">
+        <img id="photoPreview" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px">
+        <button onclick="rmPhoto()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px">✕</button>
+      </div>
+      <input type="file" id="photoFile" style="display:none" accept="image/*" onchange="handlePhoto(event)">
     </div>
-
     <div class="form-group">
-      <label class="form-label" data-i18n="label_title">Título del anuncio</label>
-      <input type="text" class="form-input" id="f_title" placeholder="Ej: iPhone 15 Pro Max — como nuevo" maxlength="80">
-      <div class="input-counter" id="titleCounter">0/80</div>
+      <label class="form-label">Título <span style="color:var(--red)">★</span></label>
+      <input type="text" class="form-input" id="pTitle" placeholder="Ej: iPhone 14 Pro Max 256GB" maxlength="80" oninput="document.getElementById('titleC').textContent=this.value.length+'/80'">
+      <div class="char-c" id="titleC">0/80</div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_cat">Categoría</label>
-        <select class="form-select" id="f_cat">
-          <option>Electrónica</option><option>Inmuebles</option><option>Vehículos</option>
-          <option>Ropa & Moda</option><option>Servicios</option><option>Hogar</option>
-          <option>Animales</option><option>Trabajo</option><option>Comida & Bebida</option>
-          <option>Arte & Coleccionables</option><option>Deportes</option><option>Tecnología</option>
-          <option>Salud & Belleza</option><option>Educación</option><option>Eventos</option>
-          <option>Otro</option>
+      <div class="form-group"><label class="form-label">Categoría</label>
+        <select class="form-select" id="pCat">
+          <option>Electrónica</option><option>Inmuebles</option><option>Vehículos</option><option>Ropa & Moda</option><option>Servicios</option><option>Hogar</option><option>Animales</option><option>Trabajo</option><option>Comida & Bebida</option><option>Arte & Coleccionables</option><option>Deportes</option><option>Tecnología</option><option>Salud & Belleza</option><option>Educación</option><option>Eventos</option><option>Otro</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_condition">Condición</label>
-        <select class="form-select" id="f_condition">
-          <option>Nuevo</option><option>Usado</option><option>Reacondicionado</option>
-        </select>
+      <div class="form-group"><label class="form-label">Condición</label>
+        <select class="form-select" id="pCond"><option>Nuevo</option><option>Usado</option><option>Reacondicionado</option></select>
       </div>
     </div>
-
     <div class="form-group">
-      <label class="form-label" data-i18n="label_desc">Descripción</label>
-      <textarea class="form-textarea" id="f_desc" placeholder="Describe tu producto o servicio..." maxlength="500"></textarea>
-      <div class="input-counter" id="descCounter">0/500</div>
+      <label class="form-label">Descripción</label>
+      <textarea class="form-textarea" id="pDesc" placeholder="Describe tu producto..." maxlength="500" oninput="document.getElementById('descC').textContent=this.value.length+'/500'"></textarea>
+      <div class="char-c" id="descC">0/500</div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_price">Precio</label>
-        <input type="number" class="form-input" id="f_price" placeholder="0.00" min="0">
-      </div>
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_currency">Moneda</label>
-        <select class="form-select" id="f_currency">
-          <option>USD</option><option>GTQ</option><option>HNL</option><option>NIO</option>
-          <option>CRC</option><option>MXN</option><option>PAB</option>
-        </select>
-      </div>
+      <div class="form-group"><label class="form-label">Precio <span style="color:var(--red)">★</span></label><input type="number" class="form-input" id="pPrice" placeholder="0.00" min="0"></div>
+      <div class="form-group"><label class="form-label">Moneda</label><select class="form-select" id="pCurr"><option>USD</option><option>GTQ</option><option>HNL</option><option>NIO</option><option>CRC</option><option>MXN</option><option>PAB</option></select></div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_country">País</label>
-        <select class="form-select" id="f_country">
-          <option>Guatemala</option><option>Honduras</option><option>El Salvador</option>
-          <option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option>
-          <option>México</option><option>Belice</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label" data-i18n="label_city">Ciudad</label>
-        <input type="text" class="form-input" id="f_city" placeholder="Ej: Guatemala City">
-      </div>
+      <div class="form-group"><label class="form-label">País</label><select class="form-select" id="pCountry"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option><option>México</option><option>Belice</option></select></div>
+      <div class="form-group"><label class="form-label">Ciudad</label><input type="text" class="form-input" id="pCity" placeholder="Ciudad"></div>
     </div>
-
-    <!-- WHATSAPP — enforced, one per account -->
     <div class="form-group">
-      <label class="form-label">
-        <span style="color:#25D366;margin-right:6px;">●</span>
-        <span data-i18n="label_whatsapp">WhatsApp</span>
-        <span style="color:var(--red);margin-left:4px;">★ Obligatorio</span>
-      </label>
-      <div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
-        <select class="form-select" id="f_wa_code" style="width:110px;flex-shrink:0;">
-          <option value="+502">🇬🇹 +502</option>
-          <option value="+504">🇭🇳 +504</option>
-          <option value="+503">🇸🇻 +503</option>
-          <option value="+505">🇳🇮 +505</option>
-          <option value="+506">🇨🇷 +506</option>
-          <option value="+507">🇵🇦 +507</option>
-          <option value="+52">🇲🇽 +52</option>
-          <option value="+501">🇧🇿 +501</option>
-          <option value="+1">🇺🇸 +1</option>
-          <option value="+44">🇬🇧 +44</option>
-        </select>
-        <div style="flex:1;min-width:140px;">
-          <input type="tel" class="form-input" id="f_wa_number" placeholder="5558-1234" 
-            style="width:100%;" oninput="formatWaNumber(this)">
-          <div id="waNumberHint" style="font-family:Cormorant Garamond,serif;font-size:12px;color:var(--text-muted);margin-top:5px;font-style:italic;"></div>
-        </div>
-      </div>
-      <div id="waVerifyStatus" style="margin-top:8px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;display:none;"></div>
-      <div id="waLockedDisplay" style="display:none;padding:10px 14px;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.2);margin-top:8px;">
-        <div style="font-family:Cinzel,serif;font-size:9px;letter-spacing:3px;color:#25D366;margin-bottom:4px;">● WHATSAPP VERIFICADO</div>
-        <div style="font-family:Cinzel Decorative,serif;font-size:16px;color:var(--gold-l);" id="waLockedNumber"></div>
-        <div style="font-family:Cormorant Garamond,serif;font-size:12px;color:var(--text-muted);margin-top:4px;" data-i18n="wa_locked_hint">Tu número está asociado a esta cuenta. Contacta soporte para cambiarlo.</div>
-      </div>
+      <label class="form-label">WhatsApp <span style="color:var(--red)">★</span></label>
+      <input type="tel" class="form-input" id="pWA" placeholder="+502 XXXX XXXX">
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Compradores te contactarán por WhatsApp.</div>
     </div>
-
-    <!-- ANTI-FRAUD NOTICE -->
-    <div style="padding:10px 14px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);margin-bottom:18px;">
-      <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:4px;">⚖ Términos Yavaya</div>
-      <div style="font-family:Cormorant Garamond,serif;font-size:12px;color:var(--text-muted);line-height:1.5;" data-i18n="fraud_notice">Al publicar aceptas que tu anuncio sea revisado. Listings falsos, fraudulentos o sin imagen real serán eliminados y tu cuenta bloqueada permanentemente.</div>
-    </div>
-
-    <button class="btn-submit" onclick="submitListing()" id="btnSubmitListing">✦ <span data-i18n="btn_publish">Publicar Ahora</span></button>
+    <button class="btn-primary" style="width:100%;justify-content:center;margin-top:6px" id="btnSubmitPost" onclick="submitListing()">Publicar Anuncio</button>
   </div>
 </div>
 
-<!-- ════ LISTING DETAIL MODAL ════ -->
-<div class="modal-overlay" id="detailModal">
-  <div class="detail-modal">
-    <button class="modal-close" style="position:absolute;top:16px;right:18px;" onclick="closeDetailModal()">✕</button>
-    <div id="detailContent"></div>
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detailModal" style="display:none">
+  <div class="modal modal-wide">
+    <button class="modal-x" onclick="document.getElementById('detailModal').style.display='none'">✕</button>
+    <img id="detImg" class="det-img" src="" alt="" style="display:none">
+    <div class="badge badge-blue" id="detCat" style="margin-bottom:10px"></div>
+    <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px" id="detTitle"></div>
+    <div class="det-price" id="detPrice"></div>
+    <div class="det-meta" id="detMeta"></div>
+    <div class="det-desc" id="detDesc"></div>
+    <button class="btn-wa" id="detWA">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Contactar por WhatsApp
+    </button>
   </div>
 </div>
 
-<!-- ════ ADMIN PANEL ════ -->
-<div class="admin-panel" id="adminPanel">
-  <div class="admin-panel-title">⚡ Panel Admin</div>
-  <button class="btn-admin" onclick="openPostModal()">+ Agregar Anuncio</button>
-  <button class="btn-admin" onclick="toggleDemoMode()">Demo: Activar/Desactivar</button>
-  <button class="btn-admin danger" onclick="deleteAllDemo()">✕ Borrar Demo Listings</button>
-</div>
 
-<!-- ════ TOAST ════ -->
+<div class="overlay" id="authModal" style="display:none;">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAuthModal()">✕</button>
+    <div class="modal-h">Bienvenido</div>
+    <div class="modal-sub">Yavaya · Centroamérica</div>
+    <div class="tab-row">
+      <button class="tab-b on" id="tabLogin" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+      <button class="tab-b" id="tabReg" onclick="switchAuthTab('reg')">Registrarse</button>
+    </div>
+    <div id="panel_login">
+      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label>
+        <div class="input-wrap"><input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('loginPass')">👁</button></div>
+        <div style="text-align:right;margin-top:5px"><span class="forgot" onclick="forgotPass()" style="cursor:pointer">¿Olvidaste tu contraseña?</span></div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center" id="btnLogin" onclick="doLogin()">Iniciar sesión</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    </div>
+    <div id="panel_reg" style="display:none">
+      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="regName" placeholder="Tu nombre"></div>
+      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="regEmail" placeholder="tu@email.com"></div>
+      <div class="form-group"><label class="form-label">Contraseña</label>
+        <div class="input-wrap"><input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('regPass')">👁</button></div>
+      </div>
+      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña"></div>
+      <button class="btn-primary" style="width:100%;justify-content:center" id="btnReg" onclick="doRegister()">Crear cuenta</button>
+      <div class="divider">o</div>
+      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
-<!-- ════ FOOTER ════ -->
-<footer class="site-footer">
-  <div class="divider" style="max-width:400px;margin:0 auto 18px;"><span class="divider-icon">◆</span></div>
-  <a href="index.html" class="footer-back">← Volver a Yavaya</a>
-  <p class="footer-copy">© 2026 YAVAYA — La Civilización Digital de Centroamérica.</p>
-</footer>
-
-<!-- ════ GOOGLE MAPS (replace AIzaSyDsDaaqYIryqAN3kQ6H2PAU5nWPIPwCwmo) ════ -->
-<script>
-function initMap() {
-  if (typeof google === 'undefined') return;
-  const mapEl = document.getElementById('mercadito-map');
-  mapEl.innerHTML = '';
-  const map = new google.maps.Map(mapEl, {
-    center: { lat: 14.0, lng: -87.0 },
-    zoom: 6,
-    styles: [
-      { elementType: 'geometry', stylers: [{ color: '#0a0807' }] },
-      { elementType: 'labels.text.stroke', stylers: [{ color: '#0a0807' }] },
-      { elementType: 'labels.text.fill', stylers: [{ color: '#7a6a50' }] },
-      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1a1410' }] },
-      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#050408' }] },
-      { featureType: 'poi', stylers: [{ visibility: 'off' }] }
-    ]
-  });
-  window._yavaya._map = map;
-  // Pin all listings on map
-  const listings = window._yavaya._allListings || [];
-  listings.forEach(l => {
-    if (l.lat && l.lng) {
-      new google.maps.Marker({
-        position: { lat: l.lat, lng: l.lng },
-        map,
-        title: l.title,
-        icon: { url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="#c9a84c" opacity="0.85"/></svg>'), scaledSize: new google.maps.Size(20,20) }
-      });
-    }
-  });
-}
-</script>
-<!-- Uncomment and add your key:
-<script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsDaaqYIryqAN3kQ6H2PAU5nWPIPwCwmo&callback=initMap">
-</script>
--->
-
-<!-- ════ MAIN APP SCRIPT ════ -->
 <script type="module">
+(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<script>
 
-// ══════════════════════════════════════════
-// YAVAYA TOKEN SYSTEM
-// ══════════════════════════════════════════
-let _userTokens = 0, _userYavayaId = '', _userFreeActive = false, _userFreeDay = 1, _userId = null;
+(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
 
-function getDeviceId() {
-  let id = localStorage.getItem('_yvyd');
-  if (!id) { id='dv-'+Date.now().toString(36)+'-'+Math.random().toString(36).substr(2,9); localStorage.setItem('_yvyd',id); }
-  return id;
-}
-function genYavayaId(uid) {
-  const p=uid.replace(/[^a-zA-Z0-9]/g,'');
-  return 'YVY-'+p.substr(0,4).toUpperCase()+'-'+p.substr(4,4).toUpperCase();
-}
-async function tokenSystemInit(user) {
-  _userId=user.uid;
-  const ref=doc(db,'users',user.uid);
-  const snap=await getDoc(ref);
-  const deviceId=getDeviceId();
-  if (!snap.exists()) {
-    const yavayaId=genYavayaId(user.uid);
-    const now=new Date(), nextR=new Date(now);
-    nextR.setHours(23,0,0,0); if(nextR<=now) nextR.setDate(nextR.getDate()+1);
-    await setDoc(ref,{uid:user.uid,email:user.email,displayName:user.displayName,photoURL:user.photoURL,yavayaId,tokens:2,tokensFreeDay:1,freeTokensActive:true,joinedAt:serverTimestamp(),lastTokenRenewal:serverTimestamp(),nextRenewal:nextR.toISOString(),deviceId,deviceIds:[deviceId],isBlocked:false,role:'user',activityLog:[],totalTokensSpent:0,totalTokensBought:0,adminWatchUntil:new Date(Date.now()+3*24*60*60*1000).toISOString()});
-    try{await addDoc(collection(db,'deviceRegistrations'),{uid:user.uid,deviceId,email:user.email,registeredAt:serverTimestamp()});}catch(e){}
-    _userTokens=2; _userYavayaId=yavayaId; _userFreeActive=true; _userFreeDay=1;
-  } else {
-    const d=snap.data();
-    if(d.isBlocked){alert('Tu cuenta ha sido bloqueada.'); await signOut(auth); return;}
-    const known=d.deviceIds||[];
-    if(!known.includes(deviceId)){try{await updateDoc(ref,{deviceIds:[...known,deviceId]});}catch(e){}}
-    if(d.freeTokensActive && d.nextRenewal){
-      const now=new Date(), nextR=new Date(d.nextRenewal);
-      if(now>=nextR){
-        const freeDay=(d.tokensFreeDay||1)+1, newTk=(d.tokens||0)<2?2:(d.tokens||0);
-        const nRD=new Date(now); nRD.setHours(23,0,0,0); if(nRD<=now) nRD.setDate(nRD.getDate()+1);
-        try{await updateDoc(ref,{tokens:newTk,tokensFreeDay:freeDay,freeTokensActive:freeDay<=5,lastTokenRenewal:serverTimestamp(),nextRenewal:nRD.toISOString()});}catch(e){}
-        _userTokens=newTk; _userFreeActive=freeDay<=5; _userFreeDay=freeDay;
-      } else { _userTokens=d.tokens||0; _userFreeActive=d.freeTokensActive; _userFreeDay=d.tokensFreeDay||1; }
-    } else { _userTokens=d.tokens||0; _userFreeActive=false; _userFreeDay=1; }
-    _userYavayaId=d.yavayaId||genYavayaId(user.uid);
-  }
-  updateTokenWidget();
-}
-function updateTokenWidget() {
-  const w=document.getElementById('tokenWidget'); if(!w) return;
-  const c=w.querySelector('.tw-count'); if(c){c.textContent=_userTokens; c.style.color=_userTokens===0?'var(--red)':'var(--gold)';}
-  const f=w.querySelector('.tw-free'); if(f) f.textContent=_userFreeActive?'Gratis día '+_userFreeDay+'/5':'';
-  w.style.display='flex';
-}
-async function spendTokenGate(action, details) {
-  if(!_userId){showNoTokensModal('');return false;}
-  if(_userTokens<1){showNoTokensModal(_userYavayaId);return false;}
-  try{
-    const ref=doc(db,'users',_userId);
-    const snap=await getDoc(ref); if(!snap.exists()) return false;
-    const d=snap.data();
-    if(d.isBlocked){alert('Tu cuenta está bloqueada.');return false;}
-    if((d.tokens||0)<1){_userTokens=0;updateTokenWidget();showNoTokensModal(_userYavayaId);return false;}
-    const newTk=d.tokens-1;
-    const logEntry={action,details,tokensAfter:newTk,timestamp:new Date().toISOString()};
-    await updateDoc(ref,{tokens:newTk,totalTokensSpent:(d.totalTokensSpent||0)+1,activityLog:[...(d.activityLog||[]).slice(-49),logEntry]});
-    try{await addDoc(collection(db,'activityLogs'),{uid:_userId,email:d.email,yavayaId:d.yavayaId,action,details,tokensAfter:newTk,deviceId:getDeviceId(),timestamp:serverTimestamp()});}catch(e){}
-    _userTokens=newTk; updateTokenWidget(); return true;
-  }catch(e){console.error(e);return false;}
-}
-function showNoTokensModal(yavayaId){
-  const ex=document.getElementById('noTokensModal'); if(ex) ex.remove();
-  const m=document.createElement('div'); m.id='noTokensModal';
-  m.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(5,4,4,.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px;';
-  m.innerHTML=\`<div style="max-width:460px;width:100%;background:#13100c;border:1px solid rgba(201,168,76,.25);padding:36px 28px;text-align:center;">
-    <div style="font-size:38px;margin-bottom:14px;">⚡</div>
-    <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:#e8c97a;margin-bottom:8px;">Sin Tokens</div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#7a6a50;line-height:1.6;margin-bottom:20px;">Cada acción cuesta 1 token. Adquiere más para continuar en Yavaya.</div>
-    \${yavayaId?\`<div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);padding:12px;margin-bottom:20px;"><div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a6c2a;margin-bottom:5px;">Tu Yavaya ID</div><div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:#c9a84c;">\${yavayaId}</div></div>\`:''}
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <a href="tokens.html" style="flex:1;padding:13px;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(135deg,#e8c97a,#c9a84c);color:#050404;text-decoration:none;font-weight:700;">Ver Tokens →</a>
-      <button onclick="document.getElementById('noTokensModal').remove()" style="flex:1;padding:13px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.2);color:#7a6a50;cursor:pointer;">Cerrar</button>
-    </div></div>\`;
-  document.body.appendChild(m);
-}
-// ══════════════════════════════════════════
+</script>
+<script>
 
-const { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged,
-  collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, getDoc,
-  setDoc, deleteDoc, where, MASTER_ADMIN_EMAIL } = window._yavaya;
 
-const ADMIN_EMAIL = MASTER_ADMIN_EMAIL;
+(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
 
-let currentUser = null;
-let isAdmin = false;
-let allListings = [];
-let filteredListings = [];
-let currentCategory = 'all';
-let firstUserJoinDate = null;
 
-// ─── DEMO LISTINGS ────────────────────────────────────────────────────────────
-const demoListings = [
-  {
-    id: 'demo_1', isDemo: true,
-    title: 'Casa Colonial en Antigua Guatemala',
-    category: 'Inmuebles', condition: 'Usado',
-    desc: 'Hermosa casa colonial en el corazón de Antigua Guatemala. 3 habitaciones, 2 baños, jardín interior con fuente, techos originales del siglo XVIII. Ideal para residencia o Airbnb de lujo.',
-    price: 185000, currency: 'USD',
-    country: 'Guatemala', city: 'Antigua Guatemala',
-    contact: '+502 5555-1234', seller: 'Yavaya Demo',
-    emoji: '🏠', lat: 14.5586, lng: -90.7295,
-    badge: 'demo'
-  },
-  {
-    id: 'demo_2', isDemo: true,
-    title: 'Toyota Hilux 2022 — 4x4 Full',
-    category: 'Vehículos', condition: 'Usado',
-    desc: 'Toyota Hilux 2022, 4x4 doble cabina, color negro, 45,000 km. A/C, asientos de cuero, sistema de navegación, cámara trasera. Sin accidentes. Impecable.',
-    price: 32000, currency: 'USD',
-    country: 'Honduras', city: 'Tegucigalpa',
-    contact: '+504 9999-5678', seller: 'Yavaya Demo',
-    emoji: '🚗', lat: 14.0723, lng: -87.1921,
-    badge: 'hot'
-  },
-  {
-    id: 'demo_3', isDemo: true,
-    title: 'MacBook Pro M3 Max — Nuevo sellado',
-    category: 'Electrónica', condition: 'Nuevo',
-    desc: 'MacBook Pro 16" con chip M3 Max, 36GB RAM, 1TB SSD. Color Space Black. Comprado en Apple Store Miami. Caja sellada con factura original. Garantía Apple 1 año.',
-    price: 3800, currency: 'USD',
-    country: 'Costa Rica', city: 'San José',
-    contact: '+506 8888-9012', seller: 'Yavaya Demo',
-    emoji: '💻', lat: 9.9281, lng: -84.0907,
-    badge: 'new'
-  },
-  {
-    id: 'demo_4', isDemo: true,
-    title: 'Diseño Web Profesional — Sitios Completos',
-    category: 'Servicios', condition: 'Nuevo',
-    desc: 'Ofrezco diseño de sitios web profesionales para negocios, tiendas, restaurantes, y más. Incluye dominio, hosting 1 año, SEO básico y diseño a medida. Entrega en 7 días.',
-    price: 350, currency: 'USD',
-    country: 'Nicaragua', city: 'Managua',
-    contact: '+505 7777-3456', seller: 'Yavaya Demo',
-    emoji: '⚙', lat: 12.1364, lng: -86.2514,
-    badge: 'demo'
-  },
-  {
-    id: 'demo_5', isDemo: true,
-    title: 'Colección Textiles Mayas — 25 piezas únicas',
-    category: 'Arte & Coleccionables', condition: 'Nuevo',
-    desc: 'Colección de 25 textiles mayas auténticos elaborados a mano por artesanas de Chichicastenango. Incluye huipiles, cortes y tapices. Ideales para coleccionistas o decoración de alto valor.',
-    price: 1200, currency: 'USD',
-    country: 'Guatemala', city: 'Chichicastenango',
-    contact: '+502 4444-7890', seller: 'Yavaya Demo',
-    emoji: '🎨', lat: 15.1177, lng: -91.0068,
-    badge: 'demo'
-  }
+</script>
+<script>
+
+const DEMO_LISTINGS = [
+  {id:'demo_1',title:'iPhone 14 Pro — 256GB Morado',category:'Electrónica',condition:'Usado',price:520,currency:'USD',country:'Guatemala',city:'Ciudad de Guatemala',wa:'+502 5555 0001',desc:'iPhone 14 Pro en perfecto estado. Sin rayones, batería al 94%. Incluye caja original y cable.',emoji:'📱',img:'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&q=80&auto=format',createdAt:Date.now()-86400000*1,demo:true},
+  {id:'demo_2',title:'Toyota Corolla 2019 — Automático',category:'Vehículos',condition:'Usado',price:14500,currency:'USD',country:'Honduras',city:'Tegucigalpa',wa:'+504 9999 0002',desc:'Toyota Corolla 2019, 58,000 km. Full extras: A/C, cámara trasera, asientos de cuero. Impecable.',emoji:'🚗',img:'https://images.unsplash.com/photo-1590362891991-f776e747a588?w=400&q=80&auto=format',createdAt:Date.now()-86400000*2,demo:true},
+  {id:'demo_3',title:'Apartamento 2 hab — Zona 10',category:'Inmuebles',condition:'Nuevo',price:850,currency:'USD',country:'Guatemala',city:'Ciudad de Guatemala',wa:'+502 5555 0003',desc:'Apartamento moderno en zona 10. 2 habitaciones, 1 baño, cocina equipada, parqueo incluido.',emoji:'🏠',img:'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80&auto=format',createdAt:Date.now()-86400000*2,demo:true},
+  {id:'demo_4',title:'Diseñador Gráfico Freelance',category:'Trabajo',condition:'Nuevo',price:15,currency:'USD',country:'El Salvador',city:'San Salvador',wa:'+503 7777 0004',desc:'Diseñador gráfico con 5 años de experiencia. Logos, branding, redes sociales. Precio por hora.',emoji:'🎨',img:'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400&q=80&auto=format',createdAt:Date.now()-86400000*3,demo:true},
+  {id:'demo_5',title:'Labrador Retriever — Cachorros',category:'Animales',condition:'Nuevo',price:200,currency:'USD',country:'Costa Rica',city:'San José',wa:'+506 8888 0005',desc:'Cachorros Labrador Retriever, 8 semanas. Vacunados, desparasitados, con pedigree. 3 disponibles.',emoji:'🐾',img:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80&auto=format',createdAt:Date.now()-86400000*4,demo:true},
 ];
 
-// ─── AUTH ─────────────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-  if (user) {
-    isAdmin = user.email === ADMIN_EMAIL;
-    document.getElementById('userBadge').style.display = 'flex';
-    document.getElementById('loginBtn').style.display = 'none';
-    document.getElementById('postBtn').style.display = 'flex';
-    document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
-    document.getElementById('userAvatar').src = user.photoURL || '';
-
-    if (isAdmin) {
-      document.getElementById('adminBadge').style.display = 'block';
-      document.getElementById('adminPanel').classList.add('visible');
-    }
-
-    // Track first non-admin user join date
-    if (!isAdmin) {
-      await trackFirstUserJoin();
-    }
-
-    await loadListings();
-  } else {
-    isAdmin = false;
-    document.getElementById('userBadge').style.display = 'none';
-    document.getElementById('loginBtn').style.display = 'flex';
-    document.getElementById('postBtn').style.display = 'none';
-    document.getElementById('adminBadge').style.display = 'none';
-    document.getElementById('adminPanel').classList.remove('visible');
-    loadListings(); // still show listings when logged out
-  }
-});
-
-async function trackFirstUserJoin() {
-  try {
-    const ref = doc(db, 'meta', 'firstUserJoin');
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      await setDoc(ref, { date: serverTimestamp(), email: currentUser.email });
-    } else {
-      firstUserJoinDate = snap.data().date?.toDate();
-    }
-  } catch(e) { /* Firebase not configured yet */ }
+// Check demo expiry — demos expire 5 days after first real user joined
+function checkDemoExpiry() {
+  var expiry = localStorage.getItem('yavaya_demo_expiry');
+  if (!expiry) return true; // no real user yet, show demos
+  return Date.now() < parseInt(expiry);
 }
-
-window.doGoogleLogin = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch(e) { showToast('Error al iniciar sesión. Configura Firebase primero.'); }
-};
-
-window.doLogout = async () => {
-  await signOut(auth);
-  showToast('Sesión cerrada.');
-};
-
-// ─── LOAD LISTINGS ────────────────────────────────────────────────────────────
-async function loadListings() {
-  let listings = [];
-
-  // Load from Firestore
-  try {
-    const q = query(collection(db, 'listings'), orderBy('createdAt', 'desc'));
-    const snap = await getDocs(q);
-    snap.forEach(d => listings.push({ id: d.id, ...d.data() }));
-  } catch(e) { /* Firebase not configured yet, use demo only */ }
-
-  // Add demo listings (check expiry)
-  const demosToShow = getDemosToShow();
-  listings = [...demosToShow, ...listings.filter(l => !l.isDemo)];
-
-  allListings = listings;
-  window._yavaya._allListings = allListings;
-  filteredListings = [...allListings];
-
-  document.getElementById('totalListings').textContent = allListings.length;
-  document.getElementById('totalSellers').textContent = [...new Set(allListings.map(l => l.seller))].length;
-
-  renderListings(filteredListings);
-}
-
-function getDemosToShow() {
-  if (!firstUserJoinDate) return demoListings;
-  const daysSinceFirstUser = (Date.now() - firstUserJoinDate.getTime()) / (1000 * 60 * 60 * 24);
-  if (daysSinceFirstUser > 5) return [];
-  return demoListings;
-}
-
-// ─── RENDER ───────────────────────────────────────────────────────────────────
-function renderListings(listings) {
-  const grid = document.getElementById('listingsGrid');
-  document.getElementById('listingsCount').textContent =
-    listings.length + (listings.length === 1 ? ' anuncio' : ' anuncios');
-
-  if (!listings.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚖</div><div class="empty-state-text">Sin anuncios en esta categoría</div></div>`;
-    return;
-  }
-
-  grid.innerHTML = listings.map(l => {
-    const badgeMap = { demo: 'Demo', new: 'Nuevo', hot: '🔥 Popular' };
-    const badge = l.badge ? `<span class="listing-badge badge-${l.badge}">${badgeMap[l.badge] || l.badge}</span>` : '';
-    const expireTag = l.isDemo ? `<span class="listing-expire">Demo</span>` : '';
-    const imgHtml = l.imgUrl
-      ? `<img src="${l.imgUrl}" alt="" class="listing-img" onerror="this.style.display='none'">`
-      : `<div class="listing-img-placeholder">${l.emoji || '📦'}</div>`;
-
-    return `
-      <div class="listing-card" onclick="openDetail('${l.id}')">
-        <div style="position:relative;">
-          ${imgHtml}
-          ${badge}${expireTag}
-        </div>
-        <div class="listing-body">
-          <div class="listing-category">${l.category || 'Mercadito'}</div>
-          <div class="listing-title">${l.title}</div>
-          <div class="listing-desc">${l.desc || ''}</div>
-          <div class="listing-footer">
-            <div>
-              <span class="listing-price">${l.price ? Number(l.price).toLocaleString() : 'A Convenir'}</span>
-              <span class="listing-currency">${l.currency || 'USD'}</span>
-            </div>
-            <div class="listing-meta">
-              <span class="listing-location">📍 ${l.city || ''}, ${l.country || ''}</span>
-              <span class="listing-seller">${l.seller || ''}</span>
-            </div>
-          </div>
-          <button class="btn-contact" onclick="event.stopPropagation();contactSeller('${encodeURIComponent(l.contact||'')}','${encodeURIComponent(l.title||'')}')">Contactar Vendedor</button>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-// ─── DETAIL MODAL ─────────────────────────────────────────────────────────────
-window.openDetail = (id) => {
-  const l = allListings.find(x => x.id === id);
-  if (!l) return;
-
-  const imgHtml = l.imgUrl
-    ? `<img src="${l.imgUrl}" alt="" class="detail-img">`
-    : `<div class="detail-img-placeholder">${l.emoji || '📦'}</div>`;
-
-  const adminDelete = isAdmin
-    ? `<button onclick="deleteListing('${l.id}')" style="width:100%;padding:10px;background:rgba(180,60,60,0.1);border:1px solid rgba(180,60,60,0.2);color:#e87a7a;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;cursor:pointer;margin-top:8px;text-transform:uppercase;">✕ Admin: Eliminar Anuncio</button>` : '';
-
-  document.getElementById('detailContent').innerHTML = `
-    ${imgHtml}
-    <div class="detail-body">
-      <div class="detail-category">${l.category || 'Mercadito'}</div>
-      <div class="detail-title">${l.title}</div>
-      <div class="detail-price">${l.price ? Number(l.price).toLocaleString() : 'A Convenir'} <span style="font-size:18px;color:var(--gold-dim)">${l.currency||'USD'}</span></div>
-      <div class="detail-desc">${l.desc || ''}</div>
-      <div class="detail-meta-row">
-        <div class="detail-meta-item">
-          <span class="detail-meta-label">Condición</span>
-          <span class="detail-meta-value">${l.condition || '—'}</span>
-        </div>
-        <div class="detail-meta-item">
-          <span class="detail-meta-label">País</span>
-          <span class="detail-meta-value">${l.country || '—'}</span>
-        </div>
-        <div class="detail-meta-item">
-          <span class="detail-meta-label">Ciudad</span>
-          <span class="detail-meta-value">${l.city || '—'}</span>
-        </div>
-        <div class="detail-meta-item">
-          <span class="detail-meta-label">Vendedor</span>
-          <span class="detail-meta-value">${l.seller || '—'}</span>
-        </div>
-      </div>
-      <button class="btn-contact-seller" onclick="contactSeller('${encodeURIComponent(l.contact||'')}','${encodeURIComponent(l.title||'')}')">
-        Contactar al Vendedor
-      </button>
-      ${adminDelete}
-    </div>`;
-
-  document.getElementById('detailModal').classList.add('open');
-};
-
-window.closeDetailModal = () => document.getElementById('detailModal').classList.remove('open');
-
-// ─── CONTACT ──────────────────────────────────────────────────────────────────
-window.contactSeller = (contact, title) => {
-  const c = decodeURIComponent(contact);
-  const t = decodeURIComponent(title);
-  if (c.includes('@')) {
-    window.open(`mailto:${c}?subject=Interesado en: ${t}`);
-  } else if (c.match(/^\+?\d/)) {
-    const num = c.replace(/[^+\d]/g,'');
-    window.open(`https://wa.me/${num}?text=Hola! Vi tu anuncio en Yavaya Mercadito: "${t}". Quisiera más información.`);
-  } else {
-    showToast('Contacto: ' + c);
-  }
-};
-
-// ─── POST LISTING ─────────────────────────────────────────────────────────────
-window.openPostModal = () => {
-  if (!currentUser) { showToast('Inicia sesión para publicar.'); return; }
-  document.getElementById('postModal').classList.add('open');
-};
-window.closePostModal = () => document.getElementById('postModal').classList.remove('open');
-
-window.submitListing = async () => {
-  // ── VALIDATION ──
-  const title = (document.getElementById('f_title').value || '').trim();
-  const desc  = (document.getElementById('f_desc').value || '').trim();
-  const imgUrl = uploadedPhotoUrl || '';
-  const waCode = document.getElementById('f_wa_code').value;
-  const waNum  = (document.getElementById('f_wa_number').value || '').replace(/\D/g,'');
-  const city   = (document.getElementById('f_city').value || '').trim();
-
-  // Clear previous errors
-  document.querySelectorAll('.form-input.error,.form-select.error,.form-textarea.error,.field-error').forEach(el => {
-    el.classList.remove('error');
-    if (el.classList.contains('field-error')) el.remove();
-  });
-
-  let errors = 0;
-  function fieldError(id, msg) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.classList.add('error');
-    const err = document.createElement('div');
-    err.className = 'field-error';
-    err.textContent = msg;
-    el.parentNode.insertBefore(err, el.nextSibling);
-    errors++;
-  }
-
-  if (!title || title.length < 5) fieldError('f_title', currentLang === 'es' ? 'Escribe un título de al menos 5 caracteres' : 'Title must be at least 5 characters');
-  if (!desc || desc.length < 10) fieldError('f_desc', currentLang === 'es' ? 'Descripción muy corta (mín 10 caracteres)' : 'Description too short (min 10 chars)');
-  if (!imgUrl) {
-    const pa = document.getElementById('photoUploadArea');
-    pa.style.borderColor = 'var(--red)';
-    const err = document.createElement('div'); err.className='field-error'; err.textContent = currentLang==='es'?'Foto obligatoria — sin foto no se publica':'Photo is required';
-    pa.parentNode.insertBefore(err, pa.nextSibling);
-    errors++;
-  }
-  if (!waNum || waNum.length < 7) fieldError('f_wa_number', currentLang==='es'?'WhatsApp obligatorio':'WhatsApp is required');
-  if (!city) fieldError('f_city', currentLang==='es'?'Escribe tu ciudad':'Enter your city');
-
-  if (errors > 0) {
-    showToast(currentLang==='es'?'Corrige los campos marcados':'Please fix the highlighted fields');
-    return;
-  }
-
-  if (!currentUser) { showToast(currentLang==='es'?'Inicia sesión primero':'Sign in first'); return; }
-
-  // ── TOKEN GATE ──
-  const ok = await spendTokenGate('create_listing', { page: 'mercadito' });
-  if (!ok) return;
-
-  // ── WHATSAPP LOCK CHECK ──
-  const fullWa = waCode + waNum;
-  const waLock = await checkAndLockWhatsApp(currentUser.uid, fullWa);
-  if (!waLock.ok) {
-    showToast(waLock.reason);
-    return;
-  }
-
-  // ── ANTI-FRAUD SCORE ──
-  const fraudScore = computeFraudScore({ title, desc, imgUrl, price: parseFloat(document.getElementById('f_price').value)||0, wa: fullWa });
-
-  const listing = {
-    title, isDemo: false,
-    category: document.getElementById('f_cat').value,
-    condition: document.getElementById('f_condition').value,
-    desc,
-    price: parseFloat(document.getElementById('f_price').value) || 0,
-    currency: document.getElementById('f_currency').value,
-    country: document.getElementById('f_country').value,
-    city,
-    whatsapp: fullWa,
-    imgUrl,
-    seller: currentUser.displayName || currentUser.email.split('@')[0],
-    sellerEmail: currentUser.email,
-    sellerUid: currentUser.uid,
-    badge: 'new',
-    emoji: '📦',
-    fraudScore,
-    isVisible: fraudScore < 70,
-    lang: currentLang,
-    createdAt: serverTimestamp()
-  };
-
-  try {
-    const btn = document.getElementById('btnSubmitListing');
-    btn.disabled = true;
-    btn.textContent = currentLang==='es'?'Publicando...':'Publishing...';
-    await addDoc(collection(db, 'listings'), listing);
-    showToast(currentLang==='es'?'¡Anuncio publicado!':'Listing published!');
-    closePostModal();
-    uploadedPhotoUrl = '';
-    await loadListings();
-    btn.disabled = false;
-    btn.innerHTML = '✦ <span data-i18n="btn_publish">'+(currentLang==='es'?'Publicar Ahora':'Publish Now')+'</span>';
-  } catch(e) {
-    showToast('Error: ' + e.message);
-    document.getElementById('btnSubmitListing').disabled = false;
-  }
-};
-
-// ─── DELETE ───────────────────────────────────────────────────────────────────
-window.deleteListing = async (id) => {
-  if (!isAdmin) return;
-  try {
-    if (!id.startsWith('demo_')) await deleteDoc(doc(db, 'listings', id));
-    allListings = allListings.filter(l => l.id !== id);
-    filteredListings = filteredListings.filter(l => l.id !== id);
-    renderListings(filteredListings);
-    closeDetailModal();
-    showToast('Anuncio eliminado.');
-  } catch(e) { showToast('Error al eliminar.'); }
-};
-
-window.deleteAllDemo = async () => {
-  if (!isAdmin) return;
-  allListings = allListings.filter(l => !l.isDemo);
-  filteredListings = filteredListings.filter(l => !l.isDemo);
-  renderListings(filteredListings);
-  showToast('Anuncios demo eliminados.');
-};
-
-window.toggleDemoMode = () => { loadListings(); showToast('Demo actualizado.'); };
-
-// ─── FILTERS & SEARCH ─────────────────────────────────────────────────────────
-window.filterCat = (cat, btn) => {
-  currentCategory = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  applyFilters();
-};
-
-window.applyFilters = () => {
-  const countries = [...document.querySelectorAll('.filter-check[value]:checked')]
-    .filter(c => ['Guatemala','Honduras','El Salvador','Nicaragua','Costa Rica','Panamá','México','Belice'].includes(c.value))
-    .map(c => c.value);
-  const conditions = [...document.querySelectorAll('.filter-check[value]:checked')]
-    .filter(c => ['Nuevo','Usado','Reacondicionado'].includes(c.value))
-    .map(c => c.value);
-  const minP = parseFloat(document.getElementById('priceMin').value) || 0;
-  const maxP = parseFloat(document.getElementById('priceMax').value) || Infinity;
-  const loc = document.getElementById('locationFilter').value.toLowerCase().trim();
-
-  filteredListings = allListings.filter(l => {
-    if (currentCategory !== 'all' && l.category !== currentCategory) return false;
-    if (countries.length && !countries.includes(l.country)) return false;
-    if (conditions.length && !conditions.includes(l.condition)) return false;
-    if (l.price < minP || l.price > maxP) return false;
-    if (loc && !((l.city||'').toLowerCase().includes(loc) || (l.country||'').toLowerCase().includes(loc))) return false;
-    return true;
-  });
-  renderListings(filteredListings);
-};
-
-window.doSearch = () => {
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  filteredListings = allListings.filter(l =>
-    (l.title||'').toLowerCase().includes(q) ||
-    (l.desc||'').toLowerCase().includes(q) ||
-    (l.category||'').toLowerCase().includes(q)
-  );
-  renderListings(filteredListings);
-};
-
-document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doSearch();
-});
-
-window.sortListings = (by) => {
-  if (by === 'price-asc') filteredListings.sort((a,b) => a.price - b.price);
-  else if (by === 'price-desc') filteredListings.sort((a,b) => b.price - a.price);
-  else filteredListings.sort((a,b) => 0); // keep order
-  renderListings(filteredListings);
-};
-
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-window.showToast = (msg) => {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-};
-
-// Close modals on overlay click
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// Initial load
-loadListings();
-</script>
-
-
-<script>
-// ══════════════════════════════════════════════════════
-// YAVAYA MERCADITO — Extended System
-// WhatsApp enforcement + Anti-fraud + Photo upload + i18n
-// ══════════════════════════════════════════════════════
-
-// ─── STATE ───────────────────────────────────────────
-let uploadedPhotoUrl = '';
-let currentLang = localStorage.getItem('yavaya_lang') || 'es';
-
-// ─── i18n STRINGS ────────────────────────────────────
-const i18n = {
-  es: {
-    modal_post_title: 'Publicar Anuncio',
-    label_photo: 'Foto del Producto',
-    upload_photo_btn: 'Toca para subir foto',
-    upload_photo_hint: 'JPG, PNG o WEBP — máx 5 MB',
-    label_title: 'Título del anuncio',
-    label_cat: 'Categoría',
-    label_condition: 'Condición',
-    label_desc: 'Descripción',
-    label_price: 'Precio',
-    label_currency: 'Moneda',
-    label_country: 'País',
-    label_city: 'Ciudad',
-    label_whatsapp: 'WhatsApp',
-    wa_locked_hint: 'Tu número está asociado a esta cuenta. Contacta soporte para cambiarlo.',
-    fraud_notice: 'Al publicar aceptas que tu anuncio sea revisado. Listings falsos, fraudulentos o sin imagen real serán eliminados y tu cuenta bloqueada permanentemente.',
-    btn_publish: 'Publicar Ahora',
-    contact_wa: 'Contactar por WhatsApp',
-    search_placeholder: 'Buscar en Mercadito...',
-    post_btn: 'Publicar',
-  },
-  en: {
-    modal_post_title: 'Post a Listing',
-    label_photo: 'Product Photo',
-    upload_photo_btn: 'Tap to upload photo',
-    upload_photo_hint: 'JPG, PNG or WEBP — max 5 MB',
-    label_title: 'Listing title',
-    label_cat: 'Category',
-    label_condition: 'Condition',
-    label_desc: 'Description',
-    label_price: 'Price',
-    label_currency: 'Currency',
-    label_country: 'Country',
-    label_city: 'City',
-    label_whatsapp: 'WhatsApp',
-    wa_locked_hint: 'This number is linked to your account. Contact support to change it.',
-    fraud_notice: 'By posting you agree your listing will be reviewed. Fake, fraudulent, or stock-photo listings will be removed and your account permanently blocked.',
-    btn_publish: 'Publish Now',
-    contact_wa: 'Contact via WhatsApp',
-    search_placeholder: 'Search Mercadito...',
-    post_btn: 'Post',
-  }
-};
-
-function setLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('yavaya_lang', lang);
-  document.getElementById('btnEs').classList.toggle('active', lang === 'es');
-  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
-  // Update all data-i18n elements
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (i18n[lang][key]) el.textContent = i18n[lang][key];
-  });
-  // Update placeholders
-  const searchInput = document.querySelector('.search-input');
-  if (searchInput) searchInput.placeholder = i18n[lang].search_placeholder;
-}
-
-// Apply lang on load
-document.addEventListener('DOMContentLoaded', () => setLang(currentLang));
-
-// ─── CHARACTER COUNTERS ──────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  const titleEl = document.getElementById('f_title');
-  const descEl = document.getElementById('f_desc');
-  if (titleEl) titleEl.addEventListener('input', () => {
-    document.getElementById('titleCounter').textContent = titleEl.value.length + '/80';
-    titleEl.classList.remove('error');
-  });
-  if (descEl) descEl.addEventListener('input', () => {
-    document.getElementById('descCounter').textContent = descEl.value.length + '/500';
-    descEl.classList.remove('error');
-  });
-});
-
-// ─── PHOTO UPLOAD to Firebase Storage ───────────────
-async function handlePhotoUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  // Validate
-  if (!file.type.startsWith('image/')) {
-    showToast(currentLang==='es'?'Solo se permiten imágenes':'Only image files are allowed');
-    return;
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    showToast(currentLang==='es'?'La imagen no puede superar 5 MB':'Image must be under 5 MB');
-    return;
-  }
-
-  // Show preview immediately
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    document.getElementById('photoPreviewImg').src = e.target.result;
-    document.getElementById('photoPreview').style.display = 'block';
-    document.getElementById('photoUploadPlaceholder').style.display = 'none';
-    document.getElementById('photoUploadArea').classList.add('has-photo');
-  };
-  reader.readAsDataURL(file);
-
-  // Upload to Firebase Storage
-  const statusEl = document.getElementById('photoUploadStatus');
-  const area = document.getElementById('photoUploadArea');
-  area.classList.add('uploading');
-  statusEl.style.display = 'block';
-  statusEl.textContent = currentLang==='es'?'⚡ Subiendo imagen...':'⚡ Uploading...';
-
-  try {
-    const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js');
-    const storage = getStorage();
-    const fileName = 'listings/' + currentUser.uid + '_' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._]/g,'_');
-    const sRef = storageRef(storage, fileName);
-    await uploadBytes(sRef, file);
-    const url = await getDownloadURL(sRef);
-    uploadedPhotoUrl = url;
-    statusEl.textContent = '✓ ' + (currentLang==='es'?'Imagen lista':'Image ready');
-    statusEl.style.color = 'var(--green)';
-    area.classList.remove('uploading');
-    area.style.borderColor = 'rgba(61,184,122,.4)';
-  } catch(e) {
-    // Fallback: use base64 data URL stored client-side (works for demo/test)
-    const reader2 = new FileReader();
-    reader2.onload = (ev) => {
-      uploadedPhotoUrl = ev.target.result;
-      statusEl.textContent = '✓ ' + (currentLang==='es'?'Imagen lista (local)':'Image ready (local)');
-      statusEl.style.color = 'var(--green)';
-      area.classList.remove('uploading');
-    };
-    reader2.readAsDataURL(file);
+function markFirstRealUser() {
+  if (!localStorage.getItem('yavaya_demo_expiry')) {
+    var exp = Date.now() + (5 * 24 * 60 * 60 * 1000); // 5 days
+    localStorage.setItem('yavaya_demo_expiry', exp.toString());
   }
 }
 
-function clearPhoto() {
-  uploadedPhotoUrl = '';
-  document.getElementById('photoPreview').style.display = 'none';
-  document.getElementById('photoUploadPlaceholder').style.display = 'flex';
-  document.getElementById('photoUploadArea').classList.remove('has-photo');
-  document.getElementById('photoUploadArea').style.borderColor = '';
-  document.getElementById('photoUploadStatus').style.display = 'none';
-  document.getElementById('f_photo_file').value = '';
-}
 
-// ─── WHATSAPP FORMAT ─────────────────────────────────
-function formatWaNumber(input) {
-  let val = input.value.replace(/\D/g,'');
-  if (val.length > 4 && val.length <= 8) val = val.slice(0,4)+'-'+val.slice(4);
-  else if (val.length > 8) val = val.slice(0,4)+'-'+val.slice(4,8)+'-'+val.slice(8,12);
-  input.value = val;
-  input.classList.remove('error');
-  const clean = val.replace(/\D/g,'');
-  const hint = document.getElementById('waNumberHint');
-  if (clean.length >= 7) {
-    const code = document.getElementById('f_wa_code').value;
-    hint.textContent = code + val;
-    hint.style.color = 'var(--green)';
-  } else {
-    hint.textContent = '';
-  }
-}
-
-// ─── WHATSAPP LOCK SYSTEM ────────────────────────────
-async function checkAndLockWhatsApp(uid, fullNumber) {
-  try {
-    // Check if this user already has a locked number
-    const userRef = doc(db, 'users', uid);
-    const snap = await getDoc(userRef);
-    const data = snap.data() || {};
-    
-    if (data.lockedWhatsApp && data.lockedWhatsApp !== fullNumber) {
-      return {
-        ok: false,
-        reason: currentLang==='es'
-          ? 'Ya tienes un WhatsApp registrado (' + data.lockedWhatsApp + '). No se puede usar otro número.'
-          : 'You already have a registered WhatsApp (' + data.lockedWhatsApp + '). You cannot use a different number.'
-      };
-    }
-    
-    // Check if this number is used by another account
-    if (!data.lockedWhatsApp) {
-      const q = query(collection(db, 'users'), where('lockedWhatsApp', '==', fullNumber));
-      const existing = await getDocs(q);
-      if (!existing.empty && existing.docs[0].id !== uid) {
-        return {
-          ok: false,
-          reason: currentLang==='es'
-            ? 'Este número de WhatsApp ya está registrado en otra cuenta.'
-            : 'This WhatsApp number is already registered to another account.'
-        };
-      }
-      // Lock it to this account
-      await updateDoc(userRef, { lockedWhatsApp: fullNumber });
-    }
-    
-    return { ok: true };
-  } catch(e) {
-    // If Firestore fails, allow but log
-    console.warn('WA check failed:', e);
-    return { ok: true };
-  }
-}
-
-// Pre-fill WhatsApp if already locked
-async function prefillLockedWhatsApp() {
-  if (!currentUser) return;
-  try {
-    const snap = await getDoc(doc(db, 'users', currentUser.uid));
-    const data = snap.data() || {};
-    if (data.lockedWhatsApp) {
-      // Show locked display, hide inputs
-      document.getElementById('f_wa_code').parentElement.style.display = 'none';
-      const locked = document.getElementById('waLockedDisplay');
-      if (locked) {
-        locked.style.display = 'block';
-        document.getElementById('waLockedNumber').textContent = data.lockedWhatsApp;
-      }
-    }
-  } catch(e) {}
-}
-
-// Hook into post modal open
-const _origOpenModal = window.openPostModal;
-window.openPostModal = function() {
-  if (_origOpenModal) _origOpenModal();
-  else document.getElementById('postModal').style.display = 'flex';
-  clearPhoto();
-  uploadedPhotoUrl = '';
-  prefillLockedWhatsApp();
-};
-
-// ─── ANTI-FRAUD SCORING ──────────────────────────────
-function computeFraudScore({ title, desc, price, imgUrl, wa }) {
-  let score = 0;
-  const t = title.toLowerCase();
-  const d = desc.toLowerCase();
-
-  // Scam keywords
-  const scamWords = ['ganalo','gratis','100% gratis','gana dinero','trabajo fácil','sin experiencia gana','multinivel','inversión garantizada','duplica tu dinero','bitcoin gratis','trabaja desde casa gana','lotería','premio','ganador','forex','cripto fácil','señales forex','pump','rug pull'];
-  scamWords.forEach(w => { if (t.includes(w) || d.includes(w)) score += 25; });
-
-  // Suspiciously vague
-  if (desc.length < 20) score += 20;
-  if (title.length < 8) score += 15;
-
-  // ALL CAPS title
-  if (title === title.toUpperCase() && title.length > 5) score += 10;
-
-  // Unrealistic price
-  if (price > 0 && price < 0.10) score += 15;
-  if (price > 50000) score += 10;
-
-  // No image (already required but double-check)
-  if (!imgUrl) score += 40;
-
-  // Excessive punctuation/emojis in title (spam signal)
-  const exclamations = (title.match(/!/g)||[]).length;
-  if (exclamations > 2) score += 10;
-
-  // Phone number in title/desc (bypass contact system)
-  if (/\+?\d{7,}/.test(t) || /\+?\d{7,}/.test(d)) score += 15;
-
-  // URL in description (external link)
-  if (/https?:\/\//.test(d) || /www\./.test(d)) score += 20;
-
-  // Duplicate-sounding title (repeated words)
-  const words = t.split(/\s+/);
-  const unique = new Set(words);
-  if (words.length > 3 && unique.size / words.length < 0.5) score += 15;
-
-  return Math.min(score, 100);
-}
-
-// ─── ENHANCED LISTING CARD with WA button ──────────
-// Override renderListingCard to add WhatsApp button and fraud check
-const _origRenderCard = window.renderListingCard;
-window.renderListingCard = function(l) {
-  // If original renderer exists, use it but inject WA
-  if (_origRenderCard) {
-    let card = _origRenderCard(l);
-    return card;
-  }
-  return '';
-};
-
-// ─── RESET POST MODAL ───────────────────────────────
-const _origClosePost = window.closePostModal;
-window.closePostModal = function() {
-  clearPhoto();
-  document.querySelectorAll('.form-input.error,.form-select.error,.form-textarea.error').forEach(el => el.classList.remove('error'));
-  document.querySelectorAll('.field-error').forEach(el => el.remove());
-  if (_origClosePost) _origClosePost();
-  else document.getElementById('postModal').style.display = 'none';
-};
-</script>
-
-<script>
-/* ══════════════════════════════════════════
-   YAVAYA — Core UI System (all pages)
-   Theme toggle + Lang toggle + Auth modal
-══════════════════════════════════════════ */
-
-// ─── THEME TOGGLE ──────────────────────────────────
+/* ═══ YAVAYA CORE JS ═══ */
 window.toggleTheme = function() {
-  var current = document.documentElement.getAttribute('data-theme') || 'dark';
-  var next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  document.documentElement.style.colorScheme = next;
-  localStorage.setItem('yavaya_theme', next);
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('yavaya_theme', t);
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+};
+(function() {
+  var t = localStorage.getItem('yavaya_theme') || 'dark';
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+
+var _lang = localStorage.getItem('yavaya_lang') || 'es';
+window.setLang = function(l) {
+  _lang = l; localStorage.setItem('yavaya_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.l === l);
+  });
+  if (window._applyLang) window._applyLang(l);
+};
+(function() { window.setLang(_lang); })();
+
+window.toggleMob = function() {
+  var m = document.getElementById('navMob');
+  if (m) m.classList.toggle('open');
 };
 
-// ─── LANG TOGGLE (unified across all pages) ────────
-window._yavayaLang = localStorage.getItem('yavaya_lang') || 'es';
+// Scroll animations
+var _obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
 
-window.setLang = window.setIdxLang = window.setYgLang = window.setTkLang = function(lang) {
-  window._yavayaLang = lang;
-  localStorage.setItem('yavaya_lang', lang);
-  // Update all lang buttons on page
-  document.querySelectorAll('.lang-btn').forEach(function(btn) {
-    var btnLang = btn.textContent.trim().toLowerCase().includes('es') ? 'es' : 'en';
-    btn.classList.toggle('active', btnLang === lang);
-  });
-  // Update all data-i18n elements
-  document.querySelectorAll('[data-i18n], [data-i18n-idx], [data-yg-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n') || el.getAttribute('data-i18n-idx') || el.getAttribute('data-yg-i18n');
-    var t = window._i18nStrings || {};
-    if (t[lang] && t[lang][key]) el.textContent = t[lang][key];
-  });
-  // Placeholders
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-placeholder');
-    var t = window._i18nStrings || {};
-    if (t[lang] && t[lang][key]) el.placeholder = t[lang][key];
-  });
+// Toast
+window.showToast = function(msg, dur) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
 };
 
-// Apply on load
-document.addEventListener('DOMContentLoaded', function() {
-  // Re-apply theme (belt + suspenders)
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  // Apply lang
-  if (window.setLang) window.setLang(window._yavayaLang);
-});
-</script>
+// Nav scroll effect
+window.addEventListener('scroll', function() {
+  var n = document.getElementById('nav');
+  if (!n) return;
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  n.style.background = window.scrollY > 50
+    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
+    : '';
+}, { passive: true });
 
-<!-- ════ AUTH MODAL ════ -->
-<div class="modal-overlay" id="authModal" style="display:none;z-index:300;">
-  <div class="modal" style="max-width:400px;">
-    <button class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div id="authTabBar" style="display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;">
-      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
-        <span data-i18n="auth_login">Iniciar Sesión</span>
-      </button>
-      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">
-        <span data-i18n="auth_register">Registrarse</span>
-      </button>
-    </div>
-
-    <!-- LOGIN -->
-    <div id="authPanelLogin">
-      <div class="modal-title" data-i18n="auth_login">Iniciar Sesión</div>
-      <div class="modal-sub">Yavaya · Tu Civilización</div>
-      <div style="margin:24px 0 16px;">
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_email">Correo</label>
-          <input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_password">Contraseña</label>
-          <div style="position:relative;">
-            <input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:44px;">
-            <button onclick="togglePassVis('loginPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
-          </div>
-        </div>
-        <div style="text-align:right;margin-top:6px;margin-bottom:18px;">
-          <a href="#" onclick="forgotPassword()" style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);text-decoration:none;" data-i18n="auth_forgot">¿Olvidaste tu contraseña?</a>
-        </div>
-        <button class="btn-submit" onclick="doLogin()" id="btnLogin" data-i18n="auth_login_btn">Entrar →</button>
-        <div style="margin-top:16px;text-align:center;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
-          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
-            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- REGISTER -->
-    <div id="authPanelRegister" style="display:none;">
-      <div class="modal-title" data-i18n="auth_register">Crear Cuenta</div>
-      <div class="modal-sub">Yavaya · Tu Civilización</div>
-      <div style="margin:24px 0 16px;">
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_name">Tu nombre</label>
-          <input type="text" class="form-input" id="regName" placeholder="Ana Sofía">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_email">Correo</label>
-          <input type="email" class="form-input" id="regEmail" placeholder="tu@email.com">
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_password">Contraseña</label>
-          <div style="position:relative;">
-            <input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:44px;">
-            <button onclick="togglePassVis('regPass')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:16px;">👁</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" data-i18n="auth_confirm">Confirmar contraseña</label>
-          <input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña">
-        </div>
-        <div style="padding:10px 14px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.1);margin-bottom:18px;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);line-height:1.6;" data-i18n="auth_terms">
-            Al registrarte aceptas los Términos de Yavaya. Tu información está protegida y nunca será vendida.
-          </div>
-        </div>
-        <button class="btn-submit" onclick="doRegister()" id="btnRegister" data-i18n="auth_register_btn">Crear Mi Cuenta →</button>
-        <div style="margin-top:16px;text-align:center;">
-          <div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:12px;" data-i18n="auth_or">— O CONTINÚA CON —</div>
-          <button onclick="doGoogleLogin()" style="width:100%;padding:12px;font-family:Cinzel,serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;">
-            <span style="font-size:18px;">G</span><span data-i18n="auth_google">Continuar con Google</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ════ AUTH MODAL SYSTEM ════ */
-
-window.openAuthModal = function(tab) {
-  document.getElementById('authModal').style.display = 'flex';
-  if (tab) switchAuthTab(tab);
+// Auth modal shared
+window.openAuthModal = window.openAuthModal || function(tab) {
+  var m = document.getElementById('authModal');
+  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
 };
 window.closeAuthModal = function() {
-  document.getElementById('authModal').style.display = 'none';
+  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
 };
 window.switchAuthTab = function(tab) {
-  document.getElementById('authPanelLogin').style.display = tab==='login' ? 'block' : 'none';
-  document.getElementById('authPanelRegister').style.display = tab==='register' ? 'block' : 'none';
-  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
-  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  ['login','reg'].forEach(function(p) {
+    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
+  });
+  ['Login','Reg'].forEach(function(p) {
+    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
+  });
 };
-window.togglePassVis = function(id) {
-  var el = document.getElementById(id);
-  el.type = el.type === 'password' ? 'text' : 'password';
-};
-window.doGoogleLogin = async function() {
-  if (typeof firebase !== 'undefined' && window._go) {
-    try {
-      var { signInWithPopup, GoogleAuthProvider } = window._go;
-      var provider = new GoogleAuthProvider();
-      await signInWithPopup(window._auth, provider);
-      closeAuthModal();
-    } catch(e) { showToast && showToast('Error Google: ' + e.message); }
-  } else {
-    showToast && showToast('Google Sign-In — Firebase no configurado');
-  }
+window.toggleVis = function(id) {
+  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
 };
 window.doLogin = async function() {
-  var email = (document.getElementById('loginEmail').value||'').trim();
-  var pass = document.getElementById('loginPass').value;
-  if (!email || !pass) { showToast && showToast('Ingresa correo y contraseña'); return; }
-  var btn = document.getElementById('btnLogin');
-  btn.disabled = true; btn.textContent = 'Entrando...';
-  if (window._go) {
-    try {
-      var { signInWithEmailAndPassword } = window._go;
-      await signInWithEmailAndPassword(window._auth, email, pass);
-      closeAuthModal();
-    } catch(e) {
-      var msgs = { 'auth/wrong-password':'Contraseña incorrecta', 'auth/user-not-found':'Cuenta no encontrada', 'auth/invalid-email':'Correo inválido' };
-      showToast && showToast(msgs[e.code] || e.message);
-    }
-  } else {
-    showToast && showToast('Firebase no configurado');
+  var e = (document.getElementById('loginEmail') || {}).value || '';
+  var p = (document.getElementById('loginPass') || {}).value || '';
+  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
+  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+  try {
+    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
+    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
+  } catch(err) {
+    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
+    showToast(map[err.code] || err.message);
   }
-  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Sign In →':'Entrar →');
+  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
 };
 window.doRegister = async function() {
-  var name = (document.getElementById('regName').value||'').trim();
-  var email = (document.getElementById('regEmail').value||'').trim();
-  var pass = document.getElementById('regPass').value;
-  var pass2 = document.getElementById('regPass2').value;
-  if (!name) { showToast && showToast('Escribe tu nombre'); return; }
-  if (!email) { showToast && showToast('Ingresa tu correo'); return; }
-  if (pass.length < 8) { showToast && showToast('Contraseña mín. 8 caracteres'); return; }
-  if (pass !== pass2) { showToast && showToast('Las contraseñas no coinciden'); return; }
-  var btn = document.getElementById('btnRegister');
-  btn.disabled = true; btn.textContent = 'Creando cuenta...';
-  if (window._go) {
-    try {
-      var { createUserWithEmailAndPassword, updateProfile } = window._go;
-      var cred = await createUserWithEmailAndPassword(window._auth, email, pass);
-      await updateProfile(cred.user, { displayName: name });
-      closeAuthModal();
-      showToast && showToast('¡Bienvenido/a ' + name + '! 🎉');
-    } catch(e) {
-      var msgs = { 'auth/email-already-in-use':'Este correo ya tiene cuenta', 'auth/invalid-email':'Correo inválido', 'auth/weak-password':'Contraseña muy débil' };
-      showToast && showToast(msgs[e.code] || e.message);
+  var n = (document.getElementById('regName') || {}).value || '';
+  var e = (document.getElementById('regEmail') || {}).value || '';
+  var p = (document.getElementById('regPass') || {}).value || '';
+  var p2 = (document.getElementById('regPass2') || {}).value || '';
+  n = n.trim(); e = e.trim();
+  if (!n) { showToast('Escribe tu nombre'); return; }
+  if (!e) { showToast('Ingresa tu correo'); return; }
+  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
+  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
+  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
+  try {
+    if (window._goAuth && window._auth) {
+      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
+      await window._goAuth.updateProfile(c.user, { displayName: n });
     }
-  } else {
-    showToast && showToast('Firebase no configurado');
+    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
+  } catch(err) {
+    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
+    showToast(map2[err.code] || err.message);
   }
-  btn.disabled = false; btn.textContent = (window._yavayaLang==='en'?'Create Account →':'Crear Mi Cuenta →');
+  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
 };
-window.forgotPassword = async function() {
-  var email = (document.getElementById('loginEmail').value||'').trim();
-  if (!email) { showToast && showToast('Primero ingresa tu correo'); return; }
-  if (window._go) {
-    try {
-      var { sendPasswordResetEmail } = window._go;
-      await sendPasswordResetEmail(window._auth, email);
-      showToast && showToast('Correo de recuperación enviado ✓');
-    } catch(e) { showToast && showToast(e.message); }
-  }
+window.doGoogle = function() {
+  if (window._goAuth && window._auth) {
+    var pr = new window._goAuth.GoogleAuthProvider();
+    window._goAuth.signInWithPopup(window._auth, pr)
+      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
+      .catch(function(e) { showToast(e.message); });
+  } else { showToast('Google auth no configurado'); }
 };
-// Close on backdrop click
-document.addEventListener('DOMContentLoaded', function() {
-  var modal = document.getElementById('authModal');
-  if (modal) modal.addEventListener('click', function(e) {
-    if (e.target === modal) closeAuthModal();
-  });
-});
-</script>
+window.forgotPass = function() {
+  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
+  if (!e) { showToast('Ingresa tu correo primero'); return; }
+  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
+};
 
+
+window._activeCat = 'all';
+window.selCat = function(el, cat) {
+  document.querySelectorAll('.cat-b').forEach(function(b){b.classList.remove('on')});
+  el.classList.add('on');
+  window._activeCat = cat;
+  filterListings();
+};
+
+window.filterListings = function() {
+  var q = (document.getElementById('searchInput')||{value:''}).value.toLowerCase();
+  var sort = (document.getElementById('sortSel')||{value:'newest'}).value;
+  var ctries = Array.from(document.querySelectorAll('.m-side input[type=checkbox]:checked')).filter(function(c){return ['Guatemala','Honduras','El Salvador','Nicaragua','Costa Rica','Panamá','México','Belice'].indexOf(c.value)>-1}).map(function(c){return c.value});
+  var conds = Array.from(document.querySelectorAll('.m-side input[type=checkbox]:checked')).filter(function(c){return ['Nuevo','Usado','Reacondicionado'].indexOf(c.value)>-1}).map(function(c){return c.value});
+  var minP = parseFloat((document.getElementById('minPrice')||{value:''}).value)||0;
+  var maxP = parseFloat((document.getElementById('maxPrice')||{value:''}).value)||Infinity;
+  if (typeof window.applyFilters === 'function') window.applyFilters({q,sort,countries:ctries,conditions:conds,minP,maxP,cat:window._activeCat});
+};
+window.clearFilters = function() {
+  document.querySelectorAll('.m-side input[type=checkbox]').forEach(function(c){c.checked=false});
+  var mn=document.getElementById('minPrice'),mx=document.getElementById('maxPrice');
+  if(mn)mn.value='';if(mx)mx.value='';
+  filterListings();
+};
+
+window.openPost = function() {
+  if(!window._currentUser && !window.firebaseUser){openAuthModal('login');showToast('Inicia sesión para publicar');return;}
+  document.getElementById('postModal').style.display='flex';
+};
+window.closePost = function() { document.getElementById('postModal').style.display='none'; };
+
+window.handlePhoto = function(e) {
+  var file = e.target.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){showToast('Foto máx 5MB');return;}
+  var r = new FileReader();
+  r.onload = function(ev) {
+    document.getElementById('photoPreview').src = ev.target.result;
+    document.getElementById('photoDrop').style.display = 'none';
+    document.getElementById('photoPreviewWrap').style.display = 'block';
+    window._pendingPhotoFile = file;
+  };
+  r.readAsDataURL(file);
+};
+window.rmPhoto = function() {
+  document.getElementById('photoDrop').style.display = 'block';
+  document.getElementById('photoPreviewWrap').style.display = 'none';
+  document.getElementById('photoFile').value = '';
+  window._pendingPhotoFile = null;
+  window.uploadedPhotoUrl = '';
+};
+
+document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
+document.getElementById('postModal').addEventListener('click',function(e){if(e.target===this)closePost()});
+document.getElementById('detailModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none'});
+</script>
 </body>
 </html>
