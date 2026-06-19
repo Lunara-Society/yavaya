@@ -176,6 +176,12 @@
       radial-gradient(ellipse 50% 40% at 30% 40%, rgba(180,50,5,0.08) 0%, transparent 50%),
       linear-gradient(185deg, #02020a 0%, #060408 25%, #0e0a04 55%, #1a0e04 75%, #0a0806 100%);
   }
+  [data-theme="light"] .hero-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 85%, rgba(255,200,80,.2) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 70% at 50% -10%, rgba(255,220,100,.25) 0%, transparent 60%),
+      linear-gradient(180deg, #faf5e4 0%, #f5edcc 40%, #ede2b8 100%);
+  }
 
   /* Star field */
   .stars {
@@ -193,6 +199,7 @@
       radial-gradient(1px 1px at 75% 30%, rgba(255,240,200,0.3) 0%, transparent 100%);
     pointer-events: none;
   }
+  [data-theme="light"] .stars { opacity: 0; }
 
   /* Architecture columns */
   .hero-arch {
@@ -1120,6 +1127,66 @@ body {
 .auth-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
 .auth-tab:hover:not(.active) { color:var(--text-light); }
 
+
+[data-theme="light"] .reino-card { background: #fffdf5 !important; border-color: rgba(139,105,30,.2) !important; }
+[data-theme="light"] .reino-card:hover { box-shadow: 0 16px 48px rgba(139,105,30,.15) !important; }
+[data-theme="light"] .reino-name { color: #6b3a08 !important; }
+[data-theme="light"] .reino-tagline { color: #8b5e20 !important; }
+[data-theme="light"] .btn-entrar { color: #6b3a08 !important; border-color: rgba(107,58,8,.25) !important; }
+[data-theme="light"] .hero-title { color: #5a2d08 !important; text-shadow: none; }
+[data-theme="light"] .hero-eyebrow { color: #7a4a10 !important; }
+[data-theme="light"] .pilares-section { background: #f5edcc !important; }
+[data-theme="light"] .pilar-card { background: #fffdf5 !important; border-color: rgba(139,105,30,.2) !important; }
+[data-theme="light"] .pilar-number { color: rgba(107,58,8,.25) !important; }
+[data-theme="light"] .pilar-title { color: #4a2a06 !important; }
+[data-theme="light"] .pilar-text { color: #6b4010 !important; }
+[data-theme="light"] .paises-section { background: transparent !important; }
+[data-theme="light"] .pais-seal { background: rgba(107,58,8,.06) !important; border-color: rgba(107,58,8,.15) !important; }
+[data-theme="light"] .pais-name { color: #5a3010 !important; }
+[data-theme="light"] .footer { background: #ede2b8 !important; border-top-color: rgba(107,58,8,.15) !important; }
+
+
+/* ════ VISUAL STRIP ════ */
+.visual-strip-wrap {
+  padding: 0 20px 48px; max-width:1200px; margin:0 auto;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:3px;
+}
+.visual-strip-cell {
+  height: 160px; position:relative; overflow:hidden;
+  background-size:cover; background-position:center;
+  filter:saturate(.35) brightness(.45);
+  transition:filter .4s; text-decoration:none; display:block;
+}
+.visual-strip-cell:hover { filter:saturate(.65) brightness(.65); }
+[data-theme="light"] .visual-strip-cell { filter:saturate(.65) brightness(.85); }
+[data-theme="light"] .visual-strip-cell:hover { filter:saturate(.9) brightness(1); }
+.vstrip-label {
+  position:absolute; bottom:10px; left:12px;
+  font-family:'Cinzel',serif; font-size:8px; letter-spacing:3px;
+  text-transform:uppercase; color:rgba(232,208,138,.8);
+  text-shadow:0 1px 6px rgba(0,0,0,.7);
+}
+[data-theme="light"] .vstrip-label { color:rgba(80,40,8,.7); text-shadow:0 1px 4px rgba(255,255,255,.8); }
+@media(max-width:600px) {
+  .visual-strip-wrap { grid-template-columns:1fr; gap:2px; padding:0 12px 32px; }
+  .visual-strip-cell { height:110px; }
+}
+
+
+/* ════ CENTERING FIXES ════ */
+.hero { text-align: center; align-items: center; }
+.hero-eyebrow { text-align: center; width:100%; }
+.hero-title { text-align: center; }
+.hero-sub { text-align: center; }
+.reinos-section { display:flex; flex-direction:column; align-items:center; }
+.reinos-grid { margin:0 auto; }
+.pilares-section { text-align:center; }
+.pilares-grid { margin:0 auto; }
+.paises-section { text-align:center; }
+.paises-row { justify-content:center; }
+.section-title { text-align:center; }
+.section-eyebrow { text-align:center; }
+
 </style>
 </head>
 <body>
@@ -1220,15 +1287,24 @@ body {
 
   
 <!-- VISUAL INTRO STRIP -->
-<div style="padding:0 20px 48px;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;">
-  <div style="height:140px;background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
+<div class="visual-strip-wrap">
+  <a href="church.html" class="visual-strip-cell" style="background-image:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=700&q=80&auto=format');">
+    <div class="vstrip-label">Yavaya · Comunidad</div>
+  </a>
+  <a href="mercadito.html" class="visual-strip-cell" style="background-image:url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=700&q=80&auto=format');">
+    <div class="vstrip-label">Mercadito · Comercio</div>
+  </a>
+  <a href="yavayago.html" class="visual-strip-cell" style="background-image:url('https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=700&q=80&auto=format');">
+    <div class="vstrip-label">YavayaGo · Entrega</div>
+  </a>
+</div>
   <div style="height:140px;background:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
   <div style="height:140px;background:url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=600&q=75&auto=format') center/cover no-repeat;filter:saturate(.4) brightness(.55);"></div>
 </div>
 <div class="reinos-grid">
 
     <!-- YAVAYA -->
-    <div class="reino-card reino-yavaya fade-up s1" onclick="window.location='mercadito.html'">
+    <div class="reino-card reino-yavaya fade-up s1" onclick="window.location='church.html'">
       <div class="reino-bg-gradient"></div>
       <div class="reino-glow-scene"></div>
       <div class="corner-ornament corner-tl"></div>
@@ -1256,12 +1332,12 @@ body {
             <div class="rv-ring rv-ring-2"></div>
           </div>
         </div>
-        <a href="#" class="btn-entrar">Entrar</a>
+        <a href="church.html" class="btn-entrar">Entrar</a>
       </div>
     </div>
 
     <!-- MERCADITO -->
-    <div class="reino-card reino-mercadito fade-up s2">
+    <div class="reino-card reino-mercadito fade-up s2" onclick="window.location='mercadito.html'">
       <div class="reino-bg-gradient"></div>
       <div class="reino-glow-scene"></div>
       <div class="corner-ornament corner-tl"></div>
@@ -1293,7 +1369,7 @@ body {
     </div>
 
     <!-- YAVAYAGO -->
-    <div class="reino-card reino-yavayago fade-up s3">
+    <div class="reino-card reino-yavayago fade-up s3" onclick="window.location='yavayago.html'">
       <div class="reino-bg-gradient"></div>
       <div class="reino-glow-scene"></div>
       <div class="corner-ornament corner-tl"></div>
