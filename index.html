@@ -1053,6 +1053,62 @@ body {
 [data-theme="light"] [style*="background:rgba(201,168,76,.0"],
 [data-theme="light"] [style*="background: rgba(201,168,76,.0"] { background: var(--input-bg) !important; }
 
+
+/* ════ REINO VISUAL ICONS ════ */
+.reino-visual { position: relative; }
+.reino-visual-icon {
+  font-size: 48px;
+  position: relative; z-index: 2;
+  filter: drop-shadow(0 0 20px rgba(201,168,76,.4));
+  animation: floatIcon 4s ease-in-out infinite;
+}
+@keyframes floatIcon {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.reino-visual-rings { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.rv-ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(201,168,76,.12);
+  animation: pulseRing 3s ease-in-out infinite;
+}
+.rv-ring-1 { width: 100px; height: 100px; animation-delay: 0s; }
+.rv-ring-2 { width: 150px; height: 150px; animation-delay: .8s; border-color: rgba(201,168,76,.06); }
+@keyframes pulseRing {
+  0%,100% { transform: scale(1); opacity: .5; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+
+/* ════ LANG TOGGLE ════ */
+.lang-toggle { display:flex; align-items:center; border:1px solid rgba(201,168,76,.2); overflow:hidden; flex-shrink:0; }
+.lang-btn { padding:7px 11px; font-family:'Cinzel',serif; font-size:9px; letter-spacing:1px; background:none; border:none; cursor:pointer; color:rgba(201,168,76,.5); transition:all .2s; }
+.lang-btn.active { background:rgba(201,168,76,.12); color:#c9a84c; }
+.lang-btn:hover:not(.active) { background:rgba(201,168,76,.07); color:#e8c97a; }
+
+/* ════ NAV RESPONSIVE ════ */
+.top-nav { display:flex; align-items:center; justify-content:space-between; flex-wrap:nowrap; }
+.nav-links { display:flex; align-items:center; gap:16px; flex-wrap:nowrap; }
+@media (max-width:768px) {
+  .nav-links a:not([href*="tokens"]):not([title="Admin"]) { display:none; }
+  .nav-links { gap:8px; }
+  .lang-btn { padding:5px 8px; font-size:8px; }
+}
+@media (max-width:480px) {
+  .nav-word { display:none; }
+  .lang-btn { padding:4px 7px; }
+  .theme-toggle { width:34px; height:34px; font-size:14px; }
+}
+
+/* ════ REINO CARDS MOBILE ════ */
+@media (max-width:600px) {
+  .reino-card { min-height: 280px !important; }
+  .reino-visual-icon { font-size: 36px !important; }
+  .rv-ring-1 { width: 80px !important; height: 80px !important; }
+  .rv-ring-2 { width: 120px !important; height: 120px !important; }
+  .btn-entrar { font-size: 9px !important; padding: 12px 28px !important; letter-spacing: 4px !important; }
+  .reino-name { font-size: 16px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -1066,15 +1122,18 @@ body {
     <span class="nav-word">Civilización</span>
   </div>
   <div class="nav-links">
+    <a href="mercadito.html" style="letter-spacing:2px;font-size:9px;">Mercadito</a>
+    <a href="yavayago.html" style="letter-spacing:2px;font-size:9px;">YavayaGo</a>
+    <a href="tokens.html" style="letter-spacing:2px;font-size:9px;">⚡ Tokens</a>
+    <a href="admin.html" style="opacity:.35;letter-spacing:2px;font-size:9px;" title="Admin">Admin</a>
+    <div class="lang-toggle" id="langToggle">
+      <button class="lang-btn active" id="btnIdxEs" onclick="setIdxLang('es')">🇪🇸 ES</button>
+      <button class="lang-btn" id="btnIdxEn" onclick="setIdxLang('en')">🇺🇸 EN</button>
+    </div>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar modo">
-  <span class="icon-dark">🌙</span>
-  <span class="icon-light">☀️</span>
-</button>
-      <a href="tokens.html">⚡ Tokens</a>
-      <a href="admin.html" style="opacity:.35;" title="Admin">Admin</a>
-    <a href="#">Legado</a>
-    <a href="#">Comunidad</a>
-    <a href="#">Futuro</a>
+      <span class="icon-dark">🌙</span>
+      <span class="icon-light">☀️</span>
+    </button>
   </div>
 </nav>
 
@@ -1148,7 +1207,7 @@ body {
   <div class="reinos-grid">
 
     <!-- YAVAYA -->
-    <div class="reino-card reino-yavaya fade-up s1">
+    <div class="reino-card reino-yavaya fade-up s1" onclick="window.location='mercadito.html'">
       <div class="reino-bg-gradient"></div>
       <div class="reino-glow-scene"></div>
       <div class="corner-ornament corner-tl"></div>
@@ -1170,6 +1229,11 @@ body {
         </div>
         <div class="reino-visual">
           <div class="reino-visual-glow"></div>
+          <div class="reino-visual-icon" style="font-family:'Cinzel Decorative',serif;font-size:52px;color:var(--gold);letter-spacing:0;line-height:1;">Y</div>
+          <div class="reino-visual-rings">
+            <div class="rv-ring rv-ring-1"></div>
+            <div class="rv-ring rv-ring-2"></div>
+          </div>
         </div>
         <a href="#" class="btn-entrar">Entrar</a>
       </div>
@@ -1197,6 +1261,11 @@ body {
         </div>
         <div class="reino-visual">
           <div class="reino-visual-glow"></div>
+          <div class="reino-visual-icon" style="font-size:44px;line-height:1;">⚖</div>
+          <div class="reino-visual-rings">
+            <div class="rv-ring rv-ring-1"></div>
+            <div class="rv-ring rv-ring-2"></div>
+          </div>
         </div>
         <a href="mercadito.html" class="btn-entrar">Entrar</a>
       </div>
@@ -1224,6 +1293,11 @@ body {
         </div>
         <div class="reino-visual">
           <div class="reino-visual-glow"></div>
+          <div class="reino-visual-icon" style="font-size:44px;line-height:1;">🍽</div>
+          <div class="reino-visual-rings">
+            <div class="rv-ring rv-ring-1"></div>
+            <div class="rv-ring rv-ring-2"></div>
+          </div>
         </div>
         <a href="yavayago.html" class="btn-entrar">Entrar</a>
       </div>
@@ -1406,6 +1480,52 @@ body {
       p.querySelector('.pais-seal').style.boxShadow = '0 0 32px rgba(201,168,76,0.55)';
     });
   });
+</script>
+
+
+<script>
+(function() {
+  var lang = localStorage.getItem('yavaya_lang') || 'es';
+  var t = {
+    es: {
+      nav_mercadito: 'Mercadito', nav_yavayago: 'YavayaGo', nav_tokens: '⚡ Tokens',
+      hero_eyebrow: 'CIVILIZACIÓN DIGITAL · LATINOAMÉRICA',
+      hero_title_1: 'Un Nuevo Orden',
+      hero_title_2: 'Digital',
+      hero_sub: 'Comercia. Pide. Muévete. Todo en un solo lugar.',
+      enter_mercadito: 'Entrar',
+      enter_yavayago: 'Entrar',
+      reino_mercadito_name: 'MERCADITO',
+      reino_yavayago_name: 'YAVAYAGO',
+    },
+    en: {
+      nav_mercadito: 'Marketplace', nav_yavayago: 'YavayaGo', nav_tokens: '⚡ Tokens',
+      hero_eyebrow: 'DIGITAL CIVILIZATION · LATIN AMERICA',
+      hero_title_1: 'A New Digital',
+      hero_title_2: 'Order',
+      hero_sub: 'Trade. Order. Move. Everything in one place.',
+      enter_mercadito: 'Enter',
+      enter_yavayago: 'Enter',
+      reino_mercadito_name: 'MARKETPLACE',
+      reino_yavayago_name: 'YAVAYAGO',
+    }
+  };
+  function setIdxLang(l) {
+    lang = l; localStorage.setItem('yavaya_lang', l);
+    var esBtn = document.getElementById('btnIdxEs');
+    var enBtn = document.getElementById('btnIdxEn');
+    if (esBtn) esBtn.classList.toggle('active', l==='es');
+    if (enBtn) enBtn.classList.toggle('active', l==='en');
+    document.querySelectorAll('[data-i18n-idx]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n-idx');
+      if (t[l] && t[l][key] !== undefined) el.innerHTML = t[l][key];
+    });
+  }
+  window.setIdxLang = setIdxLang;
+  document.addEventListener('DOMContentLoaded', function() {
+    setIdxLang(lang);
+  });
+})();
 </script>
 
 </body>
