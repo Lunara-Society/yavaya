@@ -2,720 +2,527 @@
 <html lang="es" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-<title>Yavaya — Santuario</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
-<script>
-(function() {
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  document.documentElement.style.colorScheme = saved;
-})();
-</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Santuario — Yavaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 <style>
-/* ════════════════════════════════════════
-   YAVAYA SANCTUARY — CHURCH PAGE
-   Dark = obsidian + gold
-   Light = heavenly warm white + soft gold
-════════════════════════════════════════ */
-
+/* YAVAYA Design System v4 — God Tier Modern */
 :root {
-  --bg:           #06050a;
-  --surface:      #0d0b14;
-  --surface2:     #13101e;
-  --border:       rgba(201,168,76,.18);
-  --gold:         #c9a84c;
-  --gold-l:       #e8d08a;
-  --gold-dim:     rgba(201,168,76,.5);
-  --gold-glow:    rgba(201,168,76,.15);
-  --text:         #e8e0d0;
-  --text-dim:     #a89880;
-  --text-muted:   rgba(232,224,208,.45);
-  --white:        #f5f0e8;
-  --red:          #d94040;
-  --green:        #3db87a;
-  --blue:         #4090d9;
-  --sacred:       rgba(201,168,76,.07);
-  --ray-color:    rgba(201,168,76,.04);
+  --bg: #070b10;
+  --bg2: #0c1118;
+  --bg3: #101820;
+  --surface: #141c27;
+  --surface2: #1c2636;
+  --border: rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.11);
+  --accent: #4f8eff;
+  --accent2: #7aabff;
+  --accent-glow: rgba(79,142,255,.2);
+  --accent-soft: rgba(79,142,255,.09);
+  --gold: #f0c96a;
+  --gold2: #fad98a;
+  --gold-soft: rgba(240,201,106,.09);
+  --green: #30d68c;
+  --green-soft: rgba(48,214,140,.09);
+  --red: #ff5f57;
+  --text: #e8eef8;
+  --text2: #7e90aa;
+  --text3: rgba(232,238,248,.28);
+  --nav-h: 62px;
+  --r: 14px;
+  --r-lg: 22px;
+  --shadow: 0 4px 24px rgba(0,0,0,.5);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
 }
-
-/* ── LIGHT (HEAVENLY) THEME ── */
 [data-theme="light"] {
-  --bg:           #faf8f2;
-  --surface:      #fffef9;
-  --surface2:     #f5f0e4;
-  --border:       rgba(160,120,40,.2);
-  --gold:         #a06820;
-  --gold-l:       #c9901c;
-  --gold-dim:     rgba(160,104,32,.6);
-  --gold-glow:    rgba(200,160,60,.2);
-  --text:         #2a1e10;
-  --text-dim:     #6b5030;
-  --text-muted:   rgba(42,30,16,.5);
-  --white:        #fff;
-  --sacred:       rgba(255,245,210,.7);
-  --ray-color:    rgba(255,230,100,.12);
+  --bg: #f2f5fb;
+  --bg2: #e8edf7;
+  --bg3: #dde4f0;
+  --surface: #ffffff;
+  --surface2: #f7f9fd;
+  --border: rgba(0,0,0,.07);
+  --border2: rgba(0,0,0,.13);
+  --accent: #2563eb;
+  --accent2: #1e50c8;
+  --accent-glow: rgba(37,99,235,.15);
+  --accent-soft: rgba(37,99,235,.08);
+  --gold: #a16207;
+  --gold2: #ca8a04;
+  --gold-soft: rgba(161,98,7,.08);
+  --green: #16a34a;
+  --green-soft: rgba(22,163,74,.08);
+  --red: #dc2626;
+  --text: #0d1626;
+  --text2: #4a5c78;
+  --text3: rgba(13,22,38,.35);
+  --shadow: 0 4px 24px rgba(0,0,0,.09);
+  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Cormorant Garamond', serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background .4s, color .4s;
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{display:block;max-width:100%}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
+input,textarea,select{font-family:inherit}
 
-/* ── HEAVENLY RAYS (light mode) ── */
-.heaven-rays {
-  position: fixed; inset: 0; z-index: 0;
-  pointer-events: none; opacity: 0; transition: opacity .8s;
-  background:
-    radial-gradient(ellipse 60% 90% at 50% -10%, rgba(255,240,160,.18) 0%, transparent 70%),
-    repeating-conic-gradient(at 50% -20%, transparent 0deg, var(--ray-color) 2deg, transparent 4deg);
-}
-[data-theme="light"] .heaven-rays { opacity: 1; }
+/* ── NAV ── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
+[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
+.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
+.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
+.nav-a:hover{background:var(--surface);color:var(--text)}
+.nav-r{display:flex;align-items:center;gap:7px}
+.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
+.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
+.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
+.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
+.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
+.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
+.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
+.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
+.nav-mob.open{display:flex}
+.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
+.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
 
-/* ── TOP NAV ── */
-.top-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px;
-  background: rgba(6,5,10,.88);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  transition: background .4s, border-color .4s;
-}
-[data-theme="light"] .top-nav {
-  background: rgba(250,248,242,.9);
-  border-bottom-color: rgba(160,120,40,.18);
-}
-.nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.nav-y {
-  width:38px; height:38px; border-radius:50%;
-  border: 1px solid var(--gold-dim);
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Cinzel Decorative',serif; font-size:16px; color:var(--gold);
-  background: rgba(201,168,76,.08);
-}
-.nav-word { font-family:'Cinzel',serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--text-dim); }
-.nav-right { display:flex; align-items:center; gap:10px; }
-.nav-link { font-family:'Cinzel',serif; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); text-decoration:none; transition:color .2s; }
-.nav-link:hover { color:var(--gold); }
-.lang-toggle { display:flex; align-items:center; border:1px solid var(--border); overflow:hidden; }
-.lang-btn { padding:7px 11px; font-family:'Cinzel',serif; font-size:9px; background:none; border:none; cursor:pointer; color:var(--text-muted); transition:all .2s; }
-.lang-btn.active { background:var(--gold-glow); color:var(--gold); }
-.theme-toggle {
-  width:38px; height:38px; border-radius:50%;
-  border:1px solid var(--border); background:none; cursor:pointer;
-  color:var(--gold); font-size:16px; display:flex; align-items:center; justify-content:center;
-  transition:all .2s;
-}
-.theme-toggle:hover { background:var(--gold-glow); border-color:var(--gold); }
-.icon-light { display:none; }
-[data-theme="light"] .icon-dark { display:none; }
-[data-theme="light"] .icon-light { display:block; }
+/* ── SECTION WRAPPERS ── */
+.section{padding:96px 24px}
+.section-sm{padding:64px 24px}
+.container{max-width:1200px;margin:0 auto}
+.container-sm{max-width:860px;margin:0 auto}
 
-/* ── HERO ── */
-.sanctuary-hero {
-  min-height: 100vh;
-  display: flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding: 120px 24px 60px;
-  position:relative; overflow:hidden;
-}
+/* ── SECTION HEADER ── */
+.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
+.sec-p{font-size:16px;color:var(--text2);max-width:480px}
 
-/* Dark mode hero glow */
-.hero-glow {
-  position:absolute; width:500px; height:500px;
-  border-radius:50%; top:50%; left:50%; transform:translate(-50%,-60%);
-  background: radial-gradient(ellipse, rgba(201,168,76,.08) 0%, transparent 70%);
-  pointer-events:none;
-  transition: background .8s;
-}
-[data-theme="light"] .hero-glow {
-  background: radial-gradient(ellipse, rgba(255,230,100,.35) 0%, rgba(255,200,60,.1) 40%, transparent 70%);
-  width: 700px; height: 700px;
-}
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+.card-lift:hover{transform:translateY(-4px)}
 
-/* Cross ornament */
-.cross-ornament {
-  width: 80px; height: 80px;
-  position: relative; margin: 0 auto 28px;
-  display:flex; align-items:center; justify-content:center;
-}
-.cross-ornament::before {
-  content:'✝';
-  font-size:52px; color:var(--gold);
-  text-shadow: 0 0 30px rgba(201,168,76,.4);
-  animation: crossGlow 3s ease-in-out infinite;
-  transition: color .4s, text-shadow .4s;
-}
-[data-theme="light"] .cross-ornament::before {
-  color: #a06820;
-  text-shadow: 0 0 40px rgba(255,180,60,.6), 0 0 80px rgba(255,200,80,.3);
-}
-@keyframes crossGlow {
-  0%,100% { opacity:.85; transform:scale(1); }
-  50% { opacity:1; transform:scale(1.04); }
-}
+/* ── BUTTONS ── */
+.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
+.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
+.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
 
-.hero-eyebrow {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:6px;
-  text-transform:uppercase; color:var(--gold-dim); margin-bottom:20px;
-}
-.hero-title {
-  font-family:'Cinzel Decorative',serif;
-  font-size: clamp(32px,7vw,64px);
-  font-weight:700; color:var(--gold-l); line-height:1.1;
-  letter-spacing:4px; margin-bottom:16px;
-  transition: color .4s;
-}
-[data-theme="light"] .hero-title {
-  color: #7a4d10;
-  text-shadow: 0 2px 30px rgba(255,180,60,.3);
-}
-.hero-sub {
-  font-size: clamp(16px,3vw,22px); font-style:italic;
-  color:var(--text-dim); max-width:520px; line-height:1.6;
-  margin-bottom:40px;
-}
-.divider { display:flex; align-items:center; gap:14px; margin:0 auto 40px; max-width:320px; }
-.divider-line { flex:1; height:1px; background:var(--border); }
-.divider-icon { color:var(--gold); font-size:16px; flex-shrink:0; }
+/* ── FORM ── */
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:96px;resize:vertical}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ── SECTION GRID ── */
-.sanctuary-sections {
-  padding: 0 20px 80px;
-  max-width: 1100px; margin:0 auto;
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px; position:relative; z-index:1;
-}
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
+.modal-wide{max-width:540px}
+@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
+.modal-x:hover{background:var(--surface2);color:var(--text)}
+.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
 
-.section-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 36px 28px;
-  text-align:center; position:relative;
-  cursor:pointer;
-  transition: all .3s;
-  overflow:hidden;
-}
-.section-card::before {
-  content:''; position:absolute; inset:0;
-  background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 60%);
-  opacity:0; transition:opacity .3s;
-}
-.section-card:hover::before { opacity:1; }
-.section-card:hover { border-color:var(--gold-dim); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.3); }
-[data-theme="light"] .section-card:hover { box-shadow:0 12px 40px rgba(160,104,32,.12); }
+/* ── AUTH TABS ── */
+.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
+.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
+.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
+.input-wrap{position:relative}
+.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
+.forgot{font-size:12px;color:var(--text3);transition:color .2s}
+.forgot:hover{color:var(--accent)}
 
-.card-icon {
-  font-size:42px; margin-bottom:16px;
-  filter:drop-shadow(0 0 12px rgba(201,168,76,.3));
-  display:block; transition:transform .3s;
-}
-.section-card:hover .card-icon { transform:scale(1.1); }
-[data-theme="light"] .card-icon { filter:drop-shadow(0 0 16px rgba(255,160,30,.4)); }
-
-.card-title {
-  font-family:'Cinzel',serif; font-size:11px;
-  letter-spacing:4px; text-transform:uppercase;
-  color:var(--gold); margin-bottom:10px;
-}
-.card-text {
-  font-size:15px; color:var(--text-dim); line-height:1.65;
-  font-style:italic;
-}
-.card-cta {
-  display:inline-block; margin-top:20px;
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px;
-  text-transform:uppercase; color:var(--gold-dim);
-  border:1px solid var(--border); padding:10px 22px;
-  text-decoration:none; transition:all .2s;
-  background:none; cursor:pointer; width:auto;
-}
-.card-cta:hover { color:var(--gold); border-color:var(--gold-dim); background:var(--gold-glow); }
-
-/* ── PRAYER SECTION ── */
-.prayer-section {
-  max-width:700px; margin:0 auto 80px; padding:0 20px;
-  text-align:center; position:relative; z-index:1;
-}
-.prayer-box {
-  background:var(--surface); border:1px solid var(--border);
-  padding:40px 36px; position:relative;
-}
-.prayer-box::after {
-  content:''; position:absolute; top:-1px; left:50%; transform:translateX(-50%);
-  width:60px; height:2px; background:linear-gradient(90deg, transparent, var(--gold), transparent);
-}
-.prayer-title {
-  font-family:'Cinzel',serif; font-size:11px; letter-spacing:5px;
-  text-transform:uppercase; color:var(--gold); margin-bottom:24px;
-}
-.prayer-textarea {
-  width:100%; min-height:120px; background:var(--surface2);
-  border:1px solid var(--border); color:var(--text);
-  font-family:'Cormorant Garamond',serif; font-size:16px;
-  padding:16px; resize:vertical; outline:none;
-  transition:border-color .2s;
-  line-height:1.6;
-}
-.prayer-textarea:focus { border-color:var(--gold-dim); }
-.prayer-textarea::placeholder { color:var(--text-muted); font-style:italic; }
-[data-theme="light"] .prayer-textarea { background:#f9f5ec; color:#2a1e10; }
-.btn-pray {
-  margin-top:16px; display:inline-block;
-  font-family:'Cinzel',serif; font-size:10px; letter-spacing:4px;
-  text-transform:uppercase; color:var(--bg);
-  background:linear-gradient(135deg, var(--gold) 0%, var(--gold-l) 100%);
-  border:none; padding:14px 36px; cursor:pointer; width:100%;
-  transition:all .2s;
-}
-.btn-pray:hover { opacity:.9; transform:translateY(-1px); }
-
-/* ── DONATION TIERS ── */
-.donation-section {
-  max-width:900px; margin:0 auto 80px; padding:0 20px;
-  position:relative; z-index:1;
-}
-.section-header {
-  text-align:center; margin-bottom:36px;
-}
-.section-header-title {
-  font-family:'Cinzel',serif; font-size:13px;
-  letter-spacing:6px; text-transform:uppercase; color:var(--gold); margin-bottom:10px;
-}
-.section-header-sub {
-  font-size:17px; font-style:italic; color:var(--text-dim);
-}
-.donation-grid {
-  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;
-}
-.donation-tier {
-  background:var(--surface); border:1px solid var(--border);
-  padding:28px 20px; text-align:center;
-  transition:all .3s; cursor:pointer; position:relative; overflow:hidden;
-}
-.donation-tier.featured {
-  border-color:var(--gold-dim);
-  background:linear-gradient(135deg, rgba(201,168,76,.06) 0%, var(--surface) 100%);
-}
-.donation-tier.featured::before {
-  content:'Más elegido'; position:absolute; top:0; right:0;
-  font-family:'Cinzel',serif; font-size:7px; letter-spacing:2px;
-  background:var(--gold); color:var(--bg); padding:4px 10px;
-}
-.donation-tier:hover { border-color:var(--gold-dim); transform:translateY(-3px); }
-.tier-amount {
-  font-family:'Cinzel Decorative',serif; font-size:32px; color:var(--gold-l);
-  margin-bottom:8px; transition:color .4s;
-}
-[data-theme="light"] .tier-amount { color:#8a5010; }
-.tier-label {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px;
-  text-transform:uppercase; color:var(--gold-dim); margin-bottom:12px;
-}
-.tier-desc {
-  font-size:14px; color:var(--text-dim); font-style:italic; line-height:1.5; margin-bottom:16px;
-}
-.btn-donate {
-  font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px;
-  text-transform:uppercase; padding:10px 20px;
-  border:1px solid var(--gold-dim); color:var(--gold);
-  background:none; cursor:pointer; transition:all .2s; width:100%;
-}
-.btn-donate:hover { background:var(--gold-glow); border-color:var(--gold); }
-.donation-tier.featured .btn-donate {
-  background:linear-gradient(135deg, var(--gold) 0%, var(--gold-l) 100%);
-  color:var(--bg); border:none;
-}
-
-/* ── BLESSING TICKER ── */
-.blessings-ticker {
-  max-width:700px; margin:0 auto 60px; padding:0 20px;
-  text-align:center; position:relative; z-index:1;
-}
-.ticker-wrap {
-  background:var(--surface); border:1px solid var(--border);
-  padding:24px 28px; overflow:hidden; position:relative;
-}
-.ticker-label {
-  font-family:'Cinzel',serif; font-size:8px; letter-spacing:4px;
-  text-transform:uppercase; color:var(--gold-dim); margin-bottom:14px;
-}
-.ticker-text {
-  font-size:18px; font-style:italic; color:var(--text-dim);
-  line-height:1.6; transition:opacity .6s;
-}
-.ticker-author {
-  font-family:'Cinzel',serif; font-size:8px; letter-spacing:3px;
-  color:var(--text-muted); margin-top:10px;
-}
-
-/* ── LIGHT BEAMS (decorative) ── */
-.light-beam {
-  position:fixed; pointer-events:none; z-index:0;
-  width:2px; background:linear-gradient(180deg, rgba(255,220,80,.15) 0%, transparent 100%);
-  top:0; opacity:0; transition:opacity .8s;
-  border-radius:2px;
-}
-[data-theme="light"] .light-beam { opacity:1; }
-
-/* ── CORNER ORNAMENTS ── */
-.corner-tl, .corner-tr, .corner-bl, .corner-br {
-  position:absolute; width:18px; height:18px; pointer-events:none;
-}
-.corner-tl { top:10px; left:10px; border-top:1px solid var(--gold-dim); border-left:1px solid var(--gold-dim); }
-.corner-tr { top:10px; right:10px; border-top:1px solid var(--gold-dim); border-right:1px solid var(--gold-dim); }
-.corner-bl { bottom:10px; left:10px; border-bottom:1px solid var(--gold-dim); border-left:1px solid var(--gold-dim); }
-.corner-br { bottom:10px; right:10px; border-bottom:1px solid var(--gold-dim); border-right:1px solid var(--gold-dim); }
+/* ── BADGE / TAG ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
+.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
+.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
+.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
 
 /* ── TOAST ── */
-.toast {
-  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
-  background:var(--surface); border:1px solid var(--gold-dim); color:var(--text);
-  font-family:'Cinzel',serif; font-size:10px; letter-spacing:2px;
-  padding:14px 28px; z-index:999; opacity:0; transition:all .3s;
-  pointer-events:none; text-align:center; max-width:90vw;
-}
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── FADE-UP ── */
+.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
+.fade-up.vis{opacity:1;transform:translateY(0)}
 
 /* ── RESPONSIVE ── */
-@media (max-width:768px) {
-  .top-nav { padding:10px 16px; }
-  .nav-word { display:none; }
-  .nav-right { gap:8px; }
-  .sanctuary-sections { grid-template-columns:1fr; padding:0 14px 60px; }
-  .prayer-box { padding:28px 20px; }
-  .donation-grid { grid-template-columns:1fr 1fr; }
-}
-@media (max-width:480px) {
-  .hero-title { font-size:28px; }
-  .donation-grid { grid-template-columns:1fr; }
-  .lang-btn { padding:5px 8px; font-size:8px; }
-  .section-card { padding:24px 18px; }
-}
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
+
+
+.ch-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--nav-h)+48px) 24px 64px;text-align:center;position:relative;overflow:hidden;background:var(--bg)}
+.ch-aura{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 55% at 50% 35%,rgba(240,201,106,.07) 0%,transparent 65%);animation:ca 7s ease-in-out infinite}
+@keyframes ca{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+[data-theme="light"] .ch-aura{background:radial-gradient(ellipse 75% 60% at 50% 25%,rgba(255,210,80,.22) 0%,rgba(255,240,160,.1) 50%,transparent 75%)}
+[data-theme="light"] .ch-hero{background:linear-gradient(180deg,#fef9f0 0%,#fdf1d0 50%,#fef9f0 100%)}
+.ch-icon{width:68px;height:68px;border-radius:18px;background:var(--surface);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 24px;animation:float 4s ease-in-out infinite;position:relative;z-index:1;box-shadow:var(--shadow)}
+[data-theme="light"] .ch-icon{background:rgba(255,248,220,.9);border-color:rgba(161,98,7,.15);box-shadow:0 8px 32px rgba(200,150,30,.12)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.ch-pre{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1}
+.ch-h{font-size:clamp(38px,8vw,80px);font-weight:800;letter-spacing:-2.5px;line-height:.92;color:var(--text);margin-bottom:16px;position:relative;z-index:1}
+[data-theme="light"] .ch-h{color:#1a0f00}
+.ch-p{font-size:17px;color:var(--text2);max-width:440px;margin:0 auto 36px;line-height:1.7;position:relative;z-index:1}
+.ch-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+
+.ch-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
+.ch-cat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 18px;text-align:center;cursor:pointer;transition:all .3s}
+.ch-cat:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:var(--shadow)}
+.ch-cat-ico{font-size:30px;margin-bottom:10px}
+.ch-cat-h{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ch-cat-p{font-size:11px;color:var(--text2)}
+
+.ch-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:28px}
+.ch-s-h{font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.4px}
+.ch-s-p{font-size:13px;color:var(--text2);margin-bottom:20px}
+.prayer-ta{width:100%;min-height:100px;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:inherit;font-size:15px;padding:13px;resize:vertical;outline:none;transition:border-color .2s}
+.prayer-ta:focus{border-color:var(--accent)}
+.prayer-ta::placeholder{color:var(--text3)}
+.prayer-name{width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;margin-top:9px}
+.prayer-name:focus{border-color:var(--accent)}
+.btn-pray{width:100%;padding:13px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0f00;font-size:14px;font-weight:700;border:none;margin-top:12px;transition:all .2s}
+.btn-pray:hover{filter:brightness(1.05);transform:translateY(-1px)}
+
+.blessing-c{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px 28px;text-align:center;margin-bottom:28px;overflow:hidden}
+.blessing-c::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,var(--gold-soft),transparent 60%);pointer-events:none}
+.blessing-pre{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.75}
+.blessing-t{font-size:17px;color:var(--text);font-style:italic;line-height:1.75;transition:opacity .5s;position:relative;z-index:1}
+.blessing-a{font-size:12px;color:var(--text2);font-weight:600;margin-top:12px;position:relative;z-index:1}
+.blessing-dots{display:flex;gap:6px;justify-content:center;margin-top:18px;position:relative;z-index:1}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s}
+.bdot.on{background:var(--gold)}
+
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tier{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 14px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.tier:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
+.tier-pop{border-color:rgba(240,201,106,.25)!important}
+.tier-tag{position:absolute;top:0;right:0;font-size:9px;font-weight:700;padding:4px 10px;background:var(--gold);color:#1a0f00;border-bottom-left-radius:8px;letter-spacing:.5px;text-transform:uppercase}
+.tier-amt{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:5px}
+.tier-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.tier-d{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:14px}
+.btn-tier{width:100%;padding:9px;border-radius:9px;border:1px solid var(--border2);background:none;color:var(--text);font-size:12px;font-weight:600;transition:all .2s}
+.btn-tier:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
+.tier-pop .btn-tier{background:var(--gold);color:#1a0f00;border-color:var(--gold)}
+
+@media(max-width:700px){.ch-cats{grid-template-columns:1fr 1fr}.tier-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:400px){.ch-cats{grid-template-columns:1fr 1fr}.tier-grid{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
 
-<!-- DECORATIVE LIGHT BEAMS -->
-<div class="heaven-rays"></div>
-<div class="light-beam" style="left:20%;height:70vh;"></div>
-<div class="light-beam" style="left:50%;height:90vh;width:3px;"></div>
-<div class="light-beam" style="left:80%;height:65vh;"></div>
-
-<!-- ── NAV ── -->
-<nav class="top-nav">
-  <a href="index.html" class="nav-brand">
-    <div class="nav-y">Y</div>
-    <span class="nav-word">Yavaya</span>
-  </a>
-  <div class="nav-right">
-    <a href="mercadito.html" class="nav-link">Mercadito</a>
-    <a href="yavayago.html" class="nav-link">YavayaGo</a>
-    <div class="lang-toggle">
-      <button class="lang-btn active" id="btnChEs" onclick="setLang('es')">🇪🇸 ES</button>
-      <button class="lang-btn" id="btnChEn" onclick="setLang('en')">🇺🇸 EN</button>
+<nav class="nav" id="nav">
+  <div class="nav-brand">
+    <a href="index.html" style="display:flex;align-items:center;gap:10px">
+      <div class="nav-dot"></div>
+      <span class="nav-logo">Yavaya</span>
+    </a>
+    <span class="nav-tag">Santuario</span>
+  </div>
+  <div class="nav-links"><a href="mercadito.html" class="nav-a" >Mercadito</a><a href="yavayago.html" class="nav-a" >YavayaGo</a><a href="church.html" class="nav-a" style="color:var(--accent)">Santuario</a><a href="tokens.html" class="nav-a" >Tokens</a></div>
+  <div class="nav-r">
+    <div class="lang-sw">
+      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
     </div>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Modo Sagrado / Oscuro">
-      <span class="icon-dark">🌙</span>
-      <span class="icon-light">🕊</span>
-    </button>
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
+    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
+    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
+      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
+      <span id="userName" style="font-size:13px;font-weight:600"></span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
+    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
   </div>
 </nav>
-
-<!-- ── HERO ── -->
-<section class="sanctuary-hero">
-  <div class="hero-glow"></div>
-  <div class="cross-ornament"></div>
-  <div class="hero-eyebrow" data-i18n="ch_eyebrow">SANTUARIO DIGITAL · YAVAYA</div>
-  <h1 class="hero-title" data-i18n="ch_title">Yavaya<br>Santuario</h1>
-  <p class="hero-sub" data-i18n="ch_sub">Un lugar de luz, oración y servicio.<br>Aquí la comunidad se cuida entre sí.</p>
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-icon">✝</div>
-    <div class="divider-line"></div>
-  </div>
-</section>
-
-<!-- ── MAIN SECTIONS ── -->
-<div class="sanctuary-sections">
-
-  <!-- PRAYERS -->
-  <div class="section-card" onclick="scrollToSection('prayer-section')">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <span class="card-icon">🙏</span>
-    <div class="card-title" data-i18n="ch_prayers">Oraciones</div>
-    <p class="card-text" data-i18n="ch_prayers_sub">Envía tu oración. Nuestra comunidad ora contigo. Ninguna petición es demasiado pequeña.</p>
-    <span class="card-cta" data-i18n="ch_prayers_cta">Enviar oración →</span>
-  </div>
-
-  <!-- BLESSINGS -->
-  <div class="section-card" onclick="scrollToSection('blessings-section')">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <span class="card-icon">✨</span>
-    <div class="card-title" data-i18n="ch_blessings">Bendiciones</div>
-    <p class="card-text" data-i18n="ch_blessings_sub">Recibe y comparte bendiciones diarias. Palabras que elevan el espíritu y restauran la fe.</p>
-    <span class="card-cta" data-i18n="ch_blessings_cta">Ver bendiciones →</span>
-  </div>
-
-  <!-- CHILDREN & SICK -->
-  <div class="section-card" onclick="scrollToSection('donation-section')">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <span class="card-icon">👶</span>
-    <div class="card-title" data-i18n="ch_children">Niños & Enfermos</div>
-    <p class="card-text" data-i18n="ch_children_sub">Apoya a niños con discapacidad, enfermedades y a ancianos que necesitan medicamentos y cuidados.</p>
-    <span class="card-cta" data-i18n="ch_children_cta">Apoyar ahora →</span>
-  </div>
-
-  <!-- FOOD & MEDICINE -->
-  <div class="section-card" onclick="scrollToSection('donation-section')">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <span class="card-icon">🥣</span>
-    <div class="card-title" data-i18n="ch_food">Comida & Medicina</div>
-    <p class="card-text" data-i18n="ch_food_sub">Contribuye con alimentos y medicamentos para familias vulnerables en nuestra comunidad.</p>
-    <span class="card-cta" data-i18n="ch_food_cta">Contribuir →</span>
-  </div>
-
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
 </div>
 
-<!-- ── PRAYER SUBMISSION ── -->
-<section class="prayer-section" id="prayer-section">
-  <div class="prayer-box">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <div class="prayer-title" data-i18n="ch_prayer_box_title">Enviar una Oración</div>
-    <p style="font-size:15px;font-style:italic;color:var(--text-dim);margin-bottom:24px;line-height:1.6;" data-i18n="ch_prayer_box_sub">
-      Escribe tu petición. Será recibida con amor y elevada en oración por nuestra comunidad.
-    </p>
-    <textarea class="prayer-textarea" id="prayerText" placeholder="Señor, te pido por..." data-i18n-placeholder="ch_prayer_placeholder" rows="4"></textarea>
-    <input type="text" class="prayer-textarea" id="prayerName" placeholder="Tu nombre (opcional)" style="min-height:auto;margin-top:10px;" data-i18n-placeholder="ch_prayer_name">
-    <button class="btn-pray" onclick="submitPrayer()">
-      ✝ <span data-i18n="ch_pray_btn">Enviar Mi Oración</span>
-    </button>
+<section class="ch-hero">
+  <div class="ch-aura"></div>
+  <div class="ch-icon">🕊</div>
+  <div class="ch-pre">Yavaya Santuario</div>
+  <h1 class="ch-h">Un lugar<br>de luz.</h1>
+  <p class="ch-p">Fe, oración y servicio. Aquí la comunidad se cuida entre sí.</p>
+  <div class="ch-ctas">
+    <button class="btn-primary" onclick="document.getElementById('prayerSec').scrollIntoView({behavior:'smooth'})">Enviar Oración</button>
+    <button class="btn-outline" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">Apoyar la Causa</button>
   </div>
 </section>
 
-<!-- ── BLESSINGS TICKER ── -->
-<section class="blessings-ticker" id="blessings-section">
-  <div class="ticker-wrap">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
-    <div class="ticker-label" data-i18n="ch_blessing_label">Bendición del Día</div>
-    <div class="ticker-text" id="blessingText"></div>
-    <div class="ticker-author" id="blessingAuthor"></div>
+<section class="section" style="background:var(--bg2)">
+  <div class="container-sm">
+    <div class="fade-up" style="text-align:center;margin-bottom:36px">
+      <div class="sec-pre">Comunidad</div>
+      <h2 class="sec-h">¿Qué necesitas?</h2>
+      <p class="sec-p" style="margin:0 auto">Cada área es un espacio de apoyo real.</p>
+    </div>
+    <div class="ch-cats fade-up">
+      <div class="ch-cat" onclick="document.getElementById('prayerSec').scrollIntoView({behavior:'smooth'})">
+        <div class="ch-cat-ico">🙏</div><div class="ch-cat-h">Oraciones</div><div class="ch-cat-p">Envía tu petición</div>
+      </div>
+      <div class="ch-cat" onclick="document.getElementById('blessSec').scrollIntoView({behavior:'smooth'})">
+        <div class="ch-cat-ico">✨</div><div class="ch-cat-h">Bendiciones</div><div class="ch-cat-p">Palabras diarias</div>
+      </div>
+      <div class="ch-cat" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">
+        <div class="ch-cat-ico">👶</div><div class="ch-cat-h">Niños & Enfermos</div><div class="ch-cat-p">Ayuda directa</div>
+      </div>
+      <div class="ch-cat" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">
+        <div class="ch-cat-ico">🥣</div><div class="ch-cat-h">Comida & Medicina</div><div class="ch-cat-p">Para familias</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ── DONATIONS ── -->
-<section class="donation-section" id="donation-section">
-  <div class="section-header">
-    <div class="section-header-title" data-i18n="ch_donate_title">Dar es Sagrado</div>
-    <p class="section-header-sub" data-i18n="ch_donate_sub">Tu ofrenda llega directamente a quienes más lo necesitan.</p>
-  </div>
-  <div class="donation-grid">
-    <div class="donation-tier" onclick="donate(2)">
-      <div class="tier-amount">$2</div>
-      <div class="tier-label" data-i18n="tier1_label">Semilla de Luz</div>
-      <p class="tier-desc" data-i18n="tier1_desc">Una comida para un niño por un día.</p>
-      <button class="btn-donate" data-i18n="btn_give">Dar Ahora</button>
+<section class="section" id="prayerSec">
+  <div class="container-sm">
+    <div class="fade-up">
+      <div class="sec-pre">Oración</div>
+      <h2 class="sec-h">Envía una Oración</h2>
+      <p class="sec-p">Será recibida con amor y elevada por nuestra comunidad.</p>
     </div>
-    <div class="donation-tier featured" onclick="donate(10)">
-      <div class="tier-amount">$10</div>
-      <div class="tier-label" data-i18n="tier2_label">Guardián</div>
-      <p class="tier-desc" data-i18n="tier2_desc">Medicamento básico para una semana.</p>
-      <button class="btn-donate" data-i18n="btn_give">Dar Ahora</button>
-    </div>
-    <div class="donation-tier" onclick="donate(25)">
-      <div class="tier-amount">$25</div>
-      <div class="tier-label" data-i18n="tier3_label">Ángel</div>
-      <p class="tier-desc" data-i18n="tier3_desc">Cubre los gastos de un anciano por un mes.</p>
-      <button class="btn-donate" data-i18n="btn_give">Dar Ahora</button>
-    </div>
-    <div class="donation-tier" onclick="donate(50)">
-      <div class="tier-amount">$50</div>
-      <div class="tier-label" data-i18n="tier4_label">Bendición Mayor</div>
-      <p class="tier-desc" data-i18n="tier4_desc">Tratamiento médico completo para un niño enfermo.</p>
-      <button class="btn-donate" data-i18n="btn_give">Dar Ahora</button>
+    <div class="ch-section fade-up" style="margin-top:28px">
+      <textarea class="prayer-ta" id="prayerTxt" placeholder="Señor, te pido por..."></textarea>
+      <input type="text" class="prayer-name" id="prayerName" placeholder="Tu nombre (opcional)">
+      <button class="btn-pray" onclick="sendPrayer()">🕊 Enviar Mi Oración</button>
     </div>
   </div>
-  <p style="text-align:center;margin-top:24px;font-size:13px;font-style:italic;color:var(--text-muted);" data-i18n="ch_donate_note">
-    Donaciones procesadas de forma segura. 100% va directamente a beneficiarios verificados.
-  </p>
 </section>
 
-<div style="height:60px;"></div>
+<section class="section-sm" id="blessSec" style="background:var(--bg2)">
+  <div class="container-sm">
+    <div class="fade-up" style="text-align:center;margin-bottom:24px">
+      <div class="sec-pre">Espíritu</div>
+      <h2 class="sec-h">Bendición del Día</h2>
+    </div>
+    <div class="blessing-c fade-up">
+      <div class="blessing-pre">Lectura del Día</div>
+      <div class="blessing-t" id="blessText"></div>
+      <div class="blessing-a" id="blessAuthor"></div>
+      <div class="blessing-dots" id="blessDots"></div>
+    </div>
+  </div>
+</section>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<section class="section" id="donateSec">
+  <div class="container-sm">
+    <div class="fade-up" style="text-align:center;margin-bottom:36px">
+      <div class="sec-pre">Donaciones</div>
+      <h2 class="sec-h">Dar es Sagrado</h2>
+      <p class="sec-p" style="margin:0 auto">Tu ofrenda llega directamente a quienes más lo necesitan.</p>
+    </div>
+    <div class="tier-grid fade-up">
+      <div class="tier" onclick="donate(2)"><div class="tier-amt">$2</div><div class="tier-lbl">Semilla</div><div class="tier-d">Una comida para un niño.</div><button class="btn-tier">Dar Ahora</button></div>
+      <div class="tier tier-pop" onclick="donate(10)"><div class="tier-tag">Popular</div><div class="tier-amt">$10</div><div class="tier-lbl">Guardián</div><div class="tier-d">Medicamento por una semana.</div><button class="btn-tier">Dar Ahora</button></div>
+      <div class="tier" onclick="donate(25)"><div class="tier-amt">$25</div><div class="tier-lbl">Ángel</div><div class="tier-d">Gastos de un anciano por un mes.</div><button class="btn-tier">Dar Ahora</button></div>
+      <div class="tier" onclick="donate(50)"><div class="tier-amt">$50</div><div class="tier-lbl">Bendición Mayor</div><div class="tier-d">Tratamiento médico completo.</div><button class="btn-tier">Dar Ahora</button></div>
+    </div>
+    <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:14px">100% de tu donación va a beneficiarios. Procesado de forma segura.</p>
+  </div>
+</section>
 
+<footer style="padding:40px 24px;border-top:1px solid var(--border);background:var(--bg)">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="font-size:16px;font-weight:800;color:var(--text)">Yavaya</div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="mercadito.html" style="font-size:13px;color:var(--text2)">Mercadito</a>
+      <a href="yavayago.html" style="font-size:13px;color:var(--text2)">YavayaGo</a>
+      <a href="church.html" style="font-size:13px;color:var(--text2)">Santuario</a>
+      <a href="tokens.html" style="font-size:13px;color:var(--text2)">Tokens</a>
+    </div>
+    <div style="font-size:12px;color:var(--text3)">© 2026 Yavaya · Centroamérica</div>
+  </div>
+</footer><div class="toast" id="toast"></div>
 <script>
-/* ════ CHURCH PAGE JS ════ */
 
-// ── i18n strings ──
-window._i18nStrings = {
-  es: {
-    ch_eyebrow: 'SANTUARIO DIGITAL · YAVAYA',
-    ch_title: 'Yavaya\nSantuario',
-    ch_sub: 'Un lugar de luz, oración y servicio.\nAquí la comunidad se cuida entre sí.',
-    ch_prayers: 'Oraciones',
-    ch_prayers_sub: 'Envía tu oración. Nuestra comunidad ora contigo. Ninguna petición es demasiado pequeña.',
-    ch_prayers_cta: 'Enviar oración →',
-    ch_blessings: 'Bendiciones',
-    ch_blessings_sub: 'Recibe y comparte bendiciones diarias. Palabras que elevan el espíritu y restauran la fe.',
-    ch_blessings_cta: 'Ver bendiciones →',
-    ch_children: 'Niños & Enfermos',
-    ch_children_sub: 'Apoya a niños con discapacidad, enfermedades y a ancianos que necesitan medicamentos y cuidados.',
-    ch_children_cta: 'Apoyar ahora →',
-    ch_food: 'Comida & Medicina',
-    ch_food_sub: 'Contribuye con alimentos y medicamentos para familias vulnerables en nuestra comunidad.',
-    ch_food_cta: 'Contribuir →',
-    ch_prayer_box_title: 'Enviar una Oración',
-    ch_prayer_box_sub: 'Escribe tu petición. Será recibida con amor y elevada en oración por nuestra comunidad.',
-    ch_prayer_placeholder: 'Señor, te pido por...',
-    ch_prayer_name: 'Tu nombre (opcional)',
-    ch_pray_btn: 'Enviar Mi Oración',
-    ch_blessing_label: 'Bendición del Día',
-    ch_donate_title: 'Dar es Sagrado',
-    ch_donate_sub: 'Tu ofrenda llega directamente a quienes más lo necesitan.',
-    tier1_label: 'Semilla de Luz', tier1_desc: 'Una comida para un niño por un día.',
-    tier2_label: 'Guardián', tier2_desc: 'Medicamento básico para una semana.',
-    tier3_label: 'Ángel', tier3_desc: 'Cubre los gastos de un anciano por un mes.',
-    tier4_label: 'Bendición Mayor', tier4_desc: 'Tratamiento médico completo para un niño enfermo.',
-    btn_give: 'Dar Ahora',
-    ch_donate_note: 'Donaciones procesadas de forma segura. 100% va directamente a beneficiarios verificados.',
-  },
-  en: {
-    ch_eyebrow: 'DIGITAL SANCTUARY · YAVAYA',
-    ch_title: 'Yavaya\nSanctuary',
-    ch_sub: 'A place of light, prayer, and service.\nHere the community takes care of each other.',
-    ch_prayers: 'Prayers',
-    ch_prayers_sub: 'Send your prayer. Our community prays with you. No request is too small.',
-    ch_prayers_cta: 'Send prayer →',
-    ch_blessings: 'Blessings',
-    ch_blessings_sub: 'Receive and share daily blessings. Words that lift the spirit and restore faith.',
-    ch_blessings_cta: 'See blessings →',
-    ch_children: 'Children & Sick',
-    ch_children_sub: 'Support disabled children, the ill, and elderly who need medicine and care.',
-    ch_children_cta: 'Support now →',
-    ch_food: 'Food & Medicine',
-    ch_food_sub: 'Contribute food and medicine to vulnerable families in our community.',
-    ch_food_cta: 'Contribute →',
-    ch_prayer_box_title: 'Send a Prayer',
-    ch_prayer_box_sub: 'Write your request. It will be received with love and lifted in prayer by our community.',
-    ch_prayer_placeholder: 'Lord, I ask for...',
-    ch_prayer_name: 'Your name (optional)',
-    ch_pray_btn: 'Send My Prayer',
-    ch_blessing_label: "Today's Blessing",
-    ch_donate_title: 'Giving is Sacred',
-    ch_donate_sub: 'Your offering goes directly to those who need it most.',
-    tier1_label: 'Seed of Light', tier1_desc: 'One meal for a child for one day.',
-    tier2_label: 'Guardian', tier2_desc: 'Basic medicine for one week.',
-    tier3_label: 'Angel', tier3_desc: "Covers an elder's expenses for one month.",
-    tier4_label: 'Major Blessing', tier4_desc: 'Full medical treatment for a sick child.',
-    btn_give: 'Give Now',
-    ch_donate_note: 'Donations processed securely. 100% goes directly to verified beneficiaries.',
-  }
-};
-
-// ── Blessings rotation ──
-const blessings = [
-  { text: '"La fe mueve montañas. Tu oración mueve el corazón de Dios."', author: '— Mateo 17:20' },
-  { text: '"Benditos los que tienen hambre y sed de justicia, porque ellos serán saciados."', author: '— Mateo 5:6' },
-  { text: '"El Señor es mi pastor; nada me faltará."', author: '— Salmo 23:1' },
-  { text: '"Porque yo sé los planes que tengo para vosotros — planes de bienestar y no de calamidad."', author: '— Jeremías 29:11' },
-  { text: '"Ama a tu prójimo como a ti mismo."', author: '— Marcos 12:31' },
-  { text: '"Todo lo puedo en Cristo que me fortalece."', author: '— Filipenses 4:13' },
-];
-
-let blessingIdx = 0;
-function rotateBlessings() {
-  const el = document.getElementById('blessingText');
-  const auth = document.getElementById('blessingAuthor');
-  if (!el) return;
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.textContent = blessings[blessingIdx].text;
-    auth.textContent = blessings[blessingIdx].author;
-    el.style.opacity = '1';
-    blessingIdx = (blessingIdx + 1) % blessings.length;
-  }, 600);
-}
-rotateBlessings();
-setInterval(rotateBlessings, 7000);
-
-// ── Submit prayer ──
-function submitPrayer() {
-  var text = document.getElementById('prayerText').value.trim();
-  var name = document.getElementById('prayerName').value.trim() || 'Anónimo';
-  if (!text) { showToast('Escribe tu oración primero.'); return; }
-  showToast('🙏 Tu oración fue recibida. Que Dios te bendiga, ' + name + '.');
-  document.getElementById('prayerText').value = '';
-}
-
-// ── Donate ──
-function donate(amount) {
-  showToast('💛 Redirigiendo a donación de $' + amount + '...');
-  // TODO: connect payment
-  setTimeout(() => window.open('https://www.paypal.com/donate', '_blank'), 1200);
-}
-
-// ── Scroll helper ──
-function scrollToSection(id) {
-  var el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// ── Toast ──
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3800);
-}
-</script>
-
-<!-- CORE UI SYSTEM -->
-<script>
+/* ═══ YAVAYA CORE JS ═══ */
 window.toggleTheme = function() {
-  var current = document.documentElement.getAttribute('data-theme') || 'dark';
-  var next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  document.documentElement.style.colorScheme = next;
-  localStorage.setItem('yavaya_theme', next);
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('yavaya_theme', t);
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
 };
-window._yavayaLang = localStorage.getItem('yavaya_lang') || 'es';
-window.setLang = function(lang) {
-  window._yavayaLang = lang;
-  localStorage.setItem('yavaya_lang', lang);
-  document.querySelectorAll('.lang-btn').forEach(function(btn) {
-    var isEs = btn.textContent.toLowerCase().includes('es');
-    btn.classList.toggle('active', (lang==='es'&&isEs)||(lang==='en'&&!isEs));
+(function() {
+  var t = localStorage.getItem('yavaya_theme') || 'dark';
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+
+var _lang = localStorage.getItem('yavaya_lang') || 'es';
+window.setLang = function(l) {
+  _lang = l; localStorage.setItem('yavaya_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.l === l);
   });
-  var strings = window._i18nStrings && window._i18nStrings[lang];
-  if (!strings) return;
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n');
-    if (strings[key]) el.textContent = strings[key];
+  if (window._applyLang) window._applyLang(l);
+};
+(function() { window.setLang(_lang); })();
+
+window.toggleMob = function() {
+  var m = document.getElementById('navMob');
+  if (m) m.classList.toggle('open');
+};
+
+// Scroll animations
+var _obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
+}, { threshold: .1 });
+document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
+
+// Toast
+window.showToast = function(msg, dur) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
+};
+
+// Nav scroll effect
+window.addEventListener('scroll', function() {
+  var n = document.getElementById('nav');
+  if (!n) return;
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  n.style.background = window.scrollY > 50
+    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
+    : '';
+}, { passive: true });
+
+// Auth modal shared
+window.openAuthModal = window.openAuthModal || function(tab) {
+  var m = document.getElementById('authModal');
+  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
+};
+window.closeAuthModal = function() {
+  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
+};
+window.switchAuthTab = function(tab) {
+  ['login','reg'].forEach(function(p) {
+    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
   });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-placeholder');
-    if (strings[key]) el.placeholder = strings[key];
+  ['Login','Reg'].forEach(function(p) {
+    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
   });
 };
-document.addEventListener('DOMContentLoaded', function() {
-  var saved = localStorage.getItem('yavaya_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', saved);
-  window.setLang(window._yavayaLang);
-});
+window.toggleVis = function(id) {
+  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
+};
+window.doLogin = async function() {
+  var e = (document.getElementById('loginEmail') || {}).value || '';
+  var p = (document.getElementById('loginPass') || {}).value || '';
+  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
+  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+  try {
+    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
+    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
+  } catch(err) {
+    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
+    showToast(map[err.code] || err.message);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
+};
+window.doRegister = async function() {
+  var n = (document.getElementById('regName') || {}).value || '';
+  var e = (document.getElementById('regEmail') || {}).value || '';
+  var p = (document.getElementById('regPass') || {}).value || '';
+  var p2 = (document.getElementById('regPass2') || {}).value || '';
+  n = n.trim(); e = e.trim();
+  if (!n) { showToast('Escribe tu nombre'); return; }
+  if (!e) { showToast('Ingresa tu correo'); return; }
+  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
+  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
+  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
+  try {
+    if (window._goAuth && window._auth) {
+      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
+      await window._goAuth.updateProfile(c.user, { displayName: n });
+    }
+    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
+  } catch(err) {
+    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
+    showToast(map2[err.code] || err.message);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
+};
+window.doGoogle = function() {
+  if (window._goAuth && window._auth) {
+    var pr = new window._goAuth.GoogleAuthProvider();
+    window._goAuth.signInWithPopup(window._auth, pr)
+      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
+      .catch(function(e) { showToast(e.message); });
+  } else { showToast('Google auth no configurado'); }
+};
+window.forgotPass = function() {
+  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
+  if (!e) { showToast('Ingresa tu correo primero'); return; }
+  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
+};
+
+var blessings = [
+  {t:'"La fe mueve montañas. Tu oración mueve el corazón de Dios."',a:'— Mateo 17:20'},
+  {t:'"Ama a tu prójimo como a ti mismo."',a:'— Marcos 12:31'},
+  {t:'"El Señor es mi pastor; nada me faltará."',a:'— Salmo 23:1'},
+  {t:'"Todo lo puedo en Cristo que me fortalece."',a:'— Filipenses 4:13'},
+  {t:'"Porque yo sé los planes que tengo para vosotros — planes de bienestar."',a:'— Jeremías 29:11'},
+  {t:'"Benditos los que tienen hambre y sed de justicia, porque serán saciados."',a:'— Mateo 5:6'},
+];
+var bIdx = 0;
+function showBlessing() {
+  var t=document.getElementById('blessText'),a=document.getElementById('blessAuthor'),d=document.getElementById('blessDots');
+  if(!t) return;
+  t.style.opacity=0;
+  setTimeout(function(){
+    t.textContent=blessings[bIdx].t;
+    a.textContent=blessings[bIdx].a;
+    t.style.opacity=1;
+    d.innerHTML='';
+    blessings.forEach(function(_,i){var dot=document.createElement('div');dot.className='bdot'+(i===bIdx?' on':'');dot.onclick=function(){bIdx=i;showBlessing();};d.appendChild(dot);});
+  },400);
+}
+showBlessing();
+setInterval(function(){bIdx=(bIdx+1)%blessings.length;showBlessing();},7000);
+
+window.sendPrayer=function(){
+  var txt=document.getElementById('prayerTxt').value.trim();
+  var name=document.getElementById('prayerName').value.trim()||'Anónimo';
+  if(!txt){showToast('Escribe tu oración primero.');return;}
+  showToast('🕊 Oración recibida. Dios te bendiga, '+name+'.');
+  document.getElementById('prayerTxt').value='';
+};
+window.donate=function(amt){
+  showToast('💛 Redirigiendo a donación de $'+amt+'...');
+  setTimeout(function(){window.open('https://www.paypal.com/donate','_blank');},1200);
+};
 </script>
 </body>
 </html>
