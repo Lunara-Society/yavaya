@@ -226,6 +226,164 @@ input,textarea,select{font-family:inherit}
 
 @media(max-width:600px){.pack-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:1fr}}
 
+
+/* ══ CINEMATIC REVEAL ENGINE ══ */
+.reveal          { opacity:0; transform:translateY(32px);    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
+.reveal.left     { transform:translateX(-40px) translateY(0); }
+.reveal.right    { transform:translateX( 40px) translateY(0); }
+.reveal.scale    { transform:scale(.94); }
+.reveal.done     { opacity:1; transform:none; }
+.reveal-d1       { transition-delay:.12s; }
+.reveal-d2       { transition-delay:.24s; }
+.reveal-d3       { transition-delay:.38s; }
+.reveal-d4       { transition-delay:.52s; }
+.reveal-d5       { transition-delay:.68s; }
+
+/* ══ HERO CINEMATIC LAYER ══ */
+.hero-reel {
+  position:absolute; inset:0; z-index:0; overflow:hidden;
+}
+.hero-reel img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  opacity:0; transition:opacity 2.2s cubic-bezier(.4,0,.2,1), transform 9s linear;
+  transform:scale(1.06);
+  will-change:opacity,transform;
+}
+.hero-reel img.active {
+  opacity:.28; transform:scale(1.0);
+}
+[data-theme="light"] .hero-reel img.active { opacity:.14; }
+
+/* Cinematic vignette */
+.hero-reel::after {
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(7,11,16,.9) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(7,11,16,.5) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(7,11,16,.15) 0%, transparent 30%, rgba(7,11,16,.8) 100%);
+}
+[data-theme="light"] .hero-reel::after {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(242,245,251,.95) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(242,245,251,.3) 0%, transparent 30%, rgba(242,245,251,.85) 100%);
+}
+
+/* ══ TYPEWRITER ══ */
+.typewriter { display:inline; }
+.typewriter-cursor {
+  display:inline-block; width:2px; height:.85em;
+  background:currentColor; margin-left:3px;
+  vertical-align:-.08em;
+  animation:cur .75s step-end infinite;
+}
+@keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ══ LIVE NOTIFICATION TICKER ══ */
+.live-ticker {
+  position:fixed; bottom:24px; left:24px; z-index:800;
+  display:flex; flex-direction:column; gap:8px;
+  pointer-events:none;
+}
+.ticker-pill {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 16px; border-radius:14px;
+  background:var(--surface); border:1px solid var(--border2);
+  box-shadow:0 8px 32px rgba(0,0,0,.45);
+  font-size:13px; color:var(--text);
+  transform:translateX(-120%); opacity:0;
+  transition:transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s;
+  pointer-events:none; backdrop-filter:blur(16px);
+  max-width:280px;
+}
+.ticker-pill.show { transform:translateX(0); opacity:1; }
+.ticker-pill.hide { transform:translateX(-120%); opacity:0; }
+.ticker-dot {
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  animation:td 2s infinite;
+}
+@keyframes td { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+.ticker-ico { font-size:16px; flex-shrink:0; }
+.ticker-text { line-height:1.35; }
+.ticker-title { font-weight:600; font-size:12px; }
+.ticker-sub   { font-size:11px; color:var(--text2); margin-top:1px; }
+
+/* ══ HORIZONTAL MARQUEE ══ */
+.marquee-wrap {
+  overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  padding:14px 0; background:var(--bg2);
+}
+.marquee-track {
+  display:flex; gap:48px; width:max-content;
+  animation:marquee 28s linear infinite;
+}
+.marquee-wrap:hover .marquee-track { animation-play-state:paused; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.marquee-item {
+  display:flex; align-items:center; gap:10px;
+  font-size:12px; font-weight:600; color:var(--text2);
+  letter-spacing:.4px; white-space:nowrap;
+}
+.marquee-sep { color:var(--border2); }
+
+/* ══ STAGGER GRID ══ */
+.stagger > * {
+  opacity:0; transform:translateY(24px);
+  transition:opacity .65s, transform .65s;
+}
+.stagger.done > *:nth-child(1){transition-delay:.0s}
+.stagger.done > *:nth-child(2){transition-delay:.08s}
+.stagger.done > *:nth-child(3){transition-delay:.16s}
+.stagger.done > *:nth-child(4){transition-delay:.24s}
+.stagger.done > *:nth-child(5){transition-delay:.32s}
+.stagger.done > *:nth-child(6){transition-delay:.40s}
+.stagger.done > *:nth-child(7){transition-delay:.48s}
+.stagger.done > *:nth-child(8){transition-delay:.56s}
+.stagger.done > * { opacity:1; transform:translateY(0); }
+
+/* ══ MAGNETIC HOVER ══ */
+.magnetic { transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
+
+/* ══ CARD TILT ══ */
+.tilt { transform-style:preserve-3d; transition:transform .15s ease; }
+
+/* ══ GRADIENT TEXT SHIMMER ══ */
+.shimmer-text {
+  background:linear-gradient(90deg,
+    var(--text) 0%, var(--text) 35%,
+    var(--accent2) 50%, var(--text) 65%, var(--text) 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:shimmer 5s linear infinite;
+}
+[data-theme="light"] .shimmer-text {
+  background:linear-gradient(90deg,#0d1626 0%,#0d1626 35%,#2563eb 50%,#0d1626 65%,#0d1626 100%);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text;
+}
+@keyframes shimmer { to{ background-position:200% center } }
+
+/* ══ LINE DRAW ══ */
+.line-draw {
+  display:block; height:1px;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform 1.2s cubic-bezier(.16,1,.3,1);
+}
+.line-draw.done { transform:scaleX(1); }
+
+/* ══ NUMBER COUNT-UP ══ */
+.countup { display:inline; }
+
+/* ══ LANG TOGGLE FIX ══ */
+[data-lang-show]        { display:none !important; }
+[data-lang-show="es"]   { display:var(--_d,revert) !important; }
+html[data-lang="en"] [data-lang-show="es"] { display:none !important; }
+html[data-lang="en"] [data-lang-show="en"] { display:var(--_d,revert) !important; }
+html[data-lang="es"] [data-lang-show="en"] { display:none !important; }
+html[data-lang="es"] [data-lang-show="es"] { display:var(--_d,revert) !important; }
+
 </style>
 </head>
 <body>
@@ -620,6 +778,414 @@ window.buyPack = function(tokens, price) {
   setTimeout(function(){window.open('https://www.paypal.com/paypalme/junoagattis/' + price + 'USD','_blank');},1200);
 };
 document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
+</script>
+<script>
+
+/* ═══ YAVAYA CINEMATIC ENGINE v5 ═══ */
+
+// ── THEME ────────────────────────────────────────────────────────────────────
+window.toggleTheme = function() {
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('yavaya_theme', t);
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+};
+(function() {
+  var t = localStorage.getItem('yavaya_theme') || 'dark';
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+
+// ── LANGUAGE — FIXED ─────────────────────────────────────────────────────────
+var TRANSLATIONS = {
+  es: {
+    // nav
+    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Santuario','nav_tokens':'Tokens',
+    // hero
+    'hero_badge':'La plataforma #1 de Centroamérica',
+    'hero_h1':'Todo lo que','hero_h2':'necesitas.',
+    'hero_sub':'Compra, vende, ordena comida y conecta con tu comunidad — en un solo lugar construido para Centroamérica.',
+    'hero_cta1':'Explorar Mercadito','hero_cta2':'Pedir Comida',
+    'stat_listings':'Anuncios','stat_paises':'Países','stat_sellers':'Vendedores','stat_support':'Soporte',
+    // sections
+    'sec_platform':'Plataforma','sec_all':'Todo en un solo lugar','sec_all_sub':'Tres módulos. Una cuenta. Una comunidad.',
+    'sec_cats':'Categorías','sec_life':'Para cada parte de tu vida','sec_life_sub':'Desde empleos hasta mascotas. Todo tiene su lugar.',
+    'sec_cover':'Cobertura','sec_home':'Centroamérica es nuestra casa','sec_home_sub':'Selecciona tu país para personalizar tu experiencia.',
+    // reino cards
+    'r1_tag':'Comunidad','r1_name':'Yavaya','r1_desc':'Fe, apoyo, oraciones y donaciones. El corazón humano de la plataforma.',
+    'r2_tag':'Comercio','r2_name':'Mercadito','r2_desc':'El marketplace de Centroamérica. Compra, vende y encuentra trabajo en tu país.',
+    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Comida, farmacia y súper a tu puerta en 30–45 min. Rastrea en vivo.',
+    'explore':'Explorar',
+    // pilares
+    'p1_h':'Fe & Comunidad','p1_d':'Oraciones, donaciones y apoyo entre vecinos.',
+    'p2_h':'Empleos','p2_d':'Trabajo remoto, freelance y oportunidades locales.',
+    'p3_h':'Animales','p3_d':'Adopciones, ventas y cuidado de mascotas.',
+    'p4_h':'Salud','p4_d':'Servicios médicos, farmacias y bienestar.',
+    'p5_h':'Inmuebles','p5_d':'Alquiler, venta y servicios del hogar.',
+    'p6_h':'Vehículos','p6_d':'Autos, motos y transporte privado.',
+    'p7_h':'Arte & Cultura','p7_d':'Artesanías, diseño y talento local.',
+    'p8_h':'Tecnología','p8_d':'Electrónica, servicios digitales y más.',
+    'btn_login':'Ingresar',
+  },
+  en: {
+    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Sanctuary','nav_tokens':'Tokens',
+    'hero_badge':'Central America\'s #1 platform',
+    'hero_h1':'Everything','hero_h2':'you need.',
+    'hero_sub':'Buy, sell, order food and connect with your community — one place built for Central America.',
+    'hero_cta1':'Browse Mercadito','hero_cta2':'Order Food',
+    'stat_listings':'Listings','stat_paises':'Countries','stat_sellers':'Sellers','stat_support':'Support',
+    'sec_platform':'Platform','sec_all':'Everything in one place','sec_all_sub':'Three modules. One account. One community.',
+    'sec_cats':'Categories','sec_life':'For every part of your life','sec_life_sub':'From jobs to pets. Everything has a place.',
+    'sec_cover':'Coverage','sec_home':'Central America is home','sec_home_sub':'Select your country to personalize your experience.',
+    'r1_tag':'Community','r1_name':'Yavaya','r1_desc':'Faith, support, prayers and donations. The human heart of the platform.',
+    'r2_tag':'Commerce','r2_name':'Mercadito','r2_desc':'The Central American marketplace. Buy, sell and find work in your country.',
+    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Food, pharmacy and supermarket at your door in 30–45 min. Live tracking.',
+    'explore':'Explore',
+    'p1_h':'Faith & Community','p1_d':'Prayers, donations and neighbor support.',
+    'p2_h':'Jobs','p2_d':'Remote work, freelance and local opportunities.',
+    'p3_h':'Animals','p3_d':'Adoptions, sales and pet care.',
+    'p4_h':'Health','p4_d':'Medical services, pharmacies and wellness.',
+    'p5_h':'Real Estate','p5_d':'Rentals, sales and home services.',
+    'p6_h':'Vehicles','p6_d':'Cars, motorcycles and private transport.',
+    'p7_h':'Art & Culture','p7_d':'Crafts, design and local talent.',
+    'p8_h':'Technology','p8_d':'Electronics, digital services and more.',
+    'btn_login':'Sign In',
+  }
+};
+
+var _lang = localStorage.getItem('yavaya_lang') || 'es';
+
+window.setLang = function(l) {
+  _lang = l;
+  localStorage.setItem('yavaya_lang', l);
+  document.documentElement.setAttribute('data-lang', l);
+
+  // Update button states
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.l === l);
+  });
+
+  // Apply translations to all [data-t] elements
+  var T = TRANSLATIONS[l] || TRANSLATIONS.es;
+  document.querySelectorAll('[data-t]').forEach(function(el) {
+    var key = el.getAttribute('data-t');
+    if (T[key] !== undefined) el.textContent = T[key];
+  });
+
+  // Swap [data-lang-show] blocks
+  document.querySelectorAll('[data-lang-show]').forEach(function(el) {
+    el.style.display = (el.getAttribute('data-lang-show') === l) ? '' : 'none';
+  });
+
+  // Fire custom callback if page defines one
+  if (window._applyLang) window._applyLang(l);
+};
+
+// Init lang on load
+(function() {
+  document.documentElement.setAttribute('data-lang', _lang);
+  setTimeout(function() { window.setLang(_lang); }, 0);
+})();
+
+// ── NAV MOB ───────────────────────────────────────────────────────────────────
+window.toggleMob = function() {
+  var m = document.getElementById('navMob');
+  if (m) m.classList.toggle('open');
+};
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+window.showToast = function(msg, dur) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
+};
+
+// ── NAV SCROLL ────────────────────────────────────────────────────────────────
+window.addEventListener('scroll', function() {
+  var n = document.getElementById('nav');
+  if (!n) return;
+  var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+  n.style.background = window.scrollY > 60
+    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
+    : '';
+}, { passive: true });
+
+// ── CINEMATIC REVEAL ──────────────────────────────────────────────────────────
+(function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('done');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
+  function initObs() {
+    document.querySelectorAll('.reveal, .stagger').forEach(function(el) { obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initObs);
+  else initObs();
+})();
+
+// ── HERO IMAGE REEL ───────────────────────────────────────────────────────────
+window.initHeroReel = function(ids) {
+  var imgs = ids.map(function(id) { return document.getElementById(id); }).filter(Boolean);
+  if (!imgs.length) return;
+  var idx = 0;
+  imgs[0].classList.add('active');
+  setInterval(function() {
+    imgs[idx].classList.remove('active');
+    idx = (idx + 1) % imgs.length;
+    imgs[idx].classList.add('active');
+  }, 5500);
+};
+
+// ── TYPEWRITER ────────────────────────────────────────────────────────────────
+window.initTypewriter = function(elId, lines, speed) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  speed = speed || 52;
+  var lineIdx = 0, charIdx = 0, deleting = false, pause = 0;
+  var cursor = document.createElement('span');
+  cursor.className = 'typewriter-cursor';
+  el.parentNode && el.parentNode.insertBefore(cursor, el.nextSibling);
+
+  function tick() {
+    if (pause > 0) { pause--; setTimeout(tick, 80); return; }
+    var current = lines[lineIdx];
+    if (!deleting) {
+      el.textContent = current.slice(0, charIdx + 1);
+      charIdx++;
+      if (charIdx >= current.length) { deleting = true; pause = 28; }
+    } else {
+      el.textContent = current.slice(0, charIdx - 1);
+      charIdx--;
+      if (charIdx <= 0) { deleting = false; lineIdx = (lineIdx + 1) % lines.length; pause = 6; }
+    }
+    setTimeout(tick, deleting ? speed * .45 : speed);
+  }
+  tick();
+};
+
+// ── COUNTUP ───────────────────────────────────────────────────────────────────
+window.initCountUp = function() {
+  document.querySelectorAll('[data-countup]').forEach(function(el) {
+    var target = parseFloat(el.getAttribute('data-countup'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    var prefix = el.getAttribute('data-prefix') || '';
+    var dec    = el.getAttribute('data-dec') || 0;
+    var obs = new IntersectionObserver(function(entries) {
+      if (!entries[0].isIntersecting) return;
+      obs.disconnect();
+      var start = 0, dur = 1800, startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var p = Math.min((ts - startTime) / dur, 1);
+        var ease = 1 - Math.pow(1 - p, 3);
+        var val = (start + (target - start) * ease).toFixed(dec);
+        el.textContent = prefix + val + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }, { threshold: .5 });
+    obs.observe(el);
+  });
+};
+
+// ── 3D CARD TILT ──────────────────────────────────────────────────────────────
+window.initTilt = function() {
+  document.querySelectorAll('.tilt').forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var r = card.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width  - .5;
+      var y = (e.clientY - r.top)  / r.height - .5;
+      card.style.transform = 'perspective(900px) rotateY('+x*7+'deg) rotateX('+(-y*5)+'deg) scale(1.02)';
+    });
+    card.addEventListener('mouseleave', function() { card.style.transform = ''; });
+  });
+};
+
+// ── LINE DRAW ─────────────────────────────────────────────────────────────────
+(function() {
+  var obs2 = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('done'); obs2.unobserve(e.target); } });
+  }, { threshold: .3 });
+  function initLines() { document.querySelectorAll('.line-draw').forEach(function(el) { obs2.observe(el); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLines);
+  else initLines();
+})();
+
+// ── MAGNETIC HOVER ────────────────────────────────────────────────────────────
+window.initMagnetic = function() {
+  document.querySelectorAll('.magnetic').forEach(function(el) {
+    el.addEventListener('mousemove', function(e) {
+      var r = el.getBoundingClientRect();
+      var x = (e.clientX - r.left - r.width  / 2) * .22;
+      var y = (e.clientY - r.top  - r.height / 2) * .22;
+      el.style.transform = 'translate('+x+'px,'+y+'px)';
+    });
+    el.addEventListener('mouseleave', function() { el.style.transform = ''; });
+  });
+};
+
+// ── DEMO LIVE NOTIFICATIONS ───────────────────────────────────────────────────
+(function() {
+  var DEMOS = [
+    { ico:'🛒', dot:'#4f8eff', title:'Nuevo anuncio', sub:'iPhone 15 Pro — Guatemala · $680' },
+    { ico:'🏠', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Apartamento Zona 10 — $950/mes' },
+    { ico:'🚀', dot:'#30d68c', title:'Pedido entregado', sub:'YavayaGo · La Antigua · 28 min' },
+    { ico:'💼', dot:'#4f8eff', title:'Nueva oferta de trabajo', sub:'Desarrollador Remote · $2,400/mes' },
+    { ico:'🙏', dot:'#f0c96a', title:'Oración enviada', sub:'Comunidad · Santuario Yavaya' },
+    { ico:'🚗', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Toyota Corolla 2021 · Honduras · $13,500' },
+    { ico:'✅', dot:'#30d68c', title:'Venta completada', sub:'MacBook Pro M3 · $1,200 · Managua' },
+    { ico:'🐾', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Cachorro Husky · Costa Rica · $180' },
+    { ico:'🍕', dot:'#30d68c', title:'Pedido en camino', sub:'YavayaGo · Pizzería Roma · 12 min' },
+    { ico:'📱', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Samsung S24 Ultra · El Salvador · $750' },
+  ];
+  var container, queue = [], showing = false;
+
+  function ensureContainer() {
+    if (!container) {
+      container = document.getElementById('liveTicker');
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'live-ticker';
+        container.id = 'liveTicker';
+        document.body.appendChild(container);
+      }
+    }
+  }
+
+  function showNext() {
+    if (!queue.length || showing) return;
+    showing = true;
+    ensureContainer();
+    var d = queue.shift();
+    var pill = document.createElement('div');
+    pill.className = 'ticker-pill';
+    pill.innerHTML =
+      '<span class="ticker-dot" style="background:'+d.dot+'"></span>' +
+      '<span class="ticker-ico">'+d.ico+'</span>' +
+      '<div class="ticker-text"><div class="ticker-title">'+d.title+'</div>' +
+      '<div class="ticker-sub">'+d.sub+'</div></div>';
+    container.appendChild(pill);
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { pill.classList.add('show'); });
+    });
+    setTimeout(function() {
+      pill.classList.add('hide');
+      pill.classList.remove('show');
+      setTimeout(function() {
+        if (pill.parentNode) pill.parentNode.removeChild(pill);
+        showing = false;
+        if (queue.length) setTimeout(showNext, 400);
+      }, 600);
+    }, 4200);
+  }
+
+  function scheduleNext() {
+    var delay = 6000 + Math.random() * 9000;
+    setTimeout(function() {
+      var d = DEMOS[Math.floor(Math.random() * DEMOS.length)];
+      queue.push(d);
+      showNext();
+      scheduleNext();
+    }, delay);
+  }
+
+  // First notification after 3.5s
+  setTimeout(function() {
+    ensureContainer();
+    var d = DEMOS[0];
+    queue.push(d);
+    showNext();
+    scheduleNext();
+  }, 3500);
+})();
+
+// ── AUTH MODAL ────────────────────────────────────────────────────────────────
+window.openAuthModal = function(tab) {
+  var m = document.getElementById('authModal');
+  if (m) { m.style.display = 'flex'; switchAuthTab(tab || 'login'); }
+};
+window.closeAuthModal = function() {
+  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
+};
+window.switchAuthTab = function(tab) {
+  ['login','reg'].forEach(function(p) {
+    var el = document.getElementById('panel_'+p); if (el) el.style.display = p===tab?'block':'none';
+  });
+  document.querySelectorAll('.tab-b').forEach(function(b) {
+    b.classList.toggle('on', b.dataset.tab === tab);
+  });
+};
+window.toggleVis = function(id) {
+  var el = document.getElementById(id); if (el) el.type = el.type==='password'?'text':'password';
+};
+window.doLogin = async function() {
+  var e=(document.getElementById('loginEmail')||{}).value||'';
+  var p=(document.getElementById('loginPass')||{}).value||'';
+  e=e.trim(); if(!e||!p){showToast('Ingresa correo y contraseña');return;}
+  var btn=document.getElementById('btnLogin'); if(btn){btn.disabled=true;btn.textContent='Entrando...';}
+  try {
+    if(window._goAuth&&window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth,e,p);
+    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
+  } catch(err) {
+    var map={'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
+    showToast(map[err.code]||err.message);
+  }
+  if(btn){btn.disabled=false;btn.textContent='Iniciar sesión';}
+};
+window.doRegister = async function() {
+  var n=(document.getElementById('regName')||{}).value||'';
+  var e=(document.getElementById('regEmail')||{}).value||'';
+  var p=(document.getElementById('regPass')||{}).value||'';
+  var p2=(document.getElementById('regPass2')||{}).value||'';
+  n=n.trim();e=e.trim();
+  if(!n){showToast('Escribe tu nombre');return;}
+  if(!e){showToast('Ingresa tu correo');return;}
+  if(p.length<8){showToast('Contraseña mínimo 8 caracteres');return;}
+  if(p!==p2){showToast('Las contraseñas no coinciden');return;}
+  var btn=document.getElementById('btnReg'); if(btn){btn.disabled=true;btn.textContent='Creando...';}
+  try {
+    if(window._goAuth&&window._auth){
+      var c=await window._goAuth.createUserWithEmailAndPassword(window._auth,e,p);
+      await window._goAuth.updateProfile(c.user,{displayName:n});
+    }
+    window.closeAuthModal(); showToast('¡Bienvenido/a '+n+'! 🎉');
+  } catch(err) {
+    var map2={'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
+    showToast(map2[err.code]||err.message);
+  }
+  if(btn){btn.disabled=false;btn.textContent='Crear cuenta';}
+};
+window.doGoogle = function() {
+  if(window._goAuth&&window._auth){
+    var pr=new window._goAuth.GoogleAuthProvider();
+    window._goAuth.signInWithPopup(window._auth,pr)
+      .then(function(){window.closeAuthModal();showToast('¡Bienvenido! 👋');})
+      .catch(function(e){showToast(e.message);});
+  } else { showToast('Google auth no configurado'); }
+};
+window.forgotPass = function() {
+  var e=(document.getElementById('loginEmail')||{}).value||'';e=e.trim();
+  if(!e){showToast('Ingresa tu correo primero');return;}
+  if(window._goAuth&&window._auth)
+    window._goAuth.sendPasswordResetEmail(window._auth,e)
+      .then(function(){showToast('Correo enviado ✓');})
+      .catch(function(e){showToast(e.message);});
+};
+
+// ── INIT ALL ──────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  initCountUp();
+  initTilt();
+  initMagnetic();
+});
+
 </script>
 </body>
 </html>
