@@ -3,1189 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
-<title>Tokens — Yavaya</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Yavaya Tokens — Tu acceso a la plataforma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
 <style>
-/* YAVAYA Design System v4 — God Tier Modern */
-:root {
-  --bg: #070b10;
-  --bg2: #0c1118;
-  --bg3: #101820;
-  --surface: #141c27;
-  --surface2: #1c2636;
-  --border: rgba(255,255,255,.06);
-  --border2: rgba(255,255,255,.11);
-  --accent: #4f8eff;
-  --accent2: #7aabff;
-  --accent-glow: rgba(79,142,255,.2);
-  --accent-soft: rgba(79,142,255,.09);
-  --gold: #f0c96a;
-  --gold2: #fad98a;
-  --gold-soft: rgba(240,201,106,.09);
-  --green: #30d68c;
-  --green-soft: rgba(48,214,140,.09);
-  --red: #ff5f57;
-  --text: #e8eef8;
-  --text2: #7e90aa;
-  --text3: rgba(232,238,248,.28);
-  --nav-h: 62px;
-  --r: 14px;
-  --r-lg: 22px;
-  --shadow: 0 4px 24px rgba(0,0,0,.5);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
-}
-[data-theme="light"] {
-  --bg: #f2f5fb;
-  --bg2: #e8edf7;
-  --bg3: #dde4f0;
-  --surface: #ffffff;
-  --surface2: #f7f9fd;
-  --border: rgba(0,0,0,.07);
-  --border2: rgba(0,0,0,.13);
-  --accent: #2563eb;
-  --accent2: #1e50c8;
-  --accent-glow: rgba(37,99,235,.15);
-  --accent-soft: rgba(37,99,235,.08);
-  --gold: #a16207;
-  --gold2: #ca8a04;
-  --gold-soft: rgba(161,98,7,.08);
-  --green: #16a34a;
-  --green-soft: rgba(22,163,74,.08);
-  --red: #dc2626;
-  --text: #0d1626;
-  --text2: #4a5c78;
-  --text3: rgba(13,22,38,.35);
-  --shadow: 0 4px 24px rgba(0,0,0,.09);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
-}
-
-
+:root{--bg:#05080e;--bg2:#090d15;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--accent-soft:rgba(79,142,255,.08);--gold:#f0c96a;--gold2:#fad98a;--gold3:#ffe4a0;--gold-soft:rgba(240,201,106,.09);--gold-glow:rgba(240,201,106,.35);--green:#30d68c;--green-soft:rgba(48,214,140,.09);--purple:#a78bfa;--purple-soft:rgba(167,139,250,.1);--orange:#fb923c;--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#fdf9ee;--bg2:#f8f0d8;--surface:#fff;--surface2:#fffdf5;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--gold:#92680a;--gold2:#a67c0e;--gold3:#c4960f;--gold-soft:rgba(146,104,10,.08);--gold-glow:rgba(146,104,10,.25);--green:#16a34a;--green-soft:rgba(22,163,74,.08);--purple:#7c3aed;--purple-soft:rgba(124,58,237,.1);--text:#1a1000;--text2:#5a4010;--text3:rgba(26,16,0,.3)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer}
-img{display:block;max-width:100%}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
-input,textarea,select{font-family:inherit}
-
-/* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
-[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:99px}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.82);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
+[data-theme="light"] .nav{background:rgba(253,249,238,.9)}
 .nav-brand{display:flex;align-items:center;gap:10px}
-.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
-.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
-.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
-.nav-links{display:flex;align-items:center;gap:2px}
-.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
-.nav-a:hover{background:var(--surface);color:var(--text)}
-.nav-r{display:flex;align-items:center;gap:7px}
-.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
-.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
-.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
-.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
-.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
-.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
-.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
-.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
-.nav-mob.open{display:flex}
-.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
-.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
-
-/* ── SECTION WRAPPERS ── */
-.section{padding:96px 24px}
-.section-sm{padding:64px 24px}
-.container{max-width:1200px;margin:0 auto}
-.container-sm{max-width:860px;margin:0 auto}
-
-/* ── SECTION HEADER ── */
-.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
-.sec-p{font-size:16px;color:var(--text2);max-width:480px}
-
-/* ── CARDS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
-.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-.card-lift:hover{transform:translateY(-4px)}
-
-/* ── BUTTONS ── */
-.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
-.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
-.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-
-/* ── FORM ── */
-.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
-.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
-.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
-.form-textarea{min-height:96px;resize:vertical}
-.form-group{margin-bottom:14px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
-.modal-wide{max-width:540px}
-@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
-.modal-x:hover{background:var(--surface2);color:var(--text)}
-.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
-
-/* ── AUTH TABS ── */
-.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
-.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
-.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
-.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
-.input-wrap{position:relative}
-.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
-.forgot{font-size:12px;color:var(--text3);transition:color .2s}
-.forgot:hover{color:var(--accent)}
-
-/* ── BADGE / TAG ── */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
-.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
-.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
-.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── FADE-UP ── */
-.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
-.fade-up.vis{opacity:1;transform:translateY(0)}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
-@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
-
-
-.tok-hero{padding:calc(var(--nav-h)+52px) 24px 32px;text-align:center;background:var(--bg);position:relative;overflow:hidden}
-.tok-blob{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 45% at 50% 0%,rgba(240,201,106,.07) 0%,transparent 60%);animation:tb 7s ease-in-out infinite}
-@keyframes tb{0%,100%{opacity:.6}50%{opacity:1}}
-.tok-h{font-size:clamp(30px,6vw,52px);font-weight:800;letter-spacing:-1.5px;color:var(--text);position:relative;z-index:1;margin-bottom:6px}
-.tok-p{font-size:15px;color:var(--text2);position:relative;z-index:1;margin-bottom:28px}
-
-/* ID CARD */
-.id-card{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border2);border-radius:var(--r-lg);padding:24px 28px;max-width:420px;margin:0 auto 40px;position:relative;z-index:1;box-shadow:var(--shadow)}
-.id-card::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,var(--gold-soft),transparent 60%);pointer-events:none}
-.id-pre{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.id-num{font-size:24px;font-weight:800;letter-spacing:3px;color:var(--text);margin-bottom:14px;font-family:monospace}
-.id-warn{font-size:12px;color:var(--text2);line-height:1.5;padding:10px 14px;background:var(--bg2);border-radius:9px;border:1px solid var(--border2)}
-.id-warn b{color:var(--gold)}
-.btn-copy{margin-top:12px;padding:9px 18px;border-radius:9px;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-size:13px;font-weight:600;transition:all .2s}
-.btn-copy:hover{border-color:var(--accent);color:var(--accent)}
-
+.nav-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);animation:goldpulse 2.5s ease-in-out infinite}
+@keyframes goldpulse{0%,100%{box-shadow:0 0 6px var(--gold)}50%{box-shadow:0 0 24px var(--gold),0 0 48px var(--gold-glow)}}
+.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--gold)}
+.nav-tag{font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);padding:3px 10px;border-radius:99px}
+.nav-links{display:flex;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--gold)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-cta{padding:9px 20px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a1000;border:none;font-size:13px;font-weight:900;transition:all .25s}.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 24px var(--gold-glow)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;cursor:pointer}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);z-index:299;padding:12px 16px;flex-direction:column;gap:4px}.nav-mob.open{display:flex}
+.nav-mob-a{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);transition:all .2s}.nav-mob-a:hover{background:var(--surface);color:var(--text)}
+/* BUTTONS */
+.btn-primary{padding:12px 28px;border-radius:13px;background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a1000;border:none;font-size:14px;font-weight:900;display:inline-flex;align-items:center;gap:8px;transition:all .3s;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);opacity:0;transition:opacity .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px var(--gold-glow)}.btn-primary:hover::before{opacity:1}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-soft);transform:translateY(-2px)}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(35px,-25px) scale(1.06)}66%{transform:translate(-25px,30px) scale(.96)}100%{transform:translate(0,0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(6deg)}}
+@keyframes spin-coin{0%{transform:rotateY(0deg)}50%{transform:rotateY(180deg)}100%{transform:rotateY(360deg)}}
+@keyframes shimmer-gold{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes token-rain{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:.5}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes glow-ring{0%,100%{box-shadow:0 0 0 0 var(--gold-glow)}50%{box-shadow:0 0 0 12px rgba(240,201,106,0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94)}.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}.reveal-d4{transition-delay:.4s}
+/* FALLING TOKENS */
+.token-rain-wrap{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0;transition:opacity .5s}
+.token-rain-wrap.active{opacity:1}
+.rain-tok{position:absolute;top:-40px;font-size:20px;animation:token-rain linear infinite}
+/* PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.4}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 80px) 24px 100px;position:relative;overflow:hidden;text-align:center}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 20s ease-in-out infinite}
+.hero-orb:nth-child(1){width:800px;height:800px;background:radial-gradient(circle,rgba(240,201,106,.12),transparent 70%);top:-220px;left:calc(50% - 400px)}
+.hero-orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,rgba(251,146,60,.07),transparent 70%);bottom:-80px;right:-80px;animation-delay:-11s}
+.hero-orb:nth-child(3){width:400px;height:400px;background:radial-gradient(circle,rgba(167,139,250,.05),transparent 70%);bottom:-60px;left:-60px;animation-delay:-5s}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(240,201,106,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(240,201,106,.025) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%)}
+/* BIG TOKEN */
+.big-token{font-size:clamp(80px,15vw,160px);display:block;animation:float 4s ease-in-out infinite,spin-coin 6s ease-in-out infinite;margin-bottom:20px;filter:drop-shadow(0 0 40px var(--gold-glow));animation:fadeUp .7s ease both}
+.hero-inner{position:relative;z-index:2;max-width:820px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--gold-soft);border:1px solid rgba(240,201,106,.25);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:28px;animation:fadeUp .7s ease both}
+.hero-h{font-size:clamp(46px,9.5vw,100px);font-weight:900;letter-spacing:-4px;line-height:.88;margin-bottom:24px;animation:fadeUp .7s .1s ease both}
+.shimmer-text{background:linear-gradient(135deg,var(--text) 0%,var(--gold3) 30%,var(--gold) 50%,var(--gold2) 70%,var(--text) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer-gold 4s linear infinite}
+.hero-p{font-size:clamp(16px,2vw,19px);color:var(--text2);max-width:520px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+/* LIVE BALANCE */
+.balance-card{display:inline-flex;align-items:center;gap:14px;background:var(--surface);border:1px solid rgba(240,201,106,.25);border-radius:18px;padding:18px 28px;margin-top:36px;animation:fadeUp .7s .4s ease both;box-shadow:0 0 0 0 var(--gold-glow);animation:fadeUp .7s .4s ease both,glow-ring 3s ease-in-out infinite .4s}
+.bal-icon{font-size:32px}
+.bal-n{font-size:36px;font-weight:900;color:var(--gold);letter-spacing:-2px;line-height:1}
+.bal-l{font-size:12px;color:var(--text2);font-weight:600;letter-spacing:.4px}
+/* SECTIONS */
+.section{padding:100px 24px;position:relative}
+.container{max-width:1100px;margin:0 auto}
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--gold);border-radius:1px}
+.sec-h{font-size:clamp(28px,4.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
 /* FREE TOKENS */
-.free-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:24px}
-.free-h{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px}
-.free-p{font-size:13px;color:var(--text2);margin-bottom:18px}
-.task-list{display:flex;flex-direction:column;gap:8px}
-.task{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:11px;background:var(--bg2);border:1px solid var(--border)}
-.task-info{display:flex;align-items:center;gap:10px}
-.task-ico{font-size:18px}
-.task-label{font-size:13px;font-weight:600;color:var(--text)}
-.task-done{font-size:12px;color:var(--green);display:flex;align-items:center;gap:4px}
-.btn-task{padding:7px 14px;border-radius:8px;background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.15);font-size:12px;font-weight:600;transition:all .2s}
-.btn-task:hover{background:var(--accent);color:#fff}
-
-/* BUY PACKS */
-.pack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:28px}
-.pack{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 16px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
-.pack:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
-.pack.featured{border-color:rgba(240,201,106,.25)}
-.pack-hot{position:absolute;top:0;right:0;font-size:9px;font-weight:700;padding:4px 10px;background:var(--gold);color:#1a0f00;border-bottom-left-radius:8px;text-transform:uppercase;letter-spacing:.5px}
-.pack-ico{font-size:32px;margin-bottom:10px}
-.pack-tokens{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text)}
-.pack-label{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text2);margin-bottom:4px}
-.pack-price{font-size:22px;font-weight:800;color:var(--accent);margin-bottom:6px}
-.pack-bonus{font-size:11px;color:var(--green);font-weight:600;margin-bottom:14px}
-.btn-pack{width:100%;padding:9px;border-radius:9px;border:1px solid var(--border2);background:none;color:var(--text);font-size:12px;font-weight:600;transition:all .2s}
-.btn-pack:hover{border-color:var(--accent);color:var(--accent)}
-.pack.featured .btn-pack{background:var(--gold);color:#1a0f00;border-color:var(--gold)}
-
+.free-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.free-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;transition:all .35s cubic-bezier(.34,1.56,.64,1);cursor:pointer;position:relative;overflow:hidden}
+.free-card:hover{transform:translateY(-8px);border-color:rgba(240,201,106,.35);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.free-icon{font-size:38px;margin-bottom:14px;display:block;transition:transform .4s}.free-card:hover .free-icon{transform:scale(1.2) rotate(-8deg)}
+.free-h{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
+.free-p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.free-reward{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--gold);background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);padding:5px 12px;border-radius:99px}
+.free-glow{position:absolute;width:180px;height:180px;border-radius:50%;filter:blur(50px);opacity:.07;pointer-events:none;right:-30px;bottom:-30px;background:var(--gold);transition:opacity .4s}.free-card:hover .free-glow{opacity:.18}
+/* PACKAGES */
+.pkg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px}
+.pkg{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:28px;text-align:center;transition:all .4s cubic-bezier(.34,1.56,.64,1);cursor:pointer;position:relative;overflow:hidden}
+.pkg:hover{transform:translateY(-10px);border-color:rgba(240,201,106,.4);box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.pkg.featured{border-color:rgba(240,201,106,.4);background:linear-gradient(135deg,rgba(240,201,106,.07),var(--surface))}
+.pkg-best{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--gold),var(--orange));color:#1a1000;font-size:10px;font-weight:900;padding:4px 14px;border-radius:99px;white-space:nowrap;letter-spacing:.5px}
+.pkg-icon{font-size:48px;margin-bottom:12px;display:block;transition:transform .4s,filter .4s}
+.pkg:hover .pkg-icon{transform:scale(1.2) rotate(-5deg);filter:drop-shadow(0 0 16px var(--gold-glow))}
+.pkg-name{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+.pkg-tok{font-size:52px;font-weight:900;color:var(--text);letter-spacing:-3px;line-height:1}
+.pkg-tok span{color:var(--gold)}
+.pkg-price{font-size:18px;font-weight:700;color:var(--text2);margin-top:6px;margin-bottom:18px}
+.pkg-bonus{font-size:12px;color:var(--green);font-weight:700;background:var(--green-soft);padding:3px 10px;border-radius:99px;display:inline-block;margin-bottom:16px}
+.pkg-perks{text-align:left;display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.pkg-perk{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.pkg-perk::before{content:'⚡';font-size:11px;color:var(--gold)}
 /* HOW IT WORKS */
-.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
-.how-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;text-align:center}
-.how-n{font-size:36px;font-weight:800;letter-spacing:-1px;color:var(--border2);margin-bottom:10px}
-.how-h{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
-.how-p{font-size:12px;color:var(--text2);line-height:1.5}
-
-@media(max-width:600px){.pack-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:1fr}}
-
-
-/* ══ CINEMATIC REVEAL ENGINE ══ */
-.reveal          { opacity:0; transform:translateY(32px);    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
-.reveal.left     { transform:translateX(-40px) translateY(0); }
-.reveal.right    { transform:translateX( 40px) translateY(0); }
-.reveal.scale    { transform:scale(.94); }
-.reveal.done     { opacity:1; transform:none; }
-.reveal-d1       { transition-delay:.12s; }
-.reveal-d2       { transition-delay:.24s; }
-.reveal-d3       { transition-delay:.38s; }
-.reveal-d4       { transition-delay:.52s; }
-.reveal-d5       { transition-delay:.68s; }
-
-/* ══ HERO CINEMATIC LAYER ══ */
-.hero-reel {
-  position:absolute; inset:0; z-index:0; overflow:hidden;
-}
-.hero-reel img {
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:center;
-  opacity:0; transition:opacity 2.2s cubic-bezier(.4,0,.2,1), transform 9s linear;
-  transform:scale(1.06);
-  will-change:opacity,transform;
-}
-.hero-reel img.active {
-  opacity:.28; transform:scale(1.0);
-}
-[data-theme="light"] .hero-reel img.active { opacity:.14; }
-
-/* Cinematic vignette */
-.hero-reel::after {
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(7,11,16,.9) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(7,11,16,.5) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(7,11,16,.15) 0%, transparent 30%, rgba(7,11,16,.8) 100%);
-}
-[data-theme="light"] .hero-reel::after {
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(242,245,251,.95) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(242,245,251,.3) 0%, transparent 30%, rgba(242,245,251,.85) 100%);
-}
-
-/* ══ TYPEWRITER ══ */
-.typewriter { display:inline; }
-.typewriter-cursor {
-  display:inline-block; width:2px; height:.85em;
-  background:currentColor; margin-left:3px;
-  vertical-align:-.08em;
-  animation:cur .75s step-end infinite;
-}
-@keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* ══ LIVE NOTIFICATION TICKER ══ */
-.live-ticker {
-  position:fixed; bottom:24px; left:24px; z-index:800;
-  display:flex; flex-direction:column; gap:8px;
-  pointer-events:none;
-}
-.ticker-pill {
-  display:flex; align-items:center; gap:10px;
-  padding:11px 16px; border-radius:14px;
-  background:var(--surface); border:1px solid var(--border2);
-  box-shadow:0 8px 32px rgba(0,0,0,.45);
-  font-size:13px; color:var(--text);
-  transform:translateX(-120%); opacity:0;
-  transition:transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s;
-  pointer-events:none; backdrop-filter:blur(16px);
-  max-width:280px;
-}
-.ticker-pill.show { transform:translateX(0); opacity:1; }
-.ticker-pill.hide { transform:translateX(-120%); opacity:0; }
-.ticker-dot {
-  width:7px; height:7px; border-radius:50%; flex-shrink:0;
-  animation:td 2s infinite;
-}
-@keyframes td { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
-.ticker-ico { font-size:16px; flex-shrink:0; }
-.ticker-text { line-height:1.35; }
-.ticker-title { font-weight:600; font-size:12px; }
-.ticker-sub   { font-size:11px; color:var(--text2); margin-top:1px; }
-
-/* ══ HORIZONTAL MARQUEE ══ */
-.marquee-wrap {
-  overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-  padding:14px 0; background:var(--bg2);
-}
-.marquee-track {
-  display:flex; gap:48px; width:max-content;
-  animation:marquee 28s linear infinite;
-}
-.marquee-wrap:hover .marquee-track { animation-play-state:paused; }
-@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.marquee-item {
-  display:flex; align-items:center; gap:10px;
-  font-size:12px; font-weight:600; color:var(--text2);
-  letter-spacing:.4px; white-space:nowrap;
-}
-.marquee-sep { color:var(--border2); }
-
-/* ══ STAGGER GRID ══ */
-.stagger > * {
-  opacity:0; transform:translateY(24px);
-  transition:opacity .65s, transform .65s;
-}
-.stagger.done > *:nth-child(1){transition-delay:.0s}
-.stagger.done > *:nth-child(2){transition-delay:.08s}
-.stagger.done > *:nth-child(3){transition-delay:.16s}
-.stagger.done > *:nth-child(4){transition-delay:.24s}
-.stagger.done > *:nth-child(5){transition-delay:.32s}
-.stagger.done > *:nth-child(6){transition-delay:.40s}
-.stagger.done > *:nth-child(7){transition-delay:.48s}
-.stagger.done > *:nth-child(8){transition-delay:.56s}
-.stagger.done > * { opacity:1; transform:translateY(0); }
-
-/* ══ MAGNETIC HOVER ══ */
-.magnetic { transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
-
-/* ══ CARD TILT ══ */
-.tilt { transform-style:preserve-3d; transition:transform .15s ease; }
-
-/* ══ GRADIENT TEXT SHIMMER ══ */
-.shimmer-text {
-  background:linear-gradient(90deg,
-    var(--text) 0%, var(--text) 35%,
-    var(--accent2) 50%, var(--text) 65%, var(--text) 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shimmer 5s linear infinite;
-}
-[data-theme="light"] .shimmer-text {
-  background:linear-gradient(90deg,#0d1626 0%,#0d1626 35%,#2563eb 50%,#0d1626 65%,#0d1626 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-}
-@keyframes shimmer { to{ background-position:200% center } }
-
-/* ══ LINE DRAW ══ */
-.line-draw {
-  display:block; height:1px;
-  background:linear-gradient(90deg, transparent, var(--accent), transparent);
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 1.2s cubic-bezier(.16,1,.3,1);
-}
-.line-draw.done { transform:scaleX(1); }
-
-/* ══ NUMBER COUNT-UP ══ */
-.countup { display:inline; }
-
-/* ══ LANG TOGGLE FIX ══ */
-[data-lang-show]        { display:none !important; }
-[data-lang-show="es"]   { display:var(--_d,revert) !important; }
-html[data-lang="en"] [data-lang-show="es"] { display:none !important; }
-html[data-lang="en"] [data-lang-show="en"] { display:var(--_d,revert) !important; }
-html[data-lang="es"] [data-lang-show="en"] { display:none !important; }
-html[data-lang="es"] [data-lang-show="es"] { display:var(--_d,revert) !important; }
-
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative}
+.how-card:hover{transform:translateY(-6px);border-color:rgba(240,201,106,.3);box-shadow:0 16px 50px rgba(0,0,0,.4)}
+.how-num{position:absolute;top:14px;right:16px;font-size:42px;font-weight:900;color:rgba(240,201,106,.07);line-height:1}
+.how-icon{font-size:44px;margin-bottom:14px;display:block}
+.how-h{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
+.how-p{font-size:12px;color:var(--text2);line-height:1.65}
+/* USE CASES */
+.uses-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:48px}
+.use-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;transition:all .3s;cursor:pointer}
+.use-item:hover{border-color:rgba(240,201,106,.3);transform:translateX(5px)}
+.use-icon{font-size:28px;flex-shrink:0;transition:transform .3s}.use-item:hover .use-icon{transform:scale(1.2)}
+.use-h{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.use-p{font-size:12px;color:var(--text2)}
+.use-cost{margin-left:auto;font-size:13px;font-weight:800;color:var(--gold);white-space:nowrap}
+/* BUY MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.78);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid rgba(240,201,106,.2);border-radius:24px;padding:32px 28px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 0 60px rgba(240,201,106,.1),var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--orange),var(--gold))}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}.modal-x:hover{background:var(--surface2);color:var(--text)}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s;font-family:inherit}
+.form-input:focus,.form-select:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.form-input::placeholder{color:var(--text3)}.form-group{margin-bottom:14px}
+/* PKG SELECTOR */
+.pkg-sel{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.pks{padding:14px;border-radius:13px;border:1px solid var(--border2);text-align:center;cursor:pointer;transition:all .25s}
+.pks.on{border-color:var(--gold);background:var(--gold-soft)}
+.pks-tok{font-size:22px;font-weight:900;color:var(--text)}
+.pks-price{font-size:12px;color:var(--text2);font-weight:600}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid rgba(240,201,106,.3);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:0 0 20px var(--gold-glow),var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:768px){.pkg-grid{grid-template-columns:repeat(2,1fr)}.free-grid{grid-template-columns:1fr}.uses-grid{grid-template-columns:1fr}.how-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.pkg-grid{grid-template-columns:1fr}.how-grid{grid-template-columns:1fr}.nav{padding:0 16px}.section{padding:70px 16px}.hero-h{letter-spacing:-2px}}
 </style>
 </head>
 <body>
+<canvas id="pcanvas"></canvas>
+<div class="token-rain-wrap" id="rainWrap"></div>
 
-<nav class="nav" id="nav">
-  <div class="nav-brand">
-    <a href="index.html" style="display:flex;align-items:center;gap:10px">
-      <div class="nav-dot"></div>
-      <span class="nav-logo">Yavaya</span>
-    </a>
-    <span class="nav-tag">Tokens</span>
+<nav class="nav">
+  <div class="nav-brand"><div class="nav-dot"></div><span class="nav-logo">Yava<span>ya</span></span><span class="nav-tag">⚡ Tokens</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a">Inicio</a><a href="mercadito.html" class="nav-a">Mercadito</a><a href="yavayago.html" class="nav-a">YavayaGo</a>
+    <a href="church.html" class="nav-a">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a>
+    <a href="tokens.html" class="nav-a active">Tokens</a>
   </div>
-  <div class="nav-links"><a href="mercadito.html" class="nav-a" >Mercadito</a><a href="yavayago.html" class="nav-a" >YavayaGo</a><a href="church.html" class="nav-a" >Santuario</a><a href="tokens.html" class="nav-a" style="color:var(--accent)">Tokens</a></div>
   <div class="nav-r">
-    <div class="lang-sw">
-      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
-    </div>
     <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
-    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
-    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
-      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
-      <span id="userName" style="font-size:13px;font-weight:600"></span>
-      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
-    </div>
-    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
-    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
+    <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--gold)">⚡<span id="navTokCount">0</span></div>
+    <button class="btn-cta" onclick="openBuy()">⚡ Comprar tokens</button>
+    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
-  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
-  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
-  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
-  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a><a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
 </div>
 
-<section class="tok-hero">
-  <div class="tok-blob"></div>
-  <div class="sec-pre" style="position:relative;z-index:1">⚡ Sistema de Tokens</div>
-  <h1 class="tok-h">Yavaya Tokens</h1>
-  <p class="tok-p">Tu acceso a la Plataforma</p>
-  <div class="id-card" id="idCard">
-    <div class="id-pre">Tu Yavaya ID</div>
-    <div class="id-num" id="idNum">YVY-????-????</div>
-    <div class="id-warn">⚠ <b>Importante:</b> Preséntalo al comprar tokens. Sin tu ID no podemos acreditar tu compra.</div>
-    <button class="btn-copy" onclick="copyId()">Copiar ID</button>
-    <div style="margin-top:12px;font-size:13px;color:var(--text2)" id="tokBalance"></div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div><div class="hero-orb"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">⚡ La moneda de Yavaya</div>
+    <span class="big-token">⚡</span>
+    <h1 class="hero-h">
+      <span class="shimmer-text">Yavaya Tokens</span>
+    </h1>
+    <p class="hero-p">Tu acceso a todo lo que la plataforma ofrece. Publica anuncios, desbloquea servicios premium y recompensa a tu comunidad.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openBuy()">
+        ⚡ Comprar tokens
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="btn-outline" onclick="document.getElementById('free').scrollIntoView({behavior:'smooth'})">Obtener gratis</button>
+    </div>
+    <div class="balance-card" id="balCard">
+      <span class="bal-icon">💰</span>
+      <div>
+        <div class="bal-n" id="balN">0</div>
+        <div class="bal-l">TUS TOKENS ACTUALES</div>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- FREE TOKENS -->
+<section class="section" style="background:var(--bg2)" id="free">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sec-label" style="justify-content:center;display:flex">Tokens gratuitos</div>
+      <h2 class="sec-h" style="text-align:center">Gana tokens<br>sin gastar nada</h2>
+      <p style="font-size:15px;color:var(--text2);max-width:480px;margin:0 auto">Hay varias formas de acumular tokens sin pagar. Aprovéchalas.</p>
+    </div>
+    <div class="free-grid">
+      <div class="free-card reveal" onclick="claimFree('Registro',10)">
+        <span class="free-icon">🎁</span>
+        <div class="free-h">Registro nuevo</div>
+        <div class="free-p">Crea tu cuenta Yavaya y recibe tokens de bienvenida al instante. Solo una vez.</div>
+        <div class="free-reward">⚡ +10 tokens</div>
+        <div class="free-glow"></div>
+      </div>
+      <div class="free-card reveal reveal-d1" onclick="claimFree('Referido',25)">
+        <span class="free-icon">👥</span>
+        <div class="free-h">Referir amigos</div>
+        <div class="free-p">Invita a alguien. Cuando se registren y publiquen, tú ganas tokens. Sin límite de referidos.</div>
+        <div class="free-reward">⚡ +25 tokens por referido</div>
+        <div class="free-glow"></div>
+      </div>
+      <div class="free-card reveal reveal-d2" onclick="claimFree('Primera venta',15)">
+        <span class="free-icon">🛒</span>
+        <div class="free-h">Primera venta</div>
+        <div class="free-p">Completa tu primera venta en Mercadito y recibe tokens de recompensa automáticamente.</div>
+        <div class="free-reward">⚡ +15 tokens</div>
+        <div class="free-glow"></div>
+      </div>
+      <div class="free-card reveal" onclick="claimFree('Oración enviada',5)">
+        <span class="free-icon">🙏</span>
+        <div class="free-h">Participa en el Santuario</div>
+        <div class="free-p">Envía oraciones, enciende velas y participa en la comunidad para ganar tokens semanalmente.</div>
+        <div class="free-reward">⚡ +5 tokens / semana</div>
+        <div class="free-glow"></div>
+      </div>
+      <div class="free-card reveal reveal-d1" onclick="claimFree('Perfil completo',8)">
+        <span class="free-icon">✏️</span>
+        <div class="free-h">Completar tu perfil</div>
+        <div class="free-p">Agrega foto, descripción y links. Un perfil completo genera más confianza — y tokens.</div>
+        <div class="free-reward">⚡ +8 tokens</div>
+        <div class="free-glow"></div>
+      </div>
+      <div class="free-card reveal reveal-d2" onclick="claimFree('Reseña dejada',3)">
+        <span class="free-icon">⭐</span>
+        <div class="free-h">Dejar reseñas</div>
+        <div class="free-p">Califica a vendedores, restaurantes o profesionales que usaste. Ayudas a la comunidad y ganas tokens.</div>
+        <div class="free-reward">⚡ +3 tokens por reseña</div>
+        <div class="free-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUY PACKAGES -->
+<section class="section" style="background:var(--bg)" id="buy">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Paquetes</div>
+      <h2 class="sec-h">Elige tu paquete</h2>
+      <p style="font-size:15px;color:var(--text2);max-width:480px;margin:0 auto">Mientras más compras, más recibes. Bonos de hasta 40% en paquetes grandes.</p>
+    </div>
+    <div class="pkg-grid">
+      <div class="pkg reveal" onclick="selectPkg(50,'$4.99','Starter')">
+        <span class="pkg-icon">⚡</span>
+        <div class="pkg-name">Starter</div>
+        <div class="pkg-tok"><span>50</span></div>
+        <div class="pkg-price">$4.99</div>
+        <div class="pkg-perks">
+          <div class="pkg-perk">Publicar 10 anuncios en Mercadito</div>
+          <div class="pkg-perk">Acceso a funciones básicas</div>
+        </div>
+        <button class="btn-outline" style="width:100%;justify-content:center">Comprar</button>
+      </div>
+      <div class="pkg featured reveal reveal-d1" onclick="selectPkg(150,'$12.99','Pro')">
+        <div class="pkg-best">MÁS POPULAR</div>
+        <span class="pkg-icon">⚡</span>
+        <div class="pkg-name">Pro</div>
+        <div class="pkg-tok"><span>150</span></div>
+        <div class="pkg-price">$12.99</div>
+        <div class="pkg-bonus">+20% extra gratis</div>
+        <div class="pkg-perks">
+          <div class="pkg-perk">30 anuncios en Mercadito</div>
+          <div class="pkg-perk">Destacar 5 anuncios</div>
+          <div class="pkg-perk">Acceso a Work Platform</div>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center">Comprar</button>
+      </div>
+      <div class="pkg reveal reveal-d2" onclick="selectPkg(350,'$24.99','Business')">
+        <span class="pkg-icon">⚡</span>
+        <div class="pkg-name">Business</div>
+        <div class="pkg-tok"><span>350</span></div>
+        <div class="pkg-price">$24.99</div>
+        <div class="pkg-bonus">+30% extra gratis</div>
+        <div class="pkg-perks">
+          <div class="pkg-perk">80 anuncios en Mercadito</div>
+          <div class="pkg-perk">Perfil destacado</div>
+          <div class="pkg-perk">Work Platform incluida</div>
+          <div class="pkg-perk">Soporte prioritario</div>
+        </div>
+        <button class="btn-outline" style="width:100%;justify-content:center">Comprar</button>
+      </div>
+      <div class="pkg reveal reveal-d3" onclick="selectPkg(1000,'$59.99','Elite')">
+        <span class="pkg-icon">💎</span>
+        <div class="pkg-name">Elite</div>
+        <div class="pkg-tok"><span>1000</span></div>
+        <div class="pkg-price">$59.99</div>
+        <div class="pkg-bonus">+40% extra gratis</div>
+        <div class="pkg-perks">
+          <div class="pkg-perk">Anuncios ilimitados</div>
+          <div class="pkg-perk">Badge verificado ✓</div>
+          <div class="pkg-perk">Acceso total vitalicio</div>
+          <div class="pkg-perk">Soporte dedicado 24/7</div>
+        </div>
+        <button class="btn-outline" style="width:100%;justify-content:center">Comprar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
 <section class="section" style="background:var(--bg2)">
-  <div class="container-sm">
-    <div class="fade-up" style="margin-bottom:24px">
-      <div class="sec-pre">Gratis</div>
-      <h2 class="sec-h">Tokens Gratuitos</h2>
-      <p class="sec-p">Completa tareas simples y gana tokens sin pagar nada.</p>
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">¿Cómo funciona?</div>
+      <h2 class="sec-h">Simple y transparente</h2>
     </div>
-    <div class="free-section fade-up">
-      <div class="free-h">🎁 Disponibles ahora</div>
-      <div class="free-p">Nuevos usuarios reciben 2 tokens gratis al registrarse.</div>
-      <div class="task-list">
-        <div class="task">
-          <div class="task-info"><div class="task-ico">✅</div><div><div class="task-label">Registrar cuenta</div><div style="font-size:11px;color:var(--text3)">+2 tokens</div></div></div>
-          <div class="task-done">✓ Completado</div>
-        </div>
-        <div class="task">
-          <div class="task-info"><div class="task-ico">📝</div><div><div class="task-label">Publicar tu primer anuncio</div><div style="font-size:11px;color:var(--text3)">+1 token</div></div></div>
-          <button class="btn-task" onclick="location.href='mercadito.html'">Ir a Mercadito →</button>
-        </div>
-        <div class="task">
-          <div class="task-info"><div class="task-ico">🤝</div><div><div class="task-label">Invitar a un amigo</div><div style="font-size:11px;color:var(--text3)">+3 tokens</div></div></div>
-          <button class="btn-task" onclick="shareInvite()">Compartir link</button>
-        </div>
-      </div>
+    <div class="how-grid">
+      <div class="how-card reveal"><div class="how-num">1</div><div class="how-icon">🛒</div><div class="how-h">Compra o gana tokens</div><div class="how-p">Compra un paquete o gana tokens gratis completando acciones en la plataforma.</div></div>
+      <div class="how-card reveal reveal-d1"><div class="how-num">2</div><div class="how-icon">💰</div><div class="how-h">Tokens en tu cuenta</div><div class="how-p">Aparecen al instante en tu balance. Sin esperas, sin procesos complicados.</div></div>
+      <div class="how-card reveal reveal-d2"><div class="how-num">3</div><div class="how-icon">⚡</div><div class="how-h">Úsalos donde quieras</div><div class="how-p">Mercadito, YavayaGo, Work Platform, Santuario — los tokens funcionan en toda la plataforma.</div></div>
+      <div class="how-card reveal reveal-d3"><div class="how-num">4</div><div class="how-icon">🎁</div><div class="how-h">Regala a otros</div><div class="how-p">Puedes transferir tokens a otros usuarios como pago, recompensa o simplemente un gesto.</div></div>
     </div>
   </div>
 </section>
 
-<section class="section">
-  <div class="container-sm">
-    <div class="fade-up" style="margin-bottom:8px">
-      <div class="sec-pre">Comprar</div>
-      <h2 class="sec-h">Paquetes de Tokens</h2>
-      <p class="sec-p">Más tokens = más visibilidad en Mercadito y funciones premium.</p>
+<!-- USE CASES -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Usos</div>
+      <h2 class="sec-h">¿Para qué sirven<br>los tokens?</h2>
     </div>
-    <div class="pack-grid fade-up">
-      <div class="pack" onclick="buyPack(5,2.99)"><div class="pack-ico">⚡</div><div class="pack-tokens">5</div><div class="pack-label">Tokens</div><div class="pack-price">$2.99</div><div class="pack-bonus" style="visibility:hidden">—</div><button class="btn-pack">Comprar</button></div>
-      <div class="pack featured" onclick="buyPack(20,8.99)"><div class="pack-hot">Popular</div><div class="pack-ico">⚡⚡</div><div class="pack-tokens">20</div><div class="pack-label">Tokens</div><div class="pack-price">$8.99</div><div class="pack-bonus">+3 bonus</div><button class="btn-pack">Comprar</button></div>
-      <div class="pack" onclick="buyPack(50,18.99)"><div class="pack-ico">⚡⚡⚡</div><div class="pack-tokens">50</div><div class="pack-label">Tokens</div><div class="pack-price">$18.99</div><div class="pack-bonus">+10 bonus</div><button class="btn-pack">Comprar</button></div>
-      <div class="pack" onclick="buyPack(100,29.99)"><div class="pack-ico">🔥</div><div class="pack-tokens">100</div><div class="pack-label">Tokens</div><div class="pack-price">$29.99</div><div class="pack-bonus">+25 bonus</div><button class="btn-pack">Comprar</button></div>
-    </div>
-  </div>
-</section>
-
-<section class="section-sm" style="background:var(--bg2)">
-  <div class="container-sm">
-    <div class="fade-up" style="text-align:center;margin-bottom:28px">
-      <div class="sec-pre">Guía</div>
-      <h2 class="sec-h">¿Cómo funciona?</h2>
-    </div>
-    <div class="how-grid fade-up">
-      <div class="how-step"><div class="how-n">01</div><div class="how-h">Crea tu cuenta</div><div class="how-p">Regístrate en Yavaya y recibe tu ID único.</div></div>
-      <div class="how-step"><div class="how-n">02</div><div class="how-h">Compra tokens</div><div class="how-p">Elige tu paquete e incluye tu ID en el pago.</div></div>
-      <div class="how-step"><div class="how-n">03</div><div class="how-h">Úsalos en la plataforma</div><div class="how-p">Destacar anuncios, funciones premium y más.</div></div>
+    <div class="uses-grid">
+      <div class="use-item reveal"><span class="use-icon">📢</span><div><div class="use-h">Publicar en Mercadito</div><div class="use-p">Cada anuncio publicado consume tokens. Los anuncios destacados cuestan más.</div></div><div class="use-cost">⚡ 5 tok</div></div>
+      <div class="use-item reveal reveal-d1"><span class="use-icon">⭐</span><div><div class="use-h">Destacar tu anuncio</div><div class="use-p">Aparece primero en búsquedas y categorías. Más visibilidad, más ventas.</div></div><div class="use-cost">⚡ 20 tok</div></div>
+      <div class="use-item reveal reveal-d2"><span class="use-icon">💼</span><div><div class="use-h">Work Platform (semanal)</div><div class="use-p">Accede a proyectos y publica servicios. Alternativa a pagar en efectivo.</div></div><div class="use-cost">⚡ 50 tok</div></div>
+      <div class="use-item reveal reveal-d3"><span class="use-icon">🛵</span><div><div class="use-h">Pagar delivery YavayaGo</div><div class="use-p">Paga tus pedidos con tokens en lugar de efectivo. Más rápido, más cómodo.</div></div><div class="use-cost">⚡ Variable</div></div>
+      <div class="use-item reveal"><span class="use-icon">🙏</span><div><div class="use-h">Donaciones en Santuario</div><div class="use-p">Contribuye al fondo de ayuda comunitaria usando tus tokens.</div></div><div class="use-cost">⚡ Libre</div></div>
+      <div class="use-item reveal reveal-d1"><span class="use-icon">🎁</span><div><div class="use-h">Regalar a otros usuarios</div><div class="use-p">Transfiere tokens a cualquier usuario de Yavaya como pago o regalo.</div></div><div class="use-cost">⚡ Libre</div></div>
     </div>
   </div>
 </section>
 
-<footer style="padding:40px 24px;border-top:1px solid var(--border);background:var(--bg)">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div style="font-size:16px;font-weight:800;color:var(--text)">Yavaya</div>
-    <div style="display:flex;gap:18px;flex-wrap:wrap">
-      <a href="mercadito.html" style="font-size:13px;color:var(--text2)">Mercadito</a>
-      <a href="yavayago.html" style="font-size:13px;color:var(--text2)">YavayaGo</a>
-      <a href="church.html" style="font-size:13px;color:var(--text2)">Santuario</a>
-      <a href="tokens.html" style="font-size:13px;color:var(--text2)">Tokens</a>
-    </div>
-    <div style="font-size:12px;color:var(--text3)">© 2026 Yavaya · Centroamérica</div>
-  </div>
-</footer>
-<div class="overlay" id="authModal" style="display:none;">
+<!-- BUY MODAL -->
+<div class="overlay" id="buyOverlay" style="display:none" onclick="if(event.target===this)closeBuy()">
   <div class="modal">
-    <button class="modal-x" onclick="closeAuthModal()">✕</button>
-    <div class="modal-h">Bienvenido</div>
-    <div class="modal-sub">Yavaya · Centroamérica</div>
-    <div class="tab-row">
-      <button class="tab-b on" id="tabLogin" onclick="switchAuthTab('login')">Iniciar Sesión</button>
-      <button class="tab-b" id="tabReg" onclick="switchAuthTab('reg')">Registrarse</button>
+    <button class="modal-x" onclick="closeBuy()">✕</button>
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 20px var(--gold-glow))">⚡</div>
+      <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:4px" id="buyTitle">Comprar tokens</div>
+      <div style="font-size:13px;color:var(--text2)" id="buyDesc">Elige tu paquete</div>
     </div>
-    <div id="panel_login">
-      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com"></div>
-      <div class="form-group"><label class="form-label">Contraseña</label>
-        <div class="input-wrap"><input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('loginPass')">👁</button></div>
-        <div style="text-align:right;margin-top:5px"><span class="forgot" onclick="forgotPass()" style="cursor:pointer">¿Olvidaste tu contraseña?</span></div>
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" id="btnLogin" onclick="doLogin()">Iniciar sesión</button>
-      <div class="divider">o</div>
-      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    <div class="pkg-sel" id="pkgSel">
+      <div class="pks on" onclick="selPkg(this,50,'$4.99')"><div class="pks-tok">⚡ 50</div><div class="pks-price">$4.99</div></div>
+      <div class="pks" onclick="selPkg(this,150,'$12.99')"><div class="pks-tok">⚡ 150</div><div class="pks-price">$12.99 <span style="color:var(--green);font-size:10px">+20%</span></div></div>
+      <div class="pks" onclick="selPkg(this,350,'$24.99')"><div class="pks-tok">⚡ 350</div><div class="pks-price">$24.99 <span style="color:var(--green);font-size:10px">+30%</span></div></div>
+      <div class="pks" onclick="selPkg(this,1000,'$59.99')"><div class="pks-tok">💎 1000</div><div class="pks-price">$59.99 <span style="color:var(--green);font-size:10px">+40%</span></div></div>
     </div>
-    <div id="panel_reg" style="display:none">
-      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="regName" placeholder="Tu nombre"></div>
-      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="regEmail" placeholder="tu@email.com"></div>
-      <div class="form-group"><label class="form-label">Contraseña</label>
-        <div class="input-wrap"><input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('regPass')">👁</button></div>
-      </div>
-      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña"></div>
-      <button class="btn-primary" style="width:100%;justify-content:center" id="btnReg" onclick="doRegister()">Crear cuenta</button>
-      <div class="divider">o</div>
-      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="buyEmail" placeholder="tu@email.com"></div>
+    <div class="form-group"><label class="form-label">Método de pago</label>
+      <select class="form-select">
+        <option>Tarjeta de crédito / débito</option>
+        <option>PayPal</option>
+        <option>Transferencia bancaria</option>
+        <option>Tokens (regalar a alguien)</option>
+      </select>
     </div>
+    <div style="padding:12px;border-radius:11px;background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);margin-bottom:16px;font-size:13px;color:var(--text2)">
+      Total: <strong id="buyTotal" style="color:var(--gold);font-size:16px">$4.99</strong> · <span id="buyTok" style="color:var(--text)">⚡ 50 tokens</span>
+    </div>
+    <button class="btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px" onclick="completeBuy()">⚡ Confirmar compra</button>
+    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:12px">Los tokens se acreditan al instante. Sin expiration.</p>
   </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
-<script type="module">
-
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
-    authDomain: "yavayago-ef281.firebaseapp.com",
-    projectId: "yavayago-ef281",
-    storageBucket: "yavayago-ef281.firebasestorage.app",
-    messagingSenderId: "592402476016",
-    appId: "1:592402476016:web:424456516968dfc7284b35",
-    measurementId: "G-0DBRC5NZQW"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      const data = snap.exists() ? snap.data() : {};
-      const tokens = data.tokens ?? 2;
-      const yavayaId = data.yavayaId || generateYavayaId(user.uid);
-      document.getElementById('currentTokens').textContent = tokens;
-      document.getElementById('yavayaIdDisplay').textContent = yavayaId;
-      document.getElementById('yavayaIdDisplay2').textContent = yavayaId;
-      document.getElementById('userSection').style.display = 'block';
-      document.getElementById('loginPrompt').style.display = 'none';
-    } else {
-      document.getElementById('userSection').style.display = 'none';
-      document.getElementById('loginPrompt').style.display = 'flex';
-    }
-  });
-
-  function generateYavayaId(uid) {
-    return 'YVY-' + uid.substr(0,4).toUpperCase() + '-' + uid.substr(4,4).toUpperCase();
-  }
-  window.generateYavayaId = generateYavayaId;
-
-</script>
 <script>
+/* PARTICLES — gold */
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[];const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.45;this.vy=(Math.random()-.5)*.45;this.r=Math.random()*1.8+.4;this.a=Math.random()*.5+.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(240,201,106,${this.a})`:`rgba(146,104,10,${this.a*.6})`;ctx.fill()}}
+for(let i=0;i<80;i++)ps.push(new P());
+function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();})();
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+/* TOKEN RAIN */
+function triggerRain(){
+  const wrap=document.getElementById('rainWrap');wrap.classList.add('active');wrap.innerHTML='';
+  for(let i=0;i<30;i++){
+    const t=document.createElement('div');t.className='rain-tok';t.textContent='⚡';
+    t.style.left=Math.random()*100+'vw';t.style.animationDuration=(Math.random()*2+1.5)+'s';
+    t.style.animationDelay=(Math.random()*1.5)+'s';t.style.fontSize=(Math.random()*20+14)+'px';
+    wrap.appendChild(t);
+  }
+  setTimeout(()=>{wrap.classList.remove('active');wrap.innerHTML=''},4000);
 }
 
-function copyYavayaId() {
-  const id = document.getElementById('yavayaIdDisplay').textContent;
-  if (id.includes('XXXX')) { showToast('Inicia sesión para ver tu ID'); return; }
-  navigator.clipboard.writeText(id).then(() => showToast('ID copiado: ' + id));
+/* REVEAL */
+(function(){const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))})();
+
+/* TOKEN BALANCE */
+let myToks=parseInt(localStorage.getItem('yavaya_tokens')||'0');
+function updateBal(){document.getElementById('balN').textContent=myToks.toLocaleString();document.getElementById('navTokCount').textContent=myToks.toLocaleString()}
+updateBal();
+
+/* FREE TOKENS */
+function claimFree(label,amount){
+  myToks+=amount;updateBal();localStorage.setItem('yavaya_tokens',myToks);
+  triggerRain();showToast(`+${amount} tokens por ${label} 🎉`);
 }
 
-function handleBuyClick(e, btn) {
-  const id = document.getElementById('yavayaIdDisplay').textContent;
-  if (id.includes('XXXX')) {
-    e.preventDefault();
-    showToast('Inicia sesión primero para ver tu Yavaya ID');
-    return;
-  }
-  // Show confirmation modal
-  e.preventDefault();
-  const url = btn.href;
-  if (confirm('Tu Yavaya ID es: ' + id + '\n\nEscríbelo en la nota de pago de Revolut.\n\nSin tu ID no podemos acreditarte los tokens.\n\n¿Continuar?')) {
-    window.open(url, '_blank');
-  }
+/* PACKAGES */
+function selectPkg(tok,price,name){
+  document.getElementById('buyTitle').textContent=`Paquete ${name}`;
+  document.getElementById('buyDesc').textContent=`${tok} tokens por ${price}`;
+  document.getElementById('buyTotal').textContent=price;
+  document.getElementById('buyTok').textContent=`⚡ ${tok} tokens`;
+  document.querySelectorAll('.pks').forEach(p=>p.classList.remove('on'));
+  openBuy();
+}
+let selTok=50,selPrice='$4.99';
+function selPkg(el,tok,price){
+  selTok=tok;selPrice=price;
+  document.querySelectorAll('.pks').forEach(p=>p.classList.remove('on'));el.classList.add('on');
+  document.getElementById('buyTotal').textContent=price;
+  document.getElementById('buyTok').textContent=`⚡ ${tok} tokens`;
 }
 
-</script>
-<script>
+/* BUY */
+function openBuy(){document.getElementById('buyOverlay').style.display='flex'}
+function closeBuy(){document.getElementById('buyOverlay').style.display='none'}
+function completeBuy(){
+  const e=document.getElementById('buyEmail').value;if(!e){showToast('Ingresa tu email');return}
+  myToks+=selTok;updateBal();localStorage.setItem('yavaya_tokens',myToks);
+  closeBuy();triggerRain();
+  showToast(`⚡ ¡${selTok} tokens acreditados! Bienvenido 🎉`);
+}
 
-(function() {
-  var lang = localStorage.getItem('yavaya_lang') || 'es';
-  function setTkLang(l) {
-    lang = l; localStorage.setItem('yavaya_lang', l);
-    document.getElementById('btnTkEs').classList.toggle('active', l==='es');
-    document.getElementById('btnTkEn').classList.toggle('active', l==='en');
-    var t = {
-      es: { title: 'YAVAYA Tokens', sub: 'Tu Acceso a la Plataforma', sectionTitle: 'Elige tu Paquete' },
-      en: { title: 'YAVAYA Tokens', sub: 'Your Access to the Digital Civilization', sectionTitle: 'Choose Your Package' }
-    };
-    document.querySelectorAll('[data-i18n]').forEach(function(el) {
-      var key = el.getAttribute('data-i18n');
-      if (t[l] && t[l][key]) el.textContent = t[l][key];
-    });
-  }
-  window.setTkLang = setTkLang;
-  document.addEventListener('DOMContentLoaded', function() { setTkLang(lang); });
-})();
-
-</script>
-<script>
-
-/* ═══ YAVAYA CORE JS ═══ */
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-window.setLang = function(l) {
-  _lang = l; localStorage.setItem('yavaya_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-  if (window._applyLang) window._applyLang(l);
-};
-(function() { window.setLang(_lang); })();
-
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// Scroll animations
-var _obs = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
-}, { threshold: .1 });
-document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
-
-// Toast
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// Nav scroll effect
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  n.style.background = window.scrollY > 50
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// Auth modal shared
-window.openAuthModal = window.openAuthModal || function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
-  });
-  ['Login','Reg'].forEach(function(p) {
-    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
-};
-window.doLogin = async function() {
-  var e = (document.getElementById('loginEmail') || {}).value || '';
-  var p = (document.getElementById('loginPass') || {}).value || '';
-  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
-  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
-  try {
-    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
-};
-window.doRegister = async function() {
-  var n = (document.getElementById('regName') || {}).value || '';
-  var e = (document.getElementById('regEmail') || {}).value || '';
-  var p = (document.getElementById('regPass') || {}).value || '';
-  var p2 = (document.getElementById('regPass2') || {}).value || '';
-  n = n.trim(); e = e.trim();
-  if (!n) { showToast('Escribe tu nombre'); return; }
-  if (!e) { showToast('Ingresa tu correo'); return; }
-  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
-  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
-  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
-  try {
-    if (window._goAuth && window._auth) {
-      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
-      await window._goAuth.updateProfile(c.user, { displayName: n });
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
-  } catch(err) {
-    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
-};
-window.doGoogle = function() {
-  if (window._goAuth && window._auth) {
-    var pr = new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth, pr)
-      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
-      .catch(function(e) { showToast(e.message); });
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
-  if (!e) { showToast('Ingresa tu correo primero'); return; }
-  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
-};
-
-window.copyId = function() {
-  var id = document.getElementById('idNum').textContent;
-  if (navigator.clipboard) { navigator.clipboard.writeText(id).then(function(){showToast('ID copiado ✓');}).catch(function(){showToast(id);}); }
-  else { showToast(id); }
-};
-window.shareInvite = function() {
-  var url = window.location.origin + '/index.html';
-  if(navigator.share) { navigator.share({title:'Yavaya',text:'Únete a Yavaya — La plataforma de Centroamérica',url:url}); }
-  else if(navigator.clipboard) { navigator.clipboard.writeText(url).then(function(){showToast('Link copiado ✓');}); }
-  else { showToast('Comparte: ' + url); }
-};
-window.buyPack = function(tokens, price) {
-  showToast('Redirigiendo a pago de $' + price + ' (' + tokens + ' tokens)...');
-  setTimeout(function(){window.open('https://www.paypal.com/paypalme/junoagattis/' + price + 'USD','_blank');},1200);
-};
-document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
-</script>
-<script>
-
-/* ═══ YAVAYA CINEMATIC ENGINE v5 ═══ */
-
-// ── THEME ────────────────────────────────────────────────────────────────────
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-// ── LANGUAGE — FIXED ─────────────────────────────────────────────────────────
-var TRANSLATIONS = {
-  es: {
-    // nav
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Santuario','nav_tokens':'Tokens',
-    // hero
-    'hero_badge':'La plataforma #1 de Centroamérica',
-    'hero_h1':'Todo lo que','hero_h2':'necesitas.',
-    'hero_sub':'Compra, vende, ordena comida y conecta con tu comunidad — en un solo lugar construido para Centroamérica.',
-    'hero_cta1':'Explorar Mercadito','hero_cta2':'Pedir Comida',
-    'stat_listings':'Anuncios','stat_paises':'Países','stat_sellers':'Vendedores','stat_support':'Soporte',
-    // sections
-    'sec_platform':'Plataforma','sec_all':'Todo en un solo lugar','sec_all_sub':'Tres módulos. Una cuenta. Una comunidad.',
-    'sec_cats':'Categorías','sec_life':'Para cada parte de tu vida','sec_life_sub':'Desde empleos hasta mascotas. Todo tiene su lugar.',
-    'sec_cover':'Cobertura','sec_home':'Centroamérica es nuestra casa','sec_home_sub':'Selecciona tu país para personalizar tu experiencia.',
-    // reino cards
-    'r1_tag':'Comunidad','r1_name':'Yavaya','r1_desc':'Fe, apoyo, oraciones y donaciones. El corazón humano de la plataforma.',
-    'r2_tag':'Comercio','r2_name':'Mercadito','r2_desc':'El marketplace de Centroamérica. Compra, vende y encuentra trabajo en tu país.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Comida, farmacia y súper a tu puerta en 30–45 min. Rastrea en vivo.',
-    'explore':'Explorar',
-    // pilares
-    'p1_h':'Fe & Comunidad','p1_d':'Oraciones, donaciones y apoyo entre vecinos.',
-    'p2_h':'Empleos','p2_d':'Trabajo remoto, freelance y oportunidades locales.',
-    'p3_h':'Animales','p3_d':'Adopciones, ventas y cuidado de mascotas.',
-    'p4_h':'Salud','p4_d':'Servicios médicos, farmacias y bienestar.',
-    'p5_h':'Inmuebles','p5_d':'Alquiler, venta y servicios del hogar.',
-    'p6_h':'Vehículos','p6_d':'Autos, motos y transporte privado.',
-    'p7_h':'Arte & Cultura','p7_d':'Artesanías, diseño y talento local.',
-    'p8_h':'Tecnología','p8_d':'Electrónica, servicios digitales y más.',
-    'btn_login':'Ingresar',
-  },
-  en: {
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Sanctuary','nav_tokens':'Tokens',
-    'hero_badge':'Central America\'s #1 platform',
-    'hero_h1':'Everything','hero_h2':'you need.',
-    'hero_sub':'Buy, sell, order food and connect with your community — one place built for Central America.',
-    'hero_cta1':'Browse Mercadito','hero_cta2':'Order Food',
-    'stat_listings':'Listings','stat_paises':'Countries','stat_sellers':'Sellers','stat_support':'Support',
-    'sec_platform':'Platform','sec_all':'Everything in one place','sec_all_sub':'Three modules. One account. One community.',
-    'sec_cats':'Categories','sec_life':'For every part of your life','sec_life_sub':'From jobs to pets. Everything has a place.',
-    'sec_cover':'Coverage','sec_home':'Central America is home','sec_home_sub':'Select your country to personalize your experience.',
-    'r1_tag':'Community','r1_name':'Yavaya','r1_desc':'Faith, support, prayers and donations. The human heart of the platform.',
-    'r2_tag':'Commerce','r2_name':'Mercadito','r2_desc':'The Central American marketplace. Buy, sell and find work in your country.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Food, pharmacy and supermarket at your door in 30–45 min. Live tracking.',
-    'explore':'Explore',
-    'p1_h':'Faith & Community','p1_d':'Prayers, donations and neighbor support.',
-    'p2_h':'Jobs','p2_d':'Remote work, freelance and local opportunities.',
-    'p3_h':'Animals','p3_d':'Adoptions, sales and pet care.',
-    'p4_h':'Health','p4_d':'Medical services, pharmacies and wellness.',
-    'p5_h':'Real Estate','p5_d':'Rentals, sales and home services.',
-    'p6_h':'Vehicles','p6_d':'Cars, motorcycles and private transport.',
-    'p7_h':'Art & Culture','p7_d':'Crafts, design and local talent.',
-    'p8_h':'Technology','p8_d':'Electronics, digital services and more.',
-    'btn_login':'Sign In',
-  }
-};
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-
-window.setLang = function(l) {
-  _lang = l;
-  localStorage.setItem('yavaya_lang', l);
-  document.documentElement.setAttribute('data-lang', l);
-
-  // Update button states
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-
-  // Apply translations to all [data-t] elements
-  var T = TRANSLATIONS[l] || TRANSLATIONS.es;
-  document.querySelectorAll('[data-t]').forEach(function(el) {
-    var key = el.getAttribute('data-t');
-    if (T[key] !== undefined) el.textContent = T[key];
-  });
-
-  // Swap [data-lang-show] blocks
-  document.querySelectorAll('[data-lang-show]').forEach(function(el) {
-    el.style.display = (el.getAttribute('data-lang-show') === l) ? '' : 'none';
-  });
-
-  // Fire custom callback if page defines one
-  if (window._applyLang) window._applyLang(l);
-};
-
-// Init lang on load
-(function() {
-  document.documentElement.setAttribute('data-lang', _lang);
-  setTimeout(function() { window.setLang(_lang); }, 0);
-})();
-
-// ── NAV MOB ───────────────────────────────────────────────────────────────────
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// ── NAV SCROLL ────────────────────────────────────────────────────────────────
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-  n.style.background = window.scrollY > 60
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// ── CINEMATIC REVEAL ──────────────────────────────────────────────────────────
-(function() {
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('done');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
-  function initObs() {
-    document.querySelectorAll('.reveal, .stagger').forEach(function(el) { obs.observe(el); });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initObs);
-  else initObs();
-})();
-
-// ── HERO IMAGE REEL ───────────────────────────────────────────────────────────
-window.initHeroReel = function(ids) {
-  var imgs = ids.map(function(id) { return document.getElementById(id); }).filter(Boolean);
-  if (!imgs.length) return;
-  var idx = 0;
-  imgs[0].classList.add('active');
-  setInterval(function() {
-    imgs[idx].classList.remove('active');
-    idx = (idx + 1) % imgs.length;
-    imgs[idx].classList.add('active');
-  }, 5500);
-};
-
-// ── TYPEWRITER ────────────────────────────────────────────────────────────────
-window.initTypewriter = function(elId, lines, speed) {
-  var el = document.getElementById(elId);
-  if (!el) return;
-  speed = speed || 52;
-  var lineIdx = 0, charIdx = 0, deleting = false, pause = 0;
-  var cursor = document.createElement('span');
-  cursor.className = 'typewriter-cursor';
-  el.parentNode && el.parentNode.insertBefore(cursor, el.nextSibling);
-
-  function tick() {
-    if (pause > 0) { pause--; setTimeout(tick, 80); return; }
-    var current = lines[lineIdx];
-    if (!deleting) {
-      el.textContent = current.slice(0, charIdx + 1);
-      charIdx++;
-      if (charIdx >= current.length) { deleting = true; pause = 28; }
-    } else {
-      el.textContent = current.slice(0, charIdx - 1);
-      charIdx--;
-      if (charIdx <= 0) { deleting = false; lineIdx = (lineIdx + 1) % lines.length; pause = 6; }
-    }
-    setTimeout(tick, deleting ? speed * .45 : speed);
-  }
-  tick();
-};
-
-// ── COUNTUP ───────────────────────────────────────────────────────────────────
-window.initCountUp = function() {
-  document.querySelectorAll('[data-countup]').forEach(function(el) {
-    var target = parseFloat(el.getAttribute('data-countup'));
-    var suffix = el.getAttribute('data-suffix') || '';
-    var prefix = el.getAttribute('data-prefix') || '';
-    var dec    = el.getAttribute('data-dec') || 0;
-    var obs = new IntersectionObserver(function(entries) {
-      if (!entries[0].isIntersecting) return;
-      obs.disconnect();
-      var start = 0, dur = 1800, startTime = null;
-      function step(ts) {
-        if (!startTime) startTime = ts;
-        var p = Math.min((ts - startTime) / dur, 1);
-        var ease = 1 - Math.pow(1 - p, 3);
-        var val = (start + (target - start) * ease).toFixed(dec);
-        el.textContent = prefix + val + suffix;
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }, { threshold: .5 });
-    obs.observe(el);
-  });
-};
-
-// ── 3D CARD TILT ──────────────────────────────────────────────────────────────
-window.initTilt = function() {
-  document.querySelectorAll('.tilt').forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var r = card.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width  - .5;
-      var y = (e.clientY - r.top)  / r.height - .5;
-      card.style.transform = 'perspective(900px) rotateY('+x*7+'deg) rotateX('+(-y*5)+'deg) scale(1.02)';
-    });
-    card.addEventListener('mouseleave', function() { card.style.transform = ''; });
-  });
-};
-
-// ── LINE DRAW ─────────────────────────────────────────────────────────────────
-(function() {
-  var obs2 = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('done'); obs2.unobserve(e.target); } });
-  }, { threshold: .3 });
-  function initLines() { document.querySelectorAll('.line-draw').forEach(function(el) { obs2.observe(el); }); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLines);
-  else initLines();
-})();
-
-// ── MAGNETIC HOVER ────────────────────────────────────────────────────────────
-window.initMagnetic = function() {
-  document.querySelectorAll('.magnetic').forEach(function(el) {
-    el.addEventListener('mousemove', function(e) {
-      var r = el.getBoundingClientRect();
-      var x = (e.clientX - r.left - r.width  / 2) * .22;
-      var y = (e.clientY - r.top  - r.height / 2) * .22;
-      el.style.transform = 'translate('+x+'px,'+y+'px)';
-    });
-    el.addEventListener('mouseleave', function() { el.style.transform = ''; });
-  });
-};
-
-// ── DEMO LIVE NOTIFICATIONS ───────────────────────────────────────────────────
-(function() {
-  var DEMOS = [
-    { ico:'🛒', dot:'#4f8eff', title:'Nuevo anuncio', sub:'iPhone 15 Pro — Guatemala · $680' },
-    { ico:'🏠', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Apartamento Zona 10 — $950/mes' },
-    { ico:'🚀', dot:'#30d68c', title:'Pedido entregado', sub:'YavayaGo · La Antigua · 28 min' },
-    { ico:'💼', dot:'#4f8eff', title:'Nueva oferta de trabajo', sub:'Desarrollador Remote · $2,400/mes' },
-    { ico:'🙏', dot:'#f0c96a', title:'Oración enviada', sub:'Comunidad · Santuario Yavaya' },
-    { ico:'🚗', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Toyota Corolla 2021 · Honduras · $13,500' },
-    { ico:'✅', dot:'#30d68c', title:'Venta completada', sub:'MacBook Pro M3 · $1,200 · Managua' },
-    { ico:'🐾', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Cachorro Husky · Costa Rica · $180' },
-    { ico:'🍕', dot:'#30d68c', title:'Pedido en camino', sub:'YavayaGo · Pizzería Roma · 12 min' },
-    { ico:'📱', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Samsung S24 Ultra · El Salvador · $750' },
-  ];
-  var container, queue = [], showing = false;
-
-  function ensureContainer() {
-    if (!container) {
-      container = document.getElementById('liveTicker');
-      if (!container) {
-        container = document.createElement('div');
-        container.className = 'live-ticker';
-        container.id = 'liveTicker';
-        document.body.appendChild(container);
-      }
-    }
-  }
-
-  function showNext() {
-    if (!queue.length || showing) return;
-    showing = true;
-    ensureContainer();
-    var d = queue.shift();
-    var pill = document.createElement('div');
-    pill.className = 'ticker-pill';
-    pill.innerHTML =
-      '<span class="ticker-dot" style="background:'+d.dot+'"></span>' +
-      '<span class="ticker-ico">'+d.ico+'</span>' +
-      '<div class="ticker-text"><div class="ticker-title">'+d.title+'</div>' +
-      '<div class="ticker-sub">'+d.sub+'</div></div>';
-    container.appendChild(pill);
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { pill.classList.add('show'); });
-    });
-    setTimeout(function() {
-      pill.classList.add('hide');
-      pill.classList.remove('show');
-      setTimeout(function() {
-        if (pill.parentNode) pill.parentNode.removeChild(pill);
-        showing = false;
-        if (queue.length) setTimeout(showNext, 400);
-      }, 600);
-    }, 4200);
-  }
-
-  function scheduleNext() {
-    var delay = 6000 + Math.random() * 9000;
-    setTimeout(function() {
-      var d = DEMOS[Math.floor(Math.random() * DEMOS.length)];
-      queue.push(d);
-      showNext();
-      scheduleNext();
-    }, delay);
-  }
-
-  // First notification after 3.5s
-  setTimeout(function() {
-    ensureContainer();
-    var d = DEMOS[0];
-    queue.push(d);
-    showNext();
-    scheduleNext();
-  }, 3500);
-})();
-
-// ── AUTH MODAL ────────────────────────────────────────────────────────────────
-window.openAuthModal = function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_'+p); if (el) el.style.display = p===tab?'block':'none';
-  });
-  document.querySelectorAll('.tab-b').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.tab === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type==='password'?'text':'password';
-};
-window.doLogin = async function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';
-  var p=(document.getElementById('loginPass')||{}).value||'';
-  e=e.trim(); if(!e||!p){showToast('Ingresa correo y contraseña');return;}
-  var btn=document.getElementById('btnLogin'); if(btn){btn.disabled=true;btn.textContent='Entrando...';}
-  try {
-    if(window._goAuth&&window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth,e,p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map={'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Iniciar sesión';}
-};
-window.doRegister = async function() {
-  var n=(document.getElementById('regName')||{}).value||'';
-  var e=(document.getElementById('regEmail')||{}).value||'';
-  var p=(document.getElementById('regPass')||{}).value||'';
-  var p2=(document.getElementById('regPass2')||{}).value||'';
-  n=n.trim();e=e.trim();
-  if(!n){showToast('Escribe tu nombre');return;}
-  if(!e){showToast('Ingresa tu correo');return;}
-  if(p.length<8){showToast('Contraseña mínimo 8 caracteres');return;}
-  if(p!==p2){showToast('Las contraseñas no coinciden');return;}
-  var btn=document.getElementById('btnReg'); if(btn){btn.disabled=true;btn.textContent='Creando...';}
-  try {
-    if(window._goAuth&&window._auth){
-      var c=await window._goAuth.createUserWithEmailAndPassword(window._auth,e,p);
-      await window._goAuth.updateProfile(c.user,{displayName:n});
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a '+n+'! 🎉');
-  } catch(err) {
-    var map2={'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Crear cuenta';}
-};
-window.doGoogle = function() {
-  if(window._goAuth&&window._auth){
-    var pr=new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth,pr)
-      .then(function(){window.closeAuthModal();showToast('¡Bienvenido! 👋');})
-      .catch(function(e){showToast(e.message);});
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';e=e.trim();
-  if(!e){showToast('Ingresa tu correo primero');return;}
-  if(window._goAuth&&window._auth)
-    window._goAuth.sendPasswordResetEmail(window._auth,e)
-      .then(function(){showToast('Correo enviado ✓');})
-      .catch(function(e){showToast(e.message);});
-};
-
-// ── INIT ALL ──────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', function() {
-  initCountUp();
-  initTilt();
-  initMagnetic();
-});
-
+/* THEME */
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
+if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
+function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
+function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
 </body>
 </html>
