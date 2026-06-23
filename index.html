@@ -18,10 +18,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px) saturate(180%);border-bottom:1px solid var(--border);transition:all .3s}
 [data-theme="light"] .nav{background:rgba(240,244,252,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:ndot 2.5s ease-in-out infinite;box-shadow:0 0 10px var(--accent)}
 @keyframes ndot{0%,100%{box-shadow:0 0 6px var(--accent)}50%{box-shadow:0 0 22px var(--accent),0 0 44px var(--accent-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--accent)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--accent)}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
 .nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--accent)}
@@ -255,16 +255,16 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
   </div>
   <div class="nav-r">
     <div class="lang-sw">
-      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
+      <button class="lang-btn on" data-l="es" data-l="es">ES</button>
+      <button class="lang-btn" data-l="en" data-l="en">EN</button>
     </div>
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
     <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
     <div id="authSection">
       <button class="btn-cta" id="loginBtn" onclick="openAuth('login')">Ingresar</button>
     </div>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -276,6 +276,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
   <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -610,7 +611,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <div id="loginF">
       <div class="modal-h">Bienvenido de vuelta</div>
       <div class="modal-sub">Ingresa a tu cuenta Yavaya</div>
-      <button class="btn-google" onclick="showToast('Iniciando con Google...')">
+      <button class="btn-google" onclick="yvToast('Iniciando con Google...')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continuar con Google
       </button>
@@ -622,7 +623,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <div id="regF" style="display:none">
       <div class="modal-h">Crea tu cuenta</div>
       <div class="modal-sub">Únete a la comunidad Yavaya</div>
-      <button class="btn-google" onclick="showToast('Registrando con Google...')">
+      <button class="btn-google" onclick="yvToast('Registrando con Google...')">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Registrarse con Google
       </button>
@@ -754,14 +755,15 @@ function switchTab(t){
   document.getElementById('tr').classList.toggle('on',t==='reg');
 }
 function tp(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈'}
-function doLogin(){const e=document.getElementById('le').value,p=document.getElementById('lp').value;if(!e||!p){showToast('Completa todos los campos');return}showToast('¡Bienvenido de vuelta!');closeAuth()}
-function doReg(){const n=document.getElementById('rn').value,e=document.getElementById('re').value;if(!n||!e){showToast('Completa todos los campos');return}showToast('¡Cuenta creada exitosamente!');closeAuth()}
+function doLogin(){const e=document.getElementById('le').value,p=document.getElementById('lp').value;if(!e||!p){yvToast('Completa todos los campos');return}yvToast('¡Bienvenido de vuelta!');closeAuth()}
+function doReg(){const n=document.getElementById('rn').value,e=document.getElementById('re').value;if(!n||!e){yvToast('Completa todos los campos');return}yvToast('¡Cuenta creada exitosamente!');closeAuth()}
 
 /* ── TOAST ── */
-function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function _oldtoast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 
 /* ── TOKENS ── */
 (function(){const t=localStorage.getItem('yavaya_tokens');if(t&&parseInt(t)>0){document.getElementById('tokBtn').style.display='flex';document.getElementById('tokN').textContent=t}})();
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>

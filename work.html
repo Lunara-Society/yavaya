@@ -18,10 +18,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
 [data-theme="light"] .nav{background:rgba(240,244,252,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--purple);box-shadow:0 0 14px var(--purple);animation:ndot 2.5s ease-in-out infinite}
 @keyframes ndot{0%,100%{box-shadow:0 0 6px var(--purple)}50%{box-shadow:0 0 22px var(--purple),0 0 44px var(--purple-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--purple)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--purple)}
 .nav-tag{font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-soft);border:1px solid rgba(167,139,250,.2);padding:3px 10px;border-radius:99px}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--purple)}
@@ -168,9 +168,9 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
   </div>
   <div class="nav-r">
     <div class="lang-sw"><button class="lang-btn on" data-l="es">ES</button><button class="lang-btn" data-l="en">EN</button></div>
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <button class="btn-cta" onclick="openSub()">Suscribirse</button>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
@@ -181,6 +181,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
   <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -417,7 +418,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
       <div class="form-group"><label class="form-label">Presupuesto (USD)</label><input class="form-input" type="number" placeholder="100"></div>
     </div>
     <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-input form-textarea" placeholder="Describe qué necesitas, plazos y detalles importantes..."></textarea></div>
-    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closePost();showToast('¡Proyecto publicado! Solo suscriptores lo verán.')">Publicar proyecto</button>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closePost();yvToast('¡Proyecto publicado! Solo suscriptores lo verán.')">Publicar proyecto</button>
   </div>
 </div>
 
@@ -440,10 +441,11 @@ let selP='w';
 function openSub(){document.getElementById('subOverlay').style.display='flex'}
 function closeSub(){document.getElementById('subOverlay').style.display='none'}
 function selPlan(p){selP=p;document.getElementById('planW').style.border=p==='w'?'2px solid var(--purple)':'1px solid var(--border2)';document.getElementById('planW').style.background=p==='w'?'var(--purple-soft)':'transparent';document.getElementById('planM').style.border=p==='m'?'2px solid var(--purple)':'1px solid var(--border2)';document.getElementById('planM').style.background=p==='m'?'var(--purple-soft)':'transparent'}
-function doSub(){const e=document.getElementById('subEmail').value;if(!e){showToast('Ingresa tu email');return}showToast('¡Suscripción activada! Bienvenido 🎉');closeSub()}
+function doSub(){const e=document.getElementById('subEmail').value;if(!e){yvToast('Ingresa tu email');return}yvToast('¡Suscripción activada! Bienvenido 🎉');closeSub()}
 function openPost(){document.getElementById('postOverlay').style.display='flex'}
 function closePost(){document.getElementById('postOverlay').style.display='none'}
-function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function _oldtoast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>

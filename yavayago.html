@@ -17,10 +17,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
 [data-theme="light"] .nav{background:rgba(255,250,245,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 14px var(--orange);animation:ndot 2.5s ease-in-out infinite}
 @keyframes ndot{0%,100%{box-shadow:0 0 6px var(--orange)}50%{box-shadow:0 0 22px var(--orange),0 0 44px var(--orange-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--orange)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--orange)}
 .nav-tag{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-soft);border:1px solid rgba(251,146,60,.2);padding:3px 10px;border-radius:99px}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--orange)}
@@ -131,6 +131,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 @media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
 @media(max-width:768px){.rest-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.rest-grid{grid-template-columns:1fr}.how-grid{grid-template-columns:1fr}.nav{padding:0 16px}.section{padding:70px 16px}}
+.btn-wa{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;font-size:12px;font-weight:700;border:none;cursor:pointer;background:#25d366;color:#fff;transition:all .3s;white-space:nowrap;width:100%;justify-content:center;margin-top:10px}.btn-wa:hover{box-shadow:0 4px 16px rgba(37,211,102,.35)}.wa-svg{width:15px;height:15px;fill:currentColor;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -142,15 +143,16 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <a href="church.html" class="nav-a">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a><a href="tokens.html" class="nav-a">Tokens</a>
   </div>
   <div class="nav-r">
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <button class="btn-cta" onclick="openOrder()">🛵 Pedir ahora</button>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
   <a href="index.html" class="nav-mob-a">🏠 Inicio</a><a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
   <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a><a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -223,6 +225,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Burger Planet</div>
           <div class="rest-info"><span class="rest-tag">Comida rápida</span><span class="rest-rating">★ 4.8</span><span class="rest-time">⏱ 22 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d1" onclick="openRestaurant('Pizza Volcán')">
@@ -230,6 +233,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Pizza Volcán</div>
           <div class="rest-info"><span class="rest-tag">Pizza</span><span class="rest-rating">★ 4.6</span><span class="rest-time">⏱ 30 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d2" onclick="openRestaurant('La Casona')">
@@ -237,6 +241,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">La Casona Típica</div>
           <div class="rest-info"><span class="rest-tag">Comida local</span><span class="rest-rating">★ 4.9</span><span class="rest-time">⏱ 25 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d3" onclick="openRestaurant('Sushi Tico')">
@@ -244,6 +249,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Sushi Tico</div>
           <div class="rest-info"><span class="rest-tag">Sushi</span><span class="rest-rating">★ 4.7</span><span class="rest-time">⏱ 35 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal" onclick="openRestaurant('Sweet Tooth')">
@@ -251,6 +257,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Sweet Tooth</div>
           <div class="rest-info"><span class="rest-tag">Postres</span><span class="rest-rating">★ 4.9</span><span class="rest-time">⏱ 20 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d1" onclick="openRestaurant('Super Express')">
@@ -258,6 +265,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Super Express</div>
           <div class="rest-info"><span class="rest-tag">Supermercado</span><span class="rest-rating">★ 4.5</span><span class="rest-time">⏱ 40 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d2" onclick="openRestaurant('Tacos CA')">
@@ -265,6 +273,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Tacos CA</div>
           <div class="rest-info"><span class="rest-tag">Comida local</span><span class="rest-rating">★ 4.8</span><span class="rest-time">⏱ 28 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
       <div class="rest-card reveal reveal-d3" onclick="openRestaurant('Coffee Lab')">
@@ -272,6 +281,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
         <div class="rest-body">
           <div class="rest-name">Coffee Lab</div>
           <div class="rest-info"><span class="rest-tag">Bebidas</span><span class="rest-rating">★ 4.7</span><span class="rest-time">⏱ 18 min</span></div>
+          <button class="btn-wa" onclick="event.stopPropagation();yvWhatsApp('50299999999','Hola! Quiero pedir por YavayaGo 🛵')"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Pedir por WhatsApp</button>
         </div>
       </div>
     </div>
@@ -327,7 +337,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" type="tel" placeholder="+502 ####-####"></div>
     <div class="form-group"><label class="form-label">País y ciudad</label><select class="form-select"><option>Guatemala City</option><option>Tegucigalpa</option><option>San José</option><option>Managua</option><option>Panamá City</option><option>San Salvador</option></select></div>
     <div class="form-group"><label class="form-label">Vehículo</label><select class="form-select"><option>Moto</option><option>Bicicleta</option><option>Carro</option></select></div>
-    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDriver();showToast('¡Registro enviado! Te contactamos pronto 🛵')">Registrarme como repartidor</button>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDriver();yvToast('¡Registro enviado! Te contactamos pronto 🛵')">Registrarme como repartidor</button>
   </div>
 </div>
 
@@ -349,18 +359,19 @@ for(let i=0;i<65;i++)ps.push(new P());function loop(){ctx.clearRect(0,0,W,H);ps.
 function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
 if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
 function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
-function selFood(el,cat){document.querySelectorAll('.food-cat').forEach(b=>b.classList.remove('on'));el.classList.add('on');showToast(`Mostrando: ${cat}`)}
+function selFood(el,cat){document.querySelectorAll('.food-cat').forEach(b=>b.classList.remove('on'));el.classList.add('on');yvToast(`Mostrando: ${cat}`)}
 /* CART */
 let cart=[],cartTotal=0;
-function addToCart(name,price){cart.push({name,price});cartTotal+=price;updateCart();showToast(`+1 ${name} agregado 🛒`)}
+function addToCart(name,price){cart.push({name,price});cartTotal+=price;updateCart();yvToast(`+1 ${name} agregado 🛒`)}
 function updateCart(){const bar=document.getElementById('cartBar');if(cart.length>0)bar.classList.add('show');else bar.classList.remove('show');document.getElementById('cartBarInfo').textContent=`🛒 ${cart.length} ${cart.length===1?'item':'items'}`;document.getElementById('cartBarTotal').textContent=`$${cartTotal.toFixed(2)}`;const sum=document.getElementById('cartSummary');const items=document.getElementById('cartItems');const total=document.getElementById('cartTotal');if(cart.length>0){sum.style.display='block';items.innerHTML=cart.map(i=>`• ${i.name} — $${i.price.toFixed(2)}`).join('<br>');total.textContent=`Total: $${cartTotal.toFixed(2)}`}}
 function openRestaurant(name){document.getElementById('orderTitle').textContent=name;document.getElementById('orderSub').textContent='Elige lo que quieres pedir';openOrder()}
 function openOrder(){document.getElementById('orderOverlay').style.display='flex'}
 function closeOrder(){document.getElementById('orderOverlay').style.display='none'}
 function openDriver(){document.getElementById('driverOverlay').style.display='flex'}
 function closeDriver(){document.getElementById('driverOverlay').style.display='none'}
-function placeOrder(){if(cart.length===0){showToast('Agrega algo al carrito primero');return}cart=[];cartTotal=0;updateCart();closeOrder();showToast('🛵 ¡Pedido confirmado! En camino en ~28 min')}
-function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function placeOrder(){if(cart.length===0){yvToast('Agrega algo al carrito primero');return}cart=[];cartTotal=0;updateCart();closeOrder();yvToast('🛵 ¡Pedido confirmado! En camino en ~28 min')}
+function _legacy_toast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>

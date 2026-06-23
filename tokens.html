@@ -17,10 +17,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.82);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
 [data-theme="light"] .nav{background:rgba(253,249,238,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);animation:goldpulse 2.5s ease-in-out infinite}
 @keyframes goldpulse{0%,100%{box-shadow:0 0 6px var(--gold)}50%{box-shadow:0 0 24px var(--gold),0 0 48px var(--gold-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--gold)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--gold)}
 .nav-tag{font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);padding:3px 10px;border-radius:99px}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--gold)}
@@ -153,10 +153,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <a href="tokens.html" class="nav-a active">Tokens</a>
   </div>
   <div class="nav-r">
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--gold)">⚡<span id="navTokCount">0</span></div>
     <button class="btn-cta" onclick="openBuy()">⚡ Comprar tokens</button>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
@@ -164,6 +164,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
   <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -413,7 +414,7 @@ updateBal();
 /* FREE TOKENS */
 function claimFree(label,amount){
   myToks+=amount;updateBal();localStorage.setItem('yavaya_tokens',myToks);
-  triggerRain();showToast(`+${amount} tokens por ${label} 🎉`);
+  triggerRain();yvToast(`+${amount} tokens por ${label} 🎉`);
 }
 
 /* PACKAGES */
@@ -437,17 +438,18 @@ function selPkg(el,tok,price){
 function openBuy(){document.getElementById('buyOverlay').style.display='flex'}
 function closeBuy(){document.getElementById('buyOverlay').style.display='none'}
 function completeBuy(){
-  const e=document.getElementById('buyEmail').value;if(!e){showToast('Ingresa tu email');return}
+  const e=document.getElementById('buyEmail').value;if(!e){yvToast('Ingresa tu email');return}
   myToks+=selTok;updateBal();localStorage.setItem('yavaya_tokens',myToks);
   closeBuy();triggerRain();
-  showToast(`⚡ ¡${selTok} tokens acreditados! Bienvenido 🎉`);
+  yvToast(`⚡ ¡${selTok} tokens acreditados! Bienvenido 🎉`);
 }
 
 /* THEME */
 function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
 if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
 function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
-function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function _oldtoast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>

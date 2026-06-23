@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Yavaya Ayuda — Causas que importan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="yavaya-nav.css">
+<script src="yavaya-core.js" defer></script>
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
+<style>
+:root{--bg:#05080e;--bg2:#090d15;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--accent-soft:rgba(79,142,255,.08);--accent-glow:rgba(79,142,255,.25);--gold:#f0c96a;--gold-soft:rgba(240,201,106,.09);--gold-glow:rgba(240,201,106,.3);--green:#30d68c;--green-soft:rgba(48,214,140,.09);--green-glow:rgba(48,214,140,.25);--red:#ff5f57;--orange:#fb923c;--orange-soft:rgba(251,146,60,.1);--purple:#a78bfa;--purple-soft:rgba(167,139,250,.1);--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--r:14px;--r-lg:22px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#f4f7ff;--bg2:#eaeffa;--surface:#fff;--surface2:#f7f9ff;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--accent:#2563eb;--accent-soft:rgba(37,99,235,.08);--accent-glow:rgba(37,99,235,.18);--gold:#a16207;--gold-soft:rgba(161,98,7,.08);--gold-glow:rgba(161,98,7,.2);--green:#16a34a;--green-soft:rgba(22,163,74,.08);--green-glow:rgba(22,163,74,.2);--red:#dc2626;--orange:#c4631a;--orange-soft:rgba(196,99,26,.1);--purple:#7c3aed;--purple-soft:rgba(124,58,237,.1);--text:#0d1626;--text2:#4a5c78;--text3:rgba(13,22,38,.3)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s;padding-top:var(--nav-h)}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}img{display:block;max-width:100%}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:99px}
+
+/* NAV colors for this page */
+.nav-dot{background:var(--green);color:var(--green)}
+.nav-logo span{color:var(--green)}
+.nav-tag{color:var(--green);background:var(--green-soft);border:1px solid rgba(48,214,140,.2)}
+.nav-a.active{color:var(--green)!important}
+.lang-btn.on{background:var(--green)!important}
+.btn-cta{background:var(--green);color:#0d2010}
+.btn-cta:hover{box-shadow:0 6px 20px var(--green-glow)}
+
+/* BUTTONS */
+.btn-primary{padding:12px 26px;border-radius:13px;background:var(--green);color:#0d2010;border:none;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:8px;transition:all .3s;cursor:pointer}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--green-glow)}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s;cursor:pointer}
+.btn-outline:hover{border-color:var(--green);color:var(--green);background:var(--green-soft);transform:translateY(-2px)}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,25px)}100%{transform:translate(0,0)}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes progress-animate{from{width:0}to{width:var(--pw,0%)}}
+@keyframes heartpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s cubic-bezier(.25,.46,.45,.94),transform .6s cubic-bezier(.25,.46,.45,.94)}.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+
+/* PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.35}
+
+/* HERO */
+.hero{padding:60px 24px 80px;text-align:center;position:relative;overflow:hidden;background:var(--bg)}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 20s ease-in-out infinite}
+.hero-orb:nth-child(1){width:600px;height:600px;background:radial-gradient(circle,rgba(48,214,140,.1),transparent 70%);top:-150px;left:calc(50% - 300px)}
+.hero-orb:nth-child(2){width:400px;height:400px;background:radial-gradient(circle,rgba(79,142,255,.06),transparent 70%);bottom:-80px;right:-80px;animation-delay:-10s}
+.hero-inner{position:relative;z-index:2;max-width:760px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--green-soft);border:1px solid rgba(48,214,140,.2);font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;margin-bottom:28px;animation:fadeUp .7s ease both}
+.hero-h{font-size:clamp(36px,7vw,72px);font-weight:900;letter-spacing:-3px;line-height:.92;margin-bottom:20px;animation:fadeUp .7s .1s ease both}
+.hero-h .g1{display:block;background:linear-gradient(135deg,var(--text) 0%,var(--green) 60%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .hero-h .g1{background:linear-gradient(135deg,#0d1626 0%,#16a34a 55%,#2563eb 100%);-webkit-background-clip:text;background-clip:text}
+.hero-p{font-size:clamp(15px,2vw,18px);color:var(--text2);max-width:520px;margin:0 auto 36px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:10px;padding:16px 24px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:var(--nav-h);z-index:100}
+.filter-bar::-webkit-scrollbar{display:none}
+.filt-btn{padding:8px 18px;border-radius:99px;border:1px solid var(--border2);background:var(--surface);font-size:13px;font-weight:600;color:var(--text2);white-space:nowrap;cursor:pointer;transition:all .25s;flex-shrink:0}
+.filt-btn:hover{border-color:var(--green);color:var(--green)}
+.filt-btn.on{background:var(--green);border-color:var(--green);color:#0d2010;box-shadow:0 4px 14px var(--green-glow)}
+
+/* CAMPAIGNS GRID */
+.campaigns-section{padding:48px 24px}
+.container{max-width:1200px;margin:0 auto}
+.camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:32px}
+.camp-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.camp-card:hover{transform:translateY(-8px) scale(1.01);border-color:var(--border2);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.camp-img{width:100%;height:190px;object-fit:cover;filter:brightness(.75) saturate(.85);transition:transform .5s,filter .4s}
+.camp-card:hover .camp-img{transform:scale(1.08);filter:brightness(.88) saturate(1.05)}
+.camp-body{padding:20px}
+.camp-cat{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:6px}
+.camp-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.4px;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.camp-desc{font-size:13px;color:var(--text2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:14px}
+/* Progress bar */
+.camp-prog-wrap{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.camp-prog{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--accent));animation:progress-animate .8s ease both}
+.camp-nums{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+.camp-raised{font-weight:800;color:var(--text)}
+.camp-goal{color:var(--text2)}
+.camp-pct{font-weight:800;color:var(--green)}
+.camp-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.camp-author{display:flex;align-items:center;gap:8px}
+.camp-av{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;flex-shrink:0}
+.camp-aname{font-size:12px;font-weight:600;color:var(--text2)}
+.camp-donate-btn{padding:8px 16px;border-radius:10px;background:var(--green);color:#0d2010;border:none;font-size:12px;font-weight:800;white-space:nowrap;transition:all .25s;cursor:pointer}
+.camp-donate-btn:hover{box-shadow:0 4px 14px var(--green-glow)}
+/* Urgency badge */
+.camp-urgent{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;color:var(--red);background:rgba(255,95,87,.1);border:1px solid rgba(255,95,87,.2);padding:2px 8px;border-radius:99px;margin-bottom:8px}
+
+/* IMPACT STATS */
+.impact-strip{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:36px 24px}
+.impact-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:center}
+.imp-stat{padding:0 20px;position:relative}
+.imp-stat+.imp-stat::before{content:'';position:absolute;left:0;top:15%;bottom:15%;width:1px;background:var(--border2)}
+.imp-n{font-size:36px;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1}
+.imp-l{font-size:12px;color:var(--text2);font-weight:600;margin-top:4px;letter-spacing:.3px}
+
+/* CAMPAIGN DETAIL MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:0;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:10px;background:rgba(0,0,0,.4);border:none;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;z-index:10;cursor:pointer}
+.modal-x:hover{background:rgba(0,0,0,.6)}
+.modal-img{width:100%;height:240px;object-fit:cover}
+.modal-body{padding:28px}
+.modal-cat{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.modal-title{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:10px;line-height:1.2}
+.modal-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.modal-prog-wrap{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:12px}
+.modal-prog{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--accent))}
+.modal-nums{display:flex;gap:24px;margin-bottom:24px}
+.mn-item{display:flex;flex-direction:column;gap:2px}
+.mn-n{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-1px}
+.mn-l{font-size:11px;color:var(--text2);font-weight:600;letter-spacing:.3px}
+/* Donate amounts */
+.amt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.amt-btn{padding:12px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);font-size:16px;font-weight:900;color:var(--text);cursor:pointer;transition:all .25s;text-align:center}
+.amt-btn:hover,.amt-btn.on{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.custom-amt{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-size:15px;font-weight:700;outline:none;margin-bottom:14px;font-family:inherit;text-align:center}
+.custom-amt:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.custom-amt::placeholder{color:var(--text3);font-weight:400}
+
+/* FORM */
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:90px;resize:vertical}.form-group{margin-bottom:14px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CREATE MODAL */
+.create-modal{max-width:580px}
+
+/* RESPONSIVE */
+@media(max-width:900px){.camp-grid{grid-template-columns:repeat(2,1fr)}.impact-inner{grid-template-columns:repeat(2,1fr);gap:24px}.imp-stat+.imp-stat::before{display:none}}
+@media(max-width:600px){.camp-grid{grid-template-columns:1fr}.campaigns-section{padding:32px 16px}.hero{padding:40px 16px 60px}.hero-h{letter-spacing:-2px}.amt-grid{grid-template-columns:repeat(2,1fr)}.modal-body{padding:20px}.impact-inner{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="pcanvas"></canvas>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-brand">
+    <div class="nav-dot" style="background:var(--green);color:var(--green)"></div>
+    <span class="nav-logo">Yava<span style="color:var(--green)">ya</span></span>
+    <span class="nav-tag">Ayuda</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a" data-i18n="nav_home">Inicio</a>
+    <a href="mercadito.html" class="nav-a" data-i18n="nav_mercadito">Mercadito</a>
+    <a href="yavayago.html" class="nav-a" data-i18n="nav_yavayago">YavayaGo</a>
+    <a href="church.html" class="nav-a" data-i18n="nav_church">Santuario</a>
+    <a href="animals.html" class="nav-a" data-i18n="nav_animals">Animales</a>
+    <a href="work.html" class="nav-a" data-i18n="nav_work">Trabaja</a>
+    <a href="ayuda.html" class="nav-a active" data-i18n="nav_ayuda">Ayuda</a>
+  </div>
+  <div class="nav-r">
+    <div class="lang-sw">
+      <button class="lang-btn" data-l="es">ES</button>
+      <button class="lang-btn" data-l="en">EN</button>
+    </div>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-cta" onclick="openCreate()">+ Crear causa</button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 <span data-i18n="nav_home">Inicio</span></a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
+  <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <div class="nav-mob-divider"></div>
+  <div class="nav-mob-lang">
+    <button class="lang-btn" data-l="es" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer">🇬🇹 Español</button>
+    <button class="lang-btn" data-l="en" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);font-weight:700;font-size:13px;cursor:pointer">🇺🇸 English</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">❤️ Yavaya Ayuda — Causas que importan</div>
+    <h1 class="hero-h">
+      <span class="g1">Juntos podemos</span>
+      <span class="g1">cambiarlo todo.</span>
+    </h1>
+    <p class="hero-p">Crea o apoya causas reales de Centroamérica — salud, educación, desastres, animales y más. 100% transparente, 0% comisión de Yavaya.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openCreate()">❤️ Crear una causa</button>
+      <button class="btn-outline" onclick="document.getElementById('campaigns').scrollIntoView({behavior:'smooth'})">Ver causas activas</button>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT STATS -->
+<div class="impact-strip">
+  <div class="impact-inner">
+    <div class="imp-stat reveal">
+      <div class="imp-n"><span data-target="148200" data-suffix="">0</span></div>
+      <div class="imp-l">Donado en CA</div>
+    </div>
+    <div class="imp-stat reveal reveal-d1">
+      <div class="imp-n"><span data-target="342" data-suffix="">0</span></div>
+      <div class="imp-l">Causas activas</div>
+    </div>
+    <div class="imp-stat reveal reveal-d2">
+      <div class="imp-n"><span data-target="8940" data-suffix="+">0</span></div>
+      <div class="imp-l">Donadores</div>
+    </div>
+    <div class="imp-stat reveal reveal-d3">
+      <div class="imp-n">0%</div>
+      <div class="imp-l">Comisión Yavaya</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="filt-btn on" onclick="filterCamp(this,'all')">🔥 Todas</button>
+  <button class="filt-btn" onclick="filterCamp(this,'salud')">🏥 Salud</button>
+  <button class="filt-btn" onclick="filterCamp(this,'educacion')">📚 Educación</button>
+  <button class="filt-btn" onclick="filterCamp(this,'animales')">🐾 Animales</button>
+  <button class="filt-btn" onclick="filterCamp(this,'desastre')">🌪 Desastres</button>
+  <button class="filt-btn" onclick="filterCamp(this,'familia')">👨‍👩‍👧 Familia</button>
+  <button class="filt-btn" onclick="filterCamp(this,'comunidad')">🌍 Comunidad</button>
+</div>
+
+<!-- CAMPAIGNS -->
+<div class="campaigns-section" id="campaigns">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+      <div>
+        <div style="font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px">Causas activas <span class="demo-badge">DEMO</span></div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px" id="campCount">342 causas en toda Centroamérica</div>
+      </div>
+      <button class="btn-primary" onclick="openCreate()">+ Crear causa</button>
+    </div>
+    <div class="camp-grid" id="campGrid"></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section style="padding:80px 24px;background:var(--bg2)">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:48px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:7px"><span style="display:inline-block;width:18px;height:2px;background:var(--green);border-radius:1px"></span>¿Cómo funciona?</div>
+      <div style="font-size:clamp(26px,4.5vw,44px);font-weight:900;letter-spacing:-2px;color:var(--text)">Transparente y directo</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+      <div class="reveal" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:42px;margin-bottom:14px">📝</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">Crea tu causa</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">Cuéntanos la historia, pon una meta y sube fotos. En 5 minutos está publicado.</div>
+      </div>
+      <div class="reveal reveal-d1" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:42px;margin-bottom:14px">🌎</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">Compártela</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">Comparte por WhatsApp, redes sociales o donde quieras. La comunidad de CA la verá.</div>
+      </div>
+      <div class="reveal reveal-d2" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:42px;margin-bottom:14px">❤️</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">Recibe donaciones</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">Cada donación va directa a ti. Yavaya no cobra comisión. 100% para tu causa.</div>
+      </div>
+      <div class="reveal reveal-d3" style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform=''">
+        <div style="font-size:42px;margin-bottom:14px">📊</div>
+        <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">Reporta el uso</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6">Mantén a tus donadores informados. La transparencia genera más confianza y donaciones.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGN DETAIL MODAL -->
+<div class="overlay" id="campOverlay" style="display:none" onclick="if(event.target===this)closeCamp()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeCamp()">✕</button>
+    <img class="modal-img" id="mImg" src="" alt="">
+    <div class="modal-body">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-desc" id="mDesc"></div>
+      <div class="modal-prog-wrap"><div class="modal-prog" id="mProg" style="width:0%"></div></div>
+      <div class="modal-nums">
+        <div class="mn-item"><div class="mn-n" id="mRaised"></div><div class="mn-l">Recaudado</div></div>
+        <div class="mn-item"><div class="mn-n" id="mGoal"></div><div class="mn-l">Meta</div></div>
+        <div class="mn-item"><div class="mn-n" id="mDonors"></div><div class="mn-l">Donadores</div></div>
+        <div class="mn-item"><div class="mn-n" id="mDays"></div><div class="mn-l">Días restantes</div></div>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">Elige cuánto donar</div>
+      <div class="amt-grid">
+        <div class="amt-btn on" onclick="selAmt(this,5)">$5</div>
+        <div class="amt-btn" onclick="selAmt(this,10)">$10</div>
+        <div class="amt-btn" onclick="selAmt(this,25)">$25</div>
+        <div class="amt-btn" onclick="selAmt(this,50)">$50</div>
+      </div>
+      <input class="custom-amt" type="number" placeholder="Otro monto en USD..." id="customAmt" oninput="document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('on'))">
+      <div class="form-group"><label class="form-label">Tu nombre (público)</label><input class="form-input" id="donorName" placeholder="Anónimo si lo dejas vacío"></div>
+      <div class="form-group"><label class="form-label">Método de pago</label>
+        <select class="form-select" id="payMethod">
+          <option>Tarjeta de crédito / débito</option>
+          <option>PayPal</option>
+          <option>Transferencia bancaria</option>
+          <option>Tokens Yavaya (⚡)</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary" style="flex:1;justify-content:center" onclick="doDonate()">❤️ Donar ahora</button>
+        <button class="btn-wa" onclick="shareWA()" title="Compartir por WhatsApp">
+          <svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </button>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:10px">Yavaya no cobra comisión. Tu donación llega completa.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE CAUSE MODAL -->
+<div class="overlay" id="createOverlay" style="display:none" onclick="if(event.target===this)closeCreate()">
+  <div class="modal create-modal">
+    <button class="modal-x" onclick="closeCreate()" style="background:var(--bg2);color:var(--text2)">✕</button>
+    <div class="modal-body">
+      <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:4px">Crear una causa</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:22px">Tu historia puede mover a miles. Cuéntala.</div>
+      <div class="form-group"><label class="form-label">Título de tu causa</label><input class="form-input" placeholder="Ej: Ayuda para operación de mi mamá"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Categoría</label>
+          <select class="form-select"><option>Salud</option><option>Educación</option><option>Animales</option><option>Desastres</option><option>Familia</option><option>Comunidad</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Meta (USD)</label><input class="form-input" type="number" placeholder="2000"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Tu historia</label><textarea class="form-input form-textarea" style="min-height:120px" placeholder="Cuéntanos qué pasó, quién necesita ayuda y cómo se usarán las donaciones..."></textarea></div>
+      <div class="form-group"><label class="form-label">País</label>
+        <select class="form-select"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option><option>Belice</option><option>México</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Tu nombre</label><input class="form-input" placeholder="Nombre completo"></div>
+        <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-input" type="tel" placeholder="+502 ####-####"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email para recibir donaciones</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
+      <div style="padding:12px;border-radius:11px;background:var(--green-soft);border:1px solid rgba(48,214,140,.2);margin-bottom:16px;font-size:13px;color:var(--text2)">✅ Yavaya verifica cada causa antes de publicarla. 0% comisión. Todo va a ti.</div>
+      <button class="btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px" onclick="submitCause()">❤️ Publicar causa</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* PARTICLES */
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[];const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=innerWidth;H=c.height=innerHeight}rsz();window.addEventListener('resize',rsz);class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.r=Math.random()*1.5+.4;this.a=Math.random()*.4+.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(48,214,140,${this.a})`:`rgba(22,163,74,${this.a*.5})`;ctx.fill()}}
+for(let i=0;i<60;i++)ps.push(new P());function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();})();
+
+/* CAMPAIGN DATA */
+const campaigns=[
+  {id:1,cat:'salud',title:'Operación urgente para niña de 6 años',desc:'Lucía tiene 6 años y necesita una cirugía de corazón urgente. Su familia no tiene los recursos. Cada dólar cuenta para salvarle la vida.',img:'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=600&q=80&fit=crop',raised:3240,goal:8000,donors:142,days:18,author:'Familia Rodríguez',authorLoc:'Guatemala',color:'var(--red)',urgent:true,phone:'50299999999'},
+  {id:2,cat:'educacion',title:'Computadoras para escuela rural en Honduras',desc:'50 niños sin computadoras en zona rural de Olancho. Con tu apoyo podemos equipar el aula de tecnología y abrir un mundo de posibilidades.',img:'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&q=80&fit=crop',raised:1850,goal:4500,donors:89,days:32,author:'Maestra Carmen',authorLoc:'Honduras',color:'var(--accent)',urgent:false,phone:'50499999999'},
+  {id:3,cat:'animales',title:'Refugio de animales rescatados en San José',desc:'Tenemos 40 perros y 20 gatos rescatados de las calles. Necesitamos comida, vacunas y ampliar el refugio antes de la temporada de lluvias.',img:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&fit=crop',raised:920,goal:2500,donors:61,days:45,author:'Rescate CR',authorLoc:'Costa Rica',color:'var(--green)',urgent:false,phone:'50699999999'},
+  {id:4,cat:'desastre',title:'Familias afectadas por inundaciones en Nicaragua',desc:'23 familias perdieron todo por las inundaciones en el norte de Nicaragua. Necesitan materiales para reconstruir y kits de emergencia.',img:'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=600&q=80&fit=crop',raised:5600,goal:12000,donors:234,days:14,author:'Cruz Roja NI',authorLoc:'Nicaragua',color:'var(--orange)',urgent:true,phone:'50599999999'},
+  {id:5,cat:'familia',title:'Madre soltera busca trabajo estable',desc:'Ana perdió su trabajo hace 3 meses. Tiene 3 hijos y necesita cubrir el mes hasta que inicie su nuevo empleo. Cualquier ayuda importa.',img:'https://images.unsplash.com/photo-1531983412531-1f49a365ffed?w=600&q=80&fit=crop',raised:380,goal:800,donors:28,days:7,author:'Ana Méndez',authorLoc:'El Salvador',color:'var(--purple)',urgent:true,phone:'50399999999'},
+  {id:6,cat:'comunidad',title:'Parque comunitario para barrio de Panamá',desc:'El barrio Los Pinos no tiene espacios verdes para los niños. Queremos construir un pequeño parque con árboles, bancas y área de juegos.',img:'https://images.unsplash.com/photo-1575783970733-1aaedde1db74?w=600&q=80&fit=crop',raised:2100,goal:6000,donors:95,days:60,author:'Junta Vecinos',authorLoc:'Panamá',color:'var(--green)',urgent:false,phone:'50799999999'},
+];
+
+let curFilter='all';
+let selDonateAmt=5;
+let curCamp=null;
+
+function filterCamp(el,cat){
+  curFilter=cat;
+  document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderCamps();
+}
+
+function renderCamps(){
+  const grid=document.getElementById('campGrid');
+  const list=curFilter==='all'?campaigns:campaigns.filter(c=>c.cat===curFilter);
+  document.getElementById('campCount').textContent=`${list.length} causas en toda Centroamérica`;
+  grid.innerHTML='';
+  list.forEach((c,i)=>{
+    const pct=Math.round((c.raised/c.goal)*100);
+    const card=document.createElement('div');
+    card.className='camp-card reveal';
+    card.style.transitionDelay=(i%3*.08)+'s';
+    card.innerHTML=`
+      <img class="camp-img" src="${c.img}" alt="${c.title}" loading="lazy">
+      <div class="camp-body">
+        ${c.urgent?'<div class="camp-urgent">🚨 Urgente</div>':''}
+        <div class="camp-cat">${c.cat.toUpperCase()}</div>
+        <div class="camp-title">${c.title}</div>
+        <div class="camp-desc">${c.desc}</div>
+        <div class="camp-prog-wrap"><div class="camp-prog" style="--pw:${pct}%;width:${pct}%"></div></div>
+        <div class="camp-nums">
+          <span class="camp-raised">$${c.raised.toLocaleString()}</span>
+          <span class="camp-goal">de $${c.goal.toLocaleString()}</span>
+          <span class="camp-pct">${pct}%</span>
+        </div>
+      </div>
+      <div class="camp-foot">
+        <div class="camp-author">
+          <div class="camp-av" style="background:${c.color}">${c.author.charAt(0)}</div>
+          <div class="camp-aname">${c.author} · ${c.authorLoc}</div>
+        </div>
+        <button class="camp-donate-btn" onclick="event.stopPropagation();openCamp(${c.id})">Donar</button>
+      </div>`;
+    card.addEventListener('click',()=>openCamp(c.id));
+    grid.appendChild(card);
+  });
+  setTimeout(()=>{const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('vis');obs.unobserve(en.target)}})},{threshold:.08});document.querySelectorAll('.camp-card').forEach(el=>obs.observe(el))},50);
+}
+
+function openCamp(id){
+  curCamp=campaigns.find(c=>c.id===id);
+  if(!curCamp)return;
+  const pct=Math.round((curCamp.raised/curCamp.goal)*100);
+  document.getElementById('mImg').src=curCamp.img;
+  document.getElementById('mCat').textContent=curCamp.cat.toUpperCase();
+  document.getElementById('mTitle').textContent=curCamp.title;
+  document.getElementById('mDesc').textContent=curCamp.desc;
+  document.getElementById('mProg').style.width=pct+'%';
+  document.getElementById('mRaised').textContent='$'+curCamp.raised.toLocaleString();
+  document.getElementById('mGoal').textContent='$'+curCamp.goal.toLocaleString();
+  document.getElementById('mDonors').textContent=curCamp.donors;
+  document.getElementById('mDays').textContent=curCamp.days;
+  selDonateAmt=5;
+  document.getElementById('customAmt').value='';
+  document.querySelectorAll('.amt-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
+  document.getElementById('campOverlay').style.display='flex';
+}
+function closeCamp(){document.getElementById('campOverlay').style.display='none'}
+function selAmt(el,amt){selDonateAmt=amt;document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');document.getElementById('customAmt').value=''}
+function doDonate(){
+  const custom=parseFloat(document.getElementById('customAmt').value);
+  const amt=custom||selDonateAmt;
+  if(!amt||amt<=0){yvToast('Elige o ingresa un monto');return}
+  if(curCamp){curCamp.raised+=amt;curCamp.donors++}
+  closeCamp();yvToast(`❤️ ¡Donaste $${amt} a "${curCamp?.title?.slice(0,28)}..."! Gracias`,4000);
+  renderCamps();
+}
+function shareWA(){
+  if(!curCamp)return;
+  yvWhatsApp(curCamp.phone,`❤️ Apoya esta causa en Yavaya: "${curCamp.title}" — Meta: $${curCamp.goal.toLocaleString()}. Entra a ayuda.yavaya.com`);
+}
+function openCreate(){document.getElementById('createOverlay').style.display='flex'}
+function closeCreate(){document.getElementById('createOverlay').style.display='none'}
+function submitCause(){closeCreate();yvToast('❤️ ¡Causa enviada! La revisamos en 24h y la publicamos.',4000)}
+
+// init
+renderCamps();
+</script>
+</body>
+</html>

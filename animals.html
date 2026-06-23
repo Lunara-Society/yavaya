@@ -17,10 +17,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
 [data-theme="light"] .nav{background:rgba(240,244,252,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green);animation:ndot 2.5s ease-in-out infinite}
 @keyframes ndot{0%,100%{box-shadow:0 0 6px var(--green)}50%{box-shadow:0 0 22px var(--green),0 0 44px var(--green-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--green)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--green)}
 .nav-tag{font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);border:1px solid rgba(48,214,140,.2);padding:3px 10px;border-radius:99px}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--green)}
@@ -150,9 +150,9 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <a href="tokens.html" class="nav-a">Tokens</a>
   </div>
   <div class="nav-r">
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <button class="btn-cta" onclick="openAdopt()">Adoptar ahora</button>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
@@ -163,6 +163,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
   <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -303,27 +304,27 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
       <p class="sec-p">Información real y práctica para cuidar animales bien en el contexto de Centroamérica.</p>
     </div>
     <div class="edu-grid" style="margin-top:48px">
-      <div class="edu-card reveal" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">🍗</div>
         <div><div class="edu-h">Alimentación correcta por especie</div><div class="edu-p">Qué comen, cuánto y cuándo. Guías por especie adaptadas a lo que consigues en CA.</div><span class="edu-tag">Guía gratuita</span></div>
       </div>
-      <div class="edu-card reveal reveal-d1" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal reveal-d1" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">🏥</div>
         <div><div class="edu-h">Señales de que tu animal está enfermo</div><div class="edu-p">Cómo detectar problemas de salud temprano antes de que sea grave y costoso.</div><span class="edu-tag">Guía gratuita</span></div>
       </div>
-      <div class="edu-card reveal reveal-d2" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal reveal-d2" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">💉</div>
         <div><div class="edu-h">Vacunas y desparasitaciones</div><div class="edu-p">Calendario básico de vacunas por país. Lo mínimo que todo dueño debe saber.</div><span class="edu-tag">Guía gratuita</span></div>
       </div>
-      <div class="edu-card reveal reveal-d3" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal reveal-d3" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">🌡️</div>
         <div><div class="edu-h">Calor y clima tropical</div><div class="edu-p">Cómo proteger a tus animales del calor extremo que se vive en Centroamérica.</div><span class="edu-tag">Guía gratuita</span></div>
       </div>
-      <div class="edu-card reveal" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">🏠</div>
         <div><div class="edu-h">Espacio y bienestar en casa</div><div class="edu-p">Cómo crear un ambiente sano para tu animal aunque tengas poco espacio.</div><span class="edu-tag">Guía gratuita</span></div>
       </div>
-      <div class="edu-card reveal reveal-d1" onclick="showToast('Abriendo guía...')">
+      <div class="edu-card reveal reveal-d1" onclick="yvToast('Abriendo guía...')">
         <div class="edu-icon">🤝</div>
         <div><div class="edu-h">Cómo enseñarles a tus hijos</div><div class="edu-p">Actividades y conversaciones para que los niños aprendan a respetar animales desde pequeños.</div><span class="edu-tag">Para familias</span></div>
       </div>
@@ -358,7 +359,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
     <div class="form-group"><label class="form-label">¿Tienes espacio exterior? (patio, jardín)</label><select class="form-select"><option>Sí, tengo patio grande</option><option>Sí, patio pequeño</option><option>No, apartamento</option></select></div>
     <div class="form-group"><label class="form-label">¿Por qué quieres adoptar?</label><textarea class="form-input form-textarea" placeholder="Cuéntanos un poco sobre tu hogar y por qué quieres este animal..."></textarea></div>
-    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeAdopt();showToast('¡Solicitud enviada! Te contactamos en 24h 🐾')">Enviar solicitud</button>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeAdopt();yvToast('¡Solicitud enviada! Te contactamos en 24h 🐾')">Enviar solicitud</button>
   </div>
 </div>
 
@@ -372,7 +373,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <div class="form-group"><label class="form-label">¿Qué quieres donar?</label><select class="form-select"><option>Alimento para perros</option><option>Alimento para gatos</option><option>Medicamentos</option><option>Dinero para tratamientos</option><option>Otro</option></select></div>
     <div class="form-group"><label class="form-label">Cantidad / descripción</label><input class="form-input" placeholder="Ej: 10kg de croquetas, $20 USD..."></div>
     <div class="form-group"><label class="form-label">Tu país</label><select class="form-select"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option></select></div>
-    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDonate();showToast('¡Gracias! Te contactamos para coordinar 🙏')">Ofrecer donación</button>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDonate();yvToast('¡Gracias! Te contactamos para coordinar 🙏')">Ofrecer donación</button>
   </div>
 </div>
 
@@ -394,8 +395,9 @@ function openAdopt(){document.getElementById('adoptOverlay').style.display='flex
 function closeAdopt(){document.getElementById('adoptOverlay').style.display='none'}
 function openDonate(){document.getElementById('donateOverlay').style.display='flex'}
 function closeDonate(){document.getElementById('donateOverlay').style.display='none'}
-function openFoster(){showToast('Casa de tránsito — próximamente!')}
-function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function openFoster(){yvToast('Casa de tránsito — próximamente!')}
+function _oldtoast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>

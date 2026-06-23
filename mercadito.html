@@ -17,10 +17,10 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
 [data-theme="light"] .nav{background:rgba(240,244,252,.9)}
-.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand{display:flex;align-items:center;gap:8px;flex-shrink:0;white-space:nowrap;min-width:0}
 .nav-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent);animation:ndot 2.5s ease-in-out infinite}
 @keyframes ndot{0%,100%{box-shadow:0 0 6px var(--accent)}50%{box-shadow:0 0 22px var(--accent),0 0 44px var(--accent-glow)}}
-.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--accent)}
+.nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--accent)}
 .nav-tag{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid rgba(79,142,255,.2);padding:3px 10px;border-radius:99px}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--accent)}
@@ -124,15 +124,16 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     <a href="church.html" class="nav-a">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a><a href="tokens.html" class="nav-a">Tokens</a>
   </div>
   <div class="nav-r">
-    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <button class="btn-cta" onclick="openSell()">+ Publicar</button>
-    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+    <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
   <a href="index.html" class="nav-mob-a">🏠 Inicio</a><a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
   <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
   <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a><a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
 </div>
 
 <!-- HERO -->
@@ -188,7 +189,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     </div>
     <div class="listings-grid" id="listingsGrid"></div>
     <div style="text-align:center;margin-top:40px">
-      <button class="btn-outline" onclick="showToast('Cargando más anuncios...')">Ver más anuncios</button>
+      <button class="btn-outline" onclick="yvToast('Cargando más anuncios...')">Ver más anuncios</button>
     </div>
   </div>
 </div>
@@ -219,7 +220,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
     </div>
     <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-input form-textarea" placeholder="Describe tu producto — estado, detalles, contacto..."></textarea></div>
     <div style="padding:14px;border-radius:12px;background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);margin-bottom:16px;font-size:13px;color:var(--text2)">⚡ Publicación básica gratis. Destacar anuncio cuesta <b style="color:var(--gold)">5 tokens</b>.</div>
-    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeSell();showToast('¡Anuncio publicado! Ya está en vivo 🎉')">Publicar anuncio</button>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeSell();yvToast('¡Anuncio publicado! Ya está en vivo 🎉')">Publicar anuncio</button>
   </div>
 </div>
 
@@ -264,7 +265,8 @@ function renderListings(){
       <div class="lc-loc">📍 ${l.loc}</div>
       <div class="lc-price">${l.price>999?'$'+l.price.toLocaleString():'$'+l.price}</div>
       ${l.tok?`<div class="lc-price-tok">o ${l.tok} tokens ⚡</div>`:''}
-      <div class="lc-foot"><span class="lc-seller">por ${l.seller}</span><button class="lc-fav" onclick="event.stopPropagation();this.textContent=this.textContent==='♡'?'♥':'♡';showToast('Guardado en favoritos')">♡</button></div>
+      <div class="lc-foot"><span class="lc-seller">por ${l.seller}</span><div style="display:flex;gap:6px"><button class="lc-fav" onclick="event.stopPropagation();this.textContent=this.textContent==='♡'?'♥':'♡';yvToast('Guardado en favoritos')">♡</button></div></div>
+      <button class="btn-wa" style="width:100%;justify-content:center;margin-top:10px;padding:9px;font-size:12px;border-radius:10px" onclick="event.stopPropagation();yvWhatsAppListing('${l.title}','${l.price}','502'+Math.floor(Math.random()*90000000+10000000))"><svg class="wa-svg" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Contactar por WhatsApp</button>
     </div>`;
     card.addEventListener('click',()=>openListing(l));
     grid.appendChild(card);
@@ -277,7 +279,7 @@ function selCat(el,cat){document.querySelectorAll('.cat-b').forEach(b=>b.classLi
 function filterListings(){curSearch=document.getElementById('searchInp').value;renderListings()}
 function sortListings(v){curSort=v;renderListings()}
 
-function openListing(l){showToast(`Ver: ${l.title.slice(0,30)}...`)}
+function openListing(l){yvToast(`Ver: ${l.title.slice(0,30)}...`)}
 
 /* COUNT UP */
 (function(){const obs=new IntersectionObserver(e=>{if(!e[0].isIntersecting)return;obs.disconnect();let v1=0,v2=0;const t=setInterval(()=>{v1=Math.min(v1+70,5000);v2=Math.min(v2+18,1200);document.getElementById('cnt1').textContent=v1.toLocaleString()+'+';document.getElementById('cnt2').textContent=v2.toLocaleString()+'+';if(v1>=5000)clearInterval(t)},20)},{threshold:.5});const el=document.getElementById('cnt1');if(el)obs.observe(el)})();
@@ -294,9 +296,10 @@ if(document.documentElement.getAttribute('data-theme')==='light')document.getEle
 function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
 function openSell(){document.getElementById('sellOverlay').style.display='flex'}
 function closeSell(){document.getElementById('sellOverlay').style.display='none'}
-function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+function _showToast_legacy(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 
 renderListings();
 </script>
+<script src="yavaya-core.js" defer></script>
 </body>
 </html>
