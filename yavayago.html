@@ -3,1593 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
-<title>YavayaGo — Yavaya</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>YavayaGo — Delivery Express en Centroamérica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
 <style>
-/* YAVAYA Design System v4 — God Tier Modern */
-:root {
-  --bg: #070b10;
-  --bg2: #0c1118;
-  --bg3: #101820;
-  --surface: #141c27;
-  --surface2: #1c2636;
-  --border: rgba(255,255,255,.06);
-  --border2: rgba(255,255,255,.11);
-  --accent: #4f8eff;
-  --accent2: #7aabff;
-  --accent-glow: rgba(79,142,255,.2);
-  --accent-soft: rgba(79,142,255,.09);
-  --gold: #f0c96a;
-  --gold2: #fad98a;
-  --gold-soft: rgba(240,201,106,.09);
-  --green: #30d68c;
-  --green-soft: rgba(48,214,140,.09);
-  --red: #ff5f57;
-  --text: #e8eef8;
-  --text2: #7e90aa;
-  --text3: rgba(232,238,248,.28);
-  --nav-h: 62px;
-  --r: 14px;
-  --r-lg: 22px;
-  --shadow: 0 4px 24px rgba(0,0,0,.5);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
-}
-[data-theme="light"] {
-  --bg: #f2f5fb;
-  --bg2: #e8edf7;
-  --bg3: #dde4f0;
-  --surface: #ffffff;
-  --surface2: #f7f9fd;
-  --border: rgba(0,0,0,.07);
-  --border2: rgba(0,0,0,.13);
-  --accent: #2563eb;
-  --accent2: #1e50c8;
-  --accent-glow: rgba(37,99,235,.15);
-  --accent-soft: rgba(37,99,235,.08);
-  --gold: #a16207;
-  --gold2: #ca8a04;
-  --gold-soft: rgba(161,98,7,.08);
-  --green: #16a34a;
-  --green-soft: rgba(22,163,74,.08);
-  --red: #dc2626;
-  --text: #0d1626;
-  --text2: #4a5c78;
-  --text3: rgba(13,22,38,.35);
-  --shadow: 0 4px 24px rgba(0,0,0,.09);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
-}
-
-
+:root{--bg:#05080e;--bg2:#090d15;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--accent-soft:rgba(79,142,255,.08);--gold:#f0c96a;--gold-soft:rgba(240,201,106,.09);--green:#30d68c;--green-soft:rgba(48,214,140,.09);--green-glow:rgba(48,214,140,.25);--red:#ff5f57;--orange:#fb923c;--orange-soft:rgba(251,146,60,.1);--orange-glow:rgba(251,146,60,.3);--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#fffaf5;--bg2:#fff3e8;--surface:#fff;--surface2:#fff8f0;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--green:#16a34a;--green-soft:rgba(22,163,74,.08);--green-glow:rgba(22,163,74,.2);--orange:#c4631a;--orange-soft:rgba(196,99,26,.1);--orange-glow:rgba(196,99,26,.25);--text:#1a0800;--text2:#6b4020;--text3:rgba(26,8,0,.3)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer}
-img{display:block;max-width:100%}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
-input,textarea,select{font-family:inherit}
-
-/* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
-[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--orange);border-radius:99px}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
+[data-theme="light"] .nav{background:rgba(255,250,245,.9)}
 .nav-brand{display:flex;align-items:center;gap:10px}
-.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
-.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
-.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
-.nav-links{display:flex;align-items:center;gap:2px}
-.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
-.nav-a:hover{background:var(--surface);color:var(--text)}
-.nav-r{display:flex;align-items:center;gap:7px}
-.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
-.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
-.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
-.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
-.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
-.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
-.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
-.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
-.nav-mob.open{display:flex}
-.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
-.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
-
-/* ── SECTION WRAPPERS ── */
-.section{padding:96px 24px}
-.section-sm{padding:64px 24px}
+.nav-dot{width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 14px var(--orange);animation:ndot 2.5s ease-in-out infinite}
+@keyframes ndot{0%,100%{box-shadow:0 0 6px var(--orange)}50%{box-shadow:0 0 22px var(--orange),0 0 44px var(--orange-glow)}}
+.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--orange)}
+.nav-tag{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-soft);border:1px solid rgba(251,146,60,.2);padding:3px 10px;border-radius:99px}
+.nav-links{display:flex;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--orange)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-cta{padding:9px 20px;border-radius:11px;background:var(--orange);color:#fff;border:none;font-size:13px;font-weight:800;transition:all .25s}.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--orange-glow)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;cursor:pointer}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);z-index:299;padding:12px 16px;flex-direction:column;gap:4px}.nav-mob.open{display:flex}
+.nav-mob-a{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);transition:all .2s}.nav-mob-a:hover{background:var(--surface);color:var(--text)}
+/* BUTTONS */
+.btn-primary{padding:12px 26px;border-radius:13px;background:var(--orange);color:#fff;border:none;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:8px;transition:all .3s}.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--orange-glow)}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}.btn-outline:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-soft);transform:translateY(-2px)}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes drift{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,25px)}100%{transform:translate(0,0)}}
+@keyframes drive{0%{transform:translateX(-20px)}50%{transform:translateX(8px)}100%{transform:translateX(-20px)}}
+@keyframes bounce-in{0%{transform:scale(.3) translateY(40px);opacity:0}60%{transform:scale(1.1) translateY(-8px)}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes progress-fill{from{width:0}to{width:var(--pw)}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes ping{0%{transform:scale(1);opacity:1}75%,100%{transform:scale(2);opacity:0}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s cubic-bezier(.25,.46,.45,.94),transform .6s cubic-bezier(.25,.46,.45,.94)}.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+/* PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.35}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 80px) 24px 100px;position:relative;overflow:hidden;text-align:center}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 18s ease-in-out infinite}
+.hero-orb:nth-child(1){width:700px;height:700px;background:radial-gradient(circle,rgba(251,146,60,.1),transparent 70%);top:-200px;left:calc(50% - 350px)}
+.hero-orb:nth-child(2){width:450px;height:450px;background:radial-gradient(circle,rgba(48,214,140,.06),transparent 70%);bottom:-80px;right:-80px;animation-delay:-9s}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(251,146,60,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(251,146,60,.025) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%)}
+.hero-inner{position:relative;z-index:2;max-width:820px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--orange-soft);border:1px solid rgba(251,146,60,.2);font-size:12px;font-weight:700;color:var(--orange);letter-spacing:.5px;margin-bottom:32px;animation:fadeUp .7s ease both}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:ndot 2s infinite}
+.hero-h{font-size:clamp(48px,10vw,104px);font-weight:900;letter-spacing:-4px;line-height:.88;margin-bottom:26px;animation:fadeUp .7s .1s ease both}
+.hero-h .g1{display:block;background:linear-gradient(135deg,var(--text) 0%,var(--orange) 55%,var(--green) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .hero-h .g1{background:linear-gradient(135deg,#1a0800 0%,#c4631a 55%,#16a34a 100%);-webkit-background-clip:text;background-clip:text}
+.hero-p{font-size:clamp(16px,2vw,19px);color:var(--text2);max-width:540px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+/* DELIVERY TIMER BADGE */
+.timer-badge{display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border-radius:99px;background:var(--surface);border:1px solid var(--border2);font-size:14px;font-weight:700;color:var(--text);margin-top:28px;animation:fadeUp .7s .4s ease both;box-shadow:var(--shadow)}
+.timer-dot{width:10px;height:10px;border-radius:50%;background:var(--green);position:relative}
+.timer-dot::after{content:'';position:absolute;inset:0;border-radius:50%;background:var(--green);animation:ping 1.5s cubic-bezier(0,0,.2,1) infinite}
+/* LIVE ORDER TRACKER */
+.tracker-card{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:28px;max-width:500px;margin:0 auto;position:relative;overflow:hidden}
+.tracker-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--green),var(--orange))}
+.tracker-steps{display:flex;align-items:center;justify-content:space-between;margin:24px 0}
+.tstep{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+.tstep+.tstep::before{content:'';position:absolute;right:50%;left:-50%;top:18px;height:2px;background:var(--border2);z-index:0}
+.tstep.done+.tstep::before{background:var(--orange)}
+.tstep-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid var(--border2);background:var(--surface2);transition:all .3s;position:relative;z-index:1}
+.tstep.done .tstep-icon{border-color:var(--orange);background:var(--orange-soft);box-shadow:0 0 0 4px rgba(251,146,60,.15)}
+.tstep.active .tstep-icon{border-color:var(--green);background:var(--green-soft);animation:ndot 1.5s ease-in-out infinite}
+.tstep-l{font-size:10px;font-weight:700;color:var(--text2);text-align:center;letter-spacing:.2px}
+.tstep.done .tstep-l,.tstep.active .tstep-l{color:var(--text)}
+/* SECTIONS */
+.section{padding:100px 24px;position:relative}
 .container{max-width:1200px;margin:0 auto}
-.container-sm{max-width:860px;margin:0 auto}
-
-/* ── SECTION HEADER ── */
-.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
-.sec-p{font-size:16px;color:var(--text2);max-width:480px}
-
-/* ── CARDS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
-.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-.card-lift:hover{transform:translateY(-4px)}
-
-/* ── BUTTONS ── */
-.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
-.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
-.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-
-/* ── FORM ── */
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--orange);border-radius:1px}
+.sec-h{font-size:clamp(28px,4.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
+/* RESTAURANTS GRID */
+.rest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:48px}
+.rest-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.rest-card:hover{transform:translateY(-10px) scale(1.01);border-color:var(--border2);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.rest-img{width:100%;height:160px;object-fit:cover;filter:brightness(.7) saturate(.85);transition:transform .5s,filter .4s}
+.rest-card:hover .rest-img{transform:scale(1.1);filter:brightness(.85) saturate(1.1)}
+.rest-body{padding:16px}
+.rest-name{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.4px;margin-bottom:5px}
+.rest-info{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rest-tag{padding:3px 8px;border-radius:6px;background:var(--orange-soft);color:var(--orange);font-size:10px;font-weight:700}
+.rest-rating{color:var(--gold);font-size:11px}
+.rest-time{font-size:11px;font-weight:700;color:var(--green)}
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative}
+.how-card:hover{transform:translateY(-6px);border-color:rgba(251,146,60,.3);box-shadow:0 16px 50px rgba(0,0,0,.4)}
+.how-num{position:absolute;top:14px;right:16px;font-size:36px;font-weight:900;color:rgba(251,146,60,.08);line-height:1}
+.how-icon{font-size:44px;margin-bottom:16px;display:block}
+.how-h{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px}
+.how-p{font-size:12px;color:var(--text2);line-height:1.6}
+/* CATEGORIES */
+.food-cats{display:flex;gap:12px;flex-wrap:wrap;margin-top:40px;justify-content:center}
+.food-cat{padding:10px 20px;border-radius:99px;background:var(--surface);border:1px solid var(--border);font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:6px}
+.food-cat:hover,.food-cat.on{border-color:var(--orange);color:var(--orange);background:var(--orange-soft);transform:translateY(-2px)}
+/* ORDER MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}.modal-x:hover{background:var(--surface2);color:var(--text)}
 .form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
-.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
-.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
-.form-textarea{min-height:96px;resize:vertical}
-.form-group{margin-bottom:14px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
-.modal-wide{max-width:540px}
-@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
-.modal-x:hover{background:var(--surface2);color:var(--text)}
-.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
-
-/* ── AUTH TABS ── */
-.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
-.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
-.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
-.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
-.input-wrap{position:relative}
-.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
-.forgot{font-size:12px;color:var(--text3);transition:color .2s}
-.forgot:hover{color:var(--accent)}
-
-/* ── BADGE / TAG ── */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
-.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
-.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
-.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── FADE-UP ── */
-.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
-.fade-up.vis{opacity:1;transform:translateY(0)}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
-@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
-
-
-.yg-hero{padding:calc(var(--nav-h)+44px) 24px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;background:var(--bg)}
-.yg-blob{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 65% 45% at 50% 0%,rgba(48,214,140,.07) 0%,transparent 60%);animation:yb 8s ease-in-out infinite}
-@keyframes yb{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
-.yg-h{font-size:clamp(32px,7vw,62px);font-weight:800;letter-spacing:-2px;color:var(--text);margin-bottom:6px;position:relative;z-index:1}
-.yg-p{font-size:15px;color:var(--text2);margin-bottom:22px;position:relative;z-index:1}
-
-.addr-bar{display:flex;max-width:520px;margin:0 auto 16px;background:var(--surface);border:1.5px solid var(--border2);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);position:relative;z-index:1;transition:border-color .2s}
-.addr-bar:focus-within{border-color:var(--green)}
-.addr-ico{padding:0 14px;color:var(--text3);font-size:16px;display:flex;align-items:center}
-.addr-inp{flex:1;padding:13px 0;background:none;border:none;color:var(--text);font-size:15px;outline:none}
-.addr-inp::placeholder{color:var(--text3)}
-.addr-go{padding:11px 20px;background:var(--green);border:none;color:#fff;font-size:14px;font-weight:700;transition:filter .2s;white-space:nowrap}
-.addr-go:hover{filter:brightness(1.1)}
-
-.perks{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;padding-bottom:24px}
-.perk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-weight:500}
-.perk-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
-
-.food-cats{display:flex;gap:3px;overflow-x:auto;padding:0 16px;scrollbar-width:none;background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:var(--nav-h);z-index:200}
-.food-cats::-webkit-scrollbar{display:none}
-.food-cat{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 14px;flex-shrink:0;border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-size:11px;font-weight:600;color:var(--text2);transition:all .2s;cursor:pointer;white-space:nowrap}
-.food-cat:hover{color:var(--text)}
-.food-cat.on{border-bottom-color:var(--green);color:var(--green)}
-.food-cat-ico{font-size:20px}
-
-.yg-layout{display:flex;gap:18px;max-width:1280px;margin:0 auto;padding:18px 16px 60px}
-
-/* RESTAURANTS */
-.rest-grid{flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.rest-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .3s}
-.rest-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:var(--shadow)}
-.rest-img{width:100%;height:160px;object-fit:cover;filter:brightness(.8);transition:filter .3s}
-.rest-card:hover .rest-img{filter:brightness(.9)}
-.rest-body{padding:14px}
-.rest-header{display:flex;align-items:start;justify-content:space-between;margin-bottom:6px}
-.rest-name{font-size:15px;font-weight:700;color:var(--text)}
-.rest-rating{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:600;color:var(--gold)}
-.rest-cuisine{font-size:12px;color:var(--text2);margin-bottom:8px}
-.rest-meta{display:flex;gap:10px;flex-wrap:wrap}
-.rest-tag{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:3px}
-.rest-promo{margin-top:10px;padding:7px 10px;border-radius:8px;background:var(--green-soft);color:var(--green);font-size:11px;font-weight:600}
-
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s;font-family:inherit}
+.form-input:focus,.form-select:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-soft)}
+.form-input::placeholder{color:var(--text3)}.form-group{margin-bottom:14px}
+/* MENU ITEM */
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--surface2);margin-bottom:10px;gap:12px;transition:all .25s}
+.menu-item:hover{border-color:rgba(251,146,60,.3)}
+.mi-name{font-size:14px;font-weight:700;color:var(--text)}
+.mi-desc{font-size:12px;color:var(--text2)}
+.mi-price{font-size:16px;font-weight:900;color:var(--text);white-space:nowrap}
+.mi-add{width:30px;height:30px;border-radius:8px;background:var(--orange);color:#fff;border:none;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.mi-add:hover{transform:scale(1.15);box-shadow:0 4px 12px var(--orange-glow)}
 /* CART */
-.cart-panel{width:300px;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + 52px);height:fit-content;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
-.cart-h{font-size:16px;font-weight:800;color:var(--text);margin-bottom:16px;letter-spacing:-.3px}
-.cart-empty{text-align:center;padding:28px 0;color:var(--text3);font-size:13px}
-.cart-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
-.cart-item-name{font-size:13px;font-weight:600;color:var(--text)}
-.cart-item-price{font-size:13px;color:var(--text2)}
-.cart-qty{display:flex;align-items:center;gap:8px}
-.qty-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.qty-btn:hover{border-color:var(--accent);color:var(--accent)}
-.cart-totals{margin-top:12px}
-.cart-row{display:flex;justify-content:space-between;font-size:13px;color:var(--text2);margin-bottom:6px}
-.cart-total-row{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:var(--text);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.pay-methods{display:flex;gap:6px;margin:14px 0;flex-wrap:wrap}
-.pay-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-weight:600;transition:all .2s;min-width:70px;text-align:center}
-.pay-btn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.btn-order{width:100%;padding:13px;border-radius:11px;background:var(--green);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .2s}
-.btn-order:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn-order:disabled{opacity:.5;cursor:not-allowed;transform:none}
-
-/* MENU VIEW */
-.menu-view{display:none;width:100%}
-.menu-view.show{display:block}
-.rest-grid.hide{display:none}
-.menu-back{display:flex;align-items:center;gap:8px;background:none;border:none;color:var(--text2);font-size:14px;font-weight:500;padding:0 0 16px;cursor:pointer;transition:color .2s}
-.menu-back:hover{color:var(--text)}
-.menu-rest-header{display:flex;align-items:start;gap:16px;margin-bottom:24px;flex-wrap:wrap}
-.menu-rest-img{width:80px;height:80px;border-radius:14px;object-fit:cover}
-.menu-cat-name{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin:20px 0 10px}
-.menu-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.menu-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;display:flex;justify-content:space-between;align-items:start;gap:12px;transition:all .2s}
-.menu-item:hover{border-color:var(--border2)}
-.mi-info{flex:1}
-.mi-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
-.mi-desc{font-size:12px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
-.mi-price{font-size:14px;font-weight:700;color:var(--text)}
-.mi-add{width:30px;height:30px;border-radius:8px;background:var(--green);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
-.mi-add:hover{filter:brightness(1.1)}
-.mi-emoji{font-size:22px;margin-bottom:6px}
-
-/* TRACKING */
-.track-modal{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);display:flex;align-items:flex-end;justify-content:center;padding:0}
-.track-sheet{background:var(--surface);border-radius:24px 24px 0 0;width:100%;max-width:600px;padding:28px 24px;border:1px solid var(--border2);animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.track-h{font-size:18px;font-weight:800;color:var(--text);margin-bottom:20px;letter-spacing:-.4px}
-.track-steps{display:flex;flex-direction:column;gap:14px}
-.tstep{display:flex;align-items:center;gap:14px}
-.tstep-ico{width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .4s}
-.tstep.done .tstep-ico{background:var(--green-soft);border-color:var(--green)}
-.tstep.active .tstep-ico{background:var(--accent-soft);border-color:var(--accent);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--accent-glow)}50%{box-shadow:0 0 0 8px transparent}}
-.tstep-info{}
-.tstep-l{font-size:14px;font-weight:600;color:var(--text)}
-.tstep-p{font-size:12px;color:var(--text2)}
-.track-map{width:100%;height:180px;border-radius:14px;background:var(--bg2);overflow:hidden;margin:20px 0}
-
-@media(max-width:900px){.cart-panel{display:none}.rest-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.rest-grid{grid-template-columns:1fr}.menu-items{grid-template-columns:1fr}.yg-layout{padding:12px 10px 48px}}
-
-
-/* ══ CINEMATIC REVEAL ENGINE ══ */
-.reveal          { opacity:0; transform:translateY(32px);    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
-.reveal.left     { transform:translateX(-40px) translateY(0); }
-.reveal.right    { transform:translateX( 40px) translateY(0); }
-.reveal.scale    { transform:scale(.94); }
-.reveal.done     { opacity:1; transform:none; }
-.reveal-d1       { transition-delay:.12s; }
-.reveal-d2       { transition-delay:.24s; }
-.reveal-d3       { transition-delay:.38s; }
-.reveal-d4       { transition-delay:.52s; }
-.reveal-d5       { transition-delay:.68s; }
-
-/* ══ HERO CINEMATIC LAYER ══ */
-.hero-reel {
-  position:absolute; inset:0; z-index:0; overflow:hidden;
-}
-.hero-reel img {
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:center;
-  opacity:0; transition:opacity 2.2s cubic-bezier(.4,0,.2,1), transform 9s linear;
-  transform:scale(1.06);
-  will-change:opacity,transform;
-}
-.hero-reel img.active {
-  opacity:.28; transform:scale(1.0);
-}
-[data-theme="light"] .hero-reel img.active { opacity:.14; }
-
-/* Cinematic vignette */
-.hero-reel::after {
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(7,11,16,.9) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(7,11,16,.5) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(7,11,16,.15) 0%, transparent 30%, rgba(7,11,16,.8) 100%);
-}
-[data-theme="light"] .hero-reel::after {
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(242,245,251,.95) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(242,245,251,.3) 0%, transparent 30%, rgba(242,245,251,.85) 100%);
-}
-
-/* ══ TYPEWRITER ══ */
-.typewriter { display:inline; }
-.typewriter-cursor {
-  display:inline-block; width:2px; height:.85em;
-  background:currentColor; margin-left:3px;
-  vertical-align:-.08em;
-  animation:cur .75s step-end infinite;
-}
-@keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* ══ LIVE NOTIFICATION TICKER ══ */
-.live-ticker {
-  position:fixed; bottom:24px; left:24px; z-index:800;
-  display:flex; flex-direction:column; gap:8px;
-  pointer-events:none;
-}
-.ticker-pill {
-  display:flex; align-items:center; gap:10px;
-  padding:11px 16px; border-radius:14px;
-  background:var(--surface); border:1px solid var(--border2);
-  box-shadow:0 8px 32px rgba(0,0,0,.45);
-  font-size:13px; color:var(--text);
-  transform:translateX(-120%); opacity:0;
-  transition:transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s;
-  pointer-events:none; backdrop-filter:blur(16px);
-  max-width:280px;
-}
-.ticker-pill.show { transform:translateX(0); opacity:1; }
-.ticker-pill.hide { transform:translateX(-120%); opacity:0; }
-.ticker-dot {
-  width:7px; height:7px; border-radius:50%; flex-shrink:0;
-  animation:td 2s infinite;
-}
-@keyframes td { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
-.ticker-ico { font-size:16px; flex-shrink:0; }
-.ticker-text { line-height:1.35; }
-.ticker-title { font-weight:600; font-size:12px; }
-.ticker-sub   { font-size:11px; color:var(--text2); margin-top:1px; }
-
-/* ══ HORIZONTAL MARQUEE ══ */
-.marquee-wrap {
-  overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-  padding:14px 0; background:var(--bg2);
-}
-.marquee-track {
-  display:flex; gap:48px; width:max-content;
-  animation:marquee 28s linear infinite;
-}
-.marquee-wrap:hover .marquee-track { animation-play-state:paused; }
-@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.marquee-item {
-  display:flex; align-items:center; gap:10px;
-  font-size:12px; font-weight:600; color:var(--text2);
-  letter-spacing:.4px; white-space:nowrap;
-}
-.marquee-sep { color:var(--border2); }
-
-/* ══ STAGGER GRID ══ */
-.stagger > * {
-  opacity:0; transform:translateY(24px);
-  transition:opacity .65s, transform .65s;
-}
-.stagger.done > *:nth-child(1){transition-delay:.0s}
-.stagger.done > *:nth-child(2){transition-delay:.08s}
-.stagger.done > *:nth-child(3){transition-delay:.16s}
-.stagger.done > *:nth-child(4){transition-delay:.24s}
-.stagger.done > *:nth-child(5){transition-delay:.32s}
-.stagger.done > *:nth-child(6){transition-delay:.40s}
-.stagger.done > *:nth-child(7){transition-delay:.48s}
-.stagger.done > *:nth-child(8){transition-delay:.56s}
-.stagger.done > * { opacity:1; transform:translateY(0); }
-
-/* ══ MAGNETIC HOVER ══ */
-.magnetic { transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
-
-/* ══ CARD TILT ══ */
-.tilt { transform-style:preserve-3d; transition:transform .15s ease; }
-
-/* ══ GRADIENT TEXT SHIMMER ══ */
-.shimmer-text {
-  background:linear-gradient(90deg,
-    var(--text) 0%, var(--text) 35%,
-    var(--accent2) 50%, var(--text) 65%, var(--text) 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shimmer 5s linear infinite;
-}
-[data-theme="light"] .shimmer-text {
-  background:linear-gradient(90deg,#0d1626 0%,#0d1626 35%,#2563eb 50%,#0d1626 65%,#0d1626 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-}
-@keyframes shimmer { to{ background-position:200% center } }
-
-/* ══ LINE DRAW ══ */
-.line-draw {
-  display:block; height:1px;
-  background:linear-gradient(90deg, transparent, var(--accent), transparent);
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 1.2s cubic-bezier(.16,1,.3,1);
-}
-.line-draw.done { transform:scaleX(1); }
-
-/* ══ NUMBER COUNT-UP ══ */
-.countup { display:inline; }
-
-/* ══ LANG TOGGLE FIX ══ */
-[data-lang-show]        { display:none !important; }
-[data-lang-show="es"]   { display:var(--_d,revert) !important; }
-html[data-lang="en"] [data-lang-show="es"] { display:none !important; }
-html[data-lang="en"] [data-lang-show="en"] { display:var(--_d,revert) !important; }
-html[data-lang="es"] [data-lang-show="en"] { display:none !important; }
-html[data-lang="es"] [data-lang-show="es"] { display:var(--_d,revert) !important; }
-
+.cart-bar{position:fixed;bottom:0;left:0;right:0;z-index:400;background:var(--surface);border-top:1px solid var(--border2);padding:16px 24px;display:none;align-items:center;justify-content:space-between;animation:fadeUp .4s ease}
+.cart-bar.show{display:flex}
+.cart-info{font-size:14px;font-weight:700;color:var(--text)}
+.cart-sub{font-size:12px;color:var(--text2)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:768px){.rest-grid{grid-template-columns:repeat(2,1fr)}.how-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.rest-grid{grid-template-columns:1fr}.how-grid{grid-template-columns:1fr}.nav{padding:0 16px}.section{padding:70px 16px}}
 </style>
 </head>
 <body>
-
-<nav class="nav" id="nav">
-  <div class="nav-brand">
-    <a href="index.html" style="display:flex;align-items:center;gap:10px">
-      <div class="nav-dot"></div>
-      <span class="nav-logo">Yavaya</span>
-    </a>
-    <span class="nav-tag">YavayaGo</span>
+<canvas id="pcanvas"></canvas>
+<nav class="nav">
+  <div class="nav-brand"><div class="nav-dot"></div><span class="nav-logo">Yavaya<span>Go</span></span><span class="nav-tag">Delivery</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a">Inicio</a><a href="mercadito.html" class="nav-a">Mercadito</a><a href="yavayago.html" class="nav-a active">YavayaGo</a>
+    <a href="church.html" class="nav-a">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a><a href="tokens.html" class="nav-a">Tokens</a>
   </div>
-  <div class="nav-links"><a href="mercadito.html" class="nav-a" >Mercadito</a><a href="yavayago.html" class="nav-a" style="color:var(--accent)">YavayaGo</a><a href="church.html" class="nav-a" >Santuario</a><a href="tokens.html" class="nav-a" >Tokens</a></div>
   <div class="nav-r">
-    <div class="lang-sw">
-      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
-    </div>
     <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
-    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
-    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
-      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
-      <span id="userName" style="font-size:13px;font-weight:600"></span>
-      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
-    </div>
-    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
-    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
+    <button class="btn-cta" onclick="openOrder()">🛵 Pedir ahora</button>
+    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
-  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
-  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
-  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
-  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
-  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a><a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a><a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
 </div>
 
-<section class="yg-hero">
-  <div class="yg-blob"></div>
-  <h1 class="yg-h">YavayaGo</h1>
-  <p class="yg-p">Movimiento · Velocidad · Eficiencia</p>
-  <div class="addr-bar">
-    <div class="addr-ico">📍</div>
-    <input type="text" class="addr-inp" id="addrInput" placeholder="¿Dónde te entregamos?">
-    <button class="addr-go" onclick="setAddress()">Buscar →</button>
-  </div>
-  <div class="perks">
-    <div class="perk"><div class="perk-dot"></div>Primer pedido — envío gratis</div>
-    <div class="perk"><div class="perk-dot"></div>Express 30–45 min</div>
-    <div class="perk"><div class="perk-dot"></div>Seguimiento en vivo</div>
-    <div class="perk"><div class="perk-dot"></div>Pago seguro</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div><div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="pdot"></span> Delivery activo · Toda CA</div>
+    <h1 class="hero-h">
+      <span class="g1">Tu comida,</span>
+      <span class="g1">en minutos.</span>
+    </h1>
+    <p class="hero-p">El delivery más rápido de Centroamérica. Restaurantes locales, supermercados y más — en tu puerta antes de que lo pienses.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openOrder()">
+        🛵 Pedir ahora
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="btn-outline" onclick="openDriver()">Ser repartidor</button>
+    </div>
+    <div class="timer-badge"><div class="timer-dot"></div>Tiempo promedio: <strong style="color:var(--orange)">28 minutos</strong></div>
+
+    <!-- LIVE TRACKER -->
+    <div class="tracker-card reveal reveal-d2" style="margin-top:40px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:14px;font-weight:800;color:var(--text)">🛵 Pedido en camino</div>
+        <div style="font-size:12px;color:var(--green);font-weight:700;animation:ndot 2s infinite">● Tiempo real</div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:20px">Carlos trae tu pedido — ETA 8 minutos</div>
+      <div class="tracker-steps">
+        <div class="tstep done"><div class="tstep-icon">✓</div><div class="tstep-l">Pedido<br>aceptado</div></div>
+        <div class="tstep done"><div class="tstep-icon">🍳</div><div class="tstep-l">En<br>preparación</div></div>
+        <div class="tstep active"><div class="tstep-icon">🛵</div><div class="tstep-l">En<br>camino</div></div>
+        <div class="tstep"><div class="tstep-icon">🏠</div><div class="tstep-l">En tu<br>puerta</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);text-align:center;padding-top:14px;border-top:1px solid var(--border)">Esto es lo que se ve cuando tu pedido está en camino 👆</div>
+    </div>
   </div>
 </section>
 
-<div class="food-cats" id="foodCats">
-  <button class="food-cat on" data-cat="all" onclick="selFoodCat(this,'all')"><span class="food-cat-ico">🍽</span>Todo</button>
-  <button class="food-cat" data-cat="Típico" onclick="selFoodCat(this,'Típico')"><span class="food-cat-ico">🌽</span>Típico</button>
-  <button class="food-cat" data-cat="Mariscos" onclick="selFoodCat(this,'Mariscos')"><span class="food-cat-ico">🦞</span>Mariscos</button>
-  <button class="food-cat" data-cat="Pizza" onclick="selFoodCat(this,'Pizza')"><span class="food-cat-ico">🍕</span>Pizza</button>
-  <button class="food-cat" data-cat="Sushi" onclick="selFoodCat(this,'Sushi')"><span class="food-cat-ico">🍱</span>Sushi</button>
-  <button class="food-cat" data-cat="Burgers" onclick="selFoodCat(this,'Burgers')"><span class="food-cat-ico">🍔</span>Burgers</button>
-  <button class="food-cat" data-cat="Pollo" onclick="selFoodCat(this,'Pollo')"><span class="food-cat-ico">🍗</span>Pollo</button>
-  <button class="food-cat" data-cat="Postres" onclick="selFoodCat(this,'Postres')"><span class="food-cat-ico">🍰</span>Postres</button>
-  <button class="food-cat" data-cat="Café" onclick="selFoodCat(this,'Café')"><span class="food-cat-ico">☕</span>Café</button>
-  <button class="food-cat" data-cat="Vegetariano" onclick="selFoodCat(this,'Vegetariano')"><span class="food-cat-ico">🥗</span>Vegetariano</button>
-  <button class="food-cat" data-cat="Bebidas" onclick="selFoodCat(this,'Bebidas')"><span class="food-cat-ico">🥤</span>Bebidas</button>
-  <button class="food-cat" data-cat="Farmacia" onclick="selFoodCat(this,'Farmacia')"><span class="food-cat-ico">💊</span>Farmacia</button>
-  <button class="food-cat" data-cat="Super" onclick="selFoodCat(this,'Super')"><span class="food-cat-ico">🛒</span>Super</button>
-  <button class="food-cat" data-cat="Licores" onclick="selFoodCat(this,'Licores')"><span class="food-cat-ico">🍺</span>Licores</button>
-</div>
-
-<div class="yg-layout">
-  <div id="ygMain" style="flex:1;min-width:0">
-    <div class="rest-grid" id="restGrid"></div>
-    <div class="menu-view" id="menuView">
-      <button class="menu-back" onclick="backToList()">← Volver a restaurantes</button>
-      <div id="menuContent"></div>
+<!-- FOOD CATEGORIES -->
+<section class="section" style="background:var(--bg2)" id="menu">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Categorías</div>
+      <h2 class="sec-h">¿Qué se te antoja?</h2>
+    </div>
+    <div class="food-cats">
+      <div class="food-cat on" onclick="selFood(this,'Todo')">🍽 Todo</div>
+      <div class="food-cat" onclick="selFood(this,'Comida rápida')">🍔 Comida rápida</div>
+      <div class="food-cat" onclick="selFood(this,'Pizza')">🍕 Pizza</div>
+      <div class="food-cat" onclick="selFood(this,'Comida local')">🫔 Comida típica</div>
+      <div class="food-cat" onclick="selFood(this,'Sushi')">🍱 Sushi</div>
+      <div class="food-cat" onclick="selFood(this,'Postres')">🍰 Postres</div>
+      <div class="food-cat" onclick="selFood(this,'Supermercado')">🛒 Super</div>
+      <div class="food-cat" onclick="selFood(this,'Bebidas')">🥤 Bebidas</div>
     </div>
   </div>
-  <div class="cart-panel" id="cartPanel">
-    <div class="cart-h" id="cartTitle">Tu Pedido</div>
-    <div class="cart-empty" id="cartEmpty">Agrega algo al carrito 🛒</div>
-    <div id="cartItems"></div>
-    <div class="cart-totals" id="cartTotals" style="display:none">
-      <div class="cart-row"><span>Subtotal</span><span id="cartSub">$0.00</span></div>
-      <div class="cart-row"><span>Envío</span><span id="cartDelivery">$1.50</span></div>
-      <div class="cart-row"><span>Servicio</span><span id="cartSvc">$0.25</span></div>
-      <div class="cart-total-row"><span>Total</span><span id="cartTotal">$0.00</span></div>
-      <div class="pay-methods">
-        <button class="pay-btn on" id="payEfectivo" onclick="selPay('efectivo')">💵 Efectivo</button>
-        <button class="pay-btn" id="payTarjeta" onclick="selPay('tarjeta')">💳 Tarjeta</button>
-        <button class="pay-btn" id="payYavaya" onclick="selPay('yavaya')">⚡ YavayaPay</button>
+</section>
+
+<!-- RESTAURANTS -->
+<section class="section" style="background:var(--bg)" id="restaurants">
+  <div class="container">
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div><div class="sec-label">Restaurantes</div><h2 class="sec-h">Disponibles ahora</h2></div>
+      <div style="font-size:13px;color:var(--text2)"><span style="color:var(--green);font-weight:700">●</span> 47 restaurantes abiertos</div>
+    </div>
+    <div class="rest-grid">
+      <div class="rest-card reveal" onclick="openRestaurant('Burger Planet')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Burger Planet</div>
+          <div class="rest-info"><span class="rest-tag">Comida rápida</span><span class="rest-rating">★ 4.8</span><span class="rest-time">⏱ 22 min</span></div>
+        </div>
       </div>
-      <button class="btn-order" id="btnOrder" onclick="confirmOrder()">Confirmar Pedido</button>
+      <div class="rest-card reveal reveal-d1" onclick="openRestaurant('Pizza Volcán')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Pizza Volcán</div>
+          <div class="rest-info"><span class="rest-tag">Pizza</span><span class="rest-rating">★ 4.6</span><span class="rest-time">⏱ 30 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal reveal-d2" onclick="openRestaurant('La Casona')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">La Casona Típica</div>
+          <div class="rest-info"><span class="rest-tag">Comida local</span><span class="rest-rating">★ 4.9</span><span class="rest-time">⏱ 25 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal reveal-d3" onclick="openRestaurant('Sushi Tico')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Sushi Tico</div>
+          <div class="rest-info"><span class="rest-tag">Sushi</span><span class="rest-rating">★ 4.7</span><span class="rest-time">⏱ 35 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal" onclick="openRestaurant('Sweet Tooth')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Sweet Tooth</div>
+          <div class="rest-info"><span class="rest-tag">Postres</span><span class="rest-rating">★ 4.9</span><span class="rest-time">⏱ 20 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal reveal-d1" onclick="openRestaurant('Super Express')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Super Express</div>
+          <div class="rest-info"><span class="rest-tag">Supermercado</span><span class="rest-rating">★ 4.5</span><span class="rest-time">⏱ 40 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal reveal-d2" onclick="openRestaurant('Tacos CA')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Tacos CA</div>
+          <div class="rest-info"><span class="rest-tag">Comida local</span><span class="rest-rating">★ 4.8</span><span class="rest-time">⏱ 28 min</span></div>
+        </div>
+      </div>
+      <div class="rest-card reveal reveal-d3" onclick="openRestaurant('Coffee Lab')">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=80&fit=crop" alt="">
+        <div class="rest-body">
+          <div class="rest-name">Coffee Lab</div>
+          <div class="rest-info"><span class="rest-tag">Bebidas</span><span class="rest-rating">★ 4.7</span><span class="rest-time">⏱ 18 min</span></div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- TRACKING MODAL -->
-<div id="trackModal" style="display:none" class="track-modal">
-  <div class="track-sheet">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <div class="track-h">Rastreando tu pedido</div>
-      <span class="badge badge-green" style="animation:pulse 2s infinite">EN VIVO</span>
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">¿Cómo funciona?</div>
+      <h2 class="sec-h">De tu antojo<br>a tu puerta</h2>
     </div>
-    <div id="trackMap" class="track-map"><div id="tracking-map" style="width:100%;height:100%"><div class="map-placeholder-dark" style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px">📍 Cargando mapa...</div></div></div>
-    <div class="track-steps" id="trackSteps"></div>
-    <button class="btn-primary" style="width:100%;justify-content:center;margin-top:18px" onclick="document.getElementById('trackModal').style.display='none'">← Inicio</button>
+    <div class="how-grid">
+      <div class="how-card reveal"><div class="how-num">1</div><div class="how-icon">📍</div><div class="how-h">Ingresa tu dirección</div><div class="how-p">Dinos dónde estás y te mostramos lo que está disponible cerca.</div></div>
+      <div class="how-card reveal reveal-d1"><div class="how-num">2</div><div class="how-icon">🍽</div><div class="how-h">Elige tu restaurante</div><div class="how-p">Explora menús, precios y tiempos de entrega en tiempo real.</div></div>
+      <div class="how-card reveal reveal-d2"><div class="how-num">3</div><div class="how-icon">💳</div><div class="how-h">Paga como quieras</div><div class="how-p">Tarjeta, efectivo o tokens Yavaya. Sin sorpresas en el precio.</div></div>
+      <div class="how-card reveal reveal-d3"><div class="how-num">4</div><div class="how-icon">🛵</div><div class="how-h">Sigue tu pedido en vivo</div><div class="how-p">Tracking en tiempo real. Sabes exactamente dónde está tu repartidor.</div></div>
+    </div>
   </div>
-</div>
+</section>
 
-
-<div class="overlay" id="authModal" style="display:none;">
+<!-- ORDER MODAL -->
+<div class="overlay" id="orderOverlay" style="display:none" onclick="if(event.target===this)closeOrder()">
   <div class="modal">
-    <button class="modal-x" onclick="closeAuthModal()">✕</button>
-    <div class="modal-h">Bienvenido</div>
-    <div class="modal-sub">Yavaya · Centroamérica</div>
-    <div class="tab-row">
-      <button class="tab-b on" id="tabLogin" onclick="switchAuthTab('login')">Iniciar Sesión</button>
-      <button class="tab-b" id="tabReg" onclick="switchAuthTab('reg')">Registrarse</button>
+    <button class="modal-x" onclick="closeOrder()">✕</button>
+    <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:4px" id="orderTitle">Hacer pedido</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:22px" id="orderSub">Elige lo que quieres</div>
+    <div class="form-group"><label class="form-label">Tu dirección</label><input class="form-input" placeholder="Calle, número, ciudad..."></div>
+    <div id="menuItems">
+      <div class="menu-item"><div><div class="mi-name">🍔 Classic Burger</div><div class="mi-desc">Carne angus, queso, lechuga, tomate</div></div><div style="display:flex;align-items:center;gap:10px"><div class="mi-price">$6.50</div><button class="mi-add" onclick="addToCart('Classic Burger',6.5)">+</button></div></div>
+      <div class="menu-item"><div><div class="mi-name">🍟 Papas fritas</div><div class="mi-desc">Porción grande, sal marina</div></div><div style="display:flex;align-items:center;gap:10px"><div class="mi-price">$2.50</div><button class="mi-add" onclick="addToCart('Papas fritas',2.5)">+</button></div></div>
+      <div class="menu-item"><div><div class="mi-name">🥤 Refresco</div><div class="mi-desc">Cola, naranja o limonada</div></div><div style="display:flex;align-items:center;gap:10px"><div class="mi-price">$1.50</div><button class="mi-add" onclick="addToCart('Refresco',1.5)">+</button></div></div>
+      <div class="menu-item"><div><div class="mi-name">🍦 Helado</div><div class="mi-desc">Vainilla, chocolate o fresa</div></div><div style="display:flex;align-items:center;gap:10px"><div class="mi-price">$3.00</div><button class="mi-add" onclick="addToCart('Helado',3.0)">+</button></div></div>
     </div>
-    <div id="panel_login">
-      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="loginEmail" placeholder="tu@email.com"></div>
-      <div class="form-group"><label class="form-label">Contraseña</label>
-        <div class="input-wrap"><input type="password" class="form-input" id="loginPass" placeholder="••••••••" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('loginPass')">👁</button></div>
-        <div style="text-align:right;margin-top:5px"><span class="forgot" onclick="forgotPass()" style="cursor:pointer">¿Olvidaste tu contraseña?</span></div>
-      </div>
-      <button class="btn-primary" style="width:100%;justify-content:center" id="btnLogin" onclick="doLogin()">Iniciar sesión</button>
-      <div class="divider">o</div>
-      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
+    <div style="margin-top:16px;padding:14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border)" id="cartSummary" style="display:none">
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">🛒 Tu pedido</div>
+      <div id="cartItems" style="font-size:12px;color:var(--text2)"></div>
+      <div id="cartTotal" style="font-size:16px;font-weight:900;color:var(--text);margin-top:8px"></div>
     </div>
-    <div id="panel_reg" style="display:none">
-      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="regName" placeholder="Tu nombre"></div>
-      <div class="form-group"><label class="form-label">Correo</label><input type="email" class="form-input" id="regEmail" placeholder="tu@email.com"></div>
-      <div class="form-group"><label class="form-label">Contraseña</label>
-        <div class="input-wrap"><input type="password" class="form-input" id="regPass" placeholder="Mín. 8 caracteres" style="padding-right:40px"><button class="input-eye" onclick="toggleVis('regPass')">👁</button></div>
-      </div>
-      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input type="password" class="form-input" id="regPass2" placeholder="Repite tu contraseña"></div>
-      <button class="btn-primary" style="width:100%;justify-content:center" id="btnReg" onclick="doRegister()">Crear cuenta</button>
-      <div class="divider">o</div>
-      <button class="btn-google" onclick="doGoogle()"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M5.27 9.76A7.08 7.08 0 0 1 18.5 7.49l2.61-2.61A11 11 0 0 0 1.44 8.14Z"/><path fill="#34A853" d="m5.27 14.24 2.33 1.94A7.08 7.08 0 0 0 19.1 14H12v-3.5h10.84a11.32 11.32 0 0 1-.17 6H1.44l3.83-2.26Z"/><path fill="#FBBC05" d="M1.44 8.14 5.27 9.76a7.09 7.09 0 0 0 0 4.48l-3.83 2.26A11 11 0 0 1 1.44 8.14Z"/><path fill="#4285F4" d="M12 23a10.89 10.89 0 0 0 7.1-2.62l-2.62-2.54A7.07 7.07 0 0 1 4.6 16.18l-3.16 2.44A11 11 0 0 0 12 23Z"/></svg>Continuar con Google</button>
-    </div>
+    <button class="btn-primary" style="width:100%;justify-content:center;margin-top:16px" onclick="placeOrder()">🛵 Confirmar pedido</button>
   </div>
 </div>
+
+<!-- DRIVER MODAL -->
+<div class="overlay" id="driverOverlay" style="display:none" onclick="if(event.target===this)closeDriver()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeDriver()">✕</button>
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:48px;margin-bottom:10px">🛵</div>
+    <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px">Sé repartidor</div>
+    <div style="font-size:13px;color:var(--text2)">Trabaja cuando quieras. Gana en cada entrega.</div></div>
+    <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" placeholder="Tu nombre"></div>
+    <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" type="tel" placeholder="+502 ####-####"></div>
+    <div class="form-group"><label class="form-label">País y ciudad</label><select class="form-select"><option>Guatemala City</option><option>Tegucigalpa</option><option>San José</option><option>Managua</option><option>Panamá City</option><option>San Salvador</option></select></div>
+    <div class="form-group"><label class="form-label">Vehículo</label><select class="form-select"><option>Moto</option><option>Bicicleta</option><option>Carro</option></select></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDriver();showToast('¡Registro enviado! Te contactamos pronto 🛵')">Registrarme como repartidor</button>
+  </div>
+</div>
+
+<!-- CART BAR -->
+<div class="cart-bar" id="cartBar">
+  <div><div class="cart-info" id="cartBarInfo">🛒 0 items</div><div class="cart-sub" id="cartBarTotal">$0.00</div></div>
+  <button class="btn-primary" onclick="placeOrder()">Ver pedido →</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script type="module">
-
-
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc,
-    onSnapshot, serverTimestamp, query, where, orderBy, limit }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-  /* ─── FIREBASE CONFIG — replace with your project ─── */
-  const firebaseConfig = {
-        apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
-    authDomain: "yavayago-ef281.firebaseapp.com",
-    projectId: "yavayago-ef281",
-    storageBucket: "yavayago-ef281.firebasestorage.app",
-    messagingSenderId: "592402476016",
-    appId: "1:592402476016:web:424456516968dfc7284b35",
-    measurementId: "G-0DBRC5NZQW"
-  };
-
-  const MASTER_ADMIN = "junoagattis@gmail.com";
-
-  const app   = initializeApp(firebaseConfig);
-  const auth  = getAuth(app);
-  const db    = getFirestore(app);
-  const prov  = new GoogleAuthProvider();
-
-  
-// ════ TOKEN SYSTEM INJECTION ════
-const FIREBASE_TOKEN_CONFIG = {
-  apiKey: "AIzaSyAKr_d3gGNFW2nh-F8-LxJ2LAjLxyGZbqg",
-  authDomain: "yavayago-ef281.firebaseapp.com",
-  projectId: "yavayago-ef281",
-};
-
-let _userTokens = 0;
-let _userYavayaId = '';
-let _userFreeActive = false;
-let _userFreeDay = 1;
-let _userId = null;
-
-function getDeviceId() {
-  let id = localStorage.getItem('_yvyd');
-  if (!id) { id = 'dv-'+Date.now().toString(36)+'-'+Math.random().toString(36).substr(2,9); localStorage.setItem('_yvyd',id); }
-  return id;
-}
-function genYavayaId(uid) {
-  const p = uid.replace(/[^a-zA-Z0-9]/g,'');
-  return 'YVY-'+p.substr(0,4).toUpperCase()+'-'+p.substr(4,4).toUpperCase();
-}
-
-async function tokenSystemInit(user, db, { updateDoc, doc, getDoc, setDoc, serverTimestamp, addDoc, collection }) {
-  _userId = user.uid;
-  const ref = doc(db, 'users', user.uid);
-  const snap = await getDoc(ref);
-  const deviceId = getDeviceId();
-
-  if (!snap.exists()) {
-    const yavayaId = genYavayaId(user.uid);
-    const now = new Date();
-    const nextR = new Date(now); nextR.setHours(23,0,0,0);
-    if (nextR <= now) nextR.setDate(nextR.getDate()+1);
-    await setDoc(ref, {
-      uid:user.uid, email:user.email, displayName:user.displayName,
-      photoURL:user.photoURL, yavayaId, tokens:2,
-      tokensFreeDay:1, freeTokensActive:true,
-      joinedAt:serverTimestamp(), lastTokenRenewal:serverTimestamp(),
-      nextRenewal:nextR.toISOString(),
-      deviceId, deviceIds:[deviceId],
-      isBlocked:false, role:'user', activityLog:[],
-      totalTokensSpent:0, totalTokensBought:0,
-      adminWatchUntil:new Date(Date.now()+3*24*60*60*1000).toISOString()
-    });
-    try { await addDoc(collection(db,'deviceRegistrations'),{uid:user.uid,deviceId,email:user.email,registeredAt:serverTimestamp()}); } catch(e){}
-    _userTokens=2; _userYavayaId=yavayaId; _userFreeActive=true; _userFreeDay=1;
-  } else {
-    const d = snap.data();
-    if (d.isBlocked) { alert('Esta cuenta ha sido bloqueada por el administrador.'); throw new Error('blocked'); }
-    
-    // Add device if new
-    const known = d.deviceIds||[];
-    if (!known.includes(deviceId)) {
-      try { await updateDoc(ref,{deviceIds:[...known,deviceId]}); } catch(e){}
-    }
-
-    // Token renewal check
-    if (d.freeTokensActive && d.nextRenewal) {
-      const now = new Date();
-      const nextR = new Date(d.nextRenewal);
-      if (now >= nextR) {
-        const freeDay = (d.tokensFreeDay||1)+1;
-        const newTokens = (d.tokens||0)<2 ? 2 : (d.tokens||0);
-        const nextRDate = new Date(now); nextRDate.setHours(23,0,0,0);
-        if (nextRDate<=now) nextRDate.setDate(nextRDate.getDate()+1);
-        try { await updateDoc(ref,{tokens:newTokens,tokensFreeDay:freeDay,freeTokensActive:freeDay<=5,lastTokenRenewal:serverTimestamp(),nextRenewal:nextRDate.toISOString()}); } catch(e){}
-        _userTokens=newTokens; _userFreeActive=freeDay<=5; _userFreeDay=freeDay;
-      } else {
-        _userTokens=d.tokens||0; _userFreeActive=d.freeTokensActive; _userFreeDay=d.tokensFreeDay||1;
-      }
-    } else {
-      _userTokens=d.tokens||0; _userFreeActive=false; _userFreeDay=d.tokensFreeDay||1;
-    }
-    _userYavayaId=d.yavayaId||genYavayaId(user.uid);
-  }
-  updateTokenWidget();
-}
-
-function updateTokenWidget() {
-  const w = document.getElementById('tokenWidget');
-  if (!w) return;
-  const countEl = w.querySelector('.tw-count');
-  if (countEl) { 
-    countEl.textContent = _userTokens;
-    countEl.style.color = _userTokens === 0 ? 'var(--red)' : 'var(--gold)';
-  }
-  const freeEl = w.querySelector('.tw-free');
-  if (freeEl) freeEl.textContent = _userFreeActive ? 'Gratis día '+_userFreeDay+'/5' : '';
-  w.style.display = 'flex';
-}
-
-async function spendTokenGate(action, details, db, { updateDoc, doc, getDoc, addDoc, collection, serverTimestamp }) {
-  if (!_userId) { showNoTokensModal(''); return false; }
-  if (_userTokens < 1) { showNoTokensModal(_userYavayaId); return false; }
-  
-  try {
-    const ref = doc(db, 'users', _userId);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return false;
-    const d = snap.data();
-    if (d.isBlocked) { alert('Tu cuenta está bloqueada.'); return false; }
-    if ((d.tokens||0) < 1) { _userTokens=0; updateTokenWidget(); showNoTokensModal(_userYavayaId); return false; }
-    
-    const newTokens = d.tokens - 1;
-    const logEntry = { action, details, tokensAfter:newTokens, timestamp:new Date().toISOString() };
-    await updateDoc(ref, {
-      tokens:newTokens,
-      totalTokensSpent:(d.totalTokensSpent||0)+1,
-      activityLog:[...(d.activityLog||[]).slice(-49),logEntry]
-    });
-    try { await addDoc(collection(db,'activityLogs'),{uid:_userId,email:d.email,yavayaId:d.yavayaId,action,details,tokensAfter:newTokens,deviceId:getDeviceId(),timestamp:serverTimestamp()}); } catch(e){}
-    _userTokens = newTokens;
-    updateTokenWidget();
-    return true;
-  } catch(e) { console.error(e); return false; }
-}
-
-function showNoTokensModal(yavayaId) {
-  const existing = document.getElementById('noTokensModal');
-  if (existing) existing.remove();
-  const m = document.createElement('div');
-  m.id='noTokensModal';
-  m.style.cssText='position:fixed;inset:0;z-index:9000;background:rgba(5,4,4,.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:20px;';
-  m.innerHTML=`<div style="max-width:460px;width:100%;background:#13100c;border:1px solid rgba(201,168,76,.25);padding:36px 28px;text-align:center;">
-    <div style="font-size:38px;margin-bottom:14px;">⚡</div>
-    <div style="font-family:'Plus Jakarta Sans',serif;font-size:20px;color:#e8c97a;margin-bottom:8px;">Sin Tokens</div>
-    <div style="font-family:'Inter',serif;font-size:15px;color:#7a6a50;line-height:1.6;margin-bottom:20px;">Cada acción en Yavaya cuesta 1 token. Adquiere más para continuar.</div>
-    ${yavayaId ? `<div style="background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);padding:12px;margin-bottom:20px;">
-      <div style="font-family:'Plus Jakarta Sans',sans-serif,serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a6c2a;margin-bottom:5px;">Tu Yavaya ID — Preséntalo al pagar</div>
-      <div style="font-family:'Plus Jakarta Sans',serif;font-size:20px;color:#c9a84c;">${yavayaId}</div>
-    </div>` : ''}
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <a href="tokens.html" style="flex:1;padding:13px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif,serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(135deg,#e8c97a,#c9a84c);color:#050404;text-decoration:none;font-weight:700;">Ver Tokens →</a>
-      <button onclick="document.getElementById('noTokensModal').remove()" style="flex:1;padding:13px;font-family:'Plus Jakarta Sans',sans-serif,serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.2);color:#7a6a50;cursor:pointer;">Cerrar</button>
-    </div>
-  </div>`;
-  document.body.appendChild(m);
-}
-
-window._tokenSystem = { init: tokenSystemInit, spend: spendTokenGate, getTokens:()=>_userTokens, getYavayaId:()=>_userYavayaId };
-
-  window._go = {
-    auth, db, prov, MASTER_ADMIN,
-    signInWithPopup, signOut, onAuthStateChanged,
-    collection, addDoc, getDocs, doc, getDoc, setDoc,
-    updateDoc, onSnapshot, serverTimestamp,
-    query, where, orderBy, limit
-  };
-
-
-</script>
 <script>
-
-
-function initMap() {
-  if (typeof google === 'undefined') return;
-  const trackEl = document.getElementById('tracking-map');
-  if (!trackEl.querySelector('.map-placeholder-dark')) return;
-  trackEl.innerHTML = '';
-  const map = new google.maps.Map(trackEl, {
-    center: { lat: 14.0723, lng: -87.1921 },
-    zoom: 14,
-    styles: [
-      { elementType: 'geometry', stylers: [{ color: '#0a0807' }] },
-      { elementType: 'labels.text.stroke', stylers: [{ color: '#0a0807' }] },
-      { elementType: 'labels.text.fill', stylers: [{ color: '#7a6a50' }] },
-      { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#1e1610' }] },
-      { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#141008' }] },
-      { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#050408' }] },
-      { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-      { featureType: 'transit', stylers: [{ visibility: 'off' }] }
-    ]
-  });
-  window._trackingMap = map;
-
-  // Simulated driver marker
-  const driverMarkerIcon = {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="12" fill="#c9a84c" opacity="0.9"/><text x="16" y="21" text-anchor="middle" font-size="14">🏍</text></svg>'
-    ),
-    scaledSize: new google.maps.Size(32, 32)
-  };
-
-  const driverMarker = new google.maps.Marker({
-    position: { lat: 14.0723, lng: -87.1921 },
-    map, title: 'Tu Driver', icon: driverMarkerIcon
-  });
-
-  window._driverMarker = driverMarker;
-
-  // Animate driver position (simulated)
-  let step = 0;
-  const route = [
-    { lat: 14.0723, lng: -87.1921 },
-    { lat: 14.0750, lng: -87.1900 },
-    { lat: 14.0780, lng: -87.1875 },
-    { lat: 14.0810, lng: -87.1850 },
-    { lat: 14.0840, lng: -87.1830 }
-  ];
-  setInterval(() => {
-    if (!window._driverMarker) return;
-    step = (step + 1) % route.length;
-    window._driverMarker.setPosition(route[step]);
-    map.panTo(route[step]);
-  }, 3000);
-}
-
-
-</script>
-<script>
-
-
-// ════ YAVAYAGO — i18n + WhatsApp notifications ════
-let ygLang = localStorage.getItem('yavaya_lang') || 'es';
-
-const ygI18n = {
-  es: {
-    search_ph: 'Buscar restaurante o cocina...',
-    order_btn: 'Confirmar Pedido',
-    add_to_cart: 'Agregar',
-    your_order: 'Tu Pedido',
-    delivery_to: 'Entregar en...',
-    subtotal: 'Subtotal',
-    delivery_fee: 'Delivery',
-    total: 'Total',
-  },
-  en: {
-    search_ph: 'Search restaurant or cuisine...',
-    order_btn: 'Place Order',
-    add_to_cart: 'Add',
-    your_order: 'Your Order',
-    delivery_to: 'Deliver to...',
-    subtotal: 'Subtotal',
-    delivery_fee: 'Delivery',
-    total: 'Total',
-  }
-};
-
-function setYgLang(lang) {
-  ygLang = lang;
-  localStorage.setItem('yavaya_lang', lang);
-  document.getElementById('btnYgEs').classList.toggle('active', lang==='es');
-  document.getElementById('btnYgEn').classList.toggle('active', lang==='en');
-  document.querySelectorAll('[data-yg-i18n]').forEach(el => {
-    const key = el.getAttribute('data-yg-i18n');
-    if (ygI18n[lang][key]) el.textContent = ygI18n[lang][key];
-  });
-  const searchInput = document.querySelector('.search-input');
-  if (searchInput) searchInput.placeholder = ygI18n[lang].search_ph;
-}
-
-document.addEventListener('DOMContentLoaded', () => setYgLang(ygLang));
-
-// ─── RESTAURANT WHATSAPP NOTIFICATION ───────────────
-function notifyRestaurantWhatsApp(waNumber, orderData, orderId) {
-  // Build order summary message
-  const items = orderData.items.map(i => i.qty + 'x ' + i.name + ' ($' + i.price.toFixed(2) + ')').join('\n');
-  const msg = encodeURIComponent(
-    '🍽 *NUEVO PEDIDO YAVAYA* 🍽\n' +
-    '─────────────────\n' +
-    'Pedido: #' + orderId.substr(-8).toUpperCase() + '\n' +
-    'Cliente: ' + (orderData.userName || orderData.userEmail) + '\n' +
-    'Dirección: ' + orderData.address + '\n\n' +
-    '📋 ITEMS:\n' + items + '\n\n' +
-    'Subtotal: $' + orderData.subtotal.toFixed(2) + '\n' +
-    'Delivery: $' + (orderData.deliveryFee||1.5).toFixed(2) + '\n' +
-    '💰 TOTAL: $' + orderData.total.toFixed(2) + '\n' +
-    '─────────────────\n' +
-    'Responde CONFIRMADO o RECHAZADO'
-  );
-  // Open WhatsApp
-  const clean = waNumber.replace(/[^0-9]/g,'');
-  const waUrl = 'https://wa.me/' + clean + '?text=' + msg;
-  // Don't auto-open — show notification button to restaurant
-  showRestaurantNotifyBanner(waUrl);
-}
-
-function showRestaurantNotifyBanner(waUrl) {
-  const existing = document.getElementById('waNotifyBanner');
-  if (existing) existing.remove();
-  const b = document.createElement('div');
-  b.id = 'waNotifyBanner';
-  b.style.cssText = 'position:fixed;bottom:100px;right:20px;z-index:800;background:#13100c;border:1px solid rgba(37,211,102,.3);padding:14px 18px;max-width:280px;box-shadow:0 8px 30px rgba(0,0,0,.5);';
-  b.innerHTML = '<div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#25D366;margin-bottom:8px;">● Notificar Restaurante</div>' +
-    '<div style="font-family:'Inter',sans-serif;font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5;">¿Enviar tu pedido al restaurante por WhatsApp?</div>' +
-    '<div style="display:flex;gap:8px;">' +
-    '<a href="' + waUrl + '" target="_blank" style="flex:1;padding:9px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);color:#25D366;text-decoration:none;">Enviar →</a>' +
-    '<button onclick="this.closest('#waNotifyBanner').remove()" style="flex:1;padding:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;background:none;border:1px solid rgba(201,168,76,.15);color:var(--muted);cursor:pointer;">No ahora</button>' +
-    '</div>';
-  document.body.appendChild(b);
-}
-
-
-</script>
-<script>
-
-
-/* ═══ YAVAYA CORE JS ═══ */
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-window.setLang = function(l) {
-  _lang = l; localStorage.setItem('yavaya_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-  if (window._applyLang) window._applyLang(l);
-};
-(function() { window.setLang(_lang); })();
-
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// Scroll animations
-var _obs = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
-}, { threshold: .1 });
-document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
-
-// Toast
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// Nav scroll effect
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  n.style.background = window.scrollY > 50
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// Auth modal shared
-window.openAuthModal = window.openAuthModal || function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
-  });
-  ['Login','Reg'].forEach(function(p) {
-    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
-};
-window.doLogin = async function() {
-  var e = (document.getElementById('loginEmail') || {}).value || '';
-  var p = (document.getElementById('loginPass') || {}).value || '';
-  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
-  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
-  try {
-    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
-};
-window.doRegister = async function() {
-  var n = (document.getElementById('regName') || {}).value || '';
-  var e = (document.getElementById('regEmail') || {}).value || '';
-  var p = (document.getElementById('regPass') || {}).value || '';
-  var p2 = (document.getElementById('regPass2') || {}).value || '';
-  n = n.trim(); e = e.trim();
-  if (!n) { showToast('Escribe tu nombre'); return; }
-  if (!e) { showToast('Ingresa tu correo'); return; }
-  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
-  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
-  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
-  try {
-    if (window._goAuth && window._auth) {
-      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
-      await window._goAuth.updateProfile(c.user, { displayName: n });
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
-  } catch(err) {
-    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
-};
-window.doGoogle = function() {
-  if (window._goAuth && window._auth) {
-    var pr = new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth, pr)
-      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
-      .catch(function(e) { showToast(e.message); });
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
-  if (!e) { showToast('Ingresa tu correo primero'); return; }
-  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
-};
-
-window.selFoodCat = function(el, cat) {
-  document.querySelectorAll('.food-cat').forEach(function(b){b.classList.remove('on')});
-  el.classList.add('on');
-  if(typeof window.filterRestaurants === 'function') window.filterRestaurants(cat);
-};
-window.setAddress = function() {
-  var v = document.getElementById('addrInput').value.trim();
-  if(!v) { showToast('Ingresa tu dirección'); return; }
-  showToast('📍 Buscando restaurantes cerca de '+v+'...');
-};
-document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
-document.getElementById('trackModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none'});
-
-</script>
-<script>
-
-/* ═══ YAVAYA CORE JS ═══ */
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-window.setLang = function(l) {
-  _lang = l; localStorage.setItem('yavaya_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-  if (window._applyLang) window._applyLang(l);
-};
-(function() { window.setLang(_lang); })();
-
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// Scroll animations
-var _obs = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('vis'); _obs.unobserve(e.target); } });
-}, { threshold: .1 });
-document.querySelectorAll('.fade-up').forEach(function(el) { _obs.observe(el); });
-
-// Toast
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// Nav scroll effect
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  n.style.background = window.scrollY > 50
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// Auth modal shared
-window.openAuthModal = window.openAuthModal || function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; if (window.switchAuthTab) window.switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_' + p); if (el) el.style.display = p === tab ? 'block' : 'none';
-  });
-  ['Login','Reg'].forEach(function(p) {
-    var el = document.getElementById('tab' + p); if (el) el.classList.toggle('on', p.toLowerCase() === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type === 'password' ? 'text' : 'password';
-};
-window.doLogin = async function() {
-  var e = (document.getElementById('loginEmail') || {}).value || '';
-  var p = (document.getElementById('loginPass') || {}).value || '';
-  e = e.trim(); if (!e || !p) { showToast('Ingresa correo y contraseña'); return; }
-  var btn = document.getElementById('btnLogin'); if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
-  try {
-    if (window._goAuth && window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth, e, p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map = {'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Iniciar sesión'; }
-};
-window.doRegister = async function() {
-  var n = (document.getElementById('regName') || {}).value || '';
-  var e = (document.getElementById('regEmail') || {}).value || '';
-  var p = (document.getElementById('regPass') || {}).value || '';
-  var p2 = (document.getElementById('regPass2') || {}).value || '';
-  n = n.trim(); e = e.trim();
-  if (!n) { showToast('Escribe tu nombre'); return; }
-  if (!e) { showToast('Ingresa tu correo'); return; }
-  if (p.length < 8) { showToast('Contraseña mínimo 8 caracteres'); return; }
-  if (p !== p2) { showToast('Las contraseñas no coinciden'); return; }
-  var btn = document.getElementById('btnReg'); if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
-  try {
-    if (window._goAuth && window._auth) {
-      var c = await window._goAuth.createUserWithEmailAndPassword(window._auth, e, p);
-      await window._goAuth.updateProfile(c.user, { displayName: n });
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a ' + n + '! 🎉');
-  } catch(err) {
-    var map2 = {'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code] || err.message);
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Crear cuenta'; }
-};
-window.doGoogle = function() {
-  if (window._goAuth && window._auth) {
-    var pr = new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth, pr)
-      .then(function() { window.closeAuthModal(); showToast('¡Bienvenido! 👋'); })
-      .catch(function(e) { showToast(e.message); });
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e = (document.getElementById('loginEmail') || {}).value || ''; e = e.trim();
-  if (!e) { showToast('Ingresa tu correo primero'); return; }
-  if (window._goAuth && window._auth) window._goAuth.sendPasswordResetEmail(window._auth, e).then(function() { showToast('Correo enviado ✓'); }).catch(function(e) { showToast(e.message); });
-};
-
-window.selFoodCat = function(el, cat) {
-  document.querySelectorAll('.food-cat').forEach(function(b){b.classList.remove('on')});
-  el.classList.add('on');
-  if(typeof window.filterRestaurants === 'function') window.filterRestaurants(cat);
-};
-window.setAddress = function() {
-  var v = document.getElementById('addrInput').value.trim();
-  if(!v) { showToast('Ingresa tu dirección'); return; }
-  showToast('📍 Buscando restaurantes cerca de '+v+'...');
-};
-document.getElementById('authModal').addEventListener('click',function(e){if(e.target===this)closeAuthModal()});
-document.getElementById('trackModal').addEventListener('click',function(e){if(e.target===this)this.style.display='none'});
-</script>
-<script>
-
-/* ═══ YAVAYA CINEMATIC ENGINE v5 ═══ */
-
-// ── THEME ────────────────────────────────────────────────────────────────────
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-// ── LANGUAGE — FIXED ─────────────────────────────────────────────────────────
-var TRANSLATIONS = {
-  es: {
-    // nav
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Santuario','nav_tokens':'Tokens',
-    // hero
-    'hero_badge':'La plataforma #1 de Centroamérica',
-    'hero_h1':'Todo lo que','hero_h2':'necesitas.',
-    'hero_sub':'Compra, vende, ordena comida y conecta con tu comunidad — en un solo lugar construido para Centroamérica.',
-    'hero_cta1':'Explorar Mercadito','hero_cta2':'Pedir Comida',
-    'stat_listings':'Anuncios','stat_paises':'Países','stat_sellers':'Vendedores','stat_support':'Soporte',
-    // sections
-    'sec_platform':'Plataforma','sec_all':'Todo en un solo lugar','sec_all_sub':'Tres módulos. Una cuenta. Una comunidad.',
-    'sec_cats':'Categorías','sec_life':'Para cada parte de tu vida','sec_life_sub':'Desde empleos hasta mascotas. Todo tiene su lugar.',
-    'sec_cover':'Cobertura','sec_home':'Centroamérica es nuestra casa','sec_home_sub':'Selecciona tu país para personalizar tu experiencia.',
-    // reino cards
-    'r1_tag':'Comunidad','r1_name':'Yavaya','r1_desc':'Fe, apoyo, oraciones y donaciones. El corazón humano de la plataforma.',
-    'r2_tag':'Comercio','r2_name':'Mercadito','r2_desc':'El marketplace de Centroamérica. Compra, vende y encuentra trabajo en tu país.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Comida, farmacia y súper a tu puerta en 30–45 min. Rastrea en vivo.',
-    'explore':'Explorar',
-    // pilares
-    'p1_h':'Fe & Comunidad','p1_d':'Oraciones, donaciones y apoyo entre vecinos.',
-    'p2_h':'Empleos','p2_d':'Trabajo remoto, freelance y oportunidades locales.',
-    'p3_h':'Animales','p3_d':'Adopciones, ventas y cuidado de mascotas.',
-    'p4_h':'Salud','p4_d':'Servicios médicos, farmacias y bienestar.',
-    'p5_h':'Inmuebles','p5_d':'Alquiler, venta y servicios del hogar.',
-    'p6_h':'Vehículos','p6_d':'Autos, motos y transporte privado.',
-    'p7_h':'Arte & Cultura','p7_d':'Artesanías, diseño y talento local.',
-    'p8_h':'Tecnología','p8_d':'Electrónica, servicios digitales y más.',
-    'btn_login':'Ingresar',
-  },
-  en: {
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Sanctuary','nav_tokens':'Tokens',
-    'hero_badge':'Central America\'s #1 platform',
-    'hero_h1':'Everything','hero_h2':'you need.',
-    'hero_sub':'Buy, sell, order food and connect with your community — one place built for Central America.',
-    'hero_cta1':'Browse Mercadito','hero_cta2':'Order Food',
-    'stat_listings':'Listings','stat_paises':'Countries','stat_sellers':'Sellers','stat_support':'Support',
-    'sec_platform':'Platform','sec_all':'Everything in one place','sec_all_sub':'Three modules. One account. One community.',
-    'sec_cats':'Categories','sec_life':'For every part of your life','sec_life_sub':'From jobs to pets. Everything has a place.',
-    'sec_cover':'Coverage','sec_home':'Central America is home','sec_home_sub':'Select your country to personalize your experience.',
-    'r1_tag':'Community','r1_name':'Yavaya','r1_desc':'Faith, support, prayers and donations. The human heart of the platform.',
-    'r2_tag':'Commerce','r2_name':'Mercadito','r2_desc':'The Central American marketplace. Buy, sell and find work in your country.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Food, pharmacy and supermarket at your door in 30–45 min. Live tracking.',
-    'explore':'Explore',
-    'p1_h':'Faith & Community','p1_d':'Prayers, donations and neighbor support.',
-    'p2_h':'Jobs','p2_d':'Remote work, freelance and local opportunities.',
-    'p3_h':'Animals','p3_d':'Adoptions, sales and pet care.',
-    'p4_h':'Health','p4_d':'Medical services, pharmacies and wellness.',
-    'p5_h':'Real Estate','p5_d':'Rentals, sales and home services.',
-    'p6_h':'Vehicles','p6_d':'Cars, motorcycles and private transport.',
-    'p7_h':'Art & Culture','p7_d':'Crafts, design and local talent.',
-    'p8_h':'Technology','p8_d':'Electronics, digital services and more.',
-    'btn_login':'Sign In',
-  }
-};
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-
-window.setLang = function(l) {
-  _lang = l;
-  localStorage.setItem('yavaya_lang', l);
-  document.documentElement.setAttribute('data-lang', l);
-
-  // Update button states
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-
-  // Apply translations to all [data-t] elements
-  var T = TRANSLATIONS[l] || TRANSLATIONS.es;
-  document.querySelectorAll('[data-t]').forEach(function(el) {
-    var key = el.getAttribute('data-t');
-    if (T[key] !== undefined) el.textContent = T[key];
-  });
-
-  // Swap [data-lang-show] blocks
-  document.querySelectorAll('[data-lang-show]').forEach(function(el) {
-    el.style.display = (el.getAttribute('data-lang-show') === l) ? '' : 'none';
-  });
-
-  // Fire custom callback if page defines one
-  if (window._applyLang) window._applyLang(l);
-};
-
-// Init lang on load
-(function() {
-  document.documentElement.setAttribute('data-lang', _lang);
-  setTimeout(function() { window.setLang(_lang); }, 0);
-})();
-
-// ── NAV MOB ───────────────────────────────────────────────────────────────────
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// ── NAV SCROLL ────────────────────────────────────────────────────────────────
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-  n.style.background = window.scrollY > 60
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// ── CINEMATIC REVEAL ──────────────────────────────────────────────────────────
-(function() {
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('done');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
-  function initObs() {
-    document.querySelectorAll('.reveal, .stagger').forEach(function(el) { obs.observe(el); });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initObs);
-  else initObs();
-})();
-
-// ── HERO IMAGE REEL ───────────────────────────────────────────────────────────
-window.initHeroReel = function(ids) {
-  var imgs = ids.map(function(id) { return document.getElementById(id); }).filter(Boolean);
-  if (!imgs.length) return;
-  var idx = 0;
-  imgs[0].classList.add('active');
-  setInterval(function() {
-    imgs[idx].classList.remove('active');
-    idx = (idx + 1) % imgs.length;
-    imgs[idx].classList.add('active');
-  }, 5500);
-};
-
-// ── TYPEWRITER ────────────────────────────────────────────────────────────────
-window.initTypewriter = function(elId, lines, speed) {
-  var el = document.getElementById(elId);
-  if (!el) return;
-  speed = speed || 52;
-  var lineIdx = 0, charIdx = 0, deleting = false, pause = 0;
-  var cursor = document.createElement('span');
-  cursor.className = 'typewriter-cursor';
-  el.parentNode && el.parentNode.insertBefore(cursor, el.nextSibling);
-
-  function tick() {
-    if (pause > 0) { pause--; setTimeout(tick, 80); return; }
-    var current = lines[lineIdx];
-    if (!deleting) {
-      el.textContent = current.slice(0, charIdx + 1);
-      charIdx++;
-      if (charIdx >= current.length) { deleting = true; pause = 28; }
-    } else {
-      el.textContent = current.slice(0, charIdx - 1);
-      charIdx--;
-      if (charIdx <= 0) { deleting = false; lineIdx = (lineIdx + 1) % lines.length; pause = 6; }
-    }
-    setTimeout(tick, deleting ? speed * .45 : speed);
-  }
-  tick();
-};
-
-// ── COUNTUP ───────────────────────────────────────────────────────────────────
-window.initCountUp = function() {
-  document.querySelectorAll('[data-countup]').forEach(function(el) {
-    var target = parseFloat(el.getAttribute('data-countup'));
-    var suffix = el.getAttribute('data-suffix') || '';
-    var prefix = el.getAttribute('data-prefix') || '';
-    var dec    = el.getAttribute('data-dec') || 0;
-    var obs = new IntersectionObserver(function(entries) {
-      if (!entries[0].isIntersecting) return;
-      obs.disconnect();
-      var start = 0, dur = 1800, startTime = null;
-      function step(ts) {
-        if (!startTime) startTime = ts;
-        var p = Math.min((ts - startTime) / dur, 1);
-        var ease = 1 - Math.pow(1 - p, 3);
-        var val = (start + (target - start) * ease).toFixed(dec);
-        el.textContent = prefix + val + suffix;
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }, { threshold: .5 });
-    obs.observe(el);
-  });
-};
-
-// ── 3D CARD TILT ──────────────────────────────────────────────────────────────
-window.initTilt = function() {
-  document.querySelectorAll('.tilt').forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var r = card.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width  - .5;
-      var y = (e.clientY - r.top)  / r.height - .5;
-      card.style.transform = 'perspective(900px) rotateY('+x*7+'deg) rotateX('+(-y*5)+'deg) scale(1.02)';
-    });
-    card.addEventListener('mouseleave', function() { card.style.transform = ''; });
-  });
-};
-
-// ── LINE DRAW ─────────────────────────────────────────────────────────────────
-(function() {
-  var obs2 = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('done'); obs2.unobserve(e.target); } });
-  }, { threshold: .3 });
-  function initLines() { document.querySelectorAll('.line-draw').forEach(function(el) { obs2.observe(el); }); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLines);
-  else initLines();
-})();
-
-// ── MAGNETIC HOVER ────────────────────────────────────────────────────────────
-window.initMagnetic = function() {
-  document.querySelectorAll('.magnetic').forEach(function(el) {
-    el.addEventListener('mousemove', function(e) {
-      var r = el.getBoundingClientRect();
-      var x = (e.clientX - r.left - r.width  / 2) * .22;
-      var y = (e.clientY - r.top  - r.height / 2) * .22;
-      el.style.transform = 'translate('+x+'px,'+y+'px)';
-    });
-    el.addEventListener('mouseleave', function() { el.style.transform = ''; });
-  });
-};
-
-// ── DEMO LIVE NOTIFICATIONS ───────────────────────────────────────────────────
-(function() {
-  var DEMOS = [
-    { ico:'🛒', dot:'#4f8eff', title:'Nuevo anuncio', sub:'iPhone 15 Pro — Guatemala · $680' },
-    { ico:'🏠', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Apartamento Zona 10 — $950/mes' },
-    { ico:'🚀', dot:'#30d68c', title:'Pedido entregado', sub:'YavayaGo · La Antigua · 28 min' },
-    { ico:'💼', dot:'#4f8eff', title:'Nueva oferta de trabajo', sub:'Desarrollador Remote · $2,400/mes' },
-    { ico:'🙏', dot:'#f0c96a', title:'Oración enviada', sub:'Comunidad · Santuario Yavaya' },
-    { ico:'🚗', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Toyota Corolla 2021 · Honduras · $13,500' },
-    { ico:'✅', dot:'#30d68c', title:'Venta completada', sub:'MacBook Pro M3 · $1,200 · Managua' },
-    { ico:'🐾', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Cachorro Husky · Costa Rica · $180' },
-    { ico:'🍕', dot:'#30d68c', title:'Pedido en camino', sub:'YavayaGo · Pizzería Roma · 12 min' },
-    { ico:'📱', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Samsung S24 Ultra · El Salvador · $750' },
-  ];
-  var container, queue = [], showing = false;
-
-  function ensureContainer() {
-    if (!container) {
-      container = document.getElementById('liveTicker');
-      if (!container) {
-        container = document.createElement('div');
-        container.className = 'live-ticker';
-        container.id = 'liveTicker';
-        document.body.appendChild(container);
-      }
-    }
-  }
-
-  function showNext() {
-    if (!queue.length || showing) return;
-    showing = true;
-    ensureContainer();
-    var d = queue.shift();
-    var pill = document.createElement('div');
-    pill.className = 'ticker-pill';
-    pill.innerHTML =
-      '<span class="ticker-dot" style="background:'+d.dot+'"></span>' +
-      '<span class="ticker-ico">'+d.ico+'</span>' +
-      '<div class="ticker-text"><div class="ticker-title">'+d.title+'</div>' +
-      '<div class="ticker-sub">'+d.sub+'</div></div>';
-    container.appendChild(pill);
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { pill.classList.add('show'); });
-    });
-    setTimeout(function() {
-      pill.classList.add('hide');
-      pill.classList.remove('show');
-      setTimeout(function() {
-        if (pill.parentNode) pill.parentNode.removeChild(pill);
-        showing = false;
-        if (queue.length) setTimeout(showNext, 400);
-      }, 600);
-    }, 4200);
-  }
-
-  function scheduleNext() {
-    var delay = 6000 + Math.random() * 9000;
-    setTimeout(function() {
-      var d = DEMOS[Math.floor(Math.random() * DEMOS.length)];
-      queue.push(d);
-      showNext();
-      scheduleNext();
-    }, delay);
-  }
-
-  // First notification after 3.5s
-  setTimeout(function() {
-    ensureContainer();
-    var d = DEMOS[0];
-    queue.push(d);
-    showNext();
-    scheduleNext();
-  }, 3500);
-})();
-
-// ── AUTH MODAL ────────────────────────────────────────────────────────────────
-window.openAuthModal = function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_'+p); if (el) el.style.display = p===tab?'block':'none';
-  });
-  document.querySelectorAll('.tab-b').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.tab === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type==='password'?'text':'password';
-};
-window.doLogin = async function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';
-  var p=(document.getElementById('loginPass')||{}).value||'';
-  e=e.trim(); if(!e||!p){showToast('Ingresa correo y contraseña');return;}
-  var btn=document.getElementById('btnLogin'); if(btn){btn.disabled=true;btn.textContent='Entrando...';}
-  try {
-    if(window._goAuth&&window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth,e,p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map={'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Iniciar sesión';}
-};
-window.doRegister = async function() {
-  var n=(document.getElementById('regName')||{}).value||'';
-  var e=(document.getElementById('regEmail')||{}).value||'';
-  var p=(document.getElementById('regPass')||{}).value||'';
-  var p2=(document.getElementById('regPass2')||{}).value||'';
-  n=n.trim();e=e.trim();
-  if(!n){showToast('Escribe tu nombre');return;}
-  if(!e){showToast('Ingresa tu correo');return;}
-  if(p.length<8){showToast('Contraseña mínimo 8 caracteres');return;}
-  if(p!==p2){showToast('Las contraseñas no coinciden');return;}
-  var btn=document.getElementById('btnReg'); if(btn){btn.disabled=true;btn.textContent='Creando...';}
-  try {
-    if(window._goAuth&&window._auth){
-      var c=await window._goAuth.createUserWithEmailAndPassword(window._auth,e,p);
-      await window._goAuth.updateProfile(c.user,{displayName:n});
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a '+n+'! 🎉');
-  } catch(err) {
-    var map2={'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Crear cuenta';}
-};
-window.doGoogle = function() {
-  if(window._goAuth&&window._auth){
-    var pr=new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth,pr)
-      .then(function(){window.closeAuthModal();showToast('¡Bienvenido! 👋');})
-      .catch(function(e){showToast(e.message);});
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';e=e.trim();
-  if(!e){showToast('Ingresa tu correo primero');return;}
-  if(window._goAuth&&window._auth)
-    window._goAuth.sendPasswordResetEmail(window._auth,e)
-      .then(function(){showToast('Correo enviado ✓');})
-      .catch(function(e){showToast(e.message);});
-};
-
-// ── INIT ALL ──────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', function() {
-  initCountUp();
-  initTilt();
-  initMagnetic();
-});
-
+/* PARTICLES */
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[];const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.r=Math.random()*1.5+.4;this.a=Math.random()*.4+.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(251,146,60,${this.a})`:`rgba(196,99,26,${this.a*.5})`;ctx.fill()}}
+for(let i=0;i<65;i++)ps.push(new P());function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();})();
+/* REVEAL */
+(function(){const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))})();
+/* THEME */
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
+if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
+function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
+function selFood(el,cat){document.querySelectorAll('.food-cat').forEach(b=>b.classList.remove('on'));el.classList.add('on');showToast(`Mostrando: ${cat}`)}
+/* CART */
+let cart=[],cartTotal=0;
+function addToCart(name,price){cart.push({name,price});cartTotal+=price;updateCart();showToast(`+1 ${name} agregado 🛒`)}
+function updateCart(){const bar=document.getElementById('cartBar');if(cart.length>0)bar.classList.add('show');else bar.classList.remove('show');document.getElementById('cartBarInfo').textContent=`🛒 ${cart.length} ${cart.length===1?'item':'items'}`;document.getElementById('cartBarTotal').textContent=`$${cartTotal.toFixed(2)}`;const sum=document.getElementById('cartSummary');const items=document.getElementById('cartItems');const total=document.getElementById('cartTotal');if(cart.length>0){sum.style.display='block';items.innerHTML=cart.map(i=>`• ${i.name} — $${i.price.toFixed(2)}`).join('<br>');total.textContent=`Total: $${cartTotal.toFixed(2)}`}}
+function openRestaurant(name){document.getElementById('orderTitle').textContent=name;document.getElementById('orderSub').textContent='Elige lo que quieres pedir';openOrder()}
+function openOrder(){document.getElementById('orderOverlay').style.display='flex'}
+function closeOrder(){document.getElementById('orderOverlay').style.display='none'}
+function openDriver(){document.getElementById('driverOverlay').style.display='flex'}
+function closeDriver(){document.getElementById('driverOverlay').style.display='none'}
+function placeOrder(){if(cart.length===0){showToast('Agrega algo al carrito primero');return}cart=[];cartTotal=0;updateCart();closeOrder();showToast('🛵 ¡Pedido confirmado! En camino en ~28 min')}
+function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
 </body>
 </html>

@@ -3,998 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
-<title>Santuario — Yavaya</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,400;Display=swap&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<title>Yavaya Santuario — Un lugar de luz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
 <style>
-/* YAVAYA Design System v4 — God Tier Modern */
-:root {
-  --bg: #070b10;
-  --bg2: #0c1118;
-  --bg3: #101820;
-  --surface: #141c27;
-  --surface2: #1c2636;
-  --border: rgba(255,255,255,.06);
-  --border2: rgba(255,255,255,.11);
-  --accent: #4f8eff;
-  --accent2: #7aabff;
-  --accent-glow: rgba(79,142,255,.2);
-  --accent-soft: rgba(79,142,255,.09);
-  --gold: #f0c96a;
-  --gold2: #fad98a;
-  --gold-soft: rgba(240,201,106,.09);
-  --green: #30d68c;
-  --green-soft: rgba(48,214,140,.09);
-  --red: #ff5f57;
-  --text: #e8eef8;
-  --text2: #7e90aa;
-  --text3: rgba(232,238,248,.28);
-  --nav-h: 62px;
-  --r: 14px;
-  --r-lg: 22px;
-  --shadow: 0 4px 24px rgba(0,0,0,.5);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.65);
-}
-[data-theme="light"] {
-  --bg: #f2f5fb;
-  --bg2: #e8edf7;
-  --bg3: #dde4f0;
-  --surface: #ffffff;
-  --surface2: #f7f9fd;
-  --border: rgba(0,0,0,.07);
-  --border2: rgba(0,0,0,.13);
-  --accent: #2563eb;
-  --accent2: #1e50c8;
-  --accent-glow: rgba(37,99,235,.15);
-  --accent-soft: rgba(37,99,235,.08);
-  --gold: #a16207;
-  --gold2: #ca8a04;
-  --gold-soft: rgba(161,98,7,.08);
-  --green: #16a34a;
-  --green-soft: rgba(22,163,74,.08);
-  --red: #dc2626;
-  --text: #0d1626;
-  --text2: #4a5c78;
-  --text3: rgba(13,22,38,.35);
-  --shadow: 0 4px 24px rgba(0,0,0,.09);
-  --shadow-lg: 0 16px 56px rgba(0,0,0,.14);
-}
-
-
+:root{--bg:#05080e;--bg2:#090d15;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--gold:#f0c96a;--gold2:#fad98a;--gold-soft:rgba(240,201,106,.09);--gold-glow:rgba(240,201,106,.3);--warm:#ff9f5a;--warm-soft:rgba(255,159,90,.08);--purple:#a78bfa;--green:#30d68c;--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#fdf8f0;--bg2:#f5ede0;--surface:#fff;--surface2:#fef9f2;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--gold:#92680a;--gold-soft:rgba(146,104,10,.08);--gold-glow:rgba(146,104,10,.2);--warm:#c4631a;--warm-soft:rgba(196,99,26,.08);--text:#1a0f00;--text2:#6b4c2a;--text3:rgba(26,15,0,.3)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer}
-img{display:block;max-width:100%}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:99px}
-input,textarea,select{font-family:inherit}
-
-/* ── NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(7,11,16,.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--border);transition:background .3s,border-color .3s}
-[data-theme="light"] .nav{background:rgba(242,245,251,.88)}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:99px}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
+[data-theme="light"] .nav{background:rgba(253,248,240,.9)}
 .nav-brand{display:flex;align-items:center;gap:10px}
-.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);flex-shrink:0}
-.nav-logo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:var(--text);white-space:nowrap}
-.nav-tag{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
-.nav-links{display:flex;align-items:center;gap:2px}
-.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--text2);transition:all .2s;white-space:nowrap;background:none;border:none}
-.nav-a:hover{background:var(--surface);color:var(--text)}
-.nav-r{display:flex;align-items:center;gap:7px}
-.lang-sw{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:8px;overflow:hidden}
-.lang-btn{padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:none;border:none;color:var(--text3);transition:all .2s}
-.lang-btn.on{background:var(--accent-soft);color:var(--accent)}
-.btn-icon{width:36px;height:36px;border-radius:9px;border:1px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text2);transition:all .2s}
-.btn-icon:hover{border-color:var(--accent);color:var(--accent)}
-.btn-cta{padding:8px 18px;border-radius:9px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;border:none;transition:all .2s;white-space:nowrap}
-.btn-cta:hover{filter:brightness(1.12);transform:translateY(-1px)}
-.nav-ham{display:none;flex-direction:column;gap:4px;background:none;border:none;padding:6px}
-.nav-ham span{display:block;width:20px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
-.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border2);padding:10px 16px;z-index:299;flex-direction:column;gap:4px}
-.nav-mob.open{display:flex}
-.nav-mob-a{padding:11px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s}
-.nav-mob-a:hover{background:var(--bg2);color:var(--text)}
-
-/* ── SECTION WRAPPERS ── */
-.section{padding:96px 24px}
-.section-sm{padding:64px 24px}
-.container{max-width:1200px;margin:0 auto}
-.container-sm{max-width:860px;margin:0 auto}
-
-/* ── SECTION HEADER ── */
-.sec-pre{display:inline-flex;align-items:center;gap:6px;padding:4px 13px;border-radius:99px;background:var(--accent-soft);border:1px solid rgba(79,142,255,.12);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-.sec-h{font-size:clamp(26px,4.5vw,42px);font-weight:800;letter-spacing:-1px;color:var(--text);line-height:1.1;margin-bottom:10px}
-.sec-p{font-size:16px;color:var(--text2);max-width:480px}
-
-/* ── CARDS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);transition:all .3s}
-.card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
-.card-lift:hover{transform:translateY(-4px)}
-
-/* ── BUTTONS ── */
-.btn-primary{padding:13px 28px;border-radius:11px;background:var(--accent);color:#fff;font-size:14px;font-weight:700;border:none;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
-.btn-outline{padding:13px 28px;border-radius:11px;background:var(--surface);color:var(--text);font-size:14px;font-weight:600;border:1px solid var(--border2);transition:all .25s;display:inline-flex;align-items:center;gap:8px}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
-.btn-sm{padding:8px 16px;border-radius:9px;font-size:13px;font-weight:600}
-.btn-ghost{background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;padding:6px 10px;border-radius:8px;transition:all .2s}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-
-/* ── FORM ── */
+.nav-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);animation:glow 2.5s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 6px var(--gold)}50%{box-shadow:0 0 22px var(--gold),0 0 44px var(--gold-glow)}}
+.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--gold)}
+.nav-tag{font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);padding:3px 10px;border-radius:99px}
+.nav-links{display:flex;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--gold)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-cta{padding:9px 20px;border-radius:11px;background:var(--gold);color:#1a0f00;border:none;font-size:13px;font-weight:800;transition:all .25s}.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--gold-glow)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;cursor:pointer}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);z-index:299;padding:12px 16px;flex-direction:column;gap:4px}.nav-mob.open{display:flex}
+.nav-mob-a{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);transition:all .2s}.nav-mob-a:hover{background:var(--surface);color:var(--text)}
+/* BUTTONS */
+.btn-primary{padding:12px 26px;border-radius:13px;background:var(--gold);color:#1a0f00;border:none;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--gold-glow)}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-soft);transform:translateY(-2px)}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes candle{0%,100%{transform:scaleX(1) scaleY(1);opacity:.9}25%{transform:scaleX(.95) scaleY(1.05);opacity:1}75%{transform:scaleX(1.05) scaleY(.97);opacity:.85}}
+@keyframes float-light{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(4deg)}}
+@keyframes drift{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,25px)}100%{transform:translate(0,0)}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shimmer-line{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}}
+@keyframes rise{0%{transform:translateY(0);opacity:.7}100%{transform:translateY(-200px);opacity:0}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94)}.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.12s}.reveal-d2{transition-delay:.24s}.reveal-d3{transition-delay:.36s}.reveal-d4{transition-delay:.48s}
+/* CANDLE PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.35}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 80px) 24px 100px;position:relative;overflow:hidden;text-align:center}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 20s ease-in-out infinite}
+.hero-orb:nth-child(1){width:700px;height:700px;background:radial-gradient(circle,rgba(240,201,106,.09),transparent 70%);top:-200px;left:calc(50% - 350px)}
+.hero-orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,rgba(255,159,90,.06),transparent 70%);bottom:-80px;right:-80px;animation-delay:-10s}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(240,201,106,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(240,201,106,.02) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%)}
+/* Floating crosses/lights */
+.float-el{position:absolute;opacity:0;animation:float-light 6s ease-in-out infinite;pointer-events:none}
+.float-el.vis{opacity:.25}
+.hero-inner{position:relative;z-index:2;max-width:820px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--gold-soft);border:1px solid rgba(240,201,106,.2);font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:32px;animation:fadeUp .7s ease both}
+.hero-h{font-size:clamp(50px,10vw,108px);font-weight:900;letter-spacing:-4px;line-height:.88;margin-bottom:26px;animation:fadeUp .7s .1s ease both}
+.hero-h .g1{display:block;background:linear-gradient(135deg,var(--text) 0%,var(--gold2) 50%,var(--warm) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .hero-h .g1{background:linear-gradient(135deg,#1a0f00 0%,#92680a 50%,#c4631a 100%);-webkit-background-clip:text;background-clip:text}
+.hero-p{font-size:clamp(16px,2vw,19px);color:var(--text2);max-width:560px;margin:0 auto 48px;line-height:1.8;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+/* SECTIONS */
+.section{padding:100px 24px;position:relative}
+.container{max-width:1100px;margin:0 auto}
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--gold);border-radius:1px}
+.sec-h{font-size:clamp(28px,4.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
+.sec-p{font-size:16px;color:var(--text2);max-width:540px;line-height:1.7}
+/* NEEDS GRID */
+.needs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px}
+.need-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px;cursor:pointer;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;text-align:center}
+.need-card:hover{transform:translateY(-8px);border-color:rgba(240,201,106,.35);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.need-icon{font-size:48px;margin-bottom:16px;display:block;animation:float-light 4s ease-in-out infinite}
+.need-h{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px}
+.need-p{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:18px}
+.need-glow{position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(60px);opacity:.06;pointer-events:none;right:-40px;bottom:-40px;background:var(--gold);transition:opacity .4s}.need-card:hover .need-glow{opacity:.15}
+/* PRAYER FORM */
+.prayer-form{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px;max-width:640px;margin:0 auto;position:relative;overflow:hidden}
+.prayer-form::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--warm),var(--gold))}
+/* CANDLE SECTION */
+.candle-row{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:56px}
+.candle-item{text-align:center;cursor:pointer}
+.candle-flame{font-size:48px;animation:candle 2s ease-in-out infinite;transition:transform .3s}
+.candle-item:hover .candle-flame{transform:scale(1.25)}
+.candle-label{font-size:12px;color:var(--text2);margin-top:8px;max-width:100px}
+/* BLESSING CARD */
+.blessing-card{background:linear-gradient(135deg,rgba(240,201,106,.1),rgba(255,159,90,.07));border:1px solid rgba(240,201,106,.2);border-radius:24px;padding:48px 40px;text-align:center;position:relative;overflow:hidden;max-width:700px;margin:56px auto 0}
+.blessing-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.blessing-verse{font-size:clamp(18px,2.5vw,24px);font-weight:700;color:var(--text);line-height:1.55;font-style:italic;margin-bottom:16px}
+.blessing-ref{font-size:13px;color:var(--gold);font-weight:700;letter-spacing:.5px}
+/* DONATE */
+.donate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.donate-option{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.donate-option:hover,.donate-option.sel{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-glow);transform:translateY(-4px)}
+.donate-amt{font-size:36px;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1;margin-bottom:6px}
+.donate-label{font-size:12px;color:var(--text2);font-weight:600}
+/* COMMUNITY FEED */
+.feed{display:flex;flex-direction:column;gap:14px;margin-top:48px}
+.feed-item{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;transition:all .3s}
+.feed-item:hover{border-color:rgba(240,201,106,.25);transform:translateX(4px)}
+.feed-av{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#1a0f00;flex-shrink:0}
+.feed-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.feed-loc{font-size:11px;color:var(--text2);margin-bottom:8px}
+.feed-msg{font-size:13px;color:var(--text2);line-height:1.6}
+.feed-time{font-size:11px;color:var(--text3);margin-top:8px}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}.modal-x:hover{background:var(--surface2);color:var(--text)}
 .form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
-.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
 .form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
-.form-textarea{min-height:96px;resize:vertical}
-.form-group{margin-bottom:14px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-/* ── MODAL ── */
-.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:modIn .3s cubic-bezier(.34,1.56,.64,1)}
-.modal-wide{max-width:540px}
-@keyframes modIn{from{opacity:0;transform:scale(.9) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
-.modal-x:hover{background:var(--surface2);color:var(--text)}
-.modal-h{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
-
-/* ── AUTH TABS ── */
-.tab-row{display:flex;background:var(--bg2);border-radius:12px;padding:3px;margin-bottom:22px;gap:3px}
-.tab-b{flex:1;padding:9px;border-radius:9px;border:none;background:none;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
-.tab-b.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--text3);font-size:12px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
-.btn-google{width:100%;padding:11px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.btn-google:hover{border-color:var(--border2);background:var(--surface2)}
-.input-wrap{position:relative}
-.input-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;padding:4px}
-.forgot{font-size:12px;color:var(--text3);transition:color .2s}
-.forgot:hover{color:var(--accent)}
-
-/* ── BADGE / TAG ── */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
-.badge-blue{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(79,142,255,.12)}
-.badge-gold{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(240,201,106,.12)}
-.badge-green{background:var(--green-soft);color:var(--green);border:1px solid rgba(48,214,140,.12)}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── FADE-UP ── */
-.fade-up{opacity:0;transform:translateY(22px);transition:opacity .55s,transform .55s}
-.fade-up.vis{opacity:1;transform:translateY(0)}
-
-/* ── RESPONSIVE ── */
+.form-textarea{min-height:100px;resize:vertical}.form-group{margin-bottom:14px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
-@media(max-width:600px){.nav{padding:0 14px}.section{padding:64px 16px}.form-row{grid-template-columns:1fr}.section-sm{padding:48px 16px}}
-
-
-.ch-hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(var(--nav-h)+48px) 24px 64px;text-align:center;position:relative;overflow:hidden;background:var(--bg)}
-.ch-aura{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 55% at 50% 35%,rgba(240,201,106,.07) 0%,transparent 65%);animation:ca 7s ease-in-out infinite}
-@keyframes ca{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-[data-theme="light"] .ch-aura{background:radial-gradient(ellipse 75% 60% at 50% 25%,rgba(255,210,80,.22) 0%,rgba(255,240,160,.1) 50%,transparent 75%)}
-[data-theme="light"] .ch-hero{background:linear-gradient(180deg,#fef9f0 0%,#fdf1d0 50%,#fef9f0 100%)}
-.ch-icon{width:68px;height:68px;border-radius:18px;background:var(--surface);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 24px;animation:float 4s ease-in-out infinite;position:relative;z-index:1;box-shadow:var(--shadow)}
-[data-theme="light"] .ch-icon{background:rgba(255,248,220,.9);border-color:rgba(161,98,7,.15);box-shadow:0 8px 32px rgba(200,150,30,.12)}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.ch-pre{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;position:relative;z-index:1}
-.ch-h{font-size:clamp(38px,8vw,80px);font-weight:800;letter-spacing:-2.5px;line-height:.92;color:var(--text);margin-bottom:16px;position:relative;z-index:1}
-[data-theme="light"] .ch-h{color:#1a0f00}
-.ch-p{font-size:17px;color:var(--text2);max-width:440px;margin:0 auto 36px;line-height:1.7;position:relative;z-index:1}
-.ch-ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
-
-.ch-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:44px}
-.ch-cat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px 18px;text-align:center;cursor:pointer;transition:all .3s}
-.ch-cat:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:var(--shadow)}
-.ch-cat-ico{font-size:30px;margin-bottom:10px}
-.ch-cat-h{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
-.ch-cat-p{font-size:11px;color:var(--text2)}
-
-.ch-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:28px}
-.ch-s-h{font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-.4px}
-.ch-s-p{font-size:13px;color:var(--text2);margin-bottom:20px}
-.prayer-ta{width:100%;min-height:100px;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:inherit;font-size:15px;padding:13px;resize:vertical;outline:none;transition:border-color .2s}
-.prayer-ta:focus{border-color:var(--accent)}
-.prayer-ta::placeholder{color:var(--text3)}
-.prayer-name{width:100%;padding:11px 13px;background:var(--bg2);border:1px solid var(--border2);border-radius:11px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s;margin-top:9px}
-.prayer-name:focus{border-color:var(--accent)}
-.btn-pray{width:100%;padding:13px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0f00;font-size:14px;font-weight:700;border:none;margin-top:12px;transition:all .2s}
-.btn-pray:hover{filter:brightness(1.05);transform:translateY(-1px)}
-
-.blessing-c{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:32px 28px;text-align:center;margin-bottom:28px;overflow:hidden}
-.blessing-c::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,var(--gold-soft),transparent 60%);pointer-events:none}
-.blessing-pre{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.75}
-.blessing-t{font-size:17px;color:var(--text);font-style:italic;line-height:1.75;transition:opacity .5s;position:relative;z-index:1}
-.blessing-a{font-size:12px;color:var(--text2);font-weight:600;margin-top:12px;position:relative;z-index:1}
-.blessing-dots{display:flex;gap:6px;justify-content:center;margin-top:18px;position:relative;z-index:1}
-.bdot{width:6px;height:6px;border-radius:50%;background:var(--border2);cursor:pointer;transition:background .2s}
-.bdot.on{background:var(--gold)}
-
-.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.tier{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 14px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
-.tier:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--shadow)}
-.tier-pop{border-color:rgba(240,201,106,.25)!important}
-.tier-tag{position:absolute;top:0;right:0;font-size:9px;font-weight:700;padding:4px 10px;background:var(--gold);color:#1a0f00;border-bottom-left-radius:8px;letter-spacing:.5px;text-transform:uppercase}
-.tier-amt{font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:5px}
-.tier-lbl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
-.tier-d{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:14px}
-.btn-tier{width:100%;padding:9px;border-radius:9px;border:1px solid var(--border2);background:none;color:var(--text);font-size:12px;font-weight:600;transition:all .2s}
-.btn-tier:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
-.tier-pop .btn-tier{background:var(--gold);color:#1a0f00;border-color:var(--gold)}
-
-@media(max-width:700px){.ch-cats{grid-template-columns:1fr 1fr}.tier-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:400px){.ch-cats{grid-template-columns:1fr 1fr}.tier-grid{grid-template-columns:1fr 1fr}}
-
-
-/* ══ CINEMATIC REVEAL ENGINE ══ */
-.reveal          { opacity:0; transform:translateY(32px);    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
-.reveal.left     { transform:translateX(-40px) translateY(0); }
-.reveal.right    { transform:translateX( 40px) translateY(0); }
-.reveal.scale    { transform:scale(.94); }
-.reveal.done     { opacity:1; transform:none; }
-.reveal-d1       { transition-delay:.12s; }
-.reveal-d2       { transition-delay:.24s; }
-.reveal-d3       { transition-delay:.38s; }
-.reveal-d4       { transition-delay:.52s; }
-.reveal-d5       { transition-delay:.68s; }
-
-/* ══ HERO CINEMATIC LAYER ══ */
-.hero-reel {
-  position:absolute; inset:0; z-index:0; overflow:hidden;
-}
-.hero-reel img {
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:center;
-  opacity:0; transition:opacity 2.2s cubic-bezier(.4,0,.2,1), transform 9s linear;
-  transform:scale(1.06);
-  will-change:opacity,transform;
-}
-.hero-reel img.active {
-  opacity:.28; transform:scale(1.0);
-}
-[data-theme="light"] .hero-reel img.active { opacity:.14; }
-
-/* Cinematic vignette */
-.hero-reel::after {
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(7,11,16,.9) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(7,11,16,.5) 0%, transparent 50%),
-    linear-gradient(180deg, rgba(7,11,16,.15) 0%, transparent 30%, rgba(7,11,16,.8) 100%);
-}
-[data-theme="light"] .hero-reel::after {
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(242,245,251,.95) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(242,245,251,.3) 0%, transparent 30%, rgba(242,245,251,.85) 100%);
-}
-
-/* ══ TYPEWRITER ══ */
-.typewriter { display:inline; }
-.typewriter-cursor {
-  display:inline-block; width:2px; height:.85em;
-  background:currentColor; margin-left:3px;
-  vertical-align:-.08em;
-  animation:cur .75s step-end infinite;
-}
-@keyframes cur { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* ══ LIVE NOTIFICATION TICKER ══ */
-.live-ticker {
-  position:fixed; bottom:24px; left:24px; z-index:800;
-  display:flex; flex-direction:column; gap:8px;
-  pointer-events:none;
-}
-.ticker-pill {
-  display:flex; align-items:center; gap:10px;
-  padding:11px 16px; border-radius:14px;
-  background:var(--surface); border:1px solid var(--border2);
-  box-shadow:0 8px 32px rgba(0,0,0,.45);
-  font-size:13px; color:var(--text);
-  transform:translateX(-120%); opacity:0;
-  transition:transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s;
-  pointer-events:none; backdrop-filter:blur(16px);
-  max-width:280px;
-}
-.ticker-pill.show { transform:translateX(0); opacity:1; }
-.ticker-pill.hide { transform:translateX(-120%); opacity:0; }
-.ticker-dot {
-  width:7px; height:7px; border-radius:50%; flex-shrink:0;
-  animation:td 2s infinite;
-}
-@keyframes td { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
-.ticker-ico { font-size:16px; flex-shrink:0; }
-.ticker-text { line-height:1.35; }
-.ticker-title { font-weight:600; font-size:12px; }
-.ticker-sub   { font-size:11px; color:var(--text2); margin-top:1px; }
-
-/* ══ HORIZONTAL MARQUEE ══ */
-.marquee-wrap {
-  overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-  padding:14px 0; background:var(--bg2);
-}
-.marquee-track {
-  display:flex; gap:48px; width:max-content;
-  animation:marquee 28s linear infinite;
-}
-.marquee-wrap:hover .marquee-track { animation-play-state:paused; }
-@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-.marquee-item {
-  display:flex; align-items:center; gap:10px;
-  font-size:12px; font-weight:600; color:var(--text2);
-  letter-spacing:.4px; white-space:nowrap;
-}
-.marquee-sep { color:var(--border2); }
-
-/* ══ STAGGER GRID ══ */
-.stagger > * {
-  opacity:0; transform:translateY(24px);
-  transition:opacity .65s, transform .65s;
-}
-.stagger.done > *:nth-child(1){transition-delay:.0s}
-.stagger.done > *:nth-child(2){transition-delay:.08s}
-.stagger.done > *:nth-child(3){transition-delay:.16s}
-.stagger.done > *:nth-child(4){transition-delay:.24s}
-.stagger.done > *:nth-child(5){transition-delay:.32s}
-.stagger.done > *:nth-child(6){transition-delay:.40s}
-.stagger.done > *:nth-child(7){transition-delay:.48s}
-.stagger.done > *:nth-child(8){transition-delay:.56s}
-.stagger.done > * { opacity:1; transform:translateY(0); }
-
-/* ══ MAGNETIC HOVER ══ */
-.magnetic { transition:transform .3s cubic-bezier(.34,1.56,.64,1); }
-
-/* ══ CARD TILT ══ */
-.tilt { transform-style:preserve-3d; transition:transform .15s ease; }
-
-/* ══ GRADIENT TEXT SHIMMER ══ */
-.shimmer-text {
-  background:linear-gradient(90deg,
-    var(--text) 0%, var(--text) 35%,
-    var(--accent2) 50%, var(--text) 65%, var(--text) 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shimmer 5s linear infinite;
-}
-[data-theme="light"] .shimmer-text {
-  background:linear-gradient(90deg,#0d1626 0%,#0d1626 35%,#2563eb 50%,#0d1626 65%,#0d1626 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-}
-@keyframes shimmer { to{ background-position:200% center } }
-
-/* ══ LINE DRAW ══ */
-.line-draw {
-  display:block; height:1px;
-  background:linear-gradient(90deg, transparent, var(--accent), transparent);
-  transform:scaleX(0); transform-origin:left;
-  transition:transform 1.2s cubic-bezier(.16,1,.3,1);
-}
-.line-draw.done { transform:scaleX(1); }
-
-/* ══ NUMBER COUNT-UP ══ */
-.countup { display:inline; }
-
-/* ══ LANG TOGGLE FIX ══ */
-[data-lang-show]        { display:none !important; }
-[data-lang-show="es"]   { display:var(--_d,revert) !important; }
-html[data-lang="en"] [data-lang-show="es"] { display:none !important; }
-html[data-lang="en"] [data-lang-show="en"] { display:var(--_d,revert) !important; }
-html[data-lang="es"] [data-lang-show="en"] { display:none !important; }
-html[data-lang="es"] [data-lang-show="es"] { display:var(--_d,revert) !important; }
-
-
-.ch-hero { position:relative; overflow:hidden; }
-.ch-reel { position:absolute; inset:0; z-index:0; }
-.ch-reel img {
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; opacity:0;
-  transition:opacity 2.5s ease, transform 10s ease;
-  transform:scale(1.05);
-  filter:brightness(.3) saturate(.5);
-}
-.ch-reel img.active { opacity:1; transform:scale(1.0); }
-.ch-reel::after {
-  content:''; position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(7,11,16,.2) 0%, rgba(7,11,16,.55) 50%, var(--bg) 100%);
-}
-[data-theme="light"] .ch-reel::after {
-  background:linear-gradient(180deg, rgba(253,249,240,.15) 0%, rgba(253,249,240,.6) 55%, var(--bg) 100%);
-}
-[data-theme="light"] .ch-reel img { filter:brightness(.4) saturate(.4); }
-.ch-icon,.ch-pre,.ch-h,.ch-p,.ch-ctas { position:relative; z-index:2; }
-.tier-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-.ch-cats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
-@media(max-width:700px){ .tier-grid{grid-template-columns:1fr 1fr}.ch-cats{grid-template-columns:1fr 1fr} }
-
+@media(max-width:768px){.needs-grid{grid-template-columns:1fr}.donate-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.nav{padding:0 16px}.section{padding:70px 16px}.hero-h{letter-spacing:-2px}.blessing-card{padding:32px 20px}.prayer-form{padding:28px 20px}}
 </style>
 </head>
 <body>
-
-<nav class="nav" id="nav">
-  <div class="nav-brand">
-    <a href="index.html" style="display:flex;align-items:center;gap:10px">
-      <div class="nav-dot"></div>
-      <span class="nav-logo">Yavaya</span>
-    </a>
-    <span class="nav-tag">Santuario</span>
+<canvas id="pcanvas"></canvas>
+<nav class="nav">
+  <div class="nav-brand"><div class="nav-dot"></div><span class="nav-logo">Yava<span>ya</span></span><span class="nav-tag">Santuario</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a">Inicio</a><a href="mercadito.html" class="nav-a">Mercadito</a><a href="yavayago.html" class="nav-a">YavayaGo</a>
+    <a href="church.html" class="nav-a active">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a><a href="tokens.html" class="nav-a">Tokens</a>
   </div>
-  <div class="nav-links"><a href="mercadito.html" class="nav-a" >Mercadito</a><a href="yavayago.html" class="nav-a" >YavayaGo</a><a href="church.html" class="nav-a" style="color:var(--accent)">Santuario</a><a href="tokens.html" class="nav-a" >Tokens</a></div>
   <div class="nav-r">
-    <div class="lang-sw">
-      <button class="lang-btn on" data-l="es" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" data-l="en" onclick="setLang('en')">EN</button>
-    </div>
     <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
-    <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
-    <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
-    <div id="userBadge" style="display:none;align-items:center;gap:8px;padding:5px 12px;border-radius:9px;background:var(--surface);border:1px solid var(--border2)">
-      <img id="userAv" src="" style="width:22px;height:22px;border-radius:50%">
-      <span id="userName" style="font-size:13px;font-weight:600"></span>
-      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
-    </div>
-    <button class="btn-cta" id="loginBtn" onclick="openAuthModal('login')">Ingresar</button>
-    <button class="nav-ham" onclick="toggleMob()" aria-label="Menú"><span></span><span></span><span></span></button>
+    <button class="btn-cta" onclick="openPrayer()">🙏 Orar</button>
+    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="nav-mob" id="navMob">
-  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
-  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
-  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
-  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
-  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a><a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a><a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a><a href="work.html" class="nav-mob-a">💼 Trabaja</a><a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
 </div>
 
-<section class="ch-hero">
-
-  <div class="ch-reel">
-    <img id="cr0" src="https://images.unsplash.com/photo-1473177104440-ffee2f376098?w=1400&q=85&auto=format&fit=crop" alt="">
-    <img id="cr1" src="https://images.unsplash.com/photo-1548625149-fc4a29cf7092?w=1400&q=85&auto=format&fit=crop" alt="">
-    <img id="cr2" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=85&auto=format&fit=crop" alt="">
-  </div>
-  <div class="ch-aura"></div>
-  <div class="ch-icon reveal">🕊</div>
-  <div class="ch-pre reveal reveal-d1">Yavaya Santuario</div>
-  <h1 class="ch-h reveal reveal-d2">Un lugar<br>de luz.</h1>
-  <p class="ch-p reveal reveal-d3">Fe, oración y servicio. Aquí la comunidad se cuida entre sí.</p>
-  <div class="ch-ctas reveal reveal-d4">
-    <button class="btn-primary" onclick="document.getElementById('prayerSec').scrollIntoView({behavior:'smooth'})">Enviar Oración</button>
-    <button class="btn-outline" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">Apoyar la Causa</button>
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div><div class="hero-grid"></div>
+  <div class="float-el" style="top:22%;left:8%;font-size:32px;animation-delay:0s" id="fe0">✝</div>
+  <div class="float-el" style="top:30%;right:9%;font-size:24px;animation-delay:-1.5s" id="fe1">🕊️</div>
+  <div class="float-el" style="bottom:28%;left:11%;font-size:28px;animation-delay:-3s" id="fe2">🕯️</div>
+  <div class="float-el" style="bottom:24%;right:8%;font-size:22px;animation-delay:-2s" id="fe3">✨</div>
+  <div class="hero-inner">
+    <div class="hero-badge">✝ Santuario Digital de Centroamérica</div>
+    <h1 class="hero-h">
+      <span class="g1">Un lugar</span>
+      <span class="g1">de luz.</span>
+    </h1>
+    <p class="hero-p">Aquí no importa tu iglesia, tu denominación ni tu historia. Eres bienvenido. Un espacio de paz, oración y comunidad para toda Centroamérica.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openPrayer()">🙏 Enviar una oración</button>
+      <button class="btn-outline" onclick="document.getElementById('bless').scrollIntoView({behavior:'smooth'})">Ver bendición del día</button>
+    </div>
   </div>
 </section>
 
+<!-- WHAT DO YOU NEED -->
 <section class="section" style="background:var(--bg2)">
-  <div class="container-sm">
-    <div class="fade-up" style="text-align:center;margin-bottom:36px">
-      <div class="sec-pre">Comunidad</div>
-      <h2 class="sec-h">¿Qué necesitas?</h2>
-      <p class="sec-p" style="margin:0 auto">Cada área es un espacio de apoyo real.</p>
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sec-label" style="justify-content:center;display:flex">¿Qué necesitas?</div>
+      <h2 class="sec-h" style="text-align:center">El santuario está<br>aquí para ti</h2>
     </div>
-    <div class="ch-cats stagger">
-      <div class="ch-cat" onclick="document.getElementById('prayerSec').scrollIntoView({behavior:'smooth'})">
-        <div class="ch-cat-ico">🙏</div><div class="ch-cat-h">Oraciones</div><div class="ch-cat-p">Envía tu petición</div>
+    <div class="needs-grid">
+      <div class="need-card reveal" onclick="openPrayer()">
+        <span class="need-icon">🙏</span>
+        <div class="need-h">Enviar una oración</div>
+        <div class="need-p">¿Tienes algo en el corazón? Escríbelo. La comunidad orará contigo. Nunca estás solo.</div>
+        <button class="btn-primary" style="margin:0 auto">Orar ahora</button>
+        <div class="need-glow"></div>
       </div>
-      <div class="ch-cat" onclick="document.getElementById('blessSec').scrollIntoView({behavior:'smooth'})">
-        <div class="ch-cat-ico">✨</div><div class="ch-cat-h">Bendiciones</div><div class="ch-cat-p">Palabras diarias</div>
+      <div class="need-card reveal reveal-d1" onclick="openDonate()">
+        <span class="need-icon">🕯️</span>
+        <div class="need-h">Encender una vela</div>
+        <div class="need-p">Enciende una vela virtual por alguien especial. Tu intención llega a toda la comunidad.</div>
+        <button class="btn-primary" style="margin:0 auto">Encender</button>
+        <div class="need-glow"></div>
       </div>
-      <div class="ch-cat" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">
-        <div class="ch-cat-ico">👶</div><div class="ch-cat-h">Niños & Enfermos</div><div class="ch-cat-p">Ayuda directa</div>
-      </div>
-      <div class="ch-cat" onclick="document.getElementById('donateSec').scrollIntoView({behavior:'smooth'})">
-        <div class="ch-cat-ico">🥣</div><div class="ch-cat-h">Comida & Medicina</div><div class="ch-cat-p">Para familias</div>
+      <div class="need-card reveal reveal-d2" onclick="openHelp()">
+        <span class="need-icon">❤️</span>
+        <div class="need-h">Ayuda a alguien</div>
+        <div class="need-p">¿Conoces a alguien que lo necesita? Comparte su historia. La comunidad responde con amor real.</div>
+        <button class="btn-primary" style="margin:0 auto">Pedir ayuda</button>
+        <div class="need-glow"></div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section" id="prayerSec">
-  <div class="container-sm">
-    <div class="fade-up">
-      <div class="sec-pre">Oración</div>
-      <h2 class="sec-h">Envía una Oración</h2>
-      <p class="sec-p">Será recibida con amor y elevada por nuestra comunidad.</p>
+<!-- BLESSING OF THE DAY -->
+<section class="section" style="background:var(--bg)" id="bless">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Bendición del día</div>
+      <h2 class="sec-h">Una palabra<br>para tu alma</h2>
     </div>
-    <div class="ch-section fade-up" style="margin-top:28px">
-      <textarea class="prayer-ta" id="prayerTxt" placeholder="Señor, te pido por..."></textarea>
-      <input type="text" class="prayer-name" id="prayerName" placeholder="Tu nombre (opcional)">
-      <button class="btn-pray" onclick="sendPrayer()">🕊 Enviar Mi Oración</button>
-    </div>
-  </div>
-</section>
-
-<section class="section-sm" id="blessSec" style="background:var(--bg2)">
-  <div class="container-sm">
-    <div class="fade-up" style="text-align:center;margin-bottom:24px">
-      <div class="sec-pre">Espíritu</div>
-      <h2 class="sec-h">Bendición del Día</h2>
-    </div>
-    <div class="blessing-c fade-up">
-      <div class="blessing-pre">Lectura del Día</div>
-      <div class="blessing-t" id="blessText"></div>
-      <div class="blessing-a" id="blessAuthor"></div>
-      <div class="blessing-dots" id="blessDots"></div>
+    <div class="blessing-card reveal reveal-d1">
+      <div style="font-size:36px;margin-bottom:20px" id="blessIcon">✨</div>
+      <div class="blessing-verse" id="blessVerse">"Porque yo sé los planes que tengo para ustedes — planes de bienestar y no de calamidad, para darles un futuro y una esperanza."</div>
+      <div class="blessing-ref" id="blessRef">— Jeremías 29:11</div>
+      <button onclick="nextVerse()" class="btn-outline" style="margin:28px auto 0;display:inline-flex">Otra bendición →</button>
     </div>
   </div>
 </section>
 
-<section class="section" id="donateSec">
-  <div class="container-sm">
-    <div class="fade-up" style="text-align:center;margin-bottom:36px">
-      <div class="sec-pre">Donaciones</div>
-      <h2 class="sec-h">Dar es Sagrado</h2>
-      <p class="sec-p" style="margin:0 auto">Tu ofrenda llega directamente a quienes más lo necesitan.</p>
+<!-- PRAYER WALL -->
+<section class="section" style="background:var(--bg2)" id="prayers">
+  <div class="container">
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div><div class="sec-label">Muro de oraciones</div><h2 class="sec-h">La comunidad ora junta</h2></div>
+      <button class="btn-primary" onclick="openPrayer()">+ Agregar oración</button>
     </div>
-    <div class="tier-grid stagger">
-      <div class="tier" onclick="donate(2)"><div class="tier-amt">$2</div><div class="tier-lbl">Semilla</div><div class="tier-d">Una comida para un niño.</div><button class="btn-tier">Dar Ahora</button></div>
-      <div class="tier tier-pop" onclick="donate(10)"><div class="tier-tag">Popular</div><div class="tier-amt">$10</div><div class="tier-lbl">Guardián</div><div class="tier-d">Medicamento por una semana.</div><button class="btn-tier">Dar Ahora</button></div>
-      <div class="tier" onclick="donate(25)"><div class="tier-amt">$25</div><div class="tier-lbl">Ángel</div><div class="tier-d">Gastos de un anciano por un mes.</div><button class="btn-tier">Dar Ahora</button></div>
-      <div class="tier" onclick="donate(50)"><div class="tier-amt">$50</div><div class="tier-lbl">Bendición Mayor</div><div class="tier-d">Tratamiento médico completo.</div><button class="btn-tier">Dar Ahora</button></div>
+    <div class="feed reveal reveal-d1" id="prayerFeed">
+      <div class="feed-item"><div class="feed-av" style="background:var(--gold)">MR</div><div><div class="feed-name">María R.</div><div class="feed-loc">Guatemala City</div><div class="feed-msg">"Orando por la salud de mi madre. Está en el hospital y necesita un milagro. Gracias comunidad 🙏"</div><div class="feed-time">Hace 12 minutos · 47 personas orando</div></div></div>
+      <div class="feed-item"><div class="feed-av" style="background:var(--warm)">CL</div><div><div class="feed-name">Carlos L.</div><div class="feed-loc">Tegucigalpa, Honduras</div><div class="feed-msg">"Doy gracias a Dios por haberme dado trabajo esta semana. Nunca perdí la fe aunque fue difícil."</div><div class="feed-time">Hace 34 minutos · 23 personas celebrando</div></div></div>
+      <div class="feed-item"><div class="feed-av" style="background:var(--purple)">AS</div><div><div class="feed-name">Ana S.</div><div class="feed-loc">San José, Costa Rica</div><div class="feed-msg">"Pidiendo paz para nuestra familia. Pasamos por momentos muy difíciles. Los que leen esto, gracias."</div><div class="feed-time">Hace 1 hora · 89 personas orando</div></div></div>
+      <div class="feed-item"><div class="feed-av" style="background:var(--green)">JM</div><div><div class="feed-name">José M.</div><div class="feed-loc">Panamá City</div><div class="feed-msg">"Hoy cumplo 1 año sobrio. Solo Dios y esta comunidad me ayudaron a lograrlo. Bendiciones a todos."</div><div class="feed-time">Hace 2 horas · 134 personas celebrando</div></div></div>
     </div>
-    <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:14px">100% de tu donación va a beneficiarios. Procesado de forma segura.</p>
   </div>
 </section>
 
-<footer style="padding:40px 24px;border-top:1px solid var(--border);background:var(--bg)">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-    <div style="font-size:16px;font-weight:800;color:var(--text)">Yavaya</div>
-    <div style="display:flex;gap:18px;flex-wrap:wrap">
-      <a href="mercadito.html" style="font-size:13px;color:var(--text2)">Mercadito</a>
-      <a href="yavayago.html" style="font-size:13px;color:var(--text2)">YavayaGo</a>
-      <a href="church.html" style="font-size:13px;color:var(--text2)">Santuario</a>
-      <a href="tokens.html" style="font-size:13px;color:var(--text2)">Tokens</a>
+<!-- CANDLES -->
+<section class="section" style="background:var(--bg)">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Velas encendidas</div>
+      <h2 class="sec-h">Luces por todo<br>Centroamérica</h2>
+      <p class="sec-p" style="margin:0 auto">Cada vela es una intención, una esperanza, un corazón que cree.</p>
     </div>
-    <div style="font-size:12px;color:var(--text3)">© 2026 Yavaya · Centroamérica</div>
+    <div class="candle-row reveal reveal-d1">
+      <div class="candle-item" onclick="lightCandle(this,'Por la paz')"><div class="candle-flame">🕯️</div><div class="candle-label">Por la paz</div></div>
+      <div class="candle-item" onclick="lightCandle(this,'Por la familia')"><div class="candle-flame">🕯️</div><div class="candle-label">Por la familia</div></div>
+      <div class="candle-item" onclick="lightCandle(this,'Por la salud')"><div class="candle-flame">🕯️</div><div class="candle-label">Por la salud</div></div>
+      <div class="candle-item" onclick="lightCandle(this,'Por los perdidos')"><div class="candle-flame">🕯️</div><div class="candle-label">Por los perdidos</div></div>
+      <div class="candle-item" onclick="lightCandle(this,'Por Centroamérica')"><div class="candle-flame">🕯️</div><div class="candle-label">Por Centroamérica</div></div>
+      <div class="candle-item" onclick="lightCandle(this,'Por los niños')"><div class="candle-flame">🕯️</div><div class="candle-label">Por los niños</div></div>
+    </div>
+    <div style="margin-top:32px;font-size:13px;color:var(--text2)" id="candleCount">🕯️ <strong>2,847</strong> velas encendidas hoy en toda CA</div>
   </div>
-</footer><div class="toast" id="toast"></div>
+</section>
+
+<!-- DONATE -->
+<section class="section" style="background:var(--bg2)" id="donate">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Dar es sagrado</div>
+      <h2 class="sec-h">Tu generosidad<br>cambia vidas</h2>
+      <p class="sec-p" style="margin:0 auto">100% va a familias en necesidad extrema de Centroamérica. Transparencia total.</p>
+    </div>
+    <div class="donate-grid" id="donateGrid">
+      <div class="donate-option reveal" onclick="selDonate(this,'$5')"><div class="donate-amt">$5</div><div class="donate-label">Una comida familiar</div></div>
+      <div class="donate-option reveal reveal-d1 sel" onclick="selDonate(this,'$15')"><div class="donate-amt">$15</div><div class="donate-label">Medicamentos básicos</div></div>
+      <div class="donate-option reveal reveal-d2" onclick="selDonate(this,'$50')"><div class="donate-amt">$50</div><div class="donate-label">Una semana de apoyo</div></div>
+    </div>
+    <div style="margin-top:28px">
+      <button class="btn-primary" onclick="openDonate()" style="margin:0 auto">Donar ahora ❤️</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRAYER MODAL -->
+<div class="overlay" id="prayerOverlay" style="display:none" onclick="if(event.target===this)closePrayer()">
+  <div class="modal">
+    <button class="modal-x" onclick="closePrayer()">✕</button>
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:48px;margin-bottom:10px">🙏</div>
+    <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px">Enviar una oración</div>
+    <div style="font-size:13px;color:var(--text2)">La comunidad orará contigo. No estás solo.</div></div>
+    <div class="form-group"><label class="form-label">Tu nombre (opcional)</label><input class="form-input" id="pName" placeholder="Anónimo si prefieres"></div>
+    <div class="form-group"><label class="form-label">País</label><select class="form-select"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option><option>Belice</option><option>México</option></select></div>
+    <div class="form-group"><label class="form-label">Tu oración o petición</label><textarea class="form-input form-textarea" id="pText" placeholder="Escribe lo que hay en tu corazón..."></textarea></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="sendPrayer()">🙏 Enviar al muro</button>
+  </div>
+</div>
+
+<!-- DONATE MODAL -->
+<div class="overlay" id="donateOverlay" style="display:none" onclick="if(event.target===this)closeDonate()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeDonate()">✕</button>
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:48px;margin-bottom:10px">❤️</div>
+    <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px">Hacer una donación</div>
+    <div style="font-size:13px;color:var(--text2)">100% transparente. Todo va a familias en CA.</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px">
+      <div onclick="this.parentNode.querySelectorAll('div').forEach(d=>d.style.borderColor='var(--border2)');this.style.borderColor='var(--gold)'" style="padding:14px;border-radius:12px;border:1px solid var(--border2);text-align:center;cursor:pointer"><div style="font-size:20px;font-weight:900;color:var(--text)">$5</div></div>
+      <div onclick="this.parentNode.querySelectorAll('div').forEach(d=>d.style.borderColor='var(--border2)');this.style.borderColor='var(--gold)'" style="padding:14px;border-radius:12px;border:2px solid var(--gold);text-align:center;cursor:pointer"><div style="font-size:20px;font-weight:900;color:var(--text)">$15</div></div>
+      <div onclick="this.parentNode.querySelectorAll('div').forEach(d=>d.style.borderColor='var(--border2)');this.style.borderColor='var(--gold)'" style="padding:14px;border-radius:12px;border:1px solid var(--border2);text-align:center;cursor:pointer"><div style="font-size:20px;font-weight:900;color:var(--text)">$50</div></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email para recibo</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDonate();showToast('¡Donación recibida! Gracias por tu generosidad ❤️')">Donar ahora</button>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="overlay" id="helpOverlay" style="display:none" onclick="if(event.target===this)closeHelp()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeHelp()">✕</button>
+    <div style="text-align:center;margin-bottom:22px"><div style="font-size:48px;margin-bottom:10px">💛</div>
+    <div style="font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px">Pedir ayuda</div>
+    <div style="font-size:13px;color:var(--text2)">Cuéntanos la historia. La comunidad responde.</div></div>
+    <div class="form-group"><label class="form-label">¿Para quién es la ayuda?</label><input class="form-input" placeholder="Nombre de la persona o familia"></div>
+    <div class="form-group"><label class="form-label">País y ciudad</label><input class="form-input" placeholder="Ej: Managua, Nicaragua"></div>
+    <div class="form-group"><label class="form-label">¿Qué necesitan?</label><textarea class="form-input form-textarea" placeholder="Cuéntanos la situación con detalle..."></textarea></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeHelp();showToast('¡Historia compartida! La comunidad lo verá pronto 💛')">Publicar historia</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-/* ═══ YAVAYA CINEMATIC ENGINE v5 ═══ */
-
-// ── THEME ────────────────────────────────────────────────────────────────────
-window.toggleTheme = function() {
-  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('yavaya_theme', t);
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-};
-(function() {
-  var t = localStorage.getItem('yavaya_theme') || 'dark';
-  var b = document.getElementById('themeBtn');
-  if (b) b.textContent = t === 'dark' ? '🌙' : '☀️';
-})();
-
-// ── LANGUAGE — FIXED ─────────────────────────────────────────────────────────
-var TRANSLATIONS = {
-  es: {
-    // nav
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Santuario','nav_tokens':'Tokens',
-    // hero
-    'hero_badge':'La plataforma #1 de Centroamérica',
-    'hero_h1':'Todo lo que','hero_h2':'necesitas.',
-    'hero_sub':'Compra, vende, ordena comida y conecta con tu comunidad — en un solo lugar construido para Centroamérica.',
-    'hero_cta1':'Explorar Mercadito','hero_cta2':'Pedir Comida',
-    'stat_listings':'Anuncios','stat_paises':'Países','stat_sellers':'Vendedores','stat_support':'Soporte',
-    // sections
-    'sec_platform':'Plataforma','sec_all':'Todo en un solo lugar','sec_all_sub':'Tres módulos. Una cuenta. Una comunidad.',
-    'sec_cats':'Categorías','sec_life':'Para cada parte de tu vida','sec_life_sub':'Desde empleos hasta mascotas. Todo tiene su lugar.',
-    'sec_cover':'Cobertura','sec_home':'Centroamérica es nuestra casa','sec_home_sub':'Selecciona tu país para personalizar tu experiencia.',
-    // reino cards
-    'r1_tag':'Comunidad','r1_name':'Yavaya','r1_desc':'Fe, apoyo, oraciones y donaciones. El corazón humano de la plataforma.',
-    'r2_tag':'Comercio','r2_name':'Mercadito','r2_desc':'El marketplace de Centroamérica. Compra, vende y encuentra trabajo en tu país.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Comida, farmacia y súper a tu puerta en 30–45 min. Rastrea en vivo.',
-    'explore':'Explorar',
-    // pilares
-    'p1_h':'Fe & Comunidad','p1_d':'Oraciones, donaciones y apoyo entre vecinos.',
-    'p2_h':'Empleos','p2_d':'Trabajo remoto, freelance y oportunidades locales.',
-    'p3_h':'Animales','p3_d':'Adopciones, ventas y cuidado de mascotas.',
-    'p4_h':'Salud','p4_d':'Servicios médicos, farmacias y bienestar.',
-    'p5_h':'Inmuebles','p5_d':'Alquiler, venta y servicios del hogar.',
-    'p6_h':'Vehículos','p6_d':'Autos, motos y transporte privado.',
-    'p7_h':'Arte & Cultura','p7_d':'Artesanías, diseño y talento local.',
-    'p8_h':'Tecnología','p8_d':'Electrónica, servicios digitales y más.',
-    'btn_login':'Ingresar',
-  },
-  en: {
-    'nav_mercadito':'Mercadito','nav_yavayago':'YavayaGo','nav_santuario':'Sanctuary','nav_tokens':'Tokens',
-    'hero_badge':'Central America\'s #1 platform',
-    'hero_h1':'Everything','hero_h2':'you need.',
-    'hero_sub':'Buy, sell, order food and connect with your community — one place built for Central America.',
-    'hero_cta1':'Browse Mercadito','hero_cta2':'Order Food',
-    'stat_listings':'Listings','stat_paises':'Countries','stat_sellers':'Sellers','stat_support':'Support',
-    'sec_platform':'Platform','sec_all':'Everything in one place','sec_all_sub':'Three modules. One account. One community.',
-    'sec_cats':'Categories','sec_life':'For every part of your life','sec_life_sub':'From jobs to pets. Everything has a place.',
-    'sec_cover':'Coverage','sec_home':'Central America is home','sec_home_sub':'Select your country to personalize your experience.',
-    'r1_tag':'Community','r1_name':'Yavaya','r1_desc':'Faith, support, prayers and donations. The human heart of the platform.',
-    'r2_tag':'Commerce','r2_name':'Mercadito','r2_desc':'The Central American marketplace. Buy, sell and find work in your country.',
-    'r3_tag':'Delivery','r3_name':'YavayaGo','r3_desc':'Food, pharmacy and supermarket at your door in 30–45 min. Live tracking.',
-    'explore':'Explore',
-    'p1_h':'Faith & Community','p1_d':'Prayers, donations and neighbor support.',
-    'p2_h':'Jobs','p2_d':'Remote work, freelance and local opportunities.',
-    'p3_h':'Animals','p3_d':'Adoptions, sales and pet care.',
-    'p4_h':'Health','p4_d':'Medical services, pharmacies and wellness.',
-    'p5_h':'Real Estate','p5_d':'Rentals, sales and home services.',
-    'p6_h':'Vehicles','p6_d':'Cars, motorcycles and private transport.',
-    'p7_h':'Art & Culture','p7_d':'Crafts, design and local talent.',
-    'p8_h':'Technology','p8_d':'Electronics, digital services and more.',
-    'btn_login':'Sign In',
-  }
-};
-
-var _lang = localStorage.getItem('yavaya_lang') || 'es';
-
-window.setLang = function(l) {
-  _lang = l;
-  localStorage.setItem('yavaya_lang', l);
-  document.documentElement.setAttribute('data-lang', l);
-
-  // Update button states
-  document.querySelectorAll('.lang-btn').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.l === l);
-  });
-
-  // Apply translations to all [data-t] elements
-  var T = TRANSLATIONS[l] || TRANSLATIONS.es;
-  document.querySelectorAll('[data-t]').forEach(function(el) {
-    var key = el.getAttribute('data-t');
-    if (T[key] !== undefined) el.textContent = T[key];
-  });
-
-  // Swap [data-lang-show] blocks
-  document.querySelectorAll('[data-lang-show]').forEach(function(el) {
-    el.style.display = (el.getAttribute('data-lang-show') === l) ? '' : 'none';
-  });
-
-  // Fire custom callback if page defines one
-  if (window._applyLang) window._applyLang(l);
-};
-
-// Init lang on load
-(function() {
-  document.documentElement.setAttribute('data-lang', _lang);
-  setTimeout(function() { window.setLang(_lang); }, 0);
-})();
-
-// ── NAV MOB ───────────────────────────────────────────────────────────────────
-window.toggleMob = function() {
-  var m = document.getElementById('navMob');
-  if (m) m.classList.toggle('open');
-};
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-window.showToast = function(msg, dur) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(window._tt);
-  window._tt = setTimeout(function() { t.classList.remove('show'); }, dur || 3200);
-};
-
-// ── NAV SCROLL ────────────────────────────────────────────────────────────────
-window.addEventListener('scroll', function() {
-  var n = document.getElementById('nav');
-  if (!n) return;
-  var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-  n.style.background = window.scrollY > 60
-    ? (dark ? 'rgba(7,11,16,.97)' : 'rgba(242,245,251,.97)')
-    : '';
-}, { passive: true });
-
-// ── CINEMATIC REVEAL ──────────────────────────────────────────────────────────
-(function() {
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('done');
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
-  function initObs() {
-    document.querySelectorAll('.reveal, .stagger').forEach(function(el) { obs.observe(el); });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initObs);
-  else initObs();
-})();
-
-// ── HERO IMAGE REEL ───────────────────────────────────────────────────────────
-window.initHeroReel = function(ids) {
-  var imgs = ids.map(function(id) { return document.getElementById(id); }).filter(Boolean);
-  if (!imgs.length) return;
-  var idx = 0;
-  imgs[0].classList.add('active');
-  setInterval(function() {
-    imgs[idx].classList.remove('active');
-    idx = (idx + 1) % imgs.length;
-    imgs[idx].classList.add('active');
-  }, 5500);
-};
-
-// ── TYPEWRITER ────────────────────────────────────────────────────────────────
-window.initTypewriter = function(elId, lines, speed) {
-  var el = document.getElementById(elId);
-  if (!el) return;
-  speed = speed || 52;
-  var lineIdx = 0, charIdx = 0, deleting = false, pause = 0;
-  var cursor = document.createElement('span');
-  cursor.className = 'typewriter-cursor';
-  el.parentNode && el.parentNode.insertBefore(cursor, el.nextSibling);
-
-  function tick() {
-    if (pause > 0) { pause--; setTimeout(tick, 80); return; }
-    var current = lines[lineIdx];
-    if (!deleting) {
-      el.textContent = current.slice(0, charIdx + 1);
-      charIdx++;
-      if (charIdx >= current.length) { deleting = true; pause = 28; }
-    } else {
-      el.textContent = current.slice(0, charIdx - 1);
-      charIdx--;
-      if (charIdx <= 0) { deleting = false; lineIdx = (lineIdx + 1) % lines.length; pause = 6; }
-    }
-    setTimeout(tick, deleting ? speed * .45 : speed);
-  }
-  tick();
-};
-
-// ── COUNTUP ───────────────────────────────────────────────────────────────────
-window.initCountUp = function() {
-  document.querySelectorAll('[data-countup]').forEach(function(el) {
-    var target = parseFloat(el.getAttribute('data-countup'));
-    var suffix = el.getAttribute('data-suffix') || '';
-    var prefix = el.getAttribute('data-prefix') || '';
-    var dec    = el.getAttribute('data-dec') || 0;
-    var obs = new IntersectionObserver(function(entries) {
-      if (!entries[0].isIntersecting) return;
-      obs.disconnect();
-      var start = 0, dur = 1800, startTime = null;
-      function step(ts) {
-        if (!startTime) startTime = ts;
-        var p = Math.min((ts - startTime) / dur, 1);
-        var ease = 1 - Math.pow(1 - p, 3);
-        var val = (start + (target - start) * ease).toFixed(dec);
-        el.textContent = prefix + val + suffix;
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }, { threshold: .5 });
-    obs.observe(el);
-  });
-};
-
-// ── 3D CARD TILT ──────────────────────────────────────────────────────────────
-window.initTilt = function() {
-  document.querySelectorAll('.tilt').forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var r = card.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width  - .5;
-      var y = (e.clientY - r.top)  / r.height - .5;
-      card.style.transform = 'perspective(900px) rotateY('+x*7+'deg) rotateX('+(-y*5)+'deg) scale(1.02)';
-    });
-    card.addEventListener('mouseleave', function() { card.style.transform = ''; });
-  });
-};
-
-// ── LINE DRAW ─────────────────────────────────────────────────────────────────
-(function() {
-  var obs2 = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('done'); obs2.unobserve(e.target); } });
-  }, { threshold: .3 });
-  function initLines() { document.querySelectorAll('.line-draw').forEach(function(el) { obs2.observe(el); }); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initLines);
-  else initLines();
-})();
-
-// ── MAGNETIC HOVER ────────────────────────────────────────────────────────────
-window.initMagnetic = function() {
-  document.querySelectorAll('.magnetic').forEach(function(el) {
-    el.addEventListener('mousemove', function(e) {
-      var r = el.getBoundingClientRect();
-      var x = (e.clientX - r.left - r.width  / 2) * .22;
-      var y = (e.clientY - r.top  - r.height / 2) * .22;
-      el.style.transform = 'translate('+x+'px,'+y+'px)';
-    });
-    el.addEventListener('mouseleave', function() { el.style.transform = ''; });
-  });
-};
-
-// ── DEMO LIVE NOTIFICATIONS ───────────────────────────────────────────────────
-(function() {
-  var DEMOS = [
-    { ico:'🛒', dot:'#4f8eff', title:'Nuevo anuncio', sub:'iPhone 15 Pro — Guatemala · $680' },
-    { ico:'🏠', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Apartamento Zona 10 — $950/mes' },
-    { ico:'🚀', dot:'#30d68c', title:'Pedido entregado', sub:'YavayaGo · La Antigua · 28 min' },
-    { ico:'💼', dot:'#4f8eff', title:'Nueva oferta de trabajo', sub:'Desarrollador Remote · $2,400/mes' },
-    { ico:'🙏', dot:'#f0c96a', title:'Oración enviada', sub:'Comunidad · Santuario Yavaya' },
-    { ico:'🚗', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Toyota Corolla 2021 · Honduras · $13,500' },
-    { ico:'✅', dot:'#30d68c', title:'Venta completada', sub:'MacBook Pro M3 · $1,200 · Managua' },
-    { ico:'🐾', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Cachorro Husky · Costa Rica · $180' },
-    { ico:'🍕', dot:'#30d68c', title:'Pedido en camino', sub:'YavayaGo · Pizzería Roma · 12 min' },
-    { ico:'📱', dot:'#4f8eff', title:'Nuevo anuncio', sub:'Samsung S24 Ultra · El Salvador · $750' },
-  ];
-  var container, queue = [], showing = false;
-
-  function ensureContainer() {
-    if (!container) {
-      container = document.getElementById('liveTicker');
-      if (!container) {
-        container = document.createElement('div');
-        container.className = 'live-ticker';
-        container.id = 'liveTicker';
-        document.body.appendChild(container);
-      }
-    }
-  }
-
-  function showNext() {
-    if (!queue.length || showing) return;
-    showing = true;
-    ensureContainer();
-    var d = queue.shift();
-    var pill = document.createElement('div');
-    pill.className = 'ticker-pill';
-    pill.innerHTML =
-      '<span class="ticker-dot" style="background:'+d.dot+'"></span>' +
-      '<span class="ticker-ico">'+d.ico+'</span>' +
-      '<div class="ticker-text"><div class="ticker-title">'+d.title+'</div>' +
-      '<div class="ticker-sub">'+d.sub+'</div></div>';
-    container.appendChild(pill);
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() { pill.classList.add('show'); });
-    });
-    setTimeout(function() {
-      pill.classList.add('hide');
-      pill.classList.remove('show');
-      setTimeout(function() {
-        if (pill.parentNode) pill.parentNode.removeChild(pill);
-        showing = false;
-        if (queue.length) setTimeout(showNext, 400);
-      }, 600);
-    }, 4200);
-  }
-
-  function scheduleNext() {
-    var delay = 6000 + Math.random() * 9000;
-    setTimeout(function() {
-      var d = DEMOS[Math.floor(Math.random() * DEMOS.length)];
-      queue.push(d);
-      showNext();
-      scheduleNext();
-    }, delay);
-  }
-
-  // First notification after 3.5s
-  setTimeout(function() {
-    ensureContainer();
-    var d = DEMOS[0];
-    queue.push(d);
-    showNext();
-    scheduleNext();
-  }, 3500);
-})();
-
-// ── AUTH MODAL ────────────────────────────────────────────────────────────────
-window.openAuthModal = function(tab) {
-  var m = document.getElementById('authModal');
-  if (m) { m.style.display = 'flex'; switchAuthTab(tab || 'login'); }
-};
-window.closeAuthModal = function() {
-  var m = document.getElementById('authModal'); if (m) m.style.display = 'none';
-};
-window.switchAuthTab = function(tab) {
-  ['login','reg'].forEach(function(p) {
-    var el = document.getElementById('panel_'+p); if (el) el.style.display = p===tab?'block':'none';
-  });
-  document.querySelectorAll('.tab-b').forEach(function(b) {
-    b.classList.toggle('on', b.dataset.tab === tab);
-  });
-};
-window.toggleVis = function(id) {
-  var el = document.getElementById(id); if (el) el.type = el.type==='password'?'text':'password';
-};
-window.doLogin = async function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';
-  var p=(document.getElementById('loginPass')||{}).value||'';
-  e=e.trim(); if(!e||!p){showToast('Ingresa correo y contraseña');return;}
-  var btn=document.getElementById('btnLogin'); if(btn){btn.disabled=true;btn.textContent='Entrando...';}
-  try {
-    if(window._goAuth&&window._auth) await window._goAuth.signInWithEmailAndPassword(window._auth,e,p);
-    window.closeAuthModal(); showToast('¡Bienvenido! 👋');
-  } catch(err) {
-    var map={'auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Cuenta no encontrada','auth/invalid-email':'Correo inválido'};
-    showToast(map[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Iniciar sesión';}
-};
-window.doRegister = async function() {
-  var n=(document.getElementById('regName')||{}).value||'';
-  var e=(document.getElementById('regEmail')||{}).value||'';
-  var p=(document.getElementById('regPass')||{}).value||'';
-  var p2=(document.getElementById('regPass2')||{}).value||'';
-  n=n.trim();e=e.trim();
-  if(!n){showToast('Escribe tu nombre');return;}
-  if(!e){showToast('Ingresa tu correo');return;}
-  if(p.length<8){showToast('Contraseña mínimo 8 caracteres');return;}
-  if(p!==p2){showToast('Las contraseñas no coinciden');return;}
-  var btn=document.getElementById('btnReg'); if(btn){btn.disabled=true;btn.textContent='Creando...';}
-  try {
-    if(window._goAuth&&window._auth){
-      var c=await window._goAuth.createUserWithEmailAndPassword(window._auth,e,p);
-      await window._goAuth.updateProfile(c.user,{displayName:n});
-    }
-    window.closeAuthModal(); showToast('¡Bienvenido/a '+n+'! 🎉');
-  } catch(err) {
-    var map2={'auth/email-already-in-use':'Este correo ya tiene cuenta','auth/weak-password':'Contraseña muy débil'};
-    showToast(map2[err.code]||err.message);
-  }
-  if(btn){btn.disabled=false;btn.textContent='Crear cuenta';}
-};
-window.doGoogle = function() {
-  if(window._goAuth&&window._auth){
-    var pr=new window._goAuth.GoogleAuthProvider();
-    window._goAuth.signInWithPopup(window._auth,pr)
-      .then(function(){window.closeAuthModal();showToast('¡Bienvenido! 👋');})
-      .catch(function(e){showToast(e.message);});
-  } else { showToast('Google auth no configurado'); }
-};
-window.forgotPass = function() {
-  var e=(document.getElementById('loginEmail')||{}).value||'';e=e.trim();
-  if(!e){showToast('Ingresa tu correo primero');return;}
-  if(window._goAuth&&window._auth)
-    window._goAuth.sendPasswordResetEmail(window._auth,e)
-      .then(function(){showToast('Correo enviado ✓');})
-      .catch(function(e){showToast(e.message);});
-};
-
-// ── INIT ALL ──────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', function() {
-  initCountUp();
-  initTilt();
-  initMagnetic();
-});
-
-window.addEventListener('DOMContentLoaded', function() {
-  initHeroReel(['cr0','cr1','cr2']);
-});
-
-var blessings = [
-  {t:'"La fe mueve montañas. Tu oración mueve el corazón de Dios."', a:'— Mateo 17:20'},
-  {t:'"Ama a tu prójimo como a ti mismo."', a:'— Marcos 12:31'},
-  {t:'"El Señor es mi pastor; nada me faltará."', a:'— Salmo 23:1'},
-  {t:'"Todo lo puedo en Cristo que me fortalece."', a:'— Filipenses 4:13'},
-  {t:'"Porque yo sé los planes que tengo para vosotros — planes de bienestar."', a:'— Jeremías 29:11'},
-  {t:'"Benditos los que tienen hambre y sed de justicia, porque serán saciados."', a:'— Mateo 5:6'},
-];
-var bIdx = 0;
-function showBlessing() {
-  var t=document.getElementById('blessText'),a=document.getElementById('blessAuthor'),d=document.getElementById('blessDots');
-  if(!t) return;
-  t.style.opacity=0;
-  setTimeout(function(){
-    t.textContent=blessings[bIdx].t;
-    a.textContent=blessings[bIdx].a;
-    t.style.opacity=1;
-    if(d){d.innerHTML='';blessings.forEach(function(_,i){var dot=document.createElement('div');dot.className='bdot'+(i===bIdx?' on':'');dot.onclick=function(){bIdx=i;showBlessing();};d.appendChild(dot);});}
-  },450);
-}
-showBlessing();
-setInterval(function(){bIdx=(bIdx+1)%blessings.length;showBlessing();},8000);
-
-window.sendPrayer=function(){
-  var txt=document.getElementById('prayerTxt').value.trim();
-  var name=document.getElementById('prayerName').value.trim()||'Anónimo';
-  if(!txt){showToast('Escribe tu oración primero.');return;}
-  showToast('🕊 Oración recibida. Dios te bendiga, '+name+'.');
-  document.getElementById('prayerTxt').value='';
-};
-window.donate=function(amt){
-  showToast('💛 Procesando donación de $'+amt+'...');
-  setTimeout(function(){window.open('https://www.paypal.com/donate','_blank');},1200);
-};
-
+/* PARTICLES — golden sparks */
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[];const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);
+class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=H+10;this.vx=(Math.random()-.5)*.4;this.vy=-(Math.random()*.8+.3);this.r=Math.random()*1.8+.3;this.a=Math.random()*.6+.2;this.life=0;this.maxLife=Math.random()*180+120}
+update(){this.x+=this.vx;this.y+=this.vy;this.life++;if(this.life>this.maxLife)this.reset()}
+draw(){const ratio=1-this.life/this.maxLife;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(240,201,106,${this.a*ratio})`:`rgba(146,104,10,${this.a*ratio*.7})`;ctx.fill()}}
+for(let i=0;i<60;i++){const p=new P();p.life=Math.floor(Math.random()*p.maxLife);ps.push(p)}
+function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();})();
+/* REVEAL */
+(function(){const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));setTimeout(()=>{document.querySelectorAll('.float-el').forEach((el,i)=>{setTimeout(()=>el.classList.add('vis'),i*300+600)})},0);})();
+/* VERSES */
+const verses=[{icon:'✨',text:'"Porque yo sé los planes que tengo para ustedes — planes de bienestar y no de calamidad."',ref:'— Jeremías 29:11'},{icon:'🕊️',text:'"El Señor es mi pastor; nada me faltará. En lugares de delicados pastos me hará descansar."',ref:'— Salmos 23:1-2'},{icon:'💛',text:'"Todo lo puedo en Cristo que me fortalece."',ref:'— Filipenses 4:13'},{icon:'🌅',text:'"Encomienda a Jehová tu camino, y confía en él; y él hará."',ref:'— Salmos 37:5'},{icon:'❤️',text:'"El amor es sufrido, es benigno; el amor no tiene envidia. Todo lo sufre, todo lo espera."',ref:'— 1 Corintios 13:4-7'}];
+let vi=0;
+function nextVerse(){vi=(vi+1)%verses.length;const v=verses[vi];document.getElementById('blessIcon').textContent=v.icon;document.getElementById('blessVerse').textContent=v.text;document.getElementById('blessRef').textContent=v.ref}
+/* CANDLES */
+let cnt=2847;
+function lightCandle(el,label){cnt++;document.getElementById('candleCount').innerHTML=`🕯️ <strong>${cnt.toLocaleString()}</strong> velas encendidas hoy en toda CA`;showToast(`Vela encendida "${label}" 🕯️ Gracias`)}
+/* DONATE SEL */
+function selDonate(el,amt){document.querySelectorAll('.donate-option').forEach(d=>d.classList.remove('sel'));el.classList.add('sel')}
+/* THEME */
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
+if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
+function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
+/* MODALS */
+function openPrayer(){document.getElementById('prayerOverlay').style.display='flex'}
+function closePrayer(){document.getElementById('prayerOverlay').style.display='none'}
+function sendPrayer(){const txt=document.getElementById('pText').value;const name=document.getElementById('pName').value||'Anónimo';if(!txt){showToast('Escribe tu oración');return}const feed=document.getElementById('prayerFeed');const item=document.createElement('div');item.className='feed-item';item.style.animation='fadeUp .5s ease both';item.innerHTML=`<div class="feed-av" style="background:var(--gold)">${name.charAt(0).toUpperCase()}</div><div><div class="feed-name">${name}</div><div class="feed-loc">Tu país</div><div class="feed-msg">"${txt}"</div><div class="feed-time">Ahora mismo · Siendo orado</div></div>`;feed.prepend(item);closePrayer();showToast('🙏 Oración enviada. La comunidad ora contigo.')}
+function openDonate(){document.getElementById('donateOverlay').style.display='flex'}
+function closeDonate(){document.getElementById('donateOverlay').style.display='none'}
+function openHelp(){document.getElementById('helpOverlay').style.display='flex'}
+function closeHelp(){document.getElementById('helpOverlay').style.display='none'}
+function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 </script>
 </body>
 </html>
