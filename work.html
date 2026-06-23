@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Yavaya Trabajo — Talento de Centroamérica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<style>
+:root{--bg:#05080e;--bg2:#090d15;--bg3:#0d1220;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--accent2:#7aabff;--accent-glow:rgba(79,142,255,.25);--accent-soft:rgba(79,142,255,.08);--gold:#f0c96a;--gold-soft:rgba(240,201,106,.09);--green:#30d68c;--green-soft:rgba(48,214,140,.09);--red:#ff5f57;--purple:#a78bfa;--purple-soft:rgba(167,139,250,.1);--purple-glow:rgba(167,139,250,.25);--orange:#fb923c;--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--r:14px;--r-lg:22px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#f0f4fc;--bg2:#e5ecf9;--surface:#fff;--surface2:#f5f8ff;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--accent:#2563eb;--accent-glow:rgba(37,99,235,.18);--accent-soft:rgba(37,99,235,.08);--gold:#a16207;--gold-soft:rgba(161,98,7,.08);--green:#16a34a;--green-soft:rgba(22,163,74,.08);--purple:#7c3aed;--purple-soft:rgba(124,58,237,.1);--purple-glow:rgba(124,58,237,.2);--text:#0d1626;--text2:#4a5c78;--text3:rgba(13,22,38,.3);--shadow:0 4px 24px rgba(0,0,0,.1);--shadow-lg:0 20px 60px rgba(0,0,0,.15)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:99px}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
+[data-theme="light"] .nav{background:rgba(240,244,252,.9)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-dot{width:9px;height:9px;border-radius:50%;background:var(--purple);box-shadow:0 0 14px var(--purple);animation:ndot 2.5s ease-in-out infinite}
+@keyframes ndot{0%,100%{box-shadow:0 0 6px var(--purple)}50%{box-shadow:0 0 22px var(--purple),0 0 44px var(--purple-glow)}}
+.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--purple)}
+.nav-tag{font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-soft);border:1px solid rgba(167,139,250,.2);padding:3px 10px;border-radius:99px}
+.nav-links{display:flex;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--purple)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.lang-sw{display:flex;background:var(--surface);border-radius:9px;padding:2px;gap:2px}
+.lang-btn{padding:4px 10px;border-radius:7px;border:none;background:none;font-size:11px;font-weight:700;color:var(--text2);transition:all .2s}.lang-btn.on{background:var(--purple);color:#fff}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-cta{padding:9px 20px;border-radius:11px;background:var(--purple);color:#fff;border:none;font-size:13px;font-weight:700;transition:all .25s}.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--purple-glow)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;cursor:pointer}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);z-index:299;padding:12px 16px;flex-direction:column;gap:4px}
+.nav-mob.open{display:flex}
+.nav-mob-a{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);transition:all .2s}.nav-mob-a:hover{background:var(--surface);color:var(--text)}
+/* BUTTONS */
+.btn-primary{padding:12px 26px;border-radius:13px;background:var(--purple);color:#fff;border:none;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--purple-glow)}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-outline:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-soft);transform:translateY(-2px)}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes drift{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,25px)}100%{transform:translate(0,0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes shimmer{0%{opacity:.5}50%{opacity:1}100%{opacity:.5}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94)}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.12s}.reveal-d2{transition-delay:.24s}.reveal-d3{transition-delay:.36s}.reveal-d4{transition-delay:.48s}
+.reveal-l{opacity:0;transform:translateX(-30px);transition:opacity .7s,transform .7s}.reveal-l.vis{opacity:1;transform:translateX(0)}
+/* PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.4}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 80px) 24px 100px;position:relative;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 18s ease-in-out infinite}
+.hero-orb:nth-child(1){width:700px;height:700px;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 70%);top:-180px;left:calc(50% - 350px);animation-duration:20s}
+.hero-orb:nth-child(2){width:500px;height:500px;background:radial-gradient(circle,rgba(79,142,255,.07),transparent 70%);bottom:-100px;right:-100px;animation-duration:25s;animation-delay:-10s}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(167,139,250,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(167,139,250,.03) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%)}
+.hero-inner{position:relative;z-index:2;max-width:800px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--purple-soft);border:1px solid rgba(167,139,250,.2);font-size:12px;font-weight:700;color:var(--purple);letter-spacing:.5px;margin-bottom:32px;animation:fadeUp .7s ease both}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:ndot 2s infinite}
+.hero-h{font-size:clamp(44px,9vw,96px);font-weight:900;letter-spacing:-3.5px;line-height:.9;margin-bottom:26px;animation:fadeUp .7s .1s ease both}
+.hero-h .g1{display:block;background:linear-gradient(135deg,var(--text) 0%,var(--purple) 60%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .hero-h .g1{background:linear-gradient(135deg,#0d1626 0%,#7c3aed 60%,#2563eb 100%);-webkit-background-clip:text;background-clip:text}
+.hero-p{font-size:clamp(16px,2vw,19px);color:var(--text2);max-width:540px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+/* SUB LOCK BANNER */
+.lock-banner{background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(79,142,255,.08));border:1px solid rgba(167,139,250,.25);border-radius:20px;padding:28px 32px;margin:60px 0 0;text-align:center;position:relative;overflow:hidden;animation:fadeUp .7s .4s ease both}
+.lock-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 0%,rgba(167,139,250,.1),transparent)}
+.lock-h{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:8px}
+.lock-p{font-size:14px;color:var(--text2);margin-bottom:20px}
+.lock-price{display:inline-flex;align-items:baseline;gap:4px;margin-bottom:20px}
+.lock-amt{font-size:44px;font-weight:900;color:var(--text);letter-spacing:-2px}
+.lock-per{font-size:15px;color:var(--text2);font-weight:600}
+/* SECTIONS */
+.section{padding:100px 24px;position:relative}
+.container{max-width:1200px;margin:0 auto}
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--purple);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--purple);border-radius:1px}
+.sec-h{font-size:clamp(28px,4.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
+.sec-p{font-size:16px;color:var(--text2);max-width:540px;line-height:1.7}
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.how-step{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:32px;position:relative;overflow:hidden;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.how-step:hover{transform:translateY(-8px);border-color:rgba(167,139,250,.3);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.how-num{font-size:80px;font-weight:900;color:rgba(167,139,250,.08);position:absolute;top:-10px;right:16px;line-height:1;pointer-events:none;letter-spacing:-4px}
+.how-icon{font-size:36px;margin-bottom:16px}
+.how-h{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:8px}
+.how-p{font-size:13px;color:var(--text2);line-height:1.65}
+/* JOB CARDS GRID */
+.jobs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.job-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative;cursor:pointer}
+.job-card:hover{transform:translateY(-6px);border-color:rgba(167,139,250,.3);box-shadow:0 16px 50px rgba(0,0,0,.4)}
+.jc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.jc-av{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:15px}
+.jc-lock{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-soft);padding:4px 10px;border-radius:99px}
+.jc-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4}
+.jc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.jc-tag{padding:3px 9px;border-radius:6px;background:var(--surface2);font-size:11px;color:var(--text2);font-weight:600}
+.jc-bot{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+.jc-rate{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.5px}
+.jc-stars{color:var(--gold);font-size:11px;letter-spacing:1px}
+/* Blur overlay for locked cards */
+.jc-blur{position:absolute;inset:0;border-radius:20px;backdrop-filter:blur(3px);background:rgba(5,8,14,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;opacity:0;transition:opacity .3s}
+.job-card:hover .jc-blur{opacity:1}
+.jc-blur-txt{font-size:13px;font-weight:700;color:#fff;background:var(--purple);padding:8px 20px;border-radius:10px}
+/* CATEGORIES */
+.cats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:48px}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;text-align:center;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.cat-card:hover{border-color:rgba(167,139,250,.4);transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.cat-icon{font-size:36px;margin-bottom:12px;display:block;transition:transform .3s}.cat-card:hover .cat-icon{transform:scale(1.2)}
+.cat-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.cat-count{font-size:12px;color:var(--text2);font-weight:500}
+/* PRICING */
+.pricing-wrap{display:flex;gap:20px;margin-top:56px;justify-content:center;flex-wrap:wrap}
+.plan{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:32px;min-width:280px;max-width:340px;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.plan:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg)}
+.plan.featured{border-color:rgba(167,139,250,.4);background:linear-gradient(135deg,rgba(167,139,250,.08),var(--surface));position:relative}
+.plan-best{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;font-size:11px;font-weight:800;padding:4px 16px;border-radius:99px;white-space:nowrap}
+.plan-name{font-size:14px;font-weight:700;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.plan-price{font-size:52px;font-weight:900;color:var(--text);letter-spacing:-3px;line-height:1}
+.plan-per{font-size:14px;color:var(--text2);font-weight:500;margin-bottom:24px}
+.plan-perks{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-perk{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text)}
+.plan-check{width:18px;height:18px;border-radius:5px;background:var(--purple-soft);border:1px solid rgba(167,139,250,.3);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.72);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}.modal-x:hover{background:var(--surface2);color:var(--text)}
+.modal-h{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-soft)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:90px;resize:vertical}
+.form-group{margin-bottom:14px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* RESPONSIVE */
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:768px){.how-grid{grid-template-columns:1fr}.jobs-grid{grid-template-columns:1fr}.cats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.nav{padding:0 16px}.section{padding:70px 16px}.hero-h{letter-spacing:-2px}}
+</style>
+</head>
+<body>
+<canvas id="pcanvas"></canvas>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <span class="nav-logo">Yava<span>ya</span></span>
+    <span class="nav-tag">Trabaja</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a">Inicio</a>
+    <a href="mercadito.html" class="nav-a">Mercadito</a>
+    <a href="yavayago.html" class="nav-a">YavayaGo</a>
+    <a href="church.html" class="nav-a">Santuario</a>
+    <a href="animals.html" class="nav-a">Animales</a>
+    <a href="work.html" class="nav-a active">Trabaja</a>
+    <a href="tokens.html" class="nav-a">Tokens</a>
+  </div>
+  <div class="nav-r">
+    <div class="lang-sw"><button class="lang-btn on" data-l="es">ES</button><button class="lang-btn" data-l="en">EN</button></div>
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-cta" onclick="openSub()">Suscribirse</button>
+    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
+  <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="pdot"></span> La plataforma de trabajo de CA</div>
+    <h1 class="hero-h">
+      <span class="g1">Talento</span>
+      <span class="g1">sin fronteras</span>
+    </h1>
+    <p class="hero-p">Conecta con los mejores profesionales de Centroamérica. Sin licitaciones, sin guerra de precios — puro talento. Solo para suscriptores activos.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openSub()">
+        🔓 Suscribirse ahora
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="btn-outline" onclick="openPost()">Publicar proyecto</button>
+    </div>
+    <div class="lock-banner">
+      <div class="lock-h">🔒 Acceso exclusivo para suscriptores</div>
+      <div class="lock-p">Proyectos, freelancers y oportunidades solo son visibles con una suscripción activa</div>
+      <div class="lock-price"><span class="lock-amt">$4.99</span><span class="lock-per">/ semana</span></div>
+      <button class="btn-primary" onclick="openSub()">Activar acceso semanal</button>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" style="background:var(--bg2)" id="how">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">¿Cómo funciona?</div>
+      <h2 class="sec-h">Simple, rápido,<br>directo al grano</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal">
+        <div class="how-num">01</div>
+        <div class="how-icon">🔓</div>
+        <div class="how-h">Suscríbete</div>
+        <div class="how-p">Activa tu suscripción semanal. $4.99 te da acceso completo por 7 días a proyectos, perfiles y contacto directo.</div>
+      </div>
+      <div class="how-step reveal reveal-d1">
+        <div class="how-num">02</div>
+        <div class="how-icon">🔍</div>
+        <div class="how-h">Explora o publica</div>
+        <div class="how-p">¿Buscas talento? Navega perfiles. ¿Eres profesional? Publica tus servicios y conecta con clientes reales en CA.</div>
+      </div>
+      <div class="how-step reveal reveal-d2">
+        <div class="how-num">03</div>
+        <div class="how-icon">💰</div>
+        <div class="how-h">Trabaja y cobra</div>
+        <div class="how-p">Acordad precio directamente. Paga con tokens Yavaya o efectivo. Sin comisiones absurdas ni intermediarios.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOB LISTINGS (blurred for non-subs) -->
+<section class="section" style="background:var(--bg)" id="jobs">
+  <div class="container">
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div class="sec-label">Proyectos activos</div>
+        <h2 class="sec-h">Lo que hay disponible</h2>
+      </div>
+      <button class="btn-primary" onclick="openSub()">🔓 Ver todo</button>
+    </div>
+    <div class="jobs-grid">
+      <!-- visible preview -->
+      <div class="job-card reveal">
+        <div class="jc-top">
+          <div class="jc-av" style="background:linear-gradient(135deg,var(--purple),var(--accent))">JM</div>
+          <div class="jc-lock">🔒 Suscriptores</div>
+        </div>
+        <div class="jc-title">Diseño UI/UX para app de fintech en Guatemala</div>
+        <div class="jc-tags"><span class="jc-tag">Figma</span><span class="jc-tag">UI/UX</span><span class="jc-tag">Mobile</span></div>
+        <div class="jc-bot"><div class="jc-rate">$150 USD</div><div class="jc-stars">★★★★★ (48)</div></div>
+        <div class="jc-blur"><div class="jc-blur-txt">🔓 Suscribirse para ver</div></div>
+      </div>
+      <div class="job-card reveal reveal-d1">
+        <div class="jc-top">
+          <div class="jc-av" style="background:linear-gradient(135deg,var(--green),var(--accent))">AL</div>
+          <div class="jc-lock">🔒 Suscriptores</div>
+        </div>
+        <div class="jc-title">Desarrollo full-stack e-commerce para negocio local</div>
+        <div class="jc-tags"><span class="jc-tag">React</span><span class="jc-tag">Node.js</span><span class="jc-tag">MongoDB</span></div>
+        <div class="jc-bot"><div class="jc-rate">$280 USD</div><div class="jc-stars">★★★★★ (92)</div></div>
+        <div class="jc-blur"><div class="jc-blur-txt">🔓 Suscribirse para ver</div></div>
+      </div>
+      <div class="job-card reveal reveal-d2">
+        <div class="jc-top">
+          <div class="jc-av" style="background:linear-gradient(135deg,var(--orange),var(--gold))">SR</div>
+          <div class="jc-lock">🔒 Suscriptores</div>
+        </div>
+        <div class="jc-title">Marketing digital y redes sociales para restaurante</div>
+        <div class="jc-tags"><span class="jc-tag">Instagram</span><span class="jc-tag">SEO</span><span class="jc-tag">Ads</span></div>
+        <div class="jc-bot"><div class="jc-rate">$100 USD</div><div class="jc-stars">★★★★☆ (31)</div></div>
+        <div class="jc-blur"><div class="jc-blur-txt">🔓 Suscribirse para ver</div></div>
+      </div>
+      <div class="job-card reveal reveal-d1">
+        <div class="jc-top">
+          <div class="jc-av" style="background:linear-gradient(135deg,var(--purple),var(--gold))">MC</div>
+          <div class="jc-lock">🔒 Suscriptores</div>
+        </div>
+        <div class="jc-title">Redacción de contenido en español para blog</div>
+        <div class="jc-tags"><span class="jc-tag">Copywriting</span><span class="jc-tag">SEO</span></div>
+        <div class="jc-bot"><div class="jc-rate">$60 USD</div><div class="jc-stars">★★★★★ (17)</div></div>
+        <div class="jc-blur"><div class="jc-blur-txt">🔓 Suscribirse para ver</div></div>
+      </div>
+      <div class="job-card reveal reveal-d2">
+        <div class="jc-top">
+          <div class="jc-av" style="background:linear-gradient(135deg,var(--accent),var(--green))">PR</div>
+          <div class="jc-lock">🔒 Suscriptores</div>
+        </div>
+        <div class="jc-title">Fotografía de producto para tienda Mercadito</div>
+        <div class="jc-tags"><span class="jc-tag">Fotografía</span><span class="jc-tag">Edición</span></div>
+        <div class="jc-bot"><div class="jc-rate">$85 USD</div><div class="jc-stars">★★★★★ (24)</div></div>
+        <div class="jc-blur"><div class="jc-blur-txt">🔓 Suscribirse para ver</div></div>
+      </div>
+      <div class="job-card reveal reveal-d3" style="background:linear-gradient(135deg,rgba(167,139,250,.08),var(--surface));border-color:rgba(167,139,250,.25);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px">
+        <div style="font-size:40px">🔒</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text)">+200 proyectos más</div>
+        <div style="font-size:13px;color:var(--text2)">Activa tu suscripción semanal para ver todos los proyectos disponibles</div>
+        <button class="btn-primary" onclick="openSub()" style="margin-top:8px">Suscribirme — $4.99/sem</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sec-label" style="justify-content:center;display:flex">Categorías</div>
+      <h2 class="sec-h" style="text-align:center">¿Qué necesitas?</h2>
+    </div>
+    <div class="cats-grid">
+      <div class="cat-card reveal"><span class="cat-icon">💻</span><div class="cat-name">Tecnología</div><div class="cat-count">84 proyectos</div></div>
+      <div class="cat-card reveal reveal-d1"><span class="cat-icon">🎨</span><div class="cat-name">Diseño</div><div class="cat-count">67 proyectos</div></div>
+      <div class="cat-card reveal reveal-d2"><span class="cat-icon">📱</span><div class="cat-name">Marketing Digital</div><div class="cat-count">53 proyectos</div></div>
+      <div class="cat-card reveal reveal-d3"><span class="cat-icon">✍️</span><div class="cat-name">Redacción</div><div class="cat-count">41 proyectos</div></div>
+      <div class="cat-card reveal"><span class="cat-icon">📸</span><div class="cat-name">Fotografía</div><div class="cat-count">38 proyectos</div></div>
+      <div class="cat-card reveal reveal-d1"><span class="cat-icon">🎵</span><div class="cat-name">Audio / Video</div><div class="cat-count">29 proyectos</div></div>
+      <div class="cat-card reveal reveal-d2"><span class="cat-icon">📊</span><div class="cat-name">Finanzas</div><div class="cat-count">22 proyectos</div></div>
+      <div class="cat-card reveal reveal-d3"><span class="cat-icon">🏗️</span><div class="cat-name">Construcción</div><div class="cat-count">18 proyectos</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" style="background:var(--bg)" id="pricing">
+  <div class="container" style="text-align:center">
+    <div class="reveal">
+      <div class="sec-label" style="justify-content:center;display:flex">Suscripción</div>
+      <h2 class="sec-h">Acceso completo,<br>sin sorpresas</h2>
+      <p class="sec-p" style="margin:0 auto">Una sola suscripción te da acceso total a proyectos, perfiles y contacto directo durante 7 días.</p>
+    </div>
+    <div class="pricing-wrap" style="margin-top:56px">
+      <div class="plan reveal">
+        <div class="plan-name">Semanal</div>
+        <div class="plan-price">$4.99</div>
+        <div class="plan-per">por 7 días</div>
+        <div class="plan-perks">
+          <div class="plan-perk"><div class="plan-check">✓</div>Acceso a todos los proyectos</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Ver perfiles completos</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Contacto directo</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Publicar 1 proyecto</div>
+        </div>
+        <button class="btn-outline" onclick="openSub()" style="width:100%;justify-content:center">Activar</button>
+      </div>
+      <div class="plan featured reveal reveal-d1">
+        <div class="plan-best">⚡ Más popular</div>
+        <div class="plan-name">Mensual</div>
+        <div class="plan-price">$14.99</div>
+        <div class="plan-per">por 30 días · ahorra 25%</div>
+        <div class="plan-perks">
+          <div class="plan-perk"><div class="plan-check">✓</div>Todo del plan semanal</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Publicar hasta 10 proyectos</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Perfil destacado</div>
+          <div class="plan-perk"><div class="plan-check">✓</div>Soporte prioritario</div>
+        </div>
+        <button class="btn-primary" onclick="openSub()" style="width:100%;justify-content:center">Activar ahora</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUB MODAL -->
+<div class="overlay" id="subOverlay" style="display:none" onclick="if(event.target===this)closeSub()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeSub()">✕</button>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:48px;margin-bottom:12px">🔓</div>
+      <div class="modal-h">Activar suscripción</div>
+      <div class="modal-sub">Acceso completo a toda la plataforma de trabajo</div>
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:22px">
+      <div id="planW" onclick="selPlan('w')" style="flex:1;padding:16px;border-radius:14px;border:2px solid var(--purple);background:var(--purple-soft);cursor:pointer;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--text)">$4.99</div>
+        <div style="font-size:12px;color:var(--text2);font-weight:600">7 días</div>
+      </div>
+      <div id="planM" onclick="selPlan('m')" style="flex:1;padding:16px;border-radius:14px;border:1px solid var(--border2);cursor:pointer;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--text)">$14.99</div>
+        <div style="font-size:12px;color:var(--text2);font-weight:600">30 días · -25%</div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="subEmail" placeholder="tu@email.com"></div>
+    <div class="form-group"><label class="form-label">Método de pago</label>
+      <select class="form-select" id="subPay">
+        <option value="">Seleccionar...</option>
+        <option>Tarjeta de crédito / débito</option>
+        <option>Tokens Yavaya</option>
+        <option>Transferencia bancaria</option>
+      </select>
+    </div>
+    <button class="btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px" onclick="doSub()">
+      🔓 Activar acceso ahora
+    </button>
+    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:12px">Cancela cuando quieras. Sin compromisos.</p>
+  </div>
+</div>
+
+<!-- POST MODAL -->
+<div class="overlay" id="postOverlay" style="display:none" onclick="if(event.target===this)closePost()">
+  <div class="modal">
+    <button class="modal-x" onclick="closePost()">✕</button>
+    <div class="modal-h">Publicar proyecto</div>
+    <div class="modal-sub">Requiere suscripción activa</div>
+    <div class="form-group"><label class="form-label">Título del proyecto</label><input class="form-input" placeholder="Ej: Diseño de logo para mi empresa"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Categoría</label><select class="form-select"><option>Tecnología</option><option>Diseño</option><option>Marketing</option><option>Redacción</option><option>Fotografía</option><option>Otro</option></select></div>
+      <div class="form-group"><label class="form-label">Presupuesto (USD)</label><input class="form-input" type="number" placeholder="100"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-input form-textarea" placeholder="Describe qué necesitas, plazos y detalles importantes..."></textarea></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closePost();showToast('¡Proyecto publicado! Solo suscriptores lo verán.')">Publicar proyecto</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* PARTICLES */
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[],mx=-999,my=-999;const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.r=Math.random()*1.5+.4;this.a=Math.random()*.4+.1}update(){this.x+=this.vx;this.y+=this.vy;const dx=this.x-mx,dy=this.y-my,d=Math.sqrt(dx*dx+dy*dy);if(d<80){this.x+=dx/d*1.8;this.y+=dy/d*1.8}if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(167,139,250,${this.a})`:`rgba(124,58,237,${this.a*.5})`;ctx.fill()}}
+for(let i=0;i<70;i++)ps.push(new P());
+function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});})();
+/* REVEAL */
+(function(){const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis')})},{threshold:.1});document.querySelectorAll('.reveal,.reveal-l').forEach(el=>obs.observe(el))})();
+/* THEME */
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
+if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
+function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
+/* SUB MODAL */
+let selP='w';
+function openSub(){document.getElementById('subOverlay').style.display='flex'}
+function closeSub(){document.getElementById('subOverlay').style.display='none'}
+function selPlan(p){selP=p;document.getElementById('planW').style.border=p==='w'?'2px solid var(--purple)':'1px solid var(--border2)';document.getElementById('planW').style.background=p==='w'?'var(--purple-soft)':'transparent';document.getElementById('planM').style.border=p==='m'?'2px solid var(--purple)':'1px solid var(--border2)';document.getElementById('planM').style.background=p==='m'?'var(--purple-soft)':'transparent'}
+function doSub(){const e=document.getElementById('subEmail').value;if(!e){showToast('Ingresa tu email');return}showToast('¡Suscripción activada! Bienvenido 🎉');closeSub()}
+function openPost(){document.getElementById('postOverlay').style.display='flex'}
+function closePost(){document.getElementById('postOverlay').style.display='none'}
+function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+</script>
+</body>
+</html>

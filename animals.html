@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+<title>Yavaya Animales — Bienestar Animal en Centroamérica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
+<style>
+:root{--bg:#05080e;--bg2:#090d15;--surface:#111827;--surface2:#1a2335;--border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.1);--accent:#4f8eff;--accent-soft:rgba(79,142,255,.08);--gold:#f0c96a;--gold-soft:rgba(240,201,106,.09);--green:#30d68c;--green-soft:rgba(48,214,140,.09);--green-glow:rgba(48,214,140,.25);--red:#ff5f57;--orange:#fb923c;--orange-soft:rgba(251,146,60,.1);--orange-glow:rgba(251,146,60,.25);--text:#e8eef8;--text2:#7e90aa;--text3:rgba(232,238,248,.25);--nav-h:64px;--r:14px;--r-lg:22px;--shadow:0 4px 32px rgba(0,0,0,.6);--shadow-lg:0 20px 60px rgba(0,0,0,.7)}
+[data-theme="light"]{--bg:#f0f4fc;--bg2:#e5ecf9;--surface:#fff;--surface2:#f5f8ff;--border:rgba(0,0,0,.07);--border2:rgba(0,0,0,.13);--green:#16a34a;--green-soft:rgba(22,163,74,.08);--green-glow:rgba(22,163,74,.2);--orange:#ea7c1a;--orange-soft:rgba(234,124,26,.1);--orange-glow:rgba(234,124,26,.2);--text:#0d1626;--text2:#4a5c78;--text3:rgba(13,22,38,.3)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;overflow-x:hidden;line-height:1.6;transition:background .35s,color .35s}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--green);border-radius:99px}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(5,8,14,.8);backdrop-filter:blur(28px);border-bottom:1px solid var(--border)}
+[data-theme="light"] .nav{background:rgba(240,244,252,.9)}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green);animation:ndot 2.5s ease-in-out infinite}
+@keyframes ndot{0%,100%{box-shadow:0 0 6px var(--green)}50%{box-shadow:0 0 22px var(--green),0 0 44px var(--green-glow)}}
+.nav-logo{font-size:19px;font-weight:900;letter-spacing:-1px}.nav-logo span{color:var(--green)}
+.nav-tag{font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);border:1px solid rgba(48,214,140,.2);padding:3px 10px;border-radius:99px}
+.nav-links{display:flex;gap:2px}
+.nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--green)}
+.nav-r{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s}
+.btn-cta{padding:9px 20px;border-radius:11px;background:var(--green);color:#0d1626;border:none;font-size:13px;font-weight:800;transition:all .25s}.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px var(--green-glow)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:none;border:none;padding:8px;cursor:pointer}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px}
+.nav-mob{display:none;position:fixed;top:var(--nav-h);left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);z-index:299;padding:12px 16px;flex-direction:column;gap:4px}.nav-mob.open{display:flex}
+.nav-mob-a{padding:12px 16px;border-radius:10px;font-size:14px;font-weight:600;color:var(--text2);transition:all .2s}.nav-mob-a:hover{background:var(--surface);color:var(--text)}
+/* BUTTONS */
+.btn-primary{padding:12px 26px;border-radius:13px;background:var(--green);color:#0d1626;border:none;font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--green-glow)}
+.btn-outline{padding:12px 26px;border-radius:13px;background:transparent;color:var(--text);border:1px solid var(--border2);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all .3s}
+.btn-outline:hover{border-color:var(--green);color:var(--green);background:var(--green-soft);transform:translateY(-2px)}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes drift{0%{transform:translate(0,0)}33%{transform:translate(30px,-20px)}66%{transform:translate(-20px,25px)}100%{transform:translate(0,0)}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.2)}28%{transform:scale(1)}42%{transform:scale(1.15)}70%{transform:scale(1)}}
+@keyframes paw-walk{0%,100%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-8px) rotate(5deg)}75%{transform:translateY(-4px) rotate(-3deg)}}
+@keyframes pop-in{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.25,.46,.45,.94),transform .7s cubic-bezier(.25,.46,.45,.94)}.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.12s}.reveal-d2{transition-delay:.24s}.reveal-d3{transition-delay:.36s}.reveal-d4{transition-delay:.48s}
+/* PARTICLES */
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.4}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:calc(var(--nav-h) + 80px) 24px 100px;position:relative;overflow:hidden;text-align:center}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:drift 20s ease-in-out infinite}
+.hero-orb:nth-child(1){width:700px;height:700px;background:radial-gradient(circle,rgba(48,214,140,.1),transparent 70%);top:-200px;left:calc(50% - 350px)}
+.hero-orb:nth-child(2){width:480px;height:480px;background:radial-gradient(circle,rgba(251,146,60,.06),transparent 70%);bottom:-80px;right:-80px;animation-delay:-10s}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(48,214,140,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(48,214,140,.025) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black 20%,transparent 100%)}
+/* Floating paws */
+.paw-float{position:absolute;font-size:24px;opacity:0;animation:paw-walk 3s ease-in-out infinite,fadeUp .8s ease forwards;pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:820px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;border-radius:99px;background:var(--green-soft);border:1px solid rgba(48,214,140,.2);font-size:12px;font-weight:700;color:var(--green);letter-spacing:.5px;margin-bottom:32px;animation:fadeUp .7s ease both}
+.hero-h{font-size:clamp(44px,9vw,96px);font-weight:900;letter-spacing:-3.5px;line-height:.9;margin-bottom:26px;animation:fadeUp .7s .1s ease both}
+.hero-h .g1{display:block;background:linear-gradient(135deg,var(--text) 0%,var(--green) 55%,var(--orange) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+[data-theme="light"] .hero-h .g1{background:linear-gradient(135deg,#0d1626 0%,#16a34a 55%,#ea7c1a 100%);-webkit-background-clip:text;background-clip:text}
+.hero-p{font-size:clamp(16px,2vw,19px);color:var(--text2);max-width:540px;margin:0 auto 48px;line-height:1.75;animation:fadeUp .7s .2s ease both}
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both}
+/* SECTIONS */
+.section{padding:100px 24px;position:relative}
+.container{max-width:1200px;margin:0 auto}
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+.sec-label::before{content:'';width:18px;height:2px;background:var(--green);border-radius:1px}
+.sec-h{font-size:clamp(28px,4.5vw,48px);font-weight:900;letter-spacing:-2px;color:var(--text);line-height:1.05;margin-bottom:16px}
+.sec-p{font-size:16px;color:var(--text2);max-width:540px;line-height:1.7}
+/* IMPACT STATS */
+.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px}
+.impact-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+.impact-card:hover{transform:translateY(-6px);border-color:rgba(48,214,140,.3);box-shadow:0 16px 50px rgba(0,0,0,.4)}
+.impact-icon{font-size:40px;margin-bottom:14px;display:block;animation:heartbeat 3s ease-in-out infinite}
+.impact-n{font-size:36px;font-weight:900;color:var(--text);letter-spacing:-2px;line-height:1}
+.impact-l{font-size:12px;color:var(--text2);font-weight:600;margin-top:6px;letter-spacing:.4px}
+/* WHY CARE */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.why-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px;transition:all .35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+.why-card:hover{transform:translateY(-8px);border-color:rgba(48,214,140,.3);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.why-icon{font-size:44px;margin-bottom:18px;display:block;transition:transform .4s}.why-card:hover .why-icon{transform:scale(1.2) rotate(-8deg)}
+.why-h{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:10px}
+.why-p{font-size:13px;color:var(--text2);line-height:1.7}
+.why-glow{position:absolute;width:200px;height:200px;border-radius:50%;filter:blur(60px);opacity:.07;pointer-events:none;right:-40px;bottom:-40px;transition:opacity .4s;background:var(--green)}.why-card:hover .why-glow{opacity:.15}
+/* ADOPTION GRID */
+.adopt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.adopt-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.adopt-card:hover{transform:translateY(-10px) scale(1.01);border-color:rgba(48,214,140,.3);box-shadow:0 24px 70px rgba(0,0,0,.5)}
+.adopt-img{width:100%;height:200px;object-fit:cover;filter:brightness(.75) saturate(.8);transition:transform .6s,filter .4s}
+.adopt-card:hover .adopt-img{transform:scale(1.08);filter:brightness(.9) saturate(1.1)}
+.adopt-body{padding:20px}
+.adopt-name{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px}
+.adopt-info{font-size:12px;color:var(--text2);margin-bottom:12px}
+.adopt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.adopt-tag{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:600}
+.adopt-tag-green{background:var(--green-soft);color:var(--green)}
+.adopt-tag-orange{background:var(--orange-soft);color:var(--orange)}
+.adopt-btn{width:100%;padding:10px;border-radius:11px;background:var(--green);color:#0d1626;border:none;font-size:13px;font-weight:800;transition:all .25s}
+.adopt-btn:hover{box-shadow:0 6px 20px var(--green-glow)}
+/* EDUCATION */
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:56px}
+.edu-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;display:flex;align-items:flex-start;gap:16px;transition:all .3s;cursor:pointer}
+.edu-card:hover{border-color:rgba(48,214,140,.3);transform:translateX(4px);box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.edu-icon{width:48px;height:48px;border-radius:13px;background:var(--green-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;transition:transform .3s}.edu-card:hover .edu-icon{transform:scale(1.15)}
+.edu-h{font-size:15px;font-weight:700;color:var(--text);margin-bottom:5px}
+.edu-p{font-size:13px;color:var(--text2);line-height:1.6}
+.edu-tag{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:var(--green);background:var(--green-soft);padding:3px 9px;border-radius:6px}
+/* HELP STRIP */
+.help-strip{background:linear-gradient(135deg,rgba(48,214,140,.12),rgba(251,146,60,.08));border:1px solid rgba(48,214,140,.2);border-radius:24px;padding:48px 40px;text-align:center;position:relative;overflow:hidden;margin:0 24px}
+.help-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 50% 0%,rgba(48,214,140,.08),transparent)}
+.help-h{font-size:clamp(26px,4vw,40px);font-weight:900;color:var(--text);letter-spacing:-1.5px;margin-bottom:12px}
+.help-p{font-size:15px;color:var(--text2);margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
+.help-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+/* MODAL */
+.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.72);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:24px;padding:32px 28px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg);animation:pop-in .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}.modal-x:hover{background:var(--surface2);color:var(--text)}
+.modal-h{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.3px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+.form-textarea{min-height:90px;resize:vertical}.form-group{margin-bottom:14px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--surface);border:1px solid var(--border2);color:var(--text);font-size:13px;font-weight:500;padding:11px 22px;border-radius:12px;box-shadow:var(--shadow);z-index:9999;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* RESPONSIVE */
+@media(max-width:900px){.nav-links{display:none}.nav-ham{display:flex}}
+@media(max-width:768px){.impact-grid{grid-template-columns:repeat(2,1fr)}.why-grid{grid-template-columns:1fr}.adopt-grid{grid-template-columns:1fr}.edu-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.nav{padding:0 16px}.section{padding:70px 16px}.hero-h{letter-spacing:-2px}.help-strip{margin:0 16px;padding:32px 24px}}
+</style>
+</head>
+<body>
+<canvas id="pcanvas"></canvas>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <span class="nav-logo">Yava<span>ya</span></span>
+    <span class="nav-tag">Animales</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-a">Inicio</a>
+    <a href="mercadito.html" class="nav-a">Mercadito</a>
+    <a href="yavayago.html" class="nav-a">YavayaGo</a>
+    <a href="church.html" class="nav-a">Santuario</a>
+    <a href="animals.html" class="nav-a active">Animales</a>
+    <a href="work.html" class="nav-a">Trabaja</a>
+    <a href="tokens.html" class="nav-a">Tokens</a>
+  </div>
+  <div class="nav-r">
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙</button>
+    <button class="btn-cta" onclick="openAdopt()">Adoptar ahora</button>
+    <button class="nav-ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="nav-mob" id="navMob">
+  <a href="index.html" class="nav-mob-a">🏠 Inicio</a>
+  <a href="mercadito.html" class="nav-mob-a">🛒 Mercadito</a>
+  <a href="yavayago.html" class="nav-mob-a">🚀 YavayaGo</a>
+  <a href="church.html" class="nav-mob-a">✝ Santuario</a>
+  <a href="animals.html" class="nav-mob-a">🐾 Animales</a>
+  <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
+  <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb"></div><div class="hero-orb"></div>
+  <div class="hero-grid"></div>
+  <div class="paw-float" style="top:25%;left:8%;animation-delay:.5s">🐾</div>
+  <div class="paw-float" style="top:35%;right:9%;animation-delay:1.2s;font-size:18px">🐾</div>
+  <div class="paw-float" style="bottom:30%;left:12%;animation-delay:2s;font-size:20px">🐾</div>
+  <div class="paw-float" style="bottom:25%;right:8%;animation-delay:.8s;font-size:16px">🐾</div>
+  <div class="hero-inner">
+    <div class="hero-badge">🐾 Bienestar animal en CA</div>
+    <h1 class="hero-h">
+      <span class="g1">Ayudar siendo</span>
+      <span class="g1">egoístas.</span>
+    </h1>
+    <p class="hero-p">Los animales nos dan amor incondicional. Cuidarlos bien no es solo bondad — es lo que nos hace más humanos. Aprende, adopta y ayuda aquí.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="openAdopt()">
+        🐾 Ver animales en adopción
+      </button>
+      <button class="btn-outline" onclick="document.getElementById('edu').scrollIntoView({behavior:'smooth'})">Aprender a cuidarlos</button>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT STATS -->
+<section class="section" style="background:var(--bg2)">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sec-label" style="justify-content:center;display:flex">Impacto real</div>
+      <h2 class="sec-h" style="text-align:center">Lo que hemos logrado juntos</h2>
+    </div>
+    <div class="impact-grid">
+      <div class="impact-card reveal">
+        <span class="impact-icon">🏠</span>
+        <div class="impact-n" id="is1">0</div>
+        <div class="impact-l">Animales adoptados</div>
+      </div>
+      <div class="impact-card reveal reveal-d1">
+        <span class="impact-icon">🍖</span>
+        <div class="impact-n" id="is2">0</div>
+        <div class="impact-l">Comidas donadas</div>
+      </div>
+      <div class="impact-card reveal reveal-d2">
+        <span class="impact-icon">💊</span>
+        <div class="impact-n" id="is3">0</div>
+        <div class="impact-l">Tratamientos pagados</div>
+      </div>
+      <div class="impact-card reveal reveal-d3">
+        <span class="impact-icon">📚</span>
+        <div class="impact-n" id="is4">0</div>
+        <div class="impact-l">Personas educadas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY CARE -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">¿Por qué importa?</div>
+      <h2 class="sec-h">Cuidarlos bien<br>te hace mejor</h2>
+      <p class="sec-p">No es solo sobre los animales. Es sobre quiénes somos cuando nadie nos ve.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <span class="why-icon">❤️</span>
+        <div class="why-h">Amor que cura</div>
+        <div class="why-p">Los estudios demuestran que cuidar animales reduce el estrés, la ansiedad y la depresión. Son medicina viva. Tenerlos bien cuidados te beneficia a ti también.</div>
+        <div class="why-glow"></div>
+      </div>
+      <div class="why-card reveal reveal-d1">
+        <span class="why-icon">🌿</span>
+        <div class="why-h">Equilibrio natural</div>
+        <div class="why-p">Los animales mantienen el equilibrio de los ecosistemas de CA. Protegerlos es proteger el agua, los cultivos y la vida de millones de personas.</div>
+        <div class="why-glow" style="background:var(--orange)"></div>
+      </div>
+      <div class="why-card reveal reveal-d2">
+        <span class="why-icon">👨‍👩‍👧</span>
+        <div class="why-h">Enseñar a los hijos</div>
+        <div class="why-p">Los niños que aprenden a respetar animales crecen con más empatía. Es una de las mejores lecciones de vida que puedes darles — sin costar nada.</div>
+        <div class="why-glow" style="background:#a78bfa"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADOPTION -->
+<section class="section" style="background:var(--bg2)" id="adopt">
+  <div class="container">
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+      <div>
+        <div class="sec-label">En adopción</div>
+        <h2 class="sec-h">Ellos esperan<br>un hogar</h2>
+      </div>
+      <button class="btn-primary" onclick="openAdopt()">Ver todos →</button>
+    </div>
+    <div class="adopt-grid">
+      <div class="adopt-card reveal">
+        <img class="adopt-img" src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80&auto=format&fit=crop" alt="Perro">
+        <div class="adopt-body">
+          <div class="adopt-name">Simón</div>
+          <div class="adopt-info">Perro · 2 años · Guatemala City</div>
+          <div class="adopt-tags"><span class="adopt-tag adopt-tag-green">Vacunado</span><span class="adopt-tag adopt-tag-green">Esterilizado</span><span class="adopt-tag adopt-tag-orange">Urgente</span></div>
+          <button class="adopt-btn" onclick="openAdopt()">Quiero adoptarlo</button>
+        </div>
+      </div>
+      <div class="adopt-card reveal reveal-d1">
+        <img class="adopt-img" src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&q=80&auto=format&fit=crop" alt="Gato">
+        <div class="adopt-body">
+          <div class="adopt-name">Luna</div>
+          <div class="adopt-info">Gata · 1 año · Tegucigalpa</div>
+          <div class="adopt-tags"><span class="adopt-tag adopt-tag-green">Vacunada</span><span class="adopt-tag adopt-tag-green">Esterilizada</span></div>
+          <button class="adopt-btn" onclick="openAdopt()">Quiero adoptarla</button>
+        </div>
+      </div>
+      <div class="adopt-card reveal reveal-d2">
+        <img class="adopt-img" src="https://images.unsplash.com/photo-1548681528-6a5c45b66b42?w=600&q=80&auto=format&fit=crop" alt="Perro">
+        <div class="adopt-body">
+          <div class="adopt-name">Mango</div>
+          <div class="adopt-info">Perro · 4 años · San José, CR</div>
+          <div class="adopt-tags"><span class="adopt-tag adopt-tag-green">Vacunado</span><span class="adopt-tag adopt-tag-orange">Necesita amor</span></div>
+          <button class="adopt-btn" onclick="openAdopt()">Quiero adoptarlo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section class="section" style="background:var(--bg)" id="edu">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-label">Educación</div>
+      <h2 class="sec-h">Aprende a darles<br>una buena vida</h2>
+      <p class="sec-p">Información real y práctica para cuidar animales bien en el contexto de Centroamérica.</p>
+    </div>
+    <div class="edu-grid" style="margin-top:48px">
+      <div class="edu-card reveal" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">🍗</div>
+        <div><div class="edu-h">Alimentación correcta por especie</div><div class="edu-p">Qué comen, cuánto y cuándo. Guías por especie adaptadas a lo que consigues en CA.</div><span class="edu-tag">Guía gratuita</span></div>
+      </div>
+      <div class="edu-card reveal reveal-d1" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">🏥</div>
+        <div><div class="edu-h">Señales de que tu animal está enfermo</div><div class="edu-p">Cómo detectar problemas de salud temprano antes de que sea grave y costoso.</div><span class="edu-tag">Guía gratuita</span></div>
+      </div>
+      <div class="edu-card reveal reveal-d2" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">💉</div>
+        <div><div class="edu-h">Vacunas y desparasitaciones</div><div class="edu-p">Calendario básico de vacunas por país. Lo mínimo que todo dueño debe saber.</div><span class="edu-tag">Guía gratuita</span></div>
+      </div>
+      <div class="edu-card reveal reveal-d3" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">🌡️</div>
+        <div><div class="edu-h">Calor y clima tropical</div><div class="edu-p">Cómo proteger a tus animales del calor extremo que se vive en Centroamérica.</div><span class="edu-tag">Guía gratuita</span></div>
+      </div>
+      <div class="edu-card reveal" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">🏠</div>
+        <div><div class="edu-h">Espacio y bienestar en casa</div><div class="edu-p">Cómo crear un ambiente sano para tu animal aunque tengas poco espacio.</div><span class="edu-tag">Guía gratuita</span></div>
+      </div>
+      <div class="edu-card reveal reveal-d1" onclick="showToast('Abriendo guía...')">
+        <div class="edu-icon">🤝</div>
+        <div><div class="edu-h">Cómo enseñarles a tus hijos</div><div class="edu-p">Actividades y conversaciones para que los niños aprendan a respetar animales desde pequeños.</div><span class="edu-tag">Para familias</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HELP STRIP -->
+<section class="section-sm" style="padding:40px 24px;background:var(--bg2)">
+  <div class="help-strip reveal">
+    <h2 class="help-h">¿Puedes ayudar?</h2>
+    <p class="help-p">Con comida, tiempo, cuidado temporal o una adopción — cada acto de ayuda salva una vida real.</p>
+    <div class="help-btns">
+      <button class="btn-primary" onclick="openDonate()">Donar comida o recursos</button>
+      <button class="btn-outline" onclick="openAdopt()">Dar en adopción</button>
+      <button class="btn-outline" onclick="openFoster()">Casa de tránsito temporal</button>
+    </div>
+  </div>
+</section>
+
+<!-- ADOPTION MODAL -->
+<div class="overlay" id="adoptOverlay" style="display:none" onclick="if(event.target===this)closeAdopt()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeAdopt()">✕</button>
+    <div style="text-align:center;margin-bottom:20px"><div style="font-size:48px;margin-bottom:10px">🐾</div>
+    <div class="modal-h">Solicitar adopción</div>
+    <div class="modal-sub">Cuéntanos sobre ti y tu hogar</div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tu nombre</label><input class="form-input" placeholder="Nombre completo"></div>
+      <div class="form-group"><label class="form-label">País</label><select class="form-select"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option><option>Belice</option><option>México</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="tu@email.com"></div>
+    <div class="form-group"><label class="form-label">¿Tienes espacio exterior? (patio, jardín)</label><select class="form-select"><option>Sí, tengo patio grande</option><option>Sí, patio pequeño</option><option>No, apartamento</option></select></div>
+    <div class="form-group"><label class="form-label">¿Por qué quieres adoptar?</label><textarea class="form-input form-textarea" placeholder="Cuéntanos un poco sobre tu hogar y por qué quieres este animal..."></textarea></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeAdopt();showToast('¡Solicitud enviada! Te contactamos en 24h 🐾')">Enviar solicitud</button>
+  </div>
+</div>
+
+<!-- DONATE MODAL -->
+<div class="overlay" id="donateOverlay" style="display:none" onclick="if(event.target===this)closeDonate()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeDonate()">✕</button>
+    <div style="text-align:center;margin-bottom:20px"><div style="font-size:48px;margin-bottom:10px">🍖</div>
+    <div class="modal-h">Donar recursos</div>
+    <div class="modal-sub">Tu ayuda alimenta vidas reales en CA</div></div>
+    <div class="form-group"><label class="form-label">¿Qué quieres donar?</label><select class="form-select"><option>Alimento para perros</option><option>Alimento para gatos</option><option>Medicamentos</option><option>Dinero para tratamientos</option><option>Otro</option></select></div>
+    <div class="form-group"><label class="form-label">Cantidad / descripción</label><input class="form-input" placeholder="Ej: 10kg de croquetas, $20 USD..."></div>
+    <div class="form-group"><label class="form-label">Tu país</label><select class="form-select"><option>Guatemala</option><option>Honduras</option><option>El Salvador</option><option>Nicaragua</option><option>Costa Rica</option><option>Panamá</option></select></div>
+    <button class="btn-primary" style="width:100%;justify-content:center" onclick="closeDonate();showToast('¡Gracias! Te contactamos para coordinar 🙏')">Ofrecer donación</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){const c=document.getElementById('pcanvas'),ctx=c.getContext('2d');let W,H,ps=[];const dark=()=>document.documentElement.getAttribute('data-theme')!=='light';function rsz(){W=c.width=window.innerWidth;H=c.height=window.innerHeight}rsz();window.addEventListener('resize',rsz);class P{constructor(){this.reset()}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.4;this.vy=(Math.random()-.5)*.4;this.r=Math.random()*1.5+.4;this.a=Math.random()*.4+.1}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle=dark()?`rgba(48,214,140,${this.a})`:`rgba(22,163,74,${this.a*.5})`;ctx.fill()}}
+for(let i=0;i<60;i++)ps.push(new P());
+function loop(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.update();p.draw()});requestAnimationFrame(loop)}loop();})();
+/* REVEAL */
+(function(){const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis')})},{threshold:.1});document.querySelectorAll('.reveal').forEach(el=>obs.observe(el))})();
+/* COUNT UP */
+(function(){const targets=[{id:'is1',val:847,suffix:''},{id:'is2',val:12400,suffix:''},{id:'is3',val:320,suffix:''},{id:'is4',val:5800,suffix:''}];const obs=new IntersectionObserver(entries=>{if(!entries[0].isIntersecting)return;obs.disconnect();targets.forEach(t=>{const el=document.getElementById(t.id);let v=0;const step=t.val/80;const timer=setInterval(()=>{v=Math.min(v+step,t.val);el.textContent=Math.floor(v).toLocaleString();if(v>=t.val)clearInterval(timer)},20)})},{threshold:.5});const el=document.getElementById('is1');if(el)obs.observe(el);})();
+/* THEME */
+function toggleTheme(){const t=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);localStorage.setItem('yavaya_theme',t);document.getElementById('themeBtn').textContent=t==='dark'?'🌙':'☀️'}
+if(document.documentElement.getAttribute('data-theme')==='light')document.getElementById('themeBtn').textContent='☀️';
+function toggleMob(){document.getElementById('navMob').classList.toggle('open')}
+function openAdopt(){document.getElementById('adoptOverlay').style.display='flex'}
+function closeAdopt(){document.getElementById('adoptOverlay').style.display='none'}
+function openDonate(){document.getElementById('donateOverlay').style.display='flex'}
+function closeDonate(){document.getElementById('donateOverlay').style.display='none'}
+function openFoster(){showToast('Casa de tránsito — próximamente!')}
+function showToast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
+</script>
+</body>
+</html>
