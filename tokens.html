@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <title>Yavaya Tokens — Tu acceso a la plataforma</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="yavaya-base.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})()</script>
 <style>
@@ -146,16 +147,16 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}
 <div class="token-rain-wrap" id="rainWrap"></div>
 
 <nav class="nav">
-  <div class="nav-brand"><div class="nav-dot"></div><span class="nav-logo">Yava<span>ya</span></span><span class="nav-tag">⚡ Tokens</span></div>
-  <div class="nav-links">
+  <div class="nav-brand"><div class="nav-dot"></div><span class="nav-logo">Yava<em>ya</em></span><span class="nav-tag">⚡ Tokens</span></div>
+  <div class="nav-center">
     <a href="index.html" class="nav-a">Inicio</a><a href="mercadito.html" class="nav-a">Mercadito</a><a href="yavayago.html" class="nav-a">YavayaGo</a>
     <a href="church.html" class="nav-a">Santuario</a><a href="animals.html" class="nav-a">Animales</a><a href="work.html" class="nav-a">Trabaja</a>
     <a href="tokens.html" class="nav-a active">Tokens</a>
   </div>
-  <div class="nav-r">
+  <div class="nav-right">
     <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
     <div style="display:flex;align-items:center;gap:5px;font-size:13px;font-weight:800;color:var(--gold)">⚡<span id="navTokCount">0</span></div>
-    <button class="btn-cta" onclick="openBuy()">⚡ Comprar tokens</button>
+    <button class="nav-cta" onclick="openBuy()">⚡ Comprar tokens</button>
     <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>

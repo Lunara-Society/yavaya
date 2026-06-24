@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <title>Yavaya — La Plataforma de Centroamérica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="yavaya-base.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>(function(){var t=localStorage.getItem('yavaya_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 <style>
@@ -24,7 +25,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
 .nav-logo{font-size:18px;font-weight:900;letter-spacing:-1px;white-space:nowrap;line-height:1}.nav-logo span{color:var(--accent)}
 .nav-links{display:flex;gap:2px}
 .nav-a{padding:7px 13px;border-radius:9px;font-size:13px;font-weight:600;color:var(--text2);transition:all .2s}
-.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--accent)}
+.nav-a:hover{color:var(--text);background:var(--surface)}.nav-a.active{color:var(--gold,#D4AF37)}
 .nav-r{display:flex;align-items:center;gap:8px}
 .lang-sw{display:flex;background:var(--surface);border-radius:9px;padding:2px;gap:2px}
 .lang-btn{padding:4px 10px;border-radius:7px;border:none;background:none;font-size:11px;font-weight:700;color:var(--text2);transition:all .2s}
@@ -242,9 +243,9 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
 <nav class="nav" id="nav">
   <div class="nav-brand">
     <div class="nav-dot"></div>
-    <span class="nav-logo">Yava<span>ya</span></span>
+    <span class="nav-logo">Yava<em>ya</em></span>
   </div>
-  <div class="nav-links">
+  <div class="nav-center">
     <a href="index.html" class="nav-a active">Inicio</a>
     <a href="mercadito.html" class="nav-a">Mercadito</a>
     <a href="yavayago.html" class="nav-a">YavayaGo</a>
@@ -253,7 +254,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <a href="work.html" class="nav-a">Trabaja</a>
     <a href="tokens.html" class="nav-a">Tokens</a>
   </div>
-  <div class="nav-r">
+  <div class="nav-right">
     <div class="lang-sw">
       <button class="lang-btn on" data-l="es" data-l="es">ES</button>
       <button class="lang-btn" data-l="en" data-l="en">EN</button>
@@ -262,7 +263,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <a href="tokens.html" class="btn-icon" id="tokBtn" style="display:none;color:var(--gold);border-color:var(--gold-soft)">⚡<span id="tokN">0</span></a>
     <span class="badge badge-gold" id="adminBadge" style="display:none">Admin</span>
     <div id="authSection">
-      <button class="btn-cta" id="loginBtn" onclick="openAuth('login')">Ingresar</button>
+      <button class="nav-cta" id="loginBtn" onclick="openAuth('login')">Ingresar</button>
     </div>
     <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
@@ -277,6 +278,12 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
   <a href="work.html" class="nav-mob-a">💼 Trabaja</a>
   <a href="tokens.html" class="nav-mob-a">⚡ Tokens</a>
   <a href="ayuda.html" class="nav-mob-a">❤️ Ayuda</a>
+  <div class="nav-mob-divider"></div>
+  <div style="padding:4px 4px 8px;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text3)">Idioma / Language</div>
+  <div class="nav-mob-lang">
+    <button class="lang-mob-btn" data-l="es">🇬🇹 Español</button>
+    <button class="lang-mob-btn" data-l="en">🇺🇸 English</button>
+  </div>
 </div>
 
 <!-- HERO -->

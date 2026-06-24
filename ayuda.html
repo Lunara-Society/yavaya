@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
 <title>Yavaya Ayuda — Causas que importan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="yavaya-base.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="yavaya-nav.css">
 <script src="yavaya-core.js" defer></script>
@@ -150,7 +151,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <span class="nav-logo">Yava<span style="color:var(--green)">ya</span></span>
     <span class="nav-tag">Ayuda</span>
   </div>
-  <div class="nav-links">
+  <div class="nav-center">
     <a href="index.html" class="nav-a" data-i18n="nav_home">Inicio</a>
     <a href="mercadito.html" class="nav-a" data-i18n="nav_mercadito">Mercadito</a>
     <a href="yavayago.html" class="nav-a" data-i18n="nav_yavayago">YavayaGo</a>
@@ -159,13 +160,13 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}i
     <a href="work.html" class="nav-a" data-i18n="nav_work">Trabaja</a>
     <a href="ayuda.html" class="nav-a active" data-i18n="nav_ayuda">Ayuda</a>
   </div>
-  <div class="nav-r">
+  <div class="nav-right">
     <div class="lang-sw">
       <button class="lang-btn" data-l="es">ES</button>
       <button class="lang-btn" data-l="en">EN</button>
     </div>
     <button class="btn-icon" onclick="yvToggleTheme()" id="themeBtn">🌙</button>
-    <button class="btn-cta" onclick="openCreate()">+ Crear causa</button>
+    <button class="nav-cta" onclick="openCreate()">+ Crear causa</button>
     <button class="nav-ham" onclick="yvToggleMob()"><span></span><span></span><span></span></button>
   </div>
 </nav>
