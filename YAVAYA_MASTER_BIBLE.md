@@ -325,3 +325,312 @@ If not — do not build it.
 *Chapters 1 & 2 — Civilization Architecture & The Citizen Journey*  
 *Status: Foundation document. Not final build specification.*  
 *All future development decisions must align with this document.*
+
+
+---
+---
+
+# CHAPTER 3 — THE TRUST, SAFETY & ANTI-FRAUD BIBLE
+
+> This chapter may become the most important chapter in the entire company.
+
+Most marketplaces compete on features, design, and pricing.  
+**Yavaya competes on Trust.**
+
+If Yavaya becomes the safest platform in Central America, everything else becomes easier.
+
+---
+
+## THE FUNDAMENTAL RULE
+
+Every action inside Yavaya must answer:
+
+> **Can this be abused?**
+
+Before asking:
+
+> Can this be built?
+
+Most startups build features — then build protection. Wrong order.  
+**Yavaya builds protection first. Then features.**
+
+---
+
+## THE TRUST PYRAMID
+
+| Level | Status | Requirements | Can Do |
+|-------|--------|-------------|--------|
+| 0 | Anonymous Visitor | None | Browse, Search, Explore only |
+| 1 | Basic Citizen | Email + Phone | Contact, Buy, Sell, Apply (limited) |
+| 2 | Verified Citizen | Gov ID + Selfie | More listings, higher visibility, more projects |
+| 3 | Trusted Citizen | Positive history + reviews + transactions | Priority ranking, Trust badge |
+| 4 | Elite Citizen | Long history + excellent reputation + no fraud reports | Maximum visibility, special status |
+
+---
+
+## THE REPUTATION ENGINE
+
+Every user receives a **Trust Score: 0–1000**
+
+### Positive signals:
+- Account age
+- Successful sales & purchases
+- Completed projects & deliveries
+- Positive reviews
+- Verification level
+- Community contributions
+
+### Negative signals:
+- Fraud reports
+- Disputes
+- Refund history
+- Suspicious behavior flags
+
+> The algorithm rewards **consistency**, not popularity.
+
+---
+
+## MULTI-ACCOUNT DEFENSE
+
+One of the largest threats — especially because free tokens exist.
+
+### System checks on every account:
+- Phone number
+- Email
+- Device fingerprint
+- Browser fingerprint
+- IP behavior patterns
+- Location patterns
+- Usage patterns
+
+### Red Flags (auto-review triggered):
+- 10+ accounts from same device
+- Mass referral patterns
+- Instant token farming after registration
+- Suspicious login patterns
+- Multiple accounts same IP + phone prefix
+
+---
+
+## TOKEN FARMING DEFENSE
+
+People will try. Every free token source has hard limits.
+
+| Source | Limit |
+|--------|-------|
+| Daily login | 1 token/day max |
+| Reviews | Max 3 rewarded per week |
+| Referrals | Only after: verified phone + email + account age >7 days + meaningful activity |
+| Fraud reports | Only if confirmed by moderation |
+| Community | Weekly cap enforced |
+
+**No unlimited farming. Ever.**
+
+---
+
+## LISTING PROTECTION (MERCADITO)
+
+Mercadito must feel safer than Facebook Marketplace.
+
+### AI checks on every listing:
+- Duplicate images (reverse image search)
+- Stolen photos from other platforms
+- Repeated listings (same seller, same item)
+- Scam keywords in title/description
+- Suspicious pricing (iPhone 16 Pro for $50 = instant flag)
+- Mass posting (>X listings/day from new account)
+- Price vs. category anomaly detection
+
+### New seller limits:
+- Account <7 days: max 3 listings
+- Unverified account: limited categories
+- Listings with no phone: reduced visibility
+
+---
+
+## JOB PLATFORM PROTECTION (WORK)
+
+No fake jobs. No fake employers. No mass spam.
+
+### Employers must have:
+- Verification
+- Reputation
+- Project history
+- Reviews
+
+### Professionals must have:
+- Portfolio
+- Reviews
+- Reputation
+- Verification
+
+**Trust shown before contact is allowed.**  
+No anonymous job posts. No anonymous applications.
+
+---
+
+## FUNDRAISING PROTECTION (IMPACT)
+
+Impact can be abused heavily. Must be the strictest district.
+
+### Before publishing any cause:
+- Identity verification (required)
+- Cause verification review
+- Evidence upload (photos + supporting documents)
+- Optional organization verification
+
+### By cause type:
+| Type | Additional requirement |
+|------|----------------------|
+| Urgent medical | Medical documentation required |
+| Disaster | Geographic validation required |
+| Animal rescue | Rescue organization verification when possible |
+| Family emergency | Identity + story review |
+| Community projects | Organization or community leader verification |
+
+**Trust first. Always.**
+
+---
+
+## DELIVERY PROTECTION (YAVAYAGO)
+
+Drivers are the face of YavayaGo.
+
+### Driver requirements:
+- Identity verification
+- Photo (must match)
+- Vehicle information
+- Phone verification
+- Background checks where legally possible
+
+### Customer receives for every delivery:
+- Driver name
+- Driver photo
+- Vehicle details
+- Live tracking
+
+**Transparency reduces fear. Fear kills retention.**
+
+---
+
+## COMMUNITY MODERATION
+
+Community becomes toxic if unmanaged.
+
+### Yavaya encourages:
+Support · Education · Constructive interaction · Respect
+
+### Yavaya discourages:
+Harassment · Scams · Abuse · Political warfare · Extremism · Spam
+
+**Moderation must be visible — not hidden.**  
+Users should see that enforcement exists and works.
+
+---
+
+## THE GUARDIAN SYSTEM *(Future feature — high priority)*
+
+Trusted users can become **Guardians** — volunteer trust helpers.
+
+### Guardians:
+- Review flagged reports
+- Flag scams before moderation sees them
+- Help newcomers navigate the platform
+- Support community moderation
+
+### Guardian rewards:
+- Reputation points
+- Status recognition
+- Guardian badge
+
+> Not large token rewards — Guardians are motivated by trust and recognition, not money.  
+> This keeps the system clean.
+
+---
+
+## BUSINESS VERIFICATION
+
+Verified businesses receive a **Verified Business Badge**
+
+### Requirements:
+- Business documents
+- Contact information
+- Verification review by Yavaya team
+
+### Business categories:
+Restaurants · Stores · Agencies · Organizations · Animal rescues · Community groups
+
+---
+
+## TRANSPARENCY CENTER
+
+**One hidden weapon. Build this early.**
+
+Yavaya publicly displays:
+- Fraud accounts removed (monthly count)
+- Verified businesses (directory)
+- Verified causes (active)
+- Successful fundraisers (completed)
+- Successful adoptions (stories)
+- Successful projects (Work platform)
+
+> Trust grows when users see enforcement working.  
+> Hiding it is a missed opportunity.
+
+---
+
+## THE TRUST FORMULA
+
+Every major decision should favor:
+
+> **Long-term trust** over **short-term revenue**
+
+| Scenario | Decision |
+|---------|---------|
+| Feature makes money but damages trust | Reject it |
+| Feature slows growth but increases trust | Strongly consider it |
+| Feature is neutral on trust | Evaluate on merit |
+
+---
+
+## THE STRATEGIC MOAT
+
+| Asset | Can be copied? |
+|-------|---------------|
+| Mercadito marketplace | Yes |
+| Delivery system | Yes |
+| Fundraising platform | Yes |
+| Job board | Yes |
+| Years of reputation data | **No** |
+| Years of trust history | **No** |
+| Verified identities | **No** |
+| Community reputation | **No** |
+| Cross-platform trust scores | **No** |
+
+> The real moat is not technology. Not design.  
+> **The moat is Trust.**
+
+---
+
+## YAVAYA MASTER BIBLE — FOUNDATION STATUS
+
+| Chapter | Title | Status |
+|---------|-------|--------|
+| 1 | Civilization Architecture | ✅ Complete |
+| 2 | The Citizen Journey | ✅ Complete |
+| 3 | Trust, Safety & Anti-Fraud | ✅ Complete |
+| 4 | The Mobile Bible | 🔲 Next |
+| 5 | The Monetization Bible | 🔲 Pending |
+| 6 | Onboarding & First-User Experience | 🔲 Pending |
+| 7 | Reputation Scoring Formulas | 🔲 Pending |
+| 8 | Business Accounts & Merchant Ecosystem | 🔲 Pending |
+| 9 | Restaurant Partner System | 🔲 Pending |
+| 10 | Mobile UX Architecture | 🔲 Pending |
+| 11 | AI Moderation & Fraud Prevention | 🔲 Pending |
+| 12 | Monetization Architecture v2 | 🔲 Pending |
+
+---
+
+*YAVAYA MASTER BIBLE — Reconstruction Edition v2*  
+*Chapters 1, 2 & 3 complete.*  
+*Status: Foundation document. All future development decisions must align with this document.*
