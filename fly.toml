@@ -1,0 +1,51 @@
+# Fly.io configuration for Yavaya.
+#
+# Region: Miami. It is the closest common Fly region to Central America, so
+# round trips from Guatemala, Honduras, El Salvador, Nicaragua, Costa Rica,
+# Panama and Belize stay short. Yavaya is a mobile-first product on often-slow
+# connections; latency is a product decision, not an infrastructure detail.
+#
+# `app` is a placeholder until `fly launch --no-deploy` claims a real name.
+
+app = "yavaya"
+primary_region = "mia"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  # Migrations run once, before new instances take traffic — never on boot,
+  # so two instances starting together cannot race the same migration.
+  # The seed is idempotent and safe on every release.
+  release_command = "sh -c 'node dist/scripts/migrate.cjs && node dist/scripts/seed.cjs'"
+  strategy = "rolling"
+
+[env]
+  NODE_ENV = "production"
+  APP_ENV = "production"
+  PORT = "3000"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  # Sessions live in Postgres rather than memory, so scaling to zero costs only
+  # a cold start. Raise this to 1 if cold starts become noticeable.
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    # Reports healthy only when Postgres answers, so an instance that cannot
+    # reach the database is kept out of rotation instead of serving errors.
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "20s"
+    method = "GET"
+    path = "/api/health"
+
+[[vm]]
+  # Comfortable for Next SSR. Yavaya renders on the server for every request,
+  # so memory matters more than CPU count at this stage.
+  size = "shared-cpu-1x"
+  memory = "512mb"

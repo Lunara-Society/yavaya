@@ -52,9 +52,14 @@ COPY --from=builder --chown=yavaya:yavaya /app/.next/standalone ./
 COPY --from=builder --chown=yavaya:yavaya /app/.next/static ./.next/static
 COPY --from=builder --chown=yavaya:yavaya /app/public ./public
 
-# Migrations are run as a release step, not on boot: two instances starting at
-# once must not race each other through the same migration.
+# Migrations run as a release step, not on boot: two instances starting at once
+# must not race each other through the same migration.
+#
+# The scripts are pre-bundled to self-contained CommonJS because this image has
+# no TypeScript and no dev dependencies — a release command shelling out to
+# `tsx` would work locally and fail on the first real deploy.
 COPY --from=builder --chown=yavaya:yavaya /app/drizzle ./drizzle
+COPY --from=builder --chown=yavaya:yavaya /app/dist/scripts ./dist/scripts
 
 USER yavaya
 EXPOSE 3000

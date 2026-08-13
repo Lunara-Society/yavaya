@@ -63,6 +63,11 @@ driver network, Works subscriptions, the Tavern, and any payment integration.
 Visit `/status` in the running app for the live version of this table,
 including which external integrations are configured.
 
+**Not deployed yet.** The repository is deployment-ready — container, Fly
+config, health check, bundled release scripts and a private-preview gate — but
+going live needs a hosting account and a managed database. See
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
 ---
 
 ## Running it

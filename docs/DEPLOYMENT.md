@@ -53,6 +53,7 @@ DATABASE_URL=postgres://…            # managed Postgres 16+, TLS enforced
 SESSION_SECRET=…                     # 48 random bytes
 SIGNAL_PEPPER=…                      # 48 random bytes, permanent
 PRIMARY_ADMIN_EMAIL=Junoagattis@gmail.com
+PREVIEW_ACCESS_KEY=…                 # while the site is a private preview
 ```
 
 Everything else is optional and defaults to `unconfigured`, which makes the
@@ -64,11 +65,21 @@ See [`CONFIGURATION.md`](CONFIGURATION.md).
 Migrations run as a **release step**, before the new instances start — never on
 boot. Two instances starting at once must not race through the same migration.
 
+The production image contains no TypeScript and no dev dependencies, so the
+scripts are pre-bundled to self-contained CommonJS at build time. A release
+command shelling out to `tsx` would work locally and fail on the first real
+deploy.
+
 ```bash
-npm run db:migrate     # release step
-npm run db:seed        # idempotent; safe on every release
-# then start instances
+node dist/scripts/migrate.cjs    # release step, in the image
+node dist/scripts/seed.cjs       # idempotent; safe on every release
 ```
+
+Locally the TypeScript entry points are equivalent: `npm run db:migrate` and
+`npm run db:seed`.
+
+Both bundled scripts have been verified against a fresh, empty database and
+re-run for idempotency.
 
 `db:seed` is safe to run on every deploy: it upserts reference data, never
 overwrites a tuned reputation weight, and never creates a login.
@@ -101,16 +112,72 @@ necessity and must not become a reconnaissance tool.
 
 Point the platform's probe at it.
 
-## Platform notes
+## Private preview
 
-Any of these work. The choice is about who holds the account and what the
-database costs, not about the code.
+While email delivery is unconfigured, a stranger who registers receives no
+verification code and is stranded. Setting `PREVIEW_ACCESS_KEY` closes the site
+to everyone without the key:
 
-**Fly.io** — good regional fit; deploy close to Central America (`mia` is the
-nearest common region). `fly launch --no-deploy`, set secrets with
-`fly secrets set`, add a release command running `db:migrate`, then
-`fly deploy`. Postgres via `fly postgres create` or an external managed
-instance.
+- every route except `/api/health` returns **404** without it — 404 rather than
+  401, because a preview that announces itself invites attention;
+- the platform's health probe still works, so the deploy can go green;
+- `https://your-app/?key=…` once sets an `httpOnly`, `Secure` cookie and strips
+  the key from the URL, so it does not linger in history or a screenshot;
+- responses carry `X-Robots-Tag: noindex, nofollow`.
+
+It is a **curtain, not a security boundary**. It keeps the unfinished product
+away from the public; it is not what protects member data. The session and
+permission system does that, and it applies underneath the curtain exactly as
+it will in production.
+
+Remove the secret to open the site: `fly secrets unset PREVIEW_ACCESS_KEY`.
+
+## Deploying to Fly.io
+
+`fly.toml` is committed and configured for `mia` (Miami) — the closest common
+Fly region to Central America. Latency is a product decision here, not an
+infrastructure detail.
+
+```bash
+# 1. Authenticate (your account, your credentials)
+fly auth login
+
+# 2. Claim an app name. --no-deploy because secrets are not set yet.
+fly launch --no-deploy --copy-config --name yavaya
+
+# 3. Managed Postgres, attached as DATABASE_URL
+fly postgres create --name yavaya-db --region mia
+fly postgres attach yavaya-db
+
+# 4. Secrets. Generate each value fresh — never reuse a development one.
+fly secrets set \
+  SESSION_SECRET="$(node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))")" \
+  SIGNAL_PEPPER="$(node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))")" \
+  PREVIEW_ACCESS_KEY="$(node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))")" \
+  PRIMARY_ADMIN_EMAIL="Junoagattis@gmail.com" \
+  APP_URL="https://yavaya.fly.dev"
+
+# 5. Deploy. The release command migrates and seeds before traffic shifts.
+fly deploy
+```
+
+Then read the preview key back with `fly secrets list` — Fly shows only a
+digest, so keep the value from step 4, or set it to something you choose.
+
+Visit `https://yavaya.fly.dev/?key=<preview key>` once per device.
+
+`SIGNAL_PEPPER` is effectively permanent: rotating it orphans every stored
+anti-duplication signal. Decide it once, and keep a copy somewhere durable.
+
+### After it is up
+
+```bash
+fly logs                       # watch the release command run migrations
+fly status                     # health check should be passing
+fly ssh console -C "node dist/scripts/seed.cjs"   # re-run after registering the admin
+```
+
+## Other platforms
 
 **Railway / Render** — connect the repository, they detect the Dockerfile.
 Add a managed Postgres, set the environment variables, and configure the

@@ -28,6 +28,22 @@ const serverSchema = z.object({
   /** Bootstrap administrator. The role is granted server-side at migration/seed time. */
   PRIMARY_ADMIN_EMAIL: z.string().email().default('Junoagattis@gmail.com'),
 
+  /**
+   * Private preview gate. When set, every route except the health check
+   * requires this key (via `?key=` once, then a cookie). Unset means the site
+   * is open.
+   *
+   * It is a curtain, not a security boundary — it keeps the unfinished product
+   * away from the public and from search engines while email delivery is
+   * unconfigured and a stranger who registered would be stranded. Member data
+   * is protected by the session and permission system underneath, exactly as
+   * it will be in production.
+   *
+   * Read directly from `process.env` in middleware, which runs in the edge
+   * runtime and cannot import this module.
+   */
+  PREVIEW_ACCESS_KEY: z.string().min(16).optional(),
+
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.
   // ---------------------------------------------------------------------------
