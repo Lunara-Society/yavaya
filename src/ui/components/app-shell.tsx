@@ -1,21 +1,31 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import type { Translator } from '@/i18n';
+import type { MessageKey, Translator } from '@/i18n';
+import type { LanguagePreference, ThemePreference } from '@/server/preferences';
+import { QuickControls } from './quick-controls';
+
+export type ShellMember = { yayId: string; displayName: string } | null;
 
 /**
  * The Yavaya shell.
  *
- * Mobile is the primary experience, so navigation lives at the bottom within
- * thumb reach and the header stays minimal. The same shell wraps every
- * district — a district changes the content and the accent, never the way
- * someone moves around Yavaya.
+ * Mobile is the primary experience, so navigation sits at the bottom within
+ * thumb reach and the header carries only the mark and the global controls.
+ * The same shell wraps every district — a district changes the content and the
+ * accent, never the way someone moves around Yavaya.
  */
 export function AppShell({
   t,
+  language,
+  theme,
+  member,
   district,
   children,
 }: {
   t: Translator;
+  language: LanguagePreference;
+  theme: ThemePreference;
+  member: ShellMember;
   /** Applies the district's colour world to everything inside. */
   district?: string;
   children: ReactNode;
@@ -27,17 +37,12 @@ export function AppShell({
       </a>
 
       <header className="sticky top-0 z-20 border-b bg-[var(--surface-base)]/85 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-4">
+        <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-3 px-4">
           <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
             <YavayaMark />
             <span className="text-lg">{t('brand.name')}</span>
           </Link>
-          <Link
-            href="/status"
-            className="rounded-full border px-3 py-1.5 text-2xs font-medium tracking-wide text-[var(--text-secondary)] uppercase"
-          >
-            {t('nav.status')}
-          </Link>
+          <QuickControls t={t} language={language} theme={theme} member={member} />
         </div>
       </header>
 
@@ -45,7 +50,7 @@ export function AppShell({
         {children}
       </main>
 
-      <BottomNav t={t} />
+      <BottomNav t={t} member={member} />
     </div>
   );
 }
@@ -55,18 +60,24 @@ export function AppShell({
  *
  * Four destinations, each a full touch target, labelled in words as well as
  * shape — an icon alone is guesswork for a first-time user.
+ *
+ * The last slot changes with sign-in state: it is the member area for a
+ * signed-in member and the sign-in route for everyone else, so the tap always
+ * lands somewhere useful.
  */
-function BottomNav({ t }: { t: Translator }) {
-  const items = [
-    { href: '/', labelKey: 'nav.home' as const, glyph: <HomeGlyph /> },
-    { href: '/districts', labelKey: 'nav.districts' as const, glyph: <GridGlyph /> },
-    { href: '/status', labelKey: 'nav.status' as const, glyph: <PulseGlyph /> },
-    { href: '/login', labelKey: 'nav.account' as const, glyph: <PersonGlyph /> },
+function BottomNav({ t, member }: { t: Translator; member: ShellMember }) {
+  const items: Array<{ href: string; labelKey: MessageKey; glyph: ReactNode }> = [
+    { href: '/', labelKey: 'nav.home', glyph: <HomeGlyph /> },
+    { href: '/districts', labelKey: 'nav.districts', glyph: <GridGlyph /> },
+    { href: '/settings', labelKey: 'nav.settings', glyph: <SlidersGlyph /> },
+    member
+      ? { href: '/account', labelKey: 'nav.member_area', glyph: <PersonGlyph /> }
+      : { href: '/login', labelKey: 'nav.sign_in', glyph: <PersonGlyph /> },
   ];
 
   return (
     <nav
-      aria-label={t('nav.home')}
+      aria-label={t('nav.primary')}
       className="fixed inset-x-0 bottom-0 z-20 border-t bg-[var(--surface-raised)]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
@@ -122,10 +133,12 @@ function GridGlyph() {
   );
 }
 
-function PulseGlyph() {
+function SlidersGlyph() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 12h4l2.5-6 4 12L16 12h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="16" cy="7" r="2.2" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="10" cy="17" r="2.2" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }

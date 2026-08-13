@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
-import { getTranslator } from '@/i18n/server';
-import { serverEnv } from '@/config/env';
+import { CAPABILITY_STATES, type Capability } from '@/config/capabilities';
 import { AppShell } from '@/ui/components/app-shell';
-import { listProviderAvailability } from '@/server/domains/payments/service';
+import { CapabilityBadge } from '@/ui/components/capability-badge';
+import { shellContext } from '@/ui/shell-context';
+import { allCapabilities } from '@/server/domains/platform/capability';
+import type { MessageKey, Translator } from '@/i18n';
 
 export const metadata: Metadata = { title: 'Status' };
 export const dynamic = 'force-dynamic';
@@ -10,119 +12,102 @@ export const dynamic = 'force-dynamic';
 /**
  * Platform status.
  *
- * This page exists so nobody — user, operator or engineer — has to guess what
- * Yavaya can actually do right now. Subsystems report built or not built;
- * integrations report configured or not. Nothing here is aspirational.
+ * This page exists so nobody — member, operator or engineer — has to guess what
+ * Yavaya can actually do. Every capability declares one of four states and this
+ * page renders it verbatim. Nothing here is aspirational, and nothing that is
+ * only partly built is allowed to read as finished.
  */
 export default async function StatusPage() {
-  const { t } = await getTranslator();
-  const env = serverEnv();
+  const { t, language, theme, member } = await shellContext();
+  const capabilities = allCapabilities();
 
-  const subsystems: Array<{ name: string; built: boolean; note: string }> = [
-    { name: 'Identity & YAY ID', built: true, note: 'Registration, permanent 8-digit identifier, verification challenges.' },
-    { name: 'Authentication & sessions', built: true, note: 'scrypt passwords, hashed session tokens, rotation, revocation.' },
-    { name: 'Authorization (RBAC)', built: true, note: 'Server-side roles and permissions; admin granted by backend bootstrap.' },
-    { name: 'Geography', built: true, note: 'Region → country → state → city hierarchy; 7 launch countries seeded.' },
-    { name: 'Anti-duplication & risk scoring', built: true, note: 'Layered signals, weighted score, human review — no single-signal bans.' },
-    { name: '72-hour new-account monitoring', built: true, note: 'Monitoring window, stricter limits, graduation to standard trust.' },
-    { name: 'Audit log', built: true, note: 'Append-only, hash-chained, database-enforced immutability.' },
-    { name: 'Token ledger', built: true, note: 'Atomic, exactly-once charges; treasury; starter grants; reward caps.' },
-    { name: 'Reputation engine', built: true, note: 'Configurable rules, idempotent events, cooldowns and daily caps.' },
-    { name: 'Trust Shield', built: true, note: 'Derived public summary with a hard privacy boundary.' },
-    { name: 'Rate limiting', built: true, note: 'Server-side counters, per bucket and subject.' },
-    { name: 'Moderation & enforcement', built: false, note: 'Schema in place; reporting flows and queue arrive in Phase 1.' },
-    { name: 'Districts', built: false, note: 'Registry and theming in place; district experiences are Phase 1+.' },
-    { name: 'Payments', built: false, note: 'Provider-agnostic interface in place; no working integration yet.' },
-  ];
+  const counts = Object.fromEntries(
+    CAPABILITY_STATES.map((state) => [
+      state,
+      capabilities.filter((capability) => capability.state === state).length,
+    ]),
+  ) as Record<(typeof CAPABILITY_STATES)[number], number>;
 
-  const integrations: Array<{ name: string; configured: boolean; detail: string }> = [
-    {
-      name: 'Email delivery',
-      configured: env.EMAIL_PROVIDER !== 'unconfigured',
-      detail: 'Verification codes and receipts.',
-    },
-    {
-      name: 'SMS delivery',
-      configured: env.SMS_PROVIDER !== 'unconfigured',
-      detail: 'Phone verification.',
-    },
-    {
-      name: 'Identity documents (KYC)',
-      configured: env.KYC_PROVIDER !== 'unconfigured',
-      detail: 'Driver applications and identity verification.',
-    },
-    {
-      name: 'Media storage',
-      configured: env.MEDIA_STORAGE_PROVIDER !== 'unconfigured',
-      detail: 'Listing photos, avatars, evidence.',
-    },
-    {
-      name: 'IP geolocation',
-      configured: env.GEOIP_PROVIDER !== 'unconfigured',
-      detail: 'Coarse location suggestion; manual selection always available.',
-    },
-    ...listProviderAvailability().map((provider) => ({
-      name: `Payments — ${provider.key}`,
-      configured: provider.available,
-      detail: provider.reason ?? 'Ready.',
-    })),
+  const groups: Array<{ key: Capability['group']; titleKey: MessageKey }> = [
+    { key: 'platform', titleKey: 'status.group.platform' },
+    { key: 'trust', titleKey: 'status.group.trust' },
+    { key: 'district', titleKey: 'status.group.district' },
+    { key: 'integration', titleKey: 'status.group.integration' },
   ];
 
   return (
-    <AppShell t={t}>
+    <AppShell t={t} language={language} theme={theme} member={member}>
       <h1 className="text-2xl font-semibold tracking-tight">{t('status.title')}</h1>
       <p className="mt-1 text-[var(--text-secondary)]">{t('status.subtitle')}</p>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Subsystems</h2>
-        <ul className="mt-3 divide-y rounded-xl border">
-          {subsystems.map((item) => (
-            <li key={item.name} className="flex items-start gap-3 p-3.5">
-              <StateBadge ok={item.built} okLabel={t('status.built')} offLabel={t('status.not_built')} />
-              <div className="min-w-0">
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-[var(--text-secondary)]">{item.note}</p>
-              </div>
-            </li>
+      <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {CAPABILITY_STATES.map((state) => (
+          <li key={state} className="surface-card p-3">
+            <p className="text-2xl font-semibold tabular-nums">{counts[state]}</p>
+            <div className="mt-1">
+              <CapabilityBadge state={state} t={t} />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <section className="surface-card mt-6 p-4">
+        <h2 className="text-sm font-semibold">{t('status.legend')}</h2>
+        <dl className="mt-3 space-y-2 text-sm">
+          {CAPABILITY_STATES.map((state) => (
+            <div key={state} className="flex gap-3">
+              <dt className="shrink-0">
+                <CapabilityBadge state={state} t={t} />
+              </dt>
+              <dd className="text-[var(--text-secondary)]">
+                {t(`capability.state.${state}.explain` as MessageKey)}
+              </dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       </section>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">Integrations</h2>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">{t('status.integration_note')}</p>
-        <ul className="mt-3 divide-y rounded-xl border">
-          {integrations.map((item) => (
-            <li key={item.name} className="flex items-start gap-3 p-3.5">
-              <StateBadge
-                ok={item.configured}
-                okLabel={t('status.configured')}
-                offLabel={t('status.unconfigured')}
-              />
-              <div className="min-w-0">
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-[var(--text-secondary)]">{item.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {groups.map((group) => {
+        const rows = capabilities.filter((capability) => capability.group === group.key);
+        if (rows.length === 0) return null;
+
+        return (
+          <section key={group.key} className="mt-8">
+            <h2 className="text-lg font-semibold tracking-tight">{t(group.titleKey)}</h2>
+            <ul className="mt-3 divide-y rounded-xl border">
+              {rows.map((capability) => (
+                <CapabilityRow key={capability.key} capability={capability} t={t} />
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+
+      <p className="mt-8 text-sm text-[var(--text-secondary)]">{t('status.integration_note')}</p>
     </AppShell>
   );
 }
 
-/** State is conveyed by the word first; colour only reinforces it. */
-function StateBadge({ ok, okLabel, offLabel }: { ok: boolean; okLabel: string; offLabel: string }) {
+function CapabilityRow({ capability, t }: { capability: Capability; t: Translator }) {
   return (
-    <span
-      className="mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-2xs font-semibold tracking-wide uppercase"
-      style={
-        ok
-          ? { borderColor: 'var(--color-positive)', color: 'var(--color-positive)' }
-          : { borderColor: 'var(--surface-border-strong)', color: 'var(--text-muted)' }
-      }
-    >
-      {ok ? okLabel : offLabel}
-    </span>
+    <li className="p-3.5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-medium">{t(capability.nameKey as MessageKey)}</p>
+          <p className="text-sm text-[var(--text-secondary)]">
+            {t(capability.detailKey as MessageKey)}
+          </p>
+        </div>
+        <CapabilityBadge state={capability.state} t={t} />
+      </div>
+
+      {capability.blockedBy ? (
+        // Operator-facing detail: what would have to change. Left untranslated
+        // because it names configuration keys and documentation paths.
+        <p className="mt-2 border-l-2 pl-3 text-2xs text-[var(--text-muted)]">
+          {capability.blockedBy}
+        </p>
+      ) : null}
+    </li>
   );
 }

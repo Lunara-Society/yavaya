@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { getTranslator } from '@/i18n/server';
 import { districtList } from '@/config/districts';
 import { AppShell } from '@/ui/components/app-shell';
 import { DistrictTile } from '@/ui/components/district-tile';
+import { shellContext } from '@/ui/shell-context';
 
 export const metadata: Metadata = { title: 'Districts' };
 
 export default async function DistrictsPage() {
-  const { t } = await getTranslator();
+  const { t, language, theme, member } = await shellContext();
 
   const byPhase = new Map<number, typeof districtList>();
   for (const district of districtList) {
@@ -15,7 +15,7 @@ export default async function DistrictsPage() {
   }
 
   return (
-    <AppShell t={t}>
+    <AppShell t={t} language={language} theme={theme} member={member}>
       <h1 className="text-2xl font-semibold tracking-tight">{t('districts.title')}</h1>
       <p className="mt-1 text-[var(--text-secondary)]">{t('districts.subtitle')}</p>
 

@@ -25,8 +25,19 @@ npm run db:seed         # idempotent
 ## Rules that are not negotiable
 
 **Never claim something works when it does not.** No mocked integration
-presented as real, no fake payment success, no simulated send. If a provider is
-unconfigured, the feature reports itself unavailable and `/status` shows it.
+presented as real, no fake payment success, no fake live tracking, no fake
+statistics, no fake users, no fake reviews, and never a mock silently
+substituted for a production service.
+
+Every capability declares a state in `src/config/capabilities.ts`: `REAL`,
+`DEMO`, `MOCK`, or `REQUIRES_CONFIGURATION`. `/status` renders the register
+directly, and anything not `REAL` must say what would have to change. Marking
+something `REAL` without the implementation to match is the single change this
+file exists to prevent.
+
+When a capability is not `REAL`, the control that would use it is **absent or
+clearly labelled** — never a button that looks live and leads nowhere. The
+token purchase flow is the reference example.
 
 **Never invent a business rule.** If the specification defines it, implement it
 exactly. If it does not, build the abstraction and flag it in

@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { getTranslator } from '@/i18n/server';
 import { districtList } from '@/config/districts';
 import { NEW_USER_RULES, TOKEN_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
 import { DistrictTile } from '@/ui/components/district-tile';
+import { shellContext } from '@/ui/shell-context';
 
 /**
  * Yavaya home.
@@ -14,10 +14,10 @@ import { DistrictTile } from '@/ui/components/district-tile';
  * it is never filled with invented events in the meantime.
  */
 export default async function HomePage() {
-  const { t } = await getTranslator();
+  const { t, language, theme, member } = await shellContext();
 
   return (
-    <AppShell t={t}>
+    <AppShell t={t} language={language} theme={theme} member={member}>
       <section className="pt-4">
         <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--accent)] uppercase">
           {t('brand.tagline')}

@@ -12,10 +12,27 @@ fundraising, animal welfare and entertainment.
 
 ---
 
+## Honesty states
+
+Every capability in Yavaya declares one of four states, and the interface
+renders it. This is a mechanism, not a promise: `/status` reads the register
+directly, and a test requires anything not `REAL` to explain itself.
+
+| State | Meaning |
+| --- | --- |
+| `REAL` | Implemented, wired to production infrastructure, working now |
+| `DEMO` | Sample content — marked, excluded from every statistic, expires |
+| `MOCK` | A stand-in with no real behaviour. Never in a flow that implies it works |
+| `REQUIRES_CONFIGURATION` | Implemented, but inert until credentials, a provider, or a regulatory decision arrives |
+
+There are currently **no MOCK capabilities**, and a test keeps it that way
+unless someone changes it deliberately.
+
 ## What exists right now
 
 This repository contains **Phase 0: the platform foundation**, complete and
-tested, plus the design system and shell the districts will be built into.
+tested, plus the global controls, member area, and the design system and shell
+the districts will be built into.
 
 Built and covered by tests:
 
@@ -33,6 +50,10 @@ Built and covered by tests:
 | Trust Shield | Derived public summary with a hard privacy boundary |
 | Rate limiting | Server-side counters per bucket and subject |
 | Payments | Provider-agnostic interface (**no working integration yet**) |
+| Language | Spanish/English, auto-detected from the device, overridable and remembered |
+| Appearance | Light / dark / system, resolved server-side so there is no flash |
+| Member area | Trust Shield, token balance and history, shortcuts — all real data |
+| Settings | Language, appearance, notification preferences, location privacy |
 
 **Not built yet**, and the interface says so rather than pretending otherwise:
 the eight district experiences, moderation workflows (schema exists), the
@@ -65,7 +86,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 ```bash
 npm run typecheck
-npm test          # 93 tests; integration tests need a Postgres at DATABASE_URL
+npm test          # 106 tests; integration tests need a Postgres at DATABASE_URL
 npm run build
 ```
 
@@ -85,7 +106,7 @@ its own; there is a test that proves it.
 
 ```
 src/
-  config/          Business rules, district registry, validated environment
+  config/          Business rules, capability register, districts, preferences, env
   i18n/            Spanish (default) and English dictionaries, key-complete
   server/
     db/            Schema by domain, migrations, seed
@@ -93,7 +114,7 @@ src/
                    trust, moderation, notifications, payments, platform
     security/      crypto, network signals, rate limiting
     auth/          sessions, cookies, request context
-  ui/              Design system components
+  ui/              Design system components and the app shell
   app/             Next.js App Router
 docs/              Architecture, security, configuration, roadmap, design
 drizzle/           Generated SQL migrations

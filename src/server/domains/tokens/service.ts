@@ -1,4 +1,4 @@
-import { and, eq, gte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import {
   billableActions,
@@ -80,6 +80,54 @@ export async function getBalance(executor: Executor, userId: string): Promise<nu
     .where(eq(tokenAccounts.userId, userId))
     .limit(1);
   return row?.balance ?? 0;
+}
+
+export type LedgerEntryView = {
+  id: string;
+  delta: number;
+  balanceAfter: number;
+  reason: TokenEntryReason;
+  billableActionKey: string | null;
+  note: string | null;
+  createdAt: Date;
+};
+
+/**
+ * The member's own token history.
+ *
+ * Every balance change is here, in order, with the balance it produced — so a
+ * member can always account for their own tokens without asking anyone.
+ */
+export async function listLedgerEntries(
+  executor: Executor,
+  userId: string,
+  options: { limit?: number } = {},
+): Promise<LedgerEntryView[]> {
+  const rows = await executor
+    .select({
+      id: tokenLedger.id,
+      delta: tokenLedger.delta,
+      balanceAfter: tokenLedger.balanceAfter,
+      reason: tokenLedger.reason,
+      billableActionKey: tokenLedger.billableActionKey,
+      note: tokenLedger.note,
+      createdAt: tokenLedger.createdAt,
+    })
+    .from(tokenLedger)
+    .innerJoin(tokenAccounts, eq(tokenAccounts.id, tokenLedger.accountId))
+    .where(eq(tokenAccounts.userId, userId))
+    .orderBy(desc(tokenLedger.id))
+    .limit(options.limit ?? 50);
+
+  return rows.map((row) => ({
+    id: String(row.id),
+    delta: row.delta,
+    balanceAfter: row.balanceAfter,
+    reason: row.reason as TokenEntryReason,
+    billableActionKey: row.billableActionKey,
+    note: row.note,
+    createdAt: row.createdAt,
+  }));
 }
 
 /**

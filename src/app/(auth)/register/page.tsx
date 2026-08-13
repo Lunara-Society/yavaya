@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getTranslator } from '@/i18n/server';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
+import { shellContext } from '@/ui/shell-context';
 import { RegisterForm } from './register-form';
 
 export const metadata: Metadata = { title: 'Create account' };
 
 export default async function RegisterPage() {
-  const { locale, t } = await getTranslator();
+  const { locale, t, language, theme, member } = await shellContext();
 
   return (
-    <AppShell t={t}>
+    <AppShell t={t} language={language} theme={theme} member={member}>
       <div className="mx-auto w-full max-w-md">
         <h1 className="text-2xl font-semibold tracking-tight">{t('auth.register.title')}</h1>
         <p className="mt-1 text-[var(--text-secondary)]">{t('auth.register.subtitle')}</p>

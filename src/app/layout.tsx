@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { resolveLocale } from '@/i18n/server';
+import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,9 +26,18 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await resolveLocale();
+  const [locale, theme] = await Promise.all([resolveLocale(), resolveThemeAttribute()]);
+
+  /*
+   * The theme is resolved on the server before the first byte, so the correct
+   * palette is in the very first paint — no flash of the wrong theme, and no
+   * render-blocking inline script to prevent one.
+   *
+   * `theme` is null when the member follows their device, in which case no
+   * attribute is set and the stylesheet's `prefers-color-scheme` rules apply.
+   */
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} data-theme={theme ?? undefined}>
       <body>{children}</body>
     </html>
   );

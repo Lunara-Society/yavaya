@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getTranslator } from '@/i18n/server';
 import { AppShell } from '@/ui/components/app-shell';
+import { shellContext } from '@/ui/shell-context';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = { title: 'Sign in' };
 
 export default async function LoginPage() {
-  const { t } = await getTranslator();
+  const { t, language, theme, member } = await shellContext();
 
   return (
-    <AppShell t={t}>
+    <AppShell t={t} language={language} theme={theme} member={member}>
       <div className="mx-auto w-full max-w-md">
         <h1 className="text-2xl font-semibold tracking-tight">{t('auth.login.title')}</h1>
 

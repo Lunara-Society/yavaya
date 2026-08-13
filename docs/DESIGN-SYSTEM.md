@@ -21,7 +21,7 @@ explicit `[data-theme]`, so the toggle wins in both directions.
 
 **Colour never carries meaning alone.** Every status is also a word or a mark.
 A red dot is invisible to many people and meaningless in bright sunlight. The
-`StateBadge` and Trust Shield check rows are built this way deliberately.
+`CapabilityBadge` and Trust Shield check rows are built this way deliberately.
 
 **Focus is always visible.** A 2px accent outline with offset on every
 interactive element. Removing focus styling is never acceptable — keyboard and
@@ -79,6 +79,34 @@ Visual clutter. The interface should feel alive and never chaotic — and it
 should be legible to someone using Yavaya for the first time, on a cheap phone,
 in a hurry.
 
+## Global controls
+
+Language, appearance, shortcuts and member access live in one panel, one tap
+from anywhere, anchored to the header.
+
+The panel is a `<details>` element and every control is a plain form whose
+submit button carries its value. Nothing here needs JavaScript: on a cheap
+phone or a bad connection the settings still work, which matters more than a
+snappier toggle.
+
+**Language** defaults to `auto`, which follows the device's language via
+`Accept-Language`. An explicit choice overrides it, persists in a cookie, and
+is mirrored onto the account so it follows the member to another device. The
+fallback for an unsupported device language is Spanish, never English.
+
+**Appearance** defaults to `system`. The theme is resolved on the server before
+the first byte and written as `data-theme` on `<html>`, so the correct palette
+is in the first paint — no flash, and no render-blocking inline script.
+`system` deliberately emits *no* attribute, leaving `prefers-color-scheme` in
+charge.
+
+**Shortcuts** are deliberately few — the destinations a member returns to, not
+a sitemap. A long list would defeat the point.
+
+**Member access** is in the same panel: sign in and register when signed out,
+member area and sign out when signed in. The fourth slot of the bottom
+navigation follows the same rule, so the tap always lands somewhere useful.
+
 ## Honesty in the interface
 
 A district that is not built is not a link — it renders with its real status
@@ -86,6 +114,15 @@ and does not invite a tap into an empty room.
 
 Demo content is visibly marked `DEMO` and explained. It never counts in a
 statistic and never generates a notification.
+
+Capability states are rendered with the word first and colour second, through
+one `CapabilityBadge` component. A member who cannot distinguish the colours,
+or is reading in sunlight, gets the whole message.
+
+Where a capability is not `REAL`, the interface does not offer it. Token
+packages are shown for information while payments are unconfigured, and there
+is no purchase button at all — not a disabled-looking one that still invites a
+tap.
 
 The live activity feed shows only real events. When there is nothing real to
 show, it shows nothing, or an honest empty state. It is never padded.
