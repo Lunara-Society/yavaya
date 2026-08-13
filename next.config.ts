@@ -4,6 +4,11 @@ import type { NextConfig } from 'next';
  * Security headers are applied globally. Anything that needs to be relaxed for a
  * specific route must be relaxed explicitly at that route, never here.
  */
+/*
+ * The Content-Security-Policy is not here: it needs a per-request nonce and is
+ * set in src/middleware.ts. Everything below is static and applies to every
+ * response.
+ */
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -20,6 +25,12 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  /*
+   * Emits a self-contained server bundle with only the dependencies actually
+   * used, which is what the container image copies. Keeps the image small and
+   * means the runtime stage carries no build toolchain.
+   */
+  output: 'standalone',
   experimental: {
     // Server Actions are the primary mutation surface; keep the body limit tight
     // so upload paths must go through the dedicated, validated media pipeline.

@@ -49,6 +49,7 @@ Built and covered by tests:
 | Reputation | Configurable rules, idempotent events, cooldowns, daily caps |
 | Trust Shield | Derived public summary with a hard privacy boundary |
 | Rate limiting | Server-side counters per bucket and subject |
+| Content-Security-Policy | Per-request nonce; no `unsafe-inline` for scripts |
 | Payments | Provider-agnostic interface (**no working integration yet**) |
 | Language | Spanish/English, auto-detected from the device, overridable and remembered |
 | Appearance | Light / dark / system, resolved server-side so there is no flash |
@@ -127,5 +128,6 @@ tests/             Unit and integration tests
 - [`docs/SECURITY.md`](docs/SECURITY.md) — the security model and what it refuses to do
 - [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) — every integration point that needs credentials or a decision
 - [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) — shared foundation, eight district worlds
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — how to run it in production, and what must be true first
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — what each phase delivers
 - [`CLAUDE.md`](CLAUDE.md) — conventions for anyone (human or agent) working in this repository

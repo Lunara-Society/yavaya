@@ -120,6 +120,13 @@ Applied globally in `next.config.ts`: HSTS with preload,
 `Cross-Origin-Opener-Policy: same-origin`, and a `Permissions-Policy` that
 denies camera, microphone and payment while allowing same-origin geolocation.
 
+A Content-Security-Policy is set per request in `src/middleware.ts` with a
+fresh nonce, so `script-src` carries no `unsafe-inline` and an injected script
+will not execute. `style-src` still allows inline styles: React writes inline
+`style` attributes for the district accent tokens and there is no nonce
+mechanism for those. Style injection is a far smaller hazard than script
+injection, and the alternative would be abandoning per-district theming.
+
 CSRF is handled by Next.js Server Actions, which validate origin on POST, plus
 `sameSite=lax` cookies.
 
@@ -127,8 +134,6 @@ CSRF is handled by Next.js Server Actions, which validate origin on POST, plus
 
 Stated plainly rather than left for someone to discover.
 
-- **No Content-Security-Policy yet.** It needs a nonce-based setup wired
-  through the layout. Do this before public launch.
 - **No device fingerprint is collected.** `requestContext` sets it to `null`
   rather than deriving one from the user agent, which would produce mass false
   matches across identical phone models. Real fingerprinting is client-side
@@ -140,3 +145,5 @@ Stated plainly rather than left for someone to discover.
 - **No automated audit-chain verification schedule.** The function exists; the
   runner does not.
 - **No secrets manager integration.** Secrets come from the environment.
+- **`style-src` permits inline styles**, as explained above. Tightening it
+  would require moving every district accent to a stylesheet-generated class.
