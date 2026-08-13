@@ -1,0 +1,93 @@
+name: Deploy to Fly.io
+
+# Manual by default. Yavaya is a private preview with a real database behind
+# it; a deploy should be a decision, not a side effect of pushing a commit.
+#
+# To deploy on every push to the default branch once the preview opens up, add:
+#   push:
+#     branches: [main]
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why this deploy is happening (recorded in the run log)'
+        required: false
+        default: 'manual deploy'
+
+concurrency:
+  # Never let two deploys race each other through the same release command.
+  group: fly-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify before deploying
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: yavaya
+          POSTGRES_PASSWORD: yavaya
+          POSTGRES_DB: yavaya_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+        env:
+          TEST_DATABASE_URL: postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_test
+
+      - name: Build
+        run: npm run build
+        env:
+          # The build must not reach a real database; every page that queries is
+          # force-dynamic. These placeholders only satisfy the env schema at
+          # import time and never reach a deployed instance.
+          DATABASE_URL: postgres://build:build@127.0.0.1:5432/build
+          SESSION_SECRET: build-time-placeholder-value-not-used-at-runtime
+          SIGNAL_PEPPER: build-time-placeholder-value-not-used-at-runtime
+
+  deploy:
+    name: Deploy
+    needs: verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # --remote-only uses Fly's builder, so the runner needs no Docker layer
+      # cache and the image is built close to where it will run.
+      #
+      # The release command in fly.toml runs migrations and the seed before any
+      # new instance takes traffic.
+      - name: fly deploy
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Confirm the deployment is healthy
+        run: flyctl status
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

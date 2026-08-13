@@ -169,6 +169,21 @@ Visit `https://yavaya.fly.dev/?key=<preview key>` once per device.
 `SIGNAL_PEPPER` is effectively permanent: rotating it orphans every stored
 anti-duplication signal. Decide it once, and keep a copy somewhere durable.
 
+### Deploying from CI instead
+
+`.github/workflows/deploy.yml` runs the same deploy from GitHub Actions:
+typecheck, tests against a real Postgres, build, then `flyctl deploy
+--remote-only`. It is `workflow_dispatch` only — a deploy to a live database
+should be a decision, not a side effect of pushing.
+
+It needs one repository secret, `FLY_API_TOKEN`, added under
+**Settings → Secrets and variables → Actions**.
+
+Note what a deploy token *cannot* do: it is scoped to an existing app, so the
+one-time provisioning below (`fly launch`, `fly postgres create`) must still be
+run once from a machine with `fly auth login`. After that, every deploy can go
+through CI.
+
 ### After it is up
 
 ```bash
