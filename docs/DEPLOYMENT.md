@@ -10,10 +10,22 @@ provider.
 
 Read this section before deploying, not after.
 
-**Registration is not ready to open to the public.** Email delivery is
-unconfigured, so a new member receives no verification code and cannot activate
-their account. Deploy behind a private URL, or with registration closed, until
-`EMAIL_PROVIDER` is real. This is the single hard blocker.
+**Registration cannot open to the public until email is configured.** The SMTP
+adapter is implemented and tested against a real mail server; what is missing
+is credentials. Until `EMAIL_PROVIDER=smtp`, `SMTP_URL` and `EMAIL_FROM` are
+set, a new member receives no verification code and cannot activate their
+account.
+
+Deploy behind `PREVIEW_ACCESS_KEY` until then. Adding the three variables is
+all that stands between the preview and a public launch:
+
+```bash
+fly secrets set EMAIL_PROVIDER=smtp \
+  SMTP_URL="smtps://user:pass@smtp.example.com:465" \
+  EMAIL_FROM="Yavaya <no-reply@your-domain>"
+```
+
+`/status` will then report email delivery as `REAL`.
 
 **Generate fresh secrets.** Never reuse a development value.
 

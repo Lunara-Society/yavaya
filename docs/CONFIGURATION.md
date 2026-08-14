@@ -26,14 +26,34 @@ Generate:
 
 **Needed for:** verification codes, receipts, security notices.
 
-**Until configured:** registration succeeds and a code is generated, but nothing
-is sent. The UI says so plainly. In `APP_ENV=local` the code is shown on screen
-so the flow can be completed by hand; it is never returned from a deployed
-environment.
+**The adapter is implemented.** SMTP delivery works and is wired into
+registration; only credentials are missing. Set three variables and it becomes
+`REAL`:
 
-**To complete:** set `EMAIL_PROVIDER=smtp`, `SMTP_URL`, `EMAIL_FROM`, then
-implement the delivery adapter and call it from the registration and
-resend paths. Registration must not open to the public before this exists.
+```
+EMAIL_PROVIDER=smtp
+SMTP_URL=smtps://user:pass@smtp.example.com:465     # or smtp://…:587 for STARTTLS
+EMAIL_FROM="Yavaya <no-reply@your-domain>"
+```
+
+Any SMTP provider works, so choosing a vendor is a credentials change rather
+than a code change. Pick one with reliable delivery to all seven launch
+countries.
+
+**Until configured:** registration succeeds and a code is generated, but
+nothing is sent, and the interface says exactly that. In `APP_ENV=local` the
+code is shown on screen so the flow can be finished by hand; it is never
+returned from a deployed environment.
+
+**`EMAIL_PROVIDER=console`** writes messages to the server log instead of
+sending them. It is local-development only, refuses to run anywhere else, and
+is registered as a **MOCK** capability — never `REAL` — so it cannot quietly
+stand in for delivery.
+
+A send that fails is reported as failed. `sendVerificationCode` returns an
+outcome rather than throwing, so a briefly unreachable mail host does not roll
+back a valid registration — but the caller must never report success on a
+`delivered: false`, and does not.
 
 ---
 

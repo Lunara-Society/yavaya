@@ -89,6 +89,12 @@ export const en: Dictionary = {
   'auth.verification_undeliverable':
     'Email delivery is not configured, so the code could not be sent. Configure it before opening registration to the public.',
 
+  'email.verify.subject': 'Your Yavaya verification code',
+  'email.verify.greeting': 'Hello,',
+  'email.verify.body':
+    'Use this code to verify your Yavaya account. It expires in {minutes} minutes.',
+  'email.verify.ignore': "If you didn't create this account, you can ignore this message.",
+
   'settings.title': 'Settings',
   'settings.subtitle': 'Language, appearance, alerts and privacy.',
   'settings.notifications': 'Alerts',

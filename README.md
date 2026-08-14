@@ -50,6 +50,7 @@ Built and covered by tests:
 | Trust Shield | Derived public summary with a hard privacy boundary |
 | Rate limiting | Server-side counters per bucket and subject |
 | Content-Security-Policy | Per-request nonce; no `unsafe-inline` for scripts |
+| Email delivery | SMTP adapter, wired into registration — needs credentials only |
 | Payments | Provider-agnostic interface (**no working integration yet**) |
 | Language | Spanish/English, auto-detected from the device, overridable and remembered |
 | Appearance | Light / dark / system, resolved server-side so there is no flash |
@@ -92,7 +93,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 ```bash
 npm run typecheck
-npm test          # 106 tests; integration tests need a Postgres at DATABASE_URL
+npm test          # 113 tests; integration tests need a Postgres at DATABASE_URL
 npm run build
 ```
 

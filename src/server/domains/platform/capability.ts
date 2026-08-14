@@ -1,7 +1,23 @@
 import 'server-only';
 import { serverEnv } from '@/config/env';
-import { CAPABILITIES, type Capability } from '@/config/capabilities';
+import { CAPABILITIES, type Capability, type CapabilityState } from '@/config/capabilities';
 import { listProviderAvailability } from '@/server/domains/payments/service';
+import { emailAvailability } from '@/server/domains/notifications/email/service';
+
+/**
+ * Email is the one capability with a genuine MOCK state: the console provider
+ * exists so a developer can complete a verification flow locally, and it sends
+ * nothing at all. Reporting that as REAL would hide the launch blocker.
+ */
+function emailCapabilityState(): CapabilityState {
+  if (emailAvailability().available) return 'REAL';
+  return serverEnv().EMAIL_PROVIDER === 'console' ? 'MOCK' : 'REQUIRES_CONFIGURATION';
+}
+
+function emailBlocker(): string | undefined {
+  const availability = emailAvailability();
+  return availability.available ? undefined : availability.reason;
+}
 
 /**
  * Integration capabilities, resolved from the environment at request time.
@@ -18,12 +34,16 @@ export function integrationCapabilities(): Capability[] {
       key: 'email_delivery',
       nameKey: 'capability.email_delivery.name',
       detailKey: 'capability.email_delivery.detail',
-      state: env.EMAIL_PROVIDER === 'unconfigured' ? 'REQUIRES_CONFIGURATION' : 'REAL',
+      /*
+       * Three distinct states, because "an adapter is selected" is not the same
+       * as "mail is delivered":
+       *   smtp + credentials  → REAL
+       *   console             → MOCK — it writes to the log and sends nothing
+       *   anything else       → REQUIRES_CONFIGURATION
+       */
+      state: emailCapabilityState(),
       group: 'integration',
-      blockedBy:
-        env.EMAIL_PROVIDER === 'unconfigured'
-          ? 'Set EMAIL_PROVIDER, SMTP_URL and EMAIL_FROM, then implement the delivery adapter. Registration must not open to the public before this exists.'
-          : undefined,
+      blockedBy: emailBlocker(),
     },
     {
       key: 'sms_delivery',

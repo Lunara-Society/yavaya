@@ -99,6 +99,13 @@ export const es = {
   'auth.verification_undeliverable':
     'El envío de correo no está configurado, así que el código no se pudo entregar. Configúralo antes de abrir el registro al público.',
 
+  // --- Email ----------------------------------------------------------------
+  'email.verify.subject': 'Tu código de verificación de Yavaya',
+  'email.verify.greeting': 'Hola,',
+  'email.verify.body':
+    'Usa este código para verificar tu cuenta de Yavaya. Vence en {minutes} minutos.',
+  'email.verify.ignore': 'Si no creaste esta cuenta, puedes ignorar este mensaje.',
+
   // --- Settings -------------------------------------------------------------
   'settings.title': 'Ajustes',
   'settings.subtitle': 'Idioma, apariencia, avisos y privacidad.',

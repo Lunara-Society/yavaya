@@ -3,6 +3,8 @@
 import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
 import { serverEnv } from '@/config/env';
+import { VERIFICATION_RULES } from '@/config/business-rules';
+import { sendVerificationCode } from '@/server/domains/notifications/email/service';
 import { toClientError } from '@/server/errors';
 import { authenticate, register, registrationSchema } from '@/server/domains/identity/service';
 import { createSession } from '@/server/auth/session';
@@ -47,20 +49,30 @@ export async function registerAction(
     const result = await register(db(), parsed.data, context);
 
     const env = serverEnv();
-    const emailConfigured = env.EMAIL_PROVIDER !== 'unconfigured';
 
-    if (emailConfigured) {
-      // The delivery adapter is a configuration point; until one exists this
-      // branch is unreachable and the UI says so rather than claiming a send.
+    /*
+     * The code is sent after the account commits, never inside its transaction:
+     * an unreachable mail host must not roll back a valid registration, and a
+     * transaction must not be held open across a network call to a third party.
+     */
+    const delivery = await sendVerificationCode({
+      to: parsed.data.email,
+      code: result.emailVerificationCode,
+      locale: parsed.data.locale,
+      expiresInMinutes: VERIFICATION_RULES.emailCodeTtlMinutes,
+    });
+
+    if (delivery.delivered) {
       return { status: 'registered', yayId: formatYayId(result.yayId), verificationNotice: 'sent' };
     }
 
+    // Nothing was sent, so nothing claims it was. In local development the
+    // code is shown so the flow can be finished by hand; it is never returned
+    // from a deployed environment.
     return {
       status: 'registered',
       yayId: formatYayId(result.yayId),
       verificationNotice: 'undeliverable',
-      // Shown only in local development so the flow can be completed by hand.
-      // Never returned from a deployed environment.
       code: env.APP_ENV === 'local' ? result.emailVerificationCode : undefined,
     };
   } catch (error) {
