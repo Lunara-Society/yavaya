@@ -15,7 +15,22 @@ const serverSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  /**
+   * Connections per process. On a serverless platform each concurrent
+   * invocation is its own process, so this multiplies — keep it at 1–3 there
+   * and route through a connection pooler.
+   */
   DATABASE_POOL_MAX: z.coerce.number().int().positive().max(100).default(10),
+  /**
+   * Forces transaction-pooler handling on or off. Normally detected from the
+   * URL; set this only when a pooler is reached on a non-standard port.
+   * Getting it wrong surfaces as "prepared statement does not exist" under
+   * load, so it is explicit rather than guessed.
+   */
+  DATABASE_TRANSACTION_POOLER: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
 
   /** 32+ byte random string. Rotating it invalidates every session. */
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),

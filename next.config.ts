@@ -26,11 +26,14 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   /*
-   * Emits a self-contained server bundle with only the dependencies actually
-   * used, which is what the container image copies. Keeps the image small and
-   * means the runtime stage carries no build toolchain.
+   * `standalone` emits a self-contained server bundle, which is what the
+   * container image copies — small image, no build toolchain at runtime.
+   *
+   * It is off on Vercel, which builds Next natively and has its own output
+   * format. Yavaya stays deployable both ways: a container anywhere, or a
+   * serverless platform, without a second configuration to maintain.
    */
-  output: 'standalone',
+  ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),
   experimental: {
     // Server Actions are the primary mutation surface; keep the body limit tight
     // so upload paths must go through the dedicated, validated media pipeline.
