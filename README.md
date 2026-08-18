@@ -64,9 +64,9 @@ driver network, Works subscriptions, the Tavern, and any payment integration.
 Visit `/status` in the running app for the live version of this table,
 including which external integrations are configured.
 
-**Not deployed yet.** The repository is deployment-ready — container, Fly
-config, health check, bundled release scripts and a private-preview gate — but
-going live needs a hosting account and a managed database. See
+**Database is live.** A Supabase project (`yavaya`, us-east-1) is provisioned,
+migrated, seeded and hardened — its auto-exposed data API is closed in two
+layers. The web app still needs to be connected to it on Vercel; see
 [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ---
@@ -93,7 +93,7 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 
 ```bash
 npm run typecheck
-npm test          # 113 tests; integration tests need a Postgres at DATABASE_URL
+npm test          # 118 tests; integration tests need a Postgres at DATABASE_URL
 npm run build
 ```
 

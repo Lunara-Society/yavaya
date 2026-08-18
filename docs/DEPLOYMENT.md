@@ -19,10 +19,12 @@ account.
 Deploy behind `PREVIEW_ACCESS_KEY` until then. Adding the three variables is
 all that stands between the preview and a public launch:
 
-```bash
-fly secrets set EMAIL_PROVIDER=smtp \
-  SMTP_URL="smtps://user:pass@smtp.example.com:465" \
-  EMAIL_FROM="Yavaya <no-reply@your-domain>"
+Set these three in Vercel's environment variables:
+
+```
+EMAIL_PROVIDER  smtp
+SMTP_URL        smtps://user:pass@smtp.example.com:465
+EMAIL_FROM      Yavaya <no-reply@your-domain>
 ```
 
 `/status` will then report email delivery as `REAL`.
@@ -142,66 +144,103 @@ away from the public; it is not what protects member data. The session and
 permission system does that, and it applies underneath the curtain exactly as
 it will in production.
 
-Remove the secret to open the site: `fly secrets unset PREVIEW_ACCESS_KEY`.
+Delete the variable in Vercel and redeploy to open the site.
 
-## Deploying to Fly.io
+## Deploying to Vercel + Supabase
 
-`fly.toml` is committed and configured for `mia` (Miami) — the closest common
-Fly region to Central America. Latency is a product decision here, not an
-infrastructure detail.
+The database is already provisioned, migrated, seeded and hardened. What
+remains is connecting Vercel to it.
 
-```bash
-# 1. Authenticate (your account, your credentials)
-fly auth login
+### 1. Supabase (done)
 
-# 2. Claim an app name. --no-deploy because secrets are not set yet.
-fly launch --no-deploy --copy-config --name yavaya
+Project `yavaya`, region `us-east-1` — the closest Supabase region to Central
+America. Schema, reference data and security hardening are applied and
+verified against the reference database: 41 tables, 339 columns, 110 indexes,
+44 foreign keys, 257 checks, 4 append-only triggers, 24 enums, 170 locations,
+34 permissions, 54 role grants, treasury 50,000.
 
-# 3. Managed Postgres, attached as DATABASE_URL
-fly postgres create --name yavaya-db --region mia
-fly postgres attach yavaya-db
+**The auto-exposed data API is closed.** See
+`drizzle/0002_data_api_lockdown.sql` — this is the single most important thing
+to preserve on any managed-Postgres platform.
 
-# 4. Secrets. Generate each value fresh — never reuse a development one.
-fly secrets set \
-  SESSION_SECRET="$(node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))")" \
-  SIGNAL_PEPPER="$(node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))")" \
-  PREVIEW_ACCESS_KEY="$(node -e "console.log(require('crypto').randomBytes(24).toString('base64url'))")" \
-  PRIMARY_ADMIN_EMAIL="Junoagattis@gmail.com" \
-  APP_URL="https://yavaya.fly.dev"
+Get the connection string from **Supabase → Project Settings → Database**. Use
+the **transaction pooler** (port 6543) for Vercel: serverless invocations are
+many short-lived processes, and a direct connection per invocation exhausts
+Postgres. `DATABASE_TRANSACTION_POOLER` is detected from that port
+automatically, which is what disables prepared statements.
 
-# 5. Deploy. The release command migrates and seeds before traffic shifts.
-fly deploy
+If the password is not shown, reset it there — it is only displayed once.
+
+### 2. Connect GitHub to Vercel
+
+Vercel needs a GitHub login connection before it can link a repository. One
+click: **Vercel → Settings → Login Connections → GitHub**.
+
+### 3. Import the repository
+
+**Vercel → Add New → Project → Lunara-Society/YavayaGo**. Framework detection
+finds Next.js; no build settings need changing. Set the production branch to
+the branch you are shipping.
+
+### 4. Environment variables
+
+**Vercel → Project → Settings → Environment Variables**:
+
+```
+DATABASE_URL      postgresql://postgres.<ref>:<password>@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+DATABASE_POOL_MAX 1
+NODE_ENV          production
+APP_ENV           production
+APP_URL           https://<your-vercel-domain>
+SESSION_SECRET    <48 random bytes>
+SIGNAL_PEPPER     <48 random bytes, permanent>
+PREVIEW_ACCESS_KEY <while the site is a private preview>
+PRIMARY_ADMIN_EMAIL Junoagattis@gmail.com
 ```
 
-Then read the preview key back with `fly secrets list` — Fly shows only a
-digest, so keep the value from step 4, or set it to something you choose.
+`DATABASE_POOL_MAX=1` matters: the pool is per-process, and on serverless every
+concurrent invocation is its own process.
 
-Visit `https://yavaya.fly.dev/?key=<preview key>` once per device.
-
-`SIGNAL_PEPPER` is effectively permanent: rotating it orphans every stored
-anti-duplication signal. Decide it once, and keep a copy somewhere durable.
-
-### Deploying from CI instead
-
-`.github/workflows/deploy.yml` runs the same deploy from GitHub Actions:
-typecheck, tests against a real Postgres, build, then `flyctl deploy
---remote-only`. It is `workflow_dispatch` only — a deploy to a live database
-should be a decision, not a side effect of pushing.
-
-It needs one repository secret, `FLY_API_TOKEN`, added under
-**Settings → Secrets and variables → Actions**.
-
-Note what a deploy token *cannot* do: it is scoped to an existing app, so the
-one-time provisioning below (`fly launch`, `fly postgres create`) must still be
-run once from a machine with `fly auth login`. After that, every deploy can go
-through CI.
-
-### After it is up
+Generate secrets with:
 
 ```bash
-fly logs                       # watch the release command run migrations
-fly status                     # health check should be passing
-fly ssh console -C "node dist/scripts/seed.cjs"   # re-run after registering the admin
+node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+```
+
+### 5. Deploy, then become the administrator
+
+Deploy from the Vercel dashboard. Then register through the normal flow with
+`PRIMARY_ADMIN_EMAIL` and grant the role — the seed never creates a login:
+
+```sql
+-- Supabase SQL editor, after registering
+INSERT INTO user_roles (user_id, role_key, scope)
+SELECT id, 'admin', 'global' FROM users WHERE email = 'junoagattis@gmail.com'
+ON CONFLICT DO NOTHING;
+UPDATE users SET status = 'active', trust_state = 'trusted'
+WHERE email = 'junoagattis@gmail.com';
+```
+
+Registering with that address confers no authority on its own; there is a test
+that proves it.
+
+### 6. Confirm
+
+- `/api/health` returns `{"status":"ok"}` — if it returns `degraded`, the
+  database is unreachable and `DATABASE_URL` is wrong.
+- `/status` reports the capability register from the deployed environment.
+- The CSP header is present, and no CSP violations appear in the console.
+
+### Migrations from now on
+
+Vercel has no release-command step, so migrations do not belong in the build —
+parallel builds would race. Run them deliberately, either through the Supabase
+SQL editor or with the bundled script against the **direct** connection (port
+5432, not the pooler — DDL should not go through a transaction pooler):
+
+```bash
+DATABASE_URL="postgresql://postgres.<ref>:<password>@db.<ref>.supabase.co:5432/postgres" \
+  node dist/scripts/migrate.cjs
 ```
 
 ## Other platforms

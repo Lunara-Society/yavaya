@@ -130,6 +130,23 @@ injection, and the alternative would be abandoning per-district theming.
 CSRF is handled by Next.js Server Actions, which validate origin on POST, plus
 `sameSite=lax` cookies.
 
+## Managed-Postgres data APIs
+
+Platforms that host Postgres often publish the `public` schema through a REST
+layer reachable with a browser-side key. Supabase does this by default: on a
+fresh project every table is readable with the anon key unless privileges are
+revoked or RLS denies it. For Yavaya that default would expose password hashes,
+session token hashes, verification codes, risk assessments and the audit log.
+
+`drizzle/0002_data_api_lockdown.sql` closes it in two independent layers —
+privileges revoked from the API roles including for future tables, and RLS
+enabled with no policies, which denies every non-owner role. Yavaya connects as
+the owner and enforces access in the application, so it is unaffected; a
+non-owner role would need policies written first.
+
+This is the single most important thing to preserve when moving to another
+managed platform.
+
 ## Known gaps
 
 Stated plainly rather than left for someone to discover.
@@ -145,5 +162,9 @@ Stated plainly rather than left for someone to discover.
 - **No automated audit-chain verification schedule.** The function exists; the
   runner does not.
 - **No secrets manager integration.** Secrets come from the environment.
+- **Schema `USAGE` on `public` is still inherited from the `PUBLIC` role** on
+  Supabase. It grants nothing on its own — there are no table privileges and
+  RLS denies every non-owner role — but it is why a privilege audit shows
+  `has_schema_privilege('anon','public','USAGE')` as true.
 - **`style-src` permits inline styles**, as explained above. Tightening it
   would require moving every district accent to a stylesheet-generated class.
