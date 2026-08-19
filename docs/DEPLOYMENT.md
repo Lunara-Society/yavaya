@@ -108,13 +108,20 @@ docker run -p 3000:3000 --env-file .env.production yavaya
 The image is multi-stage, runs as a non-root user, contains no build toolchain
 or dev dependencies, and declares a `HEALTHCHECK` against `/api/health`.
 
-> The Dockerfile has **not** been built and run end to end — no Docker daemon
-> was available in the environment where it was written. The standalone server
-> it launches (`node server.js` against `.next/standalone`) *has* been verified
-> in production mode: all routes render, the CSP is applied, and the health
-> endpoint correctly returns `ok` with the database up and `503 degraded` with
-> it down. Expect the Dockerfile to need at most minor adjustment on first
-> build.
+The image is **verified in CI** on every change to the Dockerfile,
+dependencies, build config or release scripts
+(`.github/workflows/docker.yml`). That run does not just build it — it:
+
+1. runs the bundled `migrate.cjs` and `seed.cjs` *from inside the image*
+   against a real Postgres, which is exactly what the platform's pre-deploy
+   step executes;
+2. starts the container and waits for `/api/health` to return `ok`, which only
+   happens once the database actually answers;
+3. checks every page renders and the CSP header is present.
+
+This caught a real failure on its first run: the runtime stage copied
+`/app/public`, which does not exist because the project has no static assets
+yet. That would have failed identically on a platform's first deploy.
 
 ## Health check
 
