@@ -22,16 +22,22 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# The build must not reach a real database. Every page that touches Postgres is
-# `force-dynamic`, so nothing here executes a query — but the environment schema
-# is validated at import time, so placeholders are supplied to satisfy it.
-# These values never reach the running container.
+# No environment is supplied to the build, and none is needed: `serverEnv()` is
+# validated lazily at request time, not at import time, so a missing secret is a
+# runtime error rather than a build failure. Verified by building with no
+# environment at all.
+#
+# Placeholder secrets used to be set here. They were removed: they were never
+# read, they bloated the image history with values that look like credentials,
+# and the Docker linter flags them (SecretsUsedInArgOrEnv) — correctly, since it
+# cannot tell a placeholder from the real thing.
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_URL="postgres://build:build@127.0.0.1:5432/build"
-ENV SESSION_SECRET="build-time-placeholder-value-not-used-at-runtime"
-ENV SIGNAL_PEPPER="build-time-placeholder-value-not-used-at-runtime"
 
-RUN npm run build
+# `public` is optional in Next.js and this project has no static assets yet, but
+# the runtime stage copies it unconditionally. Creating it here keeps that COPY
+# valid whether or not the directory is ever committed — the build failed on
+# exactly this before it was added.
+RUN mkdir -p public && npm run build
 
 # --- Runtime ------------------------------------------------------------------
 FROM node:22-alpine AS runner
