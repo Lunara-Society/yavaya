@@ -176,6 +176,13 @@ If the password is not shown, reset it there — it is only displayed once.
 Vercel needs a GitHub login connection before it can link a repository. One
 click: **Vercel → Settings → Login Connections → GitHub**.
 
+**Function region.** `vercel.json` pins serverless functions to `iad1`
+(us-east-1) — the same region as the Supabase project. Every page in Yavaya
+queries the database, so a function in one region talking to a database in
+another pays that round trip on every request. Colocating them is the single
+cheapest latency win available, and it matters most on the slow mobile
+connections Yavaya is built for.
+
 ### 3. Import the repository
 
 **Vercel → Add New → Project → Lunara-Society/YavayaGo**. Framework detection
