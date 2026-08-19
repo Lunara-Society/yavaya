@@ -19,7 +19,7 @@ account.
 Deploy behind `PREVIEW_ACCESS_KEY` until then. Adding the three variables is
 all that stands between the preview and a public launch:
 
-Set these three in Vercel's environment variables:
+Set these three on the web service:
 
 ```
 EMAIL_PROVIDER  smtp
@@ -144,98 +144,83 @@ away from the public; it is not what protects member data. The session and
 permission system does that, and it applies underneath the curtain exactly as
 it will in production.
 
-Delete the variable in Vercel and redeploy to open the site.
+Remove the variable from the service and redeploy to open the site.
 
-## Deploying to Vercel + Supabase
+## Deploying to Railway
 
-The database is already provisioned, migrated, seeded and hardened. What
-remains is connecting Vercel to it.
+Railway hosts both the app and the database in one project, which keeps the
+app-to-database hop on the internal network and inside one region.
 
-### 1. Supabase (done)
+### Provisioned
 
-Project `yavaya`, ref `xkriotfcoialxmqvherb`, region `us-east-1` — the closest
-Supabase region to Central America. Postgres 17.6.
+| | |
+| --- | --- |
+| Project | `yavaya` |
+| Region | `iad` (US East) — both services, deliberately colocated |
+| Database | Postgres (`ghcr.io/railwayapp-templates/postgres-ssl:18`) with a persistent volume at `/var/lib/postgresql/data` |
+| Web service | `yavaya-web`, built from the repository `Dockerfile` |
+| Domain | `yavaya-web-production.up.railway.app` |
 
-Note the version difference: the test suite runs against Postgres 16 locally
-and in CI, while production is 17. Nothing in the schema depends on a version
-difference between the two, and every object was verified present after
-applying, but the gap is worth closing when convenient. Schema, reference data and security hardening are applied and
-verified against the reference database: 41 tables, 339 columns, 110 indexes,
-44 foreign keys, 257 checks, 4 append-only triggers, 24 enums, 170 locations,
-34 permissions, 54 role grants, treasury 50,000.
+**Region is a product decision, not an infrastructure detail.** The database
+first provisioned in `ams` (Amsterdam); both services were moved to `iad`
+before any data existed. Yavaya renders every page on the server with database
+queries, so a transatlantic hop would have been paid on every request, by users
+on exactly the connections this product is built for.
 
-**The auto-exposed data API is closed.** See
-`drizzle/0002_data_api_lockdown.sql` — this is the single most important thing
-to preserve on any managed-Postgres platform.
+### Service configuration
 
-Get the connection string from **Supabase → Project Settings → Database**. Use
-the **transaction pooler** (port 6543) for Vercel: serverless invocations are
-many short-lived processes, and a direct connection per invocation exhausts
-Postgres. `DATABASE_TRANSACTION_POOLER` is detected from that port
-automatically, which is what disables prepared statements.
+- **Build:** `dockerfilePath = Dockerfile`. Railway's default builder (Railpack)
+  would run `next start`, which does not work with `output: standalone` — the
+  output this repository produces everywhere except Vercel. The Dockerfile is
+  the tested path.
+- **Pre-deploy:** `node dist/scripts/migrate.cjs && node dist/scripts/seed.cjs`.
+  Railway runs this before new containers take traffic, which is exactly the
+  release-step semantics migrations need — never on boot, where two starting
+  containers could race.
+- **Healthcheck:** `/api/health`, 120s timeout. It returns 200 only when the
+  database answers, so a container that cannot reach Postgres never takes
+  traffic. The path is exempt from the preview gate for this reason.
+- **Restart policy:** `ON_FAILURE`, 3 retries.
+- **`DATABASE_URL`** is a Railway reference to the Postgres service, so it
+  follows the database rather than being a copied secret. It resolves to the
+  private network address: no public exposure, no egress cost.
 
-If the password is not shown, reset it there — it is only displayed once.
+Because that connection is direct Postgres (port 5432, no pooler), prepared
+statements stay enabled — `usesTransactionPooler` detects this automatically.
+That is the opposite of the Supabase-on-Vercel case, and the reason the
+detection exists rather than a hard-coded flag.
 
-### 2. Connect GitHub to Vercel
+### The one manual step: repository access
 
-Two separate things, and both are needed:
+Railway builds from GitHub, and `Lunara-Society/YavayaGo` is **private**, so
+Railway's GitHub App has to be granted access to it. Until then the service
+exists and is fully configured but never builds — `list-deployments` returns
+an empty array.
 
-1. A **login connection** — *Vercel → Settings → Login Connections → GitHub*.
-2. **Repository access** for Vercel's GitHub App. An organization install
-   defaults to a chosen subset of repositories, so `Lunara-Society/YavayaGo`
-   has to be included explicitly:
-   *github.com/organizations/Lunara-Society/settings/installations → Vercel →
-   Repository access*. The Vercel import screen also links this as
-   "Adjust GitHub App Permissions".
+`Lunara-Society` is a personal account rather than an organization, so no
+admin approval is involved:
 
-Without the second, linking fails with `repo_not_found` even though the login
-connection is present.
+*GitHub → Settings → Applications → Installed GitHub Apps → Railway →
+Repository access → add `YavayaGo`* (or install it from
+`github.com/apps/railway-app`).
 
-**Function region.** `vercel.json` pins serverless functions to `iad1`
-(us-east-1) — the same region as the Supabase project. Every page in Yavaya
-queries the database, so a function in one region talking to a database in
-another pays that round trip on every request. Colocating them is the single
-cheapest latency win available, and it matters most on the slow mobile
-connections Yavaya is built for.
+The repository's default branch is already the branch being deployed, so
+nothing else needs pointing at it.
 
-### 3. Import the repository
+### Then
 
-**Vercel → Add New → Project → Lunara-Society/YavayaGo**. Framework detection
-finds Next.js; no build settings need changing. Set the production branch to
-the branch you are shipping.
-
-### 4. Environment variables
-
-**Vercel → Project → Settings → Environment Variables**:
-
-```
-DATABASE_URL      <copy the Transaction pooler URI from Supabase, port 6543>
-DATABASE_POOL_MAX 1
-NODE_ENV          production
-APP_ENV           production
-APP_URL           https://<your-vercel-domain>
-SESSION_SECRET    <48 random bytes>
-SIGNAL_PEPPER     <48 random bytes, permanent>
-PREVIEW_ACCESS_KEY <while the site is a private preview>
-PRIMARY_ADMIN_EMAIL Junoagattis@gmail.com
-```
-
-`DATABASE_POOL_MAX=1` matters: the pool is per-process, and on serverless every
-concurrent invocation is its own process.
-
-Generate secrets with:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
-```
-
-### 5. Deploy, then become the administrator
-
-Deploy from the Vercel dashboard. Then register through the normal flow with
-`PRIMARY_ADMIN_EMAIL` and grant the role — the seed never creates a login:
+1. Railway builds automatically once access is granted; otherwise redeploy the
+   `yavaya-web` service.
+2. Watch the pre-deploy step apply the migrations and the seed.
+3. Check `https://yavaya-web-production.up.railway.app/api/health` →
+   `{"status":"ok"}`. A `503 degraded` means the app is up but cannot reach the
+   database.
+4. Reach the site with the preview key once per device:
+   `https://yavaya-web-production.up.railway.app/?key=<PREVIEW_ACCESS_KEY>`.
+5. Register with `PRIMARY_ADMIN_EMAIL`, then grant the role — the seed never
+   creates a login:
 
 ```sql
--- Supabase SQL editor, after registering
 INSERT INTO user_roles (user_id, role_key, scope)
 SELECT id, 'admin', 'global' FROM users WHERE email = 'junoagattis@gmail.com'
 ON CONFLICT DO NOTHING;
@@ -243,27 +228,12 @@ UPDATE users SET status = 'active', trust_state = 'trusted'
 WHERE email = 'junoagattis@gmail.com';
 ```
 
-Registering with that address confers no authority on its own; there is a test
-that proves it.
+### Note on Postgres versions
 
-### 6. Confirm
-
-- `/api/health` returns `{"status":"ok"}` — if it returns `degraded`, the
-  database is unreachable and `DATABASE_URL` is wrong.
-- `/status` reports the capability register from the deployed environment.
-- The CSP header is present, and no CSP violations appear in the console.
-
-### Migrations from now on
-
-Vercel has no release-command step, so migrations do not belong in the build —
-parallel builds would race. Run them deliberately, either through the Supabase
-SQL editor or with the bundled script against the **direct** connection (port
-5432, not the pooler — DDL should not go through a transaction pooler):
-
-```bash
-DATABASE_URL="postgresql://postgres.<ref>:<password>@db.<ref>.supabase.co:5432/postgres" \
-  node dist/scripts/migrate.cjs
-```
+Railway's template deploys Postgres **18**; the test suite runs against 16
+locally and in CI. Nothing in the schema depends on the difference, and the
+pre-deploy migration is the same code path verified against an empty database
+— but the gap is worth closing when convenient.
 
 ## Other platforms
 
