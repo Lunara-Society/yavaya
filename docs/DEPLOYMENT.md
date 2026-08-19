@@ -202,7 +202,15 @@ detection exists rather than a hard-coded flag.
 Railway builds from GitHub, and `Lunara-Society/YavayaGo` is **private**, so
 Railway's GitHub App has to be granted access to it. Until then the service
 exists and is fully configured but never builds — `list-deployments` returns
-an empty array.
+an empty array, and asking Railway to deploy answers:
+
+```
+No GitHub installation found for repo: Lunara-Society/YavayaGo
+```
+
+There is no way around this from the Railway side. A redeploy cannot produce a
+first deployment, and the alternative — letting Railway create a service from
+the repository — hits the same missing installation.
 
 `Lunara-Society` is a personal account rather than an organization, so no
 admin approval is involved:
@@ -244,9 +252,11 @@ pre-deploy migration is the same code path verified against an empty database
 
 ## Other platforms
 
-**Railway / Render** — connect the repository, they detect the Dockerfile.
-Add a managed Postgres, set the environment variables, and configure the
-release command as `npm run db:migrate`.
+**Render** — connect the repository; it detects the Dockerfile. Add a managed
+Postgres, set the environment variables, and configure the pre-deploy command
+as `node dist/scripts/migrate.cjs && node dist/scripts/seed.cjs`. Not
+`npm run db:migrate`: that entry point is TypeScript, and the production image
+contains neither TypeScript nor `tsx`.
 
 **Google Cloud Run** — build with Cloud Build, push to Artifact Registry,
 deploy with Cloud SQL (Postgres) attached. Run migrations as a Cloud Run job
