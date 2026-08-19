@@ -153,8 +153,13 @@ remains is connecting Vercel to it.
 
 ### 1. Supabase (done)
 
-Project `yavaya`, region `us-east-1` — the closest Supabase region to Central
-America. Schema, reference data and security hardening are applied and
+Project `yavaya`, ref `xkriotfcoialxmqvherb`, region `us-east-1` — the closest
+Supabase region to Central America. Postgres 17.6.
+
+Note the version difference: the test suite runs against Postgres 16 locally
+and in CI, while production is 17. Nothing in the schema depends on a version
+difference between the two, and every object was verified present after
+applying, but the gap is worth closing when convenient. Schema, reference data and security hardening are applied and
 verified against the reference database: 41 tables, 339 columns, 110 indexes,
 44 foreign keys, 257 checks, 4 append-only triggers, 24 enums, 170 locations,
 34 permissions, 54 role grants, treasury 50,000.
@@ -173,8 +178,18 @@ If the password is not shown, reset it there — it is only displayed once.
 
 ### 2. Connect GitHub to Vercel
 
-Vercel needs a GitHub login connection before it can link a repository. One
-click: **Vercel → Settings → Login Connections → GitHub**.
+Two separate things, and both are needed:
+
+1. A **login connection** — *Vercel → Settings → Login Connections → GitHub*.
+2. **Repository access** for Vercel's GitHub App. An organization install
+   defaults to a chosen subset of repositories, so `Lunara-Society/YavayaGo`
+   has to be included explicitly:
+   *github.com/organizations/Lunara-Society/settings/installations → Vercel →
+   Repository access*. The Vercel import screen also links this as
+   "Adjust GitHub App Permissions".
+
+Without the second, linking fails with `repo_not_found` even though the login
+connection is present.
 
 **Function region.** `vercel.json` pins serverless functions to `iad1`
 (us-east-1) — the same region as the Supabase project. Every page in Yavaya
@@ -194,7 +209,7 @@ the branch you are shipping.
 **Vercel → Project → Settings → Environment Variables**:
 
 ```
-DATABASE_URL      postgresql://postgres.<ref>:<password>@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+DATABASE_URL      <copy the Transaction pooler URI from Supabase, port 6543>
 DATABASE_POOL_MAX 1
 NODE_ENV          production
 APP_ENV           production
