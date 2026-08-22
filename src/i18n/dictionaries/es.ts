@@ -98,6 +98,26 @@ export const es = {
     'Las cuentas nuevas pasan por un período de supervisión de {hours} horas antes de alcanzar el estado estándar.',
   'auth.verification_undeliverable':
     'El envío de correo no está configurado, así que el código no se pudo entregar. Configúralo antes de abrir el registro al público.',
+  'auth.verify.title': 'Verifica tu correo',
+  'auth.verify.subtitle': 'Enviamos un código de 6 dígitos a {email}.',
+  'auth.verify.code': 'Código de verificación',
+  'auth.verify.code_hint': 'El código vence en {minutes} minutos.',
+  'auth.verify.submit': 'Verificar cuenta',
+  'auth.verify.resend': 'Enviar un código nuevo',
+  'auth.verify.resend_hint':
+    '¿No te llegó? Revisa la carpeta de spam. Un código nuevo anula el anterior.',
+  'auth.verify.resent': 'Enviamos un código nuevo. El anterior ya no sirve.',
+  'auth.verify.already_verified': 'Tu correo ya está verificado.',
+  'auth.verify.continue': 'Verificar mi correo',
+  'auth.verify.error_format': 'El código tiene 6 dígitos.',
+  'auth.verify.error_mismatch': 'Ese código no es correcto. Revísalo e inténtalo de nuevo.',
+  'auth.verify.error_expired': 'Ese código venció. Pide uno nuevo.',
+  'auth.verify.error_no_challenge': 'No hay ningún código pendiente. Pide uno nuevo.',
+  'auth.verify.error_too_many_attempts':
+    'Demasiados intentos con este código. Pide uno nuevo.',
+  'auth.verify.error_cooldown': 'Espera {seconds} segundos antes de pedir otro código.',
+  'auth.verify.error_daily_limit':
+    'Alcanzaste el máximo de códigos por hoy. Inténtalo mañana o escribe a soporte.',
 
   // --- Email ----------------------------------------------------------------
   'email.verify.subject': 'Tu código de verificación de Yavaya',
@@ -195,6 +215,9 @@ export const es = {
   'capability.identity.detail': 'Registro, identificador permanente de 8 dígitos y verificación.',
   'capability.authentication.name': 'Autenticación y sesiones',
   'capability.authentication.detail': 'Contraseñas con scrypt, sesiones con rotación y revocación.',
+  'capability.email_verification.name': 'Verificación de correo',
+  'capability.email_verification.detail':
+    'Código de 6 dígitos con vencimiento, límite de intentos y reenvío controlado.',
   'capability.authorization.name': 'Permisos',
   'capability.authorization.detail': 'Roles y permisos verificados en el servidor.',
   'capability.geography.name': 'Geografía',

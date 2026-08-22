@@ -30,7 +30,7 @@ export default async function RegisterPage() {
               hours: NEW_USER_RULES.monitoringWindowHours,
             }),
             undeliverable: t('auth.verification_undeliverable'),
-            genericError: t('error.internal'),
+            verifyContinue: t('auth.verify.continue'),
           }}
         />
 

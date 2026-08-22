@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState } from 'react';
 import { registerAction, type ActionState } from '../actions';
 
@@ -24,7 +25,7 @@ export function RegisterForm({
     registeredTitle: string;
     monitoringNotice: string;
     undeliverable: string;
-    genericError: string;
+    verifyContinue: string;
   };
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(registerAction, {
@@ -50,6 +51,19 @@ export function RegisterForm({
             ) : null}
           </div>
         ) : null}
+
+        {/*
+          Offered in both cases. When delivery failed there is still a code in
+          the database, and a member who obtains it another way — support, or
+          the local development panel above — can finish here.
+        */}
+        <Link
+          href="/verify"
+          className="mt-5 inline-flex min-h-touch items-center rounded-xl px-5 font-medium"
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}
+        >
+          {labels.verifyContinue}
+        </Link>
       </section>
     );
   }
@@ -79,7 +93,7 @@ export function RegisterForm({
           className="rounded-lg border px-3 py-2 text-sm"
           style={{ borderColor: 'var(--color-critical)' }}
         >
-          {labels.genericError}
+          {state.message}
         </p>
       ) : null}
 

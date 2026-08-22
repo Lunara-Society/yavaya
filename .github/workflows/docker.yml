@@ -104,6 +104,16 @@ jobs:
             [ "$code" = "200" ] || { docker logs yavaya; exit 1; }
           done
 
+          echo "--- signed-out members are sent to sign in, not shown the page ---"
+          for path in /verify /account; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000$path")
+            echo "$path -> $code"
+            case "$code" in
+              30*) ;;
+              *) echo "expected a redirect to /login, got $code"; docker logs yavaya; exit 1 ;;
+            esac
+          done
+
           echo "--- security headers present ---"
           curl -sI http://127.0.0.1:3000/ | grep -iq "content-security-policy" \
             || { echo "CSP header missing"; exit 1; }

@@ -6,7 +6,7 @@ import { loginAction, type ActionState } from '../actions';
 export function LoginForm({
   labels,
 }: {
-  labels: { email: string; password: string; submit: string; error: string };
+  labels: { email: string; password: string; submit: string };
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(loginAction, {
     status: 'idle',
@@ -43,7 +43,14 @@ export function LoginForm({
           className="rounded-lg border px-3 py-2 text-sm"
           style={{ borderColor: 'var(--color-critical)' }}
         >
-          {labels.error}
+          {/*
+            The action already collapses "wrong password" and "no such
+            account" into one key, so showing the real message here cannot
+            reveal which addresses are registered. What it can now say is
+            "too many attempts, wait 240 seconds", which the generic string
+            could not.
+          */}
+          {state.message}
         </p>
       ) : null}
 

@@ -40,6 +40,29 @@ export function emailDomain(input: string): string {
 }
 
 /**
+ * Masks an address for display: `ma••••z@gmail.com`.
+ *
+ * Shown to the person who owns it, so they can tell which inbox to open —
+ * never to anyone else. The domain stays legible because that is the part that
+ * answers "which inbox"; the local part is what identifies a human, so it is
+ * the part that is hidden. A one- or two-character local part is masked
+ * entirely rather than revealed by an unhelpful rule.
+ */
+export function maskEmail(input: string): string {
+  const canonical = canonicalEmail(input);
+  const at = canonical.lastIndexOf('@');
+  if (at <= 0) return '•'.repeat(Math.max(canonical.length, 3));
+
+  const local = canonical.slice(0, at);
+  const domain = canonical.slice(at + 1);
+
+  if (local.length <= 2) return `${'•'.repeat(local.length || 1)}@${domain}`;
+
+  const hidden = '•'.repeat(Math.max(local.length - 3, 1));
+  return `${local.slice(0, 2)}${hidden}${local.slice(-1)}@${domain}`;
+}
+
+/**
  * Normalises a phone number to E.164 given the country's dialing prefix.
  *
  * Deliberately conservative: it strips formatting and applies the country

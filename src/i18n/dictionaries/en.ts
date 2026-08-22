@@ -88,6 +88,25 @@ export const en: Dictionary = {
     'New accounts go through a {hours}-hour monitoring period before reaching standard status.',
   'auth.verification_undeliverable':
     'Email delivery is not configured, so the code could not be sent. Configure it before opening registration to the public.',
+  'auth.verify.title': 'Verify your email',
+  'auth.verify.subtitle': 'We sent a 6-digit code to {email}.',
+  'auth.verify.code': 'Verification code',
+  'auth.verify.code_hint': 'The code expires in {minutes} minutes.',
+  'auth.verify.submit': 'Verify account',
+  'auth.verify.resend': 'Send a new code',
+  'auth.verify.resend_hint':
+    'Did not arrive? Check your spam folder. A new code cancels the previous one.',
+  'auth.verify.resent': 'A new code is on its way. The previous one no longer works.',
+  'auth.verify.already_verified': 'Your email is already verified.',
+  'auth.verify.continue': 'Verify my email',
+  'auth.verify.error_format': 'The code is 6 digits.',
+  'auth.verify.error_mismatch': 'That code is not correct. Check it and try again.',
+  'auth.verify.error_expired': 'That code has expired. Request a new one.',
+  'auth.verify.error_no_challenge': 'There is no code waiting. Request a new one.',
+  'auth.verify.error_too_many_attempts': 'Too many attempts with this code. Request a new one.',
+  'auth.verify.error_cooldown': 'Wait {seconds} seconds before requesting another code.',
+  'auth.verify.error_daily_limit':
+    'You have reached the maximum number of codes for today. Try tomorrow or contact support.',
 
   'email.verify.subject': 'Your Yavaya verification code',
   'email.verify.greeting': 'Hello,',
@@ -177,6 +196,9 @@ export const en: Dictionary = {
   'capability.identity.detail': 'Registration, permanent 8-digit identifier and verification.',
   'capability.authentication.name': 'Authentication and sessions',
   'capability.authentication.detail': 'scrypt passwords, sessions with rotation and revocation.',
+  'capability.email_verification.name': 'Email verification',
+  'capability.email_verification.detail':
+    'A 6-digit code with expiry, an attempt limit, and a rate-controlled resend.',
   'capability.authorization.name': 'Permissions',
   'capability.authorization.detail': 'Roles and permissions checked on the server.',
   'capability.geography.name': 'Geography',

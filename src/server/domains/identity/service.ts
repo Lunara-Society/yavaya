@@ -367,6 +367,139 @@ export async function consumeVerificationCode(
   });
 }
 
+export type VerificationReissue =
+  | {
+      ok: true;
+      code: string;
+      expiresAt: Date;
+      /** Canonical address the code must be sent to — never the one a form supplied. */
+      email: string;
+      locale: 'es' | 'en';
+    }
+  | { ok: false; reason: 'already_verified' | 'cooldown' | 'daily_limit'; retryAfterSeconds?: number };
+
+/**
+ * Issues a fresh email verification code for an account that has not verified.
+ *
+ * The address is read from the account, never accepted from the caller: a
+ * resend endpoint that took an address would be a way to mail an arbitrary
+ * code to an arbitrary inbox.
+ *
+ * Issuing a new code **expires every pending one**. Otherwise every resend
+ * would widen the window of simultaneously-valid codes, and a member who
+ * clicks the button five times would leave five live codes behind them.
+ *
+ * Three limits apply, none of them invented here: the `resend_code` bucket
+ * bounds abuse per account, `resendCooldownSeconds` stops rapid-fire requests,
+ * and `maxChallengesPerDay` caps the total. The cooldown and the daily cap are
+ * measured from the challenge rows rather than a counter, so they survive a
+ * counter purge and mean exactly what they say.
+ */
+export async function reissueEmailVerificationCode(
+  database: Database,
+  params: { userId: string },
+): Promise<VerificationReissue> {
+  const rate = await consumeRateLimit(database, RATE_LIMITS.resendCode, params.userId);
+  if (!rate.allowed) throw errors.rateLimited(rate.retryAfterSeconds);
+
+  const code = generateNumericCode(6);
+
+  return database.transaction(async (tx) => {
+    const [user] = await tx
+      .select({
+        email: users.email,
+        locale: users.locale,
+        emailVerifiedAt: users.emailVerifiedAt,
+      })
+      .from(users)
+      .where(eq(users.id, params.userId))
+      .limit(1);
+
+    if (!user) throw errors.notFound('user');
+    if (user.emailVerifiedAt) return { ok: false as const, reason: 'already_verified' as const };
+
+    const [recent] = await tx
+      .select({ createdAt: verificationChallenges.createdAt })
+      .from(verificationChallenges)
+      .where(
+        and(
+          eq(verificationChallenges.userId, params.userId),
+          eq(verificationChallenges.kind, 'email'),
+        ),
+      )
+      .orderBy(sql`${verificationChallenges.createdAt} desc`)
+      .limit(1);
+
+    const now = new Date();
+
+    if (recent) {
+      const readyAt = recent.createdAt.getTime() + VERIFICATION_RULES.resendCooldownSeconds * 1000;
+      if (readyAt > now.getTime()) {
+        return {
+          ok: false as const,
+          reason: 'cooldown' as const,
+          retryAfterSeconds: Math.ceil((readyAt - now.getTime()) / 1000),
+        };
+      }
+    }
+
+    const [issuedToday] = await tx
+      .select({ count: sql<number>`count(*)::int` })
+      .from(verificationChallenges)
+      .where(
+        and(
+          eq(verificationChallenges.userId, params.userId),
+          eq(verificationChallenges.kind, 'email'),
+          sql`${verificationChallenges.createdAt} > now() - interval '24 hours'`,
+        ),
+      );
+
+    if ((issuedToday?.count ?? 0) >= VERIFICATION_RULES.maxChallengesPerDay) {
+      return { ok: false as const, reason: 'daily_limit' as const };
+    }
+
+    await tx
+      .update(verificationChallenges)
+      .set({ status: 'expired' })
+      .where(
+        and(
+          eq(verificationChallenges.userId, params.userId),
+          eq(verificationChallenges.kind, 'email'),
+          eq(verificationChallenges.status, 'pending'),
+        ),
+      );
+
+    const expiresAt = new Date(now.getTime() + VERIFICATION_RULES.emailCodeTtlMinutes * 60_000);
+
+    await tx.insert(verificationChallenges).values({
+      userId: params.userId,
+      kind: 'email',
+      target: user.email,
+      codeHash: sha256(code),
+      maxAttempts: VERIFICATION_RULES.maxAttemptsPerChallenge,
+      expiresAt,
+    });
+
+    await recordAudit(tx, {
+      actorType: 'user',
+      actorUserId: params.userId,
+      action: 'identity.verification_code_issued',
+      subjectType: 'user',
+      subjectId: params.userId,
+      // The code itself is never recorded. Only that one was issued.
+      metadata: { kind: 'email' },
+    });
+
+    return {
+      ok: true as const,
+      code,
+      expiresAt,
+      email: user.email,
+      locale: user.locale === 'en' ? ('en' as const) : ('es' as const),
+    };
+  });
+}
+
 /**
  * Ends the 72-hour monitoring window for accounts that have completed it.
  *

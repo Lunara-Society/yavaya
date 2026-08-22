@@ -39,6 +39,7 @@ Built and covered by tests:
 | Subsystem | What it does |
 | --- | --- |
 | Identity | Registration, permanent 8-digit YAY ID, verification challenges |
+| Email verification | Expiring 6-digit code, attempt limit, resend with cooldown and daily cap — needs an email provider to reach anyone |
 | Authentication | scrypt passwords, hashed session tokens, rotation, revocation |
 | Authorization | Server-side roles and permissions; admin granted by backend bootstrap |
 | Geography | Region → country → state → city → town → village → neighborhood, as data |

@@ -27,6 +27,36 @@ The cookie is `httpOnly` (an XSS bug cannot read it), `sameSite=lax` (a
 cross-site form post cannot carry it), and `secure` everywhere except local
 HTTP.
 
+Registration signs the new account in immediately. The session grants nothing
+by itself — the account is `pending_verification` — but it is what lets the
+verification page know whose code is being entered. The alternative, asking for
+the address again, would let anyone request a code for a stranger's account.
+
+## Email verification
+
+Codes are six digits, stored only as a SHA-256, and expire. Each challenge
+carries its own attempt counter, so guessing is bounded per code rather than
+per account.
+
+Issuing a new code **expires every pending one**. Without that, each resend
+would add another simultaneously-valid code, and a member who pressed the
+button five times would leave five live codes in the database.
+
+A resend reads the address from the account row and never from the request. A
+resend endpoint that accepted an address would be a way to mail a valid code to
+an inbox of the caller's choosing.
+
+Three independent limits apply, and none of them was invented at the call site:
+the `resend_code` bucket bounds abuse per account, `resendCooldownSeconds`
+stops rapid-fire requests, and `maxChallengesPerDay` caps the total. The last
+two are measured from the challenge rows rather than a counter, so they survive
+a counter purge.
+
+Failure reasons *are* distinguished here — expired, no pending challenge, too
+many attempts, wrong code — unlike at login. The caller already holds a session
+for the account, so the distinction reveals nothing they could not learn by
+waiting, and it saves them retyping a code that can never work.
+
 ## Authorization
 
 Every privileged operation calls `requirePermission` on the server. There is no

@@ -45,6 +45,13 @@ nothing is sent, and the interface says exactly that. In `APP_ENV=local` the
 code is shown on screen so the flow can be finished by hand; it is never
 returned from a deployed environment.
 
+This is the only thing standing between a member and a verified account. The
+rest of the flow — `/verify`, code entry, expiry, the attempt limit, resend
+with its cooldown and daily cap, and activation — is implemented and covered by
+integration tests. That is why the `email_verification` capability is
+`REQUIRES_CONFIGURATION` rather than `REAL`: judged from the member's side, a
+code they never receive is not a working verification.
+
 **`EMAIL_PROVIDER=console`** writes messages to the server log instead of
 sending them. It is local-development only, refuses to run anywhere else, and
 is registered as a **MOCK** capability — never `REAL` — so it cannot quietly

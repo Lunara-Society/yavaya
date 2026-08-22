@@ -60,6 +60,22 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'platform',
   },
   {
+    key: 'email_verification',
+    nameKey: 'capability.email_verification.name',
+    detailKey: 'capability.email_verification.detail',
+    /*
+     * Not REAL, and the distinction matters. Every part of the flow this side
+     * of the inbox works: the page, code entry, expiry, attempt limits,
+     * resend with its cooldown and daily cap, and activation of the account.
+     * A member still cannot finish it, because the code never arrives. Judged
+     * from the member's side rather than the code's, that is not "real".
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy:
+      'Implemented and tested end to end against the database. Blocked on email delivery: set EMAIL_PROVIDER, SMTP_URL and EMAIL_FROM and this becomes REAL with no code change.',
+  },
+  {
     key: 'authorization',
     nameKey: 'capability.authorization.name',
     detailKey: 'capability.authorization.detail',

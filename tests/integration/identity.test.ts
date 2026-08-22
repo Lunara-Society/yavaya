@@ -1,18 +1,26 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq, sql } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
-import { duplicateCandidates, riskAssessments, tokenAccounts, users, yayIdRegistry } from '@/server/db/schema';
+import {
+  duplicateCandidates,
+  riskAssessments,
+  tokenAccounts,
+  users,
+  verificationChallenges,
+  yayIdRegistry,
+} from '@/server/db/schema';
 import {
   authenticate,
   consumeVerificationCode,
   graduateMonitoredAccounts,
   isUnderMonitoring,
   register,
+  reissueEmailVerificationCode,
 } from '@/server/domains/identity/service';
 import { getScore } from '@/server/domains/reputation/service';
 import { getBalance } from '@/server/domains/tokens/service';
 import { buildTrustShield } from '@/server/domains/trust/shield';
-import { NEW_USER_RULES, TOKEN_RULES } from '@/config/business-rules';
+import { NEW_USER_RULES, TOKEN_RULES, VERIFICATION_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 
 const context = {
@@ -207,6 +215,115 @@ describe('email verification', () => {
     const [user] = await db().select().from(users).where(eq(users.id, created.userId));
     expect(user?.emailVerifiedAt).toBeNull();
     expect(user?.status).toBe('pending_verification');
+  });
+});
+
+describe('resending a verification code', () => {
+  /** Moves an account's challenges back in time so a cooldown has elapsed. */
+  async function ageChallenges(userId: string, seconds: number) {
+    await db()
+      .update(verificationChallenges)
+      .set({ createdAt: sql`now() - (${seconds} * interval '1 second')` })
+      .where(eq(verificationChallenges.userId, userId));
+  }
+
+  it('refuses inside the cooldown window and says how long is left', async () => {
+    const created = await register(db(), registration(), context);
+
+    const result = await reissueEmailVerificationCode(db(), { userId: created.userId });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error('unreachable');
+    expect(result.reason).toBe('cooldown');
+    expect(result.retryAfterSeconds).toBeGreaterThan(0);
+    expect(result.retryAfterSeconds).toBeLessThanOrEqual(VERIFICATION_RULES.resendCooldownSeconds);
+  });
+
+  it('issues a working code and kills the previous one', async () => {
+    const created = await register(db(), registration(), context);
+    await ageChallenges(created.userId, VERIFICATION_RULES.resendCooldownSeconds + 1);
+
+    const issued = await reissueEmailVerificationCode(db(), { userId: created.userId });
+    expect(issued.ok).toBe(true);
+    if (!issued.ok) throw new Error('unreachable');
+    expect(issued.code).toMatch(/^\d{6}$/);
+    expect(issued.code).not.toBe(created.emailVerificationCode);
+
+    // The original challenge is retired, not left as a second live code.
+    const challenges = await db()
+      .select({ status: verificationChallenges.status })
+      .from(verificationChallenges)
+      .where(eq(verificationChallenges.userId, created.userId));
+    expect(challenges).toHaveLength(2);
+    expect(challenges.filter((row) => row.status === 'pending')).toHaveLength(1);
+    expect(challenges.filter((row) => row.status === 'expired')).toHaveLength(1);
+
+    const withOldCode = await consumeVerificationCode(db(), {
+      userId: created.userId,
+      kind: 'email',
+      code: created.emailVerificationCode,
+    });
+    expect(withOldCode.ok).toBe(false);
+
+    const withNewCode = await consumeVerificationCode(db(), {
+      userId: created.userId,
+      kind: 'email',
+      code: issued.code,
+    });
+    expect(withNewCode.ok).toBe(true);
+
+    const [user] = await db().select().from(users).where(eq(users.id, created.userId));
+    expect(user?.status).toBe('active');
+  });
+
+  it('sends to the address on the account, not one a caller supplies', async () => {
+    const input = registration();
+    const created = await register(db(), input, context);
+    await ageChallenges(created.userId, VERIFICATION_RULES.resendCooldownSeconds + 1);
+
+    const issued = await reissueEmailVerificationCode(db(), { userId: created.userId });
+    expect(issued.ok).toBe(true);
+    if (!issued.ok) throw new Error('unreachable');
+    expect(issued.email).toBe(input.email.toLowerCase());
+  });
+
+  it('refuses once the address is already verified', async () => {
+    const created = await register(db(), registration(), context);
+    await consumeVerificationCode(db(), {
+      userId: created.userId,
+      kind: 'email',
+      code: created.emailVerificationCode,
+    });
+    await ageChallenges(created.userId, VERIFICATION_RULES.resendCooldownSeconds + 1);
+
+    const result = await reissueEmailVerificationCode(db(), { userId: created.userId });
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error('unreachable');
+    expect(result.reason).toBe('already_verified');
+  });
+
+  it('stops at the daily cap', async () => {
+    const created = await register(db(), registration(), context);
+
+    // Registration created one; fill the rest of the day's allowance.
+    const filler = Array.from(
+      { length: VERIFICATION_RULES.maxChallengesPerDay - 1 },
+      () => ({
+        userId: created.userId,
+        kind: 'email' as const,
+        target: 'filler@example.com',
+        codeHash: null,
+        status: 'expired' as const,
+        expiresAt: new Date(Date.now() + 60_000),
+      }),
+    );
+    await db().insert(verificationChallenges).values(filler);
+    await ageChallenges(created.userId, VERIFICATION_RULES.resendCooldownSeconds + 1);
+
+    const result = await reissueEmailVerificationCode(db(), { userId: created.userId });
+    expect(result.ok).toBe(false);
+    if (result.ok) throw new Error('unreachable');
+    expect(result.reason).toBe('daily_limit');
   });
 });
 

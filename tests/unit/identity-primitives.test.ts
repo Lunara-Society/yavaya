@@ -4,6 +4,7 @@ import {
   canonicalEmail,
   emailDomain,
   isPlausibleE164,
+  maskEmail,
   normalizeDisplayName,
   signalEmail,
   toE164,
@@ -49,6 +50,18 @@ describe('email normalization', () => {
   it('extracts the domain', () => {
     expect(emailDomain('Someone@Sub.Example.com')).toBe('sub.example.com');
     expect(emailDomain('not-an-email')).toBe('');
+  });
+
+  it('masks an address without hiding which inbox it is', () => {
+    expect(maskEmail('mariajose@gmail.com')).toBe('ma••••••e@gmail.com');
+    expect(maskEmail('ABC@Example.com')).toBe('ab•c@example.com');
+
+    // A short local part is hidden entirely rather than half-revealed.
+    expect(maskEmail('jo@example.com')).toBe('••@example.com');
+    expect(maskEmail('a@example.com')).toBe('•@example.com');
+
+    // Never leaks the input when it is not an address at all.
+    expect(maskEmail('not-an-email')).not.toContain('not');
   });
 });
 

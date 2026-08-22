@@ -19,7 +19,6 @@ export default async function LoginPage() {
             email: t('auth.email'),
             password: t('auth.password'),
             submit: t('auth.submit_login'),
-            error: t('error.unauthenticated'),
           }}
         />
 

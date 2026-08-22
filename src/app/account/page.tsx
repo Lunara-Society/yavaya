@@ -46,6 +46,22 @@ export default async function AccountPage() {
         <TrustShieldCard shield={shield} t={t} />
       </div>
 
+      {/*
+        An unverified account is the one state a member can fix in thirty
+        seconds, so it is the first thing offered — above the monitoring
+        notice, which is only a matter of waiting.
+      */}
+      {!shield.emailVerified ? (
+        <Link
+          href="/verify"
+          className="mt-4 flex min-h-touch items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
+          style={{ borderColor: 'var(--color-caution)' }}
+        >
+          <span>{t('auth.verify.title')}</span>
+          <span aria-hidden="true">→</span>
+        </Link>
+      ) : null}
+
       {underMonitoring ? (
         <p
           className="mt-4 rounded-xl border px-4 py-3 text-sm"
