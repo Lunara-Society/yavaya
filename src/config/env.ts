@@ -40,6 +40,21 @@ const serverSchema = z.object({
   APP_URL: z.string().url().default('http://localhost:3000'),
   APP_ENV: z.enum(['local', 'staging', 'production']).default('local'),
 
+  /**
+   * Proxies in front of the application. One for a single platform edge; two
+   * for Cloudflare in front of that edge. Too low and a client can spoof its
+   * own address past rate limiting; too high and every visitor collapses into
+   * one shared bucket. See docs/CONFIGURATION.md.
+   */
+  TRUSTED_PROXY_COUNT: z.coerce.number().int().min(0).max(10).default(1),
+
+  /**
+   * `cf-connecting-ip` when Cloudflare proxies the traffic — it is written by
+   * Cloudflare on every request, so it does not depend on the hop count being
+   * right.
+   */
+  CLIENT_IP_HEADER: z.enum(['forwarded', 'cf-connecting-ip']).default('forwarded'),
+
   /** Bootstrap administrator. The role is granted server-side at migration/seed time. */
   PRIMARY_ADMIN_EMAIL: z.string().email().default('Junoagattis@gmail.com'),
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fuzzCoordinates, haversineKm } from '@/server/domains/geography/service';
-import { clientAddressFromHeaders, describeNetwork } from '@/server/security/network';
+import { clientAddress, clientAddressFromHeaders, describeNetwork } from '@/server/security/network';
 import { statusKeyFor, cautionKeyFor } from '@/server/domains/trust/shield';
 import { bandFor } from '@/server/domains/identity/risk';
 import { RISK_RULES } from '@/config/business-rules';
@@ -70,6 +70,59 @@ describe('network signals', () => {
     const unknown = describeNetwork(null);
     expect(unknown.networkHash).toBeNull();
     expect(unknown.family).toBe('unknown');
+  });
+});
+
+describe('client address behind Cloudflare', () => {
+  /*
+   * Cloudflare in front of a platform edge is two hops, not one. The chain the
+   * application sees is:
+   *
+   *   <what the client claimed>, <real client, added by Cloudflare>, <Cloudflare, added by the edge>
+   */
+  const CHAIN = 'x-forwarded-for';
+  const spoofed = '9.9.9.9';
+  const realClient = '203.0.113.77';
+  const cloudflare = '172.71.0.10';
+
+  it('resolves the real client through two proxies, ignoring what the client claimed', () => {
+    const headers = new Headers({ [CHAIN]: `${spoofed}, ${realClient}, ${cloudflare}` });
+
+    expect(
+      clientAddress(headers, { trustedProxyCount: 2, header: 'forwarded' }),
+    ).toBe(realClient);
+  });
+
+  it('collapses every visitor into one bucket when the count is left at 1', () => {
+    // The failure this guards against is silent: nothing errors, rate limits
+    // simply start applying to all of humanity at once.
+    const headers = new Headers({ [CHAIN]: `${spoofed}, ${realClient}, ${cloudflare}` });
+
+    expect(
+      clientAddress(headers, { trustedProxyCount: 1, header: 'forwarded' }),
+    ).toBe(cloudflare);
+  });
+
+  it('prefers the Cloudflare header when configured, regardless of hop count', () => {
+    const headers = new Headers({
+      [CHAIN]: `${spoofed}, ${realClient}, ${cloudflare}`,
+      'cf-connecting-ip': realClient,
+    });
+
+    expect(
+      clientAddress(headers, { trustedProxyCount: 1, header: 'cf-connecting-ip' }),
+    ).toBe(realClient);
+  });
+
+  it('refuses to fall back to a chain it was told not to trust', () => {
+    // A request that reaches the origin without passing through Cloudflare has
+    // no cf-connecting-ip. Reading the forwarded chain instead would hand the
+    // caller exactly the spoof the setting exists to prevent.
+    const headers = new Headers({ [CHAIN]: spoofed });
+
+    expect(
+      clientAddress(headers, { trustedProxyCount: 1, header: 'cf-connecting-ip' }),
+    ).toBeNull();
   });
 });
 

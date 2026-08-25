@@ -90,6 +90,14 @@ equality; they cannot be read back or brute-forced without the pepper.
 IP addresses are reduced to a /24 or /48 prefix hash for matching, and a
 full-address hash for rate limiting only. No raw address is persisted anywhere.
 
+Which address counts as the client depends on the proxy topology, and both ways
+of misconfiguring it fail silently: too few trusted hops lets a client spoof its
+own address past rate limiting, too many collapses every visitor into one shared
+bucket. `TRUSTED_PROXY_COUNT` and `CLIENT_IP_HEADER` make it explicit, and the
+Cloudflare-in-front-of-a-platform-edge chain is covered by tests rather than
+left to inspection. Neither setting protects an origin that remains reachable
+without passing through the proxy.
+
 ## Abuse resistance
 
 Rate limits are server-side counters keyed by an opaque subject, so a client

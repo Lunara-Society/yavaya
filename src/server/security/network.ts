@@ -70,6 +70,57 @@ export function clientAddressFromHeaders(
   return real ? stripPort(real.trim()) : null;
 }
 
+export type ClientAddressConfig = {
+  /**
+   * How many proxies sit in front of the application. Each one appends to
+   * `X-Forwarded-For`, so this is what decides which entry in the chain is the
+   * real client rather than a value the client wrote themselves.
+   */
+  trustedProxyCount: number;
+  /**
+   * Which header carries the client address.
+   *
+   * `cf-connecting-ip` is set and overwritten by Cloudflare on every proxied
+   * request, so it does not depend on counting hops correctly — useful because
+   * adding or removing a proxy silently changes the right count, and a wrong
+   * count is not a visible failure.
+   */
+  header: 'forwarded' | 'cf-connecting-ip';
+};
+
+/**
+ * The client address for this deployment's proxy topology.
+ *
+ * Getting this wrong is not a crash, which is what makes it dangerous. Too low
+ * a count and a client can spoof its own address to defeat rate limiting. Too
+ * high, or the wrong header, and *every* visitor resolves to the proxy's
+ * address — one shared bucket, where a single abuser exhausts the limit for
+ * everyone and per-account limits stop existing.
+ *
+ * Behind Cloudflare in front of another host there are two hops, not one.
+ *
+ * Neither setting can defend an origin that is still reachable without going
+ * through the proxy: anyone who finds the host directly can write these
+ * headers themselves. That is a matter of rate-limit accuracy rather than
+ * authentication — sessions and permissions do not consult this — but it is
+ * the reason the origin hostname is worth keeping quiet.
+ */
+export function clientAddress(
+  headers: { get(name: string): string | null },
+  config: ClientAddressConfig,
+): string | null {
+  if (config.header === 'cf-connecting-ip') {
+    const connecting = headers.get('cf-connecting-ip');
+    if (connecting) return stripPort(connecting.trim());
+    // No fall-through to X-Forwarded-For. The header is absent because the
+    // request did not come through Cloudflare, and honouring a chain the
+    // configuration says not to trust is how a bypass becomes a spoof.
+    return null;
+  }
+
+  return clientAddressFromHeaders(headers, config.trustedProxyCount);
+}
+
 function stripPort(value: string): string {
   // IPv4 with port, or bracketed IPv6 with port.
   if (value.startsWith('[')) {

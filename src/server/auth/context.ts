@@ -2,7 +2,8 @@ import 'server-only';
 import { headers } from 'next/headers';
 import { db } from '@/server/db/client';
 import { signalHash } from '@/server/security/crypto';
-import { clientAddressFromHeaders, describeNetwork } from '@/server/security/network';
+import { serverEnv } from '@/config/env';
+import { clientAddress, describeNetwork } from '@/server/security/network';
 import type { RequestContext } from '@/server/domains/identity/service';
 import { validateSession, type ValidatedSession } from './session';
 import { readSessionCookie } from './cookies';
@@ -16,7 +17,11 @@ import { readSessionCookie } from './cookies';
  */
 export async function requestContext(): Promise<RequestContext> {
   const headerStore = await headers();
-  const address = clientAddressFromHeaders(headerStore);
+  const env = serverEnv();
+  const address = clientAddress(headerStore, {
+    trustedProxyCount: env.TRUSTED_PROXY_COUNT,
+    header: env.CLIENT_IP_HEADER,
+  });
   const network = describeNetwork(address);
   const userAgent = headerStore.get('user-agent');
 

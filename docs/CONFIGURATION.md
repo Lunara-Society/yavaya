@@ -160,11 +160,46 @@ Precision is a separate, explicit choice — see `LOCATION_PRIVACY`.
 
 ---
 
-## Infrastructure decisions still open
+## Proxy topology — `TRUSTED_PROXY_COUNT`, `CLIENT_IP_HEADER`
 
-**Trusted proxy count.** `clientAddressFromHeaders(headers, trustedProxyCount)`
-defaults to 1. Set it to the actual number of proxies in front of the app.
-Getting this wrong lets a client spoof its own address and defeat rate limiting.
+**Needed for:** rate limiting and the duplicate-account network signal. Nothing
+else consults the client address — sessions and permissions do not — so a wrong
+value here degrades abuse resistance rather than authentication.
+
+Every proxy in front of Yavaya appends to `X-Forwarded-For`. The count tells
+the application which entry in that chain is the real client rather than a
+value the client wrote themselves.
+
+| Deployment | `TRUSTED_PROXY_COUNT` | `CLIENT_IP_HEADER` |
+| --- | --- | --- |
+| Platform edge only (Railway, Render, Fly) | `1` | `forwarded` |
+| Cloudflare in front of that edge | `2` | `forwarded` |
+| Cloudflare, hop-count-independent | any | `cf-connecting-ip` |
+| Local development | `1` | `forwarded` |
+
+**Both ways of getting it wrong are silent.** Too low and a client can spoof
+its own address to slip past rate limiting. Too high, or the wrong header, and
+*every* visitor resolves to the proxy's own address — one shared bucket, in
+which a single abuser exhausts the limit for everybody and per-account limits
+effectively cease to exist. Neither failure raises an error, which is why the
+Cloudflare chain is covered by tests rather than left to inspection.
+
+`cf-connecting-ip` is written and overwritten by Cloudflare on every proxied
+request, so it does not depend on counting hops correctly — worth preferring,
+because adding or removing a proxy later silently changes the right count. When
+that header is selected the application never falls back to `X-Forwarded-For`:
+the header is missing precisely because the request did not come through
+Cloudflare, and reading a chain the configuration says not to trust is how a
+bypass becomes a spoof.
+
+**Neither setting can defend an origin that is still reachable directly.**
+Anyone who finds the platform's own hostname can write these headers
+themselves. Keep the origin hostname quiet, and prefer a platform that can
+restrict inbound traffic to the proxy's addresses.
+
+---
+
+## Infrastructure decisions still open
 
 **Rate limit storage.** Counters currently live in Postgres — correct and
 consistent, but a write per request. Move to Redis if that write becomes a
