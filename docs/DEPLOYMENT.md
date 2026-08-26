@@ -39,9 +39,10 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 anti-duplication signal and resets duplicate detection. Decide it once.
 
 **Set the proxy topology.** `TRUSTED_PROXY_COUNT` defaults to 1, which is right
-for a platform edge alone. **Cloudflare in front of that edge is two hops, not
-one** — leave it at 1 there and every visitor collapses into a single rate-limit
-bucket. See [`CONFIGURATION.md`](CONFIGURATION.md#proxy-topology--trusted_proxy_count-client_ip_header).
+for a platform edge alone — including Railway behind plain registrar DNS. **A
+proxying CDN in front of that edge is two hops, not one** — leave it at 1 there
+and every visitor collapses into a single rate-limit bucket. See
+[`CONFIGURATION.md`](CONFIGURATION.md#proxy-topology--trusted_proxy_count-client_ip_header).
 
 **Schedule the background jobs.** All are idempotent and safe to re-run:
 
@@ -68,8 +69,8 @@ SESSION_SECRET=…                     # 48 random bytes
 SIGNAL_PEPPER=…                      # 48 random bytes, permanent
 PRIMARY_ADMIN_EMAIL=Junoagattis@gmail.com
 PREVIEW_ACCESS_KEY=…                 # while the site is a private preview
-TRUSTED_PROXY_COUNT=2                # 1 for a platform edge alone; 2 behind Cloudflare
-CLIENT_IP_HEADER=cf-connecting-ip    # only when Cloudflare actually proxies the traffic
+TRUSTED_PROXY_COUNT=1                # 1 for a platform edge alone; 2 behind a proxying CDN
+CLIENT_IP_HEADER=forwarded           # cf-connecting-ip only when Cloudflare proxies the traffic
 ```
 
 Everything else is optional and defaults to `unconfigured`, which makes the
@@ -245,48 +246,43 @@ UPDATE users SET status = 'active', trust_state = 'trusted'
 WHERE email = 'junoagattis@gmail.com';
 ```
 
-### The domain: yavaya.world on Cloudflare
+### The domain: yavaya.lat
 
-The domain is registered at Cloudflare. **That does not mean the application
-runs on Cloudflare** — Cloudflare is the registrar, DNS and CDN in front of the
-origin, and the origin is Railway. Those are separate decisions and conflating
-them is how a working deployment gets rewritten for no reason.
-
-Running Yavaya *on* Cloudflare Workers is possible but is a migration, not a
-configuration: it needs OpenNext to adapt the Next.js server output, Hyperdrive
-to reach Postgres over a connection pool, and verification that scrypt behaves
-identically under `workerd` — the password hash for every account depends on
-that last one. The container is already built, CI-verified and understood.
-Revisit Workers if there is a reason beyond it being available.
+Registered at **Spaceship**, which is a registrar with plain authoritative DNS
+— no proxy, no CDN. So there is exactly one hop in front of the application
+(Railway's edge), and `TRUSTED_PROXY_COUNT=1` with `CLIENT_IP_HEADER=forwarded`
+is correct. Both are set on the service.
 
 **DNS.** One record, at the apex:
 
-| Type | Name | Target | Proxy |
-| --- | --- | --- | --- |
-| CNAME | `yavaya.world` | the target Railway shows on the service | see below |
+| Type | Host | Value |
+| --- | --- | --- |
+| CNAME | `@` | the target Railway shows for the custom domain |
 
-Cloudflare flattens a CNAME at the apex, so this works where it would not at
-most registrars. Copy the target from Railway → `yavaya-web` → Settings →
-Networking rather than from here; it is per-service.
+Copy the target from Railway → `yavaya-web` → Settings → Networking. It is
+per-service and randomly assigned — it is **not** derivable from the service
+name, and anything of the form `<service>-<environment>.cname.railway.app` is
+a guess, not the value.
 
-**Proxy status.** Turn the orange cloud **off** until Railway has issued the
-certificate — Railway validates over HTTP and Cloudflare's proxy intercepts
-that exchange. Once the domain reports as issued, turn the proxy on and set
-SSL/TLS mode to **Full (strict)**. `Flexible` would terminate TLS at Cloudflare
-and speak plain HTTP to the origin, which silently undoes HSTS and the `secure`
-cookie flag.
+A CNAME at the apex is not legal DNS on its own. Spaceship supports it the way
+most modern registrars do, by flattening; if their interface refuses `@` for a
+CNAME, use an ALIAS/ANAME record instead, or move the site to
+`www.yavaya.lat` and redirect the apex.
 
-**When the proxy goes on, set `TRUSTED_PROXY_COUNT=2`** — or
-`CLIENT_IP_HEADER=cf-connecting-ip`, which does not depend on the hop count.
-This is not optional tuning: at `1` every visitor shares one rate-limit bucket.
+**If Cloudflare is ever put in front** — as a CDN or for DDoS protection —
+then there are two hops, and `TRUSTED_PROXY_COUNT` must become `2` (or
+`CLIENT_IP_HEADER=cf-connecting-ip`, which does not depend on counting hops).
+Left at `1`, every visitor collapses into a single rate-limit bucket. Also set
+SSL/TLS to **Full (strict)** there: `Flexible` terminates TLS at Cloudflare and
+speaks plain HTTP to the origin, silently undoing HSTS and the `secure` cookie
+flag.
 
 **`www`.** Railway's free plan allows one custom domain per service, so `www`
-is not attached. A Cloudflare **Redirect Rule** sending `www.yavaya.world/*` to
-`https://yavaya.world/$1` costs nothing and is the better arrangement anyway —
-one canonical hostname, one set of cookies.
+is not attached. Redirect it at the registrar, or leave it unused — one
+canonical hostname means one set of cookies.
 
-**Set `APP_URL=https://yavaya.world`** on the service at the same time. It is
-what absolute links and the session cookie domain derive from.
+`APP_URL=https://yavaya.lat` is set on the service. It is what absolute links
+and the session cookie domain derive from.
 
 ### Note on Postgres versions
 
