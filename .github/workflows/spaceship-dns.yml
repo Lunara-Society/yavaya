@@ -1,0 +1,139 @@
+name: Spaceship DNS
+
+# Why this exists.
+#
+# The environment where this repository is developed has no network route to
+# spaceship.dev — the egress proxy refuses it, the same way it refuses
+# railway.com. A GitHub Actions runner has no such restriction, so DNS changes
+# for yavaya.lat are made from here.
+#
+# Credentials arrive as workflow_dispatch inputs and are masked in the logs.
+# The values are still recorded in the run metadata, so treat any credential
+# used here as disposable and rotate it afterwards.
+#
+# `list` is read-only and safe to run at any time. `put` writes records.
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_key:
+        description: 'Spaceship API key'
+        required: true
+        type: string
+      api_secret:
+        description: 'Spaceship API secret. Rotate after use.'
+        required: true
+        type: string
+      action:
+        description: 'list (read-only) or put (write one record)'
+        required: true
+        default: 'list'
+        type: choice
+        options: [list, put]
+      domain:
+        description: 'Domain name'
+        required: false
+        default: 'yavaya.lat'
+        type: string
+      record_type:
+        description: 'put only: record type, e.g. CNAME or A'
+        required: false
+        default: 'CNAME'
+        type: string
+      record_name:
+        description: 'put only: host. Use @ for the apex.'
+        required: false
+        default: '@'
+        type: string
+      record_value:
+        description: 'put only: target value'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  dns:
+    name: Talk to the Spaceship DNS API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Mask the credentials before anything can echo them
+        run: |
+          echo "::add-mask::${{ inputs.api_key }}"
+          echo "::add-mask::${{ inputs.api_secret }}"
+
+      - name: List records
+        if: inputs.action == 'list'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          # -w writes the status on its own line after the body, so an auth
+          # failure is legible instead of an empty response.
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
+            -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}?take=100&skip=0")
+
+          echo "HTTP $code"
+          echo '--- body ---'
+          cat /tmp/out.json | head -c 8000
+          echo
+          [ "$code" = "200" ] || { echo "::error::Spaceship returned $code"; exit 1; }
+
+      - name: Write one record
+        if: inputs.action == 'put'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          if [ -z "${{ inputs.record_value }}" ]; then
+            echo "::error::record_value is required when action is put"
+            exit 1
+          fi
+
+          # force:true so re-running replaces an existing record of the same
+          # name and type rather than failing — this workflow must be safe to
+          # run twice.
+          cat > /tmp/body.json <<JSON
+          {
+            "force": true,
+            "items": [
+              {
+                "type": "${{ inputs.record_type }}",
+                "name": "${{ inputs.record_name }}",
+                "value": "${{ inputs.record_value }}",
+                "ttl": 3600
+              }
+            ]
+          }
+          JSON
+
+          echo '--- request ---'
+          cat /tmp/body.json
+
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X PUT \
+            -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            -H 'Content-Type: application/json' \
+            --data @/tmp/body.json \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}")
+
+          echo "HTTP $code"
+          echo '--- body ---'
+          cat /tmp/out.json | head -c 8000
+          echo
+          case "$code" in
+            2*) echo "Record written." ;;
+            *)  echo "::error::Spaceship returned $code"; exit 1 ;;
+          esac
+
+      - name: Show the records as they now stand
+        if: inputs.action == 'put'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          curl -sS -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}?take=100&skip=0" \
+            | head -c 8000
+          echo
