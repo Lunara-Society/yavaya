@@ -29,7 +29,7 @@ on:
         required: true
         default: 'list'
         type: choice
-        options: [list, put]
+        options: [list, put, probe]
       domain:
         description: 'Domain name'
         required: false
@@ -80,6 +80,42 @@ jobs:
           cat /tmp/out.json | head -c 8000
           echo
           [ "$code" = "200" ] || { echo "::error::Spaceship returned $code"; exit 1; }
+
+      - name: Probe what else the API exposes
+        # Spaceship's documented API covers domains and DNS. Whether it also
+        # exposes hosting or Hyperlift decides whether an app can be deployed
+        # there programmatically or only through the dashboard. Worth one run
+        # to know rather than assume.
+        if: inputs.action == 'probe'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          for path in \
+            "domains" \
+            "domains/${{ inputs.domain }}" \
+            "hosting" \
+            "hosting/accounts" \
+            "hyperlift" \
+            "hyperlift/apps" \
+            "apps" \
+            "cloud" \
+            "cloud/apps" \
+            "starlight" \
+            "starlight/apps" \
+            "servers" \
+            "certificates"
+          do
+            code=$(curl -sS -o /tmp/p.json -w '%{http_code}' \
+              -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+              "https://spaceship.dev/api/v1/$path" || echo "ERR")
+            printf '%-24s %s' "$path" "$code"
+            # 200 is the only interesting answer; show a little of it.
+            if [ "$code" = "200" ]; then
+              printf '  %s' "$(head -c 300 /tmp/p.json | tr -d '\n')"
+            fi
+            printf '\n'
+          done
 
       - name: Write one record
         if: inputs.action == 'put'
