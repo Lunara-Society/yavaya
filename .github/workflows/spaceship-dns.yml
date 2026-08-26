@@ -29,7 +29,7 @@ on:
         required: true
         default: 'list'
         type: choice
-        options: [list, put, probe]
+        options: [list, put, probe, recon]
       domain:
         description: 'Domain name'
         required: false
@@ -116,6 +116,57 @@ jobs:
             fi
             printf '\n'
           done
+
+      - name: Inspect the hosting the domain points at
+        # The Spaceship API says nothing about the hosting account, so the only
+        # way to establish what that server can actually run is to ask it.
+        # Everything here is an unauthenticated connectivity check against the
+        # operator's own host — what any visitor's browser would see.
+        if: inputs.action == 'recon'
+        run: |
+          set +e
+          host="${{ inputs.domain }}"
+
+          echo "=== resolution ==="
+          getent hosts "$host" || echo "(no A record resolved)"
+          ip=$(getent hosts "$host" | awk '{print $1; exit}')
+          echo "resolved: ${ip:-none}"
+
+          echo
+          echo "=== what is served now ==="
+          for url in "http://$host" "https://$host"; do
+            echo "--- $url"
+            curl -sS -k -m 15 -o /tmp/page.html -D /tmp/head.txt -w 'http=%{http_code} redirect=%{redirect_url}\n' "$url" || echo "(request failed)"
+            grep -iE '^(server|x-powered-by|location|content-type):' /tmp/head.txt || true
+            echo "--- first bytes of body:"
+            head -c 300 /tmp/page.html 2>/dev/null | tr -d '\0'; echo
+          done
+
+          echo
+          echo "=== control panel and service ports ==="
+          # 2082/2083 cPanel, 2086/2087 WHM, 2095/2096 webmail, 22 SSH,
+          # 21 FTP, 3306 MySQL, 5432 PostgreSQL.
+          for p in 21 22 2082 2083 2086 2087 2095 2096 3306 5432; do
+            if timeout 6 bash -c "</dev/tcp/${ip:-$host}/$p" 2>/dev/null; then
+              echo "port $p OPEN"
+            else
+              echo "port $p closed/filtered"
+            fi
+          done
+
+          echo
+          echo "=== control panel identity ==="
+          for p in 2083 2087; do
+            echo "--- https://$host:$p"
+            curl -sS -k -m 10 -o /dev/null -D - -w 'http=%{http_code}\n' "https://$host:$p" 2>&1 \
+              | grep -iE '^(server|location|x-powered-by):|http=' || echo "(no response)"
+          done
+
+          echo
+          echo "=== does anything answer as a Node app ==="
+          curl -sS -k -m 10 -D - -o /dev/null "https://$host/api/health" -w 'http=%{http_code}\n' 2>&1 \
+            | grep -iE '^(server|content-type):|http=' || true
+          exit 0
 
       - name: Write one record
         if: inputs.action == 'put'
