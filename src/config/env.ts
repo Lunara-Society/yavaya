@@ -11,6 +11,34 @@ import { z } from 'zod';
  * placeholder. Calling code must branch on `null` and surface an honest
  * "not configured" state — never a fake success. See docs/CONFIGURATION.md.
  */
+/**
+ * The subset needed to open a database connection, and nothing else.
+ *
+ * This exists so the release scripts — migrate, seed, and the scheduled jobs —
+ * can run without the web application's secrets. It is not a stylistic split:
+ * cPanel cron runs in a bare shell that does *not* inherit the environment set
+ * on the Node application, so demanding `SESSION_SECRET` here would force an
+ * operator to paste the session secret and the signal pepper into a crontab
+ * line in plaintext, readable by anything that can read the crontab. Narrowing
+ * what the scripts require removes the reason to do that.
+ */
+const databaseSchema = z.object({
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  DATABASE_POOL_MAX: z.coerce.number().int().positive().max(100).default(10),
+  DATABASE_TRANSACTION_POOLER: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .optional(),
+});
+
+/**
+ * What an operational command needs: a database, and the bootstrap
+ * administrator the seed grants the `admin` role to.
+ */
+const operationalSchema = databaseSchema.extend({
+  PRIMARY_ADMIN_EMAIL: z.string().email().default('Junoagattis@gmail.com'),
+});
+
 const serverSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
@@ -100,25 +128,64 @@ const serverSchema = z.object({
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;
+export type DatabaseEnv = z.infer<typeof databaseSchema>;
+export type OperationalEnv = z.infer<typeof operationalSchema>;
 
 let cached: ServerEnv | null = null;
+let cachedDatabase: DatabaseEnv | null = null;
+let cachedOperational: OperationalEnv | null = null;
+
+function describe(error: z.ZodError): string {
+  return error.issues
+    .map((issue) => `  - ${issue.path.join('.') || '(root)'}: ${issue.message}`)
+    .join('\n');
+}
+
+/**
+ * Database connection settings only.
+ *
+ * The web application reaches the same values through `serverEnv()`, which
+ * validates everything; this narrower door is what lets a cron job connect
+ * without being handed secrets it will never use.
+ */
+export function databaseEnv(): DatabaseEnv {
+  if (cachedDatabase) return cachedDatabase;
+  const parsed = databaseSchema.safeParse(process.env);
+  if (!parsed.success) {
+    throw new Error(`Invalid database environment:\n${describe(parsed.error)}\n\nSee .env.example.`);
+  }
+  cachedDatabase = parsed.data;
+  return cachedDatabase;
+}
+
+/** Database settings plus the bootstrap administrator. Used by the seed. */
+export function operationalEnv(): OperationalEnv {
+  if (cachedOperational) return cachedOperational;
+  const parsed = operationalSchema.safeParse(process.env);
+  if (!parsed.success) {
+    throw new Error(
+      `Invalid operational environment:\n${describe(parsed.error)}\n\nSee .env.example.`,
+    );
+  }
+  cachedOperational = parsed.data;
+  return cachedOperational;
+}
 
 export function serverEnv(): ServerEnv {
   if (cached) return cached;
   const parsed = serverSchema.safeParse(process.env);
   if (!parsed.success) {
-    const issues = parsed.error.issues
-      .map((issue) => `  - ${issue.path.join('.') || '(root)'}: ${issue.message}`)
-      .join('\n');
-    throw new Error(`Invalid server environment:\n${issues}\n\nSee .env.example.`);
+    throw new Error(`Invalid server environment:\n${describe(parsed.error)}\n\nSee .env.example.`);
   }
   cached = parsed.data;
   return cached;
 }
 
-/** Test helper: forces the next `serverEnv()` call to re-read `process.env`. */
+/** Test helper: forces the next env accessor to re-read `process.env`. */
 export function resetServerEnvCache(): void {
   cached = null;
+  cachedDatabase = null;
+  cachedOperational = null;
 }
 
 /**

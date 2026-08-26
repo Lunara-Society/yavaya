@@ -34,5 +34,17 @@ await build({
   outfile: 'dist/scripts/seed.cjs',
 });
 
+/*
+ * Scheduled maintenance. Bundled for the same reason as the two above: the
+ * host's scheduler runs a bare shell with no TypeScript and no dev
+ * dependencies, so a cron line invoking `tsx` would work locally and fail
+ * everywhere that matters.
+ */
+await build({
+  ...shared,
+  entryPoints: ['src/server/jobs/run.ts'],
+  outfile: 'dist/scripts/jobs.cjs',
+});
+
 // eslint-disable-next-line no-console
 console.log('release scripts bundled to dist/scripts');

@@ -44,17 +44,29 @@ proxying CDN in front of that edge is two hops, not one** — leave it at 1 ther
 and every visitor collapses into a single rate-limit bucket. See
 [`CONFIGURATION.md`](CONFIGURATION.md#proxy-topology--trusted_proxy_count-client_ip_header).
 
-**Schedule the background jobs.** All are idempotent and safe to re-run:
+**Schedule the background jobs.** All are idempotent and safe to re-run, so a
+missed tick costs nothing and an overlapping one is harmless:
 
-| Job | Function | Suggested cadence |
+| Job | Command | Suggested cadence |
 | --- | --- | --- |
-| Graduate monitored accounts | `graduateMonitoredAccounts` | every 15 min |
-| Expire demo content | `expireDueDemoContent` | hourly |
-| Purge expired sessions | `purgeExpiredSessions` | daily |
-| Purge expired rate limits | `purgeExpiredRateLimits` | hourly |
-| Verify the audit chain | `verifyAuditChain` | daily, alert on failure |
+| Graduate monitored accounts | `jobs.cjs graduate-monitored` | every 15 min |
+| Expire demo content | `jobs.cjs expire-demo` | hourly |
+| Purge expired sessions | `jobs.cjs purge-sessions` | daily |
+| Purge expired rate limits | `jobs.cjs purge-rate-limits` | hourly |
+| Verify the audit chain | `jobs.cjs verify-audit-chain` | daily, alert on failure |
 
-A hash chain nobody checks proves nothing. Wire the last one to an alert.
+Locally: `npm run jobs -- <job>`. In production: `node dist/scripts/jobs.cjs
+<job>`, bundled to self-contained CommonJS for the same reason the migration
+and seed scripts are — a scheduler runs a bare shell with no TypeScript.
+
+`verify-audit-chain` **exits non-zero when the chain is broken**, so a scheduler
+that mails on failure is the alert. A hash chain nobody checks proves nothing,
+and a check whose result goes nowhere is a chain nobody checks.
+
+These commands need `DATABASE_URL` and nothing else. They deliberately do not
+require `SESSION_SECRET` or `SIGNAL_PEPPER`: a scheduler that does not inherit
+the application's environment would otherwise force those secrets into a
+crontab line in plaintext.
 
 ## Environment
 
@@ -155,6 +167,137 @@ permission system does that, and it applies underneath the curtain exactly as
 it will in production.
 
 Remove the variable from the service and redeploy to open the site.
+
+## Deploying to Spaceship (target architecture)
+
+Yavaya runs directly on Spaceship Pro Web Hosting through its supported Node.js
+application environment — CloudLinux with Passenger, fronted by LiteSpeed. Not a
+container, not a hand-maintained daemon, and not a VPS.
+
+PostgreSQL stays external and unchanged. Shared hosting offers MySQL only, and
+the database is load-bearing: 24 native enums, a PL/pgSQL immutability guard,
+four append-only triggers and a transactional advisory lock that serialises the
+audit chain. None of that survives a port to MySQL, and none of it is negotiable.
+
+### Verify these before committing to the host
+
+Two facts decide whether this works at all, and neither can be established from
+outside the account. Check both over SSH first:
+
+1. **Outbound TCP to PostgreSQL on 5432.** Shared hosts routinely block outbound
+   traffic on non-web ports. If this is blocked, the architecture cannot work
+   here and no code change rescues it.
+   `nc -zv <db-host> 5432`
+2. **Node.js 22 in the Setup Node.js App selector.** The project declares
+   `"node": ">=22"` and the release scripts target `node22`.
+
+Outbound SMTP (465/587) matters too, but only gates public registration rather
+than the deployment itself.
+
+### Build off-host
+
+`next build` is memory-hungry and will likely exceed a CloudLinux LVE limit.
+Build locally or in CI on x64 Linux, then upload the result:
+
+```bash
+npm ci
+npm run build:deploy       # builds, then assembles ./deploy
+```
+
+`./deploy` is the complete application root: the traced server bundle, its
+pruned `node_modules`, static assets, migrations and the release scripts. It
+carries a **trimmed `package.json`** that declares no dependencies, because the
+build already vendored them — so pressing **Run NPM Install** in the cPanel
+panel cannot drag an entire build toolchain onto a memory-limited host.
+
+```bash
+rsync -az --delete deploy/ <user>@yavaya.lat:/home/<user>/yavaya/
+```
+
+### Setup Node.js App
+
+| Field | Value |
+| --- | --- |
+| Node.js version | 22.x |
+| Application mode | Production |
+| Application root | `/home/<user>/yavaya` |
+| Application URL | `app.yavaya.lat` to stage, `yavaya.lat` at cutover |
+| Application startup file | `server.js` |
+
+Passenger replaces `listen()` so the application is bound to a socket it owns;
+`PORT` and `HOSTNAME` are read and then discarded. Nothing needs configuring for
+this, and it has been verified against the assembled artifact.
+
+### Environment
+
+Everything in [Environment](#environment) above, with two values that differ
+here:
+
+```
+DATABASE_POOL_MAX=3
+TRUSTED_PROXY_COUNT=1
+```
+
+`DATABASE_POOL_MAX` is **per process**, and Passenger spawns workers on demand.
+The default of 10 is sized for one long-lived server; left alone it multiplies
+into far more connections than an external database will accept, and the failure
+arrives under load looking like an unrelated outage.
+
+`TRUSTED_PROXY_COUNT=1` is correct while LiteSpeed is the only hop. Put a
+proxying CDN in front and it must become `2`, or `CLIENT_IP_HEADER` must become
+`cf-connecting-ip` — otherwise every visitor collapses into one rate-limit
+bucket.
+
+### Release
+
+Migrations run before the new code takes traffic, never on boot:
+
+```bash
+cd /home/<user>/yavaya
+export DATABASE_URL='postgres://…'
+node dist/scripts/migrate.cjs
+node dist/scripts/seed.cjs
+mkdir -p tmp && touch tmp/restart.txt     # Passenger picks up the new code
+```
+
+`touch tmp/restart.txt` drops in-flight requests. It is brief, but it rules out
+releasing into live traffic.
+
+### Cron
+
+```
+*/15 * * * *  cd ~/yavaya && node dist/scripts/jobs.cjs graduate-monitored
+0    * * * *  cd ~/yavaya && node dist/scripts/jobs.cjs expire-demo
+0    * * * *  cd ~/yavaya && node dist/scripts/jobs.cjs purge-rate-limits
+30   3 * * *  cd ~/yavaya && node dist/scripts/jobs.cjs purge-sessions
+0    4 * * *  cd ~/yavaya && node dist/scripts/jobs.cjs verify-audit-chain
+*/5  * * * *  curl -fsS https://yavaya.lat/api/health >/dev/null
+```
+
+The last line is a keep-warm. Passenger stops idle applications, and the next
+visitor pays the cold start — measured at 1.6s on fast hardware with a warm
+cache, so expect several seconds on shared hosting.
+
+### DNS
+
+**No change required.** `yavaya.lat` already resolves to Spaceship, and `www` is
+a CNAME to the apex. To stage first, add one record: `A app → 66.29.148.153`.
+
+### What shared hosting costs
+
+- **Cold starts** after idle, mitigated but not removed by the keep-warm ping.
+- **No zero-downtime deploys.** A Passenger restart drops in-flight requests.
+- **No control over worker count.** This is why the connection pool must be
+  small and why nothing may live in process memory — both of which the
+  application already respects: there are no timers, no module-level mutable
+  state beyond two self-healing caches, and no filesystem writes.
+- **CPU and memory ceilings** enforced per account. Roughly 128 MB resident per
+  idle worker leaves headroom, but server-rendering every page against the
+  database is the workload most likely to meet a CPU quota.
+- **Database latency is paid on every request**, because every page is rendered
+  on the server against the database. Co-locate the database with the host if
+  you can.
+- **No horizontal scaling.** The ceiling is one account on one machine.
 
 ## Deploying to Railway
 

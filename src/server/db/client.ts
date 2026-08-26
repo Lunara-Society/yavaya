@@ -1,6 +1,6 @@
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { serverEnv } from '@/config/env';
+import { databaseEnv } from '@/config/env';
 import * as schema from './schema';
 
 export type Database = PostgresJsDatabase<typeof schema>;
@@ -41,7 +41,12 @@ export function usesTransactionPooler(databaseUrl: string, override?: boolean): 
 
 export function getSql(): ReturnType<typeof postgres> {
   if (sql) return sql;
-  const env = serverEnv();
+  /*
+   * `databaseEnv()` rather than `serverEnv()`: opening a connection must not
+   * require the web application's secrets, so migrations, the seed and the
+   * scheduled jobs can run from a bare cron shell. See src/config/env.ts.
+   */
+  const env = databaseEnv();
 
   const pooled = usesTransactionPooler(env.DATABASE_URL, env.DATABASE_TRANSACTION_POOLER);
 

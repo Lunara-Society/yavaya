@@ -25,7 +25,7 @@ import {
   TOKEN_RULES,
 } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
-import { serverEnv } from '@/config/env';
+import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
 import { TREASURY_HANDLE } from '@/server/domains/tokens/service';
 import { recordAudit } from '@/server/domains/audit/service';
@@ -387,7 +387,7 @@ async function seedTreasury(database: Database): Promise<void> {
  * The administrator registers through the normal flow; this promotes them.
  */
 async function bootstrapAdministrator(database: Database): Promise<void> {
-  const email = canonicalEmail(serverEnv().PRIMARY_ADMIN_EMAIL);
+  const email = canonicalEmail(operationalEnv().PRIMARY_ADMIN_EMAIL);
 
   const [admin] = await database
     .select({ id: users.id, yayId: users.yayId })
