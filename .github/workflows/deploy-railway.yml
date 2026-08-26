@@ -29,6 +29,12 @@ on:
         default: 'yavaya-web'
         type: string
 
+env:
+  # The Railway project this repository deploys to. Ids rather than names:
+  # names are mutable and there is no ambiguity to resolve at deploy time.
+  PROJECT_ID: 682b2a31-cad5-4e80-a863-51a4dd23f012
+  ENVIRONMENT_ID: 2f3e40da-c664-41f9-a583-f5db9dcb8d71
+
 jobs:
   deploy:
     name: Upload and build on Railway
@@ -48,22 +54,60 @@ jobs:
       - name: Install the Railway CLI
         run: npm i -g @railway/cli
 
-      - name: Report what the token can see
-        # Runs first and never fails the job: if the deploy then fails, this
-        # output is what distinguishes a bad token from a bad build.
-        env:
-          RAILWAY_TOKEN: ${{ inputs.railway_token }}
+      - name: Identify the token
+        # Never fails the job. Railway has two token kinds and they are read
+        # from two different variables:
+        #
+        #   RAILWAY_TOKEN      project token, scoped to one environment
+        #   RAILWAY_API_TOKEN  account or team token
+        #
+        # A token in the wrong variable reports "Invalid RAILWAY_TOKEN", which
+        # is indistinguishable from a revoked one. So both are probed, and the
+        # result decides how the deploy runs.
+        id: probe
         continue-on-error: true
         run: |
-          echo "--- whoami ---"
-          railway whoami || echo "whoami failed (expected for a project-scoped token)"
-          echo "--- status ---"
-          railway status || echo "status failed"
+          if RAILWAY_TOKEN="${{ inputs.railway_token }}" railway status >/dev/null 2>&1; then
+            echo "kind=project" >> "$GITHUB_OUTPUT"
+            echo "Token works as a PROJECT token."
+          elif RAILWAY_API_TOKEN="${{ inputs.railway_token }}" railway whoami >/dev/null 2>&1; then
+            echo "kind=account" >> "$GITHUB_OUTPUT"
+            echo "Token works as an ACCOUNT token."
+            RAILWAY_API_TOKEN="${{ inputs.railway_token }}" railway whoami
+          else
+            echo "kind=none" >> "$GITHUB_OUTPUT"
+            echo "Token rejected as both kinds. Diagnostics:"
+            RAILWAY_TOKEN="${{ inputs.railway_token }}" railway status 2>&1 | sed 's/^/  [project] /' || true
+            RAILWAY_API_TOKEN="${{ inputs.railway_token }}" railway whoami 2>&1 | sed 's/^/  [account] /' || true
+          fi
 
-      - name: Deploy
+      - name: Stop early if the token is not valid
+        if: steps.probe.outputs.kind == 'none'
+        run: |
+          echo "::error::Railway rejected this token as both a project token and an account token."
+          echo "Create a new one:"
+          echo "  Project token — Railway > project 'yavaya' > Settings > Tokens > New Token (environment: production)"
+          echo "  Account token — Railway > Account Settings > Tokens > New Token"
+          exit 1
+
+      - name: Deploy with a project token
+        if: steps.probe.outputs.kind == 'project'
         env:
           RAILWAY_TOKEN: ${{ inputs.railway_token }}
         run: |
           # --ci streams the build log and exits on completion rather than
-          # detaching, so this job's success actually means the build finished.
+          # detaching, so this job's success means the build actually finished.
+          railway up --service "${{ inputs.service }}" --ci
+
+      - name: Deploy with an account token
+        if: steps.probe.outputs.kind == 'account'
+        env:
+          RAILWAY_API_TOKEN: ${{ inputs.railway_token }}
+        run: |
+          # An account token is not bound to a project, so the target is named
+          # explicitly by id rather than inferred.
+          railway link \
+            --project "${{ env.PROJECT_ID }}" \
+            --environment "${{ env.ENVIRONMENT_ID }}" \
+            --service "${{ inputs.service }}"
           railway up --service "${{ inputs.service }}" --ci
