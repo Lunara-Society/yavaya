@@ -260,6 +260,7 @@ export async function publishListing(
     kind: 'listing_published',
     district: 'mercadito',
     locationId: input.locationId,
+    subject: { type: 'mercadito_listing', id: params.listingId },
   });
 
   await recordAudit(tx, {

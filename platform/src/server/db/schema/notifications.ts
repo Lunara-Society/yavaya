@@ -66,6 +66,13 @@ export const activityEvents = pgTable(
      */
     publicParams: jsonb('public_params').$type<Record<string, string | number>>().notNull().default({}),
     isDemo: boolean('is_demo').notNull().default(false),
+    /**
+     * What the event is about, e.g. `mercadito_listing` + its id. Lets the
+     * feed drop an event whose subject was since withdrawn or removed: "a new
+     * listing in Antigua" must not keep advertising a listing nobody can open.
+     */
+    subjectType: text('subject_type'),
+    subjectId: text('subject_id'),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
     /** When this event stops being shown in the live feed. */
     visibleUntil: timestamp('visible_until', { withTimezone: true }),

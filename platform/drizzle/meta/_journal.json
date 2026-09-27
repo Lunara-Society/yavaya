@@ -36,6 +36,13 @@
       "when": 1790541695137,
       "tag": "0004_mercadito",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790545412662,
+      "tag": "0005_activity_subject",
+      "breakpoints": true
     }
   ]
 }

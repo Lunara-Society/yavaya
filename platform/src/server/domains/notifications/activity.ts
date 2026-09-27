@@ -36,6 +36,8 @@ export type PublishActivityInput = {
   isDemoSubject?: boolean;
   /** How long the event stays in the feed. */
   visibleForSeconds?: number;
+  /** The row the event is about, so the feed can drop it once that row is gone. */
+  subject?: { type: 'mercadito_listing'; id: string };
 };
 
 export async function publishActivity(
@@ -56,6 +58,8 @@ export async function publishActivity(
     locationId: input.locationId ?? null,
     publicParams: input.publicParams ?? {},
     isDemo: false,
+    subjectType: input.subject?.type ?? null,
+    subjectId: input.subject?.id ?? null,
     visibleUntil: new Date(Date.now() + visibleForSeconds * 1000),
   });
 
@@ -85,6 +89,11 @@ export async function recentActivity(
     eq(activityEvents.isDemo, false),
     gte(activityEvents.occurredAt, new Date(Date.now() - 24 * 60 * 60 * 1000)),
     sql`(${activityEvents.visibleUntil} is null or ${activityEvents.visibleUntil} > now())`,
+    // A listing that was withdrawn, sold or removed no longer counts as news.
+    sql`(${activityEvents.subjectType} is distinct from 'mercadito_listing' or exists (
+      select 1 from mercadito_listings l
+      where l.id::text = ${activityEvents.subjectId} and l.status = 'published'
+    ))`,
   ];
 
   if (options.locationCode) {

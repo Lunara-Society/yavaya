@@ -323,6 +323,18 @@ describe('editing and closing', () => {
   });
 });
 
+describe('live activity', () => {
+  it('stops announcing a listing once it is withdrawn', async () => {
+    const { recentActivity } = await import('@/server/domains/notifications/activity');
+    const seller = await createMember({ tokens: 2 });
+    const { listingId } = await publish(seller);
+    expect((await recentActivity(db())).map((item) => item.kind)).toEqual(['listing_published']);
+
+    await db().transaction((tx) => closeListing(tx, { listingId, sellerUserId: seller, outcome: 'withdrawn' }));
+    expect(await recentActivity(db())).toEqual([]);
+  });
+});
+
 describe('browsing', () => {
   it('lists sellers buyers can reach before those they cannot', async () => {
     const quiet = await createMember({ tokens: 2 });
