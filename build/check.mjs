@@ -40,7 +40,7 @@ if (process.env.CI) {
 const htmlFiles = [];
 (function walk(dir) {
   for (const name of readdirSync(dir)) {
-    if (['.git', 'node_modules', 'build', 'docs', '.github'].includes(name)) continue;
+    if (['.git', 'node_modules', 'build', 'docs', '.github', 'platform', 'scripts'].includes(name)) continue;
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p);
     else if (name.endsWith('.html')) htmlFiles.push(p);

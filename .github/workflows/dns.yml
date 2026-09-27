@@ -11,6 +11,11 @@ on:
         type: choice
         options: [plan, apply, verify, list]
         default: plan
+      records:
+        description: web points the site at its host; email lets Resend send as @yavaya.lat
+        type: choice
+        options: [web, email]
+        default: web
 
 permissions:
   contents: read
@@ -23,8 +28,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: spaceship-dns ${{ inputs.mode }}
-        run: node scripts/spaceship-dns.mjs ${{ inputs.mode }}
+      - name: spaceship-dns ${{ inputs.mode }} ${{ inputs.records }}
+        run: node scripts/spaceship-dns.mjs ${{ inputs.mode }} ${{ inputs.records }}
         env:
           SPACESHIP_API_KEY: ${{ secrets.SPACESHIP_API_KEY }}
           SPACESHIP_API_SECRET: ${{ secrets.SPACESHIP_API_SECRET }}

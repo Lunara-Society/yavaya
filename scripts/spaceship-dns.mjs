@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 // Points yavaya.lat at GitHub Pages through the Spaceship DNS API.
 //
-//   node scripts/spaceship-dns.mjs list    show the zone
-//   node scripts/spaceship-dns.mjs plan    show what apply would change
-//   node scripts/spaceship-dns.mjs apply   make the change, then re-read the zone
-//   node scripts/spaceship-dns.mjs verify  check public DNS answers
+//   node scripts/spaceship-dns.mjs list                show the zone
+//   node scripts/spaceship-dns.mjs plan  [web|email]   show what apply would change
+//   node scripts/spaceship-dns.mjs apply [web|email]   make the change, re-read the zone
+//   node scripts/spaceship-dns.mjs verify              check public DNS answers
+//
+// Record sets: `web` points the site at its host; `email` lets Resend send as
+// @yavaya.lat. Each set owns only its own names and types, so applying one
+// never touches the other, or the Spacemail inbox records at the apex.
 //
 // Credentials come from SPACESHIP_API_KEY and SPACESHIP_API_SECRET and are
 // never printed. In GitHub Actions they are repository secrets, not workflow
@@ -20,16 +24,28 @@ const DOMAIN = 'yavaya.lat';
 const PAGES_HOST = 'lunara-society.github.io';
 
 // GitHub Pages' published apex addresses.
-const DESIRED = [
+const WEB = [
   ...['185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'].map((address) => ({ type: 'A', name: '@', address })),
   ...['2606:50c0:8000::153', '2606:50c0:8001::153', '2606:50c0:8002::153', '2606:50c0:8003::153'].map((address) => ({ type: 'AAAA', name: '@', address })),
   { type: 'CNAME', name: 'www', cname: PAGES_HOST },
 ];
 
-// Only records of these types, at these names, can conflict with the site.
-// Mail (MX), verification (TXT) and anything else in the zone is never touched.
-const WEB_TYPES = new Set(['A', 'AAAA', 'CNAME', 'ALIAS']);
-const WEB_NAMES = new Set(['@', 'www']);
+// Resend (region us-east-1), as issued for yavaya.lat. Sending mail goes out
+// through `send.`, which keeps bounces off the apex where Spacemail receives.
+const EMAIL = [
+  { type: 'TXT', name: 'resend._domainkey', value: 'p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDBWl5OPMT1/VblV0Eig3IRBNsz/gdjIur8x2Dwtf9txHFlyCIzXWKBUdufymq9njjGjFYZpjVU2Ik/1XP3rqgQMjRnHi9v5sdoC1UjQaiaKTAhHTX3RARRyJ9UJ2kcBv3LCtB3rRrSy6mpPhcaLYalNBukHN1Lzy8xz/Nyc/igmQIDAQAB' },
+  { type: 'MX', name: 'send', exchange: 'feedback-smtp.us-east-1.amazonses.com', preference: 10 },
+  { type: 'TXT', name: 'send', value: 'v=spf1 include:amazonses.com ~all' },
+  { type: 'CNAME', name: 'rsend', cname: 'send.forge.rmta.net' },
+];
+
+// A set owns these (name, type) pairs: records there that are not in the set
+// are replaced. Everything else in the zone is never touched.
+const SETS = {
+  web: { desired: WEB, owns: (r) => ['A', 'AAAA', 'CNAME', 'ALIAS'].includes(r.type) && ['@', 'www'].includes(norm(nameOf(r))) },
+  email: { desired: EMAIL, owns: (r) => EMAIL.some((d) => d.type === r.type && norm(d.name) === norm(nameOf(r))) },
+};
+const DESIRED = WEB;
 
 const key = process.env.SPACESHIP_API_KEY;
 const secret = process.env.SPACESHIP_API_SECRET;
@@ -67,9 +83,10 @@ function show(items) {
   for (const r of items) console.log(`  ${r.type.padEnd(6)} ${nameOf(r).padEnd(10)} ${target(r)}`);
 }
 
-function planFor(items) {
-  const remove = items.filter((r) => WEB_TYPES.has(r.type) && WEB_NAMES.has(norm(nameOf(r))) && !DESIRED.some((d) => same(d, r)));
-  const add = DESIRED.filter((d) => !items.some((r) => same(d, r)));
+function planFor(items, set) {
+  const { desired, owns } = SETS[set];
+  const remove = items.filter((r) => owns(r) && !desired.some((d) => same(d, r)));
+  const add = desired.filter((d) => !items.some((r) => same(d, r)));
   return { remove, add };
 }
 
@@ -95,10 +112,12 @@ try {
   if (command === 'list') {
     show(await zone());
   } else if (command === 'plan' || command === 'apply') {
+    const set = process.argv[3] || 'web';
+    if (!SETS[set]) throw new Error(`unknown record set "${set}" (web or email)`);
     const before = await zone();
     console.log('Zone now:');
     show(before);
-    const { remove, add } = planFor(before);
+    const { remove, add } = planFor(before, set);
     console.log('\nRemove (conflicting web records only):');
     remove.length ? show(remove) : console.log('  nothing');
     console.log('\nAdd:');
@@ -111,13 +130,13 @@ try {
       if (add.length) await api('PUT', { force: true, items: add.map((r) => ({ ...r, ttl: 3600 })) });
       console.log('\nApplied. Zone re-read from Spaceship:');
       show(await zone());
-      const left = planFor(await zone());
+      const left = planFor(await zone(), set);
       if (left.add.length || left.remove.length) throw new Error('The zone still differs from the plan after applying.');
     }
   } else if (command === 'verify') {
     process.exit((await verify()) ? 0 : 1);
   } else {
-    console.error('usage: spaceship-dns.mjs <list|plan|apply|verify>');
+    console.error('usage: spaceship-dns.mjs <list|plan|apply|verify> [web|email]');
     process.exit(2);
   }
 } catch (error) {
