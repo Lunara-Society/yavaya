@@ -334,8 +334,9 @@ on exactly the connections this product is built for.
   `migrate.cjs && seed.cjs` passed `&& …` to the migration as ignored
   arguments, so the seed never ran and every registration failed on a missing
   `member` role while the health check stayed green.
-- **Config as code:** `platform/railway.toml` holds the build and deploy
-  settings; the service's root directory is `/platform`.
+- **Root directory:** `/platform`, watch pattern `/platform/**`, so changes to
+  the static site alone do not redeploy the platform. These settings live on
+  the Railway service (Railway has deprecated `railway.toml`).
 - **Healthcheck:** `/api/health`, 120s timeout. It returns 200 only when the
   database answers, so a container that cannot reach Postgres never takes
   traffic. The path is exempt from the preview gate for this reason.
