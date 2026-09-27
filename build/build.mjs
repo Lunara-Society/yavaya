@@ -21,6 +21,13 @@ const SITE = 'https://yavaya.lat';
 const WHATSAPP = { href: 'https://wa.me/50558365522', label: '+505 5836 5522' };
 const LOCALES = { es, en };
 
+// Every visitor gets the desktop layout, phones included: the owner's decision.
+// A fixed layout width makes phones render the full desktop page scaled to
+// fit, and pinch-zoom stays enabled so small text can still be read. To go
+// back to a phone layout, use 'width=device-width, initial-scale=1'; the CSS
+// still contains the mobile styles.
+const VIEWPORT = 'width=1200';
+
 // One entry per page. Slugs are per locale so each language reads naturally.
 export const PAGES = [
   { id: 'home', slug: { es: '', en: '' } },
@@ -131,7 +138,7 @@ function layout({ locale, id, title, description, body, tone }) {
 <html lang="${locale}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="${VIEWPORT}">
 <title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${canonical}">
@@ -648,7 +655,7 @@ ${districtNext(c, link, 'animals')}`;
 function notFound() {
   // GitHub Pages serves this from any depth, so it links absolutely.
   const c = es;
-  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>404 · Yavaya</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/site.css"><script>try{var t=localStorage.getItem('yavaya-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script></head><body>
+  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="${VIEWPORT}"><title>404 · Yavaya</title><meta name="robots" content="noindex"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/site.css"><script>try{var t=localStorage.getItem('yavaya-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script></head><body>
 <main id="main"><section class="hero"><div class="wrap narrow">
 <p class="eyebrow" style="justify-content:center">404</p>
 <h1 class="h-lg">${esc(c.ui.notFound.title)}</h1>
