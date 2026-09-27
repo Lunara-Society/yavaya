@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { SiteContent } from '@/i18n/site';
+import { DISTRICTS, type DistrictKey } from '@/config/districts';
 import { Icon, type IconName } from './icons';
 import { Md, Paras } from './md';
 
@@ -166,10 +167,30 @@ export function Note({ text }: { text: string }) {
   );
 }
 
+/** Website district ids differ from registry keys in one place only. */
+const REGISTRY_KEY: Record<DistrictId, DistrictKey> = {
+  mercadito: 'mercadito',
+  yavayago: 'yavayago',
+  work: 'works',
+  community: 'community',
+  impact: 'impact',
+  animals: 'animals',
+};
+
+/**
+ * A district's state as the registry records it — what is built, not what is
+ * planned. Read from one place so no page can call a live district planned,
+ * or a planned one live.
+ */
+export function districtState(id: DistrictId): SiteState {
+  const status = DISTRICTS[REGISTRY_KEY[id]].status;
+  return status === 'available' ? 'live' : status === 'in_development' ? 'dev' : 'planned';
+}
+
 export function DistrictStatus({ c, id }: { c: SiteContent; id: DistrictId }) {
   return (
     <>
-      <Badge c={c} state="planned" /> <span className="muted">· {c.districts[id].phase}</span>
+      <Badge c={c} state={districtState(id)} /> <span className="muted">· {c.districts[id].phase}</span>
     </>
   );
 }
@@ -226,7 +247,7 @@ export function Gate({
       {top ? <span className="gate-foot">{top}</span> : null}
       <span className="gate-name">{d.name}</span>
       <span className="gate-tag">{text ?? d.tagline}</span>
-      {top ? null : <span className="gate-foot">{bottom ?? `${c.ui.states.planned} · ${d.phase}`}</span>}
+      {top ? null : <span className="gate-foot">{bottom ?? `${c.ui.states[districtState(id)]} · ${d.phase}`}</span>}
     </Link>
   );
 }

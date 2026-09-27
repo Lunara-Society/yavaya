@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { es } from '@/i18n/dictionaries/es';
 import { en } from '@/i18n/dictionaries/en';
@@ -103,10 +104,17 @@ describe('district registry', () => {
   });
 
   it('does not claim any district is available before it is built', () => {
+    // A district joins this list in the same change that builds it — with
+    // its pages, its service and its tests. Marking one available without
+    // that is exactly what the capability register exists to prevent.
+    const built = new Set(['mercadito']);
     for (const district of districtList) {
-      if (district.status === 'available') {
-        throw new Error(`${district.key} is marked available but no district is built yet`);
+      if (district.status === 'available' && !built.has(district.key)) {
+        throw new Error(`${district.key} is marked available but is not built`);
       }
+    }
+    for (const key of built) {
+      expect(existsSync(new URL(`../../src/app/${key}/page.tsx`, import.meta.url))).toBe(true);
     }
   });
 });

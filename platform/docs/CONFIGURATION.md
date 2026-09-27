@@ -151,15 +151,90 @@ audit record, a Trust Shield, or a public registry.
 
 ## Media storage — `MEDIA_STORAGE_PROVIDER`
 
-**Needed for:** listing photos, avatars, evidence attached to reports.
+**Needed for:** Mercadito listing photos (publishing requires at least one).
 
-**Until configured:** uploads are rejected rather than silently lost.
+**Until configured:** uploads are rejected rather than silently lost, the
+publish page says publishing is unavailable, and `/status` shows both
+`media_storage` and `mercadito` as requiring configuration.
 
-**To complete:** implement a storage adapter plus the validation pipeline —
-content-type sniffing (never trust the declared type), size limits, image
-re-encoding to strip metadata (EXIF GPS in a listing photo is a location leak),
-and malware scanning before anything is served. Serve user media from a
-separate origin so a malicious file cannot execute against Yavaya's origin.
+**Configured in production:** `MEDIA_STORAGE_PROVIDER=s3` against the Railway
+bucket `yavaya-media`. The credentials are Railway reference variables on the
+web service, never copied values:
+
+| Variable | Value |
+| --- | --- |
+| `MEDIA_S3_ENDPOINT` | `${{yavaya-media.ENDPOINT}}` |
+| `MEDIA_S3_BUCKET` | `${{yavaya-media.BUCKET}}` |
+| `MEDIA_S3_REGION` | `${{yavaya-media.REGION}}` |
+| `MEDIA_S3_ACCESS_KEY_ID` | `${{yavaya-media.ACCESS_KEY_ID}}` |
+| `MEDIA_S3_SECRET_ACCESS_KEY` | `${{yavaya-media.SECRET_ACCESS_KEY}}` |
+
+`MEDIA_S3_FORCE_PATH_STYLE=true` is only for a local MinIO; Railway buckets use
+virtual-hosted URLs. There is deliberately no local-disk provider: a container
+disk is wiped on each deploy, and the photos would vanish while their listings
+stayed.
+
+**The pipeline** (`src/server/domains/media/`):
+
+- The type is decided by the file's first bytes (JPEG, PNG, WebP), never by
+  its name or the browser's declared type.
+- Each file is decoded with a pixel ceiling (decompression bombs are refused
+  before allocation), EXIF orientation is applied, and a **new WebP is
+  encoded from the pixels** at up to 1600 px. Nothing of the original file is
+  stored, so EXIF GPS, camera serials and any payload riding in the file are
+  gone. For this reason there is no separate malware scan of images: there is
+  no uploaded file left to scan.
+- Photos are served by `/media/<id>` from the application, with
+  `Content-Security-Policy: default-src 'none'` and `nosniff`. The bucket
+  stays private. A separate media origin was the earlier plan; it is not
+  needed while the only thing served is a WebP Yavaya encoded itself, and it
+  becomes necessary the day any other file type (PDF evidence, video) is
+  accepted.
+- Objects are written before the database transaction and deleted if it
+  fails, so a refused listing (no tokens, over the limit) leaves nothing
+  behind. A crash between the two can leave an orphaned object with no row;
+  nothing references it. A periodic sweep of objects with no `media` row is
+  not built yet.
+
+---
+
+## Mercadito — rules and open decisions
+
+Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
+`config/business-rules.ts`) and can be changed without a deploy.
+
+| Setting | Default | Source |
+| --- | --- | --- |
+| `mercadito.new_seller_window_days` | 7 | Master Bible: "Account <7 days: max 3 listings" |
+| `mercadito.new_seller_max_listings` | 3 | same |
+| `mercadito.restricted_categories_unverified` | `[]` | **Undecided** — see below |
+| Photos per listing | 1–6 | Technical default, not from the Bible |
+| Cost of publishing | 1 token | `billable_actions` row `mercadito.publish_listing` |
+
+**Decisions the specification leaves open:**
+
+1. **What counts toward "max 3 listings".** Implemented as every listing the
+   account has created in its first 7 days, whatever its state now — so
+   withdrawing and republishing cannot get around it. If the intent was
+   "3 listings live at once", change the count in
+   `sellerStanding`/`publishListing` to published listings only.
+2. **"Unverified account: limited categories".** The Bible does not say which
+   categories. The mechanism is built (an identity-unverified seller is refused
+   any category in `mercadito.restricted_categories_unverified`), and the list
+   ships empty. Identity verification is itself not available yet, so any
+   category put on the list would be closed to every seller.
+3. **"Listings with no phone: reduced visibility".** Implemented as ordering:
+   listings whose seller has a WhatsApp number sort first; the rest follow,
+   never hidden.
+4. **Phone numbers are not verified.** SMS is not configured. The listing
+   page says so beside the WhatsApp button, and `phoneVerified` on the Trust
+   Shield stays false.
+5. **AI checks.** Of the Bible's list, exact duplicate photos across sellers
+   and repeated titles by one seller are flagged to the moderation queue.
+   Reverse image search, scam-keyword detection and price-anomaly detection are
+   not built (capability `listing_screening`).
+6. **Payments.** Yavaya does not process Mercadito payments; the site and the
+   listing page say so.
 
 ---
 
@@ -254,6 +329,14 @@ waiting.
 - **Animals district.** Which animals may lawfully be listed, and under what
   conditions, varies by country. Mercadito's `animals` category is likewise
   "where legally appropriate".
+- **Mercadito prohibited items.** The Terms do not yet list what may not be
+  sold (weapons, drugs, medicines, live animals, counterfeit goods, and so on),
+  and the list differs by country. Moderators can remove any listing through
+  reports today; the list itself is an owner and legal decision.
+- **Legal entity before districts open.** The approved Terms promise to name
+  the responsible legal entity, the applicable law and the dispute process
+  "before the districts open". Mercadito is built; removing the preview
+  curtain opens it, so that promise falls due at the same moment.
 - **Pharmacy pickup in YavayaGo.** Legal only in some jurisdictions and often
   only for specific product classes.
 - **Data protection.** Retention periods, subject-access rights and breach

@@ -23,6 +23,7 @@ import {
   RISK_RULES,
   TOKEN_PACKAGES,
   TOKEN_RULES,
+  MERCADITO_RULES,
 } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
@@ -211,10 +212,10 @@ async function seedDistricts(database: Database): Promise<void> {
         slug: district.slug,
         phase: district.phase,
         status: district.status,
-        // A district is only enabled once it is actually built. Phase 0 ships
-        // the platform, so every district starts disabled — the navigation
-        // must never offer something that does not exist.
-        enabled: false,
+        // A district is only enabled once it is actually built — the
+        // navigation must never offer something that does not exist. An
+        // existing row keeps its flag: operations may have switched it off.
+        enabled: district.status === 'available',
         sortOrder: index,
       })
       .onConflictDoUpdate({
@@ -307,6 +308,9 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'tokens.starter_days', value: TOKEN_RULES.starterGrantDays, description: 'Number of days the starter allocation runs' },
     { key: 'tokens.starter_maximum', value: TOKEN_RULES.starterGrantMaximum, description: 'Total starter allocation cap' },
     { key: 'demo.lifetime_days', value: DEMO_CONTENT_RULES.defaultLifetimeDays, description: 'Days before demo content expires' },
+    { key: 'mercadito.new_seller_window_days', value: MERCADITO_RULES.newSellerWindowDays, description: 'Account age, in days, under which the new-seller listing limit applies' },
+    { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
+    { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },
     { key: 'demo.real_inventory_threshold', value: DEMO_CONTENT_RULES.realInventoryThreshold, description: 'Real items per district that end demo mode early' },
   ];
 

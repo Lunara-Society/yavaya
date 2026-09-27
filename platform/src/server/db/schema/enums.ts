@@ -198,3 +198,34 @@ export const reconciliationStateEnum = pgEnum('reconciliation_state', [
 
 // --- Audit ------------------------------------------------------------------
 export const actorTypeEnum = pgEnum('actor_type', ['user', 'admin', 'system', 'anonymous']);
+
+// --- Media ------------------------------------------------------------------
+export const mediaStatusEnum = pgEnum('media_status', ['active', 'removed']);
+
+// --- Mercadito --------------------------------------------------------------
+/** The eight Mercadito categories named in the Master Bible (ch. 1). */
+export const listingCategoryEnum = pgEnum('listing_category', [
+  'vehicles',
+  'real_estate',
+  'electronics',
+  'services',
+  'fashion',
+  'home',
+  'sports',
+  'classifieds',
+]);
+
+export const listingConditionEnum = pgEnum('listing_condition', [
+  'new',
+  'like_new',
+  'used',
+  'for_parts',
+  'not_applicable',
+]);
+
+export const listingStatusEnum = pgEnum('listing_status', [
+  'published',
+  'sold',
+  'withdrawn', // taken down by the seller
+  'removed', // taken down by a moderator
+]);

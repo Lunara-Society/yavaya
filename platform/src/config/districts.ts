@@ -74,7 +74,7 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.mercadito.name',
     taglineKey: 'district.mercadito.tagline',
     phase: 1,
-    status: 'planned',
+    status: 'available',
     theme: { accent: 'emerald', tokenSet: 'district-mercadito', layout: 'discovery-density' },
   },
   yavayago: {

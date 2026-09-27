@@ -565,3 +565,16 @@ export async function creditPurchasedTokens(
     relatedId: params.paymentTransactionId,
   });
 }
+
+/**
+ * What an action costs right now, or null when it is not billable. For
+ * showing the price before the member commits, never for charging.
+ */
+export async function actionCost(executor: Executor, actionKey: string): Promise<number | null> {
+  const [action] = await executor
+    .select({ cost: billableActions.cost, enabled: billableActions.enabled })
+    .from(billableActions)
+    .where(eq(billableActions.key, actionKey))
+    .limit(1);
+  return action?.enabled ? action.cost : null;
+}

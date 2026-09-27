@@ -121,9 +121,24 @@ const serverSchema = z.object({
   /** Identity document verification (KYC) vendor. Unset => manual review only. */
   KYC_PROVIDER: z.enum(['manual', 'unconfigured']).default('unconfigured'),
 
-  /** Object storage for user media. Unset => uploads are rejected. */
-  MEDIA_STORAGE_PROVIDER: z.enum(['local', 'unconfigured']).default('unconfigured'),
-  MEDIA_LOCAL_PATH: z.string().optional(),
+  /**
+   * Object storage for user media. Unset => uploads are rejected.
+   *
+   * `s3` is any S3-compatible store (a Railway bucket in production). There
+   * is deliberately no local-disk option: container disks are wiped on every
+   * deploy, so photos stored there would vanish while their listings stayed.
+   */
+  MEDIA_STORAGE_PROVIDER: z.enum(['s3', 'unconfigured']).default('unconfigured'),
+  MEDIA_S3_ENDPOINT: z.string().url().optional(),
+  MEDIA_S3_BUCKET: z.string().min(1).optional(),
+  MEDIA_S3_REGION: z.string().min(1).default('auto'),
+  MEDIA_S3_ACCESS_KEY_ID: z.string().min(1).optional(),
+  MEDIA_S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+  /** Railway buckets use virtual-hosted URLs; a local MinIO needs path style. */
+  MEDIA_S3_FORCE_PATH_STYLE: z
+    .enum(['true', 'false'])
+    .transform((value) => value === 'true')
+    .default(false),
 
   /** IP → coarse location. Unset => geolocation falls back to manual selection. */
   GEOIP_PROVIDER: z.enum(['none', 'unconfigured']).default('unconfigured'),

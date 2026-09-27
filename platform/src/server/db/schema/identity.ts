@@ -107,6 +107,12 @@ export const userProfiles = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
     bio: text('bio'),
     avatarMediaId: uuid('avatar_media_id'),
+    /**
+     * The number buyers reach this member on through WhatsApp, in E.164.
+     * Declared by the member and NOT verified — SMS verification is not
+     * configured — so every place that shows it says so.
+     */
+    whatsappE164: text('whatsapp_e164'),
     /** Declared home location; the deepest node the user chose to reveal. */
     locationId: uuid('location_id').references(() => locations.id, { onDelete: 'set null' }),
     /**

@@ -3,6 +3,7 @@ import { serverEnv } from '@/config/env';
 import { CAPABILITIES, type Capability, type CapabilityState } from '@/config/capabilities';
 import { listProviderAvailability } from '@/server/domains/payments/service';
 import { emailAvailability } from '@/server/domains/notifications/email/service';
+import { mediaStorageAvailability } from '@/server/domains/media/storage';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -28,6 +29,7 @@ function emailBlocker(): string | undefined {
  */
 export function integrationCapabilities(): Capability[] {
   const env = serverEnv();
+  const media = mediaStorageAvailability();
 
   const integrations: Capability[] = [
     {
@@ -71,12 +73,13 @@ export function integrationCapabilities(): Capability[] {
       key: 'media_storage',
       nameKey: 'capability.media_storage.name',
       detailKey: 'capability.media_storage.detail',
-      state: env.MEDIA_STORAGE_PROVIDER === 'unconfigured' ? 'REQUIRES_CONFIGURATION' : 'REAL',
+      /*
+       * Measured, like email: REAL only when the S3 adapter has every
+       * credential it needs. A provider name on its own proves nothing.
+       */
+      state: media.available ? 'REAL' : 'REQUIRES_CONFIGURATION',
       group: 'integration',
-      blockedBy:
-        env.MEDIA_STORAGE_PROVIDER === 'unconfigured'
-          ? 'Uploads are rejected rather than lost. Needs a storage adapter plus the validation pipeline (type sniffing, re-encoding to strip EXIF, malware scanning, separate serving origin).'
-          : undefined,
+      blockedBy: media.available ? undefined : media.reason,
     },
     {
       key: 'geoip',
@@ -117,6 +120,10 @@ export function allCapabilities(): Capability[] {
  * works — both are wrong, so it follows the measured email state.
  */
 function measured(capability: Capability): Capability {
+  if (capability.key === 'mercadito') {
+    const media = mediaStorageAvailability();
+    return media.available ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
+  }
   if (capability.key !== 'email_verification') return capability;
   const state = emailCapabilityState();
   if (state === 'REAL') return { ...capability, state, blockedBy: undefined };

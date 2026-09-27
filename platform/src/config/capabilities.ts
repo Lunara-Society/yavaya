@@ -187,14 +187,50 @@ export const CAPABILITIES: readonly Capability[] = [
   },
 
   // --- Districts ------------------------------------------------------------
-  // Every district is Phase 1 or later. None is built, and none pretends to be.
+  {
+    key: 'mercadito',
+    nameKey: 'capability.mercadito.name',
+    detailKey: 'capability.mercadito.detail',
+    /*
+     * Built: browsing, search, publishing with photos, the token charge, the
+     * new-seller limit, editing, closing and WhatsApp contact. It can only
+     * work where photos can be stored, so the live state is measured from
+     * media storage (see `measured()` in platform/capability.ts); this
+     * declaration is the not-yet-configured case.
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy: 'Needs media storage: publishing requires at least one photo.',
+  },
+  {
+    key: 'mercadito_moderation',
+    nameKey: 'capability.mercadito_moderation.name',
+    detailKey: 'capability.mercadito_moderation.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'listing_screening',
+    nameKey: 'capability.listing_screening.name',
+    detailKey: 'capability.listing_screening.detail',
+    /*
+     * Not built, and "requires configuration" undersells that: the checks
+     * the Master Bible lists beyond exact duplicates need a provider or a
+     * policy decision each. Stated here so /status does not imply them.
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy:
+      'Not built. Exact duplicate photos across sellers and repeated titles are flagged today. Reverse image search (photos stolen from other sites) needs a provider; scam-keyword lists and price-anomaly thresholds need an operations decision per category and market.',
+  },
+  // The remaining districts are Phase 1 or later and not built.
   {
     key: 'districts',
     nameKey: 'capability.districts.name',
     detailKey: 'capability.districts.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Registry, theming and routing exist. District experiences are Phase 1+.',
+    blockedBy: 'Registry, theming and routing exist. Mercadito is built; the other district experiences are Phase 1+.',
   },
 
   // --- Integrations ---------------------------------------------------------

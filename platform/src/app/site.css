@@ -435,4 +435,63 @@ td strong { color: var(--text); }
 .tone-impact { --tone: var(--impact); }
 .tone-animals { --tone: var(--animals); }
 .tone-trust { --tone: var(--gold); }
+
+/* ── Mercadito: the live market ─────────────────────────────────────────
+ * "Busy marketplace — dense cards, fast scanning" (Master Bible, ch. 5).
+ * Small cards, many per row, price first. Its own grid, not a copy of
+ * another district's.
+ */
+.mk-head { padding: 28px 0 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 14%, var(--bg)) 0%, var(--bg) 100%); }
+.mk-head h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 6px; }
+.mk-head .lead { font-size: 1rem; }
+.mk-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-top: 18px; }
+.mk-bar label { display: grid; gap: 4px; font-size: 0.78rem; font-weight: 700; color: var(--text-3); }
+.mk-bar input, .mk-bar select { min-height: 44px; }
+.mk-bar .grow { flex: 1 1 260px; }
+.mk-field, .mk-bar input, .mk-bar select, .mk-form input, .mk-form select, .mk-form textarea {
+  background: var(--surface); color: var(--text); border: 1px solid var(--line-strong); border-radius: 10px; padding: 8px 12px; font: inherit; width: 100%;
+}
+.mk-form textarea { min-height: 160px; resize: vertical; }
+.mk-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.mk-cats a { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); font-size: 0.86rem; font-weight: 700; text-decoration: none; color: var(--text-2); }
+.mk-cats a[aria-current="true"] { border-color: var(--tone); color: var(--text); background: color-mix(in srgb, var(--tone) 18%, transparent); }
+.mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 14px; margin-top: 22px; }
+.mk-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; text-decoration: none; color: var(--text); }
+.mk-card:hover { border-color: var(--tone); }
+.mk-card .ph { aspect-ratio: 1; background: var(--surface-2); display: grid; place-items: center; color: var(--text-3); font-size: 0.8rem; }
+.mk-card .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mk-card .bd { padding: 10px 12px 12px; display: grid; gap: 2px; }
+.mk-card .pr { font-weight: 800; font-size: 1.05rem; }
+.mk-card .ti { font-size: 0.9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mk-card .pl { font-size: 0.78rem; color: var(--text-3); }
+.mk-card .st { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tone); }
+.mk-pager { display: flex; gap: 10px; justify-content: center; margin: 28px 0 8px; }
+.mk-empty { margin-top: 28px; padding: 28px; border: 1px dashed var(--line-strong); border-radius: 14px; text-align: center; color: var(--text-2); }
+.mk-detail { display: grid; gap: 28px; grid-template-columns: 1fr; padding: 24px 0 56px; }
+@media (min-width: 900px) { .mk-detail { grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); } }
+.mk-gallery { display: grid; gap: 10px; }
+.mk-gallery .main { border-radius: 14px; overflow: hidden; background: var(--surface-2); }
+.mk-gallery .main img { width: 100%; height: auto; display: block; max-height: 640px; object-fit: contain; }
+.mk-gallery .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.mk-gallery .thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+.mk-price { font-size: 2rem; font-weight: 800; margin: 4px 0 10px; }
+.mk-facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 14px 0; font-size: 0.95rem; }
+.mk-facts dt { color: var(--text-3); }
+.mk-desc { white-space: pre-line; }
+.mk-side { display: grid; gap: 16px; align-content: start; }
+.mk-banner { padding: 12px 16px; border-radius: 12px; border: 1px solid var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); font-weight: 700; }
+.mk-wa { background: #1f9d55; color: #fff; }
+.mk-wa:hover { filter: brightness(1.08); }
+.mk-form { display: grid; gap: 18px; max-width: 760px; }
+.mk-form label { display: grid; gap: 6px; font-weight: 700; }
+.mk-form .hint { font-weight: 400; font-size: 0.86rem; color: var(--text-3); }
+.mk-form .row { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.mk-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+.mk-photos figure { position: relative; margin: 0; }
+.mk-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; }
+.mk-photos button { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; background: rgba(0,0,0,.7); color: #fff; border: 0; }
+.mk-error { padding: 12px 16px; border-radius: 12px; border: 1px solid #d64545; background: color-mix(in srgb, #d64545 14%, transparent); }
+.mk-queue { display: grid; gap: 16px; margin-top: 22px; }
+.mk-case { display: grid; grid-template-columns: 120px 1fr; gap: 16px; }
+.mk-case img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; }
 }

@@ -15,3 +15,5 @@ export * from './moderation';
 export * from './notifications';
 export * from './payments';
 export * from './platform';
+export * from './media';
+export * from './mercadito';

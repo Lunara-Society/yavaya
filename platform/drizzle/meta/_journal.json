@@ -29,6 +29,13 @@
       "when": 1790523401899,
       "tag": "0003_trust_scale_1000",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790541695137,
+      "tag": "0004_mercadito",
+      "breakpoints": true
     }
   ]
 }

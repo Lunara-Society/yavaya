@@ -41,7 +41,10 @@ export async function resetTransactionalData(): Promise<void> {
       notification_preferences,
       activity_events,
       demo_content,
-      rate_limit_counters
+      rate_limit_counters,
+      mercadito_listing_photos,
+      mercadito_listings,
+      media
     restart identity cascade
   `);
 

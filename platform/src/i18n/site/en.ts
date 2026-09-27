@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'You can create your Yavaya account now. Districts open in phases: there is no buying, selling or paying yet.',
+      text: 'Mercadito is open: buy and sell with your Yavaya account. The other districts open in phases. Yavaya does not process payments: the deal is between buyer and seller.',
       link: 'What works today',
     },
     states: {
@@ -159,6 +159,7 @@ export const siteEn: SiteContent = {
 
     mercadito: {
       eyebrow: 'District · Mercadito',
+      enter: 'Browse listings',
       title: 'Buy and sell with more confidence than anywhere else',
       description: 'Mercadito: the trusted marketplace of Central America. Vehicles, real estate, electronics, services, fashion, home and more.',
       lead: "Mercadito is Central America's marketplace, clearer and safer. Every seller shows their reputation before you message them.",
@@ -191,21 +192,21 @@ export const siteEn: SiteContent = {
         '**Trust indicators**: what has been verified.',
         "**Reputation** of the seller, with their history.",
       ],
-      protectHead: { eyebrow: 'Protection', title: 'We check every listing' },
+      protectHead: { eyebrow: 'Protection', title: 'How every listing is protected' },
       protect: [
-        'Duplicate images, or images stolen from other sites.',
-        'Repeated listings from the same seller.',
-        'Typical scam wording in the title or description.',
-        'Prices that are impossible for the category.',
-        'Mass posting from new accounts.',
+        'Automatic: we detect the **same photo** uploaded by different sellers and the **same title** repeated by one seller; both go to a moderator for review.',
+        'Automatic: we strip **GPS location** and camera data from every photo before storing it.',
+        'Any member can **report** a listing. A moderator reviews every case and can remove it or warn the seller.',
+        'Every listing costs a token and there are hourly limits, which slows mass posting.',
+        '**Not yet**: detecting photos copied from other sites, typical scam wording, or impossible prices. We will say so here when it exists.',
       ],
       newSellerHead: { eyebrow: 'New sellers', title: 'Trust is built step by step' },
       newSeller: [
         'An account younger than 7 days can hold up to **3 listings**.',
-        'An unverified account has limited categories.',
-        'A listing without a phone number gets less visibility.',
+        'A listing without a contact number appears after those that have one.',
+        'WhatsApp numbers are **not verified** yet, and the listing says so.',
       ],
-      payNote: '**Cash is always the default.** Tokens are optional and never required to buy or sell.',
+      payNote: '**Yavaya does not process Mercadito payments.** Payment is between buyer and seller, cash by default. Publishing costs one token; browsing, buying and messaging the seller cost nothing.',
     },
 
     yavayago: {
@@ -405,7 +406,7 @@ export const siteEn: SiteContent = {
       districtTable: {
         head: ['District', 'Main protection'],
         rows: [
-          ['Mercadito', 'Every listing checked, and limits for new sellers'],
+          ['Mercadito', 'Reports reviewed by moderators, automatic signals, and limits for new sellers'],
           ['Work', 'No anonymous posts or applications; trust visible before contact'],
           ['Impact', 'Identity, evidence and review before any cause is published'],
           ['YavayaGo', 'Verified drivers; the customer knows who is coming'],
@@ -826,6 +827,16 @@ export const siteEn: SiteContent = {
           ],
         },
         {
+          title: 'If you publish on Mercadito',
+          text: 'Your listings are public: title, description, price, city, photos, your display name, your YAY ID and your Trust Shield.',
+          list: [
+            '**Photos** are stored re-encoded, without GPS location or camera data. We keep a digest of each original photo to detect photos copied between sellers.',
+            'Your **WhatsApp number**, if you add it, is used only for the contact button, which signed-in members see. You can remove it at any time.',
+            'If someone **reports** a listing, the report and its author are seen only by moderators. The seller does not learn who reported.',
+            'If you withdraw a listing or remove a photo, it stops being shown. A listing removed by moderation is kept as evidence, shown to no one.',
+          ],
+        },
+        {
           title: 'To protect everyone',
           text: 'To enforce one person, one account, we keep security signals as encrypted digests, never in the clear. Important actions go into an audit log that cannot be rewritten; it stores digests, not your IP address.',
         },
@@ -833,7 +844,7 @@ export const siteEn: SiteContent = {
           title: 'Who it is shared with',
           text: 'We do not sell data. There is no third-party advertising or analytics. Two providers help us operate:',
           list: [
-            '**Railway** hosts the platform and its database (United States).',
+            '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
           ],
         },

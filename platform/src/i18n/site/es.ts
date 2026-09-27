@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Ya puedes crear tu cuenta Yavaya. Los distritos abrirán por fases: todavía no hay compras, ventas ni pagos.',
+      text: 'Mercadito ya está abierto: compra y vende con tu cuenta Yavaya. Los demás distritos abrirán por fases. Yavaya no procesa pagos: el trato es entre comprador y vendedor.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -171,6 +171,7 @@ export const siteEs = {
 
     mercadito: {
       eyebrow: 'Distrito · Mercadito',
+      enter: 'Ver publicaciones',
       title: 'Compra y vende con más confianza que en cualquier otro lugar',
       description: 'Mercadito: el mercado de confianza de Centroamérica. Vehículos, bienes raíces, electrónica, servicios, moda, hogar y más.',
       lead: 'Mercadito es el mercado de Centroamérica, más claro y más seguro. Cada vendedor muestra su reputación antes de que le escribas.',
@@ -203,21 +204,21 @@ export const siteEs = {
         '**Indicadores de confianza**: qué está verificado.',
         '**Reputación** del vendedor, con su historial.',
       ],
-      protectHead: { eyebrow: 'Protección', title: 'Revisamos cada publicación' },
+      protectHead: { eyebrow: 'Protección', title: 'Cómo protegemos cada publicación' },
       protect: [
-        'Imágenes duplicadas o robadas de otros sitios.',
-        'Publicaciones repetidas del mismo vendedor.',
-        'Palabras típicas de estafa en el título o la descripción.',
-        'Precios imposibles para su categoría.',
-        'Publicación masiva desde cuentas nuevas.',
+        'Automático: detectamos la **misma foto** subida por vendedores distintos y el **mismo título** repetido por un vendedor; ambos casos pasan a revisión de un moderador.',
+        'Automático: quitamos de cada foto la **ubicación GPS** y los datos de la cámara antes de guardarla.',
+        'Cualquier miembro puede **reportar** una publicación. Un moderador revisa cada caso y puede retirarla o advertir al vendedor.',
+        'Cada publicación cuesta un token y hay límites por hora, lo que frena la publicación masiva.',
+        '**Todavía no** detectamos fotos copiadas de otros sitios, palabras típicas de estafa ni precios imposibles. Lo diremos aquí cuando exista.',
       ],
       newSellerHead: { eyebrow: 'Vendedores nuevos', title: 'La confianza se construye paso a paso' },
       newSeller: [
         'Una cuenta con menos de 7 días puede tener hasta **3 publicaciones**.',
-        'Una cuenta sin verificar tiene categorías limitadas.',
-        'Una publicación sin teléfono tiene menos visibilidad.',
+        'Una publicación sin número de contacto aparece después de las que sí lo tienen.',
+        'Los números de WhatsApp **no están verificados** todavía, y la publicación lo dice.',
       ],
-      payNote: '**El efectivo es siempre la opción por defecto.** Los tokens son opcionales y nunca son obligatorios para comprar o vender.',
+      payNote: '**Yavaya no procesa pagos en Mercadito.** El pago es entre comprador y vendedor, en efectivo por defecto. Publicar cuesta un token; buscar, comprar y escribir al vendedor no cuestan nada.',
     },
 
     yavayago: {
@@ -417,7 +418,7 @@ export const siteEs = {
       districtTable: {
         head: ['Distrito', 'Protección principal'],
         rows: [
-          ['Mercadito', 'Revisión de cada publicación y límites para vendedores nuevos'],
+          ['Mercadito', 'Reportes revisados por moderadores, señales automáticas y límites para vendedores nuevos'],
           ['Work', 'Sin ofertas ni postulaciones anónimas; confianza visible antes del contacto'],
           ['Impacto', 'Identidad, evidencia y revisión antes de publicar cualquier causa'],
           ['YavayaGo', 'Repartidores verificados; el cliente sabe quién llega'],
@@ -838,6 +839,16 @@ export const siteEs = {
           ],
         },
         {
+          title: 'Si publicas en Mercadito',
+          text: 'Tus publicaciones son públicas: título, descripción, precio, ciudad, fotos, tu nombre para mostrar, tu YAY ID y tu Escudo de Confianza.',
+          list: [
+            'Las **fotos** se guardan re-codificadas, sin ubicación GPS ni datos de la cámara. Guardamos un resumen de cada foto original para detectar fotos copiadas entre vendedores.',
+            'Tu **número de WhatsApp**, si lo agregas, se usa solo para el botón de contacto, que ven los miembros con sesión iniciada. Puedes quitarlo cuando quieras.',
+            'Si alguien **reporta** una publicación, el reporte y su autor solo los ven los moderadores. El vendedor no sabe quién reportó.',
+            'Si retiras una publicación o quitas una foto, deja de mostrarse. Una publicación retirada por moderación se conserva como evidencia, sin mostrarse a nadie.',
+          ],
+        },
+        {
           title: 'Para proteger a todos',
           text: 'Para cumplir la regla de una persona, una cuenta, guardamos señales de seguridad en forma de resúmenes cifrados, nunca en claro. Las acciones importantes quedan en un registro de auditoría que no se puede reescribir; ese registro guarda resúmenes, no tu dirección IP.',
         },
@@ -845,7 +856,7 @@ export const siteEs = {
           title: 'Con quién se comparte',
           text: 'No vendemos datos. No hay publicidad ni analítica de terceros. Usamos dos proveedores para operar:',
           list: [
-            '**Railway** aloja la plataforma y su base de datos (Estados Unidos).',
+            '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
           ],
         },

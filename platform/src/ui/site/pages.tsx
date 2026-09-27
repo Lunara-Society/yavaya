@@ -7,6 +7,7 @@ import {
   DISTRICT_IDS,
   DistrictNext,
   DistrictStatus,
+  districtState,
   Gate,
   Note,
   PageHero,
@@ -113,7 +114,7 @@ export function DistrictsBody({ c }: { c: SiteContent }) {
                   c={c}
                   id={id}
                   text={d.purpose}
-                  bottom={`${d.color} · ${c.ui.states.planned} · ${d.phase}`}
+                  bottom={`${d.color} · ${c.ui.states[districtState(id)]} · ${d.phase}`}
                 />
               );
             })}
@@ -139,7 +140,20 @@ export function MercaditoBody({ c }: { c: SiteContent }) {
   const p = c.pages.mercadito;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="mercadito" />} />
+      <PageHero
+        eyebrow={p.eyebrow}
+        title={p.title}
+        lead={p.lead}
+        tinted
+        badge={
+          <>
+            <DistrictStatus c={c} id="mercadito" />{' '}
+            <Link className="btn btn-gold" href="/mercadito" style={{ marginLeft: 12 }}>
+              {p.enter}
+            </Link>
+          </>
+        }
+      />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.catsHead} />

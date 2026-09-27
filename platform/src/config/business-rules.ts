@@ -186,3 +186,45 @@ export const LOCATION_PRIVACY = {
 } as const;
 
 export type LocationPrecision = (typeof LOCATION_PRIVACY.levels)[number];
+
+/**
+ * Image uploads. Technical limits rather than policy, but still retunable.
+ */
+export const MEDIA_RULES = {
+  /** Largest single upload accepted, before re-encoding. */
+  maxUploadBytes: 8 * 1024 * 1024,
+  /** Decoder guard: refuses "decompression bomb" images before allocating. */
+  maxInputPixels: 50_000_000,
+  /** Longest edge of the stored image. Enough for a phone screen at 2x. */
+  maxDimension: 1600,
+  webpQuality: 80,
+  uploadsPerHour: 60,
+} as const;
+
+/**
+ * Mercadito.
+ *
+ * `newSellerWindowDays` and `newSellerMaxListings` are the Master Bible's
+ * "Account <7 days: max 3 listings". What counts as a listing there is not
+ * defined; Yavaya counts every listing the account created, whatever its
+ * state, so withdrawing and republishing cannot get round it (see
+ * CONFIGURATION.md).
+ *
+ * `restrictedCategoriesForUnverified` implements "Unverified account:
+ * limited categories". The Bible does not say which, so it ships empty and
+ * the decision is flagged in CONFIGURATION.md rather than guessed.
+ */
+export const MERCADITO_RULES = {
+  newSellerWindowDays: 7,
+  newSellerMaxListings: 3,
+  restrictedCategoriesForUnverified: [] as readonly string[],
+  minPhotos: 1,
+  maxPhotos: 6,
+  titleMinLength: 4,
+  titleMaxLength: 90,
+  descriptionMinLength: 10,
+  descriptionMaxLength: 4000,
+  /** 10 million in major units: a guard against typos, not a policy. */
+  maxPriceMinor: 1_000_000_000,
+  pageSize: 24,
+} as const;

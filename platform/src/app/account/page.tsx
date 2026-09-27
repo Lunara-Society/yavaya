@@ -7,6 +7,7 @@ import { TrustShieldCard } from '@/ui/components/trust-shield';
 import { shellContext } from '@/ui/shell-context';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { getBalance } from '@/server/domains/tokens/service';
+import { hasPermission } from '@/server/domains/access/authorize';
 import { recentActivity } from '@/server/domains/notifications/activity';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
@@ -27,11 +28,16 @@ export default async function AccountPage() {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
 
-  const [shield, balance, activity] = await Promise.all([
+  const [shield, balance, activity, moderator] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 6 }),
+    hasPermission(db(), userId, 'listings.moderate'),
   ]);
+  // Shown only to those who hold the permission; the page checks it again.
+  const shortcuts = moderator
+    ? [...SHORTCUTS, { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' }]
+    : SHORTCUTS;
 
   if (!shield) redirect('/login');
 
@@ -88,7 +94,7 @@ export default async function AccountPage() {
       <section className="mt-8">
         <h2 className="text-lg font-semibold tracking-tight">{t('account.shortcuts')}</h2>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-          {SHORTCUTS.map((shortcut) => (
+          {shortcuts.map((shortcut) => (
             <li key={shortcut.href}>
               <Link
                 href={shortcut.href}
@@ -125,6 +131,7 @@ export default async function AccountPage() {
 }
 
 const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = [
+  { href: '/mercadito/mine', labelKey: 'mercadito.mine.title', glyph: '▦' },
   { href: '/account/tokens', labelKey: 'nav.tokens', glyph: '◆' },
   { href: '/settings#notifications', labelKey: 'nav.notifications', glyph: '◔' },
   { href: '/settings#location', labelKey: 'nav.location', glyph: '◎' },
