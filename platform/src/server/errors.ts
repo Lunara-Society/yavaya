@@ -91,7 +91,13 @@ export function toClientError(error: unknown): {
     return { code: error.code, messageKey: error.messageKey, details: error.details };
   }
   if (isDomainError(error)) {
+    // An internal domain error is a bug report, not a user mistake: it must
+    // reach the server log, or production failures leave no trace at all.
+    if (error.code === 'internal') console.error('internal error:', error, error.cause ?? '');
     return { code: error.code, messageKey: error.messageKey, details: {} };
   }
+  // Anything that is not a DomainError is unexpected. The member sees only the
+  // generic message; the operator gets the real error in the log.
+  console.error('unexpected error:', error);
   return { code: 'internal', messageKey: 'error.internal', details: {} };
 }
