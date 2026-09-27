@@ -1,43 +1,49 @@
 # Yavaya — yavaya.lat
 
-El sitio web de Yavaya, el hogar digital de Centroamérica. Español en `/`,
-inglés en `/en/`.
+El hogar digital de Centroamérica. Una cuenta. Una reputación. Un ecosistema.
 
-It is a static website: no server, no database, no dependencies. GitHub Pages
-serves this repository's `main` branch from the root, and `CNAME` points it at
-**yavaya.lat**.
+## What is here
 
-## Editing
+| Path | What it is |
+| --- | --- |
+| [`platform/`](platform/) | **The Yavaya platform and website**: accounts, identity, reputation, tokens, trust, and every public page. Next.js + PostgreSQL, deployed on Railway at **yavaya.lat**. Start with [`platform/CLAUDE.md`](platform/CLAUDE.md) and [`platform/docs/`](platform/docs/). |
+| [`docs/YAVAYA_MASTER_BIBLE.md`](docs/YAVAYA_MASTER_BIBLE.md) | The product specification. Product rules come from here. |
+| [`scripts/spaceship-dns.mjs`](scripts/spaceship-dns.mjs) | DNS for yavaya.lat, run through the **DNS (Spaceship)** workflow. |
+| `index.html`, `404.html`, `CNAME` | GitHub Pages serves only a redirect: `www.yavaya.lat` (and old Pages addresses) go to `https://yavaya.lat`, keeping the path. |
 
-All text lives in `build/content/es.mjs` (the reference) and
-`build/content/en.mjs`. Layout is in `build/build.mjs`, styles in
-`assets/site.css`.
+## Working on the platform
 
 ```bash
-npm run build   # regenerate every page into the repository root
-npm test        # same sections in both languages, no broken links
-npm run serve   # preview at http://localhost:8080
+cd platform
+npm ci
+npm run dev
+npm run typecheck
+npm test                # needs Postgres; see platform/CLAUDE.md
 ```
 
-The generated HTML is committed, since GitHub Pages serves it as-is. CI fails if
-it is out of date, so always run `npm run build` before committing.
+CI (`.github/workflows/ci.yml`) runs the typecheck, the full test suite against
+a real Postgres, the production build, and the release step against an empty
+database on every push.
 
-## Rules the content follows
+## Deployment
 
-- Nothing on the site is presented as working unless it works. Yavaya has not
-  opened, and every page says so. `/estado/` is the honest register.
-- No invented numbers, users, reviews or testimonials. Examples are marked
-  `DEMO`.
-- No purchase or sign-up button until the thing behind it exists.
-- Source of truth for product rules: [`docs/YAVAYA_MASTER_BIBLE.md`](docs/YAVAYA_MASTER_BIBLE.md).
-  The platform itself (accounts, reputation, tokens) is built in the separate
-  YavayaGo repository.
+Railway builds `platform/` from `main` (root directory `/platform`, watch
+pattern `/platform/**`). Before new instances take traffic it runs
+`node dist/scripts/release.cjs` — migrations, then the idempotent seed. See
+[`platform/docs/DEPLOYMENT.md`](platform/docs/DEPLOYMENT.md).
 
-## Domain
+Email is sent through Resend's HTTPS API as `no-reply@yavaya.lat` (Railway
+blocks SMTP below the Pro plan).
 
-DNS for yavaya.lat is at Spaceship. With repository secrets
-`SPACESHIP_API_KEY` and `SPACESHIP_API_SECRET` set, run the **DNS (Spaceship)**
-workflow: `plan` shows the change, `apply` makes it. It adds GitHub Pages' four
-A and four AAAA records at the apex and `www → lunara-society.github.io`,
-removes only conflicting web records at those two names, and leaves mail and
-TXT records alone.
+## DNS
+
+Repository secrets `SPACESHIP_API_KEY` and `SPACESHIP_API_SECRET` let the
+**DNS (Spaceship)** workflow manage two record sets:
+
+- `web` — `yavaya.lat` ALIAS to the Railway custom-domain target, `www` CNAME to
+  GitHub Pages (which redirects).
+- `email` — Resend's DKIM and return-path records on `send.`, `rsend.` and
+  `resend._domainkey`.
+
+Each set touches only its own names and types. The Spacemail inbox records at
+the apex are never modified. Run `plan` first; it changes nothing.

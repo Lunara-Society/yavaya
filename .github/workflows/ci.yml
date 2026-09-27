@@ -1,18 +1,26 @@
+# The platform (platform/) on every push: typecheck, the full test suite
+# against a real Postgres, the production build, and the release scripts run
+# against an empty database — exactly what Railway's pre-deploy executes.
 name: CI
 
 on:
   push:
-    branches-ignore: []
   pull_request:
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  check:
+  platform:
     name: Typecheck, test, build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: platform
 
     services:
       # The integration tests are the point: they exercise the append-only
@@ -39,6 +47,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: platform/package-lock.json
 
       - run: npm ci
 
@@ -57,15 +66,13 @@ jobs:
           SESSION_SECRET: build-time-placeholder-value-not-used-at-runtime
           SIGNAL_PEPPER: build-time-placeholder-value-not-used-at-runtime
 
-      - name: Verify the release scripts run against a fresh database
-        # The migrate and seed bundles are what the production release command
-        # executes. Running them against a genuinely empty database catches a
-        # broken release here rather than mid-deploy on Fly.
+      - name: Release step against a fresh database
+        # release.cjs is what Railway runs before a deploy: migrate, then
+        # seed. Run it twice — the second run proves it is idempotent.
         run: |
           PGPASSWORD=yavaya createdb -h 127.0.0.1 -U yavaya yavaya_release
-          node dist/scripts/migrate.cjs
-          node dist/scripts/seed.cjs
-          node dist/scripts/seed.cjs   # must be idempotent
+          node dist/scripts/release.cjs
+          node dist/scripts/release.cjs
         env:
           DATABASE_URL: postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_release
           SESSION_SECRET: ci-check-secret-value-that-is-long-enough-000000

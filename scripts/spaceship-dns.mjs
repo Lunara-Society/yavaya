@@ -4,7 +4,7 @@
 //   node scripts/spaceship-dns.mjs list                show the zone
 //   node scripts/spaceship-dns.mjs plan  [web|email]   show what apply would change
 //   node scripts/spaceship-dns.mjs apply [web|email]   make the change, re-read the zone
-//   node scripts/spaceship-dns.mjs verify              check public DNS answers
+//   node scripts/spaceship-dns.mjs verify              check public DNS answers for the site
 //
 // Record sets: `web` points the site at its host; `email` lets Resend send as
 // @yavaya.lat. Each set owns only its own names and types, so applying one
@@ -22,11 +22,16 @@
 const API = 'https://spaceship.dev/api/v1';
 const DOMAIN = 'yavaya.lat';
 const PAGES_HOST = 'lunara-society.github.io';
+// The platform's Railway custom-domain target for yavaya.lat. Railway assigns
+// it per domain; it cannot be derived, so it is copied from Railway here.
+const RAILWAY_TARGET = 'yzu65a0b.up.railway.app';
 
-// GitHub Pages' published apex addresses.
+// The apex goes to the platform on Railway. A CNAME is not legal at the apex,
+// so it is an ALIAS, which Spaceship flattens. www stays on GitHub Pages,
+// whose only job is now to redirect to https://yavaya.lat — that keeps www
+// working without spending one of Railway's two custom-domain slots.
 const WEB = [
-  ...['185.199.108.153', '185.199.109.153', '185.199.110.153', '185.199.111.153'].map((address) => ({ type: 'A', name: '@', address })),
-  ...['2606:50c0:8000::153', '2606:50c0:8001::153', '2606:50c0:8002::153', '2606:50c0:8003::153'].map((address) => ({ type: 'AAAA', name: '@', address })),
+  { type: 'ALIAS', name: '@', aliasName: RAILWAY_TARGET },
   { type: 'CNAME', name: 'www', cname: PAGES_HOST },
 ];
 
@@ -45,7 +50,6 @@ const SETS = {
   web: { desired: WEB, owns: (r) => ['A', 'AAAA', 'CNAME', 'ALIAS'].includes(r.type) && ['@', 'www'].includes(norm(nameOf(r))) },
   email: { desired: EMAIL, owns: (r) => EMAIL.some((d) => d.type === r.type && norm(d.name) === norm(nameOf(r))) },
 };
-const DESIRED = WEB;
 
 const key = process.env.SPACESHIP_API_KEY;
 const secret = process.env.SPACESHIP_API_SECRET;
@@ -91,20 +95,21 @@ function planFor(items, set) {
 }
 
 async function verify() {
-  // Ask public resolvers over HTTPS, not the local cache.
+  // Ask a public resolver over HTTPS, not the local cache. An ALIAS is
+  // flattened, so the apex answers with the target's own addresses.
   const ask = async (name, type) => {
     const res = await fetch(`https://dns.google/resolve?name=${name}&type=${type}`);
     const body = await res.json();
-    return (body.Answer ?? []).map((a) => norm(a.data));
+    return (body.Answer ?? []).filter((a) => a.type === (type === 'A' ? 1 : 5)).map((a) => norm(a.data));
   };
-  const a = await ask(DOMAIN, 'A');
+  const apex = (await ask(DOMAIN, 'A')).sort();
+  const target = (await ask(RAILWAY_TARGET, 'A')).sort();
   const www = await ask(`www.${DOMAIN}`, 'CNAME');
-  const wantA = DESIRED.filter((d) => d.type === 'A').map((d) => d.address);
-  const okA = wantA.every((ip) => a.includes(ip));
+  const okApex = apex.length > 0 && apex.some((ip) => target.includes(ip));
   const okWww = www.includes(PAGES_HOST);
-  console.log(`${DOMAIN} A     ${a.join(', ') || '(nothing)'}  ${okA ? '✓' : '✗'}`);
+  console.log(`${DOMAIN} A     ${apex.join(', ') || '(nothing)'}  ${okApex ? '✓ matches ' + RAILWAY_TARGET : '✗'}`);
   console.log(`www   CNAME ${www.join(', ') || '(nothing)'}  ${okWww ? '✓' : '✗'}`);
-  return okA && okWww;
+  return okApex && okWww;
 }
 
 const command = process.argv[2];

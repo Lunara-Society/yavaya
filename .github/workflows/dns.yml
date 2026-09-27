@@ -1,4 +1,4 @@
-# Points yavaya.lat at GitHub Pages via the Spaceship API.
+# DNS for yavaya.lat via the Spaceship API: `web` (apex → Railway, www → Pages redirect) or `email` (Resend).
 # Needs repository secrets SPACESHIP_API_KEY and SPACESHIP_API_SECRET.
 # Run "plan" first; it changes nothing.
 name: DNS (Spaceship)
