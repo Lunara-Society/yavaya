@@ -1,0 +1,12 @@
+{
+  "name": "yavaya-site",
+  "private": true,
+  "description": "yavaya.lat — the Yavaya website. Static, generated, no dependencies.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node build/build.mjs",
+    "test": "node build/check.mjs",
+    "serve": "python3 -m http.server 8080"
+  }
+}

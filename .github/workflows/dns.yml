@@ -1,0 +1,30 @@
+# Points yavaya.lat at GitHub Pages via the Spaceship API.
+# Needs repository secrets SPACESHIP_API_KEY and SPACESHIP_API_SECRET.
+# Run "plan" first; it changes nothing.
+name: DNS (Spaceship)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: plan shows the change, apply makes it, verify checks public DNS
+        type: choice
+        options: [plan, apply, verify, list]
+        default: plan
+
+permissions:
+  contents: read
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: spaceship-dns ${{ inputs.mode }}
+        run: node scripts/spaceship-dns.mjs ${{ inputs.mode }}
+        env:
+          SPACESHIP_API_KEY: ${{ secrets.SPACESHIP_API_KEY }}
+          SPACESHIP_API_SECRET: ${{ secrets.SPACESHIP_API_SECRET }}
