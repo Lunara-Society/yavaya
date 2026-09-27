@@ -37,7 +37,7 @@ export function integrationCapabilities(): Capability[] {
       /*
        * Three distinct states, because "an adapter is selected" is not the same
        * as "mail is delivered":
-       *   smtp + credentials  → REAL
+       *   smtp or resend, with credentials → REAL
        *   console             → MOCK — it writes to the log and sends nothing
        *   anything else       → REQUIRES_CONFIGURATION
        */

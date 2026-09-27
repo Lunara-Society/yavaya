@@ -9,6 +9,7 @@ import {
   type SendResult,
 } from './provider';
 import { SmtpEmailProvider } from './providers/smtp';
+import { ResendEmailProvider } from './providers/resend';
 import { ConsoleEmailProvider } from './providers/console';
 
 /**
@@ -20,12 +21,15 @@ import { ConsoleEmailProvider } from './providers/console';
  */
 
 const smtp = new SmtpEmailProvider();
+const resend = new ResendEmailProvider();
 const consoleProvider = new ConsoleEmailProvider();
 
 function selectProvider(): EmailProvider | null {
   switch (serverEnv().EMAIL_PROVIDER) {
     case 'smtp':
       return smtp;
+    case 'resend':
+      return resend;
     case 'console':
       return consoleProvider;
     default:
@@ -40,7 +44,7 @@ export function emailAvailability(): EmailAvailability {
       available: false,
       provider: 'unconfigured',
       reason:
-        'Set EMAIL_PROVIDER=smtp with SMTP_URL and EMAIL_FROM. Registration must not open to the public until this delivers, or a new member receives no verification code.',
+        'Set EMAIL_PROVIDER=smtp (SMTP_URL, EMAIL_FROM) or EMAIL_PROVIDER=resend (RESEND_API_KEY, EMAIL_FROM). Registration must not open to the public until this delivers, or a new member receives no verification code.',
     };
   }
   return provider.availability();
@@ -111,6 +115,9 @@ export async function sendVerificationCode(params: {
     if (error instanceof EmailUnconfiguredError) {
       return { delivered: false, reason: 'unconfigured', detail: error.message };
     }
+    // The member is told the code did not go out; the operator needs to know
+    // why, or a delivery outage is invisible until someone complains.
+    console.error('verification email not delivered:', error, error instanceof Error ? (error.cause ?? '') : '');
     return {
       delivered: false,
       reason: 'delivery_failed',

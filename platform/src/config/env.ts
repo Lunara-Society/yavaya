@@ -105,9 +105,11 @@ const serverSchema = z.object({
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.
   // ---------------------------------------------------------------------------
-  EMAIL_PROVIDER: z.enum(['console', 'smtp', 'unconfigured']).default('unconfigured'),
+  EMAIL_PROVIDER: z.enum(['console', 'smtp', 'resend', 'unconfigured']).default('unconfigured'),
   SMTP_URL: z.string().optional(),
   EMAIL_FROM: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
+  RESEND_API_URL: z.string().url().default('https://api.resend.com'),
 
   SMS_PROVIDER: z.enum(['console', 'unconfigured']).default('unconfigured'),
 

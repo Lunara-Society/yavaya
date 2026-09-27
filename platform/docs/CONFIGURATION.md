@@ -40,6 +40,21 @@ Any SMTP provider works, so choosing a vendor is a credentials change rather
 than a code change. Pick one with reliable delivery to all seven launch
 countries.
 
+**Where outbound SMTP is blocked, use the Resend adapter.** Railway blocks
+SMTP on every plan below Pro: an SMTP provider there hangs until its timeout
+and delivers nothing. `EMAIL_PROVIDER=resend` sends through Resend's HTTPS API
+instead:
+
+```
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=re_…              # a sending-only key restricted to the domain
+EMAIL_FROM="Yavaya <no-reply@yavaya.lat>"
+```
+
+The sending domain must be verified in Resend first; its DNS records are part
+of the `email` set in the repository's DNS workflow. This is the production
+configuration.
+
 **Until configured:** registration succeeds and a code is generated, but
 nothing is sent, and the interface says exactly that. In `APP_ENV=local` the
 code is shown on screen so the flow can be finished by hand; it is never

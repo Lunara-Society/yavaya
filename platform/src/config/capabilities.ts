@@ -73,7 +73,7 @@ export const CAPABILITIES: readonly Capability[] = [
     state: 'REQUIRES_CONFIGURATION',
     group: 'platform',
     blockedBy:
-      'Implemented and tested end to end against the database. Blocked on email delivery: set EMAIL_PROVIDER, SMTP_URL and EMAIL_FROM and this becomes REAL with no code change.',
+      'Implemented and tested end to end against the database. Blocked on email delivery: set EMAIL_PROVIDER with its credentials (smtp: SMTP_URL; resend: RESEND_API_KEY) and EMAIL_FROM and this becomes REAL with no code change.',
   },
   {
     key: 'authorization',
