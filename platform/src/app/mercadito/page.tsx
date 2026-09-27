@@ -4,11 +4,25 @@ import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { ListingCard } from '@/ui/mercadito/listing-card';
+import { DistrictScene } from '@/ui/site/art';
+import { Icon, type IconName } from '@/ui/site/icons';
 import type { MessageKey } from '@/i18n';
 import { browseListings, placeOptions } from '@/server/domains/mercadito/service';
 import { LISTING_CATEGORIES, type ListingCategory } from '@/server/domains/mercadito/rules';
 
 export const dynamic = 'force-dynamic';
+
+/** Each category's mark, shared by the chips and the empty-market guide. */
+const CATEGORY_ICON: Record<ListingCategory, IconName> = {
+  vehicles: 'car',
+  real_estate: 'house',
+  electronics: 'phone',
+  services: 'wrench',
+  fashion: 'shirt',
+  home: 'sofa',
+  sports: 'ball',
+  classifieds: 'tag',
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
@@ -47,6 +61,9 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="mercadito" tone="mercadito">
       <section className="mk-head">
+        <div className="mk-head-art" aria-hidden="true">
+          <DistrictScene id="mercadito" />
+        </div>
         <div className="wrap">
           <div className="btn-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
@@ -103,6 +120,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
             </Link>
             {LISTING_CATEGORIES.map((key) => (
               <Link key={key} href={href({ cat: key, page: undefined })} aria-current={category === key ? 'true' : undefined}>
+                <Icon name={CATEGORY_ICON[key]} />
                 {t(`mercadito.category.${key}` as MessageKey)}
               </Link>
             ))}
@@ -114,6 +132,18 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
         {result.items.length === 0 ? (
           <div className="mk-empty">
             <p>{filtered ? t('mercadito.browse.none') : t('mercadito.browse.empty')}</p>
+            {filtered ? null : (
+              <ul className="mk-kinds">
+                {LISTING_CATEGORIES.map((key) => (
+                  <li key={key}>
+                    <span className="mk-kind-ico">
+                      <Icon name={CATEGORY_ICON[key]} />
+                    </span>
+                    {t(`mercadito.category.${key}` as MessageKey)}
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="btn-row" style={{ justifyContent: 'center' }}>
               {filtered ? (
                 <Link className="btn btn-line" href="/mercadito">

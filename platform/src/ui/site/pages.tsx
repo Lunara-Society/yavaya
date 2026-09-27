@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { DistrictScene, Guilloche, HeroScene, OrnamentRule } from './art';
 import type { SiteContent } from '@/i18n/site';
 import {
   Badge,
@@ -34,8 +35,12 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
   return (
     <>
       <section className="hero">
+        <HeroScene className="hero-art" />
         <div className="wrap">
-          <h1 className="h-xl">YAVAYA</h1>
+          <div className="hero-mark">
+            <Guilloche className="hero-seal" size={520} lobes={36} rings={12} strokeWidth={0.45} />
+            <h1 className="h-xl">YAVAYA</h1>
+          </div>
           <p className="hero-sub">{p.sub}</p>
           <ul className="hero-verbs">
             {p.verbs.map((v) => (
@@ -55,6 +60,7 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
       </section>
       <section className="section" id="distritos" style={{ paddingTop: 0 }}>
         <div className="wrap">
+          <OrnamentRule className="ornament" />
           <SectionHead eyebrow={p.gatesEyebrow} title={p.gatesTitle} />
           <div className="gates">
             {DISTRICT_IDS.map((id) => (
@@ -76,7 +82,8 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
           </div>
         </div>
       </section>
-      <section className="section">
+      <section className="section seal-section">
+        <Guilloche className="seal-bg" size={600} lobes={40} rings={12} strokeWidth={0.4} />
         <div className="wrap">
           <p className="quote">
             <Md text={p.quote} />
@@ -145,6 +152,7 @@ export function MercaditoBody({ c }: { c: SiteContent }) {
         title={p.title}
         lead={p.lead}
         tinted
+        art={<DistrictScene id="mercadito" />}
         badge={
           <>
             <DistrictStatus c={c} id="mercadito" />{' '}
@@ -211,7 +219,7 @@ export function YavayaGoBody({ c }: { c: SiteContent }) {
   const p = c.pages.yavayago;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="yavayago" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="yavayago" />} art={<DistrictScene id="yavayago" />} />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.routeHead} />
@@ -259,7 +267,7 @@ export function WorkBody({ c }: { c: SiteContent }) {
   const p = c.pages.work;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="work" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="work" />} art={<DistrictScene id="work" />} />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.diffHead} />
@@ -315,7 +323,7 @@ export function CommunityBody({ c }: { c: SiteContent }) {
   const p = c.pages.community;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="community" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="community" />} art={<DistrictScene id="community" />} />
       <section className="section">
         <div className="wrap">
           <div className="calm">
@@ -356,7 +364,7 @@ export function ImpactBody({ c }: { c: SiteContent }) {
   const p = c.pages.impact;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="impact" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="impact" />} art={<DistrictScene id="impact" />} />
       <section className="section">
         <div className="wrap">
           <div className="promise">
@@ -402,7 +410,7 @@ export function AnimalsBody({ c }: { c: SiteContent }) {
   const p = c.pages.animals;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="animals" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="animals" />} art={<DistrictScene id="animals" />} />
       <section className="section">
         <div className="wrap">
           <div className="organic">

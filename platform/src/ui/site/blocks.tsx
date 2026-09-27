@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import type { SiteContent } from '@/i18n/site';
 import { DISTRICTS, type DistrictKey } from '@/config/districts';
 import { Icon, type IconName } from './icons';
+import { DistrictScene } from './art';
 import { Md, Paras } from './md';
 
 /**
@@ -50,22 +51,28 @@ export function PageHero({
   lead,
   tinted,
   badge,
+  art,
 }: {
   eyebrow: string;
   title: string;
   lead: string;
   tinted?: boolean;
   badge?: ReactNode;
+  /** An illustration set beside the words, e.g. a district's scene. */
+  art?: ReactNode;
 }) {
   return (
-    <section className={`page-hero${tinted ? ' tinted' : ''}`}>
+    <section className={`page-hero${tinted ? ' tinted' : ''}${art ? ' with-art' : ''}`}>
       <div className="wrap">
-        <div className="eyebrow">{eyebrow}</div>
-        <h1>{title}</h1>
-        <p className="lead">
-          <Md text={lead} />
-        </p>
-        {badge ? <p className="mt mb0">{badge}</p> : null}
+        <div className="page-hero-text">
+          <div className="eyebrow">{eyebrow}</div>
+          <h1>{title}</h1>
+          <p className="lead">
+            <Md text={lead} />
+          </p>
+          {badge ? <p className="mt mb0">{badge}</p> : null}
+        </div>
+        {art ? <div className="page-hero-art">{art}</div> : null}
       </div>
     </section>
   );
@@ -241,13 +248,18 @@ export function Gate({
   const d = c.districts[id];
   return (
     <Link className={`gate tone-${id}`} href={PAGE_PATHS[id]}>
-      <span className="gate-art">
-        <Icon name={id} />
+      <span className="gate-scene">
+        <DistrictScene id={id} />
       </span>
-      {top ? <span className="gate-foot">{top}</span> : null}
-      <span className="gate-name">{d.name}</span>
-      <span className="gate-tag">{text ?? d.tagline}</span>
-      {top ? null : <span className="gate-foot">{bottom ?? `${c.ui.states[districtState(id)]} · ${d.phase}`}</span>}
+      <span className="gate-body">
+        <span className="gate-art">
+          <Icon name={id} />
+        </span>
+        {top ? <span className="gate-foot">{top}</span> : null}
+        <span className="gate-name">{d.name}</span>
+        <span className="gate-tag">{text ?? d.tagline}</span>
+        {top ? null : <span className="gate-foot">{bottom ?? `${c.ui.states[districtState(id)]} · ${d.phase}`}</span>}
+      </span>
     </Link>
   );
 }

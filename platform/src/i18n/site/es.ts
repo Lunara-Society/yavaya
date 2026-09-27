@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito ya está abierto: compra y vende con tu cuenta Yavaya. Los demás distritos abrirán por fases. Yavaya no procesa pagos: el trato es entre comprador y vendedor.',
+      text: 'Mercadito ya está abierto. Los demás distritos abrirán por fases.',
       link: 'Qué funciona hoy',
     },
     states: {

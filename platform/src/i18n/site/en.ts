@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito is open: buy and sell with your Yavaya account. The other districts open in phases. Yavaya does not process payments: the deal is between buyer and seller.',
+      text: 'Mercadito is open. The other districts open in phases.',
       link: 'What works today',
     },
     states: {
