@@ -17,6 +17,8 @@ import en from './content/en.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://yavaya.lat';
+// Yavaya's public contact. Opens a WhatsApp chat; nothing is sent automatically.
+const WHATSAPP = { href: 'https://wa.me/50558365522', label: '+505 5836 5522' };
 const LOCALES = { es, en };
 
 // One entry per page. Slugs are per locale so each language reads naturally.
@@ -175,6 +177,7 @@ ${body({ link, href, c, locale })}
       <div class="foot-brand">
         <a class="brand" href="${link('home')}">${icons.mark}<span>YAVAYA</span></a>
         <p class="muted mt">${esc(c.ui.footer.about)}</p>
+        <p><a href="${WHATSAPP.href}" rel="noopener">${esc(c.ui.footer.contact)} · ${WHATSAPP.label}</a></p>
       </div>
       ${footCols}
     </div>

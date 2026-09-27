@@ -35,6 +35,7 @@ export default {
       about: 'The digital infrastructure of Central America. One account. One reputation. One ecosystem.',
       copy: '© 2026 Yavaya',
       honest: 'No invented numbers. No fake users. No fake reviews.',
+      contact: 'Message us on WhatsApp',
     },
     notFound: {
       title: 'This page does not exist',
@@ -775,6 +776,7 @@ export default {
         { q: 'How do you prevent scams?', a: 'With levelled verification, one account per person, visible reputation, review of listings and causes, limits for new accounts and visible moderation. The Trust page explains it.' },
         { q: 'Does Yavaya take a commission on donations?', a: 'No. Impact has 0% Yavaya commission.' },
         { q: 'Which countries will it cover?', a: 'Guatemala, Belize, El Salvador, Honduras, Nicaragua, Costa Rica and Panama.' },
+        { q: 'How do I contact you?', a: 'On WhatsApp at +505 5836 5522. The link is at the bottom of every page.' },
         { q: 'What does "DEMO" mean?', a: 'An illustrative example. It is not a real person or listing, it never counts in any statistic, and it disappears once real activity arrives.' },
       ],
     },

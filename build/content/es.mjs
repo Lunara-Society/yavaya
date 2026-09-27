@@ -40,6 +40,7 @@ export default {
       about: 'La infraestructura digital de Centroamérica. Una cuenta. Una reputación. Un ecosistema.',
       copy: '© 2026 Yavaya',
       honest: 'Sin cifras inventadas. Sin usuarios falsos. Sin reseñas falsas.',
+      contact: 'Escríbenos por WhatsApp',
     },
     notFound: {
       title: 'Esta página no existe',
@@ -780,6 +781,7 @@ export default {
         { q: '¿Cómo evitan las estafas?', a: 'Con verificación por niveles, una sola cuenta por persona, reputación visible, revisión de publicaciones y causas, límites para cuentas nuevas y moderación visible. La página de Confianza lo explica.' },
         { q: '¿Yavaya cobra comisión en las donaciones?', a: 'No. Impacto tiene 0 % de comisión de Yavaya.' },
         { q: '¿En qué países estará?', a: 'Guatemala, Belice, El Salvador, Honduras, Nicaragua, Costa Rica y Panamá.' },
+        { q: '¿Cómo los contacto?', a: 'Por WhatsApp al +505 5836 5522. El enlace está al pie de cada página.' },
         { q: '¿Qué significa "DEMO"?', a: 'Un ejemplo ilustrativo. No es una persona ni una publicación real, no cuenta en ninguna estadística y desaparece cuando llega actividad real.' },
       ],
     },
