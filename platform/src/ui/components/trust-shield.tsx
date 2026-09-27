@@ -1,5 +1,6 @@
 import type { Translator, MessageKey } from '@/i18n';
 import type { TrustShield } from '@/server/domains/trust/shield';
+import { REPUTATION_RULES } from '@/config/business-rules';
 
 /**
  * Trust Shield.
@@ -32,7 +33,7 @@ export function TrustShieldCard({ shield, t }: { shield: TrustShield; t: Transla
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <div>
           <dt className="text-[var(--text-muted)]">{t('trust.score')}</dt>
-          <dd className="text-base font-semibold tabular-nums">{shield.trustScore}/100</dd>
+          <dd className="text-base font-semibold tabular-nums">{shield.trustScore}/{REPUTATION_RULES.maximumScore}</dd>
         </div>
         <div>
           <dt className="text-[var(--text-muted)]">{t('trust.account_age')}</dt>

@@ -7,7 +7,7 @@ import { errors } from '@/server/errors';
 /**
  * Reputation.
  *
- * Every account starts at 50/100 and moves only in response to verified
+ * Every account starts at 500/1000 and moves only in response to verified
  * platform activity. Weights are read from the database (seeded from
  * `config/business-rules.ts`), never hard-coded at the call site, so they can
  * be tuned without a deploy.

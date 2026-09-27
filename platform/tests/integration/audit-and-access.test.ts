@@ -181,7 +181,7 @@ describe('authorization', () => {
 describe('reputation', () => {
   it('applies a configured rule once per event', async () => {
     const userId = await createUser();
-    expect(await getScore(db(), userId)).toBe(50);
+    expect(await getScore(db(), userId)).toBe(500);
 
     const applied = await db().transaction((tx) =>
       applyRule(tx, {
@@ -191,7 +191,7 @@ describe('reputation', () => {
         idempotencyKey: `phone:${userId}`,
       }),
     );
-    expect(applied).toMatchObject({ applied: true, delta: 5, score: 55 });
+    expect(applied).toMatchObject({ applied: true, delta: 50, score: 550 });
 
     const replay = await db().transaction((tx) =>
       applyRule(tx, {
@@ -202,7 +202,7 @@ describe('reputation', () => {
       }),
     );
     expect(replay).toMatchObject({ applied: false, reason: 'duplicate' });
-    expect(await getScore(db(), userId)).toBe(55);
+    expect(await getScore(db(), userId)).toBe(550);
   });
 
   it('enforces the daily cap on repeatable rules', async () => {
@@ -233,7 +233,7 @@ describe('reputation', () => {
 
   it('clamps at the bounds and records the delta actually applied', async () => {
     const userId = await createUser();
-    await db().update(reputationScores).set({ score: 98 }).where(eq(reputationScores.userId, userId));
+    await db().update(reputationScores).set({ score: 998 }).where(eq(reputationScores.userId, userId));
 
     const result = await db().transaction((tx) =>
       applyRule(tx, {
@@ -244,8 +244,8 @@ describe('reputation', () => {
       }),
     );
 
-    // Configured delta is +10, but the score cannot exceed 100.
-    expect(result.score).toBe(100);
+    // Configured delta is +100, but the score cannot exceed 1000.
+    expect(result.score).toBe(1000);
     expect(result.delta).toBe(2);
   });
 
@@ -259,7 +259,7 @@ describe('reputation', () => {
         idempotencyKey: `fraud:${userId}`,
       }),
     );
-    expect(result.score).toBe(25);
+    expect(result.score).toBe(250);
   });
 
   it('rejects any attempt to rewrite the reputation event stream', async () => {
@@ -331,7 +331,7 @@ describe('database-level guards', () => {
   it('keeps a reputation score inside its range even by direct write', async () => {
     const userId = await createUser();
     await expectConstraintRefusal(
-      db().execute(sql`update reputation_scores set score = 250 where user_id = ${userId}`),
+      db().execute(sql`update reputation_scores set score = 2500 where user_id = ${userId}`),
     );
   });
 

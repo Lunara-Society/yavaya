@@ -70,7 +70,7 @@ describe('registration', () => {
     expect(reserved?.userId).toBe(result.userId);
 
     // Reputation starts at 50, and the day-0 starter grant has landed.
-    expect(await getScore(db(), result.userId)).toBe(50);
+    expect(await getScore(db(), result.userId)).toBe(500);
     expect(await getBalance(db(), result.userId)).toBe(TOKEN_RULES.starterGrantPerDay);
   });
 
@@ -368,7 +368,7 @@ describe('trust shield', () => {
 
     expect(shield).not.toBeNull();
     expect(shield?.yayId).toBe(`YAY-${created.yayId}`);
-    expect(shield?.trustScore).toBe(50);
+    expect(shield?.trustScore).toBe(500);
     expect(shield?.statusKey).toBe('trust.status.unverified');
 
     // The shape itself is the privacy boundary.

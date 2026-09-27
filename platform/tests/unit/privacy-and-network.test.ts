@@ -160,13 +160,13 @@ describe('trust shield derivation', () => {
   });
 
   it('bands an established account by score', () => {
-    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 94 })).toBe(
+    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 940 })).toBe(
       'trust.status.trusted',
     );
-    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 65 })).toBe(
+    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 650 })).toBe(
       'trust.status.established',
     );
-    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 45 })).toBe(
+    expect(statusKeyFor({ status: 'active', trustState: 'standard', score: 450 })).toBe(
       'trust.status.new',
     );
   });

@@ -16,7 +16,7 @@ import { reputationSourceEnum } from './enums';
 /**
  * Reputation.
  *
- * Scores start at 50/100 and only move in response to verified platform
+ * Scores start at 500/1000 and only move in response to verified platform
  * activity. Every movement is an immutable event, so a Trust Shield can always
  * be explained.
  *

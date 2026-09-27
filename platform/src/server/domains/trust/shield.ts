@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { reputationScores, users } from '@/server/db/schema';
-import { TRUST_BANDS } from '@/config/business-rules';
+import { REPUTATION_RULES, TRUST_BANDS } from '@/config/business-rules';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 
 /**
@@ -60,7 +60,7 @@ export async function buildTrustShield(
     0,
     Math.floor((now.getTime() - row.createdAt.getTime()) / 86_400_000),
   );
-  const score = row.score ?? 50;
+  const score = row.score ?? REPUTATION_RULES.initialScore;
 
   return {
     yayId: formatYayId(row.yayId),

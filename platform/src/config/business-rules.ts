@@ -101,10 +101,16 @@ export const TOKEN_PACKAGES: readonly TokenPackage[] = [
   { key: 'tokens_100', tokens: 100, priceMinor: 1199, currency: 'USD', enabled: false, sortOrder: 5 },
 ] as const;
 
+/**
+ * Trust score scale: 0–1000, as the Master Bible specifies (ch. 3, "The
+ * Reputation Engine"). The platform first shipped on 0–100; migration 0003
+ * multiplied stored scores and rule deltas by ten, so every weight below keeps
+ * its original meaning.
+ */
 export const REPUTATION_RULES = {
-  initialScore: 50,
+  initialScore: 500,
   minimumScore: 0,
-  maximumScore: 100,
+  maximumScore: 1000,
 } as const;
 
 export type ReputationRule = {
@@ -118,24 +124,24 @@ export type ReputationRule = {
 };
 
 export const REPUTATION_RULE_DEFAULTS: readonly ReputationRule[] = [
-  { key: 'email_verified', delta: 2, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
-  { key: 'phone_verified', delta: 5, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
-  { key: 'identity_verified', delta: 10, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
-  { key: 'successful_transaction', delta: 2, cooldownSeconds: 0, maxPerDay: 20, enabled: true },
-  { key: 'successful_delivery', delta: 2, cooldownSeconds: 0, maxPerDay: 30, enabled: true },
-  { key: 'verified_positive_review', delta: 1, cooldownSeconds: 0, maxPerDay: 20, enabled: true },
-  { key: 'approved_cause', delta: 3, cooldownSeconds: 0, maxPerDay: 5, enabled: true },
-  { key: 'approved_animal_adoption', delta: 5, cooldownSeconds: 0, maxPerDay: 5, enabled: true },
-  { key: 'warning_issued', delta: -10, cooldownSeconds: 0, maxPerDay: null, enabled: true },
-  { key: 'confirmed_fraudulent_listing', delta: -25, cooldownSeconds: 0, maxPerDay: null, enabled: true },
+  { key: 'email_verified', delta: 20, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
+  { key: 'phone_verified', delta: 50, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
+  { key: 'identity_verified', delta: 100, cooldownSeconds: 0, maxPerDay: 1, enabled: true },
+  { key: 'successful_transaction', delta: 20, cooldownSeconds: 0, maxPerDay: 20, enabled: true },
+  { key: 'successful_delivery', delta: 20, cooldownSeconds: 0, maxPerDay: 30, enabled: true },
+  { key: 'verified_positive_review', delta: 10, cooldownSeconds: 0, maxPerDay: 20, enabled: true },
+  { key: 'approved_cause', delta: 30, cooldownSeconds: 0, maxPerDay: 5, enabled: true },
+  { key: 'approved_animal_adoption', delta: 50, cooldownSeconds: 0, maxPerDay: 5, enabled: true },
+  { key: 'warning_issued', delta: -100, cooldownSeconds: 0, maxPerDay: null, enabled: true },
+  { key: 'confirmed_fraudulent_listing', delta: -250, cooldownSeconds: 0, maxPerDay: null, enabled: true },
 ] as const;
 
 /** Trust Shield status bands, derived from score + verification, never set by hand. */
 export const TRUST_BANDS = [
   { key: 'restricted', minScore: 0, label: 'restricted' },
-  { key: 'new', minScore: 40, label: 'new' },
-  { key: 'established', minScore: 60, label: 'established' },
-  { key: 'trusted', minScore: 80, label: 'trusted' },
+  { key: 'new', minScore: 400, label: 'new' },
+  { key: 'established', minScore: 600, label: 'established' },
+  { key: 'trusted', minScore: 800, label: 'trusted' },
 ] as const;
 
 export const DEMO_CONTENT_RULES = {

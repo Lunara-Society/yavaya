@@ -71,22 +71,22 @@ describe('reputation rules', () => {
   it('matches the specified starting weights', () => {
     const byKey = Object.fromEntries(REPUTATION_RULE_DEFAULTS.map((rule) => [rule.key, rule.delta]));
     expect(byKey).toMatchObject({
-      email_verified: 2,
-      phone_verified: 5,
-      identity_verified: 10,
-      successful_transaction: 2,
-      successful_delivery: 2,
-      verified_positive_review: 1,
-      approved_cause: 3,
-      approved_animal_adoption: 5,
-      warning_issued: -10,
-      confirmed_fraudulent_listing: -25,
+      email_verified: 20,
+      phone_verified: 50,
+      identity_verified: 100,
+      successful_transaction: 20,
+      successful_delivery: 20,
+      verified_positive_review: 10,
+      approved_cause: 30,
+      approved_animal_adoption: 50,
+      warning_issued: -100,
+      confirmed_fraudulent_listing: -250,
     });
   });
 
-  it('starts every account at 50 of 100', () => {
-    expect(REPUTATION_RULES.initialScore).toBe(50);
-    expect(REPUTATION_RULES.maximumScore).toBe(100);
+  it("starts every account at 500 of 1000, the Bible's scale", () => {
+    expect(REPUTATION_RULES.initialScore).toBe(500);
+    expect(REPUTATION_RULES.maximumScore).toBe(1000);
   });
 });
 
