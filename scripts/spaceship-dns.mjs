@@ -76,7 +76,11 @@ async function api(method, body) {
 const norm = (s) => String(s ?? '').toLowerCase().replace(/\.$/, '');
 const nameOf = (r) => (r.name === '' || r.name == null ? '@' : r.name);
 const target = (r) => r.address ?? r.cname ?? r.aliasName ?? r.value ?? r.exchange ?? JSON.stringify(r);
-const same = (a, b) => a.type === b.type && norm(nameOf(a)) === norm(nameOf(b)) && norm(target(a)) === norm(target(b));
+// Spaceship accepts an apex ALIAS but lists it back as a CNAME, so the two
+// types compare equal; otherwise every re-run would delete and re-create it.
+const kind = (t) => (t === 'ALIAS' ? 'CNAME' : t);
+const same = (a, b) =>
+  kind(a.type) === kind(b.type) && norm(nameOf(a)) === norm(nameOf(b)) && norm(target(a)) === norm(target(b));
 
 async function zone() {
   return (await api('GET'))?.items ?? [];
