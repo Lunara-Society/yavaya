@@ -134,7 +134,7 @@ describe('authorization', () => {
     const result = await register(
       db(),
       {
-        email: 'Junoagattis@gmail.com',
+        email: 'yavayago@gmail.com',
         password: 'a-sufficiently-long-passphrase',
         displayName: 'Admin Applicant',
         locale: 'es',

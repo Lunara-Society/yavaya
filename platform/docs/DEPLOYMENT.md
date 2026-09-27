@@ -79,7 +79,7 @@ APP_URL=https://your-domain
 DATABASE_URL=postgres://…            # managed Postgres 16+, TLS enforced
 SESSION_SECRET=…                     # 48 random bytes
 SIGNAL_PEPPER=…                      # 48 random bytes, permanent
-PRIMARY_ADMIN_EMAIL=Junoagattis@gmail.com
+PRIMARY_ADMIN_EMAIL=yavayago@gmail.com
 PREVIEW_ACCESS_KEY=…                 # while the site is a private preview
 TRUSTED_PROXY_COUNT=1                # 1 for a platform edge alone; 2 behind a proxying CDN
 CLIENT_IP_HEADER=forwarded           # cf-connecting-ip only when Cloudflare proxies the traffic
@@ -383,10 +383,10 @@ nothing else needs pointing at it.
 
 ```sql
 INSERT INTO user_roles (user_id, role_key, scope)
-SELECT id, 'admin', 'global' FROM users WHERE email = 'junoagattis@gmail.com'
+SELECT id, 'admin', 'global' FROM users WHERE email = 'yavayago@gmail.com'
 ON CONFLICT DO NOTHING;
 UPDATE users SET status = 'active', trust_state = 'trusted'
-WHERE email = 'junoagattis@gmail.com';
+WHERE email = 'yavayago@gmail.com';
 ```
 
 ### The domain: yavaya.lat

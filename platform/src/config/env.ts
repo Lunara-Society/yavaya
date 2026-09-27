@@ -36,7 +36,7 @@ const databaseSchema = z.object({
  * administrator the seed grants the `admin` role to.
  */
 const operationalSchema = databaseSchema.extend({
-  PRIMARY_ADMIN_EMAIL: z.string().email().default('Junoagattis@gmail.com'),
+  PRIMARY_ADMIN_EMAIL: z.string().email().default('yavayago@gmail.com'),
 });
 
 const serverSchema = z.object({
@@ -84,7 +84,7 @@ const serverSchema = z.object({
   CLIENT_IP_HEADER: z.enum(['forwarded', 'cf-connecting-ip']).default('forwarded'),
 
   /** Bootstrap administrator. The role is granted server-side at migration/seed time. */
-  PRIMARY_ADMIN_EMAIL: z.string().email().default('Junoagattis@gmail.com'),
+  PRIMARY_ADMIN_EMAIL: z.string().email().default('yavayago@gmail.com'),
 
   /**
    * Private preview gate. When set, every route except the health check

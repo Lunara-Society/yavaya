@@ -14,7 +14,7 @@ export default async function setup(): Promise<void> {
       process.env.TEST_DATABASE_URL ?? 'postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_test',
     SESSION_SECRET: 'test-session-secret-value-that-is-long-enough-000',
     SIGNAL_PEPPER: 'test-signal-pepper-value-that-is-long-enough-0000',
-    PRIMARY_ADMIN_EMAIL: 'Junoagattis@gmail.com',
+    PRIMARY_ADMIN_EMAIL: 'yavayago@gmail.com',
   };
 
   execFileSync('npx', ['tsx', 'src/server/db/migrate.ts'], { env, stdio: 'inherit' });
