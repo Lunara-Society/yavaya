@@ -1,0 +1,19 @@
+node_modules
+.next
+.git
+.github
+coverage
+tests
+docs
+*.md
+!README.md
+
+# Never let a real secret into the build context.
+.env
+.env.local
+.env.*.local
+
+.DS_Store
+*.log
+.vscode
+.idea

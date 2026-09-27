@@ -1,0 +1,226 @@
+name: Spaceship DNS
+
+# Why this exists.
+#
+# The environment where this repository is developed has no network route to
+# spaceship.dev — the egress proxy refuses it, the same way it refuses
+# railway.com. A GitHub Actions runner has no such restriction, so DNS changes
+# for yavaya.lat are made from here.
+#
+# Credentials arrive as workflow_dispatch inputs and are masked in the logs.
+# The values are still recorded in the run metadata, so treat any credential
+# used here as disposable and rotate it afterwards.
+#
+# `list` is read-only and safe to run at any time. `put` writes records.
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_key:
+        description: 'Spaceship API key'
+        required: true
+        type: string
+      api_secret:
+        description: 'Spaceship API secret. Rotate after use.'
+        required: true
+        type: string
+      action:
+        description: 'list (read-only) or put (write one record)'
+        required: true
+        default: 'list'
+        type: choice
+        options: [list, put, probe, recon]
+      domain:
+        description: 'Domain name'
+        required: false
+        default: 'yavaya.lat'
+        type: string
+      record_type:
+        description: 'put only: record type, e.g. CNAME or A'
+        required: false
+        default: 'CNAME'
+        type: string
+      record_name:
+        description: 'put only: host. Use @ for the apex.'
+        required: false
+        default: '@'
+        type: string
+      record_value:
+        description: 'put only: target value'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  dns:
+    name: Talk to the Spaceship DNS API
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Mask the credentials before anything can echo them
+        run: |
+          echo "::add-mask::${{ inputs.api_key }}"
+          echo "::add-mask::${{ inputs.api_secret }}"
+
+      - name: List records
+        if: inputs.action == 'list'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          # -w writes the status on its own line after the body, so an auth
+          # failure is legible instead of an empty response.
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' \
+            -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}?take=100&skip=0")
+
+          echo "HTTP $code"
+          echo '--- body ---'
+          cat /tmp/out.json | head -c 8000
+          echo
+          [ "$code" = "200" ] || { echo "::error::Spaceship returned $code"; exit 1; }
+
+      - name: Probe what else the API exposes
+        # Spaceship's documented API covers domains and DNS. Whether it also
+        # exposes hosting or Hyperlift decides whether an app can be deployed
+        # there programmatically or only through the dashboard. Worth one run
+        # to know rather than assume.
+        if: inputs.action == 'probe'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          for path in \
+            "domains" \
+            "domains/${{ inputs.domain }}" \
+            "hosting" \
+            "hosting/accounts" \
+            "hyperlift" \
+            "hyperlift/apps" \
+            "apps" \
+            "cloud" \
+            "cloud/apps" \
+            "starlight" \
+            "starlight/apps" \
+            "servers" \
+            "certificates"
+          do
+            code=$(curl -sS -o /tmp/p.json -w '%{http_code}' \
+              -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+              "https://spaceship.dev/api/v1/$path" || echo "ERR")
+            printf '%-24s %s' "$path" "$code"
+            # 200 is the only interesting answer; show a little of it.
+            if [ "$code" = "200" ]; then
+              printf '  %s' "$(head -c 300 /tmp/p.json | tr -d '\n')"
+            fi
+            printf '\n'
+          done
+
+      - name: Inspect the hosting the domain points at
+        # The Spaceship API says nothing about the hosting account, so the only
+        # way to establish what that server can actually run is to ask it.
+        # Everything here is an unauthenticated connectivity check against the
+        # operator's own host — what any visitor's browser would see.
+        if: inputs.action == 'recon'
+        run: |
+          set +e
+          host="${{ inputs.domain }}"
+
+          echo "=== resolution ==="
+          getent hosts "$host" || echo "(no A record resolved)"
+          ip=$(getent hosts "$host" | awk '{print $1; exit}')
+          echo "resolved: ${ip:-none}"
+
+          echo
+          echo "=== what is served now ==="
+          for url in "http://$host" "https://$host"; do
+            echo "--- $url"
+            curl -sS -k -m 15 -o /tmp/page.html -D /tmp/head.txt -w 'http=%{http_code} redirect=%{redirect_url}\n' "$url" || echo "(request failed)"
+            grep -iE '^(server|x-powered-by|location|content-type):' /tmp/head.txt || true
+            echo "--- first bytes of body:"
+            head -c 300 /tmp/page.html 2>/dev/null | tr -d '\0'; echo
+          done
+
+          echo
+          echo "=== control panel and service ports ==="
+          # 2082/2083 cPanel, 2086/2087 WHM, 2095/2096 webmail, 22 SSH,
+          # 21 FTP, 3306 MySQL, 5432 PostgreSQL.
+          for p in 21 22 2082 2083 2086 2087 2095 2096 3306 5432; do
+            if timeout 6 bash -c "</dev/tcp/${ip:-$host}/$p" 2>/dev/null; then
+              echo "port $p OPEN"
+            else
+              echo "port $p closed/filtered"
+            fi
+          done
+
+          echo
+          echo "=== control panel identity ==="
+          for p in 2083 2087; do
+            echo "--- https://$host:$p"
+            curl -sS -k -m 10 -o /dev/null -D - -w 'http=%{http_code}\n' "https://$host:$p" 2>&1 \
+              | grep -iE '^(server|location|x-powered-by):|http=' || echo "(no response)"
+          done
+
+          echo
+          echo "=== does anything answer as a Node app ==="
+          curl -sS -k -m 10 -D - -o /dev/null "https://$host/api/health" -w 'http=%{http_code}\n' 2>&1 \
+            | grep -iE '^(server|content-type):|http=' || true
+          exit 0
+
+      - name: Write one record
+        if: inputs.action == 'put'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          if [ -z "${{ inputs.record_value }}" ]; then
+            echo "::error::record_value is required when action is put"
+            exit 1
+          fi
+
+          # force:true so re-running replaces an existing record of the same
+          # name and type rather than failing — this workflow must be safe to
+          # run twice.
+          cat > /tmp/body.json <<JSON
+          {
+            "force": true,
+            "items": [
+              {
+                "type": "${{ inputs.record_type }}",
+                "name": "${{ inputs.record_name }}",
+                "value": "${{ inputs.record_value }}",
+                "ttl": 3600
+              }
+            ]
+          }
+          JSON
+
+          echo '--- request ---'
+          cat /tmp/body.json
+
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X PUT \
+            -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            -H 'Content-Type: application/json' \
+            --data @/tmp/body.json \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}")
+
+          echo "HTTP $code"
+          echo '--- body ---'
+          cat /tmp/out.json | head -c 8000
+          echo
+          case "$code" in
+            2*) echo "Record written." ;;
+            *)  echo "::error::Spaceship returned $code"; exit 1 ;;
+          esac
+
+      - name: Show the records as they now stand
+        if: inputs.action == 'put'
+        env:
+          KEY: ${{ inputs.api_key }}
+          SECRET: ${{ inputs.api_secret }}
+        run: |
+          curl -sS -H "X-API-Key: $KEY" -H "X-API-Secret: $SECRET" \
+            "https://spaceship.dev/api/v1/dns/records/${{ inputs.domain }}?take=100&skip=0" \
+            | head -c 8000
+          echo

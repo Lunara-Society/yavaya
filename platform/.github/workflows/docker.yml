@@ -1,0 +1,122 @@
+name: Container image
+
+# The Dockerfile is the production build path on any container host, but it
+# cannot be built in the environment where it is written — there is no Docker
+# daemon there. Building it here means a broken Dockerfile fails in CI rather
+# than on a platform's first deploy, which is the worst place to find out.
+on:
+  push:
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - 'scripts/**'
+      - '.github/workflows/docker.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and smoke-test the image
+    runs-on: ubuntu-latest
+
+    services:
+      # The image is exercised against a real database, because the health
+      # endpoint deliberately reports unhealthy when Postgres is unreachable —
+      # so "it starts" is not the same as "it works".
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: yavaya
+          POSTGRES_PASSWORD: yavaya
+          POSTGRES_DB: yavaya
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: yavaya:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run the release scripts from inside the image
+        # This is exactly what the platform's pre-deploy step runs. If the
+        # bundled scripts are missing from the image, or cannot reach a
+        # database, it fails here.
+        run: |
+          docker run --rm --network host \
+            -e DATABASE_URL="postgres://yavaya:yavaya@127.0.0.1:5432/yavaya" \
+            -e SESSION_SECRET="ci-image-check-secret-long-enough-0000000000" \
+            -e SIGNAL_PEPPER="ci-image-check-pepper-long-enough-0000000000" \
+            -e NODE_ENV=production -e APP_ENV=production \
+            yavaya:ci node dist/scripts/migrate.cjs
+          docker run --rm --network host \
+            -e DATABASE_URL="postgres://yavaya:yavaya@127.0.0.1:5432/yavaya" \
+            -e SESSION_SECRET="ci-image-check-secret-long-enough-0000000000" \
+            -e SIGNAL_PEPPER="ci-image-check-pepper-long-enough-0000000000" \
+            -e NODE_ENV=production -e APP_ENV=production \
+            yavaya:ci node dist/scripts/seed.cjs
+
+      - name: Start the container and verify it serves
+        run: |
+          docker run -d --name yavaya --network host \
+            -e DATABASE_URL="postgres://yavaya:yavaya@127.0.0.1:5432/yavaya" \
+            -e SESSION_SECRET="ci-image-check-secret-long-enough-0000000000" \
+            -e SIGNAL_PEPPER="ci-image-check-pepper-long-enough-0000000000" \
+            -e NODE_ENV=production -e APP_ENV=production \
+            -e PORT=3000 \
+            yavaya:ci
+
+          echo "waiting for the container to become healthy…"
+          for i in $(seq 1 30); do
+            body=$(curl -fsS http://127.0.0.1:3000/api/health 2>/dev/null || true)
+            if [ "$body" = '{"status":"ok"}' ]; then
+              echo "health: $body"
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              echo "container never became healthy. Logs:"
+              docker logs yavaya
+              exit 1
+            fi
+            sleep 2
+          done
+
+          echo "--- pages render ---"
+          for path in / /districts /status /login /register; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || { docker logs yavaya; exit 1; }
+          done
+
+          echo "--- signed-out members are sent to sign in, not shown the page ---"
+          for path in /verify /account; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000$path")
+            echo "$path -> $code"
+            case "$code" in
+              30*) ;;
+              *) echo "expected a redirect to /login, got $code"; docker logs yavaya; exit 1 ;;
+            esac
+          done
+
+          echo "--- security headers present ---"
+          curl -sI http://127.0.0.1:3000/ | grep -iq "content-security-policy" \
+            || { echo "CSP header missing"; exit 1; }
+          echo "CSP present"
+
+          docker rm -f yavaya

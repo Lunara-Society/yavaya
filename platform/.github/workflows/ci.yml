@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: []
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+
+    services:
+      # The integration tests are the point: they exercise the append-only
+      # triggers, the ledger's exactly-once behaviour and the audit hash chain,
+      # none of which can be verified without a real Postgres.
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: yavaya
+          POSTGRES_PASSWORD: yavaya
+          POSTGRES_DB: yavaya_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+        env:
+          TEST_DATABASE_URL: postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_test
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgres://build:build@127.0.0.1:5432/build
+          SESSION_SECRET: build-time-placeholder-value-not-used-at-runtime
+          SIGNAL_PEPPER: build-time-placeholder-value-not-used-at-runtime
+
+      - name: Verify the release scripts run against a fresh database
+        # The migrate and seed bundles are what the production release command
+        # executes. Running them against a genuinely empty database catches a
+        # broken release here rather than mid-deploy on Fly.
+        run: |
+          PGPASSWORD=yavaya createdb -h 127.0.0.1 -U yavaya yavaya_release
+          node dist/scripts/migrate.cjs
+          node dist/scripts/seed.cjs
+          node dist/scripts/seed.cjs   # must be idempotent
+        env:
+          DATABASE_URL: postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_release
+          SESSION_SECRET: ci-check-secret-value-that-is-long-enough-000000
+          SIGNAL_PEPPER: ci-check-pepper-value-that-is-long-enough-000000
+          NODE_ENV: production
+          APP_ENV: production
