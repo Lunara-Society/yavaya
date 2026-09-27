@@ -151,6 +151,7 @@ export function SiteShell({
             <span>{c.ui.footer.copy}</span>
             <span>{c.ui.footer.honest}</span>
           </div>
+          <p className="foot-note">{c.ui.footer.imagery}</p>
         </div>
       </footer>
 

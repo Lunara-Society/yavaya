@@ -152,7 +152,7 @@ export function MercaditoBody({ c }: { c: SiteContent }) {
         title={p.title}
         lead={p.lead}
         tinted
-        art={<DistrictScene id="mercadito" />}
+        art={<DistrictScene id="mercadito" priority />}
         badge={
           <>
             <DistrictStatus c={c} id="mercadito" />{' '}
@@ -219,7 +219,7 @@ export function YavayaGoBody({ c }: { c: SiteContent }) {
   const p = c.pages.yavayago;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="yavayago" />} art={<DistrictScene id="yavayago" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="yavayago" />} art={<DistrictScene id="yavayago" priority />} />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.routeHead} />
@@ -267,7 +267,7 @@ export function WorkBody({ c }: { c: SiteContent }) {
   const p = c.pages.work;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="work" />} art={<DistrictScene id="work" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="work" />} art={<DistrictScene id="work" priority />} />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.diffHead} />
@@ -323,7 +323,7 @@ export function CommunityBody({ c }: { c: SiteContent }) {
   const p = c.pages.community;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="community" />} art={<DistrictScene id="community" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="community" />} art={<DistrictScene id="community" priority />} />
       <section className="section">
         <div className="wrap">
           <div className="calm">
@@ -364,7 +364,7 @@ export function ImpactBody({ c }: { c: SiteContent }) {
   const p = c.pages.impact;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="impact" />} art={<DistrictScene id="impact" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="impact" />} art={<DistrictScene id="impact" priority />} />
       <section className="section">
         <div className="wrap">
           <div className="promise">
@@ -410,7 +410,7 @@ export function AnimalsBody({ c }: { c: SiteContent }) {
   const p = c.pages.animals;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="animals" />} art={<DistrictScene id="animals" />} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="animals" />} art={<DistrictScene id="animals" priority />} />
       <section className="section">
         <div className="wrap">
           <div className="organic">

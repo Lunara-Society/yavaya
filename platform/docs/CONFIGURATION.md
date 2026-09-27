@@ -198,6 +198,22 @@ stayed.
 
 ---
 
+## Imagery
+
+The photographs in `public/art/` (home hero and the six district scenes) are
+illustrative scenes generated for Yavaya with an image model through the
+owner's ElevenLabs account, then re-encoded here to WebP at three widths with
+no metadata. The prompts excluded people, text and logos, so nothing in them
+can be taken for a real member, seller, listing or brand, and the site footer
+says the photographs are illustrative. Replacing any of them with licensed or
+commissioned photography is a file swap: keep the name and widths
+(`<name>-<width>.webp`).
+
+The guilloché seal and ornamental rules are drawn in code
+(`src/ui/site/art.tsx`).
+
+---
+
 ## Mercadito — rules and open decisions
 
 Live values are in `system_settings` (seeded from `MERCADITO_RULES` in

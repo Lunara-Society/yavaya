@@ -34,6 +34,7 @@ export const siteEn: SiteContent = {
     footer: {
       about: 'The digital infrastructure of Central America. One account. One reputation. One ecosystem.',
       copy: '© 2026 Yavaya',
+      imagery: 'The photographs on this site are illustrative scenes made for Yavaya: they show no real members, sellers or listings.',
       honest: 'No invented numbers. No fake users. No fake reviews.',
       contact: 'Message us on WhatsApp',
       whatsappHref: 'https://wa.me/50558365522',

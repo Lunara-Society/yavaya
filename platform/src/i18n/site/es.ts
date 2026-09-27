@@ -46,6 +46,7 @@ export const siteEs = {
     footer: {
       about: 'La infraestructura digital de Centroamérica. Una cuenta. Una reputación. Un ecosistema.',
       copy: '© 2026 Yavaya',
+      imagery: 'Las fotografías del sitio son escenas ilustrativas creadas para Yavaya: no muestran miembros, vendedores ni publicaciones reales.',
       honest: 'Sin cifras inventadas. Sin usuarios falsos. Sin reseñas falsas.',
       contact: 'Escríbenos por WhatsApp',
       whatsappHref: 'https://wa.me/50558365522',

@@ -62,7 +62,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="mercadito" tone="mercadito">
       <section className="mk-head">
         <div className="mk-head-art" aria-hidden="true">
-          <DistrictScene id="mercadito" />
+          <DistrictScene id="mercadito" priority />
         </div>
         <div className="wrap">
           <div className="btn-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
