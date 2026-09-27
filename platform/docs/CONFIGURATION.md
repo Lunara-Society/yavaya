@@ -333,10 +333,11 @@ waiting.
   sold (weapons, drugs, medicines, live animals, counterfeit goods, and so on),
   and the list differs by country. Moderators can remove any listing through
   reports today; the list itself is an owner and legal decision.
-- **Legal entity before districts open.** The approved Terms promise to name
-  the responsible legal entity, the applicable law and the dispute process
-  "before the districts open". Mercadito is built; removing the preview
-  curtain opens it, so that promise falls due at the same moment.
+- **Legal entity.** The Terms first promised to name the responsible legal
+  entity, the applicable law and the dispute process "before the districts
+  open". The owner opened Mercadito before those were settled, so the Terms
+  now say they will be published as soon as they are defined. They are still
+  owed.
 - **Pharmacy pickup in YavayaGo.** Legal only in some jurisdictions and often
   only for specific product classes.
 - **Data protection.** Retention periods, subject-access rights and breach

@@ -10,7 +10,7 @@
 //
 // Fuentes: YAVAYA_MASTER_BIBLE.md (capítulos 1–5) y la plataforma YavayaGo
 // (registro de capacidades, hoja de ruta, sistema de diseño). Nada aquí es una
-// cifra inventada: Yavaya todavía no ha abierto, y el sitio lo dice.
+// cifra inventada: si no hay un número real que mostrar, el sitio lo dice.
 
 export const siteEs = {
   ui: {
@@ -525,7 +525,7 @@ export const siteEs = {
         { name: 'Pro', tokens: '25' },
         { name: 'Máximo', tokens: '50', note: 'Tope por compra en el lanzamiento.' },
       ],
-      packagesNote: '**La compra de tokens todavía no está disponible.** No hay un proveedor de pagos conectado, así que los paquetes se muestran solo como información y los precios se anunciarán antes de abrir.',
+      packagesNote: '**La compra de tokens todavía no está disponible.** No hay un proveedor de pagos conectado, así que los paquetes se muestran solo como información y los precios se anunciarán antes de abrir la compra.',
       useHead: { eyebrow: 'Para qué sirven', title: 'Acciones' },
       useTable: {
         head: ['Acción', 'Costo'],
@@ -608,7 +608,7 @@ export const siteEs = {
         { icon: 'heart', title: 'Adopciones exitosas', text: 'Con sus historias.' },
         { icon: 'work', title: 'Proyectos exitosos', text: 'Completados en Work.' },
       ],
-      nowNote: '**Hoy no hay cifras que mostrar**, porque Yavaya todavía no ha abierto. Cuando abra, esta página mostrará números reales. Nunca estimaciones, nunca números de relleno.',
+      nowNote: '**Todavía no hay cifras que mostrar.** Mercadito acaba de abrir y esta página aún no está conectada a los datos reales. Cuando lo esté, mostrará números reales. Nunca estimaciones, nunca números de relleno.',
       demoHead: { eyebrow: 'Contenido de demostración', title: 'Cómo manejamos los ejemplos' },
       demo: [
         { title: 'Fase 1', text: 'Se muestra contenido de demostración, **claramente marcado DEMO**.' },
@@ -650,8 +650,8 @@ export const siteEs = {
         },
         {
           title: 'Fase 1 · El núcleo de Yavaya',
-          state: 'planned',
-          text: 'Antes de abrir los distritos: almacenamiento de fotos y los flujos de moderación.',
+          state: 'dev',
+          text: 'Mercadito ya está abierto, con fotos, reportes y moderación. Siguen Comunidad, Animales e Impacto.',
           items: ['Mercadito', 'Comunidad', 'Animales', 'Impacto', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
@@ -729,8 +729,8 @@ export const siteEs = {
       lead: 'Si tu pregunta no está aquí, probablemente todavía no tiene respuesta: Yavaya está en construcción.',
       faq: [
         { q: '¿Qué es Yavaya?', a: 'Un ecosistema digital para Centroamérica: comprar y vender, pedir a domicilio, encontrar trabajo, apoyar causas, adoptar animales y acompañarse en comunidad, todo con una sola cuenta y una sola reputación.' },
-        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Tu cuenta te sirve hoy para tu identidad y tu reputación; los distritos abrirán por fases.' },
-        { q: '¿Cuándo abre Yavaya?', a: 'No damos una fecha que no podamos cumplir. La hoja de ruta muestra el orden en que se abrirán los distritos.' },
+        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes comprar y vender en Mercadito; los demás distritos abrirán por fases.' },
+        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta: Mercadito es el primer distrito. No damos fechas que no podamos cumplir para los demás; la hoja de ruta muestra el orden en que se abrirán.' },
         { q: '¿Cuánto cuesta?', a: ['Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones es **siempre gratis**.', 'Lo que se paga es opcional: suscripciones de Work para profesionales y opciones de visibilidad. Hoy no se puede pagar nada.'] },
         { q: '¿Los tokens son criptomoneda?', a: 'No. Son créditos para participar en la plataforma: publicar, destacar, aparecer. No son una inversión, no se intercambian y no hay mercado de tokens.' },
         { q: '¿Tengo que usar tokens?', a: 'Nunca. El efectivo es siempre la opción por defecto y los tokens son siempre opcionales.' },
@@ -751,7 +751,7 @@ export const siteEs = {
       sections: [
         {
           title: '1. Qué es Yavaya hoy',
-          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla y tener tu identidad y tu reputación. Los distritos abrirán por fases. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
+          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla, tener tu identidad y tu reputación, y comprar y vender en Mercadito. Los demás distritos abrirán por fases. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
         },
         {
           title: '2. Tu cuenta',
@@ -806,7 +806,7 @@ export const siteEs = {
         },
         {
           title: '11. Lo que falta definir',
-          text: 'La entidad legal responsable de Yavaya, la ley aplicable y la forma de resolver disputas todavía no están definidas. Las publicaremos aquí antes de que los distritos abran.',
+          text: 'La entidad legal responsable de Yavaya, la ley aplicable y la forma de resolver disputas todavía no están definidas. Las publicaremos aquí en cuanto estén definidas.',
         },
         {
           title: '12. Contacto',

@@ -100,7 +100,9 @@ const serverSchema = z.object({
    * Read directly from `process.env` in middleware, which runs in the edge
    * runtime and cannot import this module.
    */
-  PREVIEW_ACCESS_KEY: z.string().min(16).optional(),
+  // An empty value means "off", the same as unset: a hosting dashboard that
+  // cannot delete a variable can still blank it without breaking every page.
+  PREVIEW_ACCESS_KEY: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(16).optional()),
 
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.

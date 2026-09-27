@@ -513,7 +513,7 @@ export const siteEn: SiteContent = {
         { name: 'Pro', tokens: '25' },
         { name: 'Max', tokens: '50', note: 'Per-purchase cap at launch.' },
       ],
-      packagesNote: '**Buying tokens is not available yet.** No payment provider is connected, so packages are shown for information only, and prices will be announced before launch.',
+      packagesNote: '**Buying tokens is not available yet.** No payment provider is connected, so packages are shown for information only, and prices will be announced before buying opens.',
       useHead: { eyebrow: 'What they are for', title: 'Actions' },
       useTable: {
         head: ['Action', 'Cost'],
@@ -596,7 +596,7 @@ export const siteEn: SiteContent = {
         { icon: 'heart', title: 'Successful adoptions', text: 'With their stories.' },
         { icon: 'work', title: 'Successful projects', text: 'Completed on Work.' },
       ],
-      nowNote: '**There are no numbers to show today**, because Yavaya has not opened yet. When it opens, this page will show real numbers. Never estimates, never filler.',
+      nowNote: '**There are no numbers to show yet.** Mercadito has just opened and this page is not connected to the real data yet. When it is, it will show real numbers. Never estimates, never filler.',
       demoHead: { eyebrow: 'Demo content', title: 'How we handle examples' },
       demo: [
         { title: 'Phase 1', text: 'Demo content is shown, **clearly marked DEMO**.' },
@@ -638,8 +638,8 @@ export const siteEn: SiteContent = {
         },
         {
           title: 'Phase 1 · Core Yavaya',
-          state: 'planned',
-          text: 'Before the districts open: photo storage and the moderation workflows.',
+          state: 'dev',
+          text: 'Mercadito is open, with photos, reports and moderation. Community, Animals and Impact come next.',
           items: ['Mercadito', 'Community', 'Animals', 'Impact', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
@@ -717,8 +717,8 @@ export const siteEn: SiteContent = {
       lead: 'If your question is not here, it probably has no answer yet: Yavaya is under construction.',
       faq: [
         { q: 'What is Yavaya?', a: 'A digital ecosystem for Central America: buying and selling, ordering delivery, finding work, supporting causes, adopting animals and being there for each other in community — all with one account and one reputation.' },
-        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. Today your account holds your identity and reputation; districts open in phases.' },
-        { q: 'When does Yavaya open?', a: 'We do not give a date we cannot keep. The roadmap shows the order in which districts will open.' },
+        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can already buy and sell on Mercadito; the other districts open in phases.' },
+        { q: 'When does Yavaya open?', a: 'It is open: Mercadito is the first district. We do not give dates we cannot keep for the others; the roadmap shows the order in which they will open.' },
         { q: 'What does it cost?', a: ['Signing up, creating an account, viewing listings, reading content and receiving donations are **always free**.', 'What is paid is optional: Work subscriptions for professionals and visibility options. Nothing can be paid for today.'] },
         { q: 'Are tokens cryptocurrency?', a: 'No. They are credits for taking part in the platform: posting, featuring, being seen. They are not an investment, cannot be traded, and there is no token market.' },
         { q: 'Do I have to use tokens?', a: 'Never. Cash is always the default and tokens are always optional.' },
@@ -739,7 +739,7 @@ export const siteEn: SiteContent = {
       sections: [
         {
           title: '1. What Yavaya is today',
-          text: 'Yavaya is opening in stages. Today you can create your account, verify it, and hold your identity and reputation. Districts open in phases. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
+          text: 'Yavaya is opening in stages. Today you can create your account, verify it, hold your identity and reputation, and buy and sell on Mercadito. The other districts open in phases. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
         },
         {
           title: '2. Your account',
@@ -794,7 +794,7 @@ export const siteEn: SiteContent = {
         },
         {
           title: '11. Still to be defined',
-          text: 'The legal entity responsible for Yavaya, the governing law and how disputes are resolved are not defined yet. We will publish them here before the districts open.',
+          text: 'The legal entity responsible for Yavaya, the governing law and how disputes are resolved are not defined yet. We will publish them here as soon as they are defined.',
         },
         {
           title: '12. Contact',
