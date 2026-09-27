@@ -75,6 +75,7 @@ export const en: Dictionary = {
   'auth.password': 'Password',
   'auth.display_name': 'Display name',
   'auth.accept_terms': 'I accept the Yavaya terms of use.',
+  'auth.read_terms': 'Read the terms of use',
   'auth.submit_register': 'Create account',
   'auth.submit_login': 'Sign in',
   'auth.sign_out': 'Sign out',

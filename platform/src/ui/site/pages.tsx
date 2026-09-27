@@ -907,6 +907,37 @@ export function HelpBody({ c }: { c: SiteContent }) {
   );
 }
 
+export function TermsBody({ c }: { c: SiteContent }) {
+  const p = c.pages.terms;
+  return (
+    <>
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <section className="section">
+        <div className="wrap">
+          <div className="prose">
+            <p className="muted">{p.version}</p>
+            {p.sections.map((s) => (
+              <div key={s.title}>
+                <h2>{s.title}</h2>
+                <Paras text={s.text} />
+                {'list' in s && s.list ? (
+                  <ul>
+                    {s.list.map((i) => (
+                      <li key={i}>
+                        <Md text={i} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+
 export function PrivacyBody({ c }: { c: SiteContent }) {
   const p = c.pages.privacy;
   return (

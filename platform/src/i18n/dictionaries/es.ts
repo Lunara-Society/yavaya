@@ -85,6 +85,7 @@ export const es = {
   'auth.password': 'Contraseña',
   'auth.display_name': 'Nombre para mostrar',
   'auth.accept_terms': 'Acepto los términos de uso de Yavaya.',
+  'auth.read_terms': 'Leer los términos de uso',
   'auth.submit_register': 'Crear cuenta',
   'auth.submit_login': 'Entrar',
   'auth.sign_out': 'Salir',

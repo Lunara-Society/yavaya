@@ -23,6 +23,7 @@ export default async function RegisterPage() {
             password: t('auth.password'),
             displayName: t('auth.display_name'),
             acceptTerms: t('auth.accept_terms'),
+            readTerms: t('auth.read_terms'),
             submit: t('auth.submit_register'),
             yayIdExplained: t('auth.yay_id_explained'),
             registeredTitle: t('auth.registered.title'),

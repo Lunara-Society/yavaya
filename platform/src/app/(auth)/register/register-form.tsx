@@ -20,6 +20,7 @@ export function RegisterForm({
     password: string;
     displayName: string;
     acceptTerms: string;
+    readTerms: string;
     submit: string;
     yayIdExplained: string;
     registeredTitle: string;
@@ -86,6 +87,12 @@ export function RegisterForm({
         <input type="checkbox" name="acceptedTerms" required className="size-5 shrink-0" />
         <span>{labels.acceptTerms}</span>
       </label>
+      {/* Outside the label, so following the link does not tick the box. */}
+      <p className="-mt-2 pl-8 text-sm">
+        <a href="/terms" target="_blank" rel="noopener" className="underline">
+          {labels.readTerms}
+        </a>
+      </p>
 
       {state.status === 'error' ? (
         <p

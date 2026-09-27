@@ -65,6 +65,7 @@ export const siteEn: SiteContent = {
     about: 'About',
     help: 'Help',
     privacy: 'Privacy',
+    terms: 'Terms',
   },
 
   districts: {
@@ -728,6 +729,78 @@ export const siteEn: SiteContent = {
       ],
     },
 
+    terms: {
+      eyebrow: 'Terms of use',
+      title: 'The rules of Yavaya',
+      description: 'The Yavaya terms of use: your account, how we treat each other, reputation, tokens, moderation, and what Yavaya does not do yet.',
+      lead: 'Yavaya works because people trust people. These rules exist to protect that trust. They are written to be understood.',
+      version: 'Version of 27 September 2026.',
+      sections: [
+        {
+          title: '1. What Yavaya is today',
+          text: 'Yavaya is opening in stages. Today you can create your account, verify it, and hold your identity and reputation. Districts open in phases. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
+        },
+        {
+          title: '2. Your account',
+          text: 'By creating an account you agree that:',
+          list: [
+            '**One person, one account.** You may not hold several accounts or create accounts for other people.',
+            'The details you give are **true**, and you do not pretend to be anyone else.',
+            'You look after your password. What is done with your account is your responsibility.',
+            'Your **YAY ID** is permanent and cannot be transferred.',
+            'New accounts go through a period of closer monitoring before reaching standard status.',
+          ],
+        },
+        {
+          title: '3. How we treat each other',
+          text: 'Not allowed on Yavaya:',
+          list: [
+            'Harassment, abuse, threats or extremism.',
+            'Scams, fake listings, fake causes or misleading prices.',
+            'Images or content taken from other people.',
+            'Spam or mass posting.',
+            'Manipulating reputation or tokens: duplicate accounts, fake reviews, false reports.',
+            'Presenting a vulnerable person’s need as entertainment.',
+          ],
+        },
+        {
+          title: '4. Reputation and verification',
+          text: 'Reputation is earned through real, confirmed activity, and it works across every district. Reporting fraud that moderation confirms is recognised. Reputation can go down for confirmed fraud, warnings and disputes. Verification works in levels; basic verification is always free.',
+        },
+        {
+          title: '5. Tokens',
+          text: 'Yavaya Tokens are credits for taking part in the platform. **They are not money, cryptocurrency or an investment**, they earn nothing, and they cannot be sold or traded outside Yavaya. Free sources have limits. Cash is always the default: nobody is required to use tokens. They cannot be bought today.',
+        },
+        {
+          title: '6. Moderation',
+          text: 'We may limit, suspend or remove an account, or take down content, when these rules are broken or other people are at risk. No automatic signal on its own is enough to block an account: unclear cases are reviewed by a person. Moderation is visible, and we will publish real numbers for what is removed.',
+        },
+        {
+          title: '7. Dealings between people',
+          text: 'When districts open, sales, services, deliveries and donations will be agreements between the people taking part. **Yavaya is not a party to them and today holds nobody’s money.** Until a real payment protection system exists, Yavaya does not guarantee any transaction, and will never say otherwise.',
+        },
+        {
+          title: '8. What is free and what is not',
+          text: 'Signing up, creating an account, viewing listings, reading content and receiving donations are always free. Anything paid will be announced with its price before it is charged, and nothing can be paid for today.',
+        },
+        {
+          title: '9. Privacy',
+          text: 'What we keep and why is on the Privacy page.',
+        },
+        {
+          title: '10. Changes',
+          text: 'If these rules change, we will announce it on Yavaya before the change applies, with the date of the new version.',
+        },
+        {
+          title: '11. Still to be defined',
+          text: 'The legal entity responsible for Yavaya, the governing law and how disputes are resolved are not defined yet. We will publish them here before the districts open.',
+        },
+        {
+          title: '12. Contact',
+          text: 'For any question about these rules, message us on WhatsApp at +505 5836 5522.',
+        },
+      ],
+    },
     privacy: {
       eyebrow: 'Privacy',
       title: 'What data we keep, and why',

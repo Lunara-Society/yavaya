@@ -34,6 +34,7 @@ export const PAGE_PATHS: Record<PageId, string> = {
   about: '/about',
   help: '/help',
   privacy: '/privacy',
+  terms: '/terms',
 };
 
 export type SiteState = keyof SiteContent['ui']['states'];
