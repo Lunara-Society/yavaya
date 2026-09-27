@@ -326,10 +326,16 @@ on exactly the connections this product is built for.
   would run `next start`, which does not work with `output: standalone` — the
   output this repository produces everywhere except Vercel. The Dockerfile is
   the tested path.
-- **Pre-deploy:** `node dist/scripts/migrate.cjs && node dist/scripts/seed.cjs`.
-  Railway runs this before new containers take traffic, which is exactly the
-  release-step semantics migrations need — never on boot, where two starting
-  containers could race.
+- **Pre-deploy:** `node dist/scripts/release.cjs`, which migrates and then
+  seeds. Railway runs this before new containers take traffic, which is
+  exactly the release-step semantics migrations need — never on boot, where
+  two starting containers could race. It is one script because Railway runs
+  the pre-deploy command **without a shell**: the earlier
+  `migrate.cjs && seed.cjs` passed `&& …` to the migration as ignored
+  arguments, so the seed never ran and every registration failed on a missing
+  `member` role while the health check stayed green.
+- **Config as code:** `platform/railway.toml` holds the build and deploy
+  settings; the service's root directory is `/platform`.
 - **Healthcheck:** `/api/health`, 120s timeout. It returns 200 only when the
   database answers, so a container that cannot reach Postgres never takes
   traffic. The path is exempt from the preview gate for this reason.
@@ -438,7 +444,7 @@ pre-deploy migration is the same code path verified against an empty database
 
 **Render** — connect the repository; it detects the Dockerfile. Add a managed
 Postgres, set the environment variables, and configure the pre-deploy command
-as `node dist/scripts/migrate.cjs && node dist/scripts/seed.cjs`. Not
+as `node dist/scripts/release.cjs`. Not
 `npm run db:migrate`: that entry point is TypeScript, and the production image
 contains neither TypeScript nor `tsx`.
 

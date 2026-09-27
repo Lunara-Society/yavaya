@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { copyFileSync } from 'node:fs';
 
 /**
  * Bundles the migration and seed entry points into self-contained CommonJS
@@ -48,3 +49,7 @@ await build({
 
 // eslint-disable-next-line no-console
 console.log('release scripts bundled to dist/scripts');
+
+// The release step that runs both of the above in order. Plain CommonJS with
+// no dependencies, so it is copied rather than bundled.
+copyFileSync('scripts/release.cjs', 'dist/scripts/release.cjs');
