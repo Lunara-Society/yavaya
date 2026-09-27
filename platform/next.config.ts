@@ -22,6 +22,36 @@ const securityHeaders = [
   },
 ];
 
+/*
+ * Addresses from the earlier static website. Pages there had Spanish slugs
+ * (and flat .html files before that); every page now has one English-slug
+ * address and the language is a preference. Old links land on the same page.
+ */
+const LEGACY_PATHS: Record<string, string> = {
+  distritos: '/districts',
+  comunidad: '/community',
+  impacto: '/impact',
+  animales: '/animals',
+  confianza: '/trust',
+  reputacion: '/reputation',
+  precios: '/pricing',
+  transparencia: '/transparency',
+  estado: '/status',
+  'hoja-de-ruta': '/roadmap',
+  nosotros: '/about',
+  ayuda: '/help',
+  privacidad: '/privacy',
+  'index.html': '/',
+  'mercadito.html': '/mercadito',
+  'yavayago.html': '/yavayago',
+  'work.html': '/work',
+  'church.html': '/community',
+  'animals.html': '/animals',
+  'ayuda.html': '/help',
+  'tokens.html': '/tokens',
+  'admin.html': '/',
+};
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -43,6 +73,13 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     // Remote image hosts are a configuration point — see docs/CONFIGURATION.md.
     remotePatterns: [],
+  },
+  async redirects() {
+    return Object.entries(LEGACY_PATHS).map(([from, to]) => ({
+      source: `/${from}{/}?`,
+      destination: to,
+      permanent: true,
+    }));
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];

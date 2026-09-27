@@ -3,26 +3,28 @@ import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.APP_URL ?? 'https://yavaya.lat'),
   title: {
-    default: 'Yavaya',
+    default: 'Yavaya — El hogar digital de Centroamérica',
     template: '%s · Yavaya',
   },
   description:
-    'Yavaya — one identity, one reputation, multiple districts. Digital infrastructure for Central America.',
+    'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
+  icons: { icon: '/favicon.svg' },
   applicationName: 'Yavaya',
   formatDetection: { telephone: false },
 };
 
+/*
+ * Every visitor gets the desktop layout, phones included: the owner's
+ * decision. A fixed layout width makes a phone render the full desktop page
+ * scaled to fit. Zoom stays enabled — pinch-to-zoom is how small text is read.
+ * To return to a phone layout, use width 'device-width' with initialScale 1;
+ * the stylesheets still carry the mobile rules.
+ */
 export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  // Never disable zoom: pinch-to-zoom is an accessibility feature, not a
-  // layout inconvenience.
-  maximumScale: 5,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#12141a' },
-  ],
+  width: '1200',
+  themeColor: '#081120',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

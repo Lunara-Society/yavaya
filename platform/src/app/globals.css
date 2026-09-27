@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './site.css';
 
 /*
  * Yavaya design system.
@@ -16,8 +17,9 @@
 @theme {
   /* Type. One family, wide weight range, system fallbacks that actually exist
      on low-end Android — the primary device across Central America. */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+  --font-sans: 'Jakarta', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
 
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
@@ -55,69 +57,52 @@
 /*
  * Surface tokens.
  *
- * Defined for light on :root, redefined for dark. Components reference the
- * token, never a raw colour, so a district or a theme can be swapped without
- * touching component code.
+ * Components reference the token, never a raw colour, so a district or a theme
+ * can be swapped without touching component code.
+ *
+ * Yavaya is navy, gold and ivory (Master Bible, ch. 1 and 5). Navy is the
+ * default: a member who has not chosen a theme gets the brand, not their
+ * device's setting. Light (ivory) applies only when chosen explicitly.
  */
 :root {
-  --surface-base: oklch(0.99 0.003 250);
-  --surface-raised: oklch(1 0 0);
-  --surface-sunken: oklch(0.96 0.006 250);
-  --surface-border: oklch(0.9 0.008 250);
-  --surface-border-strong: oklch(0.82 0.012 250);
+  --surface-base: #081120;
+  --surface-raised: #0e1a2e;
+  --surface-sunken: #050b16;
+  --surface-border: rgba(248, 246, 241, 0.1);
+  --surface-border-strong: rgba(248, 246, 241, 0.2);
 
-  --text-primary: oklch(0.24 0.02 255);
-  --text-secondary: oklch(0.47 0.015 255);
-  --text-muted: oklch(0.6 0.012 255);
-  --text-on-accent: oklch(0.99 0 0);
+  --text-primary: #f8f6f1;
+  --text-secondary: rgba(248, 246, 241, 0.76);
+  --text-muted: rgba(248, 246, 241, 0.58);
+  --text-on-accent: #081120;
 
   /* District accent. Overridden per district; this is the platform default. */
-  --accent: var(--color-yavaya-600);
-  --accent-soft: var(--color-yavaya-50);
-  --accent-strong: var(--color-yavaya-800);
-  --accent-contrast-text: oklch(0.99 0 0);
-
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --surface-base: oklch(0.17 0.012 260);
-    --surface-raised: oklch(0.21 0.014 260);
-    --surface-sunken: oklch(0.14 0.01 260);
-    --surface-border: oklch(0.3 0.015 260);
-    --surface-border-strong: oklch(0.4 0.02 260);
-
-    --text-primary: oklch(0.96 0.005 250);
-    --text-secondary: oklch(0.78 0.01 250);
-    --text-muted: oklch(0.63 0.012 250);
-
-    --accent: var(--color-yavaya-400);
-    --accent-soft: oklch(0.26 0.05 250);
-    --accent-strong: var(--color-yavaya-300);
-    --accent-contrast-text: oklch(0.15 0.02 255);
-
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme='dark'] {
-  --surface-base: oklch(0.17 0.012 260);
-  --surface-raised: oklch(0.21 0.014 260);
-  --surface-sunken: oklch(0.14 0.01 260);
-  --surface-border: oklch(0.3 0.015 260);
-  --surface-border-strong: oklch(0.4 0.02 260);
-
-  --text-primary: oklch(0.96 0.005 250);
-  --text-secondary: oklch(0.78 0.01 250);
-  --text-muted: oklch(0.63 0.012 250);
-
-  --accent: var(--color-yavaya-400);
-  --accent-soft: oklch(0.26 0.05 250);
-  --accent-strong: var(--color-yavaya-300);
-  --accent-contrast-text: oklch(0.15 0.02 255);
+  --accent: #d4af37;
+  --accent-soft: rgba(212, 175, 55, 0.12);
+  --accent-strong: #e9c95c;
+  --accent-contrast-text: #081120;
 
   color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --surface-base: #f8f6f1;
+  --surface-raised: #ffffff;
+  --surface-sunken: #efebe1;
+  --surface-border: rgba(8, 17, 32, 0.1);
+  --surface-border-strong: rgba(8, 17, 32, 0.2);
+
+  --text-primary: #081120;
+  --text-secondary: rgba(8, 17, 32, 0.76);
+  --text-muted: rgba(8, 17, 32, 0.58);
+  --text-on-accent: #ffffff;
+
+  --accent: #9a7a12;
+  --accent-soft: rgba(154, 122, 18, 0.1);
+  --accent-strong: #6b5408;
+  --accent-contrast-text: #ffffff;
+
+  color-scheme: light;
 }
 
 /*
@@ -126,58 +111,25 @@
  * Each sets its own accent family. Layout archetype and information hierarchy
  * are handled in the district's own components — recolouring alone would not
  * make a district feel like a different place, and is explicitly not the plan.
+ * Tuned for the navy default; the light theme uses deeper tones.
  */
-[data-district='mercadito'] {
-  --accent: oklch(0.55 0.14 160);
-  --accent-soft: oklch(0.95 0.03 160);
-  --accent-strong: oklch(0.4 0.11 162);
-}
-[data-district='yavayago'] {
-  --accent: oklch(0.66 0.18 45);
-  --accent-soft: oklch(0.96 0.035 55);
-  --accent-strong: oklch(0.5 0.15 42);
-}
-[data-district='works'] {
-  --accent: oklch(0.45 0.14 255);
-  --accent-soft: oklch(0.95 0.025 255);
-  --accent-strong: oklch(0.33 0.12 258);
-}
-[data-district='community'] {
-  --accent: oklch(0.55 0.16 300);
-  --accent-soft: oklch(0.96 0.025 300);
-  --accent-strong: oklch(0.41 0.14 302);
-}
-[data-district='impact'] {
-  --accent: oklch(0.55 0.19 15);
-  --accent-soft: oklch(0.96 0.03 15);
-  --accent-strong: oklch(0.42 0.16 14);
-}
-[data-district='animals'] {
-  --accent: oklch(0.48 0.12 145);
-  --accent-soft: oklch(0.95 0.03 145);
-  --accent-strong: oklch(0.35 0.1 147);
-}
-[data-district='tavern'] {
-  --accent: oklch(0.68 0.13 85);
-  --accent-soft: oklch(0.96 0.04 88);
-  --accent-strong: oklch(0.5 0.11 82);
-}
-[data-district='services'] {
-  --accent: oklch(0.56 0.1 200);
-  --accent-soft: oklch(0.95 0.025 200);
-  --accent-strong: oklch(0.42 0.09 202);
-}
+[data-district='mercadito'] { --accent: oklch(0.7 0.13 160); --accent-soft: oklch(0.26 0.05 160); --accent-strong: oklch(0.8 0.1 160); }
+[data-district='yavayago'] { --accent: oklch(0.76 0.16 55); --accent-soft: oklch(0.28 0.06 50); --accent-strong: oklch(0.84 0.12 55); }
+[data-district='works'] { --accent: oklch(0.68 0.13 255); --accent-soft: oklch(0.26 0.06 255); --accent-strong: oklch(0.78 0.1 255); }
+[data-district='community'] { --accent: oklch(0.72 0.13 300); --accent-soft: oklch(0.27 0.06 300); --accent-strong: oklch(0.8 0.1 300); }
+[data-district='impact'] { --accent: oklch(0.7 0.16 18); --accent-soft: oklch(0.28 0.07 18); --accent-strong: oklch(0.78 0.12 18); }
+[data-district='animals'] { --accent: oklch(0.68 0.12 148); --accent-soft: oklch(0.25 0.05 148); --accent-strong: oklch(0.78 0.1 148); }
+[data-district='tavern'] { --accent: oklch(0.8 0.12 88); --accent-soft: oklch(0.29 0.06 85); --accent-strong: oklch(0.86 0.1 88); }
+[data-district='services'] { --accent: oklch(0.72 0.09 200); --accent-soft: oklch(0.25 0.04 200); --accent-strong: oklch(0.8 0.08 200); }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) [data-district='mercadito'] { --accent: oklch(0.7 0.13 160); --accent-soft: oklch(0.26 0.05 160); }
-  :root:not([data-theme='light']) [data-district='yavayago'] { --accent: oklch(0.76 0.16 55); --accent-soft: oklch(0.28 0.06 50); }
-  :root:not([data-theme='light']) [data-district='works'] { --accent: oklch(0.68 0.13 255); --accent-soft: oklch(0.26 0.06 255); }
-  :root:not([data-theme='light']) [data-district='community'] { --accent: oklch(0.72 0.13 300); --accent-soft: oklch(0.27 0.06 300); }
-  :root:not([data-theme='light']) [data-district='impact'] { --accent: oklch(0.7 0.16 18); --accent-soft: oklch(0.28 0.07 18); }
-  :root:not([data-theme='light']) [data-district='animals'] { --accent: oklch(0.68 0.12 148); --accent-soft: oklch(0.25 0.05 148); }
-  :root:not([data-theme='light']) [data-district='tavern'] { --accent: oklch(0.8 0.12 88); --accent-soft: oklch(0.29 0.06 85); }
-  :root:not([data-theme='light']) [data-district='services'] { --accent: oklch(0.72 0.09 200); --accent-soft: oklch(0.25 0.04 200); }
-}
+:root[data-theme='light'] [data-district='mercadito'] { --accent: oklch(0.55 0.14 160); --accent-soft: oklch(0.95 0.03 160); --accent-strong: oklch(0.4 0.11 162); }
+:root[data-theme='light'] [data-district='yavayago'] { --accent: oklch(0.66 0.18 45); --accent-soft: oklch(0.96 0.035 55); --accent-strong: oklch(0.5 0.15 42); }
+:root[data-theme='light'] [data-district='works'] { --accent: oklch(0.45 0.14 255); --accent-soft: oklch(0.95 0.025 255); --accent-strong: oklch(0.33 0.12 258); }
+:root[data-theme='light'] [data-district='community'] { --accent: oklch(0.55 0.16 300); --accent-soft: oklch(0.96 0.025 300); --accent-strong: oklch(0.41 0.14 302); }
+:root[data-theme='light'] [data-district='impact'] { --accent: oklch(0.55 0.19 15); --accent-soft: oklch(0.96 0.03 15); --accent-strong: oklch(0.42 0.16 14); }
+:root[data-theme='light'] [data-district='animals'] { --accent: oklch(0.48 0.12 145); --accent-soft: oklch(0.95 0.03 145); --accent-strong: oklch(0.35 0.1 147); }
+:root[data-theme='light'] [data-district='tavern'] { --accent: oklch(0.68 0.13 85); --accent-soft: oklch(0.96 0.04 88); --accent-strong: oklch(0.5 0.11 82); }
+:root[data-theme='light'] [data-district='services'] { --accent: oklch(0.56 0.1 200); --accent-soft: oklch(0.95 0.025 200); --accent-strong: oklch(0.42 0.09 202); }
 
 * {
   border-color: var(--surface-border);

@@ -21,6 +21,9 @@ export function middleware(request: NextRequest): NextResponse {
   const gate = previewGate(request);
   if (gate) return withSecurityHeaders(request, gate);
 
+  const english = englishPrefix(request);
+  if (english) return withSecurityHeaders(request, english);
+
   return withSecurityHeaders(request, null);
 }
 
@@ -88,6 +91,46 @@ function previewGate(request: NextRequest): NextResponse | null {
 
   // 404 rather than 401: a preview that announces itself invites attention.
   return new NextResponse(null, { status: 404 });
+}
+
+/**
+ * `/en/...` addresses.
+ *
+ * The website used to serve English under /en/. Pages now have one address
+ * each and the language is a preference, so an /en/ link chooses English and
+ * lands on the page it named. Links shared from the old site keep working.
+ */
+function englishPrefix(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  if (pathname !== '/en' && !pathname.startsWith('/en/')) return null;
+
+  const destination = request.nextUrl.clone();
+  destination.pathname = pathname.slice(3).replace(/\/$/, '') || '/';
+  applyForwardedOrigin(request, destination);
+
+  const response = NextResponse.redirect(destination);
+  response.cookies.set('yav_locale', 'en', {
+    sameSite: 'lax',
+    secure: isSecureRequest(request),
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365,
+  });
+  return response;
+}
+
+/**
+ * Behind the platform's proxy the request URL carries the internal host, so a
+ * redirect built from it would send the browser to an address it cannot
+ * reach. Rebuild the origin from the forwarded headers.
+ */
+function applyForwardedOrigin(request: NextRequest, destination: URL): void {
+  if (isSecureRequest(request)) destination.protocol = 'https:';
+  const forwardedHost = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  if (forwardedHost) {
+    const [hostname, port] = forwardedHost.split(':');
+    if (hostname) destination.hostname = hostname;
+    destination.port = port ?? '';
+  }
 }
 
 /**

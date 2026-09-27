@@ -245,3 +245,22 @@ describe('when Resend is configured', () => {
     if (!availability.available) expect(availability.reason).toContain('RESEND_API_KEY');
   });
 });
+
+describe('the email verification capability', () => {
+  async function verificationState() {
+    const { allCapabilities } = await import('@/server/domains/platform/capability');
+    return allCapabilities().find((capability) => capability.key === 'email_verification')?.state;
+  }
+
+  it('is REAL only when delivery is actually configured', async () => {
+    configure({ EMAIL_PROVIDER: 'resend', RESEND_API_KEY: 're_test_key', EMAIL_FROM: 'Yavaya <no-reply@yavaya.test>' });
+    expect(await verificationState()).toBe('REAL');
+
+    configure({ EMAIL_PROVIDER: 'unconfigured' });
+    expect(await verificationState()).toBe('REQUIRES_CONFIGURATION');
+
+    // The console provider sends nothing, so verification is not working.
+    configure({ EMAIL_PROVIDER: 'console' });
+    expect(await verificationState()).toBe('REQUIRES_CONFIGURATION');
+  });
+});

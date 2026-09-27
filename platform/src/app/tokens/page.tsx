@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { DistrictsBody } from '@/ui/site/pages';
+import { TokensBody } from '@/ui/site/pages';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.pages.districts.title, description: c.pages.districts.description };
+  return { title: c.pages.tokens.title, description: c.pages.tokens.description };
 }
 
 export default async function Page() {
   const { c, t, language, theme, member } = await siteContext();
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="districts">
-      <DistrictsBody c={c} />
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="tokens">
+      <TokensBody c={c} />
     </SiteShell>
   );
 }

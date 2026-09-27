@@ -107,7 +107,20 @@ export function integrationCapabilities(): Capability[] {
 
 /** The complete picture: declared capabilities plus measured integrations. */
 export function allCapabilities(): Capability[] {
-  return [...CAPABILITIES, ...integrationCapabilities()];
+  return [...CAPABILITIES.map(measured), ...integrationCapabilities()];
+}
+
+/**
+ * Email verification is implemented and tested; whether it works for a member
+ * depends only on delivery. Declaring it statically would either claim REAL
+ * where no code can arrive, or keep saying "requires configuration" after it
+ * works — both are wrong, so it follows the measured email state.
+ */
+function measured(capability: Capability): Capability {
+  if (capability.key !== 'email_verification') return capability;
+  const state = emailCapabilityState();
+  if (state === 'REAL') return { ...capability, state, blockedBy: undefined };
+  return capability;
 }
 
 /**
