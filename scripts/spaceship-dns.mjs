@@ -33,6 +33,14 @@ const RAILWAY_TARGET = 'yzu65a0b.up.railway.app';
 const WEB = [
   { type: 'ALIAS', name: '@', aliasName: RAILWAY_TARGET },
   { type: 'CNAME', name: 'www', cname: PAGES_HOST },
+  // Railway's proof of ownership for yavaya.lat. Without it the domain stays
+  // "validating ownership" and no certificate is issued, however correctly the
+  // ALIAS resolves. The token is issued per domain in Railway's dashboard.
+  {
+    type: 'TXT',
+    name: '_railway-verify',
+    value: 'railway-verify=77eb168b8a996d798a80af956a63ed3888f93f5f9f0b5884a07a324735782a7e',
+  },
 ];
 
 // Resend (region us-east-1), as issued for yavaya.lat. Sending mail goes out
@@ -47,7 +55,12 @@ const EMAIL = [
 // A set owns these (name, type) pairs: records there that are not in the set
 // are replaced. Everything else in the zone is never touched.
 const SETS = {
-  web: { desired: WEB, owns: (r) => ['A', 'AAAA', 'CNAME', 'ALIAS'].includes(r.type) && ['@', 'www'].includes(norm(nameOf(r))) },
+  web: {
+    desired: WEB,
+    owns: (r) =>
+      (['A', 'AAAA', 'CNAME', 'ALIAS'].includes(r.type) && ['@', 'www'].includes(norm(nameOf(r)))) ||
+      (r.type === 'TXT' && norm(nameOf(r)) === '_railway-verify'),
+  },
   email: { desired: EMAIL, owns: (r) => EMAIL.some((d) => d.type === r.type && norm(d.name) === norm(nameOf(r))) },
 };
 
