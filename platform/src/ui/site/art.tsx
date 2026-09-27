@@ -18,7 +18,7 @@
  * assistive technology; the text beside it carries the meaning.
  */
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { DistrictId } from './blocks';
 
 // --- Deterministic helpers -----------------------------------------------------
@@ -180,26 +180,55 @@ function Palm({ x, y, height, lean, seed }: { x: number; y: number; height: numb
   const random = seeded(seed);
   const topX = x + lean * (height / 60);
   const topY = y - height;
-  const fronds = Array.from({ length: 9 }, (_, i) => {
+  const leaflets: string[] = [];
+  const spines: string[] = [];
+  for (let i = 0; i < 9; i += 1) {
     const angle = -Math.PI + (i / 8) * Math.PI + (random() - 0.5) * 0.25;
     const length = height * (0.42 + random() * 0.12);
     const ex = topX + Math.cos(angle) * length;
     const ey = topY + Math.sin(angle) * length * 0.18 + length * 0.62;
     const mx = topX + Math.cos(angle) * length * 0.55;
     const my = topY + Math.sin(angle) * length * 0.32 - length * 0.12;
-    const w = length * 0.11;
-    return `M${r1(topX)},${r1(topY)} Q${r1(mx)},${r1(my - w)} ${r1(ex)},${r1(ey)} Q${r1(mx)},${r1(my + w)} ${r1(topX)},${r1(topY)}Z`;
-  });
+    spines.push(`M${r1(topX)},${r1(topY)} Q${r1(mx)},${r1(my)} ${r1(ex)},${r1(ey)}`);
+    // Leaflets along the spine, longest in the middle, swept back toward the tip.
+    for (let k = 1; k <= 16; k += 1) {
+      const t = k / 17;
+      const px = (1 - t) * (1 - t) * topX + 2 * (1 - t) * t * mx + t * t * ex;
+      const py = (1 - t) * (1 - t) * topY + 2 * (1 - t) * t * my + t * t * ey;
+      const dx = 2 * (1 - t) * (mx - topX) + 2 * t * (ex - mx);
+      const dy = 2 * (1 - t) * (my - topY) + 2 * t * (ey - my);
+      const norm = Math.hypot(dx, dy) || 1;
+      const ux = dx / norm;
+      const uy = dy / norm;
+      const size = length * 0.2 * Math.sin(Math.PI * t) + 2;
+      for (const side of [-1, 1]) {
+        const lx = px + (-uy * side * 0.8 + ux * 0.55) * size;
+        const ly = py + (ux * side * 0.8 + uy * 0.55) * size + size * 0.35;
+        leaflets.push(`M${r1(px)},${r1(py)}L${r1(lx)},${r1(ly)}`);
+      }
+    }
+  }
   return (
     <g>
       <path
         d={`M${x - 7},${y} Q${r1(x + lean * 1.2)},${r1(y - height * 0.5)} ${r1(topX - 2.5)},${r1(topY)} L${r1(topX + 2.5)},${r1(topY)} Q${r1(x + lean * 1.2 + 8)},${r1(y - height * 0.5)} ${x + 7},${y} Z`}
         fill="#040a15"
       />
-      <path d={fronds.join(' ')} fill="#040a15" />
-      <path d={fronds.join(' ')} fill="none" stroke="rgba(212,175,55,0.28)" strokeWidth="0.8" />
+      <path d={leaflets.join('')} fill="none" stroke="#040a15" strokeWidth="2.4" strokeLinecap="round" />
+      <path d={spines.join('')} fill="none" stroke="#040a15" strokeWidth="3" strokeLinecap="round" />
+      <path d={spines.join('')} fill="none" stroke="rgba(212,175,55,0.35)" strokeWidth="0.7" />
+      <circle cx={r1(topX)} cy={r1(topY + 3)} r="5" fill="#040a15" />
     </g>
   );
+}
+
+
+/**
+ * How far a hero layer travels with the pointer and the scroll: 0 is the
+ * sky at infinity, 1 the nearest bank. Read by CSS (see `.depth`).
+ */
+function depth(value: number): CSSProperties {
+  return { ['--d' as string]: value } as CSSProperties;
 }
 
 // --- Hero ------------------------------------------------------------------------
@@ -241,9 +270,11 @@ export function HeroScene({ className }: { className?: string }) {
       </defs>
 
       <rect width={W} height={H} fill="url(#hero-sky)" />
-      <Stars seed={7} count={140} width={W} height={520} className="art-stars" />
+      <g className="depth" style={depth(0.1)}>
+        <Stars seed={7} count={140} width={W} height={520} className="art-stars" />
+      </g>
 
-      <g className="art-rise art-d1">
+      <g className="art-rise art-d1 depth" style={depth(0.25)}>
         <circle cx="1360" cy="230" r="240" fill="url(#hero-moon-glow)" className="art-glow" />
         <circle cx="1360" cy="230" r="78" fill="#e8c766" />
         <circle cx="1360" cy="230" r="78" fill="url(#hero-hatch-moon)" />
@@ -254,29 +285,28 @@ export function HeroScene({ className }: { className?: string }) {
         </g>
       </g>
 
-      <g className="art-rise art-d2">
+      <g className="art-rise art-d2 depth" style={depth(0.4)}>
         <path d={ridge(3, W, 640, [[260, 250], [620, 180], [980, 120], [1420, 210]], 8)} fill="#0e2140" />
         <path d={ridge(3, W, 640, [[260, 250], [620, 180], [980, 120], [1420, 210]], 8)} fill="url(#hero-hatch-far)" />
       </g>
-      <g className="art-rise art-d3">
+      <g className="art-rise art-d3 depth" style={depth(0.6)}>
         {/* The volcano: a clean cone with a crater and a thread of smoke. */}
         <path d="M40 660 L300 320 Q330 290 360 320 L640 660 Z" fill="#0a1a33" />
         <path d="M40 660 L300 320 Q330 290 360 320 L640 660 Z" fill="url(#hero-hatch-mid)" />
         <path d="M300 320 Q330 290 360 320" fill="none" stroke="#d4af37" strokeWidth="1.4" opacity="0.8" />
-        <path
-          className="art-smoke"
-          d="M330 302 C 320 260, 352 240, 338 200 S 360 140, 344 100"
-          fill="none"
-          stroke="rgba(248,246,241,0.07)"
-          strokeWidth="16"
-          strokeLinecap="round"
-        />
+        <g className="art-smoke" fill="rgba(248,246,241,0.05)">
+          <ellipse cx="336" cy="276" rx="22" ry="14" />
+          <ellipse cx="346" cy="246" rx="30" ry="18" />
+          <ellipse cx="362" cy="210" rx="40" ry="22" />
+          <ellipse cx="384" cy="170" rx="52" ry="26" />
+          <ellipse cx="410" cy="128" rx="66" ry="30" />
+        </g>
         <path d={ridge(11, W, 700, [[80, 110], [1180, 130], [1520, 90]], 5)} fill="#081628" />
       </g>
 
       {/* The lake, and the moon's road across it. */}
       <rect y="680" width={W} height={H - 680} fill="url(#hero-lake)" />
-      <g stroke="#e8c766" strokeLinecap="round" className="art-shimmer">
+      <g stroke="#e8c766" strokeLinecap="round" className="art-shimmer depth" style={depth(0.75)}>
         {Array.from({ length: 16 }, (_, i) => {
           const y = 700 + i * 12;
           const half = 70 - i * 3.6 + (i % 2) * 12;
@@ -285,7 +315,7 @@ export function HeroScene({ className }: { className?: string }) {
       </g>
 
       {/* A small town at the water's edge with its lights on. */}
-      <g className="art-rise art-d4">
+      <g className="art-rise art-d4 depth" style={depth(0.75)}>
         <path
           d="M1020 690 V650 h40 v-18 l22 -16 22 16 v18 h36 v-26 l18 -12 18 12 v26 h52 v-44 h10 v-14 h10 v14 h10 v44 h60 v-22 l26 -18 26 18 v22 h70 v-12 h90 V690 Z"
           fill="#050d1c"
@@ -298,12 +328,12 @@ export function HeroScene({ className }: { className?: string }) {
       </g>
 
       {/* Foreground: the near bank with palms, drawn dark against the lake. */}
-      <g className="art-rise art-d5">
-        <path d="M0 770 Q220 716 430 758 T 840 780 V900 H0 Z" fill="#040a15" />
+      <g className="art-rise art-d5 depth" style={depth(1)}>
+        <path d="M-80 900 V770 Q220 716 430 758 T 840 780 Q930 800 1010 900 Z" fill="#040a15" />
         <Palm x={150} y={770} height={250} lean={-14} seed={3} />
         <Palm x={250} y={764} height={190} lean={10} seed={8} />
         <Palm x={1500} y={800} height={210} lean={12} seed={12} />
-        <path d="M1260 800 Q1420 770 1600 786 V900 H1260 Z" fill="#040a15" />
+        <path d="M1160 900 Q1250 806 1420 790 T 1680 786 V900 Z" fill="#040a15" />
       </g>
     </svg>
   );

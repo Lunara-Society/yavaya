@@ -98,7 +98,7 @@ export function Cards({ items, cols = 'g3', tone }: { items: readonly CardItem[]
   return (
     <div className={`grid ${cols}`}>
       {items.map((it, i) => (
-        <div key={i} className={`card${tone ? ' tone' : ''}`}>
+        <div key={i} className={`card${tone ? ' tone' : ''}`} data-tilt="">
           {it.icon ? (
             <div className="ico">
               <Icon name={it.icon as IconName} />
@@ -247,7 +247,7 @@ export function Gate({
 }) {
   const d = c.districts[id];
   return (
-    <Link className={`gate tone-${id}`} href={PAGE_PATHS[id]}>
+    <Link className={`gate tone-${id}`} href={PAGE_PATHS[id]} data-tilt="">
       <span className="gate-scene">
         <DistrictScene id={id} />
       </span>

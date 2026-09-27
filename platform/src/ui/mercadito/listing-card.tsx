@@ -20,7 +20,7 @@ export function ListingCard({
   showStatus?: boolean;
 }) {
   return (
-    <Link className="mk-card" href={`/mercadito/${listing.id}`}>
+    <Link className="mk-card" href={`/mercadito/${listing.id}`} data-tilt="">
       <div className="ph">
         {listing.coverMediaId ? (
           // eslint-disable-next-line @next/next/no-img-element -- served already sized by the media pipeline

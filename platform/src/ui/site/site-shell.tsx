@@ -4,6 +4,7 @@ import type { Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
 import type { LanguagePreference, ThemePreference } from '@/server/preferences';
 import { QuickControls } from '@/ui/components/quick-controls';
+import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
 import { Icon, Mark } from './icons';
 import { Md } from './md';
@@ -50,6 +51,7 @@ export function SiteShell({
 
   return (
     <div className="site" data-district={district}>
+      <Alive />
       <a className="skip" href="#main">
         {c.ui.skip}
       </a>
