@@ -42,6 +42,7 @@ export async function resetTransactionalData(): Promise<void> {
       activity_events,
       demo_content,
       rate_limit_counters,
+      mercadito_saved_searches,
       mercadito_listing_photos,
       mercadito_listings,
       media

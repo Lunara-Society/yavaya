@@ -18,6 +18,7 @@ import { requirePermission, type AuthContext } from '@/server/domains/access/aut
 import { applyRule } from '@/server/domains/reputation/service';
 import { markRemoved } from '@/server/domains/media/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
+import { PUBLIC_STATUSES } from './rules';
 
 /**
  * Reports on Mercadito listings, and what moderators do about them.
@@ -103,7 +104,7 @@ export async function reportListing(
     .from(mercaditoListings)
     .where(eq(mercaditoListings.id, params.listingId))
     .limit(1);
-  if (!listing || (listing.status !== 'published' && listing.status !== 'sold')) {
+  if (!listing || !(PUBLIC_STATUSES as readonly string[]).includes(listing.status)) {
     throw errors.notFound('mercadito_listing');
   }
   if (listing.sellerUserId === params.reporterUserId) throw errors.validation('mercadito.report.error.own');

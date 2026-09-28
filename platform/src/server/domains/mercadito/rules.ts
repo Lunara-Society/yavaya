@@ -18,6 +18,11 @@ export const LISTING_CATEGORIES = [
 ] as const;
 export type ListingCategory = (typeof LISTING_CATEGORIES)[number];
 
+/** Up and reachable: shown in the market, contact allowed, editable. */
+export const OPEN_STATUSES = ['published', 'reserved'] as const;
+/** What anyone may look at: open listings, and sold ones as a record. */
+export const PUBLIC_STATUSES = ['published', 'reserved', 'sold'] as const;
+
 export const LISTING_CONDITIONS = ['new', 'like_new', 'used', 'for_parts', 'not_applicable'] as const;
 export type ListingCondition = (typeof LISTING_CONDITIONS)[number];
 

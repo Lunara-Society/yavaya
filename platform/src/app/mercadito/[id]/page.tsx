@@ -11,10 +11,11 @@ import { formatDate, formatPrice } from '@/ui/mercadito/format';
 import { Gallery } from '@/ui/mercadito/gallery';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { hasPermission } from '@/server/domains/access/authorize';
-import { getListing, type ListingDetail } from '@/server/domains/mercadito/service';
-import { whatsappLink } from '@/server/domains/mercadito/rules';
+import { getListing, similarListings, type ListingDetail } from '@/server/domains/mercadito/service';
+import { ListingCard } from '@/ui/mercadito/listing-card';
+import { OPEN_STATUSES, PUBLIC_STATUSES, whatsappLink } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation';
-import { closeListingAction, reportListingAction } from '../actions';
+import { closeListingAction, reportListingAction, reserveListingAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ async function visibleListing(id: string, locale: string, userId: string | null)
   if (!UUID.test(id)) return null;
   const listing = await getListing(db(), id, locale);
   if (!listing) return null;
-  if (listing.status === 'published' || listing.status === 'sold') return listing;
+  if ((PUBLIC_STATUSES as readonly string[]).includes(listing.status)) return listing;
   if (!userId) return null;
   if (listing.seller.userId === userId) return listing;
   return (await hasPermission(db(), userId, 'listings.moderate')) ? listing : null;
@@ -50,7 +51,10 @@ export default async function ListingPage({ params, searchParams }: Params) {
   const listing = await visibleListing(id, locale, userId);
   if (!listing) notFound();
 
-  const shield = await buildTrustShield(db(), listing.seller.userId);
+  const [shield, similar] = await Promise.all([
+    buildTrustShield(db(), listing.seller.userId),
+    similarListings(db(), { listingId: listing.id, category: listing.category, locale }),
+  ]);
   const own = userId === listing.seller.userId;
   const listingUrl = `${serverEnv().APP_URL.replace(/\/$/, '')}/mercadito/${listing.id}`;
 
@@ -115,7 +119,7 @@ export default async function ListingPage({ params, searchParams }: Params) {
 
               {own ? (
                 <SellerControls listing={listing} t={t} />
-              ) : listing.status !== 'published' ? null : !member ? (
+              ) : !(OPEN_STATUSES as readonly string[]).includes(listing.status) ? null : !member ? (
                 <Link className="btn btn-gold" href="/login" style={{ width: '100%' }}>
                   {t('mercadito.listing.sign_in_to_contact')}
                 </Link>
@@ -195,6 +199,19 @@ export default async function ListingPage({ params, searchParams }: Params) {
             ) : null}
           </aside>
         </div>
+
+        {similar.length > 0 ? (
+          <section className="mk-similar">
+            <h2 className="h-md" style={{ fontSize: '1.4rem' }}>
+              {t('mercadito.listing.similar')}
+            </h2>
+            <div className="mk-grid">
+              {similar.map((card) => (
+                <ListingCard key={card.id} listing={card} t={t} locale={locale} showStatus={card.status !== 'published'} />
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
     </SiteShell>
   );
@@ -204,11 +221,18 @@ function SellerControls({ listing, t }: { listing: ListingDetail; t: Parameters<
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <p className="mk-banner mb0">{t('mercadito.listing.own')}</p>
-      {listing.status === 'published' ? (
+      {(OPEN_STATUSES as readonly string[]).includes(listing.status) ? (
         <>
           <Link className="btn btn-gold" href={`/mercadito/${listing.id}/edit`}>
             {t('mercadito.listing.edit')}
           </Link>
+          <form action={reserveListingAction}>
+            <input type="hidden" name="listingId" value={listing.id} />
+            <input type="hidden" name="reserved" value={listing.status === 'reserved' ? '0' : '1'} />
+            <button className="btn btn-line" type="submit" style={{ width: '100%' }}>
+              {t(listing.status === 'reserved' ? 'mercadito.listing.unreserve' : 'mercadito.listing.reserve')}
+            </button>
+          </form>
           <form action={closeListingAction}>
             <input type="hidden" name="listingId" value={listing.id} />
             <input type="hidden" name="outcome" value="sold" />

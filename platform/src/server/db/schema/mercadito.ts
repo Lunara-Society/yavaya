@@ -76,3 +76,23 @@ export const mercaditoListingPhotos = pgTable(
     uniqueIndex('mercadito_listing_photos_position_key').on(table.listingId, table.position),
   ],
 );
+
+/**
+ * A member's saved Mercadito search. `lastSeenAt` is when they last opened
+ * it, so "3 new" means three listings really published since then.
+ */
+export const mercaditoSavedSearches = pgTable(
+  'mercadito_saved_searches',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    query: text('query'),
+    category: listingCategoryEnum('category'),
+    placeCode: text('place_code'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('mercadito_saved_searches_user_idx').on(table.userId, table.createdAt)],
+);

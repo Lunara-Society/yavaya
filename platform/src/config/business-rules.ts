@@ -227,4 +227,6 @@ export const MERCADITO_RULES = {
   /** 10 million in major units: a guard against typos, not a policy. */
   maxPriceMinor: 1_000_000_000,
   pageSize: 24,
+  /** Saved searches per member: enough to follow what you want, not a scraper. */
+  maxSavedSearches: 20,
 } as const;

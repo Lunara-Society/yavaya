@@ -228,4 +228,5 @@ export const listingStatusEnum = pgEnum('listing_status', [
   'sold',
   'withdrawn', // taken down by the seller
   'removed', // taken down by a moderator
+  'reserved', // held by the seller for a buyer; still up, marked as such
 ]);

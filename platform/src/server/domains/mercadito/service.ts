@@ -1,11 +1,12 @@
 import 'server-only';
-import { and, asc, count, desc, eq, inArray, notInArray, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, inArray, notInArray, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import {
   locations,
   media,
   mercaditoListingPhotos,
   mercaditoListings,
+  mercaditoSavedSearches,
   reputationScores,
   userProfiles,
   users,
@@ -20,7 +21,14 @@ import { getSetting } from '@/server/domains/platform/settings';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { hashesUsedByOthers, insertMediaRows, markRemoved, type StoredImage } from '@/server/domains/media/service';
 import { openSystemTicket } from './moderation';
-import { titleFingerprint, type ListingCategory, type ListingCondition, type ListingInput } from './rules';
+import {
+  OPEN_STATUSES,
+  PUBLIC_STATUSES,
+  titleFingerprint,
+  type ListingCategory,
+  type ListingCondition,
+  type ListingInput,
+} from './rules';
 
 /**
  * Mercadito.
@@ -149,7 +157,7 @@ async function screen(
     .where(
       and(
         eq(mercaditoListings.sellerUserId, params.sellerUserId),
-        eq(mercaditoListings.status, 'published'),
+        inArray(mercaditoListings.status, [...OPEN_STATUSES]),
         sql`${mercaditoListings.id} <> ${params.listingId}`,
       ),
     );
@@ -299,7 +307,7 @@ export async function updateListing(
   },
 ): Promise<{ droppedStorageKeys: string[] }> {
   const listing = await lockOwnListing(tx, params.listingId, params.sellerUserId);
-  if (listing.status !== 'published') throw errors.conflict('mercadito.error.not_editable');
+  if (!(OPEN_STATUSES as readonly string[]).includes(listing.status)) throw errors.conflict('mercadito.error.not_editable');
 
   const [seller] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.sellerUserId));
   const statusKey = statusBlock(seller?.status ?? 'deactivated');
@@ -364,7 +372,7 @@ export async function closeListing(
   params: { listingId: string; sellerUserId: string; outcome: 'sold' | 'withdrawn'; audit?: AuditContext },
 ): Promise<void> {
   const listing = await lockOwnListing(tx, params.listingId, params.sellerUserId);
-  if (listing.status !== 'published') throw errors.conflict('mercadito.error.not_editable');
+  if (!(OPEN_STATUSES as readonly string[]).includes(listing.status)) throw errors.conflict('mercadito.error.not_editable');
 
   await tx
     .update(mercaditoListings)
@@ -508,13 +516,11 @@ function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (match) => `\\${match}`);
 }
 
-export async function browseListings(
-  executor: Executor,
-  params: { query?: string; category?: ListingCategory; placeCode?: string; page?: number; locale: string },
-): Promise<{ items: ListingCard[]; hasMore: boolean; page: number }> {
-  const page = Math.max(1, Math.min(params.page ?? 1, 500));
-  const size = MERCADITO_RULES.pageSize;
-  const conditions = [eq(mercaditoListings.status, 'published')];
+export type SearchFilters = { query?: string | null; category?: ListingCategory | null; placeCode?: string | null };
+
+/** The market's search rules, shared by browsing and by saved searches. */
+function listingFilters(params: SearchFilters) {
+  const conditions = [inArray(mercaditoListings.status, [...OPEN_STATUSES])];
   if (params.category) conditions.push(eq(mercaditoListings.category, params.category));
   if (params.placeCode) {
     conditions.push(sql`(${locations.code} = ${params.placeCode} or ${params.placeCode} = any(${locations.path}))`);
@@ -526,6 +532,16 @@ export async function browseListings(
       sql`(${mercaditoListings.title} ilike ${pattern} or ${mercaditoListings.description} ilike ${pattern})`,
     );
   }
+  return conditions;
+}
+
+export async function browseListings(
+  executor: Executor,
+  params: { query?: string; category?: ListingCategory; placeCode?: string; page?: number; locale: string },
+): Promise<{ items: ListingCard[]; hasMore: boolean; page: number }> {
+  const page = Math.max(1, Math.min(params.page ?? 1, 500));
+  const size = MERCADITO_RULES.pageSize;
+  const conditions = listingFilters(params);
 
   const rows = await executor
     .select({ ...cardColumns, coverMediaId })
@@ -654,7 +670,7 @@ export async function sellerListings(
 ): Promise<ListingCard[]> {
   const conditions = [eq(mercaditoListings.sellerUserId, userId)];
   // Others see what is up or sold; withdrawn and removed stay the seller's.
-  if (options.publicOnly) conditions.push(inArray(mercaditoListings.status, ['published', 'sold']));
+  if (options.publicOnly) conditions.push(inArray(mercaditoListings.status, [...PUBLIC_STATUSES]));
   const rows = await executor
     .select({ ...cardColumns, coverMediaId })
     .from(mercaditoListings)
@@ -709,4 +725,125 @@ export async function placeOptions(executor: Executor, locale: string): Promise<
         currencyCode: country.currencyCode ?? 'USD',
       })),
   }));
+}
+
+/** The seller holds a listing for a buyer, or releases it. It stays up either way. */
+export async function setReserved(
+  tx: Executor,
+  params: { listingId: string; sellerUserId: string; reserved: boolean; audit?: AuditContext },
+): Promise<void> {
+  const listing = await lockOwnListing(tx, params.listingId, params.sellerUserId);
+  const from = params.reserved ? 'published' : 'reserved';
+  if (listing.status !== from) throw errors.conflict('mercadito.error.not_editable');
+  await tx
+    .update(mercaditoListings)
+    .set({ status: params.reserved ? 'reserved' : 'published', updatedAt: new Date() })
+    .where(eq(mercaditoListings.id, params.listingId));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.sellerUserId,
+    action: params.reserved ? 'mercadito.listing_reserved' : 'mercadito.listing_unreserved',
+    subjectType: 'mercadito_listing',
+    subjectId: params.listingId,
+    district: 'mercadito',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+  });
+}
+
+/** Other open listings in the same category, newest first — "you may also like". */
+export async function similarListings(
+  executor: Executor,
+  params: { listingId: string; category: ListingCategory; locale: string; limit?: number },
+): Promise<ListingCard[]> {
+  const rows = await executor
+    .select({ ...cardColumns, coverMediaId })
+    .from(mercaditoListings)
+    .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
+    .innerJoin(users, eq(users.id, mercaditoListings.sellerUserId))
+    .leftJoin(reputationScores, eq(reputationScores.userId, mercaditoListings.sellerUserId))
+    .where(
+      and(
+        inArray(mercaditoListings.status, [...OPEN_STATUSES]),
+        eq(mercaditoListings.category, params.category),
+        sql`${mercaditoListings.id} <> ${params.listingId}`,
+      ),
+    )
+    .orderBy(desc(mercaditoListings.publishedAt))
+    .limit(params.limit ?? 6);
+  return rows.map((row) => toCard(row, params.locale));
+}
+
+// --- Saved searches -------------------------------------------------------------
+
+export type SavedSearch = SearchFilters & { id: string; createdAt: Date; newCount: number };
+
+export async function saveSearch(tx: Executor, params: { userId: string } & SearchFilters): Promise<string> {
+  const filters = {
+    query: params.query?.trim().slice(0, 80) || null,
+    category: params.category ?? null,
+    placeCode: params.placeCode ?? null,
+  };
+  if (!filters.query && !filters.category && !filters.placeCode) throw errors.validation('mercadito.saved.error.empty');
+
+  const existing = await tx
+    .select({
+      id: mercaditoSavedSearches.id,
+      query: mercaditoSavedSearches.query,
+      category: mercaditoSavedSearches.category,
+      placeCode: mercaditoSavedSearches.placeCode,
+    })
+    .from(mercaditoSavedSearches)
+    .where(eq(mercaditoSavedSearches.userId, params.userId));
+  const same = existing.find(
+    (row) => row.query === filters.query && row.category === filters.category && row.placeCode === filters.placeCode,
+  );
+  if (same) return same.id;
+  if (existing.length >= MERCADITO_RULES.maxSavedSearches) {
+    throw errors.conflict('mercadito.saved.error.limit', { max: MERCADITO_RULES.maxSavedSearches });
+  }
+  const [row] = await tx
+    .insert(mercaditoSavedSearches)
+    .values({ userId: params.userId, ...filters })
+    .returning({ id: mercaditoSavedSearches.id });
+  return row!.id;
+}
+
+export async function deleteSavedSearch(tx: Executor, params: { userId: string; id: string }): Promise<void> {
+  await tx
+    .delete(mercaditoSavedSearches)
+    .where(and(eq(mercaditoSavedSearches.id, params.id), eq(mercaditoSavedSearches.userId, params.userId)));
+}
+
+/** Opening a saved search resets its "new" count. Someone else's is ignored. */
+export async function markSavedSearchSeen(executor: Executor, params: { userId: string; id: string }): Promise<void> {
+  await executor
+    .update(mercaditoSavedSearches)
+    .set({ lastSeenAt: new Date() })
+    .where(and(eq(mercaditoSavedSearches.id, params.id), eq(mercaditoSavedSearches.userId, params.userId)));
+}
+
+export async function listSavedSearches(executor: Executor, userId: string): Promise<SavedSearch[]> {
+  const rows = await executor
+    .select()
+    .from(mercaditoSavedSearches)
+    .where(eq(mercaditoSavedSearches.userId, userId))
+    .orderBy(desc(mercaditoSavedSearches.createdAt));
+  const out: SavedSearch[] = [];
+  for (const row of rows) {
+    const [counted] = await executor
+      .select({ total: count() })
+      .from(mercaditoListings)
+      .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
+      .where(and(...listingFilters(row), gt(mercaditoListings.publishedAt, row.lastSeenAt)));
+    out.push({
+      id: row.id,
+      query: row.query,
+      category: row.category,
+      placeCode: row.placeCode,
+      createdAt: row.createdAt,
+      newCount: counted?.total ?? 0,
+    });
+  }
+  return out;
 }

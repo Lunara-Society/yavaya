@@ -6,8 +6,8 @@ import { db } from '@/server/db/client';
 import { currentSession, requestContext, userAgentHash } from '@/server/auth/context';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { isDomainError } from '@/server/errors';
-import { closeListing, setWhatsapp } from '@/server/domains/mercadito/service';
-import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
+import { closeListing, deleteSavedSearch, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
+import { LISTING_CATEGORIES, normalizeWhatsapp, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES, reportListing, type ListingReportCategory } from '@/server/domains/mercadito/moderation';
 
 /**
@@ -89,4 +89,49 @@ export async function reportListingAction(formData: FormData): Promise<void> {
     if (!isDomainError(error)) throw error;
   }
   redirect(code ? `/mercadito/${listingId}?reported=${encodeURIComponent(code)}` : `/mercadito/${listingId}`);
+}
+
+export async function reserveListingAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const listingId = String(formData.get('listingId') ?? '');
+  if (!UUID.test(listingId)) redirect('/mercadito/mine');
+  const reserved = formData.get('reserved') === '1';
+
+  const audit = await auditContext();
+  try {
+    await db().transaction((tx) => setReserved(tx, { listingId, sellerUserId: session.user.userId, reserved, audit }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+  }
+  revalidatePath('/mercadito', 'layout');
+  redirect(`/mercadito/${listingId}`);
+}
+
+export async function saveSearchAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const category = String(formData.get('cat') ?? '');
+  const filters = {
+    query: String(formData.get('q') ?? '') || null,
+    category: (LISTING_CATEGORIES as readonly string[]).includes(category) ? (category as ListingCategory) : null,
+    placeCode: String(formData.get('place') ?? '') || null,
+  };
+  try {
+    await db().transaction((tx) => saveSearch(tx, { userId: session.user.userId, ...filters }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    redirect('/mercadito/mine?saved=limit');
+  }
+  revalidatePath('/mercadito/mine');
+  redirect('/mercadito/mine?saved=ok');
+}
+
+export async function deleteSavedSearchAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const id = String(formData.get('id') ?? '');
+  if (UUID.test(id)) await db().transaction((tx) => deleteSavedSearch(tx, { userId: session.user.userId, id }));
+  revalidatePath('/mercadito/mine');
+  redirect('/mercadito/mine');
 }

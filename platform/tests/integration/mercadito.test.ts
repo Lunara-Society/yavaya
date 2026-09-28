@@ -385,6 +385,53 @@ describe('trust on every card and public profiles', () => {
   });
 });
 
+describe('reserving, similar listings and saved searches', () => {
+  it('keeps a reserved listing up, and lets the seller release it', async () => {
+    const { setReserved } = await import('@/server/domains/mercadito/service');
+    const seller = await createMember({ tokens: 2 });
+    const { listingId } = await publish(seller);
+    await db().transaction((tx) => setReserved(tx, { listingId, sellerUserId: seller, reserved: true }));
+    const browse = await browseListings(db(), { locale: 'es' });
+    expect(browse.items.find((item) => item.id === listingId)?.status).toBe('reserved');
+    await expect(
+      db().transaction((tx) => setReserved(tx, { listingId, sellerUserId: seller, reserved: true })),
+    ).rejects.toMatchObject({ code: 'conflict' });
+    await db().transaction((tx) => setReserved(tx, { listingId, sellerUserId: seller, reserved: false }));
+    expect((await getListing(db(), listingId, 'es'))?.status).toBe('published');
+  });
+
+  it('suggests other open listings in the same category', async () => {
+    const { similarListings } = await import('@/server/domains/mercadito/service');
+    const seller = await createMember({ tokens: 6 });
+    const { listingId: a } = await publish(seller, 1, { title: 'Bicicleta roja' });
+    const { listingId: b } = await publish(seller, 2, { title: 'Bicicleta azul' });
+    await publish(seller, 3, { title: 'Sofá de tres plazas', category: 'home' });
+    const similar = await similarListings(db(), { listingId: a, category: 'sports', locale: 'es' });
+    expect(similar.map((card) => card.id)).toEqual([b]);
+  });
+
+  it('counts only listings published since the search was last opened', async () => {
+    const { saveSearch, listSavedSearches, markSavedSearchSeen } = await import('@/server/domains/mercadito/service');
+    const buyer = await createMember();
+    const seller = await createMember({ tokens: 4 });
+    const id = await db().transaction((tx) => saveSearch(tx, { userId: buyer, query: 'bicicleta' }));
+    const again = await db().transaction((tx) => saveSearch(tx, { userId: buyer, query: 'bicicleta' }));
+    expect(again).toBe(id);
+    await expect(db().transaction((tx) => saveSearch(tx, { userId: buyer }))).rejects.toMatchObject({
+      messageKey: 'mercadito.saved.error.empty',
+    });
+
+    await publish(seller, 1, { title: 'Bicicleta de ruta' });
+    await publish(seller, 2, { title: 'Mesa de comedor', category: 'home' });
+    expect((await listSavedSearches(db(), buyer))[0]?.newCount).toBe(1);
+
+    await markSavedSearchSeen(db(), { userId: buyer, id });
+    expect((await listSavedSearches(db(), buyer))[0]?.newCount).toBe(0);
+    // Another member cannot reset someone else's search.
+    await markSavedSearchSeen(db(), { userId: seller, id });
+  });
+});
+
 describe('reports and moderation', () => {
   it('collects reports under one ticket and lets a moderator remove and warn', async () => {
     const seller = await createMember({ tokens: 2 });

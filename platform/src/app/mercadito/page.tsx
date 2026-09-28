@@ -7,7 +7,8 @@ import { ListingCard } from '@/ui/mercadito/listing-card';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon, type IconName } from '@/ui/site/icons';
 import type { MessageKey } from '@/i18n';
-import { browseListings, placeOptions } from '@/server/domains/mercadito/service';
+import { browseListings, markSavedSearchSeen, placeOptions } from '@/server/domains/mercadito/service';
+import { saveSearchAction } from './actions';
 import { LISTING_CATEGORIES, type ListingCategory } from '@/server/domains/mercadito/rules';
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: c.districts.mercadito.name, description: c.pages.mercadito.description };
 }
 
-type Search = { q?: string; cat?: string; place?: string; page?: string };
+type Search = { q?: string; cat?: string; place?: string; page?: string; saved?: string };
 
 /**
  * The market itself. Everything here is a real listing by a real member —
@@ -37,7 +38,7 @@ type Search = { q?: string; cat?: string; place?: string; page?: string };
  */
 export default async function MercaditoPage({ searchParams }: { searchParams: Promise<Search> }) {
   const params = await searchParams;
-  const { c, t, locale, language, theme, member } = await siteContext();
+  const { c, t, locale, language, theme, member, userId } = await siteContext();
 
   const category = (LISTING_CATEGORIES as readonly string[]).includes(params.cat ?? '')
     ? (params.cat as ListingCategory)
@@ -48,6 +49,9 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
 
   const result = await browseListings(db(), { query, category, placeCode, page, locale });
+  if (userId && params.saved && /^[0-9a-f-]{36}$/i.test(params.saved)) {
+    await markSavedSearchSeen(db(), { userId, id: params.saved });
+  }
   const filtered = Boolean(query || category || placeCode);
 
   const href = (next: Partial<Record<keyof Search, string | undefined>>) => {
@@ -113,6 +117,17 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
               {t('mercadito.browse.submit')}
             </button>
           </form>
+
+          {member && filtered ? (
+            <form action={saveSearchAction} className="mk-save">
+              <input type="hidden" name="q" value={query ?? ''} />
+              <input type="hidden" name="cat" value={category ?? ''} />
+              <input type="hidden" name="place" value={placeCode ?? ''} />
+              <button type="submit" className="chip">
+                ☆ {t('mercadito.saved.save')}
+              </button>
+            </form>
+          ) : null}
 
           <nav className="mk-cats" aria-label={t('mercadito.browse.category_label')}>
             <Link href={href({ cat: undefined, page: undefined })} aria-current={category ? undefined : 'true'}>

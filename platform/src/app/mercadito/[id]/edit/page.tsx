@@ -7,6 +7,7 @@ import { ListingForm } from '@/ui/mercadito/listing-form';
 import { listingFormProps } from '@/ui/mercadito/form-props';
 import { priceInputValue } from '@/ui/mercadito/format';
 import { getListing, placeOptions } from '@/server/domains/mercadito/service';
+import { OPEN_STATUSES } from '@/server/domains/mercadito/rules';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +27,7 @@ export default async function EditListingPage({ params }: { params: Promise<{ id
   const listing = await getListing(db(), id, locale);
   // Only the seller edits, and only while the listing is up.
   if (!listing || listing.seller.userId !== userId) notFound();
-  if (listing.status !== 'published') redirect(`/mercadito/${id}`);
+  if (!(OPEN_STATUSES as readonly string[]).includes(listing.status)) redirect(`/mercadito/${id}`);
 
   const countries = await placeOptions(db(), locale);
   const form = listingFormProps(t, t('mercadito.form.submit_edit'));
