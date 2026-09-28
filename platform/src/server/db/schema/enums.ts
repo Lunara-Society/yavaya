@@ -230,3 +230,21 @@ export const listingStatusEnum = pgEnum('listing_status', [
   'removed', // taken down by a moderator
   'reserved', // held by the seller for a buyer; still up, marked as such
 ]);
+
+// --- Community --------------------------------------------------------------
+/** The spaces of Community that are built (Master Bible, ch. 1 district 4). */
+export const communityPostKindEnum = pgEnum('community_post_kind', [
+  'help_request', // Local help: I need a hand
+  'help_offer', // Local help: I can give a hand
+  'prayer', // Prayer wall
+  'family_support', // Family support
+]);
+
+export const communityPostStatusEnum = pgEnum('community_post_status', [
+  'open',
+  'resolved', // the author says it has been answered
+  'withdrawn', // taken down by the author
+  'removed', // taken down by a moderator
+]);
+
+export const communityReplyStatusEnum = pgEnum('community_reply_status', ['visible', 'removed']);

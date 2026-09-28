@@ -203,6 +203,22 @@ export const CAPABILITIES: readonly Capability[] = [
     blockedBy: 'Needs media storage: publishing requires at least one photo.',
   },
   {
+    key: 'community',
+    nameKey: 'capability.community.name',
+    detailKey: 'capability.community.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'community_spaces',
+    nameKey: 'capability.community_spaces.name',
+    detailKey: 'capability.community_spaces.detail',
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy:
+      'Not built. Local help, the prayer wall and family support work today. Sanctuary and community groups need their own design (membership, group moderators) before they exist.',
+  },
+  {
     key: 'mercadito_moderation',
     nameKey: 'capability.mercadito_moderation.name',
     detailKey: 'capability.mercadito_moderation.detail',
@@ -230,7 +246,7 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.districts.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Registry, theming and routing exist. Mercadito is built; the other district experiences are Phase 1+.',
+    blockedBy: 'Registry, theming and routing exist. Mercadito and Community are built; the other district experiences are Phase 1+.',
   },
 
   // --- Integrations ---------------------------------------------------------

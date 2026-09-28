@@ -35,6 +35,8 @@ export const RATE_LIMITS = {
   /** Publishing during the 72-hour monitoring window. */
   publishMonitored: { bucket: 'publish_monitored', limit: 10, windowSeconds: 60 * 60 },
   publishStandard: { bucket: 'publish_standard', limit: 60, windowSeconds: 60 * 60 },
+  /** Replies in Community: enough for a real conversation, not for flooding one. */
+  communityReply: { bucket: 'community_reply', limit: 30, windowSeconds: 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 
 /**

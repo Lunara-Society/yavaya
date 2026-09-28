@@ -230,3 +230,17 @@ export const MERCADITO_RULES = {
   /** Saved searches per member: enough to follow what you want, not a scraper. */
   maxSavedSearches: 20,
 } as const;
+
+/**
+ * Community. Length limits keep posts readable on a phone; none of these is
+ * a policy about who may post — any active member may, free of charge.
+ */
+export const COMMUNITY_RULES = {
+  titleMinLength: 4,
+  titleMaxLength: 100,
+  bodyMinLength: 10,
+  bodyMaxLength: 3000,
+  replyMinLength: 2,
+  replyMaxLength: 1500,
+  pageSize: 20,
+} as const;

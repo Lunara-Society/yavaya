@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito ya está abierto. Los demás distritos abrirán por fases.',
+      text: 'Mercadito y Comunidad ya están abiertos. Los demás distritos abrirán por fases.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -299,15 +299,16 @@ export const siteEs = {
 
     community: {
       eyebrow: 'Distrito · Comunidad',
+      enter: 'Entrar a la plaza',
       title: 'Un lugar para acompañarnos',
       description: 'Comunidad en Yavaya: santuario, muro de oración, apoyo familiar, grupos comunitarios y ayuda local.',
       lead: 'Menos transacción, más personas. Un espacio tranquilo para pedir ayuda, ofrecerla y pertenecer.',
       spaces: [
-        { title: 'Santuario', text: 'Un espacio de fe y reflexión, dentro de Comunidad.' },
-        { title: 'Muro de oración', text: 'Comparte una petición. Otros te acompañan.' },
-        { title: 'Apoyo familiar', text: 'Para los momentos difíciles de una familia, con respeto y discreción.' },
-        { title: 'Grupos comunitarios', text: 'Vecinos, intereses y causas en común.' },
-        { title: 'Ayuda local', text: 'Pedir y ofrecer ayuda cerca de ti.' },
+        { title: 'Ayuda local', text: 'Pedir y ofrecer ayuda cerca de ti. **Abierto.**' },
+        { title: 'Muro de oración', text: 'Comparte una petición. Otros te acompañan. **Abierto.**' },
+        { title: 'Apoyo familiar', text: 'Para los momentos difíciles de una familia, con respeto y discreción; puedes publicar sin mostrar tu nombre. **Abierto.**' },
+        { title: 'Santuario', text: 'Un espacio de fe y reflexión, dentro de Comunidad. Todavía no existe.' },
+        { title: 'Grupos comunitarios', text: 'Vecinos, intereses y causas en común. Todavía no existe.' },
       ],
       yesHead: { eyebrow: 'Lo que cultivamos', title: 'Aquí se viene a sumar' },
       yes: ['Apoyo', 'Educación', 'Conversación constructiva', 'Respeto'],
@@ -652,7 +653,7 @@ export const siteEs = {
         {
           title: 'Fase 1 · El núcleo de Yavaya',
           state: 'dev',
-          text: 'Mercadito ya está abierto, con fotos, reportes y moderación. Siguen Comunidad, Animales e Impacto.',
+          text: 'Mercadito y Comunidad ya están abiertos, con reportes y moderación. Siguen Animales e Impacto.',
           items: ['Mercadito', 'Comunidad', 'Animales', 'Impacto', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
@@ -731,7 +732,7 @@ export const siteEs = {
       faq: [
         { q: '¿Qué es Yavaya?', a: 'Un ecosistema digital para Centroamérica: comprar y vender, pedir a domicilio, encontrar trabajo, apoyar causas, adoptar animales y acompañarse en comunidad, todo con una sola cuenta y una sola reputación.' },
         { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes comprar y vender en Mercadito; los demás distritos abrirán por fases.' },
-        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta: Mercadito es el primer distrito. No damos fechas que no podamos cumplir para los demás; la hoja de ruta muestra el orden en que se abrirán.' },
+        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta: Mercadito y Comunidad son los primeros distritos. No damos fechas que no podamos cumplir para los demás; la hoja de ruta muestra el orden en que se abrirán.' },
         { q: '¿Cuánto cuesta?', a: ['Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones es **siempre gratis**.', 'Lo que se paga es opcional: suscripciones de Work para profesionales y opciones de visibilidad. Hoy no se puede pagar nada.'] },
         { q: '¿Los tokens son criptomoneda?', a: 'No. Son créditos para participar en la plataforma: publicar, destacar, aparecer. No son una inversión, no se intercambian y no hay mercado de tokens.' },
         { q: '¿Tengo que usar tokens?', a: 'Nunca. El efectivo es siempre la opción por defecto y los tokens son siempre opcionales.' },
@@ -837,6 +838,14 @@ export const siteEs = {
             'Tus **sesiones**: cuándo entraste, el tipo de navegador y un resumen cifrado de la red. La cookie de sesión identifica tu sesión y nada más.',
             'Los **códigos de verificación**, solo como resumen, y solo hasta que vencen.',
             'Tu saldo de **tokens** y tu **reputación**, con el historial de cada movimiento.',
+          ],
+        },
+        {
+          title: 'Si participas en Comunidad',
+          text: 'Lo que publicas en la plaza lo ven solo los miembros con sesión iniciada, no el público ni los buscadores.',
+          list: [
+            'Tus publicaciones y respuestas, con tu nombre para mostrar. En oración y apoyo familiar puedes ocultar tu nombre a otros miembros; los moderadores siempre pueden ver quién publicó.',
+            'Quién pulsó «Te acompaño» en cada publicación, para que cada persona cuente una sola vez. Los demás solo ven el total.',
           ],
         },
         {

@@ -1,5 +1,4 @@
 import 'server-only';
-import { randomBytes } from 'node:crypto';
 import { and, asc, count, desc, eq, inArray, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import {
@@ -18,70 +17,32 @@ import { requirePermission, type AuthContext } from '@/server/domains/access/aut
 import { applyRule } from '@/server/domains/reputation/service';
 import { markRemoved } from '@/server/domains/media/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
+import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { PUBLIC_STATUSES } from './rules';
 
 /**
  * Reports on Mercadito listings, and what moderators do about them.
  *
- * Reports on the same listing collect under one open ticket, so a listing
- * reported twenty times is one item in the queue with a count of twenty —
- * not twenty items a moderator could resolve inconsistently.
+ * Reports on the same listing collect under one open ticket (see
+ * moderation/tickets.ts).
  */
 
 export const LISTING_REPORT_CATEGORIES = ['scam', 'fraud', 'fake_listing', 'spam', 'harassment', 'other'] as const;
 export type ListingReportCategory = (typeof LISTING_REPORT_CATEGORIES)[number];
 
-const OPEN_STATUSES = ['open', 'triaged', 'in_review', 'awaiting_reporter'] as const;
+const OPEN_STATUSES = OPEN_TICKET_STATUSES;
 const SUBJECT = 'mercadito_listing';
 
-function ticketCode(): string {
-  return `TCK-${randomBytes(3).toString('hex').toUpperCase()}`;
-}
-
-async function openTicketFor(
+function openListingTicket(
   tx: Executor,
   params: { listingId: string; category: ListingReportCategory; priority: 'normal' | 'high' },
 ): Promise<string> {
-  const [existing] = await tx
-    .select({ id: tickets.id, priority: tickets.priority })
-    .from(tickets)
-    .where(
-      and(
-        eq(tickets.subjectType, SUBJECT),
-        eq(tickets.subjectId, params.listingId),
-        inArray(tickets.status, [...OPEN_STATUSES]),
-      ),
-    )
-    .limit(1)
-    .for('update');
-  if (existing) {
-    if (params.priority === 'high' && existing.priority !== 'high' && existing.priority !== 'urgent') {
-      await tx.update(tickets).set({ priority: 'high', updatedAt: new Date() }).where(eq(tickets.id, existing.id));
-    }
-    return existing.id;
-  }
-
-  // A collision on a 24-bit code is rare but possible; retry rather than fail.
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    const [created] = await tx
-      .insert(tickets)
-      .values({
-        code: ticketCode(),
-        subjectType: SUBJECT,
-        subjectId: params.listingId,
-        category: params.category,
-        priority: params.priority,
-      })
-      .onConflictDoNothing({ target: tickets.code })
-      .returning({ id: tickets.id });
-    if (created) return created.id;
-  }
-  throw errors.internal('could not allocate a ticket code');
+  return openTicketFor(tx, { subjectType: SUBJECT, subjectId: params.listingId, category: params.category, priority: params.priority });
 }
 
 /** Automatic screening found something: queue the listing for a person to look at. */
 export async function openSystemTicket(tx: Executor, params: { listingId: string; flags: string[] }): Promise<void> {
-  const ticketId = await openTicketFor(tx, { listingId: params.listingId, category: 'fake_listing', priority: 'normal' });
+  const ticketId = await openListingTicket(tx, { listingId: params.listingId, category: 'fake_listing', priority: 'normal' });
   await tx.insert(moderationActions).values({
     ticketId,
     actorUserId: null,
@@ -125,7 +86,7 @@ export async function reportListing(
   if (already) return { ticketCode: already.code, duplicate: true };
 
   const priority = params.category === 'scam' || params.category === 'fraud' ? 'high' : 'normal';
-  const ticketId = await openTicketFor(tx, { listingId: params.listingId, category: params.category, priority });
+  const ticketId = await openListingTicket(tx, { listingId: params.listingId, category: params.category, priority });
   await tx.insert(reports).values({
     reporterUserId: params.reporterUserId,
     subjectType: SUBJECT,

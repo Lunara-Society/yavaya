@@ -50,6 +50,13 @@
       "when": 1790555791315,
       "tag": "0006_mercadito_boost",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790556019698,
+      "tag": "0007_community",
+      "breakpoints": true
     }
   ]
 }

@@ -107,7 +107,7 @@ describe('district registry', () => {
     // A district joins this list in the same change that builds it — with
     // its pages, its service and its tests. Marking one available without
     // that is exactly what the capability register exists to prevent.
-    const built = new Set(['mercadito']);
+    const built = new Set(['mercadito', 'community']);
     for (const district of districtList) {
       if (district.status === 'available' && !built.has(district.key)) {
         throw new Error(`${district.key} is marked available but is not built`);

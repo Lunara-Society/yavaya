@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito is open. The other districts open in phases.',
+      text: 'Mercadito and Community are open. The other districts open in phases.',
       link: 'What works today',
     },
     states: {
@@ -287,15 +287,16 @@ export const siteEn: SiteContent = {
 
     community: {
       eyebrow: 'District · Community',
+      enter: 'Enter the square',
       title: 'A place to be there for each other',
       description: 'Community on Yavaya: sanctuary, prayer wall, family support, community groups and local help.',
       lead: 'Less transaction, more people. A calm space to ask for help, offer it, and belong.',
       spaces: [
-        { title: 'Sanctuary', text: 'A space for faith and reflection, inside Community.' },
-        { title: 'Prayer wall', text: 'Share a request. Others stand with you.' },
-        { title: 'Family support', text: 'For a family’s hard moments, with respect and discretion.' },
-        { title: 'Community groups', text: 'Neighbours, shared interests and shared causes.' },
-        { title: 'Local help', text: 'Ask for and offer help near you.' },
+        { title: 'Local help', text: 'Ask for and offer help near you. **Open.**' },
+        { title: 'Prayer wall', text: 'Share a request. Others stand with you. **Open.**' },
+        { title: 'Family support', text: 'For a family’s hard moments, with respect and discretion; you can post without showing your name. **Open.**' },
+        { title: 'Sanctuary', text: 'A space for faith and reflection, inside Community. Not built yet.' },
+        { title: 'Community groups', text: 'Neighbours, shared interests and shared causes. Not built yet.' },
       ],
       yesHead: { eyebrow: 'What we grow', title: 'People come here to add' },
       yes: ['Support', 'Education', 'Constructive conversation', 'Respect'],
@@ -640,7 +641,7 @@ export const siteEn: SiteContent = {
         {
           title: 'Phase 1 · Core Yavaya',
           state: 'dev',
-          text: 'Mercadito is open, with photos, reports and moderation. Community, Animals and Impact come next.',
+          text: 'Mercadito and Community are open, with reports and moderation. Animals and Impact come next.',
           items: ['Mercadito', 'Community', 'Animals', 'Impact', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
@@ -719,7 +720,7 @@ export const siteEn: SiteContent = {
       faq: [
         { q: 'What is Yavaya?', a: 'A digital ecosystem for Central America: buying and selling, ordering delivery, finding work, supporting causes, adopting animals and being there for each other in community — all with one account and one reputation.' },
         { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can already buy and sell on Mercadito; the other districts open in phases.' },
-        { q: 'When does Yavaya open?', a: 'It is open: Mercadito is the first district. We do not give dates we cannot keep for the others; the roadmap shows the order in which they will open.' },
+        { q: 'When does Yavaya open?', a: 'It is open: Mercadito and Community are the first districts. We do not give dates we cannot keep for the others; the roadmap shows the order in which they will open.' },
         { q: 'What does it cost?', a: ['Signing up, creating an account, viewing listings, reading content and receiving donations are **always free**.', 'What is paid is optional: Work subscriptions for professionals and visibility options. Nothing can be paid for today.'] },
         { q: 'Are tokens cryptocurrency?', a: 'No. They are credits for taking part in the platform: posting, featuring, being seen. They are not an investment, cannot be traded, and there is no token market.' },
         { q: 'Do I have to use tokens?', a: 'Never. Cash is always the default and tokens are always optional.' },
@@ -825,6 +826,14 @@ export const siteEn: SiteContent = {
             'Your **sessions**: when you signed in, the kind of browser, and an encrypted network digest. The session cookie identifies your session and nothing else.',
             '**Verification codes**, only as digests, and only until they expire.',
             'Your **token** balance and **reputation**, with the history of every change.',
+          ],
+        },
+        {
+          title: 'If you take part in Community',
+          text: 'What you post in the square is seen only by signed-in members, not by the public or by search engines.',
+          list: [
+            'Your posts and replies, with your display name. In prayer and family support you can hide your name from other members; moderators can always see who posted.',
+            'Who pressed "I am with you" on each post, so each person counts once. Others only see the total.',
           ],
         },
         {

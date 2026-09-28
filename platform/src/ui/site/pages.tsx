@@ -323,7 +323,21 @@ export function CommunityBody({ c }: { c: SiteContent }) {
   const p = c.pages.community;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="community" />} art={<DistrictScene id="community" priority />} />
+      <PageHero
+        eyebrow={p.eyebrow}
+        title={p.title}
+        lead={p.lead}
+        tinted
+        art={<DistrictScene id="community" priority />}
+        badge={
+          <>
+            <DistrictStatus c={c} id="community" />{' '}
+            <Link className="btn btn-gold" href="/community" style={{ marginLeft: 12 }}>
+              {p.enter}
+            </Link>
+          </>
+        }
+      />
       <section className="section">
         <div className="wrap">
           <div className="calm">

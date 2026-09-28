@@ -214,6 +214,34 @@ The guilloché seal and ornamental rules are drawn in code
 
 ---
 
+## Community — what is built and what is undecided
+
+Built: the town square at `/community` with local help (requests and
+offers), the prayer wall and family support; replies; "I am with you" on
+prayer and family posts; the author marking a post resolved or withdrawing
+it; reports on posts and on single replies; the moderation queue at
+`/admin/community`. Posting is free (`community.publish_request`, cost 0).
+
+Decisions taken, open to change:
+
+- **Members only.** The square is not public: many posts are about someone's
+  hardest week, and the Bible forbids presenting a vulnerable person's
+  situation as entertainment.
+- **Discretion.** Prayer and family-support posts can hide the author's
+  name from other members. Moderators always see it. Local-help posts always
+  show it, because a stranger coming to your door should know who asked.
+- **No activity-feed events** for Community, for the same reason.
+
+Undecided (not built, flagged rather than guessed):
+
+- **Reputation and tokens for helping.** The Bible says contribution earns
+  reputation (primary) and tokens (secondary), with a weekly cap, but sets no
+  amounts and no definition of a "confirmed" help. Nothing is awarded yet.
+- **Sanctuary and community groups** need their own design (membership,
+  group moderators) and are shown as not built.
+
+---
+
 ## Mercadito — rules and open decisions
 
 Live values are in `system_settings` (seeded from `MERCADITO_RULES` in

@@ -101,7 +101,7 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.community.name',
     taglineKey: 'district.community.tagline',
     phase: 1,
-    status: 'planned',
+    status: 'available',
     theme: { accent: 'purple', tokenSet: 'district-community', layout: 'calm-column' },
   },
   impact: {
