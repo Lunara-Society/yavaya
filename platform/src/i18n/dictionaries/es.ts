@@ -460,6 +460,8 @@ export const es = {
   'mercadito.whatsapp.missing': 'Sin número, tus publicaciones aparecen después de las que sí tienen uno.',
   'mercadito.mine.title': 'Mis publicaciones',
   'mercadito.mine.empty': 'Todavía no has publicado nada.',
+  'account.role.admin': 'Administrador · acceso completo a la plataforma',
+  'account.role.moderator': 'Moderador · puedes revisar reportes y retirar publicaciones',
   'nav.moderation': 'Moderación',
   'mercadito.mod.title': 'Moderación de Mercadito',
   'mercadito.mod.lead': 'Casos abiertos: reportes de miembros y señales de la revisión automática.',

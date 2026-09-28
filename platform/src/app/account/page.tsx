@@ -8,7 +8,7 @@ import { PageScene } from '@/ui/site/art';
 import { shellContext } from '@/ui/shell-context';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { getBalance } from '@/server/domains/tokens/service';
-import { hasPermission } from '@/server/domains/access/authorize';
+import { hasPermission, isAdmin } from '@/server/domains/access/authorize';
 import { recentActivity } from '@/server/domains/notifications/activity';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
@@ -29,11 +29,12 @@ export default async function AccountPage() {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
 
-  const [shield, balance, activity, moderator] = await Promise.all([
+  const [shield, balance, activity, moderator, admin] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 6 }),
     hasPermission(db(), userId, 'listings.moderate'),
+    isAdmin(db(), userId),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const shortcuts = moderator
@@ -52,6 +53,13 @@ export default async function AccountPage() {
           <p className="member-hero-eyebrow">{t('nav.member_area')}</p>
           <h1>{member.displayName}</h1>
           <p>{t('account.subtitle')}</p>
+          {/* The member's own role, shown only to them. It is never part of
+              the public Trust Shield: authority is not a trust signal. */}
+          {admin || moderator ? (
+            <p className="role-badge">
+              <span aria-hidden="true">⚑</span> {t(admin ? 'account.role.admin' : 'account.role.moderator')}
+            </p>
+          ) : null}
         </div>
       </section>
 

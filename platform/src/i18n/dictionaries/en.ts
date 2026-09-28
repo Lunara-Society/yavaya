@@ -436,6 +436,8 @@ export const en: Dictionary = {
   'mercadito.whatsapp.missing': 'Without a number, your listings appear after those that have one.',
   'mercadito.mine.title': 'My listings',
   'mercadito.mine.empty': 'You haven\'t published anything yet.',
+  'account.role.admin': 'Administrator · full access to the platform',
+  'account.role.moderator': 'Moderator · you can review reports and remove listings',
   'nav.moderation': 'Moderation',
   'mercadito.mod.title': 'Mercadito moderation',
   'mercadito.mod.lead': 'Open cases: member reports and signals from automatic screening.',
