@@ -535,6 +535,62 @@ td strong { color: var(--text); }
 .mk-case { display: grid; grid-template-columns: 120px 1fr; gap: 16px; }
 .mk-case img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; }
 
+
+/* ── Photographic page headers ───────────────────────────────────────── */
+.page-hero.with-photo { min-height: clamp(380px, 52vh, 560px); display: flex; align-items: flex-end; color: #f8f6f1; border-bottom: 0; background: #050b16; }
+.page-hero.with-photo > .wrap { position: relative; z-index: 1; width: 100%; }
+.page-hero-photo { position: absolute; inset: 0; overflow: hidden; }
+.page-photo { position: absolute; inset: -3%; width: 106%; height: 106%; object-fit: cover; animation: kenburns 20s cubic-bezier(.2,.6,.2,1) both; }
+.alive .page-photo { translate: calc(var(--px, 0) * -12px) calc(var(--py, 0) * -8px); transition: translate 1s cubic-bezier(.2,.7,.2,1); }
+.page-hero.with-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,11,22,0.88) 0%, rgba(5,11,22,0.55) 45%, rgba(5,11,22,0.1) 100%), linear-gradient(180deg, rgba(5,11,22,0) 55%, var(--bg) 100%); }
+.page-hero.with-photo h1 { color: #f8f6f1; text-shadow: 0 2px 30px rgba(0,0,0,0.35); }
+.page-hero.with-photo .lead { color: rgba(248, 246, 241, 0.86); }
+.page-hero.with-photo .eyebrow { color: #d4af37; }
+.page-hero.with-photo .page-hero-text { animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.2s both; }
+
+
+/* ── Trust Shield: the identity card ─────────────────────────────────── */
+.idcard {
+  position: relative; overflow: hidden; border-radius: 20px; padding: 22px 24px 20px; color: #f8f6f1;
+  background: radial-gradient(120% 90% at 100% 0%, #1a2d52 0%, transparent 60%), linear-gradient(160deg, #0d1c36 0%, #070f1d 100%);
+  border: 1px solid rgba(212, 175, 55, 0.55); box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+.idcard::before { content: ""; position: absolute; inset: 6px; border-radius: 15px; border: 1px solid rgba(212, 175, 55, 0.18); pointer-events: none; }
+.idcard-seal { position: absolute; right: -90px; top: -80px; width: 320px; height: 320px; color: rgba(212, 175, 55, 0.14); pointer-events: none; }
+.idcard > *:not(.idcard-seal) { position: relative; }
+.idcard-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.idcard-brand { font-family: var(--serif); font-weight: 600; letter-spacing: 0.22em; font-size: 0.8rem; color: #d4af37; }
+.idcard-status { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #0a1428; background: linear-gradient(180deg, #f0d06a, #c9a22c); padding: 4px 10px; border-radius: 999px; }
+.idcard-main { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 16px 0 12px; }
+.idcard-name { font-family: var(--serif); font-size: 1.55rem; font-weight: 600; line-height: 1.15; margin: 0; }
+.idcard-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.18em; color: rgba(248,246,241,0.7); font-size: 0.85rem; margin: 6px 0 0; }
+.idcard-meter { position: relative; width: 104px; height: 104px; margin: 0; flex: none; }
+.idcard-meter svg { width: 100%; height: 100%; }
+.idcard-meter circle { fill: none; stroke-width: 6; stroke-linecap: round; }
+.idcard-meter-track { stroke: rgba(248, 246, 241, 0.12); }
+.idcard-meter-fill { stroke: #d4af37; filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.5)); animation: meter 1.6s cubic-bezier(.2,.7,.2,1) 0.3s both; }
+@keyframes meter { from { stroke-dasharray: 0 999; } }
+.idcard-meter figcaption { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; line-height: 1; }
+.idcard-meter strong { font-size: 1.5rem; font-weight: 800; color: #f3dc8a; }
+.idcard-meter span { font-size: 0.7rem; color: rgba(248,246,241,0.6); margin-top: 3px; }
+.idcard-facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0; padding: 12px 0; border-top: 1px solid rgba(212,175,55,0.2); border-bottom: 1px solid rgba(212,175,55,0.2); }
+.idcard-facts dt { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(248,246,241,0.55); }
+.idcard-facts dd { margin: 3px 0 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.idcard-checks { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; }
+.idcard-checks li { display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(248,246,241,0.2); color: rgba(248,246,241,0.6); }
+.idcard-checks li.met { border-color: rgba(63, 191, 127, 0.7); color: #62d69a; background: rgba(63, 191, 127, 0.08); }
+.idcard-caution { margin: 14px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 0.84rem; border: 1px solid rgba(224, 169, 59, 0.6); background: rgba(224, 169, 59, 0.08); color: #f3d9a4; }
+
+
+/* ── Member area ─────────────────────────────────────────────────────── */
+.member-hero { position: relative; overflow: hidden; border-radius: 22px; min-height: 220px; display: flex; align-items: flex-end; padding: 26px 28px; color: #f8f6f1; border: 1px solid rgba(212,175,55,0.35); background: #050b16; }
+.member-hero-photo { position: absolute; inset: 0; }
+.member-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,11,22,0.9), rgba(5,11,22,0.35) 70%, rgba(5,11,22,0.15)); }
+.member-hero-text { position: relative; z-index: 1; }
+.member-hero-eyebrow { color: #d4af37; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 6px; }
+.member-hero h1 { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 6px; color: #f8f6f1; }
+.member-hero p:last-child { margin: 0; color: rgba(248,246,241,0.8); }
+
 /* ── Motion and finish ──────────────────────────────────────────────────
  * "Use sparingly. Trust platforms should feel stable." (Master Bible)
  * Things arrive once, gently; the only continuous motion is slow enough to

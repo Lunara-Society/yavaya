@@ -1,6 +1,7 @@
 import type { Translator, MessageKey } from '@/i18n';
 import type { TrustShield } from '@/server/domains/trust/shield';
 import { REPUTATION_RULES } from '@/config/business-rules';
+import { Guilloche } from '@/ui/site/art';
 
 /**
  * Trust Shield.
@@ -11,6 +12,9 @@ import { REPUTATION_RULES } from '@/config/business-rules';
  * document or a moderation note.
  *
  * Verification states are shown as words plus a mark, never as colour alone.
+ *
+ * Drawn as an identity card — navy, gold edge, a guilloché security pattern —
+ * because that is what it is: the member's Yavaya identity, shown to others.
  */
 export function TrustShieldCard({ shield, t }: { shield: TrustShield; t: Translator }) {
   const checks: Array<{ labelKey: MessageKey; met: boolean }> = [
@@ -19,59 +23,65 @@ export function TrustShieldCard({ shield, t }: { shield: TrustShield; t: Transla
     { labelKey: 'trust.phone_verified', met: shield.phoneVerified },
   ];
 
+  // The score as a share of a 270° arc: a meter people read at a glance,
+  // with the number itself always printed beside it.
+  const share = Math.max(0, Math.min(1, shield.trustScore / REPUTATION_RULES.maximumScore));
+  const radius = 44;
+  const arc = 2 * Math.PI * radius * 0.75;
+
   return (
-    <section className="surface-card p-4" aria-label={t('trust.shield')}>
-      <header className="flex items-baseline justify-between gap-3">
-        <p className="font-mono text-sm tracking-wider text-[var(--text-secondary)]">{shield.yayId}</p>
-        <p className="text-2xs font-semibold tracking-wide uppercase text-[var(--accent)]">
-          {t(shield.statusKey as MessageKey)}
-        </p>
+    <section className="idcard" aria-label={t('trust.shield')}>
+      <Guilloche className="idcard-seal" size={360} lobes={30} rings={9} strokeWidth={0.5} />
+      <header className="idcard-top">
+        <span className="idcard-brand">YAVAYA</span>
+        <span className="idcard-status">{t(shield.statusKey as MessageKey)}</span>
       </header>
 
-      <p className="mt-1 text-lg font-semibold">{shield.displayName}</p>
+      <div className="idcard-main">
+        <div>
+          <p className="idcard-name">{shield.displayName}</p>
+          <p className="idcard-id">{shield.yayId}</p>
+        </div>
+        <figure className="idcard-meter" aria-label={`${t('trust.score')}: ${shield.trustScore}/${REPUTATION_RULES.maximumScore}`}>
+          <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <circle cx="50" cy="50" r={radius} className="idcard-meter-track" strokeDasharray={`${arc} 999`} transform="rotate(135 50 50)" />
+            <circle
+              cx="50"
+              cy="50"
+              r={radius}
+              className="idcard-meter-fill"
+              strokeDasharray={`${arc * share} 999`}
+              transform="rotate(135 50 50)"
+            />
+          </svg>
+          <figcaption>
+            <strong>{shield.trustScore}</strong>
+            <span>/{REPUTATION_RULES.maximumScore}</span>
+          </figcaption>
+        </figure>
+      </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+      <dl className="idcard-facts">
         <div>
-          <dt className="text-[var(--text-muted)]">{t('trust.score')}</dt>
-          <dd className="text-base font-semibold tabular-nums">{shield.trustScore}/{REPUTATION_RULES.maximumScore}</dd>
+          <dt>{t('trust.account_age')}</dt>
+          <dd>{t('trust.account_age_days', { days: shield.accountAgeDays })}</dd>
         </div>
         <div>
-          <dt className="text-[var(--text-muted)]">{t('trust.account_age')}</dt>
-          <dd className="text-base font-semibold tabular-nums">
-            {t('trust.account_age_days', { days: shield.accountAgeDays })}
-          </dd>
-        </div>
-        <div className="col-span-2">
-          <dt className="text-[var(--text-muted)]">{t('trust.transactions')}</dt>
-          <dd className="text-base font-semibold tabular-nums">{shield.successfulTransactions}</dd>
+          <dt>{t('trust.transactions')}</dt>
+          <dd>{shield.successfulTransactions}</dd>
         </div>
       </dl>
 
-      <ul className="mt-4 flex flex-wrap gap-2">
+      <ul className="idcard-checks">
         {checks.map((check) => (
-          <li
-            key={check.labelKey}
-            className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-2xs font-medium"
-            style={
-              check.met
-                ? { borderColor: 'var(--color-positive)', color: 'var(--color-positive)' }
-                : { color: 'var(--text-muted)' }
-            }
-          >
+          <li key={check.labelKey} className={check.met ? 'met' : undefined}>
             <span aria-hidden="true">{check.met ? '✓' : '—'}</span>
             {t(check.labelKey)}
           </li>
         ))}
       </ul>
 
-      {shield.cautionKey ? (
-        <p
-          className="mt-4 rounded-lg border px-3 py-2 text-sm"
-          style={{ borderColor: 'var(--color-caution)' }}
-        >
-          {t(shield.cautionKey as MessageKey)}
-        </p>
-      ) : null}
+      {shield.cautionKey ? <p className="idcard-caution">{t(shield.cautionKey as MessageKey)}</p> : null}
     </section>
   );
 }

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { SiteContent } from '@/i18n/site';
 import { DISTRICTS, type DistrictKey } from '@/config/districts';
 import { Icon, type IconName } from './icons';
-import { DistrictScene } from './art';
+import { DistrictScene, PageScene, type PagePhoto } from './art';
 import { Md, Paras } from './md';
 
 /**
@@ -52,6 +52,7 @@ export function PageHero({
   tinted,
   badge,
   art,
+  photo,
 }: {
   eyebrow: string;
   title: string;
@@ -60,9 +61,12 @@ export function PageHero({
   badge?: ReactNode;
   /** An illustration set beside the words, e.g. a district's scene. */
   art?: ReactNode;
+  /** A photograph behind the whole header, for the platform's own pages. */
+  photo?: PagePhoto;
 }) {
   return (
-    <section className={`page-hero${tinted ? ' tinted' : ''}${art ? ' with-art' : ''}`}>
+    <section className={`page-hero${tinted ? ' tinted' : ''}${art ? ' with-art' : ''}${photo ? ' with-photo' : ''}`}>
+      {photo ? <PageScene name={photo} className="page-hero-photo" /> : null}
       <div className="wrap">
         <div className="page-hero-text">
           <div className="eyebrow">{eyebrow}</div>

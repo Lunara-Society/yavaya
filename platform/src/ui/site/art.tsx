@@ -149,3 +149,26 @@ export function DistrictScene({ id, className, priority }: { id: DistrictId; cla
     />
   );
 }
+
+/** Photographs that sit behind a page's header, full-bleed. */
+export const PAGE_PHOTOS = ['districts', 'trust', 'reputation', 'tokens', 'roadmap', 'street', 'transparency', 'status'] as const;
+export type PagePhoto = (typeof PAGE_PHOTOS)[number];
+
+export function PageScene({ name, className }: { name: PagePhoto; className?: string }) {
+  return (
+    <div className={className} aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img
+        className="page-photo"
+        src={`/art/${name}-1600.webp`}
+        srcSet={srcSet(name, HERO_WIDTHS)}
+        sizes="100vw"
+        width={1600}
+        height={900}
+        alt=""
+        fetchPriority="high"
+        decoding="async"
+      />
+    </div>
+  );
+}

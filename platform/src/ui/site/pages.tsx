@@ -109,7 +109,7 @@ export function DistrictsBody({ c }: { c: SiteContent }) {
   const p = c.pages.districts;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="districts" />
       <section className="section">
         <div className="wrap">
           <div className="gates">
@@ -442,7 +442,7 @@ export function TrustBody({ c }: { c: SiteContent }) {
   const p = c.pages.trust;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="trust" />
       <section className="section">
         <div className="wrap">
           <p className="quote">
@@ -523,7 +523,7 @@ export function ReputationBody({ c }: { c: SiteContent }) {
   const p = c.pages.reputation;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="reputation" />
       <section className="section">
         <div className="wrap">
           <div className="split">
@@ -595,7 +595,7 @@ export function TokensBody({ c }: { c: SiteContent }) {
   const p = c.pages.tokens;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
       <section className="section">
         <div className="wrap">
           <Cards items={p.pillars} />
@@ -652,7 +652,7 @@ export function PricingBody({ c }: { c: SiteContent }) {
   const p = c.pages.pricing;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
       <section className="section">
         <div className="wrap">
           <div className="split">
@@ -701,7 +701,7 @@ export function TransparencyBody({ c }: { c: SiteContent }) {
   const p = c.pages.transparency;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="transparency" />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.willHead} />
@@ -753,7 +753,7 @@ export function StatusBody({
   const p = c.pages.status;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="status" />
       <section className="section">
         <div className="wrap narrow">
           <div className="register">
@@ -802,7 +802,7 @@ export function RoadmapBody({ c }: { c: SiteContent }) {
   const p = c.pages.roadmap;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="roadmap" />
       <section className="section">
         <div className="wrap narrow">
           <div className="grid">
@@ -839,7 +839,7 @@ export function AboutBody({ c }: { c: SiteContent }) {
   const p = c.pages.about;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="districts" />
       <section className="section">
         <div className="wrap">
           <div className="split">
@@ -910,7 +910,7 @@ export function HelpBody({ c }: { c: SiteContent }) {
   const p = c.pages.help;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="street" />
       <section className="section">
         <div className="wrap narrow">
           <div className="faq">

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
 import { AppShell } from '@/ui/components/app-shell';
 import { TrustShieldCard } from '@/ui/components/trust-shield';
+import { PageScene } from '@/ui/site/art';
 import { shellContext } from '@/ui/shell-context';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { getBalance } from '@/server/domains/tokens/service';
@@ -45,8 +46,14 @@ export default async function AccountPage() {
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
-      <h1 className="text-2xl font-semibold tracking-tight">{t('nav.member_area')}</h1>
-      <p className="mt-1 text-[var(--text-secondary)]">{t('account.subtitle')}</p>
+      <section className="member-hero">
+        <PageScene name="districts" className="member-hero-photo" />
+        <div className="member-hero-text">
+          <p className="member-hero-eyebrow">{t('nav.member_area')}</p>
+          <h1>{member.displayName}</h1>
+          <p>{t('account.subtitle')}</p>
+        </div>
+      </section>
 
       <div className="mt-6">
         <TrustShieldCard shield={shield} t={t} />
