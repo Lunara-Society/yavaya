@@ -290,10 +290,15 @@ const DUMMY_HASH =
   'scrypt$32768$8$1$AAAAAAAAAAAAAAAAAAAAAA==$' +
   'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
 
-/** Consumes an email or phone verification code. */
+/**
+ * Consumes an email verification code.
+ *
+ * Phone codes go through phone/service.ts instead: a phone check may have to
+ * ask the provider, and confirming one writes the number to the account.
+ */
 export async function consumeVerificationCode(
   database: Database,
-  params: { userId: string; kind: 'email' | 'phone'; code: string },
+  params: { userId: string; kind: 'email'; code: string },
 ): Promise<{ ok: boolean; reason?: 'expired' | 'no_challenge' | 'too_many_attempts' | 'mismatch' }> {
   const rate = await consumeRateLimit(database, RATE_LIMITS.verifyCode, params.userId);
   if (!rate.allowed) throw errors.rateLimited(rate.retryAfterSeconds);
@@ -341,24 +346,20 @@ export async function consumeVerificationCode(
       .set({ status: 'approved', consumedAt: now })
       .where(eq(verificationChallenges.id, challenge.id));
 
-    if (params.kind === 'email') {
-      await tx
-        .update(users)
-        .set({
-          emailVerifiedAt: now,
-          // Verification lifts a pending account into normal use. A restricted
-          // account stays restricted until a human clears its review case.
-          status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
-        })
-        .where(eq(users.id, params.userId));
-    } else {
-      await tx.update(users).set({ phoneVerifiedAt: now }).where(eq(users.id, params.userId));
-    }
+    await tx
+      .update(users)
+      .set({
+        emailVerifiedAt: now,
+        // Verification lifts a pending account into normal use. A restricted
+        // account stays restricted until a human clears its review case.
+        status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
+      })
+      .where(eq(users.id, params.userId));
 
     await recordAudit(tx, {
       actorType: 'user',
       actorUserId: params.userId,
-      action: params.kind === 'email' ? 'identity.email_verified' : 'identity.phone_verified',
+      action: 'identity.email_verified',
       subjectType: 'user',
       subjectId: params.userId,
     });

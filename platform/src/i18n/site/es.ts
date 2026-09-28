@@ -217,7 +217,7 @@ export const siteEs = {
       newSeller: [
         'Una cuenta con menos de 7 días puede tener hasta **3 publicaciones**.',
         'Una publicación sin número de contacto aparece después de las que sí lo tienen.',
-        'Los números de WhatsApp **no están verificados** todavía, y la publicación lo dice.',
+        'Un número de WhatsApp aparece como **verificado** solo si el vendedor confirmó ese mismo número por SMS. Si no, la publicación dice que no está verificado.',
       ],
       payNote: '**Yavaya no procesa pagos en Mercadito.** El pago es entre comprador y vendedor, en efectivo por defecto. Publicar cuesta un token; buscar, comprar y escribir al vendedor no cuestan nada.',
     },
@@ -854,6 +854,7 @@ export const siteEs = {
           list: [
             'Las **fotos** se guardan re-codificadas, sin ubicación GPS ni datos de la cámara. Guardamos un resumen de cada foto original para detectar fotos copiadas entre vendedores.',
             'Tu **número de WhatsApp**, si lo agregas, se usa solo para el botón de contacto, que ven los miembros con sesión iniciada. Puedes quitarlo cuando quieras.',
+            'Si **verificas tu teléfono**, el número se envía a nuestro proveedor de SMS solo para mandarte el código. El número verificado se guarda en tu cuenta y no se muestra a nadie, salvo que sea también tu número de WhatsApp.',
             'Si alguien **reporta** una publicación, el reporte y su autor solo los ven los moderadores. El vendedor no sabe quién reportó.',
             'Si retiras una publicación o quitas una foto, deja de mostrarse. Una publicación retirada por moderación se conserva como evidencia, sin mostrarse a nadie.',
           ],

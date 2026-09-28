@@ -113,7 +113,17 @@ const serverSchema = z.object({
   RESEND_API_KEY: z.string().optional(),
   RESEND_API_URL: z.string().url().default('https://api.resend.com'),
 
-  SMS_PROVIDER: z.enum(['console', 'unconfigured']).default('unconfigured'),
+  /**
+   * Phone verification. `twilio_verify` sends and checks the code through
+   * Twilio Verify, which handles sender IDs and carrier rules per country;
+   * `console` writes the code to the server log and sends nothing.
+   */
+  SMS_PROVIDER: z.enum(['twilio_verify', 'console', 'unconfigured']).default('unconfigured'),
+  TWILIO_ACCOUNT_SID: z.string().min(1).optional(),
+  TWILIO_AUTH_TOKEN: z.string().min(1).optional(),
+  TWILIO_VERIFY_SERVICE_SID: z.string().min(1).optional(),
+  /** Overridable only so the integration test can answer as Twilio does. */
+  TWILIO_VERIFY_API_URL: z.string().url().default('https://verify.twilio.com'),
 
   PAYPAL_ENV: z.enum(['sandbox', 'live']).optional(),
   PAYPAL_CLIENT_ID: z.string().optional(),

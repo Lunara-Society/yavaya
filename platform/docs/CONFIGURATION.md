@@ -82,14 +82,52 @@ back a valid registration — but the caller must never report success on a
 ## SMS delivery — `SMS_PROVIDER`
 
 **Needed for:** phone verification, which is the heaviest single anti-duplication
-signal and a prerequisite for the `phone_verified` reputation rule.
+signal and earns the `phone_verified` reputation rule.
 
-**Until configured:** phone verification cannot be completed. Accounts can still
-register and transact at lower trust.
+**Built:** the whole flow, at `/account/phone`. A member enters a number in
+international form, receives a 6-digit code by SMS, and types it back. Only
+then is the number written to the account with `phone_verified_at`; starting
+a verification for another number leaves the verified one in place until the
+new one is confirmed. On confirmation the number is recorded as a duplicate
+signal, the `phone_verified` rule is applied once per member, and the phone
+medallion appears on the Trust Shield. In Mercadito, a listing shows
+"verified by SMS" beside the WhatsApp button only when the WhatsApp number is
+the verified number, and `/account/phone` offers to make it so.
 
-**To complete:** choose a provider with reliable delivery to all seven launch
-countries — coverage and per-country pricing vary sharply across Central
-America, and this is a commercial decision, not a technical one.
+Guards: one live code per member, the email flow's resend cooldown and daily
+cap (`VERIFICATION_RULES`), at most 5 codes an hour per member and 5 a day
+per number across all accounts (the per-number limit stops the form being
+used to flood a stranger's phone or pump premium-rate numbers), and 5
+attempts per code.
+
+**Until configured:** `/account/phone` says SMS verification is not active and
+shows no form; the capability reads `REQUIRES_CONFIGURATION`. Accounts can
+still register and transact at lower trust.
+
+**To complete** — Twilio Verify, which handles sender IDs and carrier rules
+per country (the adapter speaks its REST API directly, no SDK):
+
+1. Create a Twilio account and, under Verify, a Service. Set its friendly name
+   to `Yavaya` — it is the name in the SMS text.
+2. Under Verify → Geo permissions, enable the launch countries. Only these can
+   receive codes; others get "we cannot send SMS to that country".
+3. Set on the web service:
+   `SMS_PROVIDER=twilio_verify`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`,
+   `TWILIO_VERIFY_SERVICE_SID`. Keep them as secrets.
+4. `/status` then reports SMS delivery as REAL.
+
+`SMS_PROVIDER=console` is for local development: codes go to the server log,
+nothing is sent, and the capability reads `MOCK`.
+
+**Open decisions:**
+
+- **One number, several accounts.** Families share phones. A number that
+  verifies more than one account is recorded as a duplicate signal and is not
+  refused. Whether it should be refused is the owner's call.
+- **WhatsApp as a channel.** Twilio Verify can send codes over WhatsApp, which
+  many members prefer to SMS. It needs a WhatsApp sender registered with Meta;
+  the adapter sends `Channel=sms` only until that exists.
+- **Cost.** Twilio charges per verification, and the price varies by country.
 
 ---
 
@@ -270,9 +308,10 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
 3. **"Listings with no phone: reduced visibility".** Implemented as ordering:
    listings whose seller has a WhatsApp number sort first; the rest follow,
    never hidden.
-4. **Phone numbers are not verified.** SMS is not configured. The listing
-   page says so beside the WhatsApp button, and `phoneVerified` on the Trust
-   Shield stays false.
+4. **Phone numbers.** A WhatsApp number shows as verified only when the
+   seller verified that same number by SMS (see "SMS delivery"). Until SMS is
+   configured every number shows as not verified, and the listing page says
+   so beside the WhatsApp button.
 5. **AI checks.** Of the Bible's list, exact duplicate photos across sellers
    and repeated titles by one seller are flagged to the moderation queue.
    Reverse image search, scam-keyword detection and price-anomaly detection are

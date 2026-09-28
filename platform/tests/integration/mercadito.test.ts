@@ -355,6 +355,22 @@ describe('browsing', () => {
   });
 });
 
+describe('a verified WhatsApp number', () => {
+  it('is shown as verified only when it is the number the seller verified by SMS', async () => {
+    const seller = await createMember({ tokens: 2 });
+    const { listingId } = await publish(seller, 3);
+    await db().transaction((tx) => setWhatsapp(tx, { userId: seller, phoneE164: '+50588888888' }));
+    expect((await getListing(db(), listingId, 'es'))?.seller.phoneVerified).toBe(false);
+
+    // A different verified number does not vouch for this one.
+    await db().update(users).set({ phoneE164: '+50577777777', phoneVerifiedAt: new Date() }).where(eq(users.id, seller));
+    expect((await getListing(db(), listingId, 'es'))?.seller.phoneVerified).toBe(false);
+
+    await db().update(users).set({ phoneE164: '+50588888888' }).where(eq(users.id, seller));
+    expect((await getListing(db(), listingId, 'es'))?.seller.phoneVerified).toBe(true);
+  });
+});
+
 describe('trust on every card and public profiles', () => {
   it('carries the seller\'s trust on each card', async () => {
     const seller = await createMember({ tokens: 2 });

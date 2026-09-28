@@ -205,7 +205,7 @@ export const siteEn: SiteContent = {
       newSeller: [
         'An account younger than 7 days can hold up to **3 listings**.',
         'A listing without a contact number appears after those that have one.',
-        'WhatsApp numbers are **not verified** yet, and the listing says so.',
+        'A WhatsApp number shows as **verified** only if the seller confirmed that same number by SMS. Otherwise the listing says it is not verified.',
       ],
       payNote: '**Yavaya does not process Mercadito payments.** Payment is between buyer and seller, cash by default. Publishing costs one token; browsing, buying and messaging the seller cost nothing.',
     },
@@ -842,6 +842,7 @@ export const siteEn: SiteContent = {
           list: [
             '**Photos** are stored re-encoded, without GPS location or camera data. We keep a digest of each original photo to detect photos copied between sellers.',
             'Your **WhatsApp number**, if you add it, is used only for the contact button, which signed-in members see. You can remove it at any time.',
+            'If you **verify your phone**, the number is sent to our SMS provider only to deliver your code. The verified number is kept on your account and shown to no one, unless it is also your WhatsApp number.',
             'If someone **reports** a listing, the report and its author are seen only by moderators. The seller does not learn who reported.',
             'If you withdraw a listing or remove a photo, it stops being shown. A listing removed by moderation is kept as evidence, shown to no one.',
           ],

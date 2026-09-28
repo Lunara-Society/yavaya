@@ -137,7 +137,11 @@ export default async function ListingPage({ params, searchParams }: Params) {
                   >
                     {t('mercadito.listing.contact')}
                   </a>
-                  {listing.seller.phoneVerified ? null : (
+                  {listing.seller.phoneVerified ? (
+                    <p className="mk-verified" style={{ fontSize: '0.85rem', marginTop: 8 }}>
+                      <span aria-hidden="true">✓</span> {t('mercadito.listing.phone_verified')}
+                    </p>
+                  ) : (
                     <p className="muted" style={{ fontSize: '0.85rem', marginTop: 8 }}>
                       {t('mercadito.listing.phone_unverified')}
                     </p>

@@ -12,6 +12,7 @@ import { hasPermission, isAdmin } from '@/server/domains/access/authorize';
 import { recentActivity } from '@/server/domains/notifications/activity';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
+import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
 
 export const metadata: Metadata = { title: 'Member area' };
 export const dynamic = 'force-dynamic';
@@ -89,6 +90,19 @@ export default async function AccountPage() {
         </Link>
       ) : null}
 
+      {/* Offered only when a code would really be sent; otherwise the
+          shortcut below leads to a page that says why it cannot be done. */}
+      {shield.emailVerified && !shield.phoneVerified && canVerifyPhones() ? (
+        <Link
+          href="/account/phone"
+          className="mt-4 flex min-h-touch items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
+          style={{ borderColor: 'var(--color-caution)' }}
+        >
+          <span>{t('phone.banner')}</span>
+          <span aria-hidden="true">→</span>
+        </Link>
+      ) : null}
+
       {underMonitoring ? (
         <p
           className="mt-4 rounded-xl border px-4 py-3 text-sm"
@@ -154,6 +168,7 @@ export default async function AccountPage() {
 const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = [
   { href: '/mercadito/mine', labelKey: 'mercadito.mine.title', glyph: '▦' },
   { href: '/account/tokens', labelKey: 'nav.tokens', glyph: '◆' },
+  { href: '/account/phone', labelKey: 'nav.phone', glyph: '✆' },
   { href: '/settings#notifications', labelKey: 'nav.notifications', glyph: '◔' },
   { href: '/settings#location', labelKey: 'nav.location', glyph: '◎' },
   { href: '/settings#security', labelKey: 'nav.security', glyph: '⛨' },

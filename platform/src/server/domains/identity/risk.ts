@@ -281,3 +281,19 @@ async function recentRegistrationsFromNetwork(
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
+
+/**
+ * Records a verified phone number as a signal, so a number that verifies
+ * several accounts is visible to duplicate detection. It is a signal only:
+ * families share phones, and whether one number may verify more than one
+ * account is an open decision (docs/CONFIGURATION.md).
+ */
+export async function recordPhoneSignal(tx: Executor, params: { userId: string; phoneE164: string }): Promise<void> {
+  await tx
+    .insert(accountSignals)
+    .values({ userId: params.userId, kind: 'phone_e164', valueHash: signalHash('phone_e164', params.phoneE164) })
+    .onConflictDoUpdate({
+      target: [accountSignals.userId, accountSignals.kind, accountSignals.valueHash],
+      set: { occurrences: sql`${accountSignals.occurrences} + 1`, observedAt: new Date() },
+    });
+}

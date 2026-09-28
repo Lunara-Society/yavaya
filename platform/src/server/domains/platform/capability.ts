@@ -4,6 +4,7 @@ import { CAPABILITIES, type Capability, type CapabilityState } from '@/config/ca
 import { listProviderAvailability } from '@/server/domains/payments/service';
 import { emailAvailability } from '@/server/domains/notifications/email/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
+import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -13,6 +14,11 @@ import { mediaStorageAvailability } from '@/server/domains/media/storage';
 function emailCapabilityState(): CapabilityState {
   if (emailAvailability().available) return 'REAL';
   return serverEnv().EMAIL_PROVIDER === 'console' ? 'MOCK' : 'REQUIRES_CONFIGURATION';
+}
+
+function smsCapabilityState(): CapabilityState {
+  if (canVerifyPhones()) return 'REAL';
+  return serverEnv().SMS_PROVIDER === 'console' ? 'MOCK' : 'REQUIRES_CONFIGURATION';
 }
 
 function emailBlocker(): string | undefined {
@@ -30,6 +36,7 @@ function emailBlocker(): string | undefined {
 export function integrationCapabilities(): Capability[] {
   const env = serverEnv();
   const media = mediaStorageAvailability();
+  const sms = phoneVerifierAvailability();
 
   const integrations: Capability[] = [
     {
@@ -51,12 +58,11 @@ export function integrationCapabilities(): Capability[] {
       key: 'sms_delivery',
       nameKey: 'capability.sms_delivery.name',
       detailKey: 'capability.sms_delivery.detail',
-      state: env.SMS_PROVIDER === 'unconfigured' ? 'REQUIRES_CONFIGURATION' : 'REAL',
+      // Measured like email: REAL only with Twilio Verify fully configured;
+      // the console verifier logs codes and sends nothing.
+      state: smsCapabilityState(),
       group: 'integration',
-      blockedBy:
-        env.SMS_PROVIDER === 'unconfigured'
-          ? 'Choose a provider with reliable delivery across all seven launch countries. Phone verification cannot complete until then.'
-          : undefined,
+      blockedBy: sms.available && sms.provider !== 'console' ? undefined : sms.available ? 'SMS_PROVIDER=console writes codes to the log and sends nothing.' : sms.reason,
     },
     {
       key: 'kyc',

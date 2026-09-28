@@ -1,5 +1,6 @@
 import type { Translator } from '@/i18n';
 import { saveWhatsappAction } from '@/app/mercadito/actions';
+import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
 
 /** Where a seller sets the number buyers reach them on. Plain form, no JavaScript. */
 export function WhatsappForm({
@@ -16,7 +17,7 @@ export function WhatsappForm({
   return (
     <section className="card">
       <h2 style={{ fontSize: '1.1rem', marginBottom: 6 }}>{t('mercadito.whatsapp.title')}</h2>
-      <p className="muted">{t('mercadito.whatsapp.hint')}</p>
+      <p className="muted">{t(canVerifyPhones() ? 'mercadito.whatsapp.hint' : 'mercadito.whatsapp.hint_unavailable')}</p>
       {current ? (
         <p>{t('mercadito.whatsapp.current', { phone: current })}</p>
       ) : (

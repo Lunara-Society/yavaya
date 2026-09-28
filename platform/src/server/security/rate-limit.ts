@@ -31,6 +31,13 @@ export const RATE_LIMITS = {
   register: { bucket: 'register', limit: 5, windowSeconds: 60 * 60 },
   verifyCode: { bucket: 'verify_code', limit: 10, windowSeconds: 15 * 60 },
   resendCode: { bucket: 'resend_code', limit: 5, windowSeconds: 60 * 60 },
+  /** Asking for an SMS code, per member. Each one costs money to send. */
+  phoneStart: { bucket: 'phone_start', limit: 5, windowSeconds: 60 * 60 },
+  /**
+   * SMS codes to one number, across all accounts — the guard against using
+   * the form to flood a stranger's phone, or to pump premium-rate numbers.
+   */
+  phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
   /** Publishing during the 72-hour monitoring window. */
   publishMonitored: { bucket: 'publish_monitored', limit: 10, windowSeconds: 60 * 60 },

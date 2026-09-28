@@ -604,6 +604,8 @@ export async function getListing(executor: Executor, id: string, locale: string)
       sellerName: users.displayName,
       sellerSince: users.createdAt,
       whatsapp: userProfiles.whatsappE164,
+      sellerPhone: users.phoneE164,
+      sellerPhoneVerifiedAt: users.phoneVerifiedAt,
     })
     .from(mercaditoListings)
     .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
@@ -655,9 +657,10 @@ export async function getListing(executor: Executor, id: string, locale: string)
       displayName: row.sellerName,
       memberSince: row.sellerSince,
       whatsappE164: row.whatsapp,
-      // There is no SMS verification yet, so no number is ever verified.
-      // Stated as data rather than assumed in the page.
-      phoneVerified: false,
+      // Verified means *this* number: the WhatsApp number buyers are sent to
+      // is the one the seller proved they hold by SMS. A seller with some
+      // other verified phone does not make this one trustworthy.
+      phoneVerified: row.whatsapp !== null && row.sellerPhoneVerifiedAt !== null && row.whatsapp === row.sellerPhone,
     },
   };
 }

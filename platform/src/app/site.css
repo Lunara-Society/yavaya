@@ -769,3 +769,22 @@ td strong { color: var(--text); }
   .site *, .site *::before, .site *::after { animation: none !important; transition: none !important; }
 }
 }
+
+/* --- Phone verification ------------------------------------------------------ */
+.ph-page { --tone: var(--accent); display: grid; gap: 18px; max-width: 720px; padding: 8px 0 56px; }
+.ph-h { font-size: 1.15rem; margin-bottom: 8px; }
+.ph-verified { display: flex; align-items: center; gap: 14px; margin: 0; }
+.ph-verified strong { display: block; }
+.ph-seal {
+  flex: none; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  font-weight: 800; color: #1a1406;
+  background: radial-gradient(circle at 35% 30%, #fff3c4 0%, #e3bf5c 45%, #a67c1f 100%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent), 0 6px 18px rgba(0,0,0,.25);
+}
+.ph-number { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; font-size: 1.2rem; }
+.ph-note { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ph-code { text-align: center; font-family: ui-monospace, monospace; font-size: 1.6rem; letter-spacing: 0.4em; max-width: 260px; }
+.ph-unavailable { font-weight: 500; }
+.mk-verified { color: #2e9d62; font-weight: 700; }
+.ph-status .mk-banner { margin: 16px 0 0; }
+.ph-seal { font-size: 1.35rem; }
