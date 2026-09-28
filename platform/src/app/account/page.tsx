@@ -37,9 +37,10 @@ export default async function AccountPage() {
     isAdmin(db(), userId),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
+  const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
   const shortcuts = moderator
-    ? [...SHORTCUTS, { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' }]
-    : SHORTCUTS;
+    ? [profileShortcut, ...SHORTCUTS, { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' }]
+    : [profileShortcut, ...SHORTCUTS];
 
   if (!shield) redirect('/login');
 

@@ -500,6 +500,10 @@ td strong { color: var(--text); }
 .mk-card .pr { font-weight: 800; font-size: 1.05rem; }
 .mk-card .ti { font-size: 0.9rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .mk-card .pl { font-size: 0.78rem; color: var(--text-3); }
+.mk-card .tr { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; padding-top: 7px; border-top: 1px solid var(--line); font-size: 0.72rem; font-weight: 700; }
+.mk-card .tr-score { color: #d4af37; }
+.mk-card .tr-status { color: var(--text-2); }
+.mk-card .tr-check { margin-left: auto; color: #3fbf7f; border: 1px solid rgba(63,191,127,0.5); border-radius: 999px; padding: 1px 6px; }
 .mk-card .st { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tone); }
 .mk-kinds { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 12px; max-width: 640px; margin: 22px auto 26px; padding: 0; font-size: 0.86rem; font-weight: 700; color: var(--text-2); }
 .mk-kinds li { display: grid; justify-items: center; gap: 8px; }
@@ -514,6 +518,14 @@ td strong { color: var(--text); }
 .mk-gallery .main img { width: 100%; height: auto; display: block; max-height: 640px; object-fit: contain; }
 .mk-gallery .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
 .mk-gallery .thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+.mk-gallery { outline: none; }
+.mk-gallery .main { position: relative; border: 1px solid rgba(212,175,55,0.25); }
+.mk-gallery .main img { animation: photo-in 0.5s ease both; }
+@keyframes photo-in { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: none; } }
+.mk-gallery-count { position: absolute; right: 12px; bottom: 12px; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; color: #f8f6f1; background: rgba(5,11,22,0.7); backdrop-filter: blur(4px); }
+.mk-gallery .thumbs a { display: block; border-radius: 9px; border: 2px solid transparent; opacity: 0.7; transition: opacity 0.2s, border-color 0.2s; }
+.mk-gallery .thumbs a[aria-current="true"], .mk-gallery .thumbs a:hover { opacity: 1; border-color: #d4af37; }
+.mk-gallery:focus-visible .main { box-shadow: 0 0 0 3px var(--focus); }
 .mk-price { font-size: 2rem; font-weight: 800; margin: 4px 0 10px; }
 .mk-facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 14px 0; font-size: 0.95rem; }
 .mk-facts dt { color: var(--text-3); }
@@ -591,6 +603,27 @@ td strong { color: var(--text); }
 .member-hero h1 { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0 0 6px; color: #f8f6f1; }
 .member-hero p:last-child { margin: 0; color: rgba(248,246,241,0.8); }
 .member-hero p.role-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.04em; color: #0a1428; background: linear-gradient(180deg, #f0d06a, #c9a22c); box-shadow: 0 6px 18px rgba(212,175,55,0.3); }
+
+
+/* ── Public profile and badges ───────────────────────────────────────── */
+.profile-page { padding-top: 24px; padding-bottom: 56px; }
+.profile-grid { display: grid; gap: 20px; margin-top: 20px; }
+@media (min-width: 900px) { .profile-grid { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
+.medals-row { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 0; padding: 0; }
+.medals-row li { display: grid; justify-items: center; text-align: center; gap: 6px; font-size: 0.8rem; }
+.medal-disc {
+  width: 64px; height: 64px; padding: 18px; border-radius: 50%; color: var(--text-3);
+  background: var(--surface-2); border: 1px dashed var(--line-strong);
+}
+.medal-disc svg { width: 100%; height: 100%; }
+.medals-row li.earned .medal-disc {
+  color: #081120; border: 1px solid #f3dc8a;
+  background: radial-gradient(circle at 32% 28%, #fff1c1 0%, #e8c766 30%, #b8912a 75%, #8f6f10 100%);
+  box-shadow: 0 0 0 4px rgba(212,175,55,0.15), 0 10px 24px rgba(212,175,55,0.3), inset 0 -3px 6px rgba(0,0,0,0.25);
+}
+.medal-name { font-weight: 700; color: var(--text); line-height: 1.25; }
+.medal-state { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+.medals-row li.earned .medal-state { color: #d4af37; }
 
 /* ── Motion and finish ──────────────────────────────────────────────────
  * "Use sparingly. Trust platforms should feel stable." (Master Bible)

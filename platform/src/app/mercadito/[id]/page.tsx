@@ -8,6 +8,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { TrustShieldCard } from '@/ui/components/trust-shield';
 import { formatDate, formatPrice } from '@/ui/mercadito/format';
+import { Gallery } from '@/ui/mercadito/gallery';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { getListing, type ListingDetail } from '@/server/domains/mercadito/service';
@@ -52,7 +53,6 @@ export default async function ListingPage({ params, searchParams }: Params) {
   const shield = await buildTrustShield(db(), listing.seller.userId);
   const own = userId === listing.seller.userId;
   const listingUrl = `${serverEnv().APP_URL.replace(/\/$/, '')}/mercadito/${listing.id}`;
-  const [main, ...rest] = listing.photos;
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="mercadito" tone="mercadito">
@@ -69,37 +69,12 @@ export default async function ListingPage({ params, searchParams }: Params) {
               </p>
             ) : null}
 
-            {main ? (
-              <div className="mk-gallery">
-                <div className="main">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- sized by the media pipeline */}
-                  <img
-                    src={`/media/${main.mediaId}`}
-                    width={main.width}
-                    height={main.height}
-                    alt={t('mercadito.listing.photo_alt', { n: 1, total: listing.photos.length, title: listing.title })}
-                  />
-                </div>
-                {rest.length > 0 ? (
-                  <div className="thumbs">
-                    {rest.map((photo, index) => (
-                      <a key={photo.mediaId} href={`/media/${photo.mediaId}`} target="_blank" rel="noopener">
-                        {/* eslint-disable-next-line @next/next/no-img-element -- sized by the media pipeline */}
-                        <img
-                          src={`/media/${photo.mediaId}`}
-                          loading="lazy"
-                          alt={t('mercadito.listing.photo_alt', {
-                            n: index + 2,
-                            total: listing.photos.length,
-                            title: listing.title,
-                          })}
-                        />
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            <Gallery
+              photos={listing.photos}
+              altFor={listing.photos.map((_, i) =>
+                t('mercadito.listing.photo_alt', { n: i + 1, total: listing.photos.length, title: listing.title }),
+              )}
+            />
 
             <h1 className="h-md" style={{ marginTop: 20 }}>
               {listing.title}
@@ -130,7 +105,9 @@ export default async function ListingPage({ params, searchParams }: Params) {
             <div className="card">
               <h2 style={{ fontSize: '1.1rem', marginBottom: 6 }}>{t('mercadito.listing.seller')}</h2>
               <p className="mb0">
-                <strong>{listing.seller.displayName}</strong>
+                <Link href={`/members/${listing.seller.yayId}`}>
+                  <strong>{listing.seller.displayName}</strong>
+                </Link>
               </p>
               <p className="muted">
                 {t('mercadito.listing.member_since', { date: formatDate(listing.seller.memberSince, locale) })}

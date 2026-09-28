@@ -34,6 +34,16 @@ export function ListingCard({
         <span className="pr">{formatPrice(listing.priceMinor, listing.currencyCode, locale)}</span>
         <span className="ti">{listing.title}</span>
         <span className="pl">{listing.placeName}</span>
+        {/* The seller's trust, always visible: score, standing, what is verified. */}
+        <span className="tr">
+          <span className="tr-score">★ {listing.trust.score}</span>
+          <span className="tr-status">{t(listing.trust.statusKey as MessageKey)}</span>
+          {listing.trust.identityVerified ? (
+            <span className="tr-check">{t('mercadito.card.identity_verified')}</span>
+          ) : listing.trust.emailVerified ? (
+            <span className="tr-check">{t('mercadito.card.email_verified')}</span>
+          ) : null}
+        </span>
       </div>
     </Link>
   );

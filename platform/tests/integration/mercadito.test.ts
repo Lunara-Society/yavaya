@@ -23,6 +23,7 @@ import {
   closeListing,
   getListing,
   publishListing,
+  sellerListings,
   sellerStanding,
   setWhatsapp,
   updateListing,
@@ -351,6 +352,36 @@ describe('browsing', () => {
 
     const escaped = await browseListings(db(), { locale: 'es', query: '%' });
     expect(escaped.items).toHaveLength(0);
+  });
+});
+
+describe('trust on every card and public profiles', () => {
+  it('carries the seller\'s trust on each card', async () => {
+    const seller = await createMember({ tokens: 2 });
+    await publish(seller);
+    const [card] = (await browseListings(db(), { locale: 'es' })).items;
+    expect(card?.trust.score).toBe(REPUTATION_RULES.initialScore);
+    expect(card?.trust.statusKey).toMatch(/^trust\.status\./);
+    expect(card?.trust.identityVerified).toBe(false);
+  });
+
+  it('shows others only what is up or sold, and hides banned members', async () => {
+    const { findPublicMember } = await import('@/server/domains/identity/profile');
+    const seller = await createMember({ tokens: 4 });
+    const { listingId: kept } = await publish(seller, 1, { title: 'Mesa de pino' });
+    const { listingId: gone } = await publish(seller, 2, { title: 'Silla de pino' });
+    await db().transaction((tx) => closeListing(tx, { listingId: gone, sellerUserId: seller, outcome: 'withdrawn' }));
+
+    const publicCards = await sellerListings(db(), seller, 'es', { publicOnly: true });
+    expect(publicCards.map((card) => card.id)).toEqual([kept]);
+    expect((await sellerListings(db(), seller, 'es')).length).toBe(2);
+
+    const [row] = await db().select({ yayId: users.yayId }).from(users).where(eq(users.id, seller));
+    expect((await findPublicMember(db(), `YAY-${row!.yayId}`))?.userId).toBe(seller);
+    expect(await findPublicMember(db(), 'not-an-id')).toBeNull();
+
+    await db().update(users).set({ status: 'banned' }).where(eq(users.id, seller));
+    expect(await findPublicMember(db(), row!.yayId)).toBeNull();
   });
 });
 

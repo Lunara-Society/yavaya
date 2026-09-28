@@ -6,10 +6,12 @@ import {
   media,
   mercaditoListingPhotos,
   mercaditoListings,
+  reputationScores,
   userProfiles,
   users,
 } from '@/server/db/schema';
-import { MERCADITO_RULES } from '@/config/business-rules';
+import { MERCADITO_RULES, REPUTATION_RULES } from '@/config/business-rules';
+import { statusKeyFor } from '@/server/domains/trust/shield';
 import { DomainError, errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { chargeForAction } from '@/server/domains/tokens/service';
@@ -440,7 +442,57 @@ export type ListingCard = {
   placeName: string;
   coverMediaId: string | null;
   publishedAt: Date;
+  /**
+   * The seller's trust, on every card — "never hide trust" (Master Bible).
+   * Derived from the same evidence as the Trust Shield, never stored.
+   */
+  trust: { score: number; statusKey: string; emailVerified: boolean; identityVerified: boolean };
 };
+
+/** Columns every listing card needs, the seller's trust included. */
+const cardColumns = {
+  id: mercaditoListings.id,
+  title: mercaditoListings.title,
+  priceMinor: mercaditoListings.priceMinor,
+  currencyCode: mercaditoListings.currencyCode,
+  category: mercaditoListings.category,
+  condition: mercaditoListings.condition,
+  status: mercaditoListings.status,
+  publishedAt: mercaditoListings.publishedAt,
+  placeName: locations.name,
+  placeNames: locations.names,
+  sellerStatus: users.status,
+  sellerTrustState: users.trustState,
+  sellerEmailVerifiedAt: users.emailVerifiedAt,
+  sellerIdentityVerifiedAt: users.identityVerifiedAt,
+  sellerScore: reputationScores.score,
+};
+
+type CardRow = {
+  [K in keyof typeof cardColumns]: (typeof cardColumns)[K]['_']['data'] | (K extends 'sellerScore' | 'sellerEmailVerifiedAt' | 'sellerIdentityVerifiedAt' ? null : never);
+} & { coverMediaId: string | null };
+
+function toCard(row: CardRow, locale: string): ListingCard {
+  const score = row.sellerScore ?? REPUTATION_RULES.initialScore;
+  return {
+    id: row.id,
+    title: row.title,
+    priceMinor: row.priceMinor,
+    currencyCode: row.currencyCode,
+    category: row.category,
+    condition: row.condition,
+    status: row.status,
+    publishedAt: row.publishedAt,
+    placeName: localized(row.placeName, row.placeNames, locale),
+    coverMediaId: row.coverMediaId,
+    trust: {
+      score,
+      statusKey: statusKeyFor({ status: row.sellerStatus, trustState: row.sellerTrustState, score }),
+      emailVerified: row.sellerEmailVerifiedAt !== null,
+      identityVerified: row.sellerIdentityVerifiedAt !== null,
+    },
+  };
+}
 
 const coverMediaId = sql<string | null>`(
   select p.media_id from mercadito_listing_photos p
@@ -476,21 +528,11 @@ export async function browseListings(
   }
 
   const rows = await executor
-    .select({
-      id: mercaditoListings.id,
-      title: mercaditoListings.title,
-      priceMinor: mercaditoListings.priceMinor,
-      currencyCode: mercaditoListings.currencyCode,
-      category: mercaditoListings.category,
-      condition: mercaditoListings.condition,
-      status: mercaditoListings.status,
-      publishedAt: mercaditoListings.publishedAt,
-      placeName: locations.name,
-      placeNames: locations.names,
-      coverMediaId,
-    })
+    .select({ ...cardColumns, coverMediaId })
     .from(mercaditoListings)
     .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
+    .innerJoin(users, eq(users.id, mercaditoListings.sellerUserId))
+    .leftJoin(reputationScores, eq(reputationScores.userId, mercaditoListings.sellerUserId))
     .leftJoin(userProfiles, eq(userProfiles.userId, mercaditoListings.sellerUserId))
     .where(and(...conditions))
     // "Listings with no phone: reduced visibility" (Master Bible): a seller
@@ -500,16 +542,13 @@ export async function browseListings(
     .offset((page - 1) * size);
 
   return {
-    items: rows.slice(0, size).map((row) => ({
-      ...row,
-      placeName: localized(row.placeName, row.placeNames, params.locale),
-    })),
+    items: rows.slice(0, size).map((row) => toCard(row, params.locale)),
     hasMore: rows.length > size,
     page,
   };
 }
 
-export type ListingDetail = ListingCard & {
+export type ListingDetail = Omit<ListingCard, 'trust'> & {
   description: string;
   flags: string[];
   updatedAt: Date;
@@ -607,27 +646,25 @@ export async function getListing(executor: Executor, id: string, locale: string)
   };
 }
 
-export async function sellerListings(executor: Executor, userId: string, locale: string): Promise<ListingCard[]> {
+export async function sellerListings(
+  executor: Executor,
+  userId: string,
+  locale: string,
+  options: { publicOnly?: boolean } = {},
+): Promise<ListingCard[]> {
+  const conditions = [eq(mercaditoListings.sellerUserId, userId)];
+  // Others see what is up or sold; withdrawn and removed stay the seller's.
+  if (options.publicOnly) conditions.push(inArray(mercaditoListings.status, ['published', 'sold']));
   const rows = await executor
-    .select({
-      id: mercaditoListings.id,
-      title: mercaditoListings.title,
-      priceMinor: mercaditoListings.priceMinor,
-      currencyCode: mercaditoListings.currencyCode,
-      category: mercaditoListings.category,
-      condition: mercaditoListings.condition,
-      status: mercaditoListings.status,
-      publishedAt: mercaditoListings.publishedAt,
-      placeName: locations.name,
-      placeNames: locations.names,
-      coverMediaId,
-    })
+    .select({ ...cardColumns, coverMediaId })
     .from(mercaditoListings)
     .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
-    .where(eq(mercaditoListings.sellerUserId, userId))
+    .innerJoin(users, eq(users.id, mercaditoListings.sellerUserId))
+    .leftJoin(reputationScores, eq(reputationScores.userId, mercaditoListings.sellerUserId))
+    .where(and(...conditions))
     .orderBy(desc(mercaditoListings.createdAt))
     .limit(200);
-  return rows.map((row) => ({ ...row, placeName: localized(row.placeName, row.placeNames, locale) }));
+  return rows.map((row) => toCard(row, locale));
 }
 
 export type PlaceOption = { id: string; label: string; countryCode: string; currencyCode: string };
