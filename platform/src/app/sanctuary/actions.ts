@@ -75,6 +75,7 @@ function readChurch(formData: FormData) {
 export async function registerChurchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
   if (!session) redirect('/login');
+  if (formData.get('leader') !== 'on') redirect(back('/sanctuary/register', 'sanctuary.error.leader'));
   const { church, services, serviceError } = readChurch(formData);
   if (!church.success) redirect(back('/sanctuary/register', church.error.issues[0]?.message ?? 'error.validation_failed'));
   if (serviceError) redirect(back('/sanctuary/register', serviceError));

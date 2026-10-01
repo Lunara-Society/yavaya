@@ -172,6 +172,15 @@ export function ChurchForm({
       </fieldset>
 
       {churchId ? <p className="mk-banner">{t('sanctuary.form.rereview_note')}</p> : null}
+      {/* A church is registered by the person who leads it, not by a well-wisher: the reviewer confirms it. */}
+      {churchId ? null : (
+        <label>
+          <span>
+            <input type="checkbox" name="leader" required /> {t('sanctuary.form.leader')}
+          </span>
+          <span className="hint">{t('sanctuary.form.leader_hint')}</span>
+        </label>
+      )}
       <div className="btn-row">
         <button className="btn btn-gold" type="submit">
           {churchId ? t('sanctuary.form.submit_edit') : t('sanctuary.form.submit_new')}
