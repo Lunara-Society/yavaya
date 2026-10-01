@@ -446,6 +446,28 @@ describe('reserving, similar listings and saved searches', () => {
     // Another member cannot reset someone else's search.
     await markSavedSearchSeen(db(), { userId: seller, id });
   });
+
+  it('tells the searcher once a day when something new matches, never the seller', async () => {
+    const { saveSearch } = await import('@/server/domains/mercadito/service');
+    const { listNotifications } = await import('@/server/domains/notifications/service');
+    const buyer = await createMember();
+    const seller = await createMember({ tokens: 6 });
+    await db().transaction((tx) => saveSearch(tx, { userId: buyer, query: 'bici%' }));
+    await db().transaction((tx) => saveSearch(tx, { userId: seller, query: 'bicicleta' }));
+    await db().transaction((tx) => saveSearch(tx, { userId: buyer, category: 'home' }));
+
+    // "%" is literal: the search is for "bici%", which no title contains.
+    await publish(seller, 1, { title: 'Bicicleta de ruta' });
+    expect(await listNotifications(db(), buyer)).toHaveLength(0);
+
+    await publish(seller, 2, { title: 'Mesa de comedor', category: 'home' });
+    await publish(seller, 3, { title: 'Sillas de comedor', category: 'home' });
+    const news = await listNotifications(db(), buyer);
+    expect(news).toHaveLength(1);
+    expect(news[0]).toMatchObject({ category: 'mercadito', titleKey: 'notify.mercadito.saved_match', read: false });
+    expect(news[0]?.href).toMatch(/^\/mercadito\?/);
+    expect(await listNotifications(db(), seller)).toHaveLength(0);
+  });
 });
 
 describe('reports and moderation', () => {

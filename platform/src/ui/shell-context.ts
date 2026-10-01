@@ -12,6 +12,7 @@ import {
 } from '@/server/preferences';
 import { currentSession } from '@/server/auth/context';
 import { formatYayId } from '@/server/domains/identity/yay-id';
+import { unreadCount } from '@/server/domains/notifications/service';
 import type { ShellMember } from './components/app-shell';
 
 export type ShellContext = {
@@ -46,11 +47,10 @@ export async function shellContext(): Promise<ShellContext> {
     return { locale, t, language, theme, member: null, userId: null };
   }
 
-  const [row] = await db()
-    .select({ displayName: users.displayName })
-    .from(users)
-    .where(eq(users.id, session.user.userId))
-    .limit(1);
+  const [[row], unread] = await Promise.all([
+    db().select({ displayName: users.displayName }).from(users).where(eq(users.id, session.user.userId)).limit(1),
+    unreadCount(db(), session.user.userId),
+  ]);
 
   return {
     locale,
@@ -61,6 +61,7 @@ export async function shellContext(): Promise<ShellContext> {
     member: {
       yayId: formatYayId(session.user.yayId),
       displayName: row?.displayName ?? '',
+      unread,
     },
   };
 }

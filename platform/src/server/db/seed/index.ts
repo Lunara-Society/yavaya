@@ -32,6 +32,7 @@ import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
 import { TREASURY_HANDLE } from '@/server/domains/tokens/service';
 import { recordAudit } from '@/server/domains/audit/service';
 import { grantRole } from '@/server/domains/access/authorize';
+import { applyRule } from '@/server/domains/reputation/service';
 import { canonicalEmail } from '@/server/domains/identity/normalize';
 import { GEOGRAPHY_SEED } from './geography-data';
 
@@ -431,6 +432,33 @@ async function bootstrapAdministrator(database: Database): Promise<void> {
   console.log(`admin bootstrap: granted admin role to ${email}`);
 }
 
+/**
+ * Members who verified before the verification rules were applied get them
+ * now. Each award carries the same idempotency key the live path uses, so
+ * this runs on every deploy and never pays anyone twice.
+ */
+async function backfillVerificationRewards(database: Database): Promise<void> {
+  const verified = await database
+    .select({ id: users.id, email: users.emailVerifiedAt, phone: users.phoneVerifiedAt })
+    .from(users)
+    .where(sql`${users.emailVerifiedAt} is not null or ${users.phoneVerifiedAt} is not null`);
+  let applied = 0;
+  for (const user of verified) {
+    await database.transaction(async (tx) => {
+      if (user.email) {
+        const result = await applyRule(tx, { userId: user.id, ruleKey: 'email_verified', source: 'verification', idempotencyKey: `identity.email_verified:${user.id}` });
+        if (result.applied) applied += 1;
+      }
+      if (user.phone) {
+        const result = await applyRule(tx, { userId: user.id, ruleKey: 'phone_verified', source: 'verification', idempotencyKey: `identity.phone_verified:${user.id}` });
+        if (result.applied) applied += 1;
+      }
+    });
+  }
+  // eslint-disable-next-line no-console
+  if (applied > 0) console.log(`verification rewards backfilled: ${applied}`);
+}
+
 async function main(): Promise<void> {
   const database = db();
 
@@ -442,6 +470,7 @@ async function main(): Promise<void> {
   await seedSettings(database);
   await seedTreasury(database);
   await bootstrapAdministrator(database);
+  await backfillVerificationRewards(database);
 
   const [{ count } = { count: 0 }] = await database
     .select({ count: sql<number>`count(*)::int` })

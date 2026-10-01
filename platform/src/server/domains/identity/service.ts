@@ -15,7 +15,7 @@ import { errors } from '@/server/errors';
 import { generateNumericCode, hashPassword, needsRehash, sha256, signalHash, verifyPassword } from '@/server/security/crypto';
 import { RATE_LIMITS, consumeRateLimit } from '@/server/security/rate-limit';
 import { recordAudit } from '@/server/domains/audit/service';
-import { initializeReputation } from '@/server/domains/reputation/service';
+import { applyRule, initializeReputation } from '@/server/domains/reputation/service';
 import { ensureUserAccount, grantStarterTokensForPeriod } from '@/server/domains/tokens/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { canonicalEmail, emailDomain, normalizeDisplayName, signalEmail } from './normalize';
@@ -355,6 +355,14 @@ export async function consumeVerificationCode(
         status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
       })
       .where(eq(users.id, params.userId));
+
+    // The reputation table's own rule for it, once per member.
+    await applyRule(tx, {
+      userId: params.userId,
+      ruleKey: 'email_verified',
+      source: 'verification',
+      idempotencyKey: `identity.email_verified:${params.userId}`,
+    });
 
     await recordAudit(tx, {
       actorType: 'user',

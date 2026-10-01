@@ -9,7 +9,8 @@ import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
 import { Icon, Mark } from './icons';
 import { Md } from './md';
 
-export type ShellMember = { yayId: string; displayName: string } | null;
+/** `unread` is the count of unread notifications, shown on the bell. */
+export type ShellMember = { yayId: string; displayName: string; unread?: number } | null;
 
 /**
  * The frame around every page: public pages and the member area alike, so
@@ -70,9 +71,19 @@ export function SiteShell({
           </nav>
           <div className="tools">
             {member ? (
-              <Link className="chip" href="/account">
-                {member.displayName || member.yayId}
-              </Link>
+              <>
+                <Link
+                  className="chip bell"
+                  href="/notifications"
+                  aria-label={member.unread ? t('notifications.bell_unread', { count: member.unread }) : t('notifications.title')}
+                >
+                  <Icon name="bell" />
+                  {member.unread ? <span className="bell-count">{member.unread > 99 ? '99+' : member.unread}</span> : null}
+                </Link>
+                <Link className="chip member-chip" href="/account">
+                  {member.displayName || member.yayId}
+                </Link>
+              </>
             ) : (
               <>
                 <Link className="chip" href="/login">

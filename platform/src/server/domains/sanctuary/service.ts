@@ -21,6 +21,7 @@ import { hasPermission, requirePermission, type AuthContext } from '@/server/dom
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
+import { notify } from '@/server/domains/notifications/service';
 
 /**
  * Sanctuary: a space of faith inside Community.
@@ -312,6 +313,16 @@ export async function reviewChurch(
     district: 'community',
     metadata: { ownerUserId: church.ownerUserId },
   });
+  await notify(tx, [
+    {
+      userId: church.ownerUserId,
+      category: 'sanctuary',
+      type: `sanctuary.church_${status}`,
+      titleKey: `notify.sanctuary.church_${status}`,
+      params: { church: church.name },
+      href: `/sanctuary/manage/${church.id}`,
+    },
+  ]);
 }
 
 export async function publishDevotional(
@@ -359,6 +370,26 @@ export async function publishDevotional(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { churchId: church.id, forDate },
   });
+  // Followers hear of it when it can be read: a word prepared for next
+  // Sunday is not news today. (Delivery on its day is not built yet.)
+  if (forDate === today) {
+    const followers = await tx.select({ userId: sanctuaryFollows.userId }).from(sanctuaryFollows).where(eq(sanctuaryFollows.churchId, church.id));
+    await notify(
+      tx,
+      followers
+        .filter((row) => row.userId !== params.actorUserId)
+        .map((row) => ({
+          userId: row.userId,
+          category: 'sanctuary' as const,
+          type: 'sanctuary.word_published',
+          titleKey: 'notify.sanctuary.word',
+          params: { church: church.name, title: params.input.title },
+          href: `/sanctuary/words/${id}`,
+          dedupeKey: `sanctuary.word:${church.id}:${forDate}`,
+          subjectId: id,
+        })),
+    );
+  }
   return id;
 }
 
@@ -458,7 +489,7 @@ export async function resolveSanctuaryTicket(
     .for('update');
   if (!ticket) throw errors.notFound('ticket');
   if (!(OPEN_TICKET_STATUSES as readonly string[]).includes(ticket.status)) throw errors.conflict('moderation.error.closed');
-  const [church] = await tx.select({ id: sanctuaryChurches.id, ownerUserId: sanctuaryChurches.ownerUserId, status: sanctuaryChurches.status }).from(sanctuaryChurches).where(eq(sanctuaryChurches.id, ticket.subjectId)).limit(1).for('update');
+  const [church] = await tx.select({ id: sanctuaryChurches.id, name: sanctuaryChurches.name, ownerUserId: sanctuaryChurches.ownerUserId, status: sanctuaryChurches.status }).from(sanctuaryChurches).where(eq(sanctuaryChurches.id, ticket.subjectId)).limit(1).for('update');
   if (!church) throw errors.notFound('sanctuary_church');
   if (church.ownerUserId === actor.userId) throw errors.forbidden('sanctuary.review');
   if (params.decision !== 'dismiss' && !params.note) throw errors.validation('sanctuary.error.review_note');
@@ -478,6 +509,18 @@ export async function resolveSanctuaryTicket(
       .update(sanctuaryChurches)
       .set({ status: 'suspended', reviewNote: params.note, reviewedBy: actor.userId, reviewedAt: new Date(), updatedAt: new Date() })
       .where(eq(sanctuaryChurches.id, church.id));
+  }
+  if (params.decision !== 'dismiss') {
+    await notify(tx, [
+      {
+        userId: church.ownerUserId,
+        category: 'moderation',
+        type: `sanctuary.${params.decision}`,
+        titleKey: params.decision === 'suspend_church' ? 'notify.sanctuary.church_suspended' : 'notify.moderation.words_removed',
+        params: { church: church.name },
+        href: `/sanctuary/manage/${church.id}`,
+      },
+    ]);
   }
 
   const actedOn = params.decision !== 'dismiss';

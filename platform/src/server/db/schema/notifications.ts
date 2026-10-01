@@ -8,6 +8,7 @@ import {
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { users } from './identity';
 import { locations } from './geography';
 import { activityKindEnum, notificationChannelEnum } from './enums';
@@ -35,6 +36,14 @@ export const notifications = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
+    /** The preference it falls under, e.g. `community`; the member can switch it off. */
+    category: text('category').notNull().default('account'),
+    /**
+     * Identifies "the same news": a second event with the same key is not a
+     * second notification (one "new matches" per saved search per day, not one
+     * per listing).
+     */
+    dedupeKey: text('dedupe_key'),
     /** i18n key + parameters. Never a pre-rendered English sentence. */
     titleKey: text('title_key').notNull(),
     bodyKey: text('body_key'),
@@ -43,7 +52,11 @@ export const notifications = pgTable(
     readAt: timestamp('read_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [index('notifications_user_idx').on(table.userId, table.createdAt)],
+  (table) => [
+    index('notifications_user_idx').on(table.userId, table.createdAt),
+    index('notifications_unread_idx').on(table.userId).where(sql`${table.readAt} is null`),
+    uniqueIndex('notifications_dedupe_key').on(table.userId, table.dedupeKey).where(sql`${table.dedupeKey} is not null`),
+  ],
 );
 
 /**

@@ -876,3 +876,30 @@ td strong { color: var(--text); }
 .sc-owner-words { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
 .sc-owner-words li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
 .sc-prayer { background: linear-gradient(135deg, color-mix(in srgb, var(--tone) 14%, var(--surface)), var(--surface)); }
+
+/* Notifications: the bell in the header and the list behind it. */
+/* On a phone the name gives way to the bell: the account is one tap away in
+   the bottom bar ("Área de miembro"), and the header must not scroll sideways. */
+@media (max-width: 479px) { .member-chip { display: none; } }
+.chip.bell { position: relative; }
+.bell-count {
+  position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: 999px; background: var(--accent); color: var(--accent-ink);
+  font-size: 0.72rem; font-weight: 800; line-height: 20px; text-align: center;
+}
+.nt-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 760px; }
+.nt-item {
+  display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: start;
+  padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px;
+  color: var(--text); text-decoration: none; background: var(--surface);
+}
+.nt-item:hover { border-color: var(--accent); }
+.nt-unread { border-left: 4px solid var(--accent); }
+.nt-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); }
+.nt-icon svg { width: 20px; height: 20px; }
+.nt-text { display: grid; gap: 4px; min-width: 0; }
+.nt-title { font-size: 1.05rem; line-height: 1.4; overflow-wrap: anywhere; }
+.nt-unread .nt-title { font-weight: 700; }
+.nt-body { color: var(--text-2); }
+.nt-when { color: var(--text-3); font-size: 0.88rem; }
+.nt-dot { width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: var(--accent); }

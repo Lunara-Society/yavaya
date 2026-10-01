@@ -35,7 +35,8 @@ export default async function SettingsPage() {
 
   const preferenceFor = (category: string, channel: string): boolean =>
     notificationPrefs.find((row) => row.category === category && row.channel === channel)?.enabled ??
-    false;
+    // Newer categories are on unless switched off; the delivery side agrees.
+    ['community', 'mercadito', 'sanctuary'].includes(category);
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
@@ -236,6 +237,24 @@ const NOTIFICATION_ROWS: Array<{
     channel: 'in_app',
     labelKey: 'settings.notify.account',
     detailKey: 'settings.notify.account_detail',
+  },
+  {
+    category: 'community',
+    channel: 'in_app',
+    labelKey: 'settings.notify.community',
+    detailKey: 'settings.notify.community_detail',
+  },
+  {
+    category: 'mercadito',
+    channel: 'in_app',
+    labelKey: 'settings.notify.mercadito',
+    detailKey: 'settings.notify.mercadito_detail',
+  },
+  {
+    category: 'sanctuary',
+    channel: 'in_app',
+    labelKey: 'settings.notify.sanctuary',
+    detailKey: 'settings.notify.sanctuary_detail',
   },
   {
     category: 'orders',

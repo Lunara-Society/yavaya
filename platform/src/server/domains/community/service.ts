@@ -21,6 +21,7 @@ import { requirePermission, type AuthContext } from '@/server/domains/access/aut
 import { applyRule } from '@/server/domains/reputation/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
+import { dayKey, notify } from '@/server/domains/notifications/service';
 
 /**
  * Community: the town square — local help, the prayer wall, family support.
@@ -274,7 +275,7 @@ export async function getPost(
 
 async function lockOpenPost(tx: Executor, postId: string) {
   const [post] = await tx
-    .select({ status: communityPosts.status, authorUserId: communityPosts.authorUserId, kind: communityPosts.kind })
+    .select({ status: communityPosts.status, authorUserId: communityPosts.authorUserId, kind: communityPosts.kind, title: communityPosts.title })
     .from(communityPosts)
     .where(eq(communityPosts.id, postId))
     .limit(1)
@@ -308,6 +309,20 @@ export async function addReply(
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
   });
+  if (post.authorUserId !== params.authorUserId) {
+    // The reply is the news; who wrote it is on the post itself.
+    await notify(tx, [
+      {
+        userId: post.authorUserId,
+        category: 'community',
+        type: 'community.reply',
+        titleKey: 'notify.community.reply',
+        params: { title: post.title },
+        href: `/community/${params.postId}#replies`,
+        subjectId: params.postId,
+      },
+    ]);
+  }
   return reply!.id;
 }
 
@@ -335,6 +350,22 @@ export async function toggleSupport(
     .update(communityPosts)
     .set({ supportCount: sql`${communityPosts.supportCount} + 1` })
     .where(eq(communityPosts.id, params.postId));
+  if (post.authorUserId !== params.userId) {
+    // At most one a day per post: a prayer answered by twenty people is one
+    // quiet message, not twenty. Never says who; the post shows only a count.
+    await notify(tx, [
+      {
+        userId: post.authorUserId,
+        category: 'community',
+        type: 'community.support',
+        titleKey: 'notify.community.support',
+        params: { title: post.title },
+        href: `/community/${params.postId}`,
+        dedupeKey: `community.support:${params.postId}:${dayKey()}`,
+        subjectId: params.postId,
+      },
+    ]);
+  }
   return { supported: true };
 }
 
@@ -569,6 +600,17 @@ export async function resolveCommunityTicket(
     })
     .where(eq(tickets.id, ticket.id));
   await tx.insert(moderationActions).values({ ticketId: ticket.id, actorUserId: actor.userId, action: `community_${params.decision}`, internalNote: params.note });
+  if (params.decision === 'remove_post' || params.decision === 'warn') {
+    await notify(tx, [
+      {
+        userId: post.authorUserId,
+        category: 'moderation',
+        type: `community.${params.decision}`,
+        titleKey: params.decision === 'warn' ? 'notify.moderation.warned' : 'notify.moderation.post_removed',
+        href: '/community',
+      },
+    ]);
+  }
   await recordAudit(tx, {
     actorType: 'admin',
     actorUserId: actor.userId,

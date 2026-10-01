@@ -19,6 +19,7 @@ import { markRemoved } from '@/server/domains/media/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { PUBLIC_STATUSES } from './rules';
+import { notify } from '@/server/domains/notifications/service';
 
 /**
  * Reports on Mercadito listings, and what moderators do about them.
@@ -235,7 +236,7 @@ export async function resolveListingTicket(
   if (!(OPEN_STATUSES as readonly string[]).includes(ticket.status)) throw errors.conflict('moderation.error.closed');
 
   const [listing] = await tx
-    .select({ id: mercaditoListings.id, sellerUserId: mercaditoListings.sellerUserId, status: mercaditoListings.status })
+    .select({ id: mercaditoListings.id, sellerUserId: mercaditoListings.sellerUserId, status: mercaditoListings.status, title: mercaditoListings.title })
     .from(mercaditoListings)
     .where(eq(mercaditoListings.id, ticket.subjectId))
     .limit(1)
@@ -258,6 +259,16 @@ export async function resolveListingTicket(
       .where(eq(mercaditoListingPhotos.listingId, listing.id));
     // Kept in the bucket as evidence, but no longer served to anyone.
     await markRemoved(tx, photos.map((photo) => photo.mediaId));
+    await notify(tx, [
+      {
+        userId: listing.sellerUserId,
+        category: 'moderation',
+        type: `mercadito.listing_${params.decision}`,
+        titleKey: params.decision === 'remove' ? 'notify.moderation.listing_removed' : 'notify.moderation.listing_removed_warned',
+        params: { title: listing.title },
+        href: '/mercadito/mine',
+      },
+    ]);
   }
 
   if (params.decision === 'warn' || params.decision === 'fraud') {

@@ -64,6 +64,13 @@
       "when": 1790861904742,
       "tag": "0008_sanctuary",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790863960656,
+      "tag": "0009_notifications",
+      "breakpoints": true
     }
   ]
 }

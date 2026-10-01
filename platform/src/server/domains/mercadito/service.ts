@@ -1,5 +1,6 @@
 import 'server-only';
-import { and, asc, count, desc, eq, gt, inArray, notInArray, sql } from 'drizzle-orm';
+import { dayKey, notify } from '@/server/domains/notifications/service';
+import { and, asc, count, desc, eq, gt, inArray, ne, notInArray, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import {
   locations,
@@ -284,8 +285,59 @@ export async function publishListing(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { category: input.category, photos: params.images.length, cost: charge.cost, flags },
   });
+  await notifySavedSearchMatches(tx, { listingId: params.listingId, sellerUserId: params.sellerUserId });
 
   return { listingId: params.listingId, deduplicated: false, cost: charge.cost };
+}
+
+/**
+ * Tells members whose saved search this new listing matches — at most once
+ * a day per search, and never the seller. The match is the same as the
+ * market's own filters: category, place (or any place within it), and the
+ * words in the title or description.
+ */
+async function notifySavedSearchMatches(tx: Executor, params: { listingId: string; sellerUserId: string }): Promise<void> {
+  const escaped = sql`replace(replace(replace(${mercaditoSavedSearches.query}, '\\', '\\\\'), '%', '\\%'), '_', '\\_')`;
+  const matches = await tx
+    .select({
+      id: mercaditoSavedSearches.id,
+      userId: mercaditoSavedSearches.userId,
+      query: mercaditoSavedSearches.query,
+      category: mercaditoSavedSearches.category,
+      placeCode: mercaditoSavedSearches.placeCode,
+    })
+    .from(mercaditoSavedSearches)
+    .innerJoin(mercaditoListings, eq(mercaditoListings.id, params.listingId))
+    .innerJoin(locations, eq(locations.id, mercaditoListings.locationId))
+    .where(
+      and(
+        ne(mercaditoSavedSearches.userId, params.sellerUserId),
+        sql`(${mercaditoSavedSearches.category} is null or ${mercaditoSavedSearches.category} = ${mercaditoListings.category})`,
+        sql`(${mercaditoSavedSearches.placeCode} is null or ${locations.code} = ${mercaditoSavedSearches.placeCode} or ${mercaditoSavedSearches.placeCode} = any(${locations.path}))`,
+        sql`(${mercaditoSavedSearches.query} is null or ${mercaditoListings.title} ilike '%' || ${escaped} || '%' or ${mercaditoListings.description} ilike '%' || ${escaped} || '%')`,
+      ),
+    )
+    .limit(500);
+  const day = dayKey();
+  await notify(
+    tx,
+    matches.map((search) => {
+      const query = new URLSearchParams();
+      if (search.query) query.set('q', search.query);
+      if (search.category) query.set('cat', search.category);
+      if (search.placeCode) query.set('place', search.placeCode);
+      query.set('saved', search.id);
+      return {
+        userId: search.userId,
+        category: 'mercadito' as const,
+        type: 'mercadito.saved_search_match',
+        titleKey: 'notify.mercadito.saved_match',
+        href: `/mercadito?${query.toString()}`,
+        dedupeKey: `mercadito.saved:${search.id}:${day}`,
+        subjectId: params.listingId,
+      };
+    }),
+  );
 }
 
 /**

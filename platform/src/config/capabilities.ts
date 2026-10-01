@@ -104,6 +104,13 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'platform',
   },
   {
+    key: 'notifications',
+    nameKey: 'capability.notifications.name',
+    detailKey: 'capability.notifications.detail',
+    state: 'REAL',
+    group: 'platform',
+  },
+  {
     key: 'notification_preferences',
     nameKey: 'capability.notification_preferences.name',
     detailKey: 'capability.notification_preferences.detail',

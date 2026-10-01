@@ -320,7 +320,35 @@ Undecided (flagged rather than guessed):
   reputation for running a church, are not built.
 - **Live services inside Yavaya.** Broadcasts are links out to YouTube,
   Facebook or another site; nothing is embedded or streamed by Yavaya.
-- **Notifications** to followers when a church publishes are not sent yet.
+- **Followers hear of a word only when it is for today.** A word published
+  ahead (for next Sunday) sends nothing, and nothing is sent when its day
+  arrives: that needs a scheduled job and is not built. Open decision: should
+  it be built, and at what local hour?
+
+---
+
+## Notifications — in-app only
+
+Built: the bell in the header and `/notifications`. A notification is written
+by the service that caused it, inside the same transaction, as an i18n key
+with parameters, so it reads in the member's current language.
+
+| Event | Who hears | Limit |
+|---|---|---|
+| Reply to a Community post | the author (not for their own replies) | none |
+| Support on a prayer or family post | the author, never told who | one per post per day |
+| New listing matching a saved search | the searcher (never the seller) | one per search per day |
+| Church approved, rejected or suspended | the church owner | — |
+| Today's word from a followed church | followers | one per church per day |
+| Moderation removing a post, listing or word | its author | — |
+
+Members switch categories off in Settings; every category is on until they do.
+Registered demo content never produces a notification.
+
+**Not built:** email, SMS or push delivery of these. Email exists only for
+account messages (verification, security). Sending notifications by email
+needs a decision on frequency (each one, or a daily digest) and an
+unsubscribe link in every message.
 
 ---
 
