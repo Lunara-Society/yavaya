@@ -49,6 +49,7 @@ describe('scheduled jobs', () => {
       'expire-work-posts',
       'graduate-monitored',
       'purge-rate-limits',
+      'purge-safe-space',
       'purge-sessions',
       'send-digests',
       'tick',

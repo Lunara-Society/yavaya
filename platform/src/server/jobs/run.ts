@@ -9,6 +9,7 @@ import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
 import { sendDailyDigests } from '@/server/domains/notifications/digest';
 import { sendAdoptionFollowUps } from '@/server/domains/animals/service';
 import { expireLostFound } from '@/server/domains/animals/lost-found';
+import { purgeSafeSpace } from '@/server/domains/safe-space/service';
 import { expireWorkPosts } from '@/server/domains/work/service';
 
 /**
@@ -113,6 +114,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `closed ${result.closed} work post(s)` };
   },
 
+  /** Espacio Violeta forgets: old messages, old conversations, decided reports. */
+  'purge-safe-space': async () => {
+    const result = await purgeSafeSpace(db());
+    return { summary: `deleted ${result.room} room and ${result.thread} private message(s), ${result.threads} empty conversation(s), ${result.reports} decided report(s)` };
+  },
+
   /** The daily email summary, for members whose morning it is. */
   'send-digests': async () => {
     const result = await sendDailyDigests(db());
@@ -128,7 +135,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'send-digests'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'send-digests'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

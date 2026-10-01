@@ -44,6 +44,7 @@ export const PERMISSIONS = {
   'sanctuary.review': 'sanctuary',
   'services.review': 'services',
   'work.moderate': 'work',
+  'safe_space.review': 'community',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',
@@ -108,6 +109,16 @@ export const SYSTEM_ROLES: Record<
       'sanctuary.review',
       'services.review',
     ],
+  },
+  /*
+   * Espacio Violeta's reports are read only by guardians the owner chose by
+   * name — not by every moderator. A reported message there can be about
+   * abuse, and the person who reads it should have been picked for that.
+   */
+  safe_space_guardian: {
+    name: 'Espacio Violeta guardian',
+    description: 'Reads and decides reports inside Espacio Violeta. Nothing else.',
+    permissions: ['safe_space.review'],
   },
   support: {
     name: 'Support',

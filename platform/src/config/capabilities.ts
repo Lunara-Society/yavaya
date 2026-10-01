@@ -245,6 +245,20 @@ export const CAPABILITIES: readonly Capability[] = [
     blockedBy: 'Professional subscriptions need card payments, which are not live, and a price the owner has not set. Until then posting and applying are free.',
   },
   {
+    key: 'safe_space',
+    nameKey: 'capability.safe_space.name',
+    detailKey: 'capability.safe_space.detail',
+    /*
+     * Measured: REAL only when SAFE_SPACE_KEY is set, because without it the
+     * space refuses to store a single message. What it promises is encryption
+     * at rest, not end to end, and a self-declared women-only room — the
+     * pages say both plainly.
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy: 'SAFE_SPACE_KEY is not set. Without it Espacio Violeta stays closed rather than store conversations readable.',
+  },
+  {
     key: 'animals',
     nameKey: 'capability.animals.name',
     detailKey: 'capability.animals.detail',

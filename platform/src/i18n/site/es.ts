@@ -360,6 +360,7 @@ export const siteEs = {
       lead: 'Menos transacción, más personas. Un espacio tranquilo para pedir ayuda, ofrecerla y pertenecer.',
       spaces: [
         { title: 'Ayuda local', text: 'Pedir y ofrecer ayuda cerca de ti. **Abierto.**' },
+        { title: 'Espacio Violeta', text: 'Un lugar protegido solo para mujeres que pasan por algo difícil, con un nombre que no es el tuyo, mensajes cifrados y profesionales de psicología con licencia verificada. **Abierto**, desde la plaza.' },
         { title: 'Apoyo familiar', text: 'Para los momentos difíciles de una familia, con respeto y discreción; puedes publicar sin mostrar tu nombre. **Abierto.**' },
         { title: 'Causas', text: 'Causas verificadas para salud, educación, animales y emergencias familiares, con 0 % de comisión. Todavía no existe.' },
         { title: 'Grupos y avisos del barrio', text: 'Vecinos, intereses y avisos en común. Todavía no existe.' },
@@ -924,6 +925,17 @@ export const siteEs = {
             'Si te eligen, recibes el WhatsApp de quien lo rescató; tu contacto lo compartes tú.',
             'Si solicitas ser rescatista, los revisores ven tus datos, tu YAY ID y tu correo para comprobar tu trabajo de rescate.',
             'En Perdidos y encontrados, la foto, la ciudad y la descripción son públicas; tu WhatsApp solo lo ven miembros con cuenta. La publicación se cierra sola a los 60 días.',
+          ],
+        },
+        {
+          title: 'Si usas el Espacio Violeta',
+          text: 'Nadie en el espacio ve tu nombre de Yavaya ni tu YAY ID: solo un nombre propio del espacio. Ninguna página lo muestra a nadie, tampoco al equipo de Yavaya.',
+          list: [
+            'Tus mensajes se guardan cifrados. El cifrado es en nuestros servidores, no de extremo a extremo: Yavaya guarda la llave y la usa solo para mostrarte tus conversaciones.',
+            'Una conversación privada solo la leen las dos personas que están en ella. Si una reporta un mensaje, una guardiana de Yavaya lee solo ese mensaje.',
+            'Nada del espacio llega a tus notificaciones ni a tu correo, y no queda registrado en el historial de auditoría que entraste o escribiste.',
+            'Los mensajes de la sala se borran a los 30 días y los privados a los 90. Si sales del espacio, borramos todo lo tuyo al instante.',
+            'Guardamos la relación entre tu cuenta y tu nombre del espacio solo para poder expulsar a quien abuse.',
           ],
         },
         {

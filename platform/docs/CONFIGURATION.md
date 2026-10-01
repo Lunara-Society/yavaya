@@ -343,6 +343,56 @@ Decided under the owner's delegation (retune freely):
 Open: whether to add licence document upload; whether providers should pay
 for visibility (the Bible's Work subscriptions are a different district).
 
+## Espacio Violeta — what is built and what was decided
+
+A protected space for women going through something hard (abuse, a partner
+who cheated or left, a pregnancy faced alone, mental-health struggles), at
+`/violeta`, reached from Comunidad and the account page. The security model
+is in SECURITY.md; numbers are `SAFE_SPACE_RULES`; word lists, professions,
+pledges and report reasons are `config/safe-space.ts`.
+
+Built: the entrance with pledges; handles of the space (women from flowers,
+sky and sea; professionals from trees, plus a badge and colour); the shared
+room; who is online (members can hide); private conversations that only the
+two people read, with "talked before" so women recognise each other; block,
+delete, report; a guardian queue at `/admin/violeta`; settings (new name,
+presence, leave and erase); quick exit; live refresh without sockets.
+
+**Requires `SAFE_SPACE_KEY`** (32+ random characters) on the web service.
+Without it the space is closed and `/status` says why. Rotating it makes
+existing messages unreadable; since everything expires within 90 days, a
+rotation costs at most that.
+
+Decided under the owner's delegation (retune freely):
+
+- **Who may enter.** Women, by pledge — there is no way to verify gender
+  without identity documents, and requiring documents would keep out the
+  women who most need anonymity. Reports remove those who lie.
+- **Professionals** are psychologists and psychiatrists whose Servicios
+  profile carries a mental-health licence a reviewer verified. If the licence
+  stops being verified, they are locked out on the next request.
+- **Who writes first.** Women may start a private conversation with anyone;
+  professionals may not start one. This protects the women from unsolicited
+  contact and the professionals from being accused of it.
+- **Guardians** are a separate role (`safe_space_guardian`) the owner grants
+  by name. Ordinary moderators do not see these reports. Admins do, because
+  admin holds every permission.
+- **Retention.** Room 30 days, private 90 days, decided reports 90 days.
+- **Not audited, not notified:** see SECURITY.md for why.
+- The privacy page states the 30/90-day periods in prose; if
+  `SAFE_SPACE_RULES` changes, update `i18n/site/*` privacy text too.
+
+Open:
+
+- **Verified help lines per country.** The space tells women in danger to
+  call their country emergency number, but shows no numbers: Yavaya has no
+  verified list yet, and a wrong number in this place is worse than none.
+  Operations should supply verified numbers (emergency, women's helplines)
+  per country; they belong in a table, not in code.
+- Who the first guardians are (grant `safe_space_guardian` to them).
+- Whether professionals should be paid or volunteer, and how a woman can
+  move from a conversation to a paid session in Servicios.
+
 ## Trabajo — what is built and what was decided
 
 Built: the offer board (public, filter by field, kind and remote), job and

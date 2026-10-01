@@ -348,6 +348,7 @@ export const siteEn: SiteContent = {
       lead: 'Less transaction, more people. A calm space to ask for help, offer it, and belong.',
       spaces: [
         { title: 'Local help', text: 'Ask for and offer help near you. **Open.**' },
+        { title: 'Espacio Violeta', text: 'A protected place only for women going through something hard, with a name that is not yours, encrypted messages and psychologists with verified licences. **Open**, from the square.' },
         { title: 'Family support', text: 'For a family’s hard moments, with respect and discretion; you can post without showing your name. **Open.**' },
         { title: 'Causes', text: 'Verified causes for health, education, animals and family emergencies, with 0% commission. Not built yet.' },
         { title: 'Groups and neighbourhood notices', text: 'Neighbours, shared interests and shared notices. Not built yet.' },
@@ -912,6 +913,17 @@ export const siteEn: SiteContent = {
             'If you are chosen, you receive the rescuer’s WhatsApp; you share your own contact yourself.',
             'If you apply to be a rescuer, reviewers see your details, YAY ID and email to check your rescue work.',
             'In Lost and found, the photo, city and description are public; your WhatsApp is seen only by members with an account. The post closes by itself after 60 days.',
+          ],
+        },
+        {
+          title: 'If you use Espacio Violeta',
+          text: 'Nobody in the space sees your Yavaya name or YAY ID: only a name that belongs to the space. No page shows it to anyone, the Yavaya team included.',
+          list: [
+            'Your messages are stored encrypted. The encryption is on our servers, not end to end: Yavaya holds the key and uses it only to show you your conversations.',
+            'A private conversation is read only by the two people in it. If one reports a message, a Yavaya guardian reads that message only.',
+            'Nothing from the space reaches your notifications or your email, and the audit log does not record that you entered or wrote.',
+            'Room messages are deleted after 30 days and private ones after 90. If you leave the space, we erase everything of yours at once.',
+            'We keep the link between your account and your name in the space only so we can remove someone who abuses it.',
           ],
         },
         {

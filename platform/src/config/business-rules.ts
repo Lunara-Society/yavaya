@@ -284,6 +284,34 @@ export const WORK_RULES = {
  * like a licence: learn first, then apply, then be chosen by a rescuer.
  * Listed in docs/CONFIGURATION.md as open to change.
  */
+/** Espacio Violeta: the protected space for women. See config/safe-space.ts. */
+export const SAFE_SPACE_RULES = {
+  messageMaxLength: 2000,
+  reportNoteMaxLength: 1000,
+  /** Messages shown in the shared room, newest last. */
+  roomPageSize: 80,
+  threadPageSize: 200,
+  /** Seen within this long, and not hidden, reads "en línea". */
+  onlineWindowSeconds: 180,
+  /** How often an open page says "still here", and refreshes. */
+  presencePingSeconds: 45,
+  refreshSeconds: 8,
+  /**
+   * Conversations here are not meant to be kept. The shared room forgets
+   * after a month; private conversations after three, so a woman and her
+   * psychologist keep enough context. Decided reports go after three months.
+   */
+  roomRetentionDays: 30,
+  threadRetentionDays: 90,
+  reportRetentionDays: 90,
+  /** A new name, at most this often: often enough to escape, not to evade. */
+  handleChangeCooldownDays: 7,
+  messagesPerHour: 120,
+  newThreadsPerDay: 10,
+  /** Where "Salir rápido" goes: an ordinary page that draws no attention. */
+  quickExitUrl: 'https://www.google.com/',
+} as const;
+
 export const ANIMALS_RULES = {
   /** Correct answers out of the quiz's questions needed for the certificate. */
   quizPassMark: 8,

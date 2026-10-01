@@ -30,7 +30,7 @@ export default async function AccountPage() {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
 
-  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator] = await Promise.all([
+  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 6 }),
@@ -40,6 +40,7 @@ export default async function AccountPage() {
     hasPermission(db(), userId, 'services.review'),
     hasPermission(db(), userId, 'adoptions.review'),
     hasPermission(db(), userId, 'work.moderate'),
+    hasPermission(db(), userId, 'safe_space.review'),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
@@ -54,6 +55,7 @@ export default async function AccountPage() {
   if (sanctuaryReviewer) shortcuts.push({ href: '/admin/sanctuary', labelKey: 'nav.moderation_sanctuary' as MessageKey, glyph: '⚑' });
   if (servicesReviewer) shortcuts.push({ href: '/admin/services', labelKey: 'nav.admin_services' as MessageKey, glyph: '⚑' });
   if (workModerator) shortcuts.push({ href: '/admin/work', labelKey: 'nav.admin_work' as MessageKey, glyph: '⚑' });
+  if (guardian) shortcuts.push({ href: '/admin/violeta', labelKey: 'nav.admin_violeta' as MessageKey, glyph: '⚑' });
   if (animalsReviewer) shortcuts.push({ href: '/admin/animals', labelKey: 'nav.admin_animals' as MessageKey, glyph: '⚑' });
 
   if (!shield) redirect('/login');
@@ -177,6 +179,7 @@ const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = 
   { href: '/mercadito/mine', labelKey: 'mercadito.mine.title', glyph: '▦' },
   { href: '/services/mine', labelKey: 'services.board.mine', glyph: '⚒' },
   { href: '/work/mine', labelKey: 'work.board.mine', glyph: '▤' },
+  { href: '/violeta', labelKey: 'nav.violeta', glyph: '✿' },
   { href: '/animals/mine', labelKey: 'animals.mine.title', glyph: '♥' },
   { href: '/sanctuary', labelKey: 'nav.sanctuary', glyph: '✝' },
   { href: '/account/tokens', labelKey: 'nav.tokens', glyph: '◆' },

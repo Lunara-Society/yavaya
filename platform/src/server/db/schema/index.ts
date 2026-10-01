@@ -22,3 +22,4 @@ export * from './sanctuary';
 export * from './services';
 export * from './animals';
 export * from './work';
+export * from './safe-space';

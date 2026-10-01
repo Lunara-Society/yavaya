@@ -26,6 +26,7 @@ export default defineConfig({
         process.env.TEST_DATABASE_URL ?? 'postgres://yavaya:yavaya@127.0.0.1:5432/yavaya_test',
       SESSION_SECRET: 'test-session-secret-value-that-is-long-enough-000',
       SIGNAL_PEPPER: 'test-signal-pepper-value-that-is-long-enough-0000',
+      SAFE_SPACE_KEY: 'test-safe-space-key-value-that-is-long-enough-00',
       PRIMARY_ADMIN_EMAIL: 'yavayago@gmail.com',
     },
   },

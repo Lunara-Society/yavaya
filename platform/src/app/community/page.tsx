@@ -56,6 +56,9 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             <Link className="btn btn-line" href="/sanctuary">
               ✝ {t('nav.sanctuary')}
             </Link>
+            <Link className="btn btn-line" href="/violeta">
+              {t('nav.violeta')}
+            </Link>
           </div>
         </div>
       </section>

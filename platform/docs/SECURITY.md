@@ -150,6 +150,34 @@ to the true position. `exact` is never the default.
 The public enforcement registry may show a YAY ID, a status, a broad reason
 category and a date. Never documents, reports, addresses or personal detail.
 
+### Espacio Violeta
+
+The protected space for women has a stricter model than the rest of Yavaya:
+
+- **Separate identity.** Members appear only under a handle of the space
+  ("Luna 27"; professionals draw from a different word list and carry a
+  badge). The account link exists for bans only; no page renders it, the
+  guardian queue included.
+- **Sealed at rest.** Messages, report snapshots and reporter notes are
+  AES-256-GCM with a key derived (HKDF) from `SAFE_SPACE_KEY` and bound to
+  its purpose (`security/sealed-text.ts`). Without the key the space is
+  closed; it never falls back to plain text. This is encryption at rest, not
+  end to end — the application holds the key — and the pages say so.
+- **Two readers.** A private conversation is readable only by its two
+  members; anyone else gets "not found". A guardian (`safe_space.review`,
+  role `safe_space_guardian`, granted by name — not every moderator) reads a
+  message only when a participant reports it, from a sealed snapshot.
+- **Silence.** Nothing in the space creates a notification or an email.
+  Joining and writing are deliberately not audited: the audit log is
+  staff-readable, and membership itself is sensitive. Guardian decisions are
+  audited without handle, member id or content.
+- **Forgetting.** Room messages expire after 30 days, private ones after 90,
+  decided reports after 90 (`purge-safe-space` in the tick). Leaving deletes
+  the member and, by cascade, every message and conversation they were in.
+- **Exit.** A quick-exit control on every page replaces the history entry;
+  Esc twice does the same. Titles read "Yavaya" only; pages are `noindex`
+  and send no referrer.
+
 ## Transport and headers
 
 Applied globally in `next.config.ts`: HSTS with preload,
@@ -188,6 +216,11 @@ managed platform.
 ## Known gaps
 
 Stated plainly rather than left for someone to discover.
+
+- **Espacio Violeta cannot verify that a member is a woman.** Entry is a
+  pledge; removal follows a report. Professionals are verified (licence
+  reviewed in Servicios). A determined man with a fresh account can enter
+  until reported.
 
 - **No device fingerprint is collected.** `requestContext` sets it to `null`
   rather than deriving one from the user agent, which would produce mass false

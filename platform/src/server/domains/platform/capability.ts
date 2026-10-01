@@ -4,6 +4,7 @@ import { CAPABILITIES, type Capability, type CapabilityState } from '@/config/ca
 import { listProviderAvailability } from '@/server/domains/payments/service';
 import { emailAvailability } from '@/server/domains/notifications/email/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
+import { safeSpaceAvailable } from '@/server/domains/safe-space/service';
 import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
 
 /**
@@ -129,6 +130,9 @@ function measured(capability: Capability): Capability {
   if (capability.key === 'mercadito') {
     const media = mediaStorageAvailability();
     return media.available ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
+  }
+  if (capability.key === 'safe_space') {
+    return safeSpaceAvailable() ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
   }
   if (capability.key !== 'email_verification') return capability;
   const state = emailCapabilityState();

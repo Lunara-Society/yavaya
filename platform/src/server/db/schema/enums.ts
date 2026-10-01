@@ -320,4 +320,7 @@ export const workPostStatusEnum = pgEnum('work_post_status', [
   'removed', // taken down by a moderator
 ]);
 export const workApplicationStatusEnum = pgEnum('work_application_status', ['submitted', 'shortlisted', 'declined', 'hired', 'withdrawn']);
+export const safeSpaceMemberKindEnum = pgEnum('safe_space_member_kind', ['member', 'professional']);
+export const safeSpaceMemberStatusEnum = pgEnum('safe_space_member_status', ['active', 'banned']);
+export const safeSpaceReportStatusEnum = pgEnum('safe_space_report_status', ['open', 'dismissed', 'removed', 'banned']);
 export const workProfileStatusEnum = pgEnum('work_profile_status', ['active', 'suspended']);

@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { rateLimitCounters } from '@/server/db/schema';
+import { SAFE_SPACE_RULES } from '@/config/business-rules';
 
 /**
  * Server-side rate limiting.
@@ -44,6 +45,9 @@ export const RATE_LIMITS = {
   publishStandard: { bucket: 'publish_standard', limit: 60, windowSeconds: 60 * 60 },
   /** Replies in Community: enough for a real conversation, not for flooding one. */
   communityReply: { bucket: 'community_reply', limit: 30, windowSeconds: 60 * 60 },
+  /** Espacio Violeta, per member: a real conversation, not a flood. */
+  safeSpaceMessage: { bucket: 'safe_space_message', limit: SAFE_SPACE_RULES.messagesPerHour, windowSeconds: 60 * 60 },
+  safeSpaceThread: { bucket: 'safe_space_thread', limit: SAFE_SPACE_RULES.newThreadsPerDay, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 
 /**

@@ -47,6 +47,7 @@
   --community: #9366e0;
   --sanctuary: #c8a165;
   --animals: #3f8f4a;
+  --violeta: #a57cf0;
 
   --radius: 18px;
   --radius-sm: 12px;
@@ -467,6 +468,7 @@ td strong { color: var(--text); }
 .tone-community { --tone: var(--community); }
 .tone-sanctuary { --tone: var(--sanctuary); }
 .tone-animals { --tone: var(--animals); }
+.tone-violeta { --tone: var(--violeta); }
 .tone-trust { --tone: var(--gold); }
 
 /* ── Mercadito: the live market ─────────────────────────────────────────
@@ -1042,3 +1044,62 @@ td strong { color: var(--text); }
 .wk-links { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 .wk-links a { overflow-wrap: anywhere; }
 .wk-pay-field input { font-weight: 700; }
+
+/* Espacio Violeta ---------------------------------------------------------- */
+.vt { min-height: 100vh; background: var(--bg); }
+.vt-top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--tone) 16%, var(--bg)); border-bottom: 1px solid color-mix(in srgb, var(--tone) 40%, var(--line)); }
+.vt-top-in { display: flex; align-items: center; gap: 18px; min-height: 60px; flex-wrap: wrap; }
+.vt-brand { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; color: var(--text); text-decoration: none; }
+.vt-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.vt-nav a { padding: 8px 12px; border-radius: 10px; color: var(--text-2); text-decoration: none; font-weight: 700; }
+.vt-nav a[aria-current="page"], .vt-nav a:hover { color: var(--text); background: color-mix(in srgb, var(--tone) 22%, transparent); }
+.vt-count { display: inline-block; margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--tone); color: #12081f; font-size: 0.75rem; line-height: 20px; text-align: center; }
+/* Always visible, always the same place: the one control that must never be hunted for. */
+.vt-exit { margin-left: auto; padding: 10px 18px; border-radius: 12px; background: #d64545; color: #fff; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.vt-exit:hover { filter: brightness(1.1); }
+.vt-main { padding-top: 28px; padding-bottom: 64px; }
+.vt-door { max-width: 760px; }
+.vt-door .lead { font-size: 1.12rem; color: var(--text-2); }
+.vt-danger { padding: 14px 16px; border-radius: 12px; border: 1px solid #d64545; background: color-mix(in srgb, #d64545 10%, transparent); font-weight: 700; }
+.vt-h { font-size: 1.1rem; margin: 26px 0 10px; }
+.vt-title { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 0 0 6px; }
+.vt-list { display: grid; gap: 10px; padding-left: 20px; }
+.vt-join, .vt-pro-door { margin-top: 28px; padding: 20px; border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--tone) 6%, var(--surface)); }
+.vt-room { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+@media (max-width: 860px) { .vt-room { grid-template-columns: 1fr; } }
+.vt-messages { list-style: none; margin: 16px 0; padding: 4px; display: flex; flex-direction: column-reverse; gap: 10px; max-height: 62vh; overflow-y: auto; }
+.vt-msg { padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); max-width: 86%; }
+.vt-msg.mine { align-self: flex-end; background: color-mix(in srgb, var(--tone) 14%, var(--surface)); }
+.vt-msg.pro { border-color: #1aa3a3; box-shadow: inset 4px 0 0 #1aa3a3; }
+.vt-msg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 4px; font-size: 0.9rem; }
+.vt-time { color: var(--text-3); font-size: 0.82rem; margin-left: auto; }
+.vt-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); background: var(--surface-2, var(--surface)); }
+.vt-msg-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 6px; font-size: 0.86rem; }
+.vt-link { background: none; border: 0; padding: 0; color: var(--text-3); text-decoration: underline; cursor: pointer; font: inherit; }
+.vt-link:hover { color: var(--text); }
+.vt-report summary { cursor: pointer; color: var(--text-3); text-decoration: underline; }
+.vt-report form { margin-top: 8px; }
+.vt-report textarea { min-height: 70px; }
+.vt-who { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.vt-who strong { color: var(--tone); }
+/* Professionals: another colour and a badge, so nobody mistakes one for a woman like her. */
+.vt-who.pro strong { color: #1aa3a3; }
+.vt-badge { padding: 2px 8px; border-radius: 999px; background: #1aa3a3; color: #04201f; font-size: 0.74rem; font-weight: 800; }
+.vt-dot { width: 9px; height: 9px; border-radius: 50%; background: #3fbf7f; box-shadow: 0 0 0 3px color-mix(in srgb, #3fbf7f 25%, transparent); }
+.vt-known { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--tone); font-size: 0.74rem; color: var(--tone); }
+.vt-compose textarea { min-height: 96px; }
+.vt-side { position: sticky; top: 84px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.vt-side .vt-h:first-child { margin-top: 0; }
+.vt-people { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 10px; }
+.vt-people li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.vt-small { min-height: 36px; padding: 0 12px; font-size: 0.86rem; }
+.vt-threads { list-style: none; padding: 0; display: grid; gap: 10px; margin-top: 16px; }
+.vt-thread { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--text); text-decoration: none; }
+.vt-thread.unread { border-color: var(--tone); box-shadow: inset 4px 0 0 var(--tone); }
+.vt-sealed { font-size: 0.9rem; color: var(--text-3); }
+.vt-sealed::before { content: "🔒 "; }
+.vt-block { margin-top: 18px; }
+.vt-section { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.vt-danger-zone .btn { border-color: #d64545; }
+.vt-case blockquote { margin: 10px 0; }

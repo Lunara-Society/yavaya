@@ -64,6 +64,15 @@ const serverSchema = z.object({
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
   /** Used to keyed-hash IP addresses and device fingerprints before storage. */
   SIGNAL_PEPPER: z.string().min(32, 'SIGNAL_PEPPER must be at least 32 characters'),
+  /**
+   * Encrypts every message in Espacio Violeta at rest. Without it the space
+   * stays closed: it never stores those conversations in plain text.
+   * Rotating it makes existing messages unreadable — they are short-lived by
+   * design, but rotate only on purpose.
+   */
+  // Checked where it is used, not here: a bad value must close the space,
+  // never stop the whole site from starting.
+  SAFE_SPACE_KEY: z.string().optional(),
 
   APP_URL: z.string().url().default('http://localhost:3000'),
   APP_ENV: z.enum(['local', 'staging', 'production']).default('local'),
