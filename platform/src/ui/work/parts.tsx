@@ -19,7 +19,8 @@ export function PostCard({ post, t, locale, footer }: { post: PostCardView; t: T
       </h3>
       <p className="wk-pay">{post.payText}</p>
       <p className="sv-meta">
-        {post.companyName ?? post.employerName} · {post.placeName} · {t(`work.place_mode.${post.placeMode}` as MessageKey)} · {t(`work.employment.${post.employment}` as MessageKey)}
+        {post.companyName ?? post.employerName}
+        {post.employerVerified ? <span className="wk-verified"> ✓ {t(`work.employer.verified_${post.employerVerified}` as MessageKey)}</span> : null} · {post.placeName} · {t(`work.place_mode.${post.placeMode}` as MessageKey)} · {t(`work.employment.${post.employment}` as MessageKey)}
       </p>
       <p className="sv-meta">
         {formatDate(post.createdAt, locale)}

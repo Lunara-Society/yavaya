@@ -56,6 +56,7 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
           <p className="wk-pay big">{post.payText}</p>
           <p className="sv-meta">
             {post.companyName ? `${post.companyName} · ` : ''}
+            {post.employerVerified ? <span className="wk-verified">✓ {t(`work.employer.verified_${post.employerVerified}` as MessageKey)} · </span> : null}
             {post.placeName} · {t(`work.place_mode.${post.placeMode}` as MessageKey)} · {t(`work.employment.${post.employment}` as MessageKey)}
           </p>
           <p className="sv-meta">

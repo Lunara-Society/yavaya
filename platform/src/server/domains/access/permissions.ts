@@ -44,6 +44,7 @@ export const PERMISSIONS = {
   'sanctuary.review': 'sanctuary',
   'services.review': 'services',
   'work.moderate': 'work',
+  'work.review': 'work',
   'safe_space.review': 'community',
 
   // Platform ----------------------------------------------------------------
@@ -93,11 +94,12 @@ export const SYSTEM_ROLES: Record<
       'sanctuary.review',
       'services.review',
       'work.moderate',
+      'work.review',
     ],
   },
   district_reviewer: {
     name: 'District reviewer',
-    description: 'Reviews driver applications, causes, adoption applications, churches and professional licences.',
+    description: 'Reviews driver applications, causes, adoption applications, churches, professional licences and employers.',
     permissions: [
       'users.read',
       'drivers.review',
@@ -108,6 +110,7 @@ export const SYSTEM_ROLES: Record<
       'adoptions.approve',
       'sanctuary.review',
       'services.review',
+      'work.review',
     ],
   },
   /*

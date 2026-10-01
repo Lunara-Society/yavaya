@@ -8,6 +8,7 @@ import { EMPLOYMENT_TYPES, PLACE_MODES, WORK_FIELDS } from '@/config/work';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { placeOptions } from '@/server/domains/mercadito/service';
+import { getEmployer } from '@/server/domains/work/service';
 import { publishPostAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
@@ -25,8 +26,37 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
   const kind = query.kind === 'project' ? 'project' : 'job';
-  const countries = await placeOptions(db(), locale);
+  const [countries, employer] = await Promise.all([placeOptions(db(), locale), getEmployer(db(), userId)]);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
+
+  // Only a verified employer sees the form; everyone else sees where they stand.
+  if (employer?.status !== 'approved') {
+    const state = !employer ? 'none' : employer.status;
+    return (
+      <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="work" tone="work">
+        <div className="wrap cm-column" style={{ padding: '28px var(--gutter) 56px' }}>
+          <p>
+            <Link href="/work">← {t('work.back')}</Link>
+          </p>
+          <h1 className="h-md">{t('work.employer.gate_title')}</h1>
+          <p className="lead">{t(`work.employer.gate.${state}` as MessageKey)}</p>
+          {state === 'none' || state === 'rejected' ? (
+            <p className="btn-row">
+              <Link className="btn btn-gold" href="/work/employer">
+                {t(state === 'none' ? 'work.employer.apply' : 'work.employer.edit')}
+              </Link>
+            </p>
+          ) : (
+            <p className="btn-row">
+              <Link className="btn btn-line" href="/work/employer">
+                {t('work.employer.view')}
+              </Link>
+            </p>
+          )}
+        </div>
+      </SiteShell>
+    );
+  }
   const employments = kind === 'project' ? (['freelance'] as const) : EMPLOYMENT_TYPES.filter((e) => e !== 'freelance');
 
   return (
@@ -95,11 +125,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
             {t('work.form.requirements')}
             <textarea name="requirements" maxLength={WORK_RULES.requirementsMaxLength} style={{ minHeight: 80 }} />
           </label>
-          <label>
-            {t('work.form.company')}
-            <span className="hint">{t('work.form.company_hint')}</span>
-            <input name="companyName" maxLength={WORK_RULES.companyMaxLength} />
-          </label>
+          <p className="muted">{employer.kind === 'business' ? t('work.employer.posts_as_business', { name: employer.name }) : t('work.employer.posts_as_person')}</p>
           <label>
             {t('work.form.location')}
             <select name="locationId" required defaultValue="">

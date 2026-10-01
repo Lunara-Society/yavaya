@@ -272,6 +272,11 @@ export const WORK_RULES = {
   maxPortfolioLinks: 3,
   maxOpenPostsPerEmployer: 10,
   maxOpenApplicationsPerCandidate: 20,
+  employerNameMinLength: 3,
+  employerNameMaxLength: 100,
+  registrationMaxLength: 40,
+  employerAboutMinLength: 30,
+  employerAboutMaxLength: 1000,
   /** A post stays open this long unless closed or filled sooner. */
   postOpenDays: 30,
   /** Members told about one new post, at most (once a day per field each). */

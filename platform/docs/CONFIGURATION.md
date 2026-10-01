@@ -395,8 +395,9 @@ Open:
 
 ## Trabajo — what is built and what was decided
 
-Built: the offer board (public, filter by field, kind and remote), job and
-project offers, professional profiles (members only, not indexed),
+Built: the offer board (public, filter by field, kind and remote), employer
+verification (`/work/employer`, reviewed at `/admin/work` with `work.review`:
+moderators, district reviewers, admins), job and project offers, professional profiles (members only, not indexed),
 applications with a message, the employer's steps (shortlist, decline with an
 optional note, hire), closing, 30-day expiry (`expire-work-posts` in the
 tick), reports and a review queue (`work.moderate`: moderators and admins).
@@ -429,10 +430,23 @@ Decided under the owner's delegation (retune freely):
   profile hides it and stops it applying; it does not close offers already
   posted (remove those individually).
 - **Limits.** 10 open offers per employer; 20 open applications per candidate.
+- **Verified employers only** (owner decision, October 2026). Every employer
+  applies once — as a person or a business — and a person approves them
+  before their first post. A business must give a registration or tax
+  number, and posts under the verified name only: the post form has no
+  company field, because borrowing a real company's name is the commonest
+  employment scam. Changing name, type or registration sends the employer
+  back to review; phone, description and website do not. Suspending an
+  employer removes their open offers and tells waiting candidates. Offers
+  published before verification existed stay up without the badge until
+  they expire.
+- **What "verified" means** is that a reviewer looked: a business number
+  checked in the country's public register, a person contacted on WhatsApp.
+  There is no registry integration or document upload; the review guidance
+  on `/admin/work` says what to check.
 
-Open: the subscription start date and plans; whether employers must be
-verified before posting (today any active member with a confirmed email can
-post); reviews between employers and professionals.
+Open: the subscription start date and plans; reviews between employers and
+professionals; whether to integrate a business registry per country.
 
 ## Community — what is built and what is undecided
 

@@ -1,7 +1,7 @@
 import { index, integer, pgTable, text, timestamp, uniqueIndex, uuid, boolean } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 import { locations } from './geography';
-import { workApplicationStatusEnum, workPostKindEnum, workPostStatusEnum, workProfileStatusEnum } from './enums';
+import { workApplicationStatusEnum, workEmployerStatusEnum, workPostKindEnum, workPostStatusEnum, workProfileStatusEnum } from './enums';
 
 /**
  * Trabajo: jobs and professional projects, without auctions.
@@ -88,4 +88,38 @@ export const workApplications = pgTable(
     uniqueIndex('work_applications_one_per_candidate').on(table.postId, table.candidateUserId),
     index('work_applications_candidate_idx').on(table.candidateUserId, table.createdAt),
   ],
+);
+
+/**
+ * Who may post. Every employer is checked by a person before their first
+ * post: the commonest job scams here are fake companies and real companies'
+ * names borrowed by someone else. A business posts under the name a reviewer
+ * verified, never a name typed into the post.
+ */
+export const workEmployers = pgTable(
+  'work_employers',
+  {
+    userId: uuid('user_id')
+      .primaryKey()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    /** `person` (hiring for themselves or their home) or `business`. */
+    kind: text('kind').notNull(),
+    /** The business name, or the person's name as on their ID. */
+    name: text('name').notNull(),
+    /** Businesses: the registration or tax number a reviewer can look up. */
+    registration: text('registration'),
+    about: text('about').notNull(),
+    website: text('website'),
+    locationId: uuid('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'restrict' }),
+    whatsappE164: text('whatsapp_e164').notNull(),
+    status: workEmployerStatusEnum('status').notNull().default('pending'),
+    reviewNote: text('review_note'),
+    reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('work_employers_status_idx').on(table.status, table.updatedAt)],
 );

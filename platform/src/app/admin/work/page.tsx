@@ -7,20 +7,25 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
-import { workReviewQueue } from '@/server/domains/work/service';
-import { resolveWorkReportAction } from '@/app/work/actions';
+import { employerReviewQueue, workReviewQueue } from '@/server/domains/work/service';
+import { resolveWorkReportAction, reviewEmployerAction } from '@/app/work/actions';
+import { formatDate } from '@/ui/mercadito/format';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
 
-/** Reports on job posts and professional profiles. `work.moderate` only. */
+/** Employers waiting for verification (`work.review`), and reports on posts and profiles (`work.moderate`). */
 export default async function WorkModerationPage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  if (!(await hasPermission(db(), userId, 'work.moderate'))) notFound();
+  const [canModerate, canReview] = await Promise.all([hasPermission(db(), userId, 'work.moderate'), hasPermission(db(), userId, 'work.review')]);
+  if (!canModerate && !canReview) notFound();
   const session = await currentSession();
-  const queue = await workReviewQueue(db(), session ? { userId, status: session.user.status } : null, locale);
+  const actor = session ? { userId, status: session.user.status } : null;
+  const [queue, employers] = await Promise.all([canModerate ? workReviewQueue(db(), actor, locale) : [], canReview ? employerReviewQueue(db(), actor) : []]);
+  const pending = employers.filter((e) => e.status === 'pending');
+  const approved = employers.filter((e) => e.status === 'approved');
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
@@ -34,7 +39,64 @@ export default async function WorkModerationPage({ searchParams }: { searchParam
       <div className="wrap" style={{ paddingBottom: 56 }}>
         {query.done ? <p className="mk-banner" role="status">{t('sanctuary.review.done')}</p> : null}
         {error ? <p className="mk-error">{t(error as MessageKey)}</p> : null}
-        {queue.length === 0 ? (
+        {canReview ? (
+          <section id="employers" style={{ marginBottom: 36 }}>
+            <h2 style={{ fontSize: '1.3rem' }}>{t('work.employer.review_title', { count: pending.length })}</h2>
+            <p className="muted">{t('work.employer.review_guidance')}</p>
+            {pending.length === 0 ? <p className="mk-empty">{t('work.employer.review_empty')}</p> : null}
+            <div className="mk-queue">
+              {pending.map((e) => (
+                <article key={e.userId} className="card">
+                  <p className="muted mb0">
+                    {t(`work.employer.kind.${e.kind}` as MessageKey)} · {e.placeName} · {t('work.employer.account', { name: e.displayName, yay: e.yayId, date: formatDate(e.accountCreatedAt, locale) })}
+                  </p>
+                  <h3 style={{ fontSize: '1.2rem', margin: '4px 0' }}>{e.name}</h3>
+                  {e.registration ? <p className="mb0"><strong>{t('work.employer.registration')}:</strong> {e.registration}</p> : null}
+                  <p className="cm-body">{e.about}</p>
+                  <p className="muted">
+                    WhatsApp {e.whatsappE164}
+                    {e.website ? <> · <a href={e.website} target="_blank" rel="noopener noreferrer nofollow">{e.website}</a></> : null}
+                  </p>
+                  <form action={reviewEmployerAction} className="mk-form" style={{ marginTop: 12, maxWidth: 'none' }}>
+                    <input type="hidden" name="employerUserId" value={e.userId} />
+                    <label>
+                      {t('work.employer.review_note_label')}
+                      <textarea name="note" maxLength={1000} style={{ minHeight: 70 }} />
+                    </label>
+                    <div className="btn-row">
+                      <button className="btn btn-gold" type="submit" name="decision" value="approve">
+                        {t('work.employer.approve')}
+                      </button>
+                      <button className="btn btn-line" type="submit" name="decision" value="reject">
+                        {t('work.employer.reject')}
+                      </button>
+                    </div>
+                  </form>
+                </article>
+              ))}
+            </div>
+            {approved.length > 0 ? (
+              <details style={{ marginTop: 18 }}>
+                <summary>{t('work.employer.approved_list', { count: approved.length })}</summary>
+                <ul className="wk-approved">
+                  {approved.map((e) => (
+                    <li key={e.userId}>
+                      <strong>{e.name}</strong> · {t(`work.employer.kind.${e.kind}` as MessageKey)} · {e.placeName}
+                      <form action={reviewEmployerAction} className="btn-row">
+                        <input type="hidden" name="employerUserId" value={e.userId} />
+                        <input name="note" required maxLength={1000} placeholder={t('work.employer.suspend_reason')} />
+                        <button className="btn btn-line" type="submit" name="decision" value="suspend">
+                          {t('work.employer.suspend')}
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : null}
+          </section>
+        ) : null}
+        {!canModerate ? null : queue.length === 0 ? (
           <p className="mk-empty">{t('sanctuary.review.no_reports')}</p>
         ) : (
           <div className="mk-queue">

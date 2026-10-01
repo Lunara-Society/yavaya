@@ -48,6 +48,7 @@ export async function resetTransactionalData(): Promise<void> {
       safe_space_room_messages,
       safe_space_members,
       work_applications,
+      work_employers,
       work_posts,
       work_profiles,
       animals_lost_found_photos,

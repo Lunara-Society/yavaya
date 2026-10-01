@@ -73,6 +73,9 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           <p>
             <strong>{t('work.principle.fee_title')}</strong> {t('work.principle.fee_text')}
           </p>
+          <p>
+            <strong>{t('work.principle.verified_title')}</strong> {t('work.principle.verified_text')}
+          </p>
           <p className="muted mb0">{t('work.principle.free_now')}</p>
         </div>
 

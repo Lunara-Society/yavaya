@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { and, eq } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
-import { auditEvents, locations, users, workPosts } from '@/server/db/schema';
+import { auditEvents, locations, users, workEmployers, workPosts } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { listNotifications } from '@/server/domains/notifications/service';
@@ -9,6 +9,11 @@ import {
   apply,
   closePost,
   decideApplication,
+  employerInputSchema,
+  employerReviewQueue,
+  getEmployer,
+  reviewEmployer,
+  saveEmployer,
   expireWorkPosts,
   getPost,
   listPosts,
@@ -32,6 +37,26 @@ async function member(name = 'Persona') {
     context,
   );
   await db().update(users).set({ status: 'active' }).where(eq(users.id, userId));
+  return userId;
+}
+
+const business = (overrides: Record<string, unknown> = {}) =>
+  employerInputSchema.parse({
+    kind: 'business',
+    name: 'Ferretería El Sol',
+    registration: 'J0310000012345',
+    about: 'Ferretería familiar en el centro de León desde 1998. Contratamos vendedores y técnicos.',
+    website: '',
+    locationId: placeId,
+    whatsapp: '+505 8888 3333',
+    ...overrides,
+  });
+
+/** An employer a reviewer already approved: the state every post needs. */
+async function verifiedEmployer(name = 'Ferretería') {
+  const userId = await member(name);
+  await db().transaction((tx) => saveEmployer(tx, { userId, input: business() }));
+  await db().update(workEmployers).set({ status: 'approved' }).where(eq(workEmployers.userId, userId));
   return userId;
 }
 
@@ -90,7 +115,7 @@ describe('posting without auctions', () => {
     await db().transaction((tx) => saveProfile(tx, { userId: pro, input: profile() }));
     const designer = await member('Diseñadora');
     await db().transaction((tx) => saveProfile(tx, { userId: designer, input: profile({ fields: ['design'] }) }));
-    const employer = await member('Ferretería');
+    const employer = await verifiedEmployer('Ferretería');
     await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
     await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: 'Técnico de redes' }) }));
     expect((await listNotifications(db(), pro)).map((n) => n.titleKey)).toEqual(['notify.work.new_posts']);
@@ -101,7 +126,7 @@ describe('posting without auctions', () => {
 
 describe('applying', () => {
   it('needs a profile; the employer sees the candidate, shortlists, and the candidate gets the contact', async () => {
-    const employer = await member('Ferretería');
+    const employer = await verifiedEmployer('Ferretería');
     const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
     const candidate = await member('Carlos');
     await expect(db().transaction((tx) => apply(tx, { candidateUserId: candidate, postId, message: 'Me interesa mucho el puesto, tengo experiencia.' }))).rejects.toMatchObject({ messageKey: 'work.error.need_profile' });
@@ -122,7 +147,7 @@ describe('applying', () => {
   });
 
   it('closing a post tells everyone still waiting', async () => {
-    const employer = await member();
+    const employer = await verifiedEmployer();
     const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
     const candidate = await member();
     await db().transaction((tx) => saveProfile(tx, { userId: candidate, input: profile() }));
@@ -132,7 +157,7 @@ describe('applying', () => {
   });
 
   it('expires old posts', async () => {
-    const employer = await member();
+    const employer = await verifiedEmployer();
     const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
     await db().update(workPosts).set({ expiresAt: new Date(Date.now() - 1000) }).where(eq(workPosts.id, postId));
     expect(await expireWorkPosts(db())).toEqual({ closed: 1 });
@@ -142,7 +167,7 @@ describe('applying', () => {
 
 describe('reports', () => {
   it('lets a moderator remove a post that charges candidates', async () => {
-    const employer = await member();
+    const employer = await verifiedEmployer();
     const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
     const candidate = await member();
     await db().transaction((tx) => reportWork(tx, { reporterUserId: candidate, subject: 'post', subjectId: postId, category: 'scam', description: 'Piden C$500 por la capacitación.' }));
@@ -154,5 +179,57 @@ describe('reports', () => {
     expect(await getPost(db(), { postId, viewerId: candidate, viewerIsModerator: false, locale: 'es' })).toBeNull();
     const audits = await db().select().from(auditEvents).where(and(eq(auditEvents.action, 'moderation.work_remove_post'), eq(auditEvents.subjectId, postId)));
     expect(audits).toHaveLength(1);
+  });
+
+  it('lets only a verified employer post, under the verified name', async () => {
+    const userId = await member('Dueño');
+    await expect(db().transaction((tx) => publishPost(tx, { employerUserId: userId, input: job() }))).rejects.toMatchObject({ messageKey: 'work.error.employer_needed' });
+    await db().transaction((tx) => saveEmployer(tx, { userId, input: business() }));
+    await expect(db().transaction((tx) => publishPost(tx, { employerUserId: userId, input: job() }))).rejects.toMatchObject({ messageKey: 'work.error.employer_pending' });
+
+    const reviewer = await member('Revisora');
+    await db().transaction((tx) => grantRole(tx, { userId: reviewer, roleKey: 'district_reviewer', grantedBy: null }));
+    const queue = await employerReviewQueue(db(), { userId: reviewer, status: 'active' });
+    expect(queue.map((e) => e.userId)).toContain(userId);
+    await expect(db().transaction((tx) => reviewEmployer(tx, { actor: { userId: reviewer, status: 'active' }, employerUserId: userId, decision: 'reject', note: null }))).rejects.toMatchObject({ messageKey: 'work.error.review_note' });
+    await db().transaction((tx) => reviewEmployer(tx, { actor: { userId: reviewer, status: 'active' }, employerUserId: userId, decision: 'approve', note: null }));
+    expect((await listNotifications(db(), userId)).some((n) => n.titleKey === 'notify.work.employer_approved')).toBe(true);
+
+    // A name typed into the post is ignored: a business posts as itself.
+    const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: userId, input: { ...job(), companyName: 'Banco Central' } as never }));
+    const [post] = await db().select().from(workPosts).where(eq(workPosts.id, postId));
+    expect(post!.companyName).toBe('Ferretería El Sol');
+    const page = await listPosts(db(), { locale: 'es' });
+    expect(page.items.find((p) => p.id === postId)?.employerVerified).toBe('business');
+  });
+
+  it('sends an employer back to review when who they are changes, but not for a new phone', async () => {
+    const userId = await verifiedEmployer('Dueña');
+    await db().transaction((tx) => saveEmployer(tx, { userId, input: business({ whatsapp: '+505 8888 4444' }) }));
+    expect((await getEmployer(db(), userId))?.status).toBe('approved');
+    const result = await db().transaction((tx) => saveEmployer(tx, { userId, input: business({ name: 'Banco Central de Nicaragua' }) }));
+    expect(result.reReview).toBe(true);
+    expect((await getEmployer(db(), userId))?.status).toBe('pending');
+  });
+
+  it('requires a registration number from a business, not from a person', () => {
+    const raw = { kind: 'business', name: 'Ferretería El Sol', registration: '', about: 'Ferretería familiar en el centro de León desde 1998.', website: '', locationId: placeId, whatsapp: '+505 8888 3333' };
+    expect(employerInputSchema.safeParse(raw).success).toBe(false);
+    expect(employerInputSchema.safeParse({ ...raw, kind: 'person', name: 'María José López' }).success).toBe(true);
+  });
+
+  it('suspending an employer takes their offers down and tells waiting candidates', async () => {
+    const employer = await verifiedEmployer();
+    const postId = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job() }));
+    const candidate = await member('Carlos');
+    await db().transaction((tx) => saveProfile(tx, { userId: candidate, input: profile() }));
+    await db().transaction((tx) => apply(tx, { candidateUserId: candidate, postId, message: 'Tengo cinco años de experiencia en soporte y redes.' }));
+    const reviewer = await member('Revisora');
+    await db().transaction((tx) => grantRole(tx, { userId: reviewer, roleKey: 'moderator', grantedBy: null }));
+    await db().transaction((tx) => reviewEmployer(tx, { actor: { userId: reviewer, status: 'active' }, employerUserId: employer, decision: 'suspend', note: 'Pedía dinero a candidatos.' }));
+    const [post] = await db().select().from(workPosts).where(eq(workPosts.id, postId));
+    expect(post!.status).toBe('removed');
+    expect((await listNotifications(db(), candidate)).some((n) => n.titleKey === 'notify.work.post_closed')).toBe(true);
+    await expect(db().transaction((tx) => saveEmployer(tx, { userId: employer, input: business() }))).rejects.toMatchObject({ messageKey: 'work.error.employer_suspended' });
   });
 });

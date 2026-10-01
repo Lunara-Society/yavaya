@@ -12,6 +12,11 @@ import {
   APPLICATION_STEPS,
   closePost,
   decideApplication,
+  EMPLOYER_DECISIONS,
+  employerInputSchema,
+  reviewEmployer,
+  saveEmployer,
+  type EmployerDecision,
   postInputSchema,
   profileInputSchema,
   publishPost,
@@ -84,7 +89,6 @@ export async function publishPostAction(formData: FormData): Promise<void> {
     description: field(formData, 'description'),
     requirements: field(formData, 'requirements'),
     payText: field(formData, 'payText'),
-    companyName: field(formData, 'companyName'),
     locationId: field(formData, 'locationId'),
     placeMode: field(formData, 'placeMode'),
     whatsapp: field(formData, 'whatsapp'),
@@ -195,4 +199,42 @@ export async function resolveWorkReportAction(formData: FormData): Promise<void>
   }
   revalidatePath('/admin/work');
   redirect('/admin/work?done=1');
+}
+
+export async function saveEmployerAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const parsed = employerInputSchema.safeParse({
+    kind: field(formData, 'kind'),
+    name: field(formData, 'name'),
+    registration: field(formData, 'registration'),
+    about: field(formData, 'about'),
+    website: field(formData, 'website'),
+    locationId: field(formData, 'locationId'),
+    whatsapp: field(formData, 'whatsapp'),
+  });
+  if (!parsed.success) redirect(back('/work/employer', parsed.error.issues[0]?.message ?? 'error.validation_failed'));
+  let reReview = false;
+  try {
+    const audit = await auditContext();
+    ({ reReview } = await db().transaction((tx) => saveEmployer(tx, { userId: session.user.userId, input: parsed.data, audit })));
+  } catch (error) {
+    redirect(back('/work/employer', errorKey(error)));
+  }
+  redirect(`/work/employer?saved=${reReview ? 'review' : '1'}`);
+}
+
+export async function reviewEmployerAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const employerUserId = field(formData, 'employerUserId');
+  const decision = field(formData, 'decision');
+  if (!UUID.test(employerUserId) || !(EMPLOYER_DECISIONS as readonly string[]).includes(decision)) redirect('/admin/work');
+  try {
+    await db().transaction((tx) =>
+      reviewEmployer(tx, { actor: { userId: session.user.userId, status: session.user.status }, employerUserId, decision: decision as EmployerDecision, note: field(formData, 'note').trim().slice(0, 1000) || null }),
+    );
+  } catch (error) {
+    redirect(back('/admin/work', errorKey(error)));
+  }
+  revalidatePath('/admin/work');
+  redirect('/admin/work?done=1#employers');
 }

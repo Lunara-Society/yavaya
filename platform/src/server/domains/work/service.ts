@@ -2,7 +2,7 @@ import 'server-only';
 import { and, asc, desc, eq, inArray, lte, ne, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Database, Executor } from '@/server/db/client';
-import { locations, moderationActions, reports, tickets, users, workApplications, workPosts, workProfiles } from '@/server/db/schema';
+import { locations, moderationActions, reports, tickets, users, workApplications, workEmployers, workPosts, workProfiles } from '@/server/db/schema';
 import { WORK_RULES as R } from '@/config/business-rules';
 import { EMPLOYMENT_TYPES, PLACE_MODES, WORK_FIELDS, type WorkField } from '@/config/work';
 import { DomainError, errors } from '@/server/errors';
@@ -27,6 +27,7 @@ import { dayKey, notify } from '@/server/domains/notifications/service';
 type AuditContext = { ipHash?: string | null; userAgentHash?: string | null };
 const POST = 'work_post';
 const PROFILE = 'work_profile';
+const EMPLOYER = 'work_employer';
 
 export const WORK_REPORT_CATEGORIES = ['scam', 'fraud', 'fake_listing', 'harassment', 'other'] as const;
 export type WorkReportCategory = (typeof WORK_REPORT_CATEGORIES)[number];
@@ -118,6 +119,124 @@ export async function getProfile(executor: Executor, userId: string) {
   return row ?? null;
 }
 
+// --- Employers ---------------------------------------------------------------------
+
+export const EMPLOYER_KINDS = ['person', 'business'] as const;
+export type EmployerKind = (typeof EMPLOYER_KINDS)[number];
+
+export const employerInputSchema = z
+  .object({
+    kind: z.enum(EMPLOYER_KINDS, { message: 'work.error.employer_kind' }),
+    name: text(R.employerNameMinLength, R.employerNameMaxLength, 'work.error.employer_name'),
+    registration: optionalText(R.registrationMaxLength, 'work.error.registration'),
+    about: text(R.employerAboutMinLength, R.employerAboutMaxLength, 'work.error.employer_about'),
+    website: z
+      .string()
+      .trim()
+      .transform((value) => value || null)
+      .pipe(z.string().url({ message: 'work.error.link' }).max(300).refine((url) => url.startsWith('https://'), { message: 'work.error.link' }).nullable()),
+    locationId: z.string().uuid({ message: 'work.error.location' }),
+    whatsapp,
+  })
+  // A business is checked against its registration; without one there is nothing to check.
+  .refine((input) => input.kind !== 'business' || Boolean(input.registration), { message: 'work.error.registration', path: ['registration'] });
+export type EmployerInput = z.output<typeof employerInputSchema>;
+
+export async function getEmployer(executor: Executor, userId: string) {
+  const [row] = await executor.select().from(workEmployers).where(eq(workEmployers.userId, userId)).limit(1);
+  return row ?? null;
+}
+
+/**
+ * Applies, or updates. Who you are (kind, name, registration) is what a
+ * reviewer checked, so changing it sends the employer back to review; a new
+ * phone number, description or website does not.
+ */
+export async function saveEmployer(tx: Executor, params: { userId: string; input: EmployerInput; audit?: AuditContext }): Promise<{ reReview: boolean }> {
+  await activeMember(tx, params.userId);
+  const { input } = params;
+  const [place] = await tx.select({ id: locations.id }).from(locations).where(eq(locations.id, input.locationId)).limit(1);
+  if (!place) throw errors.validation('work.error.location');
+  const [existing] = await tx.select().from(workEmployers).where(eq(workEmployers.userId, params.userId)).limit(1).for('update');
+  if (existing?.status === 'suspended') throw new DomainError('forbidden', 'work.error.employer_suspended');
+  const registration = input.kind === 'business' ? input.registration : null;
+  const values = { kind: input.kind, name: input.name, registration, about: input.about, website: input.website, locationId: input.locationId, whatsappE164: input.whatsapp, updatedAt: new Date() };
+  const identityChanged = !existing || existing.kind !== input.kind || existing.name !== input.name || existing.registration !== registration;
+  if (existing) {
+    await tx
+      .update(workEmployers)
+      .set(identityChanged ? { ...values, status: 'pending', reviewNote: null, reviewedBy: null, reviewedAt: null } : values)
+      .where(eq(workEmployers.userId, params.userId));
+  } else {
+    await tx.insert(workEmployers).values({ userId: params.userId, ...values });
+  }
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.userId,
+    action: existing ? 'work.employer_updated' : 'work.employer_applied',
+    subjectType: EMPLOYER,
+    subjectId: params.userId,
+    district: 'works',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+    metadata: { kind: input.kind, reReview: identityChanged },
+  });
+  return { reReview: Boolean(existing) && identityChanged };
+}
+
+export const EMPLOYER_DECISIONS = ['approve', 'reject', 'suspend'] as const;
+export type EmployerDecision = (typeof EMPLOYER_DECISIONS)[number];
+
+export async function reviewEmployer(
+  tx: Executor,
+  params: { actor: AuthContext | null; employerUserId: string; decision: EmployerDecision; note: string | null; now?: Date },
+): Promise<void> {
+  const actor = await requirePermission(tx, params.actor, 'work.review');
+  if (actor.userId === params.employerUserId) throw errors.forbidden('work.review');
+  const [employer] = await tx.select().from(workEmployers).where(eq(workEmployers.userId, params.employerUserId)).limit(1).for('update');
+  if (!employer) throw errors.notFound('work_employer');
+  if (params.decision === 'suspend' && employer.status !== 'approved') throw errors.conflict('work.error.employer_not_approved');
+  if (params.decision !== 'suspend' && employer.status !== 'pending') throw errors.conflict('work.error.employer_not_pending');
+  if (params.decision !== 'approve' && !params.note) throw errors.validation('work.error.review_note');
+  const now = params.now ?? new Date();
+  const status = params.decision === 'approve' ? 'approved' : params.decision === 'reject' ? 'rejected' : 'suspended';
+  await tx.update(workEmployers).set({ status, reviewNote: params.note, reviewedBy: actor.userId, reviewedAt: now, updatedAt: now }).where(eq(workEmployers.userId, employer.userId));
+  if (status === 'suspended') {
+    // Their offers come down, and everyone waiting on one is told it closed.
+    const closed = await tx
+      .update(workPosts)
+      .set({ status: 'removed', removedBy: actor.userId, updatedAt: now })
+      .where(and(eq(workPosts.employerUserId, employer.userId), eq(workPosts.status, 'open')))
+      .returning({ id: workPosts.id, title: workPosts.title });
+    for (const post of closed) {
+      const waiting = await tx
+        .update(workApplications)
+        .set({ status: 'declined', decidedAt: now })
+        .where(and(eq(workApplications.postId, post.id), inArray(workApplications.status, ['submitted', 'shortlisted'])))
+        .returning({ candidateUserId: workApplications.candidateUserId });
+      await notify(
+        tx,
+        waiting.map((row) => ({ userId: row.candidateUserId, category: 'work' as const, type: 'work.post_closed', titleKey: 'notify.work.post_closed', params: { title: post.title }, href: '/work/mine' })),
+      );
+    }
+  }
+  await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: `work.employer_${status}`, subjectType: EMPLOYER, subjectId: employer.userId, district: 'works' });
+  await notify(tx, [{ userId: employer.userId, category: 'work', type: `work.employer_${status}`, titleKey: `notify.work.employer_${status}`, href: '/work/employer' }]);
+}
+
+export async function employerReviewQueue(executor: Executor, actor: AuthContext | null) {
+  await requirePermission(executor, actor, 'work.review');
+  const rows = await executor
+    .select({ employer: workEmployers, placeName: locations.name, displayName: users.displayName, yayId: users.yayId, accountCreatedAt: users.createdAt })
+    .from(workEmployers)
+    .innerJoin(locations, eq(locations.id, workEmployers.locationId))
+    .innerJoin(users, eq(users.id, workEmployers.userId))
+    .where(inArray(workEmployers.status, ['pending', 'approved']))
+    .orderBy(asc(workEmployers.updatedAt))
+    .limit(200);
+  return rows.map((row) => ({ ...row.employer, placeName: row.placeName, displayName: row.displayName, yayId: formatYayId(row.yayId), accountCreatedAt: row.accountCreatedAt }));
+}
+
 // --- Posts -----------------------------------------------------------------------
 
 export const postInputSchema = z
@@ -129,7 +248,6 @@ export const postInputSchema = z
     description: text(R.descriptionMinLength, R.descriptionMaxLength, 'work.error.description'),
     requirements: optionalText(R.requirementsMaxLength, 'work.error.requirements'),
     payText: text(R.payMinLength, R.payMaxLength, 'work.error.pay'),
-    companyName: optionalText(R.companyMaxLength, 'work.error.company'),
     locationId: z.string().uuid({ message: 'work.error.location' }),
     placeMode: z.enum(PLACE_MODES, { message: 'work.error.place_mode' }),
     whatsapp,
@@ -174,6 +292,10 @@ async function tellMatchingProfessionals(tx: Executor, params: { postId: string;
 
 export async function publishPost(tx: Executor, params: { employerUserId: string; input: PostInput; audit?: AuditContext; now?: Date }): Promise<string> {
   await activeMember(tx, params.employerUserId);
+  const employer = await getEmployer(tx, params.employerUserId);
+  if (!employer) throw new DomainError('forbidden', 'work.error.employer_needed');
+  if (employer.status === 'pending') throw new DomainError('forbidden', 'work.error.employer_pending');
+  if (employer.status !== 'approved') throw new DomainError('forbidden', 'work.error.employer_not_allowed');
   const now = params.now ?? new Date();
   const { input } = params;
   const [place] = await tx.select({ id: locations.id }).from(locations).where(eq(locations.id, input.locationId)).limit(1);
@@ -194,7 +316,8 @@ export async function publishPost(tx: Executor, params: { employerUserId: string
       description: input.description,
       requirements: input.requirements,
       payText: input.payText,
-      companyName: input.companyName,
+      // The verified name, never one typed into the post.
+      companyName: employer.kind === 'business' ? employer.name : null,
       locationId: input.locationId,
       placeMode: input.placeMode,
       whatsappE164: input.whatsapp,
@@ -433,6 +556,8 @@ export type PostCard = {
   createdAt: Date;
   expiresAt: Date;
   employerName: string;
+  /** `person` or `business` when a reviewer verified the employer; null for posts from before verification. */
+  employerVerified: 'person' | 'business' | null;
   applicationCount: number;
 };
 
@@ -452,6 +577,7 @@ const cardColumns = {
   placeName: locations.name,
   placeNames: locations.names,
   employerName: users.displayName,
+  employerVerified: sql<'person' | 'business' | null>`(select e.kind from work_employers e where e.user_id = ${workPosts.employerUserId} and e.status = 'approved')`,
   applicationCount: sql<number>`(select count(*)::int from work_applications a where a.post_id = ${workPosts.id} and a.status <> 'withdrawn')`,
 };
 
