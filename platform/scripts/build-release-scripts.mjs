@@ -45,6 +45,10 @@ await build({
   ...shared,
   entryPoints: ['src/server/jobs/run.ts'],
   outfile: 'dist/scripts/jobs.cjs',
+  // Domain services guard themselves with `server-only`, which throws outside
+  // a Next server build. The scheduler is server code by definition, so the
+  // guard is replaced with an empty module here and nowhere else.
+  alias: { 'server-only': './scripts/server-only-empty.cjs' },
 });
 
 // eslint-disable-next-line no-console

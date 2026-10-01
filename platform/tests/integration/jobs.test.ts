@@ -26,7 +26,7 @@ const context = {
 
 /** Runs a job the way cron will: a fresh process, arguments on the command line. */
 function runJob(name: string) {
-  return run('npx', ['tsx', 'src/server/jobs/run.ts', name], {
+  return run('npx', ['tsx', '--conditions=react-server', 'src/server/jobs/run.ts', name], {
     env: { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL },
   });
 }
@@ -42,10 +42,13 @@ describe('scheduled jobs', () => {
 
   it('exposes exactly the jobs the deployment guide schedules', () => {
     expect([...JOB_NAMES].sort()).toEqual([
+      'deliver-words',
       'expire-demo',
       'graduate-monitored',
       'purge-rate-limits',
       'purge-sessions',
+      'send-digests',
+      'tick',
       'verify-audit-chain',
     ]);
   });
@@ -100,10 +103,12 @@ describe('scheduled jobs', () => {
     delete env.PREVIEW_ACCESS_KEY;
     env.DATABASE_URL = process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL!;
 
-    const { stdout } = await run('npx', ['tsx', 'src/server/jobs/run.ts', 'purge-rate-limits'], {
+    const { stdout } = await run('npx', ['tsx', '--conditions=react-server', 'src/server/jobs/run.ts', 'tick'], {
       env,
     });
     expect(stdout).toContain('purged expired rate-limit counters');
+    // Mail needs the web secrets; without them the summary waits, it does not crash the tick.
+    expect(stdout).toContain('send-digests: no summaries: email_unavailable');
   }, 60_000);
 
   it('records the audit event the runner never writes', async () => {

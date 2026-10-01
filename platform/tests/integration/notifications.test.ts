@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
-import { demoContent, locations, notificationPreferences, users } from '@/server/db/schema';
+import { demoContent, locations, notificationPreferences, userProfiles, users } from '@/server/db/schema';
 import { consumeVerificationCode, register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { addReply, createPost, postInputSchema, toggleSupport } from '@/server/domains/community/service';
@@ -13,9 +13,12 @@ import {
   registerChurch,
   reviewChurch,
   toggleFollow,
+  deliverScheduledWords,
 } from '@/server/domains/sanctuary/service';
+import { sendDailyDigests, setDigestEnabled, unsubscribeSignature, verifyUnsubscribe, type DigestDelivery } from '@/server/domains/notifications/digest';
+import type { EmailMessage } from '@/server/domains/notifications/email/provider';
 import { listNotifications, markAllRead, openNotification, unreadCount } from '@/server/domains/notifications/service';
-import { REPUTATION_RULE_DEFAULTS } from '@/config/business-rules';
+import { NOTIFICATION_RULES, REPUTATION_RULE_DEFAULTS, SANCTUARY_RULES } from '@/config/business-rules';
 import { getScore } from '@/server/domains/reputation/service';
 import { resetTransactionalData } from '../helpers/database';
 
@@ -180,5 +183,125 @@ describe('verifying an email', () => {
 
     expect((await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode })).ok).toBe(true);
     expect(await getScore(db(), created.userId)).toBe(start + delta);
+  });
+});
+
+/** The first whole hour at or after `from` at which `test` holds for the local hour/date in `zone`. */
+function firstHour(from: Date, zone: string, test: (local: { date: string; hour: number }) => boolean): Date {
+  const at = new Date(Math.ceil(from.getTime() / 3_600_000) * 3_600_000);
+  for (let i = 0; i < 24 * 5; i += 1) {
+    const date = new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
+    const hour = Number(new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' }).format(at));
+    if (test({ date, hour })) return at;
+    at.setTime(at.getTime() + 3_600_000);
+  }
+  throw new Error('no such hour');
+}
+
+describe('words prepared ahead', () => {
+  async function setup() {
+    const owner = await member();
+    const follower = await member();
+    const reviewer = await member();
+    await db().transaction((tx) => grantRole(tx, { userId: reviewer, roleKey: 'moderator', grantedBy: null }));
+    const churchId = await db().transaction((tx) =>
+      registerChurch(tx, {
+        ownerUserId: owner,
+        input: churchInputSchema.parse({ name: 'Iglesia del Camino', description: 'Una congregación pequeña y familiar. Todos son bienvenidos a nuestros cultos.', locationId: placeId, denomination: '', address: '', whatsapp: '', streamUrl: '' }),
+        services: [],
+      }),
+    );
+    await db().transaction((tx) => reviewChurch(tx, { actor: { userId: reviewer, status: 'active' }, churchId, decision: 'approve', note: null }));
+    await db().transaction((tx) => toggleFollow(tx, { userId: follower, churchId }));
+    const tomorrow = new Date(`${localDate(timezone)}T12:00:00Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    const forDate = tomorrow.toISOString().slice(0, 10);
+    const id = await db().transaction((tx) =>
+      publishDevotional(tx, { actorUserId: owner, churchId, input: devotionalInputSchema.parse({ forDate, title: 'Para el domingo', scripture: '', body: 'Hoy recordamos que no caminamos solos. Que este día encuentres descanso.' }) }),
+    );
+    return { follower, owner, id, forDate };
+  }
+
+  it('reach followers on their own morning, once', async () => {
+    const { follower, owner, id, forDate } = await setup();
+    expect(await listNotifications(db(), follower)).toHaveLength(0);
+
+    const early = firstHour(new Date(), timezone, (l) => l.date === forDate && l.hour === SANCTUARY_RULES.wordDeliveryLocalHour - 1);
+    expect((await deliverScheduledWords(db(), early)).delivered).toBe(0);
+    expect(await listNotifications(db(), follower)).toHaveLength(0);
+
+    const morning = firstHour(new Date(), timezone, (l) => l.date === forDate && l.hour === SANCTUARY_RULES.wordDeliveryLocalHour);
+    expect(await deliverScheduledWords(db(), morning)).toMatchObject({ delivered: 1, notified: 1 });
+    expect(await listNotifications(db(), follower)).toEqual([expect.objectContaining({ titleKey: 'notify.sanctuary.word', href: `/sanctuary/words/${id}` })]);
+    expect((await deliverScheduledWords(db(), new Date(morning.getTime() + 3_600_000))).delivered).toBe(0);
+    // The owner heard about the review, not about their own word.
+    expect(await listNotifications(db(), owner)).toHaveLength(1);
+  });
+
+  it('are not sent late when their day has passed', async () => {
+    const { follower, forDate } = await setup();
+    const after = firstHour(new Date(), timezone, (l) => l.date > forDate && l.hour === 9);
+    expect(await deliverScheduledWords(db(), after)).toMatchObject({ delivered: 0, skipped: 1 });
+    expect(await listNotifications(db(), follower)).toHaveLength(0);
+  });
+});
+
+describe('the daily email summary', () => {
+  function recorder(): DigestDelivery & { sent: EmailMessage[] } {
+    const sent: EmailMessage[] = [];
+    return { sent, available: () => true, send: async (message) => void sent.push(message) };
+  }
+
+  async function verifiedWithNews() {
+    const created = await register(
+      db(),
+      { email: `d-${crypto.randomUUID()}@example.com`, password: 'a-sufficiently-long-passphrase', displayName: 'Doña Marta', locale: 'es', acceptedTerms: true },
+      context,
+    );
+    await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode });
+    await db().update(users).set({ status: 'active' }).where(eq(users.id, created.userId));
+    // No place set: the summary goes out in the fallback UTC window.
+    await db().update(userProfiles).set({ locationId: null }).where(eq(userProfiles.userId, created.userId));
+    const neighbour = await member();
+    const postId = await db().transaction((tx) => createPost(tx, { authorUserId: created.userId, input: post({ title: 'Busco quien me lleve al médico' }) }));
+    await db().transaction((tx) => addReply(tx, { postId, authorUserId: neighbour, body: 'Yo la llevo el martes.' }));
+    const morning = firstHour(new Date(Date.now() + NOTIFICATION_RULES.digestMinAgeMinutes * 60_000), 'UTC', (l) => l.hour === NOTIFICATION_RULES.digestFallbackUtcHourStart);
+    return { userId: created.userId, morning };
+  }
+
+  it('sends one summary in the morning, with a way out, and never twice a day', async () => {
+    const { userId, morning } = await verifiedWithNews();
+    const delivery = recorder();
+
+    const night = new Date(morning.getTime() - 6 * 3_600_000);
+    expect((await sendDailyDigests(db(), night, delivery)).sent).toBe(0);
+
+    expect(await sendDailyDigests(db(), morning, delivery)).toEqual({ sent: 1, failed: 0 });
+    const [message] = delivery.sent;
+    expect(message!.subject).toBe('Tienes un aviso sin leer en Yavaya');
+    expect(message!.text).toContain('Alguien respondió a «Busco quien me lleve al médico»');
+    expect(message!.headers?.['List-Unsubscribe']).toContain(`u=${userId}&s=${unsubscribeSignature(userId)}`);
+    expect(message!.headers?.['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
+
+    expect((await sendDailyDigests(db(), new Date(morning.getTime() + 3_600_000), delivery)).sent).toBe(0);
+    // Unread is still unread on the site; only the email is spent.
+    expect(await unreadCount(db(), userId)).toBe(1);
+  });
+
+  it('skips what was read, members who switched it off, and runs where mail is not real', async () => {
+    const read = await verifiedWithNews();
+    await markAllRead(db(), read.userId);
+    const off = await verifiedWithNews();
+    await setDigestEnabled(db(), off.userId, false);
+    const delivery = recorder();
+    expect((await sendDailyDigests(db(), off.morning, delivery)).sent).toBe(0);
+    expect(await sendDailyDigests(db(), off.morning, { ...delivery, available: () => false })).toMatchObject({ skipped: 'email_unavailable' });
+  });
+
+  it('signs the unsubscribe link to its member only', async () => {
+    const id = crypto.randomUUID();
+    expect(verifyUnsubscribe(id, unsubscribeSignature(id))).toBe(true);
+    expect(verifyUnsubscribe(crypto.randomUUID(), unsubscribeSignature(id))).toBe(false);
+    expect(verifyUnsubscribe(id, '0'.repeat(32))).toBe(false);
   });
 });

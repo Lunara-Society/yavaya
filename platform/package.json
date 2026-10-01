@@ -19,7 +19,7 @@
     "db:reset": "tsx src/server/db/reset.ts",
     "build:scripts": "node scripts/build-release-scripts.mjs",
     "build:deploy": "npm run build && node scripts/assemble-deploy.mjs",
-    "jobs": "tsx src/server/jobs/run.ts",
+    "jobs": "tsx --conditions=react-server src/server/jobs/run.ts",
     "db:migrate:dist": "node dist/scripts/migrate.cjs",
     "db:seed:dist": "node dist/scripts/seed.cjs"
   },

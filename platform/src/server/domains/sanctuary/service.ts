@@ -1,7 +1,7 @@
 import 'server-only';
 import { and, desc, eq, gte, inArray, lte, ne, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import type { Executor } from '@/server/db/client';
+import type { Database, Executor } from '@/server/db/client';
 import {
   locations,
   moderationActions,
@@ -126,6 +126,89 @@ function addDays(isoDate: string, days: number): string {
   const d = new Date(`${isoDate}T12:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
+}
+
+/** Tells a church's followers about one word. The author is never told of their own. */
+async function announceWord(
+  tx: Executor,
+  word: { devotionalId: string; churchId: string; churchName: string; title: string; forDate: string; authorUserId: string },
+): Promise<number> {
+  const followers = await tx.select({ userId: sanctuaryFollows.userId }).from(sanctuaryFollows).where(eq(sanctuaryFollows.churchId, word.churchId));
+  return notify(
+    tx,
+    followers
+      .filter((row) => row.userId !== word.authorUserId)
+      .map((row) => ({
+        userId: row.userId,
+        category: 'sanctuary' as const,
+        type: 'sanctuary.word_published',
+        titleKey: 'notify.sanctuary.word',
+        params: { church: word.churchName, title: word.title },
+        href: `/sanctuary/words/${word.devotionalId}`,
+        // One message per church per day, however many words it shares.
+        dedupeKey: `sanctuary.word:${word.churchId}:${word.forDate}`,
+        subjectId: word.devotionalId,
+      })),
+  );
+}
+
+/**
+ * Scheduler job: words prepared ahead reach followers on their day, from
+ * `wordDeliveryLocalHour` where the church is. Words whose day has passed
+ * unannounced (the scheduler was down) are marked and not sent late: last
+ * Sunday's word is not news on Tuesday.
+ */
+export async function deliverScheduledWords(database: Database, now = new Date()): Promise<{ delivered: number; notified: number; skipped: number }> {
+  const candidates = await database
+    .select({
+      id: sanctuaryDevotionals.id,
+      churchId: sanctuaryChurches.id,
+      churchName: sanctuaryChurches.name,
+      title: sanctuaryDevotionals.title,
+      forDate: sanctuaryDevotionals.forDate,
+      authorUserId: sanctuaryDevotionals.authorUserId,
+      timezone: churchTimezone,
+    })
+    .from(sanctuaryDevotionals)
+    .innerJoin(sanctuaryChurches, eq(sanctuaryChurches.id, sanctuaryDevotionals.churchId))
+    .innerJoin(locations, eq(locations.id, sanctuaryChurches.locationId))
+    .where(
+      and(
+        sql`${sanctuaryDevotionals.followersNotifiedAt} is null`,
+        eq(sanctuaryDevotionals.status, 'published'),
+        eq(sanctuaryChurches.status, 'approved'),
+        // Every timezone's "today" lies within a day of UTC's.
+        lte(sanctuaryDevotionals.forDate, addDays(now.toISOString().slice(0, 10), 1)),
+      ),
+    )
+    .orderBy(sanctuaryDevotionals.forDate)
+    .limit(500);
+
+  let delivered = 0;
+  let notified = 0;
+  let skipped = 0;
+  for (const word of candidates) {
+    const today = localDate(word.timezone, now);
+    const due = word.forDate === today && localClock(word.timezone, now).minutes >= R.wordDeliveryLocalHour * 60;
+    const stale = word.forDate < today;
+    if (!due && !stale) continue;
+    await database.transaction(async (tx) => {
+      // Claim it first: two overlapping runs announce it once.
+      const [claimed] = await tx
+        .update(sanctuaryDevotionals)
+        .set({ followersNotifiedAt: now })
+        .where(and(eq(sanctuaryDevotionals.id, word.id), sql`${sanctuaryDevotionals.followersNotifiedAt} is null`))
+        .returning({ id: sanctuaryDevotionals.id });
+      if (!claimed) return;
+      if (stale) {
+        skipped += 1;
+        return;
+      }
+      delivered += 1;
+      notified += await announceWord(tx, { devotionalId: word.id, churchId: word.churchId, churchName: word.churchName, title: word.title, forDate: word.forDate, authorUserId: word.authorUserId });
+    });
+  }
+  return { delivered, notified, skipped };
 }
 
 /** Weekday and minutes since midnight, where the church is. */
@@ -349,7 +432,9 @@ export async function publishDevotional(
 
   const [devotional] = await tx
     .insert(sanctuaryDevotionals)
-    .values({ churchId: church.id, authorUserId: params.actorUserId, ...params.input })
+    // A word for today (or a past day) counts as announced now; one prepared
+    // ahead waits for `deliverScheduledWords` on its morning.
+    .values({ churchId: church.id, authorUserId: params.actorUserId, ...params.input, followersNotifiedAt: forDate <= today ? new Date() : null })
     .returning({ id: sanctuaryDevotionals.id });
   const id = devotional!.id;
   await chargeForAction(tx, {
@@ -371,24 +456,9 @@ export async function publishDevotional(
     metadata: { churchId: church.id, forDate },
   });
   // Followers hear of it when it can be read: a word prepared for next
-  // Sunday is not news today. (Delivery on its day is not built yet.)
+  // Sunday is not news today. The scheduler tells them on its morning.
   if (forDate === today) {
-    const followers = await tx.select({ userId: sanctuaryFollows.userId }).from(sanctuaryFollows).where(eq(sanctuaryFollows.churchId, church.id));
-    await notify(
-      tx,
-      followers
-        .filter((row) => row.userId !== params.actorUserId)
-        .map((row) => ({
-          userId: row.userId,
-          category: 'sanctuary' as const,
-          type: 'sanctuary.word_published',
-          titleKey: 'notify.sanctuary.word',
-          params: { church: church.name, title: params.input.title },
-          href: `/sanctuary/words/${id}`,
-          dedupeKey: `sanctuary.word:${church.id}:${forDate}`,
-          subjectId: id,
-        })),
-    );
+    await announceWord(tx, { devotionalId: id, churchId: church.id, churchName: church.name, title: params.input.title, forDate, authorUserId: params.actorUserId });
   }
   return id;
 }

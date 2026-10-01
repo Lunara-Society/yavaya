@@ -98,6 +98,7 @@ export class SmtpEmailProvider implements EmailProvider {
         subject: message.subject,
         text: message.text,
         ...(message.html ? { html: message.html } : {}),
+        ...(message.headers ? { headers: message.headers } : {}),
       });
 
       return { messageId: info.messageId ?? null, provider: this.key };

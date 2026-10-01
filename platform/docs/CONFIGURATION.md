@@ -320,10 +320,10 @@ Undecided (flagged rather than guessed):
   reputation for running a church, are not built.
 - **Live services inside Yavaya.** Broadcasts are links out to YouTube,
   Facebook or another site; nothing is embedded or streamed by Yavaya.
-- **Followers hear of a word only when it is for today.** A word published
-  ahead (for next Sunday) sends nothing, and nothing is sent when its day
-  arrives: that needs a scheduled job and is not built. Open decision: should
-  it be built, and at what local hour?
+- **Words prepared ahead reach followers on their day**, from 06:00 where the
+  church is (`SANCTUARY_RULES.wordDeliveryLocalHour`), via the scheduler's
+  `deliver-words` job. A word whose day passed while the scheduler was down
+  is not sent late. Decided under the owner's delegation; retune freely.
 
 ---
 
@@ -345,10 +345,21 @@ with parameters, so it reads in the member's current language.
 Members switch categories off in Settings; every category is on until they do.
 Registered demo content never produces a notification.
 
-**Not built:** email, SMS or push delivery of these. Email exists only for
-account messages (verification, security). Sending notifications by email
-needs a decision on frequency (each one, or a daily digest) and an
-unsubscribe link in every message.
+**Daily email summary** (decided under the owner's delegation, "best for all
+users"; numbers in `NOTIFICATION_RULES`):
+
+- One email a day at most, between 07:00 and 12:00 where the member lives
+  (13:00–18:00 UTC for members with no place set).
+- Only notifications still unread, at least an hour old (the site gets the
+  first chance) and at most three days old.
+- On by default for members with a verified email; one switch in Settings,
+  and a signed one-click unsubscribe in every message (RFC 8058
+  `List-Unsubscribe-Post`, plus a page that asks before acting, since mail
+  scanners open links).
+- Never sent through the console provider, and an item is marked as emailed
+  only after the provider accepts the message.
+
+**Not built:** SMS or push delivery of notifications.
 
 ---
 

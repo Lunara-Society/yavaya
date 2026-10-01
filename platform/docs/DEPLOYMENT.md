@@ -54,6 +54,18 @@ missed tick costs nothing and an overlapping one is harmless:
 | Purge expired sessions | `jobs.cjs purge-sessions` | daily |
 | Purge expired rate limits | `jobs.cjs purge-rate-limits` | hourly |
 | Verify the audit chain | `jobs.cjs verify-audit-chain` | daily, alert on failure |
+| Deliver words prepared ahead | `jobs.cjs deliver-words` | every 15 min |
+| Daily email summary | `jobs.cjs send-digests` | every 15 min (each member gets at most one a day) |
+
+**Hosts with a single cron per service (Railway):** schedule `jobs.cjs tick`
+every 15 minutes instead. It runs every job above in turn, each even if an
+earlier one failed, and checks the audit chain in the first tick after 09:00
+UTC. On Railway this is the `yavaya-scheduler` service: same repository and
+Dockerfile as the web service, start command `node dist/scripts/jobs.cjs
+tick`, cron `*/15 * * * *`, restart policy never, and its variables as
+references to the web service's (`${{yavaya-web.DATABASE_URL}}` and so on), so
+no secret is copied by hand. Without `SESSION_SECRET` and the email variables
+the tick still runs; the summary simply waits.
 
 Locally: `npm run jobs -- <job>`. In production: `node dist/scripts/jobs.cjs
 <job>`, bundled to self-contained CommonJS for the same reason the migration

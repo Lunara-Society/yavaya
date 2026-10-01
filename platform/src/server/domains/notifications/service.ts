@@ -20,6 +20,18 @@ export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 /** Categories on unless the member turns them off. */
 const DEFAULT_ON: ReadonlySet<string> = new Set(NOTIFICATION_CATEGORIES);
 
+/**
+ * What a preference is when the member never touched it. The settings page
+ * and the delivery side both ask this, so a switch never shows "off" for
+ * something that is in fact being sent. Email is off except the daily
+ * summary; marketing stays off until asked for.
+ */
+export function preferenceDefault(category: string, channel: string): boolean {
+  if (channel === 'in_app') return DEFAULT_ON.has(category);
+  if (channel === 'email') return category === 'digest';
+  return false;
+}
+
 export type NotifyInput = {
   userId: string;
   category: NotificationCategory;

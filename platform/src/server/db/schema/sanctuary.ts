@@ -78,6 +78,8 @@ export const sanctuaryDevotionals = pgTable(
     body: text('body').notNull(),
     status: sanctuaryDevotionalStatusEnum('status').notNull().default('published'),
     removedBy: uuid('removed_by').references(() => users.id, { onDelete: 'set null' }),
+    /** When followers were told. Null until the word's day arrives where the church is. */
+    followersNotifiedAt: timestamp('followers_notified_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

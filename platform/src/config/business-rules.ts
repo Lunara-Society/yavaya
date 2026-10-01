@@ -271,4 +271,40 @@ export const SANCTUARY_RULES = {
   devotionalDaysAhead: 14,
   devotionalDaysBack: 1,
   feedSize: 12,
+  /**
+   * Local hour (where the church is) from which a word prepared ahead reaches
+   * followers on its day. Early, so it is there with the morning coffee;
+   * not so early that a phone buzzes at night.
+   */
+  wordDeliveryLocalHour: 6,
+} as const;
+
+/**
+ * The daily email summary of unread notifications.
+ *
+ * One email a day at most, only about things still unread, and only after
+ * the member has had a chance to see them on the site. Chosen by the owner's
+ * delegation ("best for all users"): a daily summary rather than one email per
+ * event, on by default, with a one-click unsubscribe in every message.
+ */
+export const NOTIFICATION_RULES = {
+  /** Local hour window in which the summary may be sent (start inclusive, end exclusive). */
+  digestLocalHourStart: 7,
+  digestLocalHourEnd: 12,
+  /**
+   * For members with no place set, the same window in UTC hours. 13:00 UTC is
+   * 7:00 in UTC-6; a member who sets a place gets their own morning.
+   */
+  digestFallbackUtcHourStart: 13,
+  digestFallbackUtcHourEnd: 18,
+  /** A notification younger than this is left for the site to show first. */
+  digestMinAgeMinutes: 60,
+  /** Older unread news is stale; it is not mailed. */
+  digestLookbackHours: 72,
+  /** Minimum gap between two summaries to one member. */
+  digestMinIntervalHours: 20,
+  /** Items listed by name; the rest are counted. */
+  digestMaxItems: 8,
+  /** Members mailed per scheduler run, so one run never floods the provider. */
+  digestBatchSize: 200,
 } as const;

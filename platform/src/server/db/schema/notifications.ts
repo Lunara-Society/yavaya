@@ -50,6 +50,8 @@ export const notifications = pgTable(
     params: jsonb('params').$type<Record<string, string | number>>().notNull().default({}),
     href: text('href'),
     readAt: timestamp('read_at', { withTimezone: true }),
+    /** Included in a daily email summary. A notification is emailed at most once. */
+    emailedAt: timestamp('emailed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [

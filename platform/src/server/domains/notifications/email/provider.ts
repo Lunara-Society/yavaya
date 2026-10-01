@@ -17,6 +17,9 @@ export type EmailMessage = {
    *  low-end clients, and text is what always arrives intact. */
   text: string;
   html?: string;
+  /** Extra headers, e.g. List-Unsubscribe on anything that is not a reply to
+   *  something the member just did. */
+  headers?: Record<string, string>;
 };
 
 export type SendResult = {

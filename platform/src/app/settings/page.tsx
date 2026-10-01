@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { preferenceDefault } from '@/server/domains/notifications/service';
 import Link from 'next/link';
 import { LOCATION_PRIVACY } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
@@ -35,8 +36,7 @@ export default async function SettingsPage() {
 
   const preferenceFor = (category: string, channel: string): boolean =>
     notificationPrefs.find((row) => row.category === category && row.channel === channel)?.enabled ??
-    // Newer categories are on unless switched off; the delivery side agrees.
-    ['community', 'mercadito', 'sanctuary'].includes(category);
+    preferenceDefault(category, channel);
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
@@ -226,6 +226,9 @@ function SignInPrompt({ t }: { t: Awaited<ReturnType<typeof shellContext>>['t'] 
  * and offering a switch that cannot deliver would be a promise Yavaya can't
  * keep. They appear here once their capability is REAL.
  */
+// Only categories something actually sends. Orders, tokens and nearby
+// activity send nothing yet, so they have no switch: a toggle for news that
+// never comes is a control that leads nowhere.
 const NOTIFICATION_ROWS: Array<{
   category: string;
   channel: string;
@@ -257,28 +260,16 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.sanctuary_detail',
   },
   {
-    category: 'orders',
-    channel: 'in_app',
-    labelKey: 'settings.notify.orders',
-    detailKey: 'settings.notify.orders_detail',
-  },
-  {
     category: 'moderation',
     channel: 'in_app',
     labelKey: 'settings.notify.moderation',
     detailKey: 'settings.notify.moderation_detail',
   },
   {
-    category: 'tokens',
-    channel: 'in_app',
-    labelKey: 'settings.notify.tokens',
-    detailKey: 'settings.notify.tokens_detail',
-  },
-  {
-    category: 'live_activity',
-    channel: 'in_app',
-    labelKey: 'settings.notify.live_activity',
-    detailKey: 'settings.notify.live_activity_detail',
+    category: 'digest',
+    channel: 'email',
+    labelKey: 'settings.notify.digest',
+    detailKey: 'settings.notify.digest_detail',
   },
   {
     category: 'marketing',

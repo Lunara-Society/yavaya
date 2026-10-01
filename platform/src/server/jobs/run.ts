@@ -5,6 +5,8 @@ import { expireDueDemoContent } from '@/server/domains/platform/demo';
 import { purgeExpiredSessions } from '@/server/auth/session';
 import { purgeExpiredRateLimits } from '@/server/security/rate-limit';
 import { verifyAuditChain } from '@/server/domains/audit/service';
+import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
+import { sendDailyDigests } from '@/server/domains/notifications/digest';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -82,6 +84,44 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
         `${result.reason} at event ${result.brokenAtId}`,
       failed: true,
     };
+  },
+
+  /** Words prepared ahead reach followers on their morning. */
+  'deliver-words': async () => {
+    const result = await deliverScheduledWords(db());
+    return { summary: `announced ${result.delivered} word(s) to ${result.notified} follower(s); ${result.skipped} past their day` };
+  },
+
+  /** The daily email summary, for members whose morning it is. */
+  'send-digests': async () => {
+    const result = await sendDailyDigests(db());
+    if (result.skipped) return { summary: `no summaries: ${result.skipped}` };
+    return { summary: `sent ${result.sent} summary email(s), ${result.failed} failed`, failed: result.failed > 0 && result.sent === 0 };
+  },
+
+  /**
+   * Everything above on one schedule, for hosts that give a deployment a
+   * single cron (Railway does). Meant for every 15 minutes. Each job runs
+   * even if an earlier one failed; the tick fails if any did. The audit chain
+   * is checked once a day, in the first tick after 09:00 UTC.
+   */
+  tick: async () => {
+    const now = new Date();
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'send-digests'];
+    if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
+    const lines: string[] = [];
+    let failed = false;
+    for (const name of names) {
+      try {
+        const outcome = await JOBS[name]!();
+        failed ||= Boolean(outcome.failed);
+        lines.push(`${name}: ${outcome.summary}`);
+      } catch (error) {
+        failed = true;
+        lines.push(`${name}: FAILED ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    return { summary: `\n  ${lines.join('\n  ')}`, failed };
   },
 };
 

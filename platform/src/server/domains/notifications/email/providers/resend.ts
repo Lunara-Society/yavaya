@@ -66,6 +66,7 @@ export class ResendEmailProvider implements EmailProvider {
           subject: message.subject,
           text: message.text,
           ...(message.html ? { html: message.html } : {}),
+          ...(message.headers ? { headers: message.headers } : {}),
         }),
         // Fail fast rather than hanging a registration behind a slow provider.
         signal: AbortSignal.timeout(15_000),
