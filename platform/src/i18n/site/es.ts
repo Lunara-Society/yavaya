@@ -713,8 +713,8 @@ export const siteEs = {
         {
           title: 'Fase 1 · El núcleo de Yavaya',
           state: 'dev',
-          text: 'Mercadito, Servicios, Comunidad, Santuario y Animales ya están abiertos, con reportes, moderación y avisos.',
-          items: ['Mercadito', 'Servicios', 'Comunidad', 'Santuario', 'Animales', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
+          text: 'Mercadito, Servicios, Comunidad, Santuario, Animales y el Espacio Violeta ya están abiertos, con reportes, moderación y avisos.',
+          items: ['Mercadito', 'Servicios', 'Comunidad', 'Santuario', 'Animales', 'Espacio Violeta', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
           title: 'Fase 2 · Trabajo y movimiento',

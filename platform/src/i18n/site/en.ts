@@ -701,8 +701,8 @@ export const siteEn: SiteContent = {
         {
           title: 'Phase 1 · Core Yavaya',
           state: 'dev',
-          text: 'Mercadito, Services, Community, Sanctuary and Animals are open, with reports, moderation and notifications.',
-          items: ['Mercadito', 'Services', 'Community', 'Sanctuary', 'Animals', 'Tokens', 'Notifications', 'Visible Trust Shield'],
+          text: 'Mercadito, Services, Community, Sanctuary, Animals and Espacio Violeta are open, with reports, moderation and notifications.',
+          items: ['Mercadito', 'Services', 'Community', 'Sanctuary', 'Animals', 'Espacio Violeta', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
           title: 'Phase 2 · Work and movement',
