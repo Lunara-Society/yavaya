@@ -30,12 +30,13 @@ export default async function AccountPage() {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
 
-  const [shield, balance, activity, moderator, admin] = await Promise.all([
+  const [shield, balance, activity, moderator, admin, sanctuaryReviewer] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 6 }),
     hasPermission(db(), userId, 'listings.moderate'),
     isAdmin(db(), userId),
+    hasPermission(db(), userId, 'sanctuary.review'),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
@@ -47,6 +48,7 @@ export default async function AccountPage() {
         { href: '/admin/community', labelKey: 'nav.moderation_community' as MessageKey, glyph: '⚑' },
       ]
     : [profileShortcut, ...SHORTCUTS];
+  if (sanctuaryReviewer) shortcuts.push({ href: '/admin/sanctuary', labelKey: 'nav.moderation_sanctuary' as MessageKey, glyph: '⚑' });
 
   if (!shield) redirect('/login');
 
@@ -167,6 +169,7 @@ export default async function AccountPage() {
 
 const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = [
   { href: '/mercadito/mine', labelKey: 'mercadito.mine.title', glyph: '▦' },
+  { href: '/sanctuary', labelKey: 'nav.sanctuary', glyph: '✝' },
   { href: '/account/tokens', labelKey: 'nav.tokens', glyph: '◆' },
   { href: '/account/phone', labelKey: 'nav.phone', glyph: '✆' },
   { href: '/settings#notifications', labelKey: 'nav.notifications', glyph: '◔' },

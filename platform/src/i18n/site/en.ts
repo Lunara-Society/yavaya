@@ -295,7 +295,7 @@ export const siteEn: SiteContent = {
         { title: 'Local help', text: 'Ask for and offer help near you. **Open.**' },
         { title: 'Prayer wall', text: 'Share a request. Others stand with you. **Open.**' },
         { title: 'Family support', text: 'For a family’s hard moments, with respect and discretion; you can post without showing your name. **Open.**' },
-        { title: 'Sanctuary', text: 'A space for faith and reflection, inside Community. Not built yet.' },
+        { title: 'Sanctuary', text: 'A space of faith inside Community: the prayer and word for the day from reviewed churches, their service times and their broadcasts. **Open.**' },
         { title: 'Community groups', text: 'Neighbours, shared interests and shared causes. Not built yet.' },
       ],
       yesHead: { eyebrow: 'What we grow', title: 'People come here to add' },
@@ -834,6 +834,14 @@ export const siteEn: SiteContent = {
           list: [
             'Your posts and replies, with your display name. In prayer and family support you can hide your name from other members; moderators can always see who posted.',
             'Who pressed "I am with you" on each post, so each person counts once. Others only see the total.',
+          ],
+        },
+        {
+          title: 'If you use the Sanctuary',
+          text: 'What an approved church publishes (its name, city, service times, broadcast and the word for the day) is public.',
+          list: [
+            'If you register a church, we keep that you registered it. Reviewers see your name, YAY ID and email so they can confirm the details; the public does not.',
+            'The churches you follow are private: nobody else sees whom you follow. The church page shows only how many people follow it.',
           ],
         },
         {

@@ -248,3 +248,13 @@ export const communityPostStatusEnum = pgEnum('community_post_status', [
 ]);
 
 export const communityReplyStatusEnum = pgEnum('community_reply_status', ['visible', 'removed']);
+
+// --- Sanctuary (inside Community) -------------------------------------------
+export const sanctuaryChurchStatusEnum = pgEnum('sanctuary_church_status', [
+  'pending', // registered or changed; waiting for a reviewer
+  'approved', // visible to everyone
+  'rejected', // not approved; visible only to its owner, with the reason
+  'suspended', // taken down by a reviewer after approval
+]);
+
+export const sanctuaryDevotionalStatusEnum = pgEnum('sanctuary_devotional_status', ['published', 'removed']);

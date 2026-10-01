@@ -24,6 +24,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
+  SANCTUARY_RULES,
 } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
@@ -264,6 +265,8 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
     { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
     { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
     { key: 'community.publish_request', district: 'community', cost: 0, description: 'Publish a community support request (free)' },
+    { key: 'sanctuary.register_church', district: 'community', cost: 0, description: 'Register a church in Sanctuary (free)' },
+    { key: 'sanctuary.publish_devotional', district: 'community', cost: 0, description: 'Publish a church prayer or word for the day (free)' },
     { key: 'impact.publish_cause', district: 'impact', cost: 0, description: 'Submit a cause for review (free)' },
     { key: 'animals.publish_listing', district: 'animals', cost: 0, description: 'Publish an animal welfare listing (free)' },
   ];
@@ -310,6 +313,8 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'demo.lifetime_days', value: DEMO_CONTENT_RULES.defaultLifetimeDays, description: 'Days before demo content expires' },
     { key: 'mercadito.new_seller_window_days', value: MERCADITO_RULES.newSellerWindowDays, description: 'Account age, in days, under which the new-seller listing limit applies' },
     { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
+    { key: 'sanctuary.max_churches_per_owner', value: SANCTUARY_RULES.maxChurchesPerOwner, description: 'Churches one member may register in Sanctuary' },
+    { key: 'sanctuary.max_devotionals_per_church_per_day', value: SANCTUARY_RULES.maxDevotionalsPerChurchPerDay, description: 'Prayers or words one church may publish for the same day' },
     { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },
     { key: 'demo.real_inventory_threshold', value: DEMO_CONTENT_RULES.realInventoryThreshold, description: 'Real items per district that end demo mode early' },
   ];

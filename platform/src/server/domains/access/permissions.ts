@@ -41,6 +41,7 @@ export const PERMISSIONS = {
   'adoptions.review': 'animals',
   'adoptions.approve': 'animals',
   'listings.moderate': 'marketplace',
+  'sanctuary.review': 'community',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',
@@ -86,6 +87,7 @@ export const SYSTEM_ROLES: Record<
       'moderation.content.remove',
       'moderation.enforcement.issue',
       'listings.moderate',
+      'sanctuary.review',
     ],
   },
   district_reviewer: {
@@ -99,6 +101,7 @@ export const SYSTEM_ROLES: Record<
       'causes.approve',
       'adoptions.review',
       'adoptions.approve',
+      'sanctuary.review',
     ],
   },
   support: {

@@ -275,8 +275,52 @@ Undecided (not built, flagged rather than guessed):
 - **Reputation and tokens for helping.** The Bible says contribution earns
   reputation (primary) and tokens (secondary), with a weekly cap, but sets no
   amounts and no definition of a "confirmed" help. Nothing is awarded yet.
-- **Sanctuary and community groups** need their own design (membership,
-  group moderators) and are shown as not built.
+- **Community groups** need their own design (membership, group
+  moderators) and are shown as not built.
+
+## Sanctuary — what is built and what is undecided
+
+Built: `/sanctuary`, inside Community. Open to everyone to read.
+
+- **Churches register themselves** (`/sanctuary/register`): name,
+  denomination as they describe it, description, city, address, WhatsApp,
+  broadcast link (https only) and weekly service times in the church's own
+  local time (taken from its place's timezone).
+- **A person approves each church** before it appears, at
+  `/admin/sanctuary`, with the `sanctuary.review` permission (held by the
+  admin, moderator and district-reviewer roles). Nobody reviews their own
+  church. Rejecting or suspending needs a written reason, which only the
+  owner sees.
+- **Changing what identifies an approved church** — its name,
+  denomination, city, WhatsApp or broadcast link — sends it back to review,
+  so an approval can't be carried over to something else. Its description,
+  address and service times change freely.
+- **The prayer and word for the day** is written by approved churches, up to
+  3 per church per day, dated from 1 day back to 14 days ahead. A word shows
+  only once its day has arrived where the church is. Yavaya writes and
+  publishes none of this content.
+- **Following a church** shows its next service and its words first.
+  Writing to a church on WhatsApp needs an account, as in Mercadito.
+- **Reports** on a church or on one of its words collect under one ticket;
+  a reviewer can dismiss, remove the reported words, or suspend the church.
+- Everything is free (`sanctuary.register_church`,
+  `sanctuary.publish_devotional`, both cost 0).
+
+Decisions taken here, open to change: the limits above and the field
+lengths are guardrails in `SANCTUARY_RULES`, not rules from the Bible. Two
+are mirrored into `system_settings`.
+
+Undecided (flagged rather than guessed):
+
+- **What a reviewer must confirm before approving a church.** The review
+  page asks the reviewer to confirm the church exists and that the person
+  who registered it represents it, but no required evidence is defined
+  (registration documents, a call, a visit). Owner decision.
+- **Church verification as a badge** on the owner's Trust Shield, and any
+  reputation for running a church, are not built.
+- **Live services inside Yavaya.** Broadcasts are links out to YouTube,
+  Facebook or another site; nothing is embedded or streamed by Yavaya.
+- **Notifications** to followers when a church publishes are not sent yet.
 
 ---
 

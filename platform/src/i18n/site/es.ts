@@ -307,7 +307,7 @@ export const siteEs = {
         { title: 'Ayuda local', text: 'Pedir y ofrecer ayuda cerca de ti. **Abierto.**' },
         { title: 'Muro de oración', text: 'Comparte una petición. Otros te acompañan. **Abierto.**' },
         { title: 'Apoyo familiar', text: 'Para los momentos difíciles de una familia, con respeto y discreción; puedes publicar sin mostrar tu nombre. **Abierto.**' },
-        { title: 'Santuario', text: 'Un espacio de fe y reflexión, dentro de Comunidad. Todavía no existe.' },
+        { title: 'Santuario', text: 'Un espacio de fe dentro de Comunidad: la oración y la palabra del día de iglesias revisadas, sus horarios y sus transmisiones. **Abierto.**' },
         { title: 'Grupos comunitarios', text: 'Vecinos, intereses y causas en común. Todavía no existe.' },
       ],
       yesHead: { eyebrow: 'Lo que cultivamos', title: 'Aquí se viene a sumar' },
@@ -846,6 +846,14 @@ export const siteEs = {
           list: [
             'Tus publicaciones y respuestas, con tu nombre para mostrar. En oración y apoyo familiar puedes ocultar tu nombre a otros miembros; los moderadores siempre pueden ver quién publicó.',
             'Quién pulsó «Te acompaño» en cada publicación, para que cada persona cuente una sola vez. Los demás solo ven el total.',
+          ],
+        },
+        {
+          title: 'Si usas el Santuario',
+          text: 'Lo que publica una iglesia aprobada (su nombre, ciudad, horarios, transmisión y la palabra del día) es público.',
+          list: [
+            'Si registras una iglesia, guardamos que la registraste. Los revisores ven tu nombre, tu YAY ID y tu correo para poder confirmar los datos; el público no.',
+            'Las iglesias que sigues son privadas: nadie más ve a quién sigues. En la página de la iglesia solo se muestra cuántas personas la siguen.',
           ],
         },
         {

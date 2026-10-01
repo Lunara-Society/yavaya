@@ -210,13 +210,22 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
-    key: 'community_spaces',
-    nameKey: 'capability.community_spaces.name',
-    detailKey: 'capability.community_spaces.detail',
+    key: 'sanctuary',
+    nameKey: 'capability.sanctuary.name',
+    detailKey: 'capability.sanctuary.detail',
+    // Real in what it promises: churches a person reviewed, and words those
+    // churches wrote. Yavaya publishes no devotional content of its own.
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'community_groups',
+    nameKey: 'capability.community_groups.name',
+    detailKey: 'capability.community_groups.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
     blockedBy:
-      'Not built. Local help, the prayer wall and family support work today. Sanctuary and community groups need their own design (membership, group moderators) before they exist.',
+      'Not built. Community groups need their own design (membership, group moderators) before they exist.',
   },
   {
     key: 'mercadito_moderation',

@@ -244,3 +244,31 @@ export const COMMUNITY_RULES = {
   replyMaxLength: 1500,
   pageSize: 20,
 } as const;
+
+/**
+ * Sanctuary. Lengths and limits are guardrails chosen here, not rules from
+ * the Bible; each is listed in docs/CONFIGURATION.md as open to change.
+ */
+export const SANCTUARY_RULES = {
+  nameMinLength: 3,
+  nameMaxLength: 120,
+  denominationMaxLength: 80,
+  descriptionMinLength: 20,
+  descriptionMaxLength: 2000,
+  addressMaxLength: 200,
+  /** Churches one member may register (a pastor may serve more than one). */
+  maxChurchesPerOwner: 3,
+  maxServicesPerChurch: 20,
+  serviceTitleMaxLength: 60,
+  devotionalTitleMinLength: 3,
+  devotionalTitleMaxLength: 120,
+  scriptureMaxLength: 80,
+  devotionalBodyMinLength: 20,
+  devotionalBodyMaxLength: 4000,
+  /** Words one church may publish for the same day. */
+  maxDevotionalsPerChurchPerDay: 3,
+  /** How far ahead a church may prepare words, and how far back it may date one. */
+  devotionalDaysAhead: 14,
+  devotionalDaysBack: 1,
+  feedSize: 12,
+} as const;

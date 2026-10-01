@@ -57,6 +57,13 @@
       "when": 1790556019698,
       "tag": "0007_community",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790861904742,
+      "tag": "0008_sanctuary",
+      "breakpoints": true
     }
   ]
 }

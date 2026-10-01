@@ -44,13 +44,16 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           <p className="eyebrow">{c.districts.community.name}</p>
           <h1>{t('community.square.title')}</h1>
           <p className="lead">{t('community.square.lead')}</p>
-          {member ? (
-            <div className="btn-row">
+          <div className="btn-row">
+            {member ? (
               <Link className="btn btn-gold" href="/community/new">
                 {t('community.square.new')}
               </Link>
-            </div>
-          ) : null}
+            ) : null}
+            <Link className="btn btn-line" href="/sanctuary">
+              ✝ {t('nav.sanctuary')}
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -151,7 +151,7 @@ export function DistrictScene({ id, className, priority }: { id: DistrictId; cla
 }
 
 /** Photographs that sit behind a page's header, full-bleed. */
-export const PAGE_PHOTOS = ['districts', 'trust', 'reputation', 'tokens', 'roadmap', 'street', 'transparency', 'status'] as const;
+export const PAGE_PHOTOS = ['districts', 'trust', 'reputation', 'tokens', 'roadmap', 'street', 'transparency', 'status', 'sanctuary', 'sanctuary-church', 'sanctuary-word'] as const;
 export type PagePhoto = (typeof PAGE_PHOTOS)[number];
 
 export function PageScene({ name, className }: { name: PagePhoto; className?: string }) {
