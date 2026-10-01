@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito, Services, Community and Sanctuary are open. The other districts open in phases.',
+      text: 'Mercadito, Services, Community, Sanctuary and Animals are open. Work and YavayaGo open later.',
       link: 'What works today',
     },
     states: {
@@ -422,6 +422,7 @@ export const siteEn: SiteContent = {
         { title: 'Follow-up', text: 'After the adoption, to make sure everything is going well.' },
       ],
       adoptNote: '**Adoption is not instant, on purpose.** Every step is recorded. Supporting animals on Yavaya is free.',
+      enter: 'Go to Animals',
     },
 
     trust: {
@@ -698,7 +699,7 @@ export const siteEn: SiteContent = {
         {
           title: 'Phase 1 · Core Yavaya',
           state: 'dev',
-          text: 'Mercadito, Services, Community and Sanctuary are open, with reports, moderation and notifications. Animals comes next.',
+          text: 'Mercadito, Services, Community, Sanctuary and Animals are open, with reports, moderation and notifications.',
           items: ['Mercadito', 'Services', 'Community', 'Sanctuary', 'Animals', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
@@ -899,6 +900,16 @@ export const siteEn: SiteContent = {
           list: [
             'If you register a church, we keep that you registered it. Reviewers see your name, YAY ID and email so they can confirm the details; the public does not.',
             'The churches you follow are private: nobody else sees whom you follow. The church page shows only how many people follow it.',
+          ],
+        },
+        {
+          title: 'If you use Animals',
+          text: 'Animals published by verified rescuers are public, with the city where they are; never their address.',
+          list: [
+            'We keep whether you passed the responsible care test and your score.',
+            'Your answers to an adoption application are seen only by the person who rescued that animal, and by reviewers if someone reports a problem.',
+            'If you are chosen, you receive the rescuer’s WhatsApp; you share your own contact yourself.',
+            'If you apply to be a rescuer, reviewers see your details, YAY ID and email to check your rescue work.',
           ],
         },
         {

@@ -7,6 +7,7 @@ import { purgeExpiredRateLimits } from '@/server/security/rate-limit';
 import { verifyAuditChain } from '@/server/domains/audit/service';
 import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
 import { sendDailyDigests } from '@/server/domains/notifications/digest';
+import { sendAdoptionFollowUps } from '@/server/domains/animals/service';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -92,6 +93,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `announced ${result.delivered} word(s) to ${result.notified} follower(s); ${result.skipped} past their day` };
   },
 
+  /** A month after an adoption, adopter and rescuer are asked how it is going. */
+  'adoption-follow-ups': async () => {
+    const result = await sendAdoptionFollowUps(db());
+    return { summary: `asked about ${result.sent} adoption(s)` };
+  },
+
   /** The daily email summary, for members whose morning it is. */
   'send-digests': async () => {
     const result = await sendDailyDigests(db());
@@ -107,7 +114,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'send-digests'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'send-digests'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

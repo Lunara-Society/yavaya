@@ -271,6 +271,38 @@ causes), **Santuario** (churches, daily word, prayer wall) and **Animales**
   Community posts of kind `prayer` (same moderation, same discretion); the
   square lists only `NEIGHBOUR_KINDS`.
 
+## Animales — what is built and what was decided
+
+Owner's direction: animal welfare is the priority, and adopting must be
+earned "almost like a licence". Built:
+
+1. **Learn.** A responsible-care guide (water and food, shelter, no chains,
+   vet and rabies vaccine, sterilisation, respectful training, heat and signs
+   of illness, lifelong commitment) and a 10-question quiz. Passing
+   (`ANIMALS_RULES.quizPassMark`, 8/10) grants the *certificado de cuidado
+   responsable*. Retrying is allowed at once; every answer is explained.
+2. **Rescuers.** Only rescuers approved by a reviewer (`adoptions.review`:
+   district reviewers, admins) can publish animals — the easiest way to sell
+   puppies would otherwise be to call yourself a rescuer. Changing name,
+   description or place sends them back to review.
+3. **Adopt.** No animal has a price. An application covers home, tenure and
+   landlord permission, household (all must agree), other animals,
+   experience, hours alone, where it sleeps, vet plan and motive, plus six
+   commitments that must all be accepted (no chains, vaccines, sterilisation,
+   vet care, return rather than abandon, follow-up). The rescuer chooses the
+   home; declining requires a written reason. Completing the adoption applies
+   `approved_animal_adoption` (+50) to the adopter, once.
+4. **Follow-up.** `followUpDays` (30) after an adoption the scheduler asks the
+   adopter for news and reminds the rescuer to check in.
+
+The guide says Central American countries have animal-protection laws and
+that cruelty can be reported; it deliberately cites no law numbers.
+
+Not built: home visits (they happen outside Yavaya; nothing claims Yavaya
+verified a home), lost-and-found posts, a public directory of vets, and
+re-taking the quiz when the guide changes (`certificateVersion` is stored for
+that).
+
 ## Servicios — what is built and what was decided
 
 Built: the request board (members only, urgent first), asking (with

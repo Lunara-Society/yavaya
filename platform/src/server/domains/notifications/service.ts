@@ -14,7 +14,7 @@ import { demoContent, notificationPreferences, notifications } from '@/server/db
  * Never sent about demo content, and never sent to the person who acted.
  */
 
-export const NOTIFICATION_CATEGORIES = ['account', 'community', 'mercadito', 'services', 'sanctuary', 'moderation'] as const;
+export const NOTIFICATION_CATEGORIES = ['account', 'community', 'mercadito', 'services', 'sanctuary', 'animals', 'moderation'] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
 
 /** Categories on unless the member turns them off. */

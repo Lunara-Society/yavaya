@@ -42,6 +42,7 @@ describe('scheduled jobs', () => {
 
   it('exposes exactly the jobs the deployment guide schedules', () => {
     expect([...JOB_NAMES].sort()).toEqual([
+      'adoption-follow-ups',
       'deliver-words',
       'expire-demo',
       'graduate-monitored',

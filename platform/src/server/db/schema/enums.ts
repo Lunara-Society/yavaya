@@ -278,3 +278,27 @@ export const servicesLicenceStatusEnum = pgEnum('services_licence_status', [
 ]);
 
 export const servicesProviderStatusEnum = pgEnum('services_provider_status', ['active', 'suspended']);
+
+// --- Animals -----------------------------------------------------------------
+export const animalsRescuerStatusEnum = pgEnum('animals_rescuer_status', [
+  'pending', // applied; waiting for a reviewer
+  'approved', // may publish animals for adoption
+  'rejected', // not approved; sees the reason
+  'suspended', // taken down after approval
+]);
+
+export const animalsListingStatusEnum = pgEnum('animals_listing_status', [
+  'available', // looking for a home
+  'reserved', // an application was approved; handover pending
+  'adopted', // the rescuer confirmed the handover
+  'withdrawn', // taken down by the rescuer
+  'removed', // taken down by a reviewer
+]);
+
+export const animalsApplicationStatusEnum = pgEnum('animals_application_status', [
+  'submitted',
+  'approved', // the rescuer chose this home
+  'rejected', // the rescuer declined, with a reason
+  'withdrawn', // the applicant withdrew
+  'completed', // the animal went home with this applicant
+]);

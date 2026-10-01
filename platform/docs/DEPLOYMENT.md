@@ -55,6 +55,7 @@ missed tick costs nothing and an overlapping one is harmless:
 | Purge expired rate limits | `jobs.cjs purge-rate-limits` | hourly |
 | Verify the audit chain | `jobs.cjs verify-audit-chain` | daily, alert on failure |
 | Deliver words prepared ahead | `jobs.cjs deliver-words` | every 15 min |
+| Adoption follow-ups (30 days) | `jobs.cjs adoption-follow-ups` | hourly |
 | Daily email summary | `jobs.cjs send-digests` | every 15 min (each member gets at most one a day) |
 
 **Hosts with a single cron per service (Railway):** schedule `jobs.cjs tick`

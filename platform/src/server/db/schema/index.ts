@@ -20,3 +20,4 @@ export * from './mercadito';
 export * from './community';
 export * from './sanctuary';
 export * from './services';
+export * from './animals';

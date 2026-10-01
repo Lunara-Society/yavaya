@@ -883,7 +883,10 @@ td strong { color: var(--text); }
 /* On a phone the name (or, signed out, "Entrar") gives way: the account and
    sign-in are one tap away in the bottom bar, and the header must not scroll
    sideways. */
-@media (max-width: 479px) { .member-chip { display: none; } }
+@media (max-width: 479px) {
+  .member-chip { display: none; }
+  .tools .btn { white-space: nowrap; padding: 0 14px; font-size: 0.88rem; }
+}
 .chip.bell { position: relative; }
 .bell-count {
   position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 5px;
@@ -954,3 +957,60 @@ td strong { color: var(--text); }
 .sv-stars label { color: #e0a93b; font-size: 1.1rem; }
 .sv-reviews { list-style: none; padding: 0; display: grid; gap: 10px; }
 .sv-reviews strong { color: #e0a93b; }
+
+/* ── Animales: a face first, then the facts ─────────────────────────────── */
+.an-doors { display: grid; gap: 14px; margin: 28px 0 12px; }
+@media (min-width: 820px) { .an-doors { grid-template-columns: repeat(3, 1fr); } }
+.an-door { display: grid; gap: 6px; padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); color: var(--text); text-decoration: none; }
+.an-door:hover { border-color: var(--tone); }
+.an-door strong { font-size: 1.15rem; }
+.an-door span:last-child { color: var(--text-2); }
+.an-door-icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: color-mix(in srgb, var(--tone) 20%, transparent); color: var(--tone); }
+.an-door-icon svg { width: 24px; height: 24px; }
+.an-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-top: 16px; }
+.an-card { display: grid; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); color: var(--text); text-decoration: none; }
+.an-card:hover { border-color: var(--tone); }
+.an-photo { position: relative; display: block; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--tone) 12%, var(--surface)); }
+.an-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.an-status { position: absolute; left: 10px; top: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 0.78rem; font-weight: 800; }
+.an-card-body { display: grid; gap: 4px; padding: 14px 16px 16px; }
+.an-name { font-size: 1.2rem; }
+.an-facts { color: var(--text-2); font-size: 0.92rem; }
+.an-health { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.85rem; color: #3fbf7f; }
+:root[data-theme="light"] .an-health { color: #17794a; }
+.an-place { color: var(--text-3); font-size: 0.85rem; }
+.an-foot { margin-top: 4px; font-weight: 700; color: var(--tone); font-size: 0.9rem; }
+.an-report-abuse { margin-top: 40px; border-left: 4px solid #e0677b; }
+.an-detail { display: grid; gap: 28px; margin-top: 12px; }
+@media (min-width: 900px) { .an-detail { grid-template-columns: 1.1fr 1fr; } }
+.an-gallery { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); align-content: start; }
+.an-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 14px; display: block; }
+.an-gallery img:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+.an-status-line { font-weight: 800; color: var(--tone); margin: 0; }
+.an-health-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.an-health-list li { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 0.88rem; font-weight: 700; }
+.an-health-list li.yes { border-color: #3fbf7f; color: #3fbf7f; }
+.an-health-list li.no { color: #e0a93b; border-color: #e0a93b; }
+.an-apply-box { margin-top: 20px; }
+.an-answers-list { display: grid; gap: 8px; margin: 12px 0; }
+.an-answers-list div { display: grid; gap: 2px; }
+.an-answers-list dt { font-weight: 700; color: var(--text-2); font-size: 0.9rem; }
+.an-answers-list dd { margin: 0; }
+.an-certificate { padding: 12px 16px; border-radius: 12px; border: 1px solid #3fbf7f; color: #3fbf7f; font-weight: 700; }
+:root[data-theme="light"] .an-certificate { color: #17794a; border-color: #17794a; }
+.an-guide { display: grid; gap: 14px; margin-top: 24px; }
+.an-guide-section { padding: 18px 20px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.an-guide-section h2 { font-size: 1.2rem; margin: 0 0 8px; display: flex; gap: 10px; align-items: center; }
+.an-guide-section p { margin: 0; line-height: 1.6; }
+.an-num { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--tone); color: #08130b; font-size: 0.95rem; font-weight: 800; flex: none; }
+.an-quiz { display: grid; gap: 16px; margin-top: 16px; }
+.an-quiz fieldset { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; display: grid; gap: 10px; }
+.an-quiz legend { font-weight: 700; padding: 0 6px; line-height: 1.4; }
+.an-quiz label { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; }
+.an-quiz input[type="radio"] { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+.an-result { padding: 14px 18px; border-radius: 14px; border: 1px solid #e0a93b; margin: 12px 0; }
+.an-result.pass { border-color: #3fbf7f; }
+.an-answers { display: grid; gap: 12px; padding-left: 20px; }
+.an-answers li { display: grid; gap: 4px; }
+.an-answers li.wrong > span:first-of-type { color: #e0677b; font-weight: 700; }
+.an-answers li.right > span:first-of-type { color: #3fbf7f; font-weight: 700; }

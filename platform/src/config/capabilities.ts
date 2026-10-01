@@ -227,6 +227,16 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    key: 'animals',
+    nameKey: 'capability.animals.name',
+    detailKey: 'capability.animals.detail',
+    // Real in what it promises: a certificate earned by passing the guide's
+    // quiz, rescuers a person approved, and applications rescuers decide.
+    // Home visits happen outside Yavaya; nothing here claims to verify a home.
+    state: 'REAL',
+    group: 'district',
+  },
+  {
     key: 'sanctuary',
     nameKey: 'capability.sanctuary.name',
     detailKey: 'capability.sanctuary.detail',

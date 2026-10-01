@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('notifications.title'), robots: { index: false } };
 }
 
-const CATEGORY_ICON = { community: 'community', mercadito: 'mercadito', services: 'services', sanctuary: 'sanctuary', moderation: 'flag', account: 'id' } as const;
+const CATEGORY_ICON = { community: 'community', mercadito: 'mercadito', services: 'services', sanctuary: 'sanctuary', animals: 'animals', moderation: 'flag', account: 'id' } as const;
 
 function when(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es', { dateStyle: 'medium', timeStyle: 'short' }).format(date);

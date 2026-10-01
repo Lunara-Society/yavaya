@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito, Servicios, Comunidad y Santuario ya están abiertos. Los demás distritos abrirán por fases.',
+      text: 'Mercadito, Servicios, Comunidad, Santuario y Animales ya están abiertos. Trabajo y YavayaGo abrirán después.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -433,7 +433,8 @@ export const siteEs = {
         { title: 'Aprobación y acuerdo', text: 'Compromisos claros por escrito.' },
         { title: 'Seguimiento', text: 'Después de la adopción, para asegurar que todo va bien.' },
       ],
-      adoptNote: '**La adopción no es instantánea, a propósito.** Cada paso queda registrado. Apoyar a los animales en Yavaya es gratis.',
+      adoptNote: '**La adopción no es instantánea, a propósito.** Cada paso queda registrado. Apoyar a los animales en Yavaya es gratis, y ningún animal tiene precio.',
+      enter: 'Ir a Animales',
     },
 
     trust: {
@@ -710,7 +711,7 @@ export const siteEs = {
         {
           title: 'Fase 1 · El núcleo de Yavaya',
           state: 'dev',
-          text: 'Mercadito, Servicios, Comunidad y Santuario ya están abiertos, con reportes, moderación y avisos. Sigue Animales.',
+          text: 'Mercadito, Servicios, Comunidad, Santuario y Animales ya están abiertos, con reportes, moderación y avisos.',
           items: ['Mercadito', 'Servicios', 'Comunidad', 'Santuario', 'Animales', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
@@ -911,6 +912,16 @@ export const siteEs = {
           list: [
             'Si registras una iglesia, guardamos que la registraste. Los revisores ven tu nombre, tu YAY ID y tu correo para poder confirmar los datos; el público no.',
             'Las iglesias que sigues son privadas: nadie más ve a quién sigues. En la página de la iglesia solo se muestra cuántas personas la siguen.',
+          ],
+        },
+        {
+          title: 'Si usas Animales',
+          text: 'Los animales publicados por rescatistas verificados son públicos, con la ciudad donde están; nunca su dirección.',
+          list: [
+            'Guardamos si aprobaste la prueba de cuidado responsable y con qué puntaje.',
+            'Tus respuestas a una solicitud de adopción solo las ve quien rescató a ese animal, y los revisores si alguien reporta un problema.',
+            'Si te eligen, recibes el WhatsApp de quien lo rescató; tu contacto lo compartes tú.',
+            'Si solicitas ser rescatista, los revisores ven tus datos, tu YAY ID y tu correo para comprobar tu trabajo de rescate.',
           ],
         },
         {

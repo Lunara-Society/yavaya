@@ -477,7 +477,21 @@ export function AnimalsBody({ c }: { c: SiteContent }) {
   const p = c.pages.animals;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="animals" />} art={<DistrictScene id="animals" priority />} />
+      <PageHero
+        eyebrow={p.eyebrow}
+        title={p.title}
+        lead={p.lead}
+        tinted
+        art={<DistrictScene id="animals" priority />}
+        badge={
+          <>
+            <DistrictStatus c={c} id="animals" />{' '}
+            <Link className="btn btn-gold" href="/animals" style={{ marginLeft: 12 }}>
+              {p.enter}
+            </Link>
+          </>
+        }
+      />
       <section className="section">
         <div className="wrap">
           <div className="organic">

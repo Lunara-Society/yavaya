@@ -246,6 +246,37 @@ export const COMMUNITY_RULES = {
 } as const;
 
 /**
+ * Animales. Chosen under the owner's direction that adoption must be earned,
+ * like a licence: learn first, then apply, then be chosen by a rescuer.
+ * Listed in docs/CONFIGURATION.md as open to change.
+ */
+export const ANIMALS_RULES = {
+  /** Correct answers out of the quiz's questions needed for the certificate. */
+  quizPassMark: 8,
+  /** Bump when the guide or quiz changes materially; older certificates still count. */
+  certificateVersion: 1,
+  nameMaxLength: 60,
+  descriptionMinLength: 30,
+  descriptionMaxLength: 3000,
+  notesMaxLength: 1000,
+  rescuerNameMinLength: 3,
+  rescuerNameMaxLength: 120,
+  rescuerAboutMinLength: 40,
+  rescuerAboutMaxLength: 2000,
+  answerMinLength: 2,
+  answerMaxLength: 1000,
+  minPhotos: 1,
+  maxPhotos: 6,
+  /** Open applications one person may have at once. */
+  maxOpenApplicationsPerMember: 3,
+  /** Animals one rescuer may have listed at once. */
+  maxActiveListingsPerRescuer: 40,
+  /** Days after an adoption when adopter and rescuer are asked how it is going. */
+  followUpDays: 30,
+  pageSize: 24,
+} as const;
+
+/**
  * Servicios. Guardrails chosen under the owner's delegation, not rules from
  * the Bible; each is listed in docs/CONFIGURATION.md as open to change.
  */

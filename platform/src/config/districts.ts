@@ -126,7 +126,7 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.animals.name',
     taglineKey: 'district.animals.tagline',
     phase: 1,
-    status: 'planned',
+    status: 'available',
     theme: { accent: 'forest', tokenSet: 'district-animals', layout: 'organic-profile' },
   },
 };
