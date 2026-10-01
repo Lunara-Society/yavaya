@@ -90,7 +90,7 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.works.name',
     taglineKey: 'district.works.tagline',
     phase: 2,
-    status: 'planned',
+    status: 'available',
     theme: { accent: 'deep-blue', tokenSet: 'district-works', layout: 'professional-directory' },
   },
   yavayago: {

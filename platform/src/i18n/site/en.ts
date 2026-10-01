@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito, Services, Community, Sanctuary and Animals are open. Work and YavayaGo open later.',
+      text: 'Mercadito, Services, Work, Community, Sanctuary and Animals are open. YavayaGo opens later.',
       link: 'What works today',
     },
     states: {
@@ -256,6 +256,7 @@ export const siteEn: SiteContent = {
     },
 
     work: {
+      enter: 'Go to Work',
       eyebrow: 'District · Work',
       title: "Central America's professional network",
       description: 'Work: professional network and project marketplace for Central America. No bidding: professionals compete on quality and reputation.',
@@ -286,7 +287,7 @@ export const siteEn: SiteContent = {
         { name: 'Business', price: '$39.99', per: 'per month', when: 'Later', launch: false },
         { name: 'Agency', price: '$79.99', per: 'per month', when: 'Later', launch: false },
       ],
-      plansNote: '**You cannot subscribe yet.** These are the planned prices in US dollars. Work subscriptions are separate from tokens.',
+      plansNote: '**You cannot subscribe yet, so posting and applying are free for now.** These are the planned prices in US dollars. Work subscriptions are separate from tokens.',
       employerHead: { eyebrow: 'Who hires', title: 'Must have' },
       employer: ['Verification', 'Reputation', 'Project history', 'Reviews'],
       proHead: { eyebrow: 'Who works', title: 'Must have' },
@@ -704,8 +705,8 @@ export const siteEn: SiteContent = {
         },
         {
           title: 'Phase 2 · Work and movement',
-          state: 'planned',
-          text: 'No driver is active before approval. Work uses subscriptions, kept separate from tokens.',
+          state: 'dev',
+          text: 'Work is open, and free while subscriptions cannot be paid. No driver will be active before approval.',
           items: ['Work', 'YavayaGo', 'Driver network', 'Restaurants'],
         },
         {
@@ -911,6 +912,15 @@ export const siteEn: SiteContent = {
             'If you are chosen, you receive the rescuer’s WhatsApp; you share your own contact yourself.',
             'If you apply to be a rescuer, reviewers see your details, YAY ID and email to check your rescue work.',
             'In Lost and found, the photo, city and description are public; your WhatsApp is seen only by members with an account. The post closes by itself after 60 days.',
+          ],
+        },
+        {
+          title: 'If you use Work',
+          text: 'Offers are public. Professional profiles are seen only by members with an account and do not appear in search engines.',
+          list: [
+            'An offer shows the title, the description, the pay, the city and the name of whoever posted it.',
+            'When you apply, whoever posted sees your profile, your message and your WhatsApp number, so they can message you. Nobody else sees your number.',
+            'If you are shortlisted or hired, you see the WhatsApp of whoever posted too.',
           ],
         },
         {

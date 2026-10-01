@@ -112,14 +112,16 @@ describe('district registry', () => {
     // A district joins this list in the same change that builds it — with
     // its pages, its service and its tests. Marking one available without
     // that is exactly what the capability register exists to prevent.
-    const built = new Set(['mercadito', 'services', 'community', 'sanctuary', 'animals']);
+    const built = new Set(['mercadito', 'services', 'works', 'community', 'sanctuary', 'animals']);
     for (const district of districtList) {
       if (district.status === 'available' && !built.has(district.key)) {
         throw new Error(`${district.key} is marked available but is not built`);
       }
     }
+    // The route is the slug, not the key: `works` lives at /work.
     for (const key of built) {
-      expect(existsSync(new URL(`../../src/app/${key}/page.tsx`, import.meta.url))).toBe(true);
+      const district = districtList.find((entry) => entry.key === key);
+      expect(existsSync(new URL(`../../src/app/${district?.slug}/page.tsx`, import.meta.url)), key).toBe(true);
     }
   });
 });

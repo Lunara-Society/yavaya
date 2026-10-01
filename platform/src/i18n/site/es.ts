@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito, Servicios, Comunidad, Santuario y Animales ya están abiertos. Trabajo y YavayaGo abrirán después.',
+      text: 'Mercadito, Servicios, Trabajo, Comunidad, Santuario y Animales ya están abiertos. YavayaGo abrirá después.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -268,6 +268,7 @@ export const siteEs = {
     },
 
     work: {
+      enter: 'Ir a Trabajo',
       eyebrow: 'Distrito · Trabajo',
       title: 'La red profesional de Centroamérica',
       description: 'Trabajo: empleos, red profesional y proyectos en Centroamérica. Sin subastas: los profesionales compiten por calidad y reputación.',
@@ -298,7 +299,7 @@ export const siteEs = {
         { name: 'Negocio', price: '$39.99', per: 'por mes', when: 'Más adelante', launch: false },
         { name: 'Agencia', price: '$79.99', per: 'por mes', when: 'Más adelante', launch: false },
       ],
-      plansNote: '**Todavía no se puede suscribir.** Estos son los precios previstos en dólares estadounidenses. Las suscripciones de Trabajo son independientes de los tokens.',
+      plansNote: '**Todavía no se puede suscribir: mientras tanto, publicar y postular es gratis.** Estos son los precios previstos en dólares estadounidenses. Las suscripciones de Trabajo son independientes de los tokens.',
       employerHead: { eyebrow: 'Quien contrata', title: 'Debe tener' },
       employer: ['Verificación', 'Reputación', 'Historial de proyectos', 'Reseñas'],
       proHead: { eyebrow: 'Quien trabaja', title: 'Debe tener' },
@@ -716,8 +717,8 @@ export const siteEs = {
         },
         {
           title: 'Fase 2 · Trabajo y movimiento',
-          state: 'planned',
-          text: 'Ningún repartidor está activo antes de su aprobación. Trabajo usa suscripciones, separadas de los tokens.',
+          state: 'dev',
+          text: 'Trabajo ya está abierto y es gratis mientras no se puedan pagar suscripciones. Ningún repartidor estará activo antes de su aprobación.',
           items: ['Trabajo', 'YavayaGo', 'Red de repartidores', 'Restaurantes'],
         },
         {
@@ -923,6 +924,15 @@ export const siteEs = {
             'Si te eligen, recibes el WhatsApp de quien lo rescató; tu contacto lo compartes tú.',
             'Si solicitas ser rescatista, los revisores ven tus datos, tu YAY ID y tu correo para comprobar tu trabajo de rescate.',
             'En Perdidos y encontrados, la foto, la ciudad y la descripción son públicas; tu WhatsApp solo lo ven miembros con cuenta. La publicación se cierra sola a los 60 días.',
+          ],
+        },
+        {
+          title: 'Si usas Trabajo',
+          text: 'Las ofertas son públicas. Los perfiles profesionales solo los ven miembros con cuenta y no aparecen en buscadores.',
+          list: [
+            'Una oferta muestra el título, la descripción, el pago, la ciudad y el nombre de quien publica.',
+            'Cuando postulas, quien publicó ve tu perfil, tu mensaje y tu número de WhatsApp, para poder escribirte. Nadie más ve tu número.',
+            'Si te preseleccionan o te contratan, tú también ves el WhatsApp de quien publicó.',
           ],
         },
         {

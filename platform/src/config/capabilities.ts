@@ -227,6 +227,24 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    key: 'work',
+    nameKey: 'capability.work.name',
+    detailKey: 'capability.work.detail',
+    // Real in what it promises: offers with stated pay, profiles and
+    // applications the employer decides. Free while professional
+    // subscriptions cannot be paid (`work_subscriptions` below).
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'work_subscriptions',
+    nameKey: 'capability.work_subscriptions.name',
+    detailKey: 'capability.work_subscriptions.detail',
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy: 'Professional subscriptions need card payments, which are not live, and a price the owner has not set. Until then posting and applying are free.',
+  },
+  {
     key: 'animals',
     nameKey: 'capability.animals.name',
     detailKey: 'capability.animals.detail',
@@ -282,7 +300,7 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.districts.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Five of seven are built: Mercadito, Servicios, Comunidad, Santuario and Animales. Trabajo (professional subscriptions) and YavayaGo (delivery network, driver approval) are not built yet.',
+    blockedBy: 'Six of seven are built: Mercadito, Servicios, Trabajo, Comunidad, Santuario and Animales. YavayaGo (delivery network, driver approval) is not built yet.',
   },
 
   // --- Integrations ---------------------------------------------------------

@@ -267,7 +267,21 @@ export function WorkBody({ c }: { c: SiteContent }) {
   const p = c.pages.work;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="work" />} art={<DistrictScene id="work" priority />} />
+      <PageHero
+        eyebrow={p.eyebrow}
+        title={p.title}
+        lead={p.lead}
+        tinted
+        art={<DistrictScene id="work" priority />}
+        badge={
+          <>
+            <DistrictStatus c={c} id="work" />{' '}
+            <Link className="btn btn-gold" href="/work" style={{ marginLeft: 12 }}>
+              {p.enter}
+            </Link>
+          </>
+        }
+      />
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.diffHead} />

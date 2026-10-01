@@ -343,6 +343,47 @@ Decided under the owner's delegation (retune freely):
 Open: whether to add licence document upload; whether providers should pay
 for visibility (the Bible's Work subscriptions are a different district).
 
+## Trabajo — what is built and what was decided
+
+Built: the offer board (public, filter by field, kind and remote), job and
+project offers, professional profiles (members only, not indexed),
+applications with a message, the employer's steps (shortlist, decline with an
+optional note, hire), closing, 30-day expiry (`expire-work-posts` in the
+tick), reports and a review queue (`work.moderate`: moderators and admins).
+Numbers live in `WORK_RULES`; fields and contract types in `config/work.ts`.
+The district key stays `works` (data already written under it); the route is
+`/work`.
+
+Decided under the owner's delegation (retune freely):
+
+- **Free for now.** The Bible prices Work by subscription ($4.99 a week,
+  $14.99 a month, business and agency plans later). Subscriptions need card
+  payments, which are not live, so posting and applying are free until the
+  owner sets a start date. `/status` lists `work_subscriptions` as
+  REQUIRES_CONFIGURATION. Starting to charge is an owner decision, and
+  members should be told before it happens.
+- **Pay is required.** Every offer states its pay as free text (an amount or
+  a range, with currency and period). No auctions: candidates apply with a
+  profile and a message, never a price.
+- **No-fee promise.** Publishing requires promising never to charge
+  candidates (to apply, for training or materials), the region's commonest
+  employment scam. "They asked me for money to apply" is its own report
+  category.
+- **Contact.** Applying shares the candidate's WhatsApp with that employer.
+  The employer's WhatsApp is shown to a candidate only once shortlisted or
+  hired.
+- **Notices.** Members marked "open to work" in the offer's field and area
+  get at most one "new offers" notice per field per day (up to 200 people per
+  offer). Candidates hear about each decision and about closing.
+- **Moderation.** Removing an offer notifies its author. Suspending a
+  profile hides it and stops it applying; it does not close offers already
+  posted (remove those individually).
+- **Limits.** 10 open offers per employer; 20 open applications per candidate.
+
+Open: the subscription start date and plans; whether employers must be
+verified before posting (today any active member with a confirmed email can
+post); reviews between employers and professionals.
+
 ## Community — what is built and what is undecided
 
 Built: the town square at `/community` with local help (requests and

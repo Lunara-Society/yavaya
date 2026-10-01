@@ -310,3 +310,14 @@ export const animalsLostFoundStatusEnum = pgEnum('animals_lost_found_status', [
   'closed', // the author closed it, or it expired
   'removed', // taken down by a reviewer
 ]);
+
+// --- Work (Trabajo) --------------------------------------------------------------
+export const workPostKindEnum = pgEnum('work_post_kind', ['job', 'project']);
+export const workPostStatusEnum = pgEnum('work_post_status', [
+  'open',
+  'closed', // closed by the employer, or expired
+  'filled', // the employer found who they needed
+  'removed', // taken down by a moderator
+]);
+export const workApplicationStatusEnum = pgEnum('work_application_status', ['submitted', 'shortlisted', 'declined', 'hired', 'withdrawn']);
+export const workProfileStatusEnum = pgEnum('work_profile_status', ['active', 'suspended']);

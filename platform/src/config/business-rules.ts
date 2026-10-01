@@ -246,6 +246,40 @@ export const COMMUNITY_RULES = {
 } as const;
 
 /**
+ * Trabajo. The Bible's principle is "no auctions": pay is stated by the
+ * employer up front and candidates never bid. Professional subscriptions
+ * (Bible prices on the pricing page) need payments, which are not
+ * configured; until then the district is free and says so.
+ * Lengths and limits are guardrails, listed in docs/CONFIGURATION.md.
+ */
+export const WORK_RULES = {
+  titleMinLength: 5,
+  titleMaxLength: 100,
+  descriptionMinLength: 40,
+  descriptionMaxLength: 4000,
+  requirementsMaxLength: 2000,
+  payMinLength: 3,
+  payMaxLength: 80,
+  companyMaxLength: 100,
+  headlineMinLength: 5,
+  headlineMaxLength: 100,
+  aboutMinLength: 30,
+  aboutMaxLength: 2000,
+  skillsMaxLength: 500,
+  messageMinLength: 20,
+  messageMaxLength: 2000,
+  maxFieldsPerProfile: 3,
+  maxPortfolioLinks: 3,
+  maxOpenPostsPerEmployer: 10,
+  maxOpenApplicationsPerCandidate: 20,
+  /** A post stays open this long unless closed or filled sooner. */
+  postOpenDays: 30,
+  /** Members told about one new post, at most (once a day per field each). */
+  newPostNotifyLimit: 200,
+  pageSize: 20,
+} as const;
+
+/**
  * Animales. Chosen under the owner's direction that adoption must be earned,
  * like a licence: learn first, then apply, then be chosen by a rescuer.
  * Listed in docs/CONFIGURATION.md as open to change.

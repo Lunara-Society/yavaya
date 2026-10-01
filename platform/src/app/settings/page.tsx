@@ -260,6 +260,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.services_detail',
   },
   {
+    category: 'work',
+    channel: 'in_app',
+    labelKey: 'settings.notify.work',
+    detailKey: 'settings.notify.work_detail',
+  },
+  {
     category: 'sanctuary',
     channel: 'in_app',
     labelKey: 'settings.notify.sanctuary',

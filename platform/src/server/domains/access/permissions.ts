@@ -43,6 +43,7 @@ export const PERMISSIONS = {
   'listings.moderate': 'marketplace',
   'sanctuary.review': 'sanctuary',
   'services.review': 'services',
+  'work.moderate': 'work',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',
@@ -90,6 +91,7 @@ export const SYSTEM_ROLES: Record<
       'listings.moderate',
       'sanctuary.review',
       'services.review',
+      'work.moderate',
     ],
   },
   district_reviewer: {

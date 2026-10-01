@@ -884,8 +884,17 @@ td strong { color: var(--text); }
    sign-in are one tap away in the bottom bar, and the header must not scroll
    sideways. */
 @media (max-width: 479px) {
+  /* Brand, sign-up button, settings and menu must fit a 360px phone side by side. */
   .member-chip { display: none; }
-  .tools .btn { white-space: nowrap; padding: 0 14px; font-size: 0.88rem; }
+  .top-in { gap: 8px; }
+  .brand { gap: 6px; font-size: 1.05rem; letter-spacing: 0.03em; }
+  .brand-mark { width: 26px; height: 26px; }
+  .tools { gap: 4px; }
+  .tools .btn { white-space: nowrap; padding: 0 12px; font-size: 0.88rem; }
+}
+@media (max-width: 359px) {
+  /* The link keeps its aria-label; only the word gives way to the mark. */
+  .top-in .brand > span { display: none; }
 }
 .chip.bell { position: relative; }
 .bell-count {
@@ -1020,3 +1029,16 @@ td strong { color: var(--text); }
 .an-answers li { display: grid; gap: 4px; }
 .an-answers li.wrong > span:first-of-type { color: #e0677b; font-weight: 700; }
 .an-answers li.right > span:first-of-type { color: #3fbf7f; font-weight: 700; }
+
+/* Trabajo ----------------------------------------------------------------- */
+.wk-post { padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: inset 4px 0 0 var(--tone); min-width: 0; }
+/* The pay is the first thing a candidate would have to ask, so it is never small print. */
+.wk-pay { margin: 0 0 6px; font-weight: 800; font-size: 1.05rem; color: var(--tone); overflow-wrap: anywhere; }
+.wk-pay.big { font-size: 1.5rem; margin: 6px 0 10px; }
+.wk-principles { display: grid; gap: 8px; margin: 24px 0 8px; padding: 18px 20px; border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--tone) 8%, var(--surface)); }
+.wk-principles p { margin: 0; }
+.wk-check { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.wk-check input { width: 18px; height: 18px; margin: 0; }
+.wk-links { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.wk-links a { overflow-wrap: anywhere; }
+.wk-pay-field input { font-weight: 700; }
