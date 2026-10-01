@@ -9,7 +9,8 @@ import { formatDate } from '@/ui/mercadito/format';
 import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { animalsReviewQueue } from '@/server/domains/animals/service';
-import { resolveAnimalsReportAction, reviewRescuerAction } from '@/app/animals/actions';
+import { lostFoundReports } from '@/server/domains/animals/lost-found';
+import { resolveAnimalsReportAction, resolveLostFoundReportAction, reviewRescuerAction } from '@/app/animals/actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -22,6 +23,7 @@ export default async function AnimalsReviewPage({ searchParams }: { searchParams
   if (!(await hasPermission(db(), userId, 'adoptions.review'))) notFound();
   const session = await currentSession();
   const queue = await animalsReviewQueue(db(), session ? { userId, status: session.user.status } : null, locale);
+  const lostReports = await lostFoundReports(db());
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
@@ -108,6 +110,49 @@ export default async function AnimalsReviewPage({ searchParams }: { searchParams
                     </button>
                     <button className="btn btn-gold" type="submit" name="decision" value="suspend_rescuer">
                       {t('animals.review_queue.suspend_rescuer')}
+                    </button>
+                  </div>
+                </form>
+              </article>
+            ))}
+          </div>
+        )}
+
+        <h2 className="sc-h" style={{ marginTop: 40 }}>
+          {t('animals.lost.title')}
+        </h2>
+        {lostReports.length === 0 ? (
+          <p className="mk-empty">{t('sanctuary.review.no_reports')}</p>
+        ) : (
+          <div className="mk-queue">
+            {lostReports.map((item) => (
+              <article key={item.ticketId} className="card">
+                <p className="muted mb0">
+                  {item.code} · {t(`mercadito.mod.priority.${item.priority}` as MessageKey)} · {t(`animals.lost.kind.${item.kind}` as MessageKey)}
+                </p>
+                <h3 style={{ fontSize: '1.2rem', margin: '4px 0' }}>
+                  <Link href={`/animals/lost/${item.postId}`}>{t(`animals.species.${item.species}` as MessageKey)}</Link>
+                </h3>
+                <ul style={{ margin: '8px 0 0 18px' }}>
+                  {item.reports.map((report, index) => (
+                    <li key={index}>
+                      <strong>{t(`animals.report.category.${report.category}` as MessageKey)}</strong>
+                      {report.description ? ` — ${report.description}` : ''}
+                    </li>
+                  ))}
+                </ul>
+                <form action={resolveLostFoundReportAction} className="mk-form" style={{ marginTop: 12, maxWidth: 'none' }}>
+                  <input type="hidden" name="ticketId" value={item.ticketId} />
+                  <label>
+                    {t('sanctuary.review.note')}
+                    <textarea name="note" maxLength={1000} style={{ minHeight: 70 }} />
+                  </label>
+                  <div className="btn-row">
+                    <button className="btn btn-line" type="submit" name="decision" value="dismiss">
+                      {t('sanctuary.review.dismiss')}
+                    </button>
+                    <button className="btn btn-gold" type="submit" name="decision" value="remove_post">
+                      {t('animals.review_queue.remove_listing')}
                     </button>
                   </div>
                 </form>

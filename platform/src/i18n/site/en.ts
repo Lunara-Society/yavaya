@@ -910,6 +910,7 @@ export const siteEn: SiteContent = {
             'Your answers to an adoption application are seen only by the person who rescued that animal, and by reviewers if someone reports a problem.',
             'If you are chosen, you receive the rescuer’s WhatsApp; you share your own contact yourself.',
             'If you apply to be a rescuer, reviewers see your details, YAY ID and email to check your rescue work.',
+            'In Lost and found, the photo, city and description are public; your WhatsApp is seen only by members with an account. The post closes by itself after 60 days.',
           ],
         },
         {

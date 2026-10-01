@@ -80,6 +80,13 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
             <strong>3 · {t('animals.home.rescue')}</strong>
             <span>{rescuer ? t(`animals.rescuer.status.${rescuer.status}` as MessageKey) : t('animals.home.rescue_text')}</span>
           </Link>
+          <Link className="an-door an-door-lost" href="/animals/lost">
+            <span className="an-door-icon" aria-hidden="true">
+              <Icon name="map" />
+            </span>
+            <strong>{t('animals.lost.title')}</strong>
+            <span>{t('animals.home.lost_text')}</span>
+          </Link>
         </div>
         {member ? (
           <p className="center">

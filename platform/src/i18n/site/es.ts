@@ -922,6 +922,7 @@ export const siteEs = {
             'Tus respuestas a una solicitud de adopción solo las ve quien rescató a ese animal, y los revisores si alguien reporta un problema.',
             'Si te eligen, recibes el WhatsApp de quien lo rescató; tu contacto lo compartes tú.',
             'Si solicitas ser rescatista, los revisores ven tus datos, tu YAY ID y tu correo para comprobar tu trabajo de rescate.',
+            'En Perdidos y encontrados, la foto, la ciudad y la descripción son públicas; tu WhatsApp solo lo ven miembros con cuenta. La publicación se cierra sola a los 60 días.',
           ],
         },
         {

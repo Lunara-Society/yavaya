@@ -42,6 +42,8 @@ export async function resetTransactionalData(): Promise<void> {
       activity_events,
       demo_content,
       rate_limit_counters,
+      animals_lost_found_photos,
+      animals_lost_found,
       animals_applications,
       animals_listing_photos,
       animals_listings,

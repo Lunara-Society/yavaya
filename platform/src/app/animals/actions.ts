@@ -29,6 +29,7 @@ import {
   type ApplicationDecision,
   type RescuerDecision,
 } from '@/server/domains/animals/service';
+import { closeLostFound, reportLostFound, resolveLostFoundTicket } from '@/server/domains/animals/lost-found';
 
 /** Animales' mutations: plain forms that work on any phone, without JavaScript. */
 
@@ -205,6 +206,56 @@ export async function resolveAnimalsReportAction(formData: FormData): Promise<vo
   try {
     await db().transaction((tx) =>
       resolveAnimalsTicket(tx, { actor: { userId: session.user.userId, status: session.user.status }, ticketId, decision: decision as AnimalsTicketDecision, note: field(formData, 'note').trim().slice(0, 1000) || null }),
+    );
+  } catch (error) {
+    redirect(back('/admin/animals', errorKey(error)));
+  }
+  revalidatePath('/admin/animals');
+  redirect('/admin/animals?done=1');
+}
+
+export async function closeLostFoundAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const postId = field(formData, 'postId');
+  if (!UUID.test(postId)) redirect('/animals/lost');
+  const outcome = field(formData, 'outcome') === 'reunited' ? 'reunited' : 'closed';
+  try {
+    await db().transaction((tx) => closeLostFound(tx, { authorUserId: session.user.userId, postId, outcome }));
+  } catch (error) {
+    redirect(back(`/animals/lost/${postId}`, errorKey(error)));
+  }
+  revalidatePath('/animals/lost');
+  redirect(`/animals/lost/${postId}`);
+}
+
+export async function reportLostFoundAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const postId = field(formData, 'postId');
+  if (!UUID.test(postId)) redirect('/animals/lost');
+  const page = `/animals/lost/${postId}`;
+  const category = field(formData, 'category');
+  if (!(ANIMALS_REPORT_CATEGORIES as readonly string[]).includes(category)) redirect(back(page, 'animals.report.error.category'));
+  const limit = await consumeRateLimit(db(), RATE_LIMITS.report, `user:${session.user.userId}`);
+  if (!limit.allowed) redirect(back(page, 'animals.error.rate_limited'));
+  let code: string;
+  try {
+    ({ ticketCode: code } = await db().transaction((tx) =>
+      reportLostFound(tx, { reporterUserId: session.user.userId, postId, category: category as AnimalsReportCategory, description: field(formData, 'description').trim().slice(0, 1000) || null }),
+    ));
+  } catch (error) {
+    redirect(back(page, errorKey(error)));
+  }
+  redirect(`${page}?reported=${encodeURIComponent(code)}`);
+}
+
+export async function resolveLostFoundReportAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const ticketId = field(formData, 'ticketId');
+  const decision = field(formData, 'decision') === 'remove_post' ? 'remove_post' : 'dismiss';
+  if (!UUID.test(ticketId)) redirect('/admin/animals');
+  try {
+    await db().transaction((tx) =>
+      resolveLostFoundTicket(tx, { actor: { userId: session.user.userId, status: session.user.status }, ticketId, decision, note: field(formData, 'note').trim().slice(0, 1000) || null }),
     );
   } catch (error) {
     redirect(back('/admin/animals', errorKey(error)));

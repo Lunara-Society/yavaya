@@ -273,6 +273,15 @@ export const ANIMALS_RULES = {
   maxActiveListingsPerRescuer: 40,
   /** Days after an adoption when adopter and rescuer are asked how it is going. */
   followUpDays: 30,
+  /** Lost and found: photos, length, open posts per member, and how long a post stays up. */
+  lostMinPhotos: 1,
+  lostMaxPhotos: 4,
+  lostDescriptionMinLength: 20,
+  lostDescriptionMaxLength: 1500,
+  lostMaxOpenPerMember: 5,
+  lostOpenDays: 60,
+  /** How far back a post's "seen on" date may be. */
+  lostSeenDaysBack: 90,
   pageSize: 24,
 } as const;
 

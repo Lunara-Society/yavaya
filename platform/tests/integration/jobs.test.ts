@@ -45,6 +45,7 @@ describe('scheduled jobs', () => {
       'adoption-follow-ups',
       'deliver-words',
       'expire-demo',
+      'expire-lost-found',
       'graduate-monitored',
       'purge-rate-limits',
       'purge-sessions',

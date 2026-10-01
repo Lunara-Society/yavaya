@@ -8,6 +8,7 @@ import { verifyAuditChain } from '@/server/domains/audit/service';
 import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
 import { sendDailyDigests } from '@/server/domains/notifications/digest';
 import { sendAdoptionFollowUps } from '@/server/domains/animals/service';
+import { expireLostFound } from '@/server/domains/animals/lost-found';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -99,6 +100,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `asked about ${result.sent} adoption(s)` };
   },
 
+  /** Lost-and-found posts close after their time, and their authors are told. */
+  'expire-lost-found': async () => {
+    const result = await expireLostFound(db());
+    return { summary: `closed ${result.closed} lost-and-found post(s)` };
+  },
+
   /** The daily email summary, for members whose morning it is. */
   'send-digests': async () => {
     const result = await sendDailyDigests(db());
@@ -114,7 +121,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'send-digests'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'send-digests'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

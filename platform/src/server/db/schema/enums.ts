@@ -302,3 +302,11 @@ export const animalsApplicationStatusEnum = pgEnum('animals_application_status',
   'withdrawn', // the applicant withdrew
   'completed', // the animal went home with this applicant
 ]);
+
+export const animalsLostFoundKindEnum = pgEnum('animals_lost_found_kind', ['lost', 'found']);
+export const animalsLostFoundStatusEnum = pgEnum('animals_lost_found_status', [
+  'open',
+  'reunited', // the animal is home
+  'closed', // the author closed it, or it expired
+  'removed', // taken down by a reviewer
+]);

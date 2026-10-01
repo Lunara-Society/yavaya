@@ -1,8 +1,8 @@
-import { boolean, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { boolean, date, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 import { locations } from './geography';
 import { media } from './media';
-import { animalsApplicationStatusEnum, animalsListingStatusEnum, animalsRescuerStatusEnum } from './enums';
+import { animalsApplicationStatusEnum, animalsListingStatusEnum, animalsLostFoundKindEnum, animalsLostFoundStatusEnum, animalsRescuerStatusEnum } from './enums';
 
 /**
  * Animales: welfare first, adoption earned.
@@ -138,4 +138,54 @@ export const animalsApplications = pgTable(
     index('animals_applications_applicant_idx').on(table.applicantUserId, table.createdAt),
     index('animals_applications_follow_up_idx').on(table.status, table.completedAt),
   ],
+);
+
+/**
+ * Lost and found. Open to every member — finding a lost dog cannot wait for a
+ * review — and public to read, because a post nobody sees reunites nobody.
+ * The contact number is shown to signed-in members only.
+ */
+export const animalsLostFound = pgTable(
+  'animals_lost_found',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    authorUserId: uuid('author_user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    kind: animalsLostFoundKindEnum('kind').notNull(),
+    species: text('species').notNull(),
+    /** The animal's name, when it is the owner who posts. */
+    name: text('name'),
+    description: text('description').notNull(),
+    locationId: uuid('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'restrict' }),
+    /** The day it went missing, or was found. */
+    seenOn: date('seen_on', { mode: 'string' }).notNull(),
+    whatsappE164: text('whatsapp_e164').notNull(),
+    status: animalsLostFoundStatusEnum('status').notNull().default('open'),
+    removedBy: uuid('removed_by').references(() => users.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    closedAt: timestamp('closed_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('animals_lost_found_browse_idx').on(table.status, table.kind, table.createdAt),
+    index('animals_lost_found_match_idx').on(table.locationId, table.species, table.kind, table.status),
+    index('animals_lost_found_author_idx').on(table.authorUserId, table.createdAt),
+  ],
+);
+
+export const animalsLostFoundPhotos = pgTable(
+  'animals_lost_found_photos',
+  {
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => animalsLostFound.id, { onDelete: 'cascade' }),
+    mediaId: uuid('media_id')
+      .notNull()
+      .references(() => media.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.postId, table.mediaId] })],
 );

@@ -298,8 +298,16 @@ earned "almost like a licence". Built:
 The guide says Central American countries have animal-protection laws and
 that cruelty can be reported; it deliberately cites no law numbers.
 
+5. **Lost and found** (`/animals/lost`). Any active member may post (no
+   review: speed matters), with 1–4 photos, the day and the city. Public to
+   read; the WhatsApp is for signed-in members only, against the ransom scam,
+   and every page warns never to pay in advance. A new "found" post notifies
+   owners of open "lost" posts for the same species in the same city (once a
+   day per post), and each post lists its possible matches. Posts close after
+   `lostOpenDays` (60) via the scheduler's `expire-lost-found`.
+
 Not built: home visits (they happen outside Yavaya; nothing claims Yavaya
-verified a home), lost-and-found posts, a public directory of vets, and
+verified a home), a public directory of vets, and
 re-taking the quiz when the guide changes (`certificateVersion` is stored for
 that).
 
