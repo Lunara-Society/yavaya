@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito, Community and Sanctuary are open. The other districts open in phases.',
+      text: 'Mercadito, Services, Community and Sanctuary are open. The other districts open in phases.',
       link: 'What works today',
     },
     states: {
@@ -321,7 +321,7 @@ export const siteEn: SiteContent = {
           ['Events', 'Photography, music, catering, decoration'],
         ],
       },
-      howHead: { eyebrow: 'How it will work', title: 'Ask, compare, choose' },
+      howHead: { eyebrow: 'How it works', title: 'Ask, compare, choose' },
       how: [
         { title: 'Describe what you need', text: 'What is happening, where and by when. Mark “I need it today” if it is urgent.' },
         { title: 'Get answers', text: 'People and professionals nearby reply, with their reputation visible.' },
@@ -335,7 +335,8 @@ export const siteEn: SiteContent = {
         'Trades show their real history and reviews on Yavaya.',
       ],
       freeNote: '**Help without payment?** That belongs in Community. If there is money or an agreed job, it belongs in Services.',
-      statusNote: '**Not open yet.** Services is the next district being built; this page shows how it will work.',
+      statusNote: '**Open now.** Ask for a service, or create your profile to offer yours.',
+      enter: 'Go to Services',
     },
 
     community: {
@@ -697,8 +698,8 @@ export const siteEn: SiteContent = {
         {
           title: 'Phase 1 · Core Yavaya',
           state: 'dev',
-          text: 'Mercadito, Community and Sanctuary are open, with reports, moderation and notifications. Services and Animals come next.',
-          items: ['Mercadito', 'Community', 'Sanctuary', 'Services', 'Animals', 'Tokens', 'Notifications', 'Visible Trust Shield'],
+          text: 'Mercadito, Services, Community and Sanctuary are open, with reports, moderation and notifications. Animals comes next.',
+          items: ['Mercadito', 'Services', 'Community', 'Sanctuary', 'Animals', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
           title: 'Phase 2 · Work and movement',
@@ -898,6 +899,16 @@ export const siteEn: SiteContent = {
           list: [
             'If you register a church, we keep that you registered it. Reviewers see your name, YAY ID and email so they can confirm the details; the public does not.',
             'The churches you follow are private: nobody else sees whom you follow. The church page shows only how many people follow it.',
+          ],
+        },
+        {
+          title: 'If you use Services',
+          text: 'Requests and replies are seen only by members with an account; they do not appear in search engines.',
+          list: [
+            'A request shows your name, your city and what you write. In Mental health and Health and care only professionals in that area see it, and you can hide your name.',
+            'If you reply to a request, the person who made it sees your WhatsApp number so they can message you. Nobody else sees it.',
+            'If you state a professional licence, reviewers compare it with the official register. Your profile shows whether it was checked.',
+            'Reviews you receive are shown on your services profile, without the name of whoever wrote them.',
           ],
         },
         {

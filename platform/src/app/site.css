@@ -907,3 +907,50 @@ td strong { color: var(--text); }
 .nt-when { color: var(--text-3); font-size: 0.88rem; }
 .nt-dot { width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: var(--accent); }
 .cm-head-art > div { height: 100%; }
+
+/* ── Servicios: a board of needs, urgent first ──────────────────────────── */
+.sv-list { display: grid; gap: 12px; margin-top: 12px; }
+.sv-request, .sv-detail { display: grid; grid-template-columns: 44px 1fr; gap: 14px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.sv-detail { grid-template-columns: 1fr; padding: 22px; }
+.sv-urgent { border-color: #e0a93b; box-shadow: inset 4px 0 0 #e0a93b; }
+.sv-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--tone) 18%, transparent); color: var(--tone); }
+.sv-icon svg { width: 22px; height: 22px; }
+.sv-icon.sm { display: inline-grid; width: 28px; height: 28px; border-radius: 8px; vertical-align: middle; margin-right: 8px; }
+.sv-icon.sm svg { width: 16px; height: 16px; }
+.sv-request-text { min-width: 0; }
+.sv-kicker { margin: 0 0 4px; font-size: 0.82rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-2); }
+.sv-today { display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: 999px; background: #e0a93b; color: #1c1405; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.02em; text-transform: none; }
+.sv-title { margin: 0 0 6px; font-size: 1.15rem; line-height: 1.35; overflow-wrap: anywhere; }
+.sv-title a { color: var(--text); text-decoration: none; }
+.sv-title a:hover { text-decoration: underline; }
+.sv-body { margin: 0 0 8px; color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sv-meta { margin: 0; color: var(--text-3); font-size: 0.9rem; }
+.sv-tab-urgent[aria-current="true"] { border-color: #e0a93b !important; background: color-mix(in srgb, #e0a93b 18%, transparent) !important; }
+.sv-cats { display: grid; gap: 12px; margin-top: 24px; }
+@media (min-width: 720px) { .sv-cats { grid-template-columns: repeat(2, 1fr); } }
+.sv-cat { display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; color: var(--text); text-decoration: none; background: var(--surface); }
+.sv-cat:hover { border-color: var(--tone); }
+.sv-cat strong { display: block; }
+.sv-cat .muted { font-size: 0.9rem; }
+.sv-available { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin: 20px 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.sv-available.on { border-color: #3fbf7f; box-shadow: inset 4px 0 0 #3fbf7f; }
+.sv-responses { display: grid; gap: 14px; }
+.sv-response.chosen { border-color: #3fbf7f; }
+.sv-chosen { margin: 0 0 8px; font-weight: 800; color: #3fbf7f; }
+.sv-price { font-weight: 700; margin: 0 0 12px; }
+.sv-provider { margin-bottom: 10px; }
+.sv-provider-name { margin: 0 0 2px; font-weight: 800; font-size: 1.05rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sv-licence { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; border: 1px solid var(--line); }
+.sv-licence-verified { border-color: #3fbf7f; color: #3fbf7f; }
+.sv-licence-pending { color: #e0a93b; border-color: #e0a93b; }
+.sv-licence-rejected { color: #e0677b; border-color: #e0677b; }
+:root[data-theme="light"] .sv-licence-verified, :root[data-theme="light"] .sv-chosen { color: #17794a; border-color: #17794a; }
+:root[data-theme="light"] .sv-licence-pending { color: #8a5e00; border-color: #8a5e00; }
+.sv-checks { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; }
+.sv-checks label { display: block; font-weight: 600; }
+.sv-regulated { color: var(--text-3); font-weight: 500; font-size: 0.9rem; }
+.sv-urgent-check { padding: 12px 14px; border: 1px solid #e0a93b; border-radius: 12px; }
+.sv-stars { border: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+.sv-stars label { color: #e0a93b; font-size: 1.1rem; }
+.sv-reviews { list-style: none; padding: 0; display: grid; gap: 10px; }
+.sv-reviews strong { color: #e0a93b; }

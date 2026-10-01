@@ -73,7 +73,7 @@ export async function setNotificationPreferenceAction(formData: FormData): Promi
   const channel = String(formData.get('channel') ?? '');
   const enabled = String(formData.get('enabled') ?? '') === 'true';
 
-  const allowedCategories = ['account', 'orders', 'moderation', 'tokens', 'live_activity', 'marketing', 'community', 'mercadito', 'sanctuary', 'digest'];
+  const allowedCategories = ['account', 'orders', 'moderation', 'tokens', 'live_activity', 'marketing', 'community', 'mercadito', 'services', 'sanctuary', 'digest'];
   const allowedChannels = ['in_app', 'push', 'email', 'sms'] as const;
 
   if (!allowedCategories.includes(category)) return;

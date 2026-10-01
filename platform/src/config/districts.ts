@@ -81,7 +81,7 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.services.name',
     taglineKey: 'district.services.tagline',
     phase: 1,
-    status: 'planned',
+    status: 'available',
     theme: { accent: 'teal', tokenSet: 'district-services', layout: 'request-board' },
   },
   works: {

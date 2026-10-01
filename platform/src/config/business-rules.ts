@@ -246,6 +246,42 @@ export const COMMUNITY_RULES = {
 } as const;
 
 /**
+ * Servicios. Guardrails chosen under the owner's delegation, not rules from
+ * the Bible; each is listed in docs/CONFIGURATION.md as open to change.
+ */
+export const SERVICES_RULES = {
+  titleMinLength: 5,
+  titleMaxLength: 100,
+  bodyMinLength: 20,
+  bodyMaxLength: 2000,
+  messageMinLength: 10,
+  messageMaxLength: 1000,
+  priceMaxLength: 60,
+  headlineMinLength: 5,
+  headlineMaxLength: 80,
+  bioMinLength: 20,
+  bioMaxLength: 1000,
+  licenceMinLength: 5,
+  licenceMaxLength: 200,
+  reviewMaxLength: 1000,
+  /** Categories one provider may offer: enough for a real trade, not a catalogue. */
+  maxCategoriesPerProvider: 3,
+  /** Open requests one member may have at once. */
+  maxOpenRequestsPerMember: 5,
+  /** Responses a request takes before it stops accepting more. */
+  maxResponsesPerRequest: 20,
+  /** How long "Disponible hoy" lasts once switched on. */
+  availableTodayHours: 12,
+  /** Providers told about one urgent request. */
+  urgentNotifyLimit: 30,
+  /** Providers told about one ordinary request (once a day each). */
+  newRequestNotifyLimit: 100,
+  /** A review of this many stars or more earns the provider reputation. */
+  positiveReviewStars: 4,
+  pageSize: 20,
+} as const;
+
+/**
  * Sanctuary. Lengths and limits are guardrails chosen here, not rules from
  * the Bible; each is listed in docs/CONFIGURATION.md as open to change.
  */

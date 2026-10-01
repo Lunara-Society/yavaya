@@ -420,7 +420,21 @@ export function ServicesBody({ c }: { c: SiteContent }) {
   const p = c.pages.services;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="services" />} art={<DistrictScene id="services" priority />} />
+      <PageHero
+        eyebrow={p.eyebrow}
+        title={p.title}
+        lead={p.lead}
+        tinted
+        art={<DistrictScene id="services" priority />}
+        badge={
+          <>
+            <DistrictStatus c={c} id="services" />{' '}
+            <Link className="btn btn-gold" href="/services" style={{ marginLeft: 12 }}>
+              {p.enter}
+            </Link>
+          </>
+        }
+      />
       <section className="section">
         <div className="wrap">
           <Note text={p.statusNote} />

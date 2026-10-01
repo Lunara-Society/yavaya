@@ -254,6 +254,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.mercadito_detail',
   },
   {
+    category: 'services',
+    channel: 'in_app',
+    labelKey: 'settings.notify.services',
+    detailKey: 'settings.notify.services_detail',
+  },
+  {
     category: 'sanctuary',
     channel: 'in_app',
     labelKey: 'settings.notify.sanctuary',

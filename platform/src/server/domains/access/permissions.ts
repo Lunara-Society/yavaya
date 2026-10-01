@@ -42,6 +42,7 @@ export const PERMISSIONS = {
   'adoptions.approve': 'animals',
   'listings.moderate': 'marketplace',
   'sanctuary.review': 'sanctuary',
+  'services.review': 'services',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',
@@ -88,11 +89,12 @@ export const SYSTEM_ROLES: Record<
       'moderation.enforcement.issue',
       'listings.moderate',
       'sanctuary.review',
+      'services.review',
     ],
   },
   district_reviewer: {
     name: 'District reviewer',
-    description: 'Reviews driver applications, causes and adoption applications.',
+    description: 'Reviews driver applications, causes, adoption applications, churches and professional licences.',
     permissions: [
       'users.read',
       'drivers.review',
@@ -102,6 +104,7 @@ export const SYSTEM_ROLES: Record<
       'adoptions.review',
       'adoptions.approve',
       'sanctuary.review',
+      'services.review',
     ],
   },
   support: {

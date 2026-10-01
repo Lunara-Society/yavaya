@@ -271,6 +271,38 @@ causes), **Santuario** (churches, daily word, prayer wall) and **Animales**
   Community posts of kind `prayer` (same moderation, same discretion); the
   square lists only `NEIGHBOUR_KINDS`.
 
+## Servicios — what is built and what was decided
+
+Built: the request board (members only, urgent first), asking (with
+"Lo necesito hoy"), provider profiles with "Disponible hoy", replies, choosing
+who does the job, completion, reviews, reports, and a review queue for
+licences and reports (`services.review`: moderators, district reviewers,
+admins). Numbers live in `SERVICES_RULES`; categories in `config/services.ts`.
+
+Decided under the owner's delegation (retune freely):
+
+- **Free.** Asking and replying are billable actions at cost 0. No payment
+  passes through Yavaya; a reply's price is free text the two people agree on.
+- **Contact.** A reply shows the provider's WhatsApp to the person who asked,
+  at once — a roof leaking at 3 a.m. cannot wait for a second step. Choosing
+  who did it is what makes a review possible.
+- **Sensitive categories** (Mental health, Health and care) are seen only by
+  the asker and providers of that category, and only there may the asker hide
+  their name.
+- **Regulated categories** (Mental health, Health and care, Legal) require a
+  stated licence. It reads "sin verificar" until a reviewer confirms it in the
+  official register; changing the text sends it back to review. Reviewers
+  check by hand: there is no document upload and no registry integration yet.
+- **Urgent requests** notify providers in the same country who switched on
+  "Disponible hoy" (lasts 12 h), up to 30. Ordinary requests send each
+  matching provider at most one "new requests" notice per category per day.
+- **Reputation.** A review of 4–5 stars applies `verified_positive_review`
+  (+10), once per job. `successful_transaction` is *not* applied: Yavaya does
+  not see money change hands, so it cannot confirm a transaction.
+
+Open: whether to add licence document upload; whether providers should pay
+for visibility (the Bible's Work subscriptions are a different district).
+
 ## Community — what is built and what is undecided
 
 Built: the town square at `/community` with local help (requests and

@@ -249,7 +249,7 @@ export const communityPostStatusEnum = pgEnum('community_post_status', [
 
 export const communityReplyStatusEnum = pgEnum('community_reply_status', ['visible', 'removed']);
 
-// --- Sanctuary (inside Community) -------------------------------------------
+// --- Sanctuary ----------------------------------------------------------------
 export const sanctuaryChurchStatusEnum = pgEnum('sanctuary_church_status', [
   'pending', // registered or changed; waiting for a reviewer
   'approved', // visible to everyone
@@ -258,3 +258,23 @@ export const sanctuaryChurchStatusEnum = pgEnum('sanctuary_church_status', [
 ]);
 
 export const sanctuaryDevotionalStatusEnum = pgEnum('sanctuary_devotional_status', ['published', 'removed']);
+
+// --- Services ----------------------------------------------------------------
+export const servicesRequestStatusEnum = pgEnum('services_request_status', [
+  'open', // taking responses
+  'in_progress', // the requester chose who does it
+  'completed', // the requester says it is done
+  'cancelled', // withdrawn by the requester
+  'removed', // taken down by a moderator
+]);
+
+export const servicesResponseStatusEnum = pgEnum('services_response_status', ['sent', 'accepted', 'withdrawn', 'removed']);
+
+export const servicesLicenceStatusEnum = pgEnum('services_licence_status', [
+  'none', // no licence stated
+  'pending', // stated, waiting for a reviewer
+  'verified', // a reviewer checked it
+  'rejected', // a reviewer could not confirm it
+]);
+
+export const servicesProviderStatusEnum = pgEnum('services_provider_status', ['active', 'suspended']);

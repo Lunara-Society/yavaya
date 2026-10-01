@@ -274,6 +274,8 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
     { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
     { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
     { key: 'community.publish_request', district: 'community', cost: 0, description: 'Publish a community support request (free)' },
+    { key: 'services.publish_request', district: 'services', cost: 0, description: 'Ask for a service (free)' },
+    { key: 'services.respond', district: 'services', cost: 0, description: 'Answer a service request (free)' },
     { key: 'sanctuary.register_church', district: 'sanctuary', cost: 0, description: 'Register a church in Sanctuary (free)' },
     { key: 'sanctuary.publish_devotional', district: 'sanctuary', cost: 0, description: 'Publish a church prayer or word for the day (free)' },
     { key: 'impact.publish_cause', district: 'community', cost: 0, description: 'Submit a cause for review (free)' },

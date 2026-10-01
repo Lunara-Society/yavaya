@@ -217,6 +217,16 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    key: 'services',
+    nameKey: 'capability.services.name',
+    detailKey: 'capability.services.detail',
+    // Real in what it promises: requests, replies and reviews between
+    // members. No payment passes through Yavaya, and a licence reads
+    // "verified" only after a person checked it.
+    state: 'REAL',
+    group: 'district',
+  },
+  {
     key: 'sanctuary',
     nameKey: 'capability.sanctuary.name',
     detailKey: 'capability.sanctuary.detail',

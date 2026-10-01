@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito, Comunidad y Santuario ya están abiertos. Los demás distritos abrirán por fases.',
+      text: 'Mercadito, Servicios, Comunidad y Santuario ya están abiertos. Los demás distritos abrirán por fases.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -333,7 +333,7 @@ export const siteEs = {
           ['Eventos', 'Fotografía, música, comida, decoración'],
         ],
       },
-      howHead: { eyebrow: 'Cómo funcionará', title: 'Pedir, comparar, elegir' },
+      howHead: { eyebrow: 'Cómo funciona', title: 'Pedir, comparar, elegir' },
       how: [
         { title: 'Describe lo que necesitas', text: 'Qué pasa, dónde y para cuándo. Marca «Lo necesito hoy» si es urgente.' },
         { title: 'Recibe respuestas', text: 'Personas y profesionales cercanos te responden con su reputación visible.' },
@@ -347,7 +347,8 @@ export const siteEs = {
         'Los oficios muestran su historial y sus reseñas reales en Yavaya.',
       ],
       freeNote: '**¿Ayuda sin cobrar?** Eso va en Comunidad. Si hay dinero o un trabajo acordado, va en Servicios.',
-      statusNote: '**Todavía no está abierto.** Servicios es el próximo distrito en construcción; esta página muestra cómo funcionará.',
+      statusNote: '**Ya está abierto.** Pide un servicio o crea tu perfil para ofrecer los tuyos.',
+      enter: 'Ir a Servicios',
     },
 
     community: {
@@ -709,8 +710,8 @@ export const siteEs = {
         {
           title: 'Fase 1 · El núcleo de Yavaya',
           state: 'dev',
-          text: 'Mercadito, Comunidad y Santuario ya están abiertos, con reportes, moderación y avisos. Siguen Servicios y Animales.',
-          items: ['Mercadito', 'Comunidad', 'Santuario', 'Servicios', 'Animales', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
+          text: 'Mercadito, Servicios, Comunidad y Santuario ya están abiertos, con reportes, moderación y avisos. Sigue Animales.',
+          items: ['Mercadito', 'Servicios', 'Comunidad', 'Santuario', 'Animales', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
           title: 'Fase 2 · Trabajo y movimiento',
@@ -910,6 +911,16 @@ export const siteEs = {
           list: [
             'Si registras una iglesia, guardamos que la registraste. Los revisores ven tu nombre, tu YAY ID y tu correo para poder confirmar los datos; el público no.',
             'Las iglesias que sigues son privadas: nadie más ve a quién sigues. En la página de la iglesia solo se muestra cuántas personas la siguen.',
+          ],
+        },
+        {
+          title: 'Si usas Servicios',
+          text: 'Los pedidos y las respuestas solo los ven miembros con cuenta; no aparecen en buscadores.',
+          list: [
+            'Un pedido muestra tu nombre, tu ciudad y lo que escribes. En Salud mental y en Salud y cuidado solo lo ven profesionales de esa área, y puedes ocultar tu nombre.',
+            'Si respondes a un pedido, quien lo hizo ve tu número de WhatsApp para poder escribirte. Nadie más lo ve.',
+            'Si declaras una licencia profesional, los revisores la comparan con el registro oficial. Tu perfil muestra si fue revisada.',
+            'Las reseñas que recibes se muestran en tu perfil de servicios, sin el nombre de quien las escribió.',
           ],
         },
         {
