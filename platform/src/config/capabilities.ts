@@ -282,7 +282,7 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.districts.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Registry, theming and routing exist. Mercadito and Community are built; the other district experiences are Phase 1+.',
+    blockedBy: 'Five of seven are built: Mercadito, Servicios, Comunidad, Santuario and Animales. Trabajo (professional subscriptions) and YavayaGo (delivery network, driver approval) are not built yet.',
   },
 
   // --- Integrations ---------------------------------------------------------

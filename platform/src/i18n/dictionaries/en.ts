@@ -239,7 +239,7 @@ export const en: Dictionary = {
   'capability.community.name': 'Community',
   'capability.community.detail': 'Local help, prayer wall and family support, with moderation.',
   'capability.districts.name': 'Districts',
-  'capability.districts.detail': 'The eight district experiences.',
+  'capability.districts.detail': 'The seven district experiences.',
   'capability.email_delivery.name': 'Email delivery',
   'capability.email_delivery.detail': 'Verification codes and receipts.',
   'capability.sms_delivery.name': 'SMS delivery',

@@ -258,7 +258,7 @@ export const es = {
   'capability.community.name': 'Comunidad',
   'capability.community.detail': 'Ayuda local, muro de oración y apoyo familiar, con moderación.',
   'capability.districts.name': 'Distritos',
-  'capability.districts.detail': 'Las ocho experiencias de distrito.',
+  'capability.districts.detail': 'Las siete experiencias de distrito.',
   'capability.email_delivery.name': 'Envío de correo',
   'capability.email_delivery.detail': 'Códigos de verificación y comprobantes.',
   'capability.sms_delivery.name': 'Envío de SMS',
