@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
@@ -6,7 +7,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { DistrictScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/community/post-card';
-import { listPosts, POST_KINDS, type PostKind } from '@/server/domains/community/service';
+import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ kind?: string; page?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const kind = (POST_KINDS as readonly string[]).includes(params.kind ?? '') ? (params.kind as PostKind) : undefined;
+  // The prayer wall moved to the Sanctuary; old links follow it there.
+  if (params.kind === 'prayer') redirect('/sanctuary/prayer');
+  const kind = (NEIGHBOUR_KINDS as readonly string[]).includes(params.kind ?? '') ? (params.kind as PostKind) : undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
-  const feed = userId ? await listPosts(db(), { viewerId: userId, kind, page, locale }) : null;
+  const feed = userId ? await listPosts(db(), { viewerId: userId, kind, kinds: NEIGHBOUR_KINDS, page, locale }) : null;
   const href = (next: { kind?: string; page?: number }) => {
     const search = new URLSearchParams();
     if (next.kind) search.set('kind', next.kind);
@@ -76,7 +79,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
               <Link href={href({})} aria-current={kind ? undefined : 'true'}>
                 {t('community.square.all')}
               </Link>
-              {POST_KINDS.map((option) => (
+              {NEIGHBOUR_KINDS.map((option) => (
                 <Link key={option} href={href({ kind: option })} aria-current={kind === option ? 'true' : undefined}>
                   {t(`community.kind.${option}` as MessageKey)}
                 </Link>

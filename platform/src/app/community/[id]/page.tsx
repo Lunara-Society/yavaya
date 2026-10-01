@@ -30,12 +30,14 @@ export default async function CommunityPostPage({ params, searchParams }: Params
   const { post, replies } = found;
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const limits = { min: COMMUNITY_RULES.replyMinLength, max: COMMUNITY_RULES.replyMaxLength };
+  // Prayer requests belong to the Sanctuary's wall; the page wears its colours.
+  const prayer = post.kind === 'prayer';
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current={prayer ? 'sanctuary' : 'community'} tone={prayer ? 'sanctuary' : 'community'}>
       <div className="wrap cm-column" style={{ padding: '28px var(--gutter) 56px' }}>
         <p>
-          <Link href="/community">← {t('community.post.back')}</Link>
+          <Link href={prayer ? '/sanctuary/prayer' : '/community'}>← {prayer ? t('sanctuary.prayer.back') : t('community.post.back')}</Link>
         </p>
         {post.status === 'withdrawn' ? <p className="mk-banner">{t('community.post.withdrawn')}</p> : null}
         {post.status === 'removed' ? <p className="mk-banner">{t('community.post.removed')}</p> : null}

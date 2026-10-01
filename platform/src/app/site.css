@@ -42,9 +42,10 @@
   /* District worlds. Each has a strong tone and a soft wash. */
   --mercadito: #1f9d6b;
   --yavayago: #f07a1f;
+  --services: #1aa3a3;
   --work: #3c6df0;
   --community: #9366e0;
-  --impact: #d6334f;
+  --sanctuary: #c8a165;
   --animals: #3f8f4a;
 
   --radius: 18px;
@@ -460,10 +461,11 @@ td strong { color: var(--text); }
 .mt { margin-top: 28px; }
 .mb0 { margin-bottom: 0; }
 .tone-mercadito { --tone: var(--mercadito); }
+.tone-services { --tone: var(--services); }
 .tone-yavayago { --tone: var(--yavayago); }
 .tone-work { --tone: var(--work); }
 .tone-community { --tone: var(--community); }
-.tone-impact { --tone: var(--impact); }
+.tone-sanctuary { --tone: var(--sanctuary); }
 .tone-animals { --tone: var(--animals); }
 .tone-trust { --tone: var(--gold); }
 
@@ -878,8 +880,9 @@ td strong { color: var(--text); }
 .sc-prayer { background: linear-gradient(135deg, color-mix(in srgb, var(--tone) 14%, var(--surface)), var(--surface)); }
 
 /* Notifications: the bell in the header and the list behind it. */
-/* On a phone the name gives way to the bell: the account is one tap away in
-   the bottom bar ("Área de miembro"), and the header must not scroll sideways. */
+/* On a phone the name (or, signed out, "Entrar") gives way: the account and
+   sign-in are one tap away in the bottom bar, and the header must not scroll
+   sideways. */
 @media (max-width: 479px) { .member-chip { display: none; } }
 .chip.bell { position: relative; }
 .bell-count {
@@ -903,3 +906,4 @@ td strong { color: var(--text); }
 .nt-body { color: var(--text-2); }
 .nt-when { color: var(--text-3); font-size: 0.88rem; }
 .nt-dot { width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: var(--accent); }
+.cm-head-art > div { height: 100%; }

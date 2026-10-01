@@ -20,7 +20,7 @@ export default async function MyChurchesPage() {
   const churches = await ownedChurches(db(), { userId, locale });
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
       <section className="mk-head">
         <div className="wrap cm-column">
           <p>

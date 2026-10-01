@@ -252,6 +252,25 @@ The guilloché seal and ornamental rules are drawn in code
 
 ---
 
+## District structure (owner decision, October 2026)
+
+Seven districts, each answering one question: **Mercadito** (buy and sell
+things), **Servicios** (someone does something for me — trades, urgent home
+problems, professionals including psychology), **Trabajo** (jobs and
+professional projects; registry key `works`), **YavayaGo** (deliveries and
+errands), **Comunidad** (free help between neighbours, family support,
+causes), **Santuario** (churches, daily word, prayer wall) and **Animales**
+(welfare, screened adoption, rescue).
+
+- The line between Comunidad and Servicios: no money → Comunidad; money or an
+  agreed job → Servicios.
+- Impacto became the "Causas" section of Comunidad (`/impact` redirects there).
+  The Tavern was taken off the roadmap. Both rows stay in `districts` as
+  `retired` so history resolves.
+- The prayer wall moved to `/sanctuary/prayer`. Prayer requests are still
+  Community posts of kind `prayer` (same moderation, same discretion); the
+  square lists only `NEIGHBOUR_KINDS`.
+
 ## Community — what is built and what is undecided
 
 Built: the town square at `/community` with local help (requests and

@@ -33,7 +33,7 @@ export const districts = pgTable(
     key: text('key').primaryKey(),
     slug: text('slug').notNull(),
     phase: integer('phase').notNull(),
-    /** `available` | `in_development` | `planned`. Reflects reality, not plans. */
+    /** `available` | `in_development` | `planned` | `retired` (removed from the registry). Reflects reality, not plans. */
     status: text('status').notNull().default('planned'),
     enabled: boolean('enabled').notNull().default(false),
     sortOrder: integer('sort_order').notNull().default(0),

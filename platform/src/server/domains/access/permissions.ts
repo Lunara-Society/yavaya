@@ -36,12 +36,12 @@ export const PERMISSIONS = {
   // District operations -----------------------------------------------------
   'drivers.review': 'delivery',
   'drivers.approve': 'delivery',
-  'causes.review': 'impact',
-  'causes.approve': 'impact',
+  'causes.review': 'community',
+  'causes.approve': 'community',
   'adoptions.review': 'animals',
   'adoptions.approve': 'animals',
   'listings.moderate': 'marketplace',
-  'sanctuary.review': 'community',
+  'sanctuary.review': 'sanctuary',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',

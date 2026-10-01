@@ -369,18 +369,23 @@ export function CommunityBody({ c }: { c: SiteContent }) {
           </div>
         </div>
       </section>
+      <CausesSection c={c} />
       <DistrictNext c={c} id="community" />
     </>
   );
 }
 
-export function ImpactBody({ c }: { c: SiteContent }) {
+/**
+ * Causes: what was the Impact district, now a section of Community. Not
+ * built; shown so its rules are public before the first cause exists.
+ */
+function CausesSection({ c }: { c: SiteContent }) {
   const p = c.pages.impact;
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="impact" />} art={<DistrictScene id="impact" priority />} />
-      <section className="section">
+      <section className="section" id="causes">
         <div className="wrap">
+          <SectionHead eyebrow={p.eyebrow} title={p.title} lead={p.lead} />
           <div className="promise">
             {p.promise.map((x) => (
               <div key={x.title}>
@@ -398,24 +403,58 @@ export function ImpactBody({ c }: { c: SiteContent }) {
         <div className="wrap">
           <SectionHead {...p.reviewHead} />
           <Steps items={p.review} />
+          <div className="mt">
+            <SectionHead {...p.typesHead} />
+            <Table head={p.typesTable.head} rows={p.typesTable.rows} />
+            <div className="mt">
+              <Note text={p.typesNote} />
+            </div>
+          </div>
         </div>
       </section>
+    </>
+  );
+}
+
+export function ServicesBody({ c }: { c: SiteContent }) {
+  const p = c.pages.services;
+  return (
+    <>
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} tinted badge={<DistrictStatus c={c} id="services" />} art={<DistrictScene id="services" priority />} />
       <section className="section">
         <div className="wrap">
-          <SectionHead {...p.typesHead} />
-          <Table head={p.typesTable.head} rows={p.typesTable.rows} />
+          <Note text={p.statusNote} />
           <div className="mt">
-            <Note text={p.typesNote} />
+            <SectionHead {...p.urgentHead} />
+            <Cards items={p.urgent} tone />
+            <p className="muted mt">{p.urgentNote}</p>
           </div>
         </div>
       </section>
       <section className="section alt">
         <div className="wrap">
-          <SectionHead {...p.causesHead} />
-          <Cards items={p.causes} tone />
+          <SectionHead {...p.areasHead} />
+          <Table head={p.areasTable.head} rows={p.areasTable.rows} />
         </div>
       </section>
-      <DistrictNext c={c} id="impact" />
+      <section className="section">
+        <div className="wrap">
+          <div className="split">
+            <div>
+              <SectionHead {...p.howHead} />
+              <Steps items={p.how} />
+            </div>
+            <div>
+              <SectionHead {...p.credHead} />
+              <Checks items={p.cred} />
+              <div className="mt">
+                <Note text={p.freeNote} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <DistrictNext c={c} id="services" />
     </>
   );
 }

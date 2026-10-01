@@ -7,7 +7,7 @@ import { COMMUNITY_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { placeOptions } from '@/server/domains/mercadito/service';
-import { POST_KINDS } from '@/server/domains/community/service';
+import { NEIGHBOUR_KINDS } from '@/server/domains/community/service';
 import { createPostAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -29,31 +29,38 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
   if (!userId) redirect('/login');
   const countries = await placeOptions(db(), locale);
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
-  const initialKind = (POST_KINDS as readonly string[]).includes(params.kind ?? '') ? params.kind : '';
+  // A prayer request is written here too, but presented as the Sanctuary's.
+  const prayer = params.kind === 'prayer';
+  const initialKind = (NEIGHBOUR_KINDS as readonly string[]).includes(params.kind ?? '') ? params.kind : '';
+  const home = prayer ? '/sanctuary/prayer' : '/community';
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current={prayer ? 'sanctuary' : 'community'} tone={prayer ? 'sanctuary' : 'community'}>
       <div className="wrap cm-column" style={{ padding: '32px var(--gutter) 56px' }}>
         <p>
-          <Link href="/community">← {t('community.post.back')}</Link>
+          <Link href={home}>← {prayer ? t('sanctuary.prayer.back') : t('community.post.back')}</Link>
         </p>
-        <h1 className="h-md">{t('community.form.title')}</h1>
+        <h1 className="h-md">{prayer ? t('sanctuary.prayer.form_title') : t('community.form.title')}</h1>
         <p className="muted">{t('community.form.free')}</p>
         {error ? <p className="mk-error">{t(error as MessageKey, LIMITS[error] ?? {})}</p> : null}
         <form action={createPostAction} className="mk-form" style={{ marginTop: 18 }}>
-          <label>
-            {t('community.form.kind')}
-            <select name="kind" required defaultValue={initialKind}>
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {POST_KINDS.map((kind) => (
-                <option key={kind} value={kind}>
-                  {t(`community.kind.${kind}` as MessageKey)}
+          {prayer ? (
+            <input type="hidden" name="kind" value="prayer" />
+          ) : (
+            <label>
+              {t('community.form.kind')}
+              <select name="kind" required defaultValue={initialKind}>
+                <option value="" disabled>
+                  {t('mercadito.form.choose')}
                 </option>
-              ))}
-            </select>
-          </label>
+                {NEIGHBOUR_KINDS.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {t(`community.kind.${kind}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <label>
             {t('community.form.headline')}
             <input name="title" required minLength={COMMUNITY_RULES.titleMinLength} maxLength={COMMUNITY_RULES.titleMaxLength} />

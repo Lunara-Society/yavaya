@@ -46,7 +46,9 @@ export async function createPostAction(formData: FormData): Promise<void> {
     locationId: String(formData.get('locationId') ?? '') || null,
     anonymous: formData.get('anonymous') === 'on',
   });
-  if (!parsed.success) redirect(`/community/new?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? 'error.validation_failed')}`);
+  // Errors go back to the form the member came from: the prayer form keeps its kind.
+  const back = formData.get('kind') === 'prayer' ? '&kind=prayer' : '';
+  if (!parsed.success) redirect(`/community/new?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? 'error.validation_failed')}${back}`);
 
   const monitored = session.user.monitoredUntil > new Date();
   const limit = await consumeRateLimit(
@@ -54,16 +56,17 @@ export async function createPostAction(formData: FormData): Promise<void> {
     monitored ? RATE_LIMITS.publishMonitored : RATE_LIMITS.publishStandard,
     `community:${session.user.userId}`,
   );
-  if (!limit.allowed) redirect('/community/new?error=community.error.rate_limited');
+  if (!limit.allowed) redirect(`/community/new?error=community.error.rate_limited${back}`);
 
   let postId: string;
   try {
     const audit = await auditContext();
     postId = await db().transaction((tx) => createPost(tx, { authorUserId: session.user.userId, input: parsed.data, audit }));
   } catch (error) {
-    redirect(`/community/new?error=${encodeURIComponent(errorKey(error))}`);
+    redirect(`/community/new?error=${encodeURIComponent(errorKey(error))}${back}`);
   }
   revalidatePath('/community');
+  revalidatePath('/sanctuary/prayer');
   redirect(`/community/${postId}`);
 }
 

@@ -86,7 +86,7 @@ export function SiteShell({
               </>
             ) : (
               <>
-                <Link className="chip" href="/login">
+                <Link className="chip member-chip" href="/login">
                   {t('nav.sign_in')}
                 </Link>
                 <Link className="btn btn-gold" href="/register" style={{ minHeight: 44 }}>

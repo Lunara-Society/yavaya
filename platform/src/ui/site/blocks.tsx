@@ -11,7 +11,7 @@ import { Md, Paras } from './md';
  * content; none carries a literal sentence.
  */
 
-export const DISTRICT_IDS = ['mercadito', 'yavayago', 'work', 'community', 'impact', 'animals'] as const;
+export const DISTRICT_IDS = ['mercadito', 'services', 'work', 'yavayago', 'community', 'sanctuary', 'animals'] as const;
 export type DistrictId = (typeof DISTRICT_IDS)[number];
 
 export type PageId = keyof SiteContent['nav'];
@@ -21,10 +21,11 @@ export const PAGE_PATHS: Record<PageId, string> = {
   home: '/',
   districts: '/districts',
   mercadito: '/mercadito',
-  yavayago: '/yavayago',
+  services: '/services',
   work: '/work',
+  yavayago: '/yavayago',
   community: '/community',
-  impact: '/impact',
+  sanctuary: '/sanctuary',
   animals: '/animals',
   trust: '/trust',
   reputation: '/reputation',
@@ -181,10 +182,11 @@ export function Note({ text }: { text: string }) {
 /** Website district ids differ from registry keys in one place only. */
 const REGISTRY_KEY: Record<DistrictId, DistrictKey> = {
   mercadito: 'mercadito',
-  yavayago: 'yavayago',
+  services: 'services',
   work: 'works',
+  yavayago: 'yavayago',
   community: 'community',
-  impact: 'impact',
+  sanctuary: 'sanctuary',
   animals: 'animals',
 };
 

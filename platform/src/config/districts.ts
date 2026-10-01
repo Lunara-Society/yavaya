@@ -10,15 +10,23 @@
  * UI must never present a planned district as an available one.
  */
 
+/**
+ * Seven districts, each answering one question a person already asks in their
+ * own words. Order is the order shown everywhere.
+ *
+ * Impact was folded into Community (as "Causes") and the Tavern taken off the
+ * roadmap in the owner's restructure; Sanctuary was promoted from a space
+ * inside Community to a district of its own. The key `works` is kept for data
+ * already written under it; its display name is "Trabajo".
+ */
 export const DISTRICT_KEYS = [
-  'services',
   'mercadito',
-  'yavayago',
+  'services',
   'works',
+  'yavayago',
   'community',
-  'impact',
+  'sanctuary',
   'animals',
-  'tavern',
 ] as const;
 
 export type DistrictKey = (typeof DISTRICT_KEYS)[number];
@@ -53,21 +61,11 @@ export type DistrictTheme = {
     | 'motion-map'
     | 'professional-directory'
     | 'calm-column'
-    | 'campaign-progress'
     | 'organic-profile'
-    | 'playful-tiles';
+    | 'sacred-nave';
 };
 
 export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
-  services: {
-    key: 'services',
-    slug: 'services',
-    nameKey: 'district.services.name',
-    taglineKey: 'district.services.tagline',
-    phase: 1,
-    status: 'planned',
-    theme: { accent: 'teal', tokenSet: 'district-services', layout: 'request-board' },
-  },
   mercadito: {
     key: 'mercadito',
     slug: 'mercadito',
@@ -77,23 +75,32 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     status: 'available',
     theme: { accent: 'emerald', tokenSet: 'district-mercadito', layout: 'discovery-density' },
   },
-  yavayago: {
-    key: 'yavayago',
-    slug: 'go',
-    nameKey: 'district.yavayago.name',
-    taglineKey: 'district.yavayago.tagline',
-    phase: 2,
+  services: {
+    key: 'services',
+    slug: 'services',
+    nameKey: 'district.services.name',
+    taglineKey: 'district.services.tagline',
+    phase: 1,
     status: 'planned',
-    theme: { accent: 'orange', tokenSet: 'district-yavayago', layout: 'motion-map' },
+    theme: { accent: 'teal', tokenSet: 'district-services', layout: 'request-board' },
   },
   works: {
     key: 'works',
-    slug: 'works',
+    slug: 'work',
     nameKey: 'district.works.name',
     taglineKey: 'district.works.tagline',
     phase: 2,
     status: 'planned',
     theme: { accent: 'deep-blue', tokenSet: 'district-works', layout: 'professional-directory' },
+  },
+  yavayago: {
+    key: 'yavayago',
+    slug: 'yavayago',
+    nameKey: 'district.yavayago.name',
+    taglineKey: 'district.yavayago.tagline',
+    phase: 2,
+    status: 'planned',
+    theme: { accent: 'orange', tokenSet: 'district-yavayago', layout: 'motion-map' },
   },
   community: {
     key: 'community',
@@ -104,14 +111,14 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     status: 'available',
     theme: { accent: 'purple', tokenSet: 'district-community', layout: 'calm-column' },
   },
-  impact: {
-    key: 'impact',
-    slug: 'impact',
-    nameKey: 'district.impact.name',
-    taglineKey: 'district.impact.tagline',
+  sanctuary: {
+    key: 'sanctuary',
+    slug: 'sanctuary',
+    nameKey: 'district.sanctuary.name',
+    taglineKey: 'district.sanctuary.tagline',
     phase: 1,
-    status: 'planned',
-    theme: { accent: 'ruby', tokenSet: 'district-impact', layout: 'campaign-progress' },
+    status: 'available',
+    theme: { accent: 'ivory', tokenSet: 'district-sanctuary', layout: 'sacred-nave' },
   },
   animals: {
     key: 'animals',
@@ -121,15 +128,6 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     phase: 1,
     status: 'planned',
     theme: { accent: 'forest', tokenSet: 'district-animals', layout: 'organic-profile' },
-  },
-  tavern: {
-    key: 'tavern',
-    slug: 'tavern',
-    nameKey: 'district.tavern.name',
-    taglineKey: 'district.tavern.tagline',
-    phase: 3,
-    status: 'planned',
-    theme: { accent: 'gold', tokenSet: 'district-tavern', layout: 'playful-tiles' },
   },
 };
 

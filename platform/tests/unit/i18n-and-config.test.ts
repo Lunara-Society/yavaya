@@ -92,22 +92,27 @@ describe('reputation rules', () => {
 });
 
 describe('district registry', () => {
-  it('registers all eight districts with unique slugs and layouts', () => {
-    expect(DISTRICT_KEYS).toHaveLength(8);
+  it('registers the seven districts with unique slugs and layouts', () => {
+    expect([...DISTRICT_KEYS]).toEqual(['mercadito', 'services', 'works', 'yavayago', 'community', 'sanctuary', 'animals']);
     const slugs = districtList.map((district) => district.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
 
     // Distinct layout archetypes are what stop Yavaya being one grid recoloured
-    // eight times.
+    // seven times.
     const layouts = districtList.map((district) => district.theme.layout);
     expect(new Set(layouts).size).toBe(layouts.length);
+
+    // Every slug is a real page, so no link in the navigation leads nowhere.
+    for (const district of districtList) {
+      expect(existsSync(new URL(`../../src/app/${district.slug}/page.tsx`, import.meta.url)), district.slug).toBe(true);
+    }
   });
 
   it('does not claim any district is available before it is built', () => {
     // A district joins this list in the same change that builds it — with
     // its pages, its service and its tests. Marking one available without
     // that is exactly what the capability register exists to prevent.
-    const built = new Set(['mercadito', 'community']);
+    const built = new Set(['mercadito', 'community', 'sanctuary']);
     for (const district of districtList) {
       if (district.status === 'available' && !built.has(district.key)) {
         throw new Error(`${district.key} is marked available but is not built`);

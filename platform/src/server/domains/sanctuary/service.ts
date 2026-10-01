@@ -307,7 +307,7 @@ export async function registerChurch(
     action: 'sanctuary.church_registered',
     subjectType: SUBJECT,
     subjectId: churchId,
-    district: 'community',
+    district: 'sanctuary',
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
   });
@@ -361,7 +361,7 @@ export async function updateChurch(
     action: 'sanctuary.church_updated',
     subjectType: SUBJECT,
     subjectId: church.id,
-    district: 'community',
+    district: 'sanctuary',
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { identityChanged, status: nextStatus },
@@ -393,7 +393,7 @@ export async function reviewChurch(
     action: `sanctuary.church_${status}`,
     subjectType: SUBJECT,
     subjectId: church.id,
-    district: 'community',
+    district: 'sanctuary',
     metadata: { ownerUserId: church.ownerUserId },
   });
   await notify(tx, [
@@ -450,7 +450,7 @@ export async function publishDevotional(
     action: 'sanctuary.devotional_published',
     subjectType: 'sanctuary_devotional',
     subjectId: id,
-    district: 'community',
+    district: 'sanctuary',
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { churchId: church.id, forDate },
@@ -483,7 +483,7 @@ export async function removeDevotional(tx: Executor, params: { actorUserId: stri
     action: isOwner ? 'sanctuary.devotional_withdrawn' : 'sanctuary.devotional_removed',
     subjectType: 'sanctuary_devotional',
     subjectId: row.id,
-    district: 'community',
+    district: 'sanctuary',
     metadata: { churchId: row.churchId, note: params.note ?? null },
   });
 }
@@ -524,7 +524,7 @@ export async function reportChurch(
     reporterUserId: params.reporterUserId,
     subjectType: SUBJECT,
     subjectId: params.churchId,
-    district: 'community',
+    district: 'sanctuary',
     category: params.category,
     description: params.description,
     evidence: params.devotionalId ? [{ type: 'sanctuary_devotional', ref: params.devotionalId }] : [],
@@ -537,7 +537,7 @@ export async function reportChurch(
     action: 'sanctuary.church_reported',
     subjectType: SUBJECT,
     subjectId: params.churchId,
-    district: 'community',
+    district: 'sanctuary',
     metadata: { category: params.category, ticketId, devotional: params.devotionalId ?? null },
   });
   return { ticketCode: ticket!.code, duplicate: false };
@@ -611,7 +611,7 @@ export async function resolveSanctuaryTicket(
     action: `moderation.sanctuary_${params.decision}`,
     subjectType: SUBJECT,
     subjectId: church.id,
-    district: 'community',
+    district: 'sanctuary',
     metadata: { ticketId: ticket.id },
   });
 }

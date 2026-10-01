@@ -33,6 +33,11 @@ import { dayKey, notify } from '@/server/domains/notifications/service';
 
 export const POST_KINDS = ['help_request', 'help_offer', 'prayer', 'family_support'] as const;
 export type PostKind = (typeof POST_KINDS)[number];
+/**
+ * What the Community square lists. Prayer posts are written to the same
+ * table but live in the Sanctuary's prayer wall, next to the churches.
+ */
+export const NEIGHBOUR_KINDS: readonly PostKind[] = ['help_request', 'help_offer', 'family_support'];
 /** Kinds where a name may be hidden from other members. Asking for a neighbour's hand is not one of them. */
 export const DISCREET_KINDS: readonly PostKind[] = ['prayer', 'family_support'];
 /** Kinds answered with "I'm with you" rather than, or as well as, replies. */
@@ -197,12 +202,13 @@ async function supportedSet(executor: Executor, viewerId: string, postIds: strin
 /** The square, newest first. Only open and resolved posts; nothing removed. */
 export async function listPosts(
   executor: Executor,
-  params: { viewerId: string; kind?: PostKind; page?: number; locale: string },
+  params: { viewerId: string; kind?: PostKind; kinds?: readonly PostKind[]; page?: number; locale: string },
 ): Promise<{ items: PostView[]; hasMore: boolean; page: number }> {
   const page = Math.max(1, Math.min(params.page ?? 1, 200));
   const size = COMMUNITY_RULES.pageSize;
   const conditions = [inArray(communityPosts.status, ['open', 'resolved'])];
   if (params.kind) conditions.push(eq(communityPosts.kind, params.kind));
+  else if (params.kinds) conditions.push(inArray(communityPosts.kind, [...params.kinds]));
   const rows = await executor
     .select(postColumns)
     .from(communityPosts)

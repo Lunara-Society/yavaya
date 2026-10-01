@@ -41,7 +41,7 @@ export default async function ChurchPage({ params, searchParams }: Params) {
     .filter((group) => group.services.length > 0);
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
       <section className="sc-church-hero">
         <PageScene name="sanctuary-church" className="sc-church-hero-photo" />
         <div className="wrap">

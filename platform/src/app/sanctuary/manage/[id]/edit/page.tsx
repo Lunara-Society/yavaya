@@ -30,7 +30,7 @@ export default async function EditChurchPage({ params, searchParams }: { params:
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
       <section className="mk-head">
         <div className="wrap cm-column">
           <p>

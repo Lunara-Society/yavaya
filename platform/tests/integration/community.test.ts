@@ -11,6 +11,7 @@ import {
   createPost,
   getPost,
   listPosts,
+  NEIGHBOUR_KINDS,
   postInputSchema,
   reportPost,
   resolveCommunityTicket,
@@ -185,5 +186,21 @@ describe('reports and moderation', () => {
     expect(view?.post.status).toBe('open');
     expect(view?.replies).toHaveLength(0);
     expect(view?.post.replyCount).toBe(0);
+  });
+});
+
+describe('the prayer wall lives in the Sanctuary', () => {
+  it('keeps prayers out of the square and shows them on the wall', async () => {
+    const author = await member();
+    const reader = await member();
+    const help = await db().transaction((tx) => createPost(tx, { authorUserId: author, input: input() }));
+    const prayer = await db().transaction((tx) =>
+      createPost(tx, { authorUserId: author, input: input({ kind: 'prayer', locationId: null, title: 'Oren por mi hermano' }) }),
+    );
+
+    const square = await listPosts(db(), { viewerId: reader, kinds: NEIGHBOUR_KINDS, locale: 'es' });
+    expect(square.items.map((post) => post.id)).toEqual([help]);
+    const wall = await listPosts(db(), { viewerId: reader, kind: 'prayer', locale: 'es' });
+    expect(wall.items.map((post) => post.id)).toEqual([prayer]);
   });
 });

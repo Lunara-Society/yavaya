@@ -231,6 +231,14 @@ async function seedDistricts(database: Database): Promise<void> {
         },
       });
   }
+  // A district taken out of the registry (Impact, folded into Community; the
+  // Tavern, off the roadmap) keeps its row so history still resolves, but is
+  // switched off and sorted last. Its slug is freed for reuse.
+  const keys = districtList.map((district) => district.key);
+  await database
+    .update(districtsTable)
+    .set({ enabled: false, status: 'retired', sortOrder: 1000, slug: sql`'retired-' || ${districtsTable.key}`, updatedAt: new Date() })
+    .where(sql`${districtsTable.key} <> all(${sql.raw(`array[${keys.map((key) => `'${key}'`).join(',')}]`)})`);
 }
 
 async function seedTokenConfiguration(database: Database): Promise<void> {
@@ -266,9 +274,9 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
     { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
     { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
     { key: 'community.publish_request', district: 'community', cost: 0, description: 'Publish a community support request (free)' },
-    { key: 'sanctuary.register_church', district: 'community', cost: 0, description: 'Register a church in Sanctuary (free)' },
-    { key: 'sanctuary.publish_devotional', district: 'community', cost: 0, description: 'Publish a church prayer or word for the day (free)' },
-    { key: 'impact.publish_cause', district: 'impact', cost: 0, description: 'Submit a cause for review (free)' },
+    { key: 'sanctuary.register_church', district: 'sanctuary', cost: 0, description: 'Register a church in Sanctuary (free)' },
+    { key: 'sanctuary.publish_devotional', district: 'sanctuary', cost: 0, description: 'Publish a church prayer or word for the day (free)' },
+    { key: 'impact.publish_cause', district: 'community', cost: 0, description: 'Submit a cause for review (free)' },
     { key: 'animals.publish_listing', district: 'animals', cost: 0, description: 'Publish an animal welfare listing (free)' },
   ];
 

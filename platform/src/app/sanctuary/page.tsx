@@ -37,7 +37,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
   const others = words.filter((word) => !yours.has(word.id));
 
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
       <PageHero eyebrow={t('sanctuary.eyebrow')} title={t('sanctuary.title')} lead={t('sanctuary.lead')} photo="sanctuary" />
 
       <div className="wrap sc-page">
@@ -130,7 +130,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
           <section className="card sc-card sc-prayer">
             <h2 className="sc-h-sm">{t('sanctuary.prayer_wall.title')}</h2>
             <p>{t('sanctuary.prayer_wall.text')}</p>
-            <Link className="btn btn-line" href="/community?kind=prayer">
+            <Link className="btn btn-line" href="/sanctuary/prayer">
               {t('sanctuary.prayer_wall.cta')}
             </Link>
           </section>
