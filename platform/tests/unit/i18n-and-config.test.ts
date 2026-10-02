@@ -4,7 +4,7 @@ import { es } from '@/i18n/dictionaries/es';
 import { en } from '@/i18n/dictionaries/en';
 import { createTranslator } from '@/i18n';
 import { negotiateLocale } from '@/i18n/config';
-import { TOKEN_PACKAGES, TOKEN_RULES, REPUTATION_RULE_DEFAULTS, REPUTATION_RULES } from '@/config/business-rules';
+import { packageSavingPercent, TOKEN_PACKAGES, TOKEN_RULES, REPUTATION_RULE_DEFAULTS, REPUTATION_RULES } from '@/config/business-rules';
 import { DISTRICT_KEYS, districtList } from '@/config/districts';
 
 describe('dictionaries', () => {
@@ -49,16 +49,24 @@ describe('token business rules', () => {
     }
   });
 
-  it('keeps the 100-token package in the catalogue but disabled', () => {
-    const hundred = TOKEN_PACKAGES.find((pkg) => pkg.tokens === 100);
-    expect(hundred).toBeDefined();
-    expect(hundred?.enabled).toBe(false);
+  it('offers exactly the owner-set packages (2 October 2026)', () => {
+    expect(TOKEN_PACKAGES.filter((pkg) => pkg.enabled).map((pkg) => [pkg.tokens, pkg.priceMinor])).toEqual([
+      [2, 99],
+      [10, 449],
+      [25, 999],
+      [50, 1899],
+      [100, 3499],
+      [500, 14999],
+    ]);
   });
 
-  it('exposes exactly the launch packages', () => {
-    expect(TOKEN_PACKAGES.filter((pkg) => pkg.enabled).map((pkg) => pkg.tokens)).toEqual([
-      5, 10, 25, 50,
-    ]);
+  it('makes every larger package cheaper per token', () => {
+    const offered = TOKEN_PACKAGES.filter((pkg) => pkg.enabled);
+    for (let i = 1; i < offered.length; i += 1) {
+      expect(offered[i]!.priceMinor / offered[i]!.tokens).toBeLessThan(offered[i - 1]!.priceMinor / offered[i - 1]!.tokens);
+    }
+    expect(packageSavingPercent(offered[0]!, offered)).toBe(0);
+    expect(packageSavingPercent(offered[offered.length - 1]!, offered)).toBe(39);
   });
 
   it('caps the starter allocation at the stated total', () => {

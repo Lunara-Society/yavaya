@@ -118,7 +118,7 @@ describe('dLocal Go payments', () => {
     expect(redirectUrl).toMatch(/^https:\/\/checkout-sbx\.dlocalgo\.com\//);
     expect(lastAuthorization).toBe(`Bearer ${API_KEY}:${SECRET}`);
     const payment = payments.get(transaction.providerTransactionId!)!;
-    expect(payment).toMatchObject({ amount: 3.99, currency: 'USD', order_id: transaction.reference });
+    expect(payment).toMatchObject({ amount: 9.99, currency: 'USD', order_id: transaction.reference });
     expect(transaction.status).toBe('pending_provider');
     expect(await getBalance(db(), userId)).toBe(before);
   });
@@ -196,7 +196,7 @@ describe('dLocal Go payments', () => {
   it('treats a repeated purchase attempt as a double click, not a second charge', async () => {
     const userId = await member();
     const attemptId = crypto.randomUUID();
-    const params = { userId, packageKey: 'tokens_5', attemptId, appUrl: 'https://yavaya.lat', description: 'Tokens' };
+    const params = { userId, packageKey: 'tokens_2', attemptId, appUrl: 'https://yavaya.lat', description: 'Tokens' };
     await startTokenPurchase(db(), params);
     await expect(startTokenPurchase(db(), params)).rejects.toMatchObject({ messageKey: 'payments.error.duplicate' });
     expect(payments.size).toBe(1);
@@ -218,7 +218,8 @@ describe('dLocal Go payments', () => {
 
   it('refuses a package that is not offered', async () => {
     const userId = await member();
-    await expect(buy(userId, 'tokens_100')).rejects.toMatchObject({ messageKey: 'payments.error.package' });
+    // Retired from the catalogue: kept for past purchases, never sold again.
+    await expect(buy(userId, 'tokens_5')).rejects.toMatchObject({ messageKey: 'payments.error.package' });
     expect(payments.size).toBe(0);
   });
 });

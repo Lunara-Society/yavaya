@@ -1644,6 +1644,7 @@ export const es = {
   'payments.error.rate_limited': 'Demasiados intentos de pago seguidos. Espera un momento.',
   'payments.error.provider': 'No pudimos abrir el pago con dLocal Go. No se hizo ningún cobro; inténtalo en unos minutos.',
   'payments.test_mode': 'Modo de prueba: dLocal Go está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.',
+  'payments.saving': 'Ahorras {percent}%',
   'nav.moderation_community': 'Moderación · Comunidad',
   'nav.sanctuary': 'Santuario',
   'nav.moderation_sanctuary': 'Revisión · Santuario',

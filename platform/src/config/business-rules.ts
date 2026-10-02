@@ -71,13 +71,12 @@ export const TOKEN_RULES = {
   /**
    * Maximum tokens a single purchase transaction may deliver.
    *
-   * The specification listed a 100-token package *and* a 50-token per-purchase
-   * ceiling. That contradiction is resolved for launch in favour of the
-   * ceiling: the 100-token package exists in the catalogue but is disabled, so
-   * the purchase UI exposes 5 / 10 / 25 / 50 only. Raising this limit and
-   * enabling the package is a deliberate business decision, not a code change.
+   * Launch had a 50-token ceiling (the specification listed a 100-token
+   * package and a 50-token ceiling; the ceiling won). On 2 October 2026 the
+   * owner set the catalogue to 2 / 10 / 25 / 50 / 100 / 500 when card
+   * payments went live, so the ceiling is the largest package.
    */
-  maxTokensPerPurchase: 50,
+  maxTokensPerPurchase: 500,
 
   /** Standard cost of a qualifying publish action. */
   defaultPublishCost: 1,
@@ -92,14 +91,27 @@ export type TokenPackage = {
   sortOrder: number;
 };
 
+/**
+ * The owner's prices (2 October 2026), anchored on 2 = $0.92, 10 = $4.50 and
+ * 25 = $10, rounded to .99 and extended so each step costs less per token:
+ * $0.50, $0.45, $0.40, $0.38, $0.35 and $0.30. A package that is not listed
+ * here is disabled by the seed, never deleted: past purchases refer to it.
+ */
 export const TOKEN_PACKAGES: readonly TokenPackage[] = [
-  { key: 'tokens_5', tokens: 5, priceMinor: 99, currency: 'USD', enabled: true, sortOrder: 1 },
-  { key: 'tokens_10', tokens: 10, priceMinor: 179, currency: 'USD', enabled: true, sortOrder: 2 },
-  { key: 'tokens_25', tokens: 25, priceMinor: 399, currency: 'USD', enabled: true, sortOrder: 3 },
-  { key: 'tokens_50', tokens: 50, priceMinor: 699, currency: 'USD', enabled: true, sortOrder: 4 },
-  // Disabled at launch: exceeds TOKEN_RULES.maxTokensPerPurchase.
-  { key: 'tokens_100', tokens: 100, priceMinor: 1199, currency: 'USD', enabled: false, sortOrder: 5 },
+  { key: 'tokens_2', tokens: 2, priceMinor: 99, currency: 'USD', enabled: true, sortOrder: 1 },
+  { key: 'tokens_10', tokens: 10, priceMinor: 449, currency: 'USD', enabled: true, sortOrder: 2 },
+  { key: 'tokens_25', tokens: 25, priceMinor: 999, currency: 'USD', enabled: true, sortOrder: 3 },
+  { key: 'tokens_50', tokens: 50, priceMinor: 1899, currency: 'USD', enabled: true, sortOrder: 4 },
+  { key: 'tokens_100', tokens: 100, priceMinor: 3499, currency: 'USD', enabled: true, sortOrder: 5 },
+  { key: 'tokens_500', tokens: 500, priceMinor: 14999, currency: 'USD', enabled: true, sortOrder: 6 },
 ] as const;
+
+/** Percent saved per token against the smallest offered package, for display. */
+export function packageSavingPercent(pkg: { tokens: number; priceMinor: number }, packages: ReadonlyArray<{ tokens: number; priceMinor: number }>): number {
+  const base = [...packages].sort((a, b) => a.tokens - b.tokens)[0];
+  if (!base || base.tokens === pkg.tokens) return 0;
+  return Math.floor((1 - pkg.priceMinor / pkg.tokens / (base.priceMinor / base.tokens)) * 100);
+}
 
 /**
  * Trust score scale: 0–1000, as the Master Bible specifies (ch. 3, "The

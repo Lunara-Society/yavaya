@@ -581,13 +581,11 @@ export const siteEs = {
       ],
       packagesHead: { eyebrow: 'Paquetes', title: 'Simples. Y seguirán siendo simples.' },
       tokensWord: 'tokens',
-      packages: [
-        { name: 'Inicial', tokens: '2' },
-        { name: 'Plus', tokens: '10' },
-        { name: 'Pro', tokens: '25' },
-        { name: 'Máximo', tokens: '50', note: 'Tope por compra en el lanzamiento.' },
-      ],
-      packagesNote: '**La compra de tokens todavía no está disponible.** No hay un proveedor de pagos conectado, así que los paquetes se muestran solo como información y los precios se anunciarán antes de abrir la compra.',
+      packageNames: { tokens_2: 'Para probar', tokens_10: 'Básico', tokens_25: 'Plus', tokens_50: 'Pro', tokens_100: 'Negocio', tokens_500: 'Empresa' } as Record<string, string>,
+      packagesNote: 'Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta u otro medio local en la página segura de dLocal Go. Los tokens llegan cuando el pago se confirma.',
+      perToken: '{price} por token',
+      saving: 'Ahorras {percent}%',
+      bestValue: 'El mejor precio por token',
       useHead: { eyebrow: 'Para qué sirven', title: 'Acciones' },
       useTable: {
         head: ['Acción', 'Costo'],
@@ -809,7 +807,7 @@ export const siteEs = {
       title: 'Las reglas de Yavaya',
       description: 'Los términos de uso de Yavaya: tu cuenta, cómo nos tratamos, reputación, tokens, moderación y lo que Yavaya todavía no hace.',
       lead: 'Yavaya funciona porque la gente confía en la gente. Estas reglas existen para proteger esa confianza. Están escritas para que se entiendan.',
-      version: 'Versión del 27 de septiembre de 2026.',
+      version: 'Versión del 2 de octubre de 2026.',
       sections: [
         {
           title: '1. Qué es Yavaya hoy',
@@ -844,34 +842,48 @@ export const siteEs = {
         },
         {
           title: '5. Tokens',
-          text: 'Los Tokens Yavaya son créditos para participar en la plataforma. **No son dinero, criptomoneda ni una inversión**, no generan rendimiento y no se venden ni se intercambian fuera de Yavaya. Las fuentes gratuitas tienen límites. El efectivo es siempre la opción por defecto: nadie está obligado a usar tokens. Hoy no se pueden comprar.',
+          text: 'Los Tokens Yavaya son créditos para participar en la plataforma. **No son dinero, criptomoneda ni una inversión**, no generan rendimiento y no se venden ni se intercambian fuera de Yavaya. Las fuentes gratuitas tienen límites. El efectivo es siempre la opción por defecto: nadie está obligado a usar tokens.',
         },
         {
-          title: '6. Moderación',
+          title: '6. Comprar tokens',
+          text: 'Puedes comprar paquetes de tokens. Al comprar aceptas que:',
+          list: [
+            'El **precio** de cada paquete se muestra en dólares estadounidenses antes de pagar, y es el total que cobra Yavaya. Si pagas en otra moneda, la conversión la hace el procesador de pagos al momento del pago, y tu banco puede cobrar sus propias comisiones.',
+            'El pago lo procesa **dLocal Go**, en su propia página segura. **Yavaya nunca ve ni guarda los datos de tu tarjeta.**',
+            'Los tokens se acreditan **cuando el procesador confirma el pago**, normalmente en segundos; con efectivo o transferencia puede tardar más. Cada compra aparece en tu cuenta con su estado y su referencia.',
+            'Los tokens comprados **no vencen** y no se transfieren a otra cuenta. No se cambian por dinero, salvo en los casos de devolución de abajo.',
+            '**Devoluciones:** te devolvemos el dinero si te cobramos y los tokens no llegaron, si te cobramos dos veces lo mismo, o si compraste por error y escribes dentro de los 14 días siguientes sin haber usado ninguno de esos tokens. Escríbenos con la referencia de la compra.',
+            'Si un pago se anula o se desconoce ante el banco, podemos retirar los tokens de esa compra.',
+            'Si el precio cambia, el nuevo precio aplica solo a compras futuras.',
+            '**Nada de lo anterior limita los derechos que te da la ley de protección al consumidor de tu país.** Si una ley te da más derechos, se aplica esa ley.',
+          ],
+        },
+        {
+          title: '7. Moderación',
           text: 'Podemos limitar, suspender o retirar una cuenta, o quitar contenido, cuando se incumplen estas reglas o hay riesgo para otras personas. Ninguna señal automática por sí sola basta para bloquear una cuenta: los casos dudosos los revisa una persona. La moderación es visible, y publicaremos cifras reales de lo que se retira.',
         },
         {
-          title: '7. Tratos entre personas',
+          title: '8. Tratos entre personas',
           text: 'Cuando los distritos abran, las ventas, servicios, entregas y donaciones serán acuerdos entre las personas que participan. **Yavaya no es parte de esos tratos y hoy no retiene dinero de nadie.** Hasta que exista un sistema real de protección de pagos, Yavaya no garantiza ninguna transacción, y nunca dirá lo contrario.',
         },
         {
-          title: '8. Lo que es gratis y lo que no',
-          text: 'Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones son siempre gratis. Cualquier cosa de pago se anunciará con su precio antes de cobrarse, y hoy no se puede pagar nada.',
+          title: '9. Lo que es gratis y lo que no',
+          text: 'Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones son siempre gratis. Cualquier cosa de pago se anuncia con su precio antes de cobrarse. Hoy lo único que se puede pagar son los paquetes de tokens.',
         },
         {
-          title: '9. Privacidad',
+          title: '10. Privacidad',
           text: 'Qué datos guardamos y por qué está en la página de Privacidad.',
         },
         {
-          title: '10. Cambios',
+          title: '11. Cambios',
           text: 'Si estas reglas cambian, lo anunciaremos en Yavaya antes de que el cambio aplique, con la fecha de la nueva versión.',
         },
         {
-          title: '11. Lo que falta definir',
+          title: '12. Lo que falta definir',
           text: 'La entidad legal responsable de Yavaya, la ley aplicable y la forma de resolver disputas todavía no están definidas. Las publicaremos aquí en cuanto estén definidas.',
         },
         {
-          title: '12. Contacto',
+          title: '13. Contacto',
           text: 'Para cualquier pregunta sobre estas reglas, escríbenos por WhatsApp al +505 5836 5522.',
         },
       ],
@@ -974,8 +986,9 @@ export const siteEs = {
         },
         {
           title: 'Con quién se comparte',
-          text: 'No vendemos datos. No hay publicidad ni analítica de terceros. Usamos dos proveedores para operar:',
+          text: 'No vendemos datos. No hay publicidad ni analítica de terceros. Usamos estos proveedores para operar:',
           list: [
+            '**dLocal Go** procesa los pagos cuando compras tokens: recibe el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
             '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
           ],

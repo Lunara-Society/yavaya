@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { packageSavingPercent, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { DistrictScene, Guilloche, HeroScene, OrnamentRule } from './art';
 import type { SiteContent } from '@/i18n/site';
 import {
@@ -688,6 +689,8 @@ export function ReputationBody({ c }: { c: SiteContent }) {
 
 export function TokensBody({ c }: { c: SiteContent }) {
   const p = c.pages.tokens;
+  const offered = TOKEN_PACKAGES.filter((pk) => pk.enabled && pk.tokens <= TOKEN_RULES.maxTokensPerPurchase);
+  const best = [...offered].sort((a, b) => a.priceMinor / a.tokens - b.priceMinor / b.tokens)[0];
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
@@ -700,14 +703,25 @@ export function TokensBody({ c }: { c: SiteContent }) {
         <div className="wrap">
           <SectionHead {...p.packagesHead} />
           <div className="plans">
-            {p.packages.map((pk) => (
-              <div key={pk.name} className="plan">
-                <h3>{pk.name}</h3>
-                <div className="price">{pk.tokens}</div>
-                <div className="per">{p.tokensWord}</div>
-                {'note' in pk && pk.note ? <p className="muted mb0">{pk.note}</p> : null}
-              </div>
-            ))}
+            {/* Prices come from the catalogue, never from copy: one source of truth. */}
+            {offered.map((pk) => {
+              const saving = packageSavingPercent(pk, offered);
+              return (
+                <div key={pk.key} className="plan">
+                  <h3>{p.packageNames[pk.key] ?? pk.key}</h3>
+                  <div className="price">{pk.tokens}</div>
+                  <div className="per">{p.tokensWord}</div>
+                  <p className="mb0">
+                    <strong>{usd(pk.priceMinor)}</strong> USD
+                  </p>
+                  <p className="muted mb0">
+                    {p.perToken.replace('{price}', usd(Math.round(pk.priceMinor / pk.tokens)))}
+                    {saving > 0 ? ` · ${p.saving.replace('{percent}', String(saving))}` : ''}
+                  </p>
+                  {pk === best ? <p className="mb0"><strong>{p.bestValue}</strong></p> : null}
+                </div>
+              );
+            })}
           </div>
           <div className="mt">
             <Note text={p.packagesNote} />
@@ -1083,4 +1097,8 @@ export function PrivacyBody({ c }: { c: SiteContent }) {
       </section>
     </>
   );
+}
+
+function usd(minor: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(minor / 100);
 }

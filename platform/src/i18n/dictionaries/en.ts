@@ -1620,6 +1620,7 @@ export const en: Dictionary = {
   'payments.error.rate_limited': 'Too many payment attempts in a row. Please wait a moment.',
   'payments.error.provider': 'We could not open the dLocal Go payment. Nothing was charged; please try again in a few minutes.',
   'payments.test_mode': 'Test mode: dLocal Go is connected to its test environment. Only administrators see these buttons; use test cards, no real money is charged.',
+  'payments.saving': 'Save {percent}%',
   'nav.moderation_community': 'Moderation · Community',
   'nav.sanctuary': 'Sanctuary',
   'nav.moderation_sanctuary': 'Review · Sanctuary',

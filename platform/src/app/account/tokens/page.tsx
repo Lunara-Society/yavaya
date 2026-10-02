@@ -12,7 +12,7 @@ import { listProviderAvailability } from '@/server/domains/payments/service';
 import { myTokenPurchases } from '@/server/domains/payments/token-purchase';
 import { isAdmin } from '@/server/domains/access/authorize';
 import { buyTokensAction } from './actions';
-import { TOKEN_RULES } from '@/config/business-rules';
+import { packageSavingPercent, TOKEN_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 
 export const metadata: Metadata = { title: 'Tokens' };
@@ -68,7 +68,7 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
           <CapabilityBadge state={paymentsReady ? 'REAL' : 'REQUIRES_CONFIGURATION'} t={t} />
         </div>
 
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {packages
             .sort((a, b) => a.sortOrder - b.sortOrder)
             .map((pkg) => (
@@ -77,6 +77,11 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
                 <p className="mt-1 text-sm text-[var(--text-secondary)]">
                   {formatPrice(pkg.priceMinor, pkg.currency)}
                 </p>
+                {packageSavingPercent(pkg, packages) > 0 ? (
+                  <p className="mt-1 text-2xs font-semibold" style={{ color: 'var(--color-positive)' }}>
+                    {t('payments.saving', { percent: packageSavingPercent(pkg, packages) })}
+                  </p>
+                ) : null}
                 {paymentsReady && pkg.tokens <= TOKEN_RULES.maxTokensPerPurchase ? (
                   <form action={buyTokensAction} className="mt-3">
                     <input type="hidden" name="package" value={pkg.key} />

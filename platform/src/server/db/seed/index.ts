@@ -242,9 +242,14 @@ async function seedDistricts(database: Database): Promise<void> {
 }
 
 async function seedTokenConfiguration(database: Database): Promise<void> {
+  // Packages that left the catalogue stay in the table for past purchases,
+  // but are no longer offered.
+  await database
+    .update(tokenPackages)
+    .set({ enabled: false })
+    .where(sql`${tokenPackages.key} <> all(${sql.raw(`array[${TOKEN_PACKAGES.map((pkg) => `'${pkg.key}'`).join(',')}]`)})`);
   for (const pkg of TOKEN_PACKAGES) {
-    // The 100-token package is seeded disabled: it exceeds the per-purchase
-    // ceiling, so it exists in the catalogue but is never offered.
+    // A package above the per-purchase ceiling is kept but never offered.
     const enabled = pkg.enabled && pkg.tokens <= TOKEN_RULES.maxTokensPerPurchase;
     await database
       .insert(tokenPackages)
