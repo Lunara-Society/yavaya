@@ -190,7 +190,9 @@ export async function changeHandle(tx: Executor, params: { memberId: string; now
 /**
  * Leaving erases: her messages, her conversations (for both people — a
  * private conversation exists only between two), and her membership.
- * A ban is not erased, or leaving would be the way around it.
+ * A ban is not erased, or leaving would be the way around it — and for the
+ * same reason reports about her survive (they hold the account, not only
+ * the name), so a guardian can still decide them after she has gone.
  */
 export async function leave(tx: Executor, params: { memberId: string }): Promise<void> {
   const [member] = await tx.select({ status: safeSpaceMembers.status }).from(safeSpaceMembers).where(eq(safeSpaceMembers.id, params.memberId)).limit(1);
@@ -200,6 +202,16 @@ export async function leave(tx: Executor, params: { memberId: string }): Promise
 }
 
 // --- Presence -------------------------------------------------------------------
+
+/**
+ * A professional is shown as one only while the licence still holds. A
+ * withdrawn licence locks them out at once (requireMember), and these
+ * listings must agree: otherwise a woman would still see the badge, and could
+ * still write, to someone who is no longer a verified professional.
+ */
+const stillQualified = sql`(${safeSpaceMembers.kind} = 'member' or exists (
+  select 1 from services_provider_profiles p
+  where p.user_id = ${safeSpaceMembers.userId} and p.status = 'active' and p.licence_status = 'verified' and 'mental_health' = any(p.categories)))`;
 
 export type PresenceEntry = { id: string; handle: string; kind: MemberKind; profession: string | null; online: boolean };
 
@@ -212,7 +224,7 @@ export async function whoIsHere(executor: Executor, now = new Date()): Promise<P
   const rows = await executor
     .select({ id: safeSpaceMembers.id, handle: safeSpaceMembers.handle, kind: safeSpaceMembers.kind, profession: safeSpaceMembers.profession })
     .from(safeSpaceMembers)
-    .where(and(eq(safeSpaceMembers.status, 'active'), eq(safeSpaceMembers.showPresence, true), gt(safeSpaceMembers.lastSeenAt, onlineSince(now))))
+    .where(and(eq(safeSpaceMembers.status, 'active'), eq(safeSpaceMembers.showPresence, true), gt(safeSpaceMembers.lastSeenAt, onlineSince(now)), stillQualified))
     .orderBy(desc(safeSpaceMembers.kind), asc(safeSpaceMembers.handle))
     .limit(100);
   return rows.map((row) => ({ ...row, online: true }));
@@ -223,7 +235,7 @@ export async function professionals(executor: Executor, now = new Date()): Promi
   const rows = await executor
     .select({ id: safeSpaceMembers.id, handle: safeSpaceMembers.handle, kind: safeSpaceMembers.kind, profession: safeSpaceMembers.profession, lastSeenAt: safeSpaceMembers.lastSeenAt, showPresence: safeSpaceMembers.showPresence })
     .from(safeSpaceMembers)
-    .where(and(eq(safeSpaceMembers.status, 'active'), eq(safeSpaceMembers.kind, 'professional')))
+    .where(and(eq(safeSpaceMembers.status, 'active'), eq(safeSpaceMembers.kind, 'professional'), stillQualified))
     .orderBy(desc(safeSpaceMembers.lastSeenAt))
     .limit(100);
   const since = onlineSince(now);
@@ -266,7 +278,7 @@ export async function roomMessages(executor: Executor, viewer: Member): Promise<
     .select({ id: safeSpaceRoomMessages.id, authorId: safeSpaceRoomMessages.authorMemberId, sealed: safeSpaceRoomMessages.bodySealed, createdAt: safeSpaceRoomMessages.createdAt, handle: safeSpaceMembers.handle, kind: safeSpaceMembers.kind, profession: safeSpaceMembers.profession })
     .from(safeSpaceRoomMessages)
     .innerJoin(safeSpaceMembers, eq(safeSpaceMembers.id, safeSpaceRoomMessages.authorMemberId))
-    .where(eq(safeSpaceMembers.status, 'active'))
+    .where(and(eq(safeSpaceMembers.status, 'active'), stillQualified))
     .orderBy(desc(safeSpaceRoomMessages.createdAt))
     .limit(R.roomPageSize);
   const partners = await partnersOf(executor, viewer.id);
@@ -299,7 +311,11 @@ const pair = (x: string, y: string) => (x < y ? { memberA: x, memberB: y } : { m
 export async function startThread(tx: Executor, params: { member: Member; otherMemberId: string }): Promise<string> {
   if (params.member.kind === 'professional') throw new DomainError('forbidden', 'violeta.error.professional_first');
   if (params.otherMemberId === params.member.id) throw errors.validation('violeta.error.self');
-  const [other] = await tx.select({ status: safeSpaceMembers.status }).from(safeSpaceMembers).where(eq(safeSpaceMembers.id, params.otherMemberId)).limit(1);
+  const [other] = await tx
+    .select({ status: safeSpaceMembers.status })
+    .from(safeSpaceMembers)
+    .where(and(eq(safeSpaceMembers.id, params.otherMemberId), stillQualified))
+    .limit(1);
   if (!other || other.status !== 'active') throw errors.notFound('safe_space_member');
   const ids = pair(params.member.id, params.otherMemberId);
   const [existing] = await tx.select().from(safeSpaceThreads).where(and(eq(safeSpaceThreads.memberA, ids.memberA), eq(safeSpaceThreads.memberB, ids.memberB))).limit(1);
@@ -388,6 +404,11 @@ export async function markThreadRead(tx: Executor, params: { viewer: Member; thr
 export async function sendThreadMessage(tx: Executor, params: { viewer: Member; threadId: string; text: string; now?: Date }): Promise<string> {
   const thread = await threadFor(tx, params.viewer, params.threadId);
   if (thread.blockedBy) throw errors.conflict('violeta.error.blocked');
+  // The other person must still be someone she may write to: not banned, and
+  // a professional only while the licence holds.
+  const otherId = thread.memberA === params.viewer.id ? thread.memberB : thread.memberA;
+  const [other] = await tx.select({ id: safeSpaceMembers.id }).from(safeSpaceMembers).where(and(eq(safeSpaceMembers.id, otherId), eq(safeSpaceMembers.status, 'active'), stillQualified)).limit(1);
+  if (!other) throw errors.conflict('violeta.error.partner_gone');
   const parsed = body.safeParse(params.text);
   if (!parsed.success) throw errors.validation(parsed.error.issues[0]?.message ?? 'violeta.error.empty');
   const now = params.now ?? new Date();
@@ -441,6 +462,8 @@ export async function reportMessage(
     sealed = message.bodySealed;
   }
   if (authorId === params.viewer.id) throw errors.validation('violeta.report.error.own');
+  const [author] = await tx.select({ userId: safeSpaceMembers.userId }).from(safeSpaceMembers).where(eq(safeSpaceMembers.id, authorId)).limit(1);
+  if (!author) throw errors.notFound('safe_space_message');
   const text = openText(PURPOSE.message, sealed) ?? '';
   const note = params.note?.trim().slice(0, R.reportNoteMaxLength) || null;
   const inserted = await tx
@@ -448,6 +471,7 @@ export async function reportMessage(
     .values({
       reporterMemberId: params.viewer.id,
       reportedMemberId: authorId,
+      reportedUserId: author.userId,
       source: params.source,
       messageId: params.messageId,
       snapshotSealed: sealText(PURPOSE.report, text),
@@ -466,9 +490,10 @@ export type ReportView = {
   createdAt: Date;
   text: string | null;
   note: string | null;
-  reportedHandle: string;
-  reportedKind: MemberKind;
-  reportedStatus: string;
+  /** Null when the person has since left the space. */
+  reportedHandle: string | null;
+  reportedKind: MemberKind | null;
+  reportedStatus: string | null;
   /** Other reports against the same person, decided or not. */
   priorReports: number;
 };
@@ -478,16 +503,16 @@ export async function reviewQueue(executor: Executor, actor: AuthContext): Promi
   const rows = await executor
     .select({ report: safeSpaceReports, handle: safeSpaceMembers.handle, kind: safeSpaceMembers.kind, status: safeSpaceMembers.status })
     .from(safeSpaceReports)
-    .innerJoin(safeSpaceMembers, eq(safeSpaceMembers.id, safeSpaceReports.reportedMemberId))
+    .leftJoin(safeSpaceMembers, eq(safeSpaceMembers.id, safeSpaceReports.reportedMemberId))
     .where(eq(safeSpaceReports.status, 'open'))
     .orderBy(asc(safeSpaceReports.createdAt))
     .limit(100);
   const counts = rows.length
     ? await executor
-        .select({ id: safeSpaceReports.reportedMemberId, n: sql<number>`count(*)::int` })
+        .select({ id: safeSpaceReports.reportedUserId, n: sql<number>`count(*)::int` })
         .from(safeSpaceReports)
-        .where(inArray(safeSpaceReports.reportedMemberId, rows.map((r) => r.report.reportedMemberId)))
-        .groupBy(safeSpaceReports.reportedMemberId)
+        .where(inArray(safeSpaceReports.reportedUserId, rows.flatMap((r) => (r.report.reportedUserId ? [r.report.reportedUserId] : []))))
+        .groupBy(safeSpaceReports.reportedUserId)
     : [];
   const countOf = new Map(counts.map((c) => [c.id, c.n]));
   return rows.map(({ report, handle, kind, status }) => ({
@@ -500,7 +525,7 @@ export async function reviewQueue(executor: Executor, actor: AuthContext): Promi
     reportedHandle: handle,
     reportedKind: kind,
     reportedStatus: status,
-    priorReports: (countOf.get(report.reportedMemberId) ?? 1) - 1,
+    priorReports: Math.max(0, (report.reportedUserId ? countOf.get(report.reportedUserId) ?? 1 : 1) - 1),
   }));
 }
 
@@ -518,8 +543,7 @@ export async function resolveReport(
   const [report] = await tx.select().from(safeSpaceReports).where(eq(safeSpaceReports.id, params.reportId)).limit(1).for('update');
   if (!report) throw errors.notFound('safe_space_report');
   if (report.status !== 'open') throw errors.conflict('violeta.error.report_closed');
-  const [reported] = await tx.select({ userId: safeSpaceMembers.userId }).from(safeSpaceMembers).where(eq(safeSpaceMembers.id, report.reportedMemberId)).limit(1);
-  if (reported?.userId === actor.userId) throw errors.forbidden('safe_space.review');
+  if (report.reportedUserId === actor.userId) throw errors.forbidden('safe_space.review');
   const now = params.now ?? new Date();
 
   if ((params.decision === 'remove' || params.decision === 'ban') && report.messageId) {
@@ -527,17 +551,34 @@ export async function resolveReport(
     else await tx.delete(safeSpaceThreadMessages).where(eq(safeSpaceThreadMessages.id, report.messageId));
   }
   if (params.decision === 'ban') {
-    await tx.update(safeSpaceMembers).set({ status: 'banned', showPresence: false }).where(eq(safeSpaceMembers.id, report.reportedMemberId));
-    await tx.delete(safeSpaceRoomMessages).where(eq(safeSpaceRoomMessages.authorMemberId, report.reportedMemberId));
-    await tx
-      .update(safeSpaceThreads)
-      .set({ blockedBy: report.reportedMemberId })
-      .where(and(or(eq(safeSpaceThreads.memberA, report.reportedMemberId), eq(safeSpaceThreads.memberB, report.reportedMemberId)), sql`${safeSpaceThreads.blockedBy} is null`));
+    // The person may have left, and may have come back under a new name;
+    // the ban follows the account either way.
+    const [current] = report.reportedUserId
+      ? await tx.select({ id: safeSpaceMembers.id }).from(safeSpaceMembers).where(eq(safeSpaceMembers.userId, report.reportedUserId)).limit(1)
+      : report.reportedMemberId
+        ? [{ id: report.reportedMemberId }]
+        : [];
+    if (current) {
+      await tx.update(safeSpaceMembers).set({ status: 'banned', showPresence: false }).where(eq(safeSpaceMembers.id, current.id));
+      await tx.delete(safeSpaceRoomMessages).where(eq(safeSpaceRoomMessages.authorMemberId, current.id));
+      await tx
+        .update(safeSpaceThreads)
+        .set({ blockedBy: current.id })
+        .where(and(or(eq(safeSpaceThreads.memberA, current.id), eq(safeSpaceThreads.memberB, current.id)), sql`${safeSpaceThreads.blockedBy} is null`));
+    } else if (report.reportedUserId) {
+      // Gone from the space: a banned row is what keeps them from rejoining.
+      await tx.insert(safeSpaceMembers).values({ userId: report.reportedUserId, kind: 'member', handle: await freshHandle(tx, 'member'), status: 'banned', showPresence: false });
+    }
     // Every open report about the same person is settled by the ban.
     await tx
       .update(safeSpaceReports)
       .set({ status: 'banned', decidedBy: actor.userId, decidedAt: now })
-      .where(and(eq(safeSpaceReports.reportedMemberId, report.reportedMemberId), eq(safeSpaceReports.status, 'open')));
+      .where(
+        and(
+          eq(safeSpaceReports.status, 'open'),
+          report.reportedUserId ? eq(safeSpaceReports.reportedUserId, report.reportedUserId) : eq(safeSpaceReports.id, report.id),
+        ),
+      );
   }
   const status = params.decision === 'dismiss' ? 'dismissed' : params.decision === 'remove' ? 'removed' : 'banned';
   await tx.update(safeSpaceReports).set({ status, decidedBy: actor.userId, decidedAt: now }).where(eq(safeSpaceReports.id, report.id));

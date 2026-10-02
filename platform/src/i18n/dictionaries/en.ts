@@ -1597,6 +1597,8 @@ export const en: Dictionary = {
   'ops.jobs.stale': 'They have not run for over an hour. Check the yavaya-scheduler service on Railway.',
   'ops.jobs.failures': 'Failures in the last 24 hours',
   'ops.jobs.no_failures': 'No failures in the last 24 hours.',
+  'violeta.error.partner_gone': 'This person is no longer available in Espacio Violeta. Your conversation stays here, but you can no longer write to them.',
+  'violeta.guardian.left': '(has left the space)',
   'nav.moderation_community': 'Moderation · Community',
   'nav.sanctuary': 'Sanctuary',
   'nav.moderation_sanctuary': 'Review · Sanctuary',

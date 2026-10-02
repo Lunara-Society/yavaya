@@ -1621,6 +1621,8 @@ export const es = {
   'ops.jobs.stale': 'Hace más de una hora que no corren. Revisa el servicio yavaya-scheduler en Railway.',
   'ops.jobs.failures': 'Fallos en las últimas 24 horas',
   'ops.jobs.no_failures': 'Ningún fallo en las últimas 24 horas.',
+  'violeta.error.partner_gone': 'Esta persona ya no está disponible en el Espacio Violeta. Tu conversación sigue aquí, pero ya no puedes escribirle.',
+  'violeta.guardian.left': '(ya salió del espacio)',
   'nav.moderation_community': 'Moderación · Comunidad',
   'nav.sanctuary': 'Santuario',
   'nav.moderation_sanctuary': 'Revisión · Santuario',

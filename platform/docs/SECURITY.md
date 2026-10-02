@@ -174,6 +174,12 @@ The protected space for women has a stricter model than the rest of Yavaya:
 - **Forgetting.** Room messages expire after 30 days, private ones after 90,
   decided reports after 90 (`purge-safe-space` in the tick). Leaving deletes
   the member and, by cascade, every message and conversation they were in.
+  Reports about a member are the exception: they hold the account, not only
+  the handle, so leaving and rejoining under a new name does not discard
+  them, and a guardian's ban reaches someone who has already left.
+- **Licence first.** A professional whose licence is withdrawn is locked out
+  at once, disappears from every listing, loses the badge on old room
+  messages, and cannot be written to.
 - **Exit.** A quick-exit control on every page replaces the history entry;
   Esc twice does the same. Titles read "Yavaya" only; pages are `noindex`
   and send no referrer.

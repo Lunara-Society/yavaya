@@ -106,9 +106,14 @@ export const safeSpaceReports = pgTable(
   {
     id: uuid('id').primaryKey().defaultRandom(),
     reporterMemberId: uuid('reporter_member_id').references(() => safeSpaceMembers.id, { onDelete: 'set null' }),
-    reportedMemberId: uuid('reported_member_id')
-      .notNull()
-      .references(() => safeSpaceMembers.id, { onDelete: 'cascade' }),
+    /** Null once the reported person has left the space; the report stays. */
+    reportedMemberId: uuid('reported_member_id').references(() => safeSpaceMembers.id, { onDelete: 'set null' }),
+    /**
+     * The account behind the reported name. Leaving erases a member, and if
+     * the report went with it, leaving and coming back under a new name would
+     * be the way around every report. Never rendered; a ban uses it.
+     */
+    reportedUserId: uuid('reported_user_id').references(() => users.id, { onDelete: 'cascade' }),
     /** `room` or `thread`. */
     source: text('source').notNull(),
     messageId: uuid('message_id'),

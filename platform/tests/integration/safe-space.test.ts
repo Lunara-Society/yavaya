@@ -215,6 +215,60 @@ describe('Espacio Violeta', () => {
     expect(logged).not.toContain('vives');
   });
 
+  it('cannot escape a report by leaving and coming back under a new name', async () => {
+    const ana = await woman();
+    const intruder = await woman();
+    await db().transaction((tx) => postRoomMessage(tx, { memberId: intruder.id, text: 'Sé dónde vives.' }));
+    const [message] = await db().select().from(safeSpaceRoomMessages);
+    await db().transaction((tx) => reportMessage(tx, { viewer: ana, source: 'room', messageId: message!.id, category: 'threat', note: null }));
+
+    // Leaves before a guardian looks, then comes straight back.
+    await db().transaction((tx) => leave(tx, { memberId: intruder.id }));
+    const back = await db().transaction((tx) => join(tx, { userId: intruder.userId, kind: 'member', pledges: [...MEMBER_PLEDGES] }));
+    expect(back.handle).not.toBe(intruder.handle);
+
+    const guardianId = await account('Guardiana');
+    await db().transaction((tx) => grantRole(tx, { userId: guardianId, roleKey: 'safe_space_guardian', grantedBy: null }));
+    const queue = await reviewQueue(db(), { userId: guardianId, status: 'active' });
+    expect(queue).toHaveLength(1);
+    expect(queue[0]?.text).toBe('Sé dónde vives.');
+    expect(queue[0]?.reportedHandle).toBeNull();
+
+    await db().transaction((tx) => resolveReport(tx, { actor: { userId: guardianId, status: 'active' }, reportId: queue[0]!.id, decision: 'ban' }));
+    await expect(requireMember(db(), intruder.userId)).rejects.toMatchObject({ messageKey: 'violeta.error.banned' });
+  });
+
+  it('bans someone who left before the guardian decided', async () => {
+    const ana = await woman();
+    const intruder = await woman();
+    await db().transaction((tx) => postRoomMessage(tx, { memberId: intruder.id, text: 'Te voy a encontrar.' }));
+    const [message] = await db().select().from(safeSpaceRoomMessages);
+    await db().transaction((tx) => reportMessage(tx, { viewer: ana, source: 'room', messageId: message!.id, category: 'threat', note: null }));
+    await db().transaction((tx) => leave(tx, { memberId: intruder.id }));
+
+    const guardianId = await account('Guardiana');
+    await db().transaction((tx) => grantRole(tx, { userId: guardianId, roleKey: 'safe_space_guardian', grantedBy: null }));
+    const [report] = await reviewQueue(db(), { userId: guardianId, status: 'active' });
+    await db().transaction((tx) => resolveReport(tx, { actor: { userId: guardianId, status: 'active' }, reportId: report!.id, decision: 'ban' }));
+    await expect(db().transaction((tx) => join(tx, { userId: intruder.userId, kind: 'member', pledges: [...MEMBER_PLEDGES] }))).rejects.toMatchObject({ messageKey: 'violeta.error.banned' });
+  });
+
+  it('stops showing a professional, and stops letting women write to one, once the licence is withdrawn', async () => {
+    const ana = await woman();
+    const verified = await licensedPsychologist();
+    const pro = await db().transaction((tx) => join(tx, { userId: verified, kind: 'professional', profession: 'psychology', pledges: [...PROFESSIONAL_PLEDGES] }));
+    await db().transaction((tx) => postRoomMessage(tx, { memberId: pro.id, text: 'Estoy aquí para escucharte.' }));
+    const threadId = await db().transaction((tx) => startThread(tx, { member: ana, otherMemberId: pro.id }));
+
+    await db().update(servicesProviderProfiles).set({ licenceStatus: 'pending' }).where(eq(servicesProviderProfiles.userId, verified));
+    expect((await professionals(db())).map((p) => p.id)).not.toContain(pro.id);
+    expect((await whoIsHere(db())).map((p) => p.id)).not.toContain(pro.id);
+    expect((await roomMessages(db(), ana)).map((m) => m.authorId)).not.toContain(pro.id);
+    await expect(db().transaction((tx) => sendThreadMessage(tx, { viewer: ana, threadId, text: 'Hola' }))).rejects.toMatchObject({ messageKey: 'violeta.error.partner_gone' });
+    const lucia = await woman();
+    await expect(db().transaction((tx) => startThread(tx, { member: lucia, otherMemberId: pro.id }))).rejects.toMatchObject({ code: 'not_found' });
+  });
+
   it('never notifies or audits a woman for entering or writing', async () => {
     const ana = await woman();
     const lucia = await woman();

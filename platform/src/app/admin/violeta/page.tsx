@@ -37,7 +37,7 @@ export default async function VioletaGuardian({ searchParams }: { searchParams: 
                 {t(`violeta.report.category.${report.category}` as MessageKey)} · {t(report.source === 'room' ? 'violeta.guardian.in_room' : 'violeta.guardian.in_private')} · {when(report.createdAt, locale)}
               </p>
               <p>
-                <strong>{report.reportedHandle}</strong> {report.reportedKind === 'professional' ? `· ${t('violeta.guardian.professional')}` : ''}{' '}
+                <strong>{report.reportedHandle ?? t('violeta.guardian.left')}</strong> {report.reportedKind === 'professional' ? `· ${t('violeta.guardian.professional')}` : ''}{' '}
                 {report.priorReports > 0 ? <span className="vt-known">{t('violeta.guardian.prior', { count: report.priorReports })}</span> : null}
               </p>
               <blockquote className="vt-text">{report.text ?? t('violeta.unreadable')}</blockquote>
