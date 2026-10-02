@@ -196,7 +196,7 @@ describe('dLocal Go payments', () => {
   it('treats a repeated purchase attempt as a double click, not a second charge', async () => {
     const userId = await member();
     const attemptId = crypto.randomUUID();
-    const params = { userId, packageKey: 'tokens_2', attemptId, appUrl: 'https://yavaya.lat', description: 'Tokens' };
+    const params = { userId, packageKey: 'tokens_10', attemptId, appUrl: 'https://yavaya.lat', description: 'Tokens' };
     await startTokenPurchase(db(), params);
     await expect(startTokenPurchase(db(), params)).rejects.toMatchObject({ messageKey: 'payments.error.duplicate' });
     expect(payments.size).toBe(1);
