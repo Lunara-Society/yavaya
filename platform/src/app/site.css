@@ -1110,3 +1110,18 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .vt-section { padding: 18px 0; border-bottom: 1px solid var(--line); }
 .vt-danger-zone .btn { border-color: #d64545; }
 .vt-case blockquote { margin: 10px 0; }
+
+/* Operations ---------------------------------------------------------------- */
+.ops-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; margin-top: 20px; }
+.ops-card { display: grid; gap: 4px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); color: var(--text); text-decoration: none; box-shadow: inset 4px 0 0 #e0a93b; }
+.ops-card.clear { box-shadow: inset 4px 0 0 #3fbf7f; opacity: .75; }
+.ops-card.late { box-shadow: inset 4px 0 0 #d64545; border-color: #d64545; }
+.ops-count { font-family: var(--serif); font-size: 2.2rem; font-weight: 700; line-height: 1; }
+.ops-label { font-weight: 700; }
+.ops-age { color: var(--text-3); font-size: .9rem; }
+.ops-card.late .ops-age { color: #f08a8a; font-weight: 700; }
+.staff-roles { display: grid; gap: 8px; padding-left: 20px; }
+.staff-list { list-style: none; padding: 0; display: grid; gap: 12px; margin-top: 14px; }
+.staff-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.staff-actions .btn, .staff-list .btn { min-height: 38px; padding: 0 14px; font-size: .9rem; }
+.staff-on { border-color: #3fbf7f !important; color: #8fe0b5 !important; }

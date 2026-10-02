@@ -1,3 +1,4 @@
+import { canSeeOps } from '@/server/domains/ops/queues';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -30,7 +31,7 @@ export default async function AccountPage() {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
 
-  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian, workReviewer] = await Promise.all([
+  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian, workReviewer, ops] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 6 }),
@@ -42,6 +43,7 @@ export default async function AccountPage() {
     hasPermission(db(), userId, 'work.moderate'),
     hasPermission(db(), userId, 'safe_space.review'),
     hasPermission(db(), userId, 'work.review'),
+    canSeeOps(db(), userId),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
@@ -53,6 +55,8 @@ export default async function AccountPage() {
         { href: '/admin/community', labelKey: 'nav.moderation_community' as MessageKey, glyph: '⚑' },
       ]
     : [profileShortcut, ...SHORTCUTS];
+  // Everyone who reviews anything starts from the one inbox.
+  if (ops) shortcuts.unshift({ href: '/admin', labelKey: 'nav.ops' as MessageKey, glyph: '◎' });
   if (sanctuaryReviewer) shortcuts.push({ href: '/admin/sanctuary', labelKey: 'nav.moderation_sanctuary' as MessageKey, glyph: '⚑' });
   if (servicesReviewer) shortcuts.push({ href: '/admin/services', labelKey: 'nav.admin_services' as MessageKey, glyph: '⚑' });
   if (workModerator || workReviewer) shortcuts.push({ href: '/admin/work', labelKey: 'nav.admin_work' as MessageKey, glyph: '⚑' });

@@ -58,6 +58,7 @@ missed tick costs nothing and an overlapping one is harmless:
 | Adoption follow-ups (30 days) | `jobs.cjs adoption-follow-ups` | hourly |
 | Close lost-and-found posts (60 days) | `jobs.cjs expire-lost-found` | hourly |
 | Close work posts (30 days) | `jobs.cjs expire-work-posts` | hourly |
+| Operations email: what waits for the team, failed jobs | `jobs.cjs ops-email` | in the tick, once a day at 14:00 UTC |
 | Espacio Violeta: delete old messages and decided reports | `jobs.cjs purge-safe-space` | hourly |
 | Daily email summary | `jobs.cjs send-digests` | every 15 min (each member gets at most one a day) |
 

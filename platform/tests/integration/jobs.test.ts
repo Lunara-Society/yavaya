@@ -48,6 +48,7 @@ describe('scheduled jobs', () => {
       'expire-lost-found',
       'expire-work-posts',
       'graduate-monitored',
+      'ops-email',
       'purge-rate-limits',
       'purge-safe-space',
       'purge-sessions',

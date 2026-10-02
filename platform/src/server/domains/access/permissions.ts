@@ -54,6 +54,9 @@ export const PERMISSIONS = {
   'demo.manage': 'platform',
   'analytics.read': 'platform',
   'audit.read': 'audit',
+  // Appointing people to staff roles. Admin only: whoever can appoint can
+  // appoint themselves, so this is never part of a narrower role.
+  'roles.manage': 'platform',
   'payments.read': 'payments',
   'payments.reconcile': 'payments',
 } as const;

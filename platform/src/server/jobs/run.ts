@@ -9,6 +9,7 @@ import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
 import { sendDailyDigests } from '@/server/domains/notifications/digest';
 import { sendAdoptionFollowUps } from '@/server/domains/animals/service';
 import { expireLostFound } from '@/server/domains/animals/lost-found';
+import { purgeJobRuns, recordJobRun, sendOpsEmails } from '@/server/domains/ops/alerts';
 import { purgeSafeSpace } from '@/server/domains/safe-space/service';
 import { expireWorkPosts } from '@/server/domains/work/service';
 
@@ -120,6 +121,13 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `deleted ${result.room} room and ${result.thread} private message(s), ${result.threads} empty conversation(s), ${result.reports} decided report(s)` };
   },
 
+  /** The team hears, once a day, what waits for them and what failed. */
+  'ops-email': async () => {
+    await purgeJobRuns(db());
+    const result = await sendOpsEmails(db());
+    return { summary: result.skipped ? `no operations email: ${result.skipped}` : `sent ${result.sent} operations email(s)` };
+  },
+
   /** The daily email summary, for members whose morning it is. */
   'send-digests': async () => {
     const result = await sendDailyDigests(db());
@@ -135,20 +143,27 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'send-digests'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;
     for (const name of names) {
+      const startedAt = new Date();
       try {
         const outcome = await JOBS[name]!();
         failed ||= Boolean(outcome.failed);
         lines.push(`${name}: ${outcome.summary}`);
+        // Quiet skips are not worth a row every fifteen minutes; work done and failures are.
+        if (outcome.failed || !/^no |: 0 |^(closed|purged|deleted|asked|announced|sent) 0\b/.test(outcome.summary)) await recordJobRun(db(), name, !outcome.failed, outcome.summary, startedAt);
       } catch (error) {
         failed = true;
-        lines.push(`${name}: FAILED ${error instanceof Error ? error.message : String(error)}`);
+        const message = error instanceof Error ? error.message : String(error);
+        lines.push(`${name}: FAILED ${message}`);
+        await recordJobRun(db(), name, false, `FAILED ${message}`, startedAt);
       }
     }
+    // A heartbeat: the operations page shows when the scheduler last ran at all.
+    await recordJobRun(db(), 'tick', !failed, failed ? lines.filter((l) => l.includes('FAILED')).join(' | ') : `${names.length} job(s) ran`, now);
     return { summary: `\n  ${lines.join('\n  ')}`, failed };
   },
 };

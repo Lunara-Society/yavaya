@@ -23,3 +23,4 @@ export * from './services';
 export * from './animals';
 export * from './work';
 export * from './safe-space';
+export * from './ops';

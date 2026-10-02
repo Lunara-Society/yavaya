@@ -289,6 +289,14 @@ export const WORK_RULES = {
  * like a licence: learn first, then apply, then be chosen by a rescuer.
  * Listed in docs/CONFIGURATION.md as open to change.
  */
+/** Operations: when a wait for a person becomes too long. */
+export const OPS_RULES = {
+  /** A review waiting longer than this is late: red on /admin, and in the operations email. */
+  reviewLateHours: 48,
+  /** The operations email goes out once a day, at this hour UTC (09:00 = 03:00 in Nicaragua and Guatemala). */
+  emailHourUtc: 14,
+} as const;
+
 /** Espacio Violeta: the protected space for women. See config/safe-space.ts. */
 export const SAFE_SPACE_RULES = {
   messageMaxLength: 2000,
