@@ -60,6 +60,7 @@ missed tick costs nothing and an overlapping one is harmless:
 | Close work posts (30 days) | `jobs.cjs expire-work-posts` | hourly |
 | Operations email: what waits for the team, failed jobs | `jobs.cjs ops-email` | in the tick, once a day at 14:00 UTC |
 | Espacio Violeta: delete old messages and decided reports | `jobs.cjs purge-safe-space` | hourly |
+| Payments: re-read any payment whose notification never arrived | `jobs.cjs reconcile-payments` | in the tick (every 15 min) |
 | Daily email summary | `jobs.cjs send-digests` | every 15 min (each member gets at most one a day) |
 
 **Hosts with a single cron per service (Railway):** schedule `jobs.cjs tick`

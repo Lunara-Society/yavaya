@@ -12,6 +12,7 @@ import { expireLostFound } from '@/server/domains/animals/lost-found';
 import { purgeJobRuns, recordJobRun, sendOpsEmails } from '@/server/domains/ops/alerts';
 import { purgeSafeSpace } from '@/server/domains/safe-space/service';
 import { expireWorkPosts } from '@/server/domains/work/service';
+import { reconcilePendingPayments } from '@/server/domains/payments/service';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -121,6 +122,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `deleted ${result.room} room and ${result.thread} private message(s), ${result.threads} empty conversation(s), ${result.reports} decided report(s)` };
   },
 
+  /** Payments whose notification never arrived are read from the provider again. */
+  'reconcile-payments': async () => {
+    const result = await reconcilePendingPayments(db());
+    return { summary: `checked ${result.checked} waiting payment(s), settled ${result.settled}, ${result.failed} failed`, failed: result.failed > 0 && result.settled === 0 };
+  },
+
   /** The team hears, once a day, what waits for them and what failed. */
   'ops-email': async () => {
     await purgeJobRuns(db());
@@ -143,7 +150,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'reconcile-payments', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray, lt } from 'drizzle-orm';
 import type { Database, Executor } from '@/server/db/client';
 import { paymentEvents, paymentTransactions, paymentWebhookEvents } from '@/server/db/schema';
 import { errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
+import { creditPurchasedTokens } from '@/server/domains/tokens/service';
 import type { PaymentProvider } from './provider';
 import { PayPalProvider } from './providers/paypal';
+import { DLocalGoProvider } from './providers/dlocalgo';
 
 /**
  * Payment service.
@@ -19,7 +21,15 @@ import { PayPalProvider } from './providers/paypal';
  * server-side capture. There is no code path from a browser to `succeeded`.
  */
 
-const providers = new Map<string, PaymentProvider>([['paypal', new PayPalProvider()]]);
+const providers = new Map<string, PaymentProvider>([
+  ['dlocalgo', new DLocalGoProvider()],
+  ['paypal', new PayPalProvider()],
+]);
+
+/** The provider a new checkout uses: the first one that is configured. */
+export function activeProvider(): PaymentProvider | null {
+  return [...providers.values()].find((provider) => provider.availability().available) ?? null;
+}
 
 export function getProvider(key: string): PaymentProvider {
   const provider = providers.get(key);
@@ -30,13 +40,14 @@ export function getProvider(key: string): PaymentProvider {
 export function listProviderAvailability(): Array<{
   key: string;
   available: boolean;
+  testMode: boolean;
   reason?: string;
 }> {
   return [...providers.values()].map((provider) => {
     const availability = provider.availability();
     return availability.available
-      ? { key: provider.key, available: true }
-      : { key: provider.key, available: false, reason: availability.reason };
+      ? { key: provider.key, available: true, testMode: provider.testMode?.() ?? false }
+      : { key: provider.key, available: false, testMode: false, reason: availability.reason };
   });
 }
 
@@ -86,7 +97,10 @@ export async function startCheckout(
       .from(paymentTransactions)
       .where(eq(paymentTransactions.idempotencyKey, input.idempotencyKey))
       .limit(1);
-    if (existing) return existing.id;
+    // The key names one purchase attempt. Seeing it again is a double submit,
+    // and a second provider checkout for it would be a payment nobody could
+    // match if the first one were paid as well.
+    if (existing) throw errors.conflict('payments.error.duplicate');
 
     const [created] = await tx
       .insert(paymentTransactions)
@@ -161,6 +175,18 @@ const fulfillers = new Map<PaymentDomain, Fulfiller>();
 export function registerFulfiller(domain: PaymentDomain, fulfiller: Fulfiller): void {
   fulfillers.set(domain, fulfiller);
 }
+
+/**
+ * Tokens bought: credited through the token service, keyed by the payment, so
+ * a second application of the same payment cannot credit twice. The count
+ * comes from the intent recorded at checkout — the package as it was priced
+ * when the member paid, not as it may be priced now.
+ */
+registerFulfiller('tokens', async (tx, transaction) => {
+  const tokens = Number(transaction.intent.tokens);
+  if (!transaction.userId || !Number.isInteger(tokens) || tokens <= 0) throw errors.internal(`token purchase ${transaction.id} has no valid intent`);
+  await creditPurchasedTokens(tx, { userId: transaction.userId, tokens, paymentTransactionId: transaction.id });
+});
 
 /**
  * Records a verified provider outcome and, on success, fulfils it exactly once.
@@ -246,6 +272,92 @@ export async function applyProviderOutcome(
 
     return { applied: true, reason: 'applied' as const };
   });
+}
+
+/**
+ * Reads a payment's state from the provider, server to server, and applies
+ * it. This is the only way a dLocal Go payment succeeds: its notification
+ * carries no status, and a browser returning from checkout proves nothing.
+ *
+ * The amount and currency the provider reports must be exactly what was
+ * asked for. Anything else is held as a discrepancy for a person to look at
+ * and is never fulfilled — paying 1 instead of 100 must not buy 100.
+ */
+export async function settleFromProvider(
+  database: Database,
+  params: { providerKey: string; providerTransactionId: string; source: 'webhook' | 'reconciliation' },
+): Promise<{ status: string; applied: boolean; reason: string }> {
+  const provider = getProvider(params.providerKey);
+  const [transaction] = await database
+    .select()
+    .from(paymentTransactions)
+    .where(and(eq(paymentTransactions.provider, provider.key), eq(paymentTransactions.providerTransactionId, params.providerTransactionId)))
+    .limit(1);
+  if (!transaction) return { status: 'unknown', applied: false, reason: 'unknown_transaction' };
+
+  const result = await provider.capture(params.providerTransactionId);
+  if (result.status === 'pending') return { status: 'pending', applied: false, reason: 'pending' };
+
+  if (result.status === 'succeeded') {
+    const matches = result.money.amountMinor === Number(transaction.amountMinor) && result.money.currency.toUpperCase() === transaction.currency.toUpperCase();
+    if (!matches) {
+      await database.transaction(async (tx) => {
+        await tx.update(paymentTransactions).set({ reconciliationState: 'discrepancy', updatedAt: new Date() }).where(eq(paymentTransactions.id, transaction.id));
+        await tx.insert(paymentEvents).values({
+          transactionId: transaction.id,
+          fromStatus: transaction.status,
+          toStatus: transaction.status,
+          source: params.source,
+          detail: { discrepancy: true, expected: { amountMinor: Number(transaction.amountMinor), currency: transaction.currency }, reported: result.money },
+        });
+        await recordAudit(tx, {
+          actorType: 'system',
+          action: 'payments.discrepancy',
+          subjectType: 'payment_transaction',
+          subjectId: transaction.id,
+          metadata: { provider: provider.key, reference: transaction.reference },
+        });
+      });
+      return { status: 'succeeded', applied: false, reason: 'amount_mismatch' };
+    }
+  }
+
+  const outcome = await applyProviderOutcome(database, {
+    providerKey: provider.key,
+    providerTransactionId: params.providerTransactionId,
+    status: result.status,
+    source: params.source,
+    detail: result.raw,
+    failureCode: result.failureCode,
+  });
+  return { status: result.status, applied: outcome.applied, reason: outcome.reason };
+}
+
+/**
+ * Notifications can be lost. Every payment still waiting on its provider
+ * after a few minutes is read again, for as long as its checkout could still
+ * be paid (a day) plus a margin.
+ */
+export async function reconcilePendingPayments(database: Database, now = new Date()): Promise<{ checked: number; settled: number; failed: number }> {
+  const waiting = await database
+    .select({ provider: paymentTransactions.provider, providerTransactionId: paymentTransactions.providerTransactionId, createdAt: paymentTransactions.createdAt })
+    .from(paymentTransactions)
+    .where(and(inArray(paymentTransactions.status, ['pending_provider', 'authorized']), lt(paymentTransactions.updatedAt, new Date(now.getTime() - 5 * 60_000))))
+    .limit(50);
+  let settled = 0;
+  let failed = 0;
+  for (const row of waiting) {
+    if (!row.providerTransactionId || now.getTime() - row.createdAt.getTime() > 3 * 86_400_000) continue;
+    try {
+      if (!getProvider(row.provider).availability().available) continue;
+      const result = await settleFromProvider(database, { providerKey: row.provider, providerTransactionId: row.providerTransactionId, source: 'reconciliation' });
+      if (result.applied) settled += 1;
+    } catch (error) {
+      failed += 1;
+      console.error('payment reconciliation failed:', row.provider, error instanceof Error ? error.message : error);
+    }
+  }
+  return { checked: waiting.length, settled, failed };
 }
 
 /**

@@ -106,9 +106,14 @@ export function integrationCapabilities(): Capability[] {
       key: `payments_${provider.key}`,
       nameKey: 'capability.payments.name',
       detailKey: 'capability.payments.detail',
-      state: provider.available ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      // Test keys make a working checkout with no real money: DEMO, not REAL.
+      state: provider.available ? (provider.testMode ? 'DEMO' : 'REAL') : 'REQUIRES_CONFIGURATION',
       group: 'integration',
-      blockedBy: provider.available ? undefined : provider.reason,
+      blockedBy: provider.available
+        ? provider.testMode
+          ? 'Connected to the provider test environment: only administrators can try a purchase, with test cards. Live keys make it real.'
+          : undefined
+        : provider.reason,
     });
   }
 

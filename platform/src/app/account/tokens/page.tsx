@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
@@ -8,6 +9,9 @@ import { CapabilityBadge } from '@/ui/components/capability-badge';
 import { shellContext } from '@/ui/shell-context';
 import { getBalance, listLedgerEntries } from '@/server/domains/tokens/service';
 import { listProviderAvailability } from '@/server/domains/payments/service';
+import { myTokenPurchases } from '@/server/domains/payments/token-purchase';
+import { isAdmin } from '@/server/domains/access/authorize';
+import { buyTokensAction } from './actions';
 import { TOKEN_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 
@@ -17,22 +21,35 @@ export const dynamic = 'force-dynamic';
 /**
  * Token balance, history and packages.
  *
- * The purchase section is the sharp edge of the honesty rule. No payment
- * provider is working, so the packages are shown for information and the
+ * The purchase section is the sharp edge of the honesty rule. Without a
+ * configured payment provider the packages are shown for information and the
  * purchase control is **absent** — not disabled-looking-but-tappable, not a
  * button that opens a broken checkout. The capability badge says exactly why.
+ *
+ * With one, each package is a button to the provider's checkout. Coming back
+ * from checkout proves nothing, so the page never says "paid" because of the
+ * return address: it shows each purchase as the provider has confirmed it.
  */
-export default async function TokensPage() {
+export default async function TokensPage({ searchParams }: { searchParams: Promise<{ purchase?: string; error?: string }> }) {
   const { t, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
+  const query = await searchParams;
 
-  const [balance, entries, packages] = await Promise.all([
+  const [balance, entries, packages, purchases] = await Promise.all([
     getBalance(db(), userId),
     listLedgerEntries(db(), userId, { limit: 50 }),
     db().select().from(tokenPackages).where(eq(tokenPackages.enabled, true)),
+    myTokenPurchases(db(), userId, 5),
   ]);
+  // One id per page view: a double click on the same form is one purchase.
+  const attempt = randomUUID();
+  const errorKey = query.error && /^(payments\.error\.[a-z_]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
 
-  const paymentsReady = listProviderAvailability().some((provider) => provider.available);
+  const ready = listProviderAvailability().find((provider) => provider.available);
+  // In the provider's test environment only administrators see the purchase
+  // controls; everyone else sees what they would see with no provider at all.
+  const testMode = Boolean(ready?.testMode);
+  const paymentsReady = Boolean(ready) && (!testMode || (await isAdmin(db(), userId)));
   const unavailableReason = listProviderAvailability().find((provider) => !provider.available)?.reason;
 
   return (
@@ -60,11 +77,42 @@ export default async function TokensPage() {
                 <p className="mt-1 text-sm text-[var(--text-secondary)]">
                   {formatPrice(pkg.priceMinor, pkg.currency)}
                 </p>
+                {paymentsReady && pkg.tokens <= TOKEN_RULES.maxTokensPerPurchase ? (
+                  <form action={buyTokensAction} className="mt-3">
+                    <input type="hidden" name="package" value={pkg.key} />
+                    <input type="hidden" name="attempt" value={attempt} />
+                    <button type="submit" className="btn btn-gold w-full">
+                      {t('payments.buy')}
+                    </button>
+                  </form>
+                ) : null}
               </li>
             ))}
         </ul>
 
-        {paymentsReady ? null : (
+        {query.purchase === 'returned' ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" role="status">
+            {t('payments.returned')}
+          </p>
+        ) : null}
+        {query.purchase === 'cancelled' ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" role="status">
+            {t('payments.cancelled')}
+          </p>
+        ) : null}
+        {errorKey ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" role="alert" style={{ borderColor: 'var(--color-caution)' }}>
+            {t(errorKey)}
+          </p>
+        ) : null}
+        {paymentsReady && testMode ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: 'var(--color-caution)' }}>
+            {t('payments.test_mode')}
+          </p>
+        ) : null}
+        {paymentsReady ? (
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">{t('payments.how')}</p>
+        ) : (
           <p
             className="mt-3 rounded-xl border px-4 py-3 text-sm"
             style={{ borderColor: 'var(--color-caution)' }}
@@ -80,6 +128,27 @@ export default async function TokensPage() {
           {t('tokens.purchase_limit', { limit: TOKEN_RULES.maxTokensPerPurchase })}
         </p>
       </section>
+
+      {purchases.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold tracking-tight">{t('payments.purchases')}</h2>
+          <ul className="mt-3 divide-y rounded-xl border">
+            {purchases.map((purchase) => (
+              <li key={purchase.reference} className="flex items-center justify-between gap-3 p-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">
+                    {t('payments.purchase_line', { tokens: purchase.tokens, price: formatPrice(purchase.amountMinor, purchase.currency) })}
+                  </p>
+                  <p className="text-2xs text-[var(--text-muted)]">
+                    <time dateTime={purchase.createdAt.toISOString()}>{purchase.createdAt.toISOString().slice(0, 10)}</time> · {purchase.reference}
+                  </p>
+                </div>
+                <p className="shrink-0 text-sm font-semibold">{t(`payments.status.${purchase.status}` as MessageKey)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="mt-8">
         <h2 className="text-lg font-semibold tracking-tight">{t('tokens.history')}</h2>
@@ -122,5 +191,6 @@ export default async function TokensPage() {
 }
 
 function formatPrice(minor: number, currency: string): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(minor / 100);
+  const format = new Intl.NumberFormat('en-US', { style: 'currency', currency });
+  return format.format(minor / 10 ** (format.resolvedOptions().maximumFractionDigits ?? 2));
 }

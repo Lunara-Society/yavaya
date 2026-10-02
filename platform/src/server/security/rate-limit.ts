@@ -47,6 +47,8 @@ export const RATE_LIMITS = {
   communityReply: { bucket: 'community_reply', limit: 30, windowSeconds: 60 * 60 },
   /** Espacio Violeta, per member: a real conversation, not a flood. */
   safeSpaceMessage: { bucket: 'safe_space_message', limit: SAFE_SPACE_RULES.messagesPerHour, windowSeconds: 60 * 60 },
+  /** Starting a checkout, per member: room for a changed mind, not for card testing. */
+  paymentCheckout: { bucket: 'payment_checkout', limit: 10, windowSeconds: 60 * 60 },
   safeSpaceThread: { bucket: 'safe_space_thread', limit: SAFE_SPACE_RULES.newThreadsPerDay, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 

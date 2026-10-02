@@ -131,6 +131,58 @@ nothing is sent, and the capability reads `MOCK`.
 
 ---
 
+## Payments — dLocal Go
+
+**Needed for:** buying tokens (`/account/tokens`). Later: Trabajo
+subscriptions and other paid flows, through the same adapter.
+
+**Current state:** implemented and tested against a stand-in that behaves as
+dLocal Go documents (`providers/dlocalgo.ts`, `tests/integration/payments.test.ts`).
+Not yet run against dLocal Go itself — that is the sandbox step below. Until
+the keys are set, `/status` says "requires configuration" and the tokens page
+shows packages with no buy button.
+
+**How a purchase works:**
+
+1. The member picks a package. Yavaya records the payment and asks dLocal Go
+   for a checkout (`POST /v1/payments`); the member pays on dLocal Go's page.
+   Card details never reach Yavaya.
+2. dLocal Go calls `https://yavaya.lat/api/payments/dlocalgo/notify` on every
+   status change. Yavaya checks the HMAC-SHA256 signature, then asks dLocal Go
+   for the payment's status (`GET /v1/payments/:id`).
+3. Only `PAID`, for **exactly** the price and currency asked, credits the
+   tokens — once, however many times dLocal Go retries. A different amount is
+   held as a discrepancy (audited, never credited) for a person to look at.
+4. Coming back to Yavaya from the checkout proves nothing and credits nothing.
+   The page shows each purchase as dLocal Go confirmed it.
+5. If a notification is lost, the scheduler re-reads waiting payments every
+   15 minutes (`reconcile-payments`).
+
+**Owner setup:**
+
+1. Create the dLocal Go account and, in the **sandbox** dashboard
+   (`dashboard-sbx.dlocalgo.com` → Integrations → API Integration), copy the
+   sandbox API key and secret key.
+2. In Railway, set on **both** `yavaya-web` and `yavaya-scheduler` (as
+   variables, never in chat or in the repository):
+   `DLOCALGO_ENV=sandbox`, `DLOCALGO_API_KEY`, `DLOCALGO_SECRET_KEY`.
+3. In sandbox mode only administrators see the buy buttons, and `/status`
+   shows payments as DEMO: test cards are not money, so nothing bought with
+   them may reach ordinary members. Buy a package as the admin with test card
+   `4111 1111 1111 1111` (any future date, any CVV) and check that the tokens
+   arrive. `5555 5555 5555 4444` should be rejected and credit nothing.
+4. Activate the live account, configure its payment methods (settings do not
+   carry over from sandbox), and replace the three variables with the live
+   keys and `DLOCALGO_ENV=live`. Then make one small real purchase.
+5. Before step 4: the lawyer has reviewed the Terms of Use for purchases, and
+   the prices in `TOKEN_PACKAGES` (USD) are the ones you want.
+
+**Notes:** the checkout pages are on `checkout.dlocalgo.com` /
+`checkout-sbx.dlocalgo.com`; the Content-Security-Policy allows form
+redirects there and nowhere else. Refunds are not automated: `refund()`
+exists in the adapter, but no screen calls it yet, and a refund
+notification is recorded without changing balances.
+
 ## Payments — PayPal
 
 **Needed for:** token purchases, Works subscriptions, and later YavayaGo

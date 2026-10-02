@@ -139,6 +139,11 @@ const serverSchema = z.object({
   PAYPAL_CLIENT_SECRET: z.string().optional(),
   PAYPAL_WEBHOOK_ID: z.string().optional(),
 
+  /** dLocal Go (https://docs.dlocalgo.com). Sandbox keys first; live only after a sandbox purchase works end to end. */
+  DLOCALGO_ENV: z.enum(['sandbox', 'live']).optional(),
+  DLOCALGO_API_KEY: z.string().min(1).optional(),
+  DLOCALGO_SECRET_KEY: z.string().min(1).optional(),
+
   /** Identity document verification (KYC) vendor. Unset => manual review only. */
   KYC_PROVIDER: z.enum(['manual', 'unconfigured']).default('unconfigured'),
 

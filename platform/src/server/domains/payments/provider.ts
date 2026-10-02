@@ -68,6 +68,11 @@ export interface PaymentProvider {
    * honest "payments unavailable" rather than showing a checkout that cannot work.
    */
   availability(): ProviderAvailability;
+  /**
+   * True when the provider is wired to its test environment: payments there
+   * are not real money, so nothing bought with them may reach ordinary members.
+   */
+  testMode?(): boolean;
   createCheckout(request: CheckoutRequest): Promise<CheckoutSession>;
   /** Server-to-server confirmation of an authorised payment. */
   capture(providerTransactionId: string): Promise<CaptureResult>;

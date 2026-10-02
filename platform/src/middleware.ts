@@ -16,6 +16,8 @@ const PREVIEW_PARAM = 'key';
  * cookie, and an unreachable probe means the deploy never goes healthy.
  */
 const PREVIEW_EXEMPT = ['/api/health'];
+/** Payment providers' notifications: they cannot hold a cookie either, and carry their own signature. */
+const PREVIEW_EXEMPT_PATTERN = /^\/api\/payments\/[a-z0-9]+\/notify$/;
 
 export function middleware(request: NextRequest): NextResponse {
   const gate = previewGate(request);
@@ -48,7 +50,7 @@ function previewGate(request: NextRequest): NextResponse | null {
   if (!expected) return null;
 
   const { pathname, searchParams } = request.nextUrl;
-  if (PREVIEW_EXEMPT.includes(pathname)) return null;
+  if (PREVIEW_EXEMPT.includes(pathname) || PREVIEW_EXEMPT_PATTERN.test(pathname)) return null;
 
   // Arriving with the key in the URL: store it and strip it from the address
   // bar, so the key does not sit in history, logs or a shared screenshot.
@@ -164,7 +166,9 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
     `connect-src 'self'`,
     `object-src 'none'`,
     `base-uri 'self'`,
-    `form-action 'self'`,
+    // A purchase form posts here and is redirected to the payment provider's
+    // hosted checkout; browsers apply form-action to that redirect too.
+    `form-action 'self' https://checkout.dlocalgo.com https://checkout-sbx.dlocalgo.com`,
     `frame-ancestors 'none'`,
     `upgrade-insecure-requests`,
   ].join('; ');
