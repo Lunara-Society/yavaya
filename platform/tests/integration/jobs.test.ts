@@ -97,6 +97,18 @@ describe('scheduled jobs', () => {
   }, 60_000);
 
   /**
+   * Production runs the esbuild bundle, not the source. The bundle once
+   * crashed at start-up (a native image library pulled in through a domain
+   * service) while every test above, running from source, stayed green.
+   */
+  it('runs from the bundle the scheduler actually deploys', async () => {
+    await run('node', ['scripts/build-release-scripts.mjs']);
+    const env = { ...process.env, DATABASE_URL: process.env.TEST_DATABASE_URL ?? process.env.DATABASE_URL! };
+    const { stdout } = await run('node', ['dist/scripts/jobs.cjs', 'purge-sessions'], { env });
+    expect(stdout).toMatch(/purged \d+ expired session\(s\)/);
+  }, 120_000);
+
+  /**
    * The reason this runner has its own env door. cPanel cron runs in a bare
    * shell that does not inherit the application's environment, so a job that
    * demanded SESSION_SECRET would force an operator to paste it into a crontab.

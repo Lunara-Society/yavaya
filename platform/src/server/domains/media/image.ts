@@ -1,6 +1,5 @@
 import 'server-only';
 import { createHash } from 'node:crypto';
-import sharp from 'sharp';
 import { MEDIA_RULES } from '@/config/business-rules';
 import { errors } from '@/server/errors';
 
@@ -62,6 +61,10 @@ export async function processImage(input: Buffer): Promise<ProcessedImage> {
     // `rotate()` with no argument applies the EXIF orientation to the pixels
     // first, so a portrait phone photo stays upright once EXIF is dropped.
     // sharp writes no metadata unless asked to, and it is never asked here.
+    // Loaded on use, never at import: the scheduler bundle reaches this
+    // module through domain services but never processes an image, and
+    // sharp's native loader crashes a bundled CommonJS script at start-up.
+    const { default: sharp } = await import('sharp');
     const { data, info } = await sharp(input, {
       limitInputPixels: MEDIA_RULES.maxInputPixels,
       failOn: 'error',

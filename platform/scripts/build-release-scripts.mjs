@@ -49,6 +49,8 @@ await build({
   // a Next server build. The scheduler is server code by definition, so the
   // guard is replaced with an empty module here and nowhere else.
   alias: { 'server-only': './scripts/server-only-empty.cjs' },
+  // Native image library: never bundled. No job processes images; see media/image.ts.
+  external: ['sharp'],
 });
 
 // eslint-disable-next-line no-console
