@@ -242,7 +242,7 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.work_subscriptions.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Professional subscriptions need card payments, which are not live, and a price the owner has not set. Until then posting and applying are free.',
+    blockedBy: 'Card payments are live for tokens, but recurring subscriptions are not built yet and the owner has not set their start date. Until then posting and applying are free.',
   },
   {
     key: 'safe_space',

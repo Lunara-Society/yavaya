@@ -1301,7 +1301,7 @@ export const en: Dictionary = {
   'capability.work.detail': 'Offers with visible pay from employers a person verified, professional profiles and applications decided by whoever posts.',
   'nav.admin_work': 'Work review',
   'capability.work_subscriptions.name': 'Professional Work subscriptions',
-  'capability.work_subscriptions.detail': 'Charging for them needs card payments and a price. Until then, posting and applying are free.',
+  'capability.work_subscriptions.detail': 'Card payments now work for tokens; subscriptions are not built yet and have no start date. Until then, posting and applying are free.',
   'violeta.name': 'Espacio Violeta',
   'violeta.exit': 'Quick exit',
   'violeta.exit_hint': 'Takes you to another page at once. Pressing Esc twice does the same.',

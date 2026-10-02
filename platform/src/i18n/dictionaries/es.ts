@@ -1325,7 +1325,7 @@ export const es = {
   'capability.work.detail': 'Ofertas con pago visible de empleadores verificados por una persona, perfiles profesionales y postulaciones que decide quien publica.',
   'nav.admin_work': 'Revisión de Trabajo',
   'capability.work_subscriptions.name': 'Suscripciones profesionales de Trabajo',
-  'capability.work_subscriptions.detail': 'Para cobrarlas hacen falta pagos con tarjeta y un precio. Mientras tanto, publicar y postular es gratis.',
+  'capability.work_subscriptions.detail': 'Los pagos con tarjeta ya funcionan para tokens; las suscripciones todavía no están construidas ni tienen fecha de inicio. Mientras tanto, publicar y postular es gratis.',
   'violeta.name': 'Espacio Violeta',
   'violeta.exit': 'Salir rápido',
   'violeta.exit_hint': 'Te lleva a otra página al instante. También puedes pulsar Esc dos veces.',
