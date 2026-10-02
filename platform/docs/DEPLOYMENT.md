@@ -459,6 +459,28 @@ locally and in CI. Nothing in the schema depends on the difference, and the
 pre-deploy migration is the same code path verified against an empty database
 — but the gap is worth closing when convenient.
 
+## Backups
+
+**What exists:** Railway volume backups of the Postgres volume, scheduled
+daily, weekly and monthly (enabled 2 October 2026). The volume is 500 MB.
+Photos live in the media bucket and are not part of these backups.
+
+**What is not yet verified, and must be before real money moves:**
+
+1. In the Railway dashboard (Postgres → Backups), confirm the backups are
+   being taken and how long each is kept.
+2. Do one restore test: restore the latest backup into a *new* volume or
+   service — never over production — point a local `DATABASE_URL` at it, and
+   check that you can sign in and that `/admin` shows the expected queues.
+3. Decide whether an off-Railway copy is needed. Every backup above lives with
+   the same provider as the database. An independent copy means a nightly
+   `pg_dump` (client version 18 or newer, matching the server) encrypted and
+   stored elsewhere; it is not built yet.
+
+**What a restore loses:** everything since the backup used — including token
+ledger entries and payments. After a restore with payments live, reconcile
+against the dLocal Go dashboard before reopening purchases.
+
 ## Other platforms
 
 **Render** — connect the repository; it detects the Dockerfile. Add a managed
