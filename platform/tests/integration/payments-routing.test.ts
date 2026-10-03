@@ -202,10 +202,9 @@ describe('payments by country', () => {
     expect(await getBalance(db(), userId)).toBe(before + 10);
   });
 
-  it('sends the countries dLocal Go cannot serve to Stripe once it is configured', async () => {
+  it('sends every country to Stripe once it is configured', async () => {
     configure({ ...BOTH, STRIPE_SECRET_KEY: 'rk_live_abc123' });
-    expect(routeFor('NI')).toMatchObject({ status: 'ready', provider: { key: 'stripe' } });
-    expect(routeFor('GT')).toMatchObject({ status: 'ready', provider: { key: 'dlocalgo' } });
+    for (const iso of ['NI', 'HN', 'SV', 'BZ', 'GT', 'CR', 'PA', 'MX']) expect(routeFor(iso)).toMatchObject({ status: 'ready', provider: { key: 'stripe' } });
 
     const userId = await memberIn('NI');
     const before = await getBalance(db(), userId);
