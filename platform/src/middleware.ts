@@ -168,7 +168,7 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
     `base-uri 'self'`,
     // A purchase form posts here and is redirected to the payment provider's
     // hosted checkout; browsers apply form-action to that redirect too.
-    `form-action 'self' https://checkout.dlocalgo.com https://checkout-sbx.dlocalgo.com https://www.paypal.com https://www.sandbox.paypal.com`,
+    `form-action 'self' https://checkout.dlocalgo.com https://checkout-sbx.dlocalgo.com https://www.paypal.com https://www.sandbox.paypal.com https://checkout.stripe.com`,
     `frame-ancestors 'none'`,
     `upgrade-insecure-requests`,
   ].join('; ');

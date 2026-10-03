@@ -1633,6 +1633,8 @@ export const en: Dictionary = {
   'payments.paid': 'Payment confirmed! Your tokens are in your balance.',
   'payments.failed': 'The payment was not completed and you were not charged. You can try again.',
   'payments.error.country': 'Buying tokens is not available in your country yet. Below you can see how each country pays.',
+  'payments.how.stripe': 'In your country you pay by card on Stripe’s secure page. Yavaya never sees your card details. Tokens arrive as soon as Stripe confirms the payment.',
+  'payments.method.stripe': 'Stripe · credit or debit card',
   'nav.moderation_community': 'Moderation · Community',
   'nav.sanctuary': 'Sanctuary',
   'nav.moderation_sanctuary': 'Review · Sanctuary',

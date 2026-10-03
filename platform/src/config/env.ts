@@ -139,6 +139,12 @@ const serverSchema = z.object({
   PAYPAL_CLIENT_SECRET: z.string().optional(),
   PAYPAL_WEBHOOK_ID: z.string().optional(),
 
+  /**
+   * Stripe restricted key (rk_live_… / rk_test_…). Needs only: Checkout
+   * Sessions write, PaymentIntents read, Refunds write. Test keys are test mode.
+   */
+  STRIPE_SECRET_KEY: z.string().regex(/^(rk|sk)_(live|test)_[A-Za-z0-9]+$/).optional(),
+
   /** dLocal Go (https://docs.dlocalgo.com). Sandbox keys first; live only after a sandbox purchase works end to end. */
   DLOCALGO_ENV: z.enum(['sandbox', 'live']).optional(),
   DLOCALGO_API_KEY: z.string().min(1).optional(),

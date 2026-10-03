@@ -21,6 +21,8 @@ import { resetTransactionalData } from '../helpers/database';
 
 const context = { networkHash: null, addressHash: 'routing-test', deviceFingerprint: null, userAgent: 'vitest' };
 
+type FakeSession = { id: string; amount_total: number; currency: string; status: string; payment_status: string };
+let sessions: Map<string, FakeSession>;
 type FakeOrder = { id: string; status: string; value: string; currency: string; captured: boolean };
 let orders: Map<string, FakeOrder>;
 let dlocalCountries: string[];
@@ -28,6 +30,7 @@ let captureCalls: number;
 
 function fakeProviders() {
   orders = new Map();
+  sessions = new Map();
   dlocalCountries = [];
   captureCalls = 0;
   let next = 1;
@@ -38,6 +41,19 @@ function fakeProviders() {
       const body = JSON.parse(String(init.body)) as { country?: string };
       dlocalCountries.push(body.country ?? '');
       return Response.json({ id: `DP-${next++}`, redirect_url: 'https://checkout.dlocalgo.com/validate/x' });
+    }
+    // Stripe Checkout.
+    if (pathname === '/v1/checkout/sessions' && init.method === 'POST') {
+      const form = new URLSearchParams(String(init.body));
+      const id = `cs_live_${'a'.repeat(20)}${next++}`;
+      sessions.set(id, { id, amount_total: Number(form.get('line_items[0][price_data][unit_amount]')), currency: form.get('line_items[0][price_data][currency]')!, status: 'open', payment_status: 'unpaid' });
+      expect(form.get('success_url')).toContain('session_id={CHECKOUT_SESSION_ID}');
+      return Response.json({ id, url: `https://checkout.stripe.com/c/pay/${id}` });
+    }
+    const stripe = /^\/v1\/checkout\/sessions\/(cs_[A-Za-z0-9_]+)$/.exec(pathname);
+    if (stripe) {
+      const session = sessions.get(stripe[1]!);
+      return session ? Response.json(session) : Response.json({ error: { type: 'invalid_request_error', code: 'resource_missing' } }, { status: 404 });
     }
     // PayPal.
     if (pathname === '/v1/oauth2/token') return Response.json({ access_token: 'token', expires_in: 3600 });
@@ -88,7 +104,7 @@ async function buy(userId: string) {
   return { redirectUrl, transaction: transaction! };
 }
 
-const KEYS = ['DLOCALGO_ENV', 'DLOCALGO_API_KEY', 'DLOCALGO_SECRET_KEY', 'PAYPAL_ENV', 'PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET'] as const;
+const KEYS = ['DLOCALGO_ENV', 'DLOCALGO_API_KEY', 'DLOCALGO_SECRET_KEY', 'PAYPAL_ENV', 'PAYPAL_CLIENT_ID', 'PAYPAL_CLIENT_SECRET', 'STRIPE_SECRET_KEY'] as const;
 function configure(values: Partial<Record<(typeof KEYS)[number], string>>) {
   for (const key of KEYS) delete process.env[key];
   Object.assign(process.env, values);
@@ -126,7 +142,7 @@ describe('payments by country', () => {
     for (const iso of ['NI', 'HN', 'SV', 'BZ']) expect(routeFor(iso)).toMatchObject({ status: 'ready', provider: { key: 'paypal' } });
 
     configure({ DLOCALGO_ENV: 'live', DLOCALGO_API_KEY: 'k', DLOCALGO_SECRET_KEY: 's' });
-    expect(routeFor('NI')).toEqual({ status: 'pending', providerKey: 'paypal' });
+    expect(routeFor('NI')).toEqual({ status: 'pending', providerKey: 'stripe' });
     // No country on the profile: a provider whose checkout asks for it.
     expect(routeFor(null)).toMatchObject({ status: 'ready', provider: { key: 'dlocalgo' } });
   });
@@ -184,6 +200,42 @@ describe('payments by country', () => {
     expect(result).toMatchObject({ settled: 1, failed: 0 });
     expect(captureCalls).toBe(1);
     expect(await getBalance(db(), userId)).toBe(before + 10);
+  });
+
+  it('sends the countries dLocal Go cannot serve to Stripe once it is configured', async () => {
+    configure({ ...BOTH, STRIPE_SECRET_KEY: 'rk_live_abc123' });
+    expect(routeFor('NI')).toMatchObject({ status: 'ready', provider: { key: 'stripe' } });
+    expect(routeFor('GT')).toMatchObject({ status: 'ready', provider: { key: 'dlocalgo' } });
+
+    const userId = await memberIn('NI');
+    const before = await getBalance(db(), userId);
+    const { redirectUrl, transaction } = await buy(userId);
+    expect(transaction.provider).toBe('stripe');
+    expect(redirectUrl).toMatch(/^https:\/\/checkout\.stripe\.com\//);
+    const sessionId = transaction.providerTransactionId!;
+    expect(sessions.get(sessionId)).toMatchObject({ amount_total: 449, currency: 'usd' });
+
+    const route = { params: Promise.resolve({ provider: 'stripe' }) };
+    // Back before paying: nothing.
+    await paypalReturn(new Request(`https://yavaya.lat/api/payments/stripe/return?session_id=${sessionId}`), route);
+    expect(await getBalance(db(), userId)).toBe(before);
+
+    Object.assign(sessions.get(sessionId)!, { status: 'complete', payment_status: 'paid' });
+    const back = await paypalReturn(new Request(`https://yavaya.lat/api/payments/stripe/return?session_id=${sessionId}`), route);
+    expect(back.headers.get('location')).toContain('purchase=paid');
+    expect(await getBalance(db(), userId)).toBe(before + 10);
+    await reconcilePendingPayments(db(), new Date(Date.now() + 10 * 60_000));
+    expect(await getBalance(db(), userId)).toBe(before + 10);
+  });
+
+  it('never credits a Stripe session paid for a different amount', async () => {
+    configure({ ...BOTH, STRIPE_SECRET_KEY: 'rk_live_abc123' });
+    const userId = await memberIn('BZ');
+    const before = await getBalance(db(), userId);
+    const { transaction } = await buy(userId);
+    Object.assign(sessions.get(transaction.providerTransactionId!)!, { status: 'complete', payment_status: 'paid', amount_total: 49 });
+    await reconcilePendingPayments(db(), new Date(Date.now() + 10 * 60_000));
+    expect(await getBalance(db(), userId)).toBe(before);
   });
 
   it('never credits a PayPal capture for a different amount', async () => {

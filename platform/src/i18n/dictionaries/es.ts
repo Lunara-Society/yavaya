@@ -1657,6 +1657,8 @@ export const es = {
   'payments.paid': '¡Pago confirmado! Tus tokens ya están en tu saldo.',
   'payments.failed': 'El pago no se completó y no se te cobró. Puedes intentarlo de nuevo.',
   'payments.error.country': 'La compra de tokens todavía no está disponible en tu país. Abajo ves cómo se paga en cada país.',
+  'payments.how.stripe': 'En tu país pagas con tarjeta en la página segura de Stripe. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan en cuanto Stripe confirma el pago.',
+  'payments.method.stripe': 'Stripe · tarjeta de crédito o débito',
   'nav.moderation_community': 'Moderación · Comunidad',
   'nav.sanctuary': 'Santuario',
   'nav.moderation_sanctuary': 'Revisión · Santuario',

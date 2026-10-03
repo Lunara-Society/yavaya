@@ -8,6 +8,7 @@ import { creditPurchasedTokens } from '@/server/domains/tokens/service';
 import type { PaymentProvider } from './provider';
 import { PayPalProvider } from './providers/paypal';
 import { DLocalGoProvider } from './providers/dlocalgo';
+import { StripeProvider } from './providers/stripe';
 
 /**
  * Payment service.
@@ -23,6 +24,7 @@ import { DLocalGoProvider } from './providers/dlocalgo';
 
 const providers = new Map<string, PaymentProvider>([
   ['dlocalgo', new DLocalGoProvider()],
+  ['stripe', new StripeProvider()],
   ['paypal', new PayPalProvider()],
 ]);
 

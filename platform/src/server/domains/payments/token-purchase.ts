@@ -47,7 +47,7 @@ export async function startTokenPurchase(
     description: params.description,
     // Coming back proves nothing. PayPal returns through its own route, which
     // settles server to server; dLocal Go reports by notification.
-    returnUrl: provider.key === 'paypal' ? `${base}/api/payments/paypal/return` : `${base}/account/tokens?purchase=returned`,
+    returnUrl: provider.key === 'paypal' || provider.key === 'stripe' ? `${base}/api/payments/${provider.key}/return` : `${base}/account/tokens?purchase=returned`,
     country,
     cancelUrl: `${base}/account/tokens?purchase=cancelled`,
   });

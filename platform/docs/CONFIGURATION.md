@@ -183,6 +183,17 @@ redirects there and nowhere else. Refunds are not automated: `refund()`
 exists in the adapter, but no screen calls it yet, and a refund
 notification is recorded without changing balances.
 
+## Payments — Stripe (countries dLocal Go does not reach)
+
+Routing (`config/payments.ts`): dLocal Go where it is licensed, then
+**Stripe**, then PayPal. Stripe takes cards from buyers in any country on its
+hosted Checkout page. Set on both services: `STRIPE_SECRET_KEY` — a
+**restricted** key (`rk_live_…`) with only Checkout Sessions: Write,
+PaymentIntents: Read, Refunds: Write. A `rk_test_…` key is test mode (only
+administrators can buy). Tokens are credited only when the session reads
+`complete` and `paid` for exactly the price asked; `reconcile-payments`
+settles buyers who closed the tab. No webhook secret is needed.
+
 ## Payments — PayPal (countries dLocal Go does not reach)
 
 **Why:** dLocal Go only takes payers from countries it is licensed in. Of
