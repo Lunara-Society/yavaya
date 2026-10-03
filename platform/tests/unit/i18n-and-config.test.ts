@@ -51,6 +51,7 @@ describe('token business rules', () => {
 
   it('offers exactly the owner-set packages (2 October 2026)', () => {
     expect(TOKEN_PACKAGES.filter((pkg) => pkg.enabled).map((pkg) => [pkg.tokens, pkg.priceMinor])).toEqual([
+      [2, 99],
       [10, 449],
       [25, 999],
       [50, 1899],
@@ -65,7 +66,7 @@ describe('token business rules', () => {
       expect(offered[i]!.priceMinor / offered[i]!.tokens).toBeLessThan(offered[i - 1]!.priceMinor / offered[i - 1]!.tokens);
     }
     expect(packageSavingPercent(offered[0]!, offered)).toBe(0);
-    expect(packageSavingPercent(offered[offered.length - 1]!, offered)).toBe(33);
+    expect(packageSavingPercent(offered[offered.length - 1]!, offered)).toBe(39);
   });
 
   it('caps the starter allocation at the stated total', () => {
