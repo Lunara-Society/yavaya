@@ -166,7 +166,7 @@ export const es = {
   'tokens.balance': 'Saldo',
   'tokens.description':
     'Los Tokens Yavaya son créditos de uso de la plataforma. No son criptomoneda, no representan participación ni depósitos, y no son una inversión.',
-  'tokens.starter_grant': 'Las cuentas nuevas reciben {perDay} tokens cada 24 horas durante {days} días, hasta {max}.',
+  'tokens.starter_grant': 'Al verificar tu correo recibes {perDay} tokens cada 24 horas durante {days} días, hasta {max}. Después ya no llegan más.',
   'tokens.cost_publish': 'Publicar contenido que califica cuesta {cost} token.',
   'tokens.view_history': 'Ver mi historial',
   'tokens.history': 'Historial',

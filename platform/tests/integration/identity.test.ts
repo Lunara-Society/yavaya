@@ -20,7 +20,7 @@ import {
 import { getScore } from '@/server/domains/reputation/service';
 import { getBalance } from '@/server/domains/tokens/service';
 import { buildTrustShield } from '@/server/domains/trust/shield';
-import { NEW_USER_RULES, TOKEN_RULES, VERIFICATION_RULES } from '@/config/business-rules';
+import { NEW_USER_RULES, VERIFICATION_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 
 const context = {
@@ -69,9 +69,9 @@ describe('registration', () => {
       .where(eq(yayIdRegistry.yayId, result.yayId));
     expect(reserved?.userId).toBe(result.userId);
 
-    // Reputation starts at 50, and the day-0 starter grant has landed.
+    // Reputation starts at 50. No starter tokens yet: they begin at verification.
     expect(await getScore(db(), result.userId)).toBe(500);
-    expect(await getBalance(db(), result.userId)).toBe(TOKEN_RULES.starterGrantPerDay);
+    expect(await getBalance(db(), result.userId)).toBe(0);
   });
 
   it('allocates a distinct YAY ID to every account', async () => {

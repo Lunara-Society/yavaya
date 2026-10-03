@@ -60,7 +60,7 @@ export const RISK_RULES = {
 } as const;
 
 export const TOKEN_RULES = {
-  /** New accounts: 2 tokens per 24h for the first 7 days, capped at 14. */
+  /** 2 tokens per 24h for the 7 days after email verification, capped at 14. */
   starterGrantPerDay: 2,
   starterGrantDays: 7,
   starterGrantMaximum: 14,

@@ -105,7 +105,8 @@ export const billableActions = pgTable(
 );
 
 /**
- * Starter allocation: 2 tokens per 24h period for the first 7 days, 14 total.
+ * Starter allocation: 2 tokens per 24h period for the 7 days after email
+ * verification, 14 total.
  * One row per user per period makes double-granting impossible.
  */
 export const starterGrants = pgTable(
@@ -114,7 +115,7 @@ export const starterGrants = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    /** 0-based 24h period since account creation. */
+    /** 0-based 24h period since the member verified their email. */
     periodIndex: smallint('period_index').notNull(),
     amount: integer('amount').notNull(),
     grantedAt: timestamp('granted_at', { withTimezone: true }).notNull().defaultNow(),

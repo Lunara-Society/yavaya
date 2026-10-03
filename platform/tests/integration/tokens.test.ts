@@ -11,10 +11,11 @@ import {
   ensureUserAccount,
   getBalance,
   grantReward,
+  grantDueStarterTokens,
   grantStarterTokensForPeriod,
   refundAction,
 } from '@/server/domains/tokens/service';
-import { register } from '@/server/domains/identity/service';
+import { consumeVerificationCode, register } from '@/server/domains/identity/service';
 import { TOKEN_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 import { expectAppendOnlyRefusal } from '../helpers/errors';
@@ -38,6 +39,8 @@ async function createUser(): Promise<{ userId: string; createdAt: Date }> {
     },
     context,
   );
+  // Starter tokens arrive with verification; these tests start from them.
+  await consumeVerificationCode(db(), { userId: result.userId, kind: 'email', code: result.emailVerificationCode });
   const [row] = await db()
     .select({ createdAt: users.createdAt })
     .from(users)
@@ -221,39 +224,62 @@ describe('charging for actions', () => {
 });
 
 describe('starter allocation', () => {
-  it('grants 2 per period, capped at 14 over 7 days, and never twice per period', async () => {
-    const { userId, createdAt } = await createUser();
-
-    // Day 0 was granted at registration; granting again in the same period is
-    // a no-op.
-    const sameDay = await db().transaction((tx) =>
-      grantStarterTokensForPeriod(tx, { userId, accountCreatedAt: createdAt, now: createdAt }),
+  async function registerUnverified() {
+    const result = await register(
+      db(),
+      { email: `starter-${crypto.randomUUID()}@example.com`, password: 'a-sufficiently-long-passphrase', displayName: 'Nueva', locale: 'es', acceptedTerms: true },
+      context,
     );
-    expect(sameDay.granted).toBe(0);
+    return result;
+  }
+
+  it('gives nothing at sign-up, and day 0 the moment the email is verified', async () => {
+    const { userId, emailVerificationCode } = await registerUnverified();
+    expect(await getBalance(db(), userId)).toBe(0);
+    // The scheduler skips a member who has not verified.
+    await grantDueStarterTokens(db());
+    expect(await getBalance(db(), userId)).toBe(0);
+
+    expect((await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode })).ok).toBe(true);
+    expect(await getBalance(db(), userId)).toBe(TOKEN_RULES.starterGrantPerDay);
+    // Same period again, from the scheduler: nothing.
+    await grantDueStarterTokens(db());
+    expect(await getBalance(db(), userId)).toBe(TOKEN_RULES.starterGrantPerDay);
+  });
+
+  it('grants 2 per day for the 7 days after verification, then stops for good', async () => {
+    const { userId, emailVerificationCode } = await registerUnverified();
+    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode });
+    const [row] = await db().select({ verifiedAt: users.emailVerifiedAt }).from(users).where(eq(users.id, userId));
+    const verifiedAt = row!.verifiedAt!;
 
     for (let day = 1; day < TOKEN_RULES.starterGrantDays; day += 1) {
-      const now = new Date(createdAt.getTime() + day * 86_400_000);
-      const result = await db().transaction((tx) =>
-        grantStarterTokensForPeriod(tx, { userId, accountCreatedAt: createdAt, now }),
-      );
+      const result = await grantDueStarterTokens(db(), new Date(verifiedAt.getTime() + day * 86_400_000 + 1000));
       expect(result.granted).toBe(TOKEN_RULES.starterGrantPerDay);
+      // A second tick the same day changes nothing.
+      expect((await grantDueStarterTokens(db(), new Date(verifiedAt.getTime() + day * 86_400_000 + 60_000))).granted).toBe(0);
     }
-
     expect(await getBalance(db(), userId)).toBe(TOKEN_RULES.starterGrantMaximum);
 
-    // Day 7 is outside the window.
-    const afterWindow = await db().transaction((tx) =>
-      grantStarterTokensForPeriod(tx, {
-        userId,
-        accountCreatedAt: createdAt,
-        now: new Date(createdAt.getTime() + TOKEN_RULES.starterGrantDays * 86_400_000),
-      }),
-    );
-    expect(afterWindow.granted).toBe(0);
+    // Day 7 and later: outside the window, from either path.
+    const late = new Date(verifiedAt.getTime() + TOKEN_RULES.starterGrantDays * 86_400_000 + 1000);
+    expect((await grantDueStarterTokens(db(), late)).granted).toBe(0);
+    const direct = await db().transaction((tx) => grantStarterTokensForPeriod(tx, { userId, verifiedAt, now: late }));
+    expect(direct.granted).toBe(0);
     expect(await getBalance(db(), userId)).toBe(TOKEN_RULES.starterGrantMaximum);
 
     const grants = await db().select().from(starterGrants).where(eq(starterGrants.userId, userId));
     expect(grants).toHaveLength(TOKEN_RULES.starterGrantDays);
+  });
+
+  it('gives nothing to an account that is not active', async () => {
+    const { userId, emailVerificationCode } = await registerUnverified();
+    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode });
+    const before = await getBalance(db(), userId);
+    await db().update(users).set({ status: 'restricted' }).where(eq(users.id, userId));
+    const [row] = await db().select({ verifiedAt: users.emailVerifiedAt }).from(users).where(eq(users.id, userId));
+    await grantDueStarterTokens(db(), new Date(row!.verifiedAt!.getTime() + 2 * 86_400_000));
+    expect(await getBalance(db(), userId)).toBe(before);
   });
 });
 

@@ -180,8 +180,7 @@ export async function register(
     await grantRole(tx, { userId, roleKey: 'member', grantedBy: null });
     await seedNotificationPreferences(tx, userId);
 
-    // Day 0 of the starter allocation.
-    await grantStarterTokensForPeriod(tx, { userId, accountCreatedAt: now, now });
+    // No starter tokens yet: they begin when the email address is verified.
 
     await tx.insert(verificationChallenges).values({
       userId,
@@ -355,6 +354,15 @@ export async function consumeVerificationCode(
         status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
       })
       .where(eq(users.id, params.userId));
+
+    // Day 0 of the starter allocation; the scheduler grants days 1 to 6. A
+    // restricted account waits: it gets nothing until a human clears it, and
+    // by then its window may have passed — free tokens are not owed to an
+    // account under review.
+    const [verified] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.userId));
+    if (verified?.status === 'active') {
+      await grantStarterTokensForPeriod(tx, { userId: params.userId, verifiedAt: now, now });
+    }
 
     // The reputation table's own rule for it, once per member.
     await applyRule(tx, {

@@ -150,7 +150,7 @@ export const en: Dictionary = {
   'tokens.balance': 'Balance',
   'tokens.description':
     'Yavaya Tokens are platform utility credits. They are not cryptocurrency, they do not represent equity or deposits, and they are not an investment.',
-  'tokens.starter_grant': 'New accounts receive {perDay} tokens every 24 hours for {days} days, up to {max}.',
+  'tokens.starter_grant': 'Once you verify your email you receive {perDay} tokens every 24 hours for {days} days, up to {max}. After that they stop.',
   'tokens.cost_publish': 'Publishing qualifying content costs {cost} token.',
   'tokens.view_history': 'View my history',
   'tokens.history': 'History',

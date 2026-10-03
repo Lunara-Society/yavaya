@@ -54,6 +54,7 @@ describe('scheduled jobs', () => {
       'purge-sessions',
       'reconcile-payments',
       'send-digests',
+      'starter-tokens',
       'tick',
       'verify-audit-chain',
     ]);

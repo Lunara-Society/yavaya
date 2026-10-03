@@ -1,11 +1,12 @@
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
-import type { Executor } from '@/server/db/client';
+import type { Database, Executor } from '@/server/db/client';
 import {
   billableActions,
   rewardGrants,
   starterGrants,
   tokenAccounts,
   tokenLedger,
+  users,
 } from '@/server/db/schema';
 import { TOKEN_RULES } from '@/config/business-rules';
 import { errors } from '@/server/errors';
@@ -289,18 +290,24 @@ export async function refundAction(
 }
 
 /**
- * Starter allocation: 2 tokens per 24h period for the first 7 days, 14 max.
+ * Starter allocation: 2 tokens per 24h period for the 7 days after the member
+ * verifies their email, 14 max. After those 7 days nothing more arrives.
  *
- * `periodIndex` is derived from account age, and the unique constraint on
- * (user, period) is what makes the grant unrepeatable — not a timer, not a
- * cron job's memory.
+ * The window opens at verification, not at sign-up (owner, 3 October 2026):
+ * an address nobody can read should not collect free tokens, and a member who
+ * verifies on day five should not find most of the welcome already gone.
+ *
+ * `periodIndex` is derived from the time since verification, and the unique
+ * constraint on (user, period) is what makes the grant unrepeatable — not a
+ * timer, not a cron job's memory. The scheduler and the verification step may
+ * both ask for the same period; only one of them gets it.
  */
 export async function grantStarterTokensForPeriod(
   tx: Executor,
-  params: { userId: string; accountCreatedAt: Date; now?: Date },
+  params: { userId: string; verifiedAt: Date; now?: Date },
 ): Promise<{ granted: number; periodIndex: number | null; balance: number }> {
   const now = params.now ?? new Date();
-  const elapsedMs = now.getTime() - params.accountCreatedAt.getTime();
+  const elapsedMs = now.getTime() - params.verifiedAt.getTime();
   const periodIndex = Math.floor(elapsedMs / (24 * 60 * 60 * 1000));
 
   if (elapsedMs < 0 || periodIndex >= TOKEN_RULES.starterGrantDays) {
@@ -340,6 +347,32 @@ export async function grantStarterTokensForPeriod(
   });
 
   return { granted: amount, periodIndex, balance: result.balance };
+}
+
+/**
+ * The scheduler's half of the starter allocation: every active member still
+ * inside their 7 days after verification gets the period they are due. Each
+ * member is granted in their own transaction, so one failure costs that member
+ * a retry on the next tick, not everyone their tokens.
+ */
+export async function grantDueStarterTokens(database: Database, now = new Date()): Promise<{ members: number; granted: number }> {
+  const windowStart = new Date(now.getTime() - TOKEN_RULES.starterGrantDays * 24 * 60 * 60 * 1000);
+  const due = await database
+    .select({ id: users.id, verifiedAt: users.emailVerifiedAt })
+    .from(users)
+    .where(and(eq(users.status, 'active'), gte(users.emailVerifiedAt, windowStart)));
+  let members = 0;
+  let granted = 0;
+  for (const member of due) {
+    if (!member.verifiedAt) continue;
+    const verifiedAt = member.verifiedAt;
+    const result = await database.transaction((tx) => grantStarterTokensForPeriod(tx, { userId: member.id, verifiedAt, now }));
+    if (result.granted > 0) {
+      members += 1;
+      granted += result.granted;
+    }
+  }
+  return { members, granted };
 }
 
 /**

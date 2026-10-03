@@ -85,7 +85,7 @@ async function createMember(options: { ageDays?: number; tokens?: number } = {})
     await db().transaction((tx) =>
       grantStarterTokensForPeriod(tx, {
         userId,
-        accountCreatedAt: createdAt,
+        verifiedAt: createdAt,
         now: new Date(createdAt.getTime() + period * 86_400_000 + 1000),
       }),
     );
