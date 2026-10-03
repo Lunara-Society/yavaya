@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/ui/site/json-ld';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -42,6 +43,21 @@ export default async function ChurchPage({ params, searchParams }: Params) {
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
+      {church.status === 'approved' ? (
+        // What the page already shows, in a form search engines read: so a
+        // search for a church in a city can find it.
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'Church',
+            name: church.name,
+            url: pageUrl,
+            description: church.description.slice(0, 300),
+            address: { '@type': 'PostalAddress', ...(church.address ? { streetAddress: church.address } : {}), addressLocality: church.placeName },
+            ...(church.whatsappE164 ? { telephone: church.whatsappE164 } : {}),
+          }}
+        />
+      ) : null}
       <section className="sc-church-hero">
         <PageScene name="sanctuary-church" className="sc-church-hero-photo" />
         <div className="wrap">

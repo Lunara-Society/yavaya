@@ -2,18 +2,47 @@ import type { Metadata, Viewport } from 'next';
 import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
 import './globals.css';
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL ?? 'https://yavaya.lat'),
-  title: {
-    default: 'Yavaya — El hogar digital de Centroamérica',
-    template: '%s · Yavaya',
-  },
-  description:
-    'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
-  icons: { icon: '/favicon.svg' },
-  applicationName: 'Yavaya',
-  formatDetection: { telephone: false },
-};
+/**
+ * Site-wide metadata. Read per request (not at build), because the Google
+ * Search Console verification code is an environment variable the owner
+ * sets on the host: GOOGLE_SITE_VERIFICATION.
+ *
+ * The share card (og.jpg) and the icons live in /public. Pages set their own
+ * title and description; Open Graph has no title here on purpose, so sharing
+ * a page shows that page's own title rather than the site's.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+  return {
+    metadataBase: new URL(process.env.APP_URL ?? 'https://yavaya.lat'),
+    title: {
+      default: 'Yavaya — El hogar digital de Centroamérica',
+      template: '%s · Yavaya',
+    },
+    description:
+      'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
+    icons: {
+      icon: [
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+        { url: '/favicon.ico', sizes: '48x48' },
+        { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      ],
+      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    },
+    manifest: '/manifest.webmanifest',
+    applicationName: 'Yavaya',
+    formatDetection: { telephone: false },
+    openGraph: {
+      type: 'website',
+      siteName: 'Yavaya',
+      locale: 'es_LA',
+      alternateLocale: ['en_US'],
+      images: [{ url: '/og.jpg', width: 1200, height: 630, alt: 'Yavaya — El hogar digital de Centroamérica' }],
+    },
+    twitter: { card: 'summary_large_image', images: ['/og.jpg'] },
+    ...(verification ? { verification: { google: verification } } : {}),
+  };
+}
 
 /*
  * Every visitor gets the desktop layout, phones included: the owner's

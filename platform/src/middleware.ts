@@ -15,18 +15,45 @@ const PREVIEW_PARAM = 'key';
  * The health endpoint is here because the platform's probe cannot hold a
  * cookie, and an unreachable probe means the deploy never goes healthy.
  */
-const PREVIEW_EXEMPT = ['/api/health'];
+const PREVIEW_EXEMPT = ['/api/health', '/robots.txt', '/sitemap.xml'];
 /** Payment providers' notifications: they cannot hold a cookie either, and carry their own signature. */
 const PREVIEW_EXEMPT_PATTERN = /^\/api\/payments\/[a-z0-9]+\/notify$/;
 
 export function middleware(request: NextRequest): NextResponse {
+  const www = wwwToApex(request);
+  if (www) return www;
+
   const gate = previewGate(request);
   if (gate) return withSecurityHeaders(request, gate);
 
   const english = englishPrefix(request);
   if (english) return withSecurityHeaders(request, english);
 
-  return withSecurityHeaders(request, null);
+  return withCanonical(request, withSecurityHeaders(request, null));
+}
+
+/**
+ * One address per page. `www.yavaya.lat` answers too, but it is the same
+ * site: a permanent redirect makes search engines count one page, not two.
+ */
+function wwwToApex(request: NextRequest): NextResponse | null {
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? '';
+  if (!host.toLowerCase().startsWith('www.')) return null;
+  const target = new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${host.slice(4)}`);
+  return NextResponse.redirect(target, 308);
+}
+
+/**
+ * The canonical address of a page, sent as a header: the path without its
+ * query string, on the one public origin. Filters and sort orders
+ * (`?category=…`) then count as the page they filter, not as new pages.
+ */
+function withCanonical(request: NextRequest, response: NextResponse): NextResponse {
+  const { pathname } = request.nextUrl;
+  if (request.method !== 'GET' || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) return response;
+  const base = (process.env.APP_URL ?? 'https://yavaya.lat').replace(/\/$/, '');
+  response.headers.set('link', `<${base}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}>; rel="canonical"`);
+  return response;
 }
 
 /**
