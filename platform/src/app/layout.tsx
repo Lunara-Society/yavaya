@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
 import './globals.css';
 
@@ -13,6 +14,13 @@ import './globals.css';
  */
 export async function generateMetadata(): Promise<Metadata> {
   const verification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+  /*
+   * One address per page: the path without its query string, so filters and
+   * sort orders (`?category=…`) count as the page they filter. Rendered as a
+   * tag, not a header: the host's edge merges duplicate Link headers.
+   */
+  const pathname = (await headers()).get('x-pathname') ?? '/';
+  const canonical = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   return {
     metadataBase: new URL(process.env.APP_URL ?? 'https://yavaya.lat'),
     title: {
@@ -30,6 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
     },
     manifest: '/manifest.webmanifest',
+    alternates: { canonical },
     applicationName: 'Yavaya',
     formatDetection: { telephone: false },
     openGraph: {

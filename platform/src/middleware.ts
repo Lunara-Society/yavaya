@@ -29,7 +29,7 @@ export function middleware(request: NextRequest): NextResponse {
   const english = englishPrefix(request);
   if (english) return withSecurityHeaders(request, english);
 
-  return withCanonical(request, withSecurityHeaders(request, null));
+  return withSecurityHeaders(request, null);
 }
 
 /**
@@ -41,19 +41,6 @@ function wwwToApex(request: NextRequest): NextResponse | null {
   if (!host.toLowerCase().startsWith('www.')) return null;
   const target = new URL(request.nextUrl.pathname + request.nextUrl.search, `https://${host.slice(4)}`);
   return NextResponse.redirect(target, 308);
-}
-
-/**
- * The canonical address of a page, sent as a header: the path without its
- * query string, on the one public origin. Filters and sort orders
- * (`?category=…`) then count as the page they filter, not as new pages.
- */
-function withCanonical(request: NextRequest, response: NextResponse): NextResponse {
-  const { pathname } = request.nextUrl;
-  if (request.method !== 'GET' || pathname.startsWith('/api/') || /\.[a-z0-9]+$/i.test(pathname)) return response;
-  const base = (process.env.APP_URL ?? 'https://yavaya.lat').replace(/\/$/, '');
-  response.headers.set('link', `<${base}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}>; rel="canonical"`);
-  return response;
 }
 
 /**
@@ -207,6 +194,8 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-nonce', nonce);
+  // The path, for the canonical tag the root layout renders.
+  requestHeaders.set('x-pathname', request.nextUrl.pathname);
   requestHeaders.set('content-security-policy', csp);
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
