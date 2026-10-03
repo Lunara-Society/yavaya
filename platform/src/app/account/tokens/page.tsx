@@ -8,7 +8,7 @@ import { AppShell } from '@/ui/components/app-shell';
 import { CapabilityBadge } from '@/ui/components/capability-badge';
 import { shellContext } from '@/ui/shell-context';
 import { getBalance, listLedgerEntries } from '@/server/domains/tokens/service';
-import { listProviderAvailability } from '@/server/domains/payments/service';
+import { countryRoutes, memberCountry, routeFor } from '@/server/domains/payments/routing';
 import { myTokenPurchases } from '@/server/domains/payments/token-purchase';
 import { isAdmin } from '@/server/domains/access/authorize';
 import { buyTokensAction } from './actions';
@@ -31,26 +31,29 @@ export const dynamic = 'force-dynamic';
  * return address: it shows each purchase as the provider has confirmed it.
  */
 export default async function TokensPage({ searchParams }: { searchParams: Promise<{ purchase?: string; error?: string }> }) {
-  const { t, language, theme, member, userId } = await shellContext();
+  const { t, locale, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
   const query = await searchParams;
 
-  const [balance, entries, packages, purchases] = await Promise.all([
+  const [balance, entries, packages, purchases, country, countries] = await Promise.all([
     getBalance(db(), userId),
     listLedgerEntries(db(), userId, { limit: 50 }),
     db().select().from(tokenPackages).where(eq(tokenPackages.enabled, true)),
     myTokenPurchases(db(), userId, 5),
+    memberCountry(db(), userId),
+    countryRoutes(db(), locale),
   ]);
   // One id per page view: a double click on the same form is one purchase.
   const attempt = randomUUID();
   const errorKey = query.error && /^(payments\.error\.[a-z_]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
 
-  const ready = listProviderAvailability().find((provider) => provider.available);
-  // In the provider's test environment only administrators see the purchase
+  // The member's country decides how they pay (config/payments.ts).
+  const route = routeFor(country);
+  const provider = route.status === 'ready' ? route.provider : null;
+  // In a provider's test environment only administrators see the purchase
   // controls; everyone else sees what they would see with no provider at all.
-  const testMode = Boolean(ready?.testMode);
-  const paymentsReady = Boolean(ready) && (!testMode || (await isAdmin(db(), userId)));
-  const unavailableReason = listProviderAvailability().find((provider) => !provider.available)?.reason;
+  const testMode = Boolean(provider?.testMode?.());
+  const paymentsReady = Boolean(provider) && (!testMode || (await isAdmin(db(), userId)));
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
@@ -95,6 +98,16 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
             ))}
         </ul>
 
+        {query.purchase === 'paid' ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm font-semibold" role="status" style={{ borderColor: 'var(--color-positive)' }}>
+            {t('payments.paid')}
+          </p>
+        ) : null}
+        {query.purchase === 'failed' ? (
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" role="alert" style={{ borderColor: 'var(--color-caution)' }}>
+            {t('payments.failed')}
+          </p>
+        ) : null}
         {query.purchase === 'returned' ? (
           <p className="mt-3 rounded-xl border px-4 py-3 text-sm" role="status">
             {t('payments.returned')}
@@ -115,23 +128,44 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
             {t('payments.test_mode')}
           </p>
         ) : null}
-        {paymentsReady ? (
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">{t('payments.how')}</p>
+        {paymentsReady && provider ? (
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">{t(`payments.how.${provider.key}` as MessageKey)}</p>
         ) : (
-          <p
-            className="mt-3 rounded-xl border px-4 py-3 text-sm"
-            style={{ borderColor: 'var(--color-caution)' }}
-          >
-            {t('tokens.purchase_unavailable')}
-            {unavailableReason ? (
-              <span className="mt-1 block text-[var(--text-muted)]">{unavailableReason}</span>
-            ) : null}
+          <p className="mt-3 rounded-xl border px-4 py-3 text-sm" style={{ borderColor: 'var(--color-caution)' }}>
+            {route.status === 'pending'
+              ? t('payments.country_pending', { method: t(`payments.method.${route.providerKey}` as MessageKey) })
+              : t('tokens.purchase_unavailable')}
           </p>
         )}
 
         <p className="mt-3 text-sm text-[var(--text-secondary)]">
           {t('tokens.purchase_limit', { limit: TOKEN_RULES.maxTokensPerPurchase })}
         </p>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-semibold tracking-tight">{t('payments.countries_title')}</h2>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">{t('payments.countries_lead')}</p>
+        <ul className="mt-3 divide-y rounded-xl border">
+          {countries.map((row) => (
+            <li
+              key={row.iso}
+              className="flex items-center justify-between gap-3 p-3"
+              style={row.iso === country ? { background: 'var(--surface-2, rgba(127,127,127,0.08))' } : undefined}
+            >
+              <span className="min-w-0 text-sm font-medium">
+                {row.name}
+                {row.iso === country ? <span className="ml-2 text-2xs text-[var(--text-muted)]">{t('payments.your_country')}</span> : null}
+              </span>
+              <span className="shrink-0 text-right text-sm">
+                {row.providerKey ? t(`payments.method.${row.providerKey}` as MessageKey) : '—'}
+                <span className="block text-2xs" style={{ color: row.ready ? 'var(--color-positive)' : 'var(--text-muted)' }}>
+                  {t(row.ready ? 'payments.country_ready' : 'payments.country_soon')}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </section>
 
       {purchases.length > 0 ? (

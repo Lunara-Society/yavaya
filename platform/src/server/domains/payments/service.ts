@@ -70,6 +70,8 @@ export type StartCheckoutInput = {
   description: string;
   returnUrl: string;
   cancelUrl: string;
+  /** The payer's country (ISO alpha-2), when known. */
+  country?: string | null;
 };
 
 /**
@@ -135,6 +137,7 @@ export async function startCheckout(
     description: input.description,
     returnUrl: input.returnUrl,
     cancelUrl: input.cancelUrl,
+    country: input.country ?? null,
     metadata: { reference },
   });
 
@@ -285,7 +288,7 @@ export async function applyProviderOutcome(
  */
 export async function settleFromProvider(
   database: Database,
-  params: { providerKey: string; providerTransactionId: string; source: 'webhook' | 'reconciliation' },
+  params: { providerKey: string; providerTransactionId: string; source: 'webhook' | 'server_capture' | 'reconciliation' },
 ): Promise<{ status: string; applied: boolean; reason: string }> {
   const provider = getProvider(params.providerKey);
   const [transaction] = await database

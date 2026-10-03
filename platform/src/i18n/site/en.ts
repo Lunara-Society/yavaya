@@ -570,7 +570,7 @@ export const siteEn: SiteContent = {
       packagesHead: { eyebrow: 'Packages', title: 'Simple. And they will stay simple.' },
       tokensWord: 'tokens',
       packageNames: { tokens_2: 'Try it', tokens_10: 'Basic', tokens_25: 'Plus', tokens_50: 'Pro', tokens_100: 'Business', tokens_500: 'Enterprise' } as Record<string, string>,
-      packagesNote: 'Prices in US dollars. Buy them from **Your account → Tokens**, by card or another local method on dLocal Go’s secure page. Tokens arrive when the payment is confirmed.',
+      packagesNote: 'Prices in US dollars. Buy them from **Your account → Tokens**, by card or another method, on the secure page of dLocal Go or PayPal depending on your country. Tokens arrive when the payment is confirmed.',
       perToken: '{price} per token',
       saving: 'Save {percent}%',
       bestValue: 'Best price per token',
@@ -837,7 +837,7 @@ export const siteEn: SiteContent = {
           text: 'You can buy token packages. When you buy, you agree that:',
           list: [
             'Each package’s **price** is shown in US dollars before you pay, and it is the total Yavaya charges. If you pay in another currency, the payment processor converts it at the time of payment, and your bank may charge its own fees.',
-            'Payment is processed by **dLocal Go**, on its own secure page. **Yavaya never sees or stores your card details.**',
+            'Payment is processed by **dLocal Go** or **PayPal**, depending on your country, on its own secure page. **Yavaya never sees or stores your card details.**',
             'Tokens are credited **when the processor confirms the payment**, usually within seconds; cash or bank transfer can take longer. Each purchase appears in your account with its status and reference.',
             'Purchased tokens **do not expire** and cannot be moved to another account. They cannot be exchanged for money, except in the refund cases below.',
             '**Refunds:** we refund you if you were charged and the tokens did not arrive, if you were charged twice for the same thing, or if you bought by mistake and write to us within 14 days without having used any of those tokens. Write to us with the purchase reference.',
@@ -976,7 +976,7 @@ export const siteEn: SiteContent = {
           title: 'Who it is shared with',
           text: 'We do not sell data. There is no third-party advertising or analytics. These providers help us operate:',
           list: [
-            '**dLocal Go** processes payments when you buy tokens: it receives the amount, a purchase reference and the details you enter on its payment page. Yavaya does not receive your card details.',
+            '**dLocal Go** and **PayPal** process payments when you buy tokens, depending on your country: they receive the amount, a purchase reference and the details you enter on their payment page. Yavaya does not receive your card details.',
             '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
           ],

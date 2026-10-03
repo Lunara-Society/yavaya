@@ -140,6 +140,7 @@ export class DLocalGoProvider implements PaymentProvider {
     const data = await this.call('/v1/payments', {
       method: 'POST',
       body: {
+        ...(request.country ? { country: request.country } : {}),
         amount: toMajor(request.money),
         currency: request.money.currency.toUpperCase(),
         order_id: request.reference,

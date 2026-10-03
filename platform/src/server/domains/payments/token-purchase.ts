@@ -5,7 +5,8 @@ import { paymentTransactions, tokenPackages, users } from '@/server/db/schema';
 import { TOKEN_RULES } from '@/config/business-rules';
 import { DomainError, errors } from '@/server/errors';
 import { isAdmin } from '@/server/domains/access/authorize';
-import { activeProvider, startCheckout } from './service';
+import { startCheckout } from './service';
+import { memberCountry, routeFor } from './routing';
 
 /**
  * Buying tokens. The member chooses a package, is sent to the provider's
@@ -16,8 +17,12 @@ export async function startTokenPurchase(
   database: Database,
   params: { userId: string; packageKey: string; attemptId: string; appUrl: string; description: string },
 ): Promise<{ redirectUrl: string; reference: string }> {
-  const provider = activeProvider();
-  if (!provider) throw errors.integrationUnconfigured('payments');
+  // The member's country picks the provider: dLocal Go where it is
+  // licensed, PayPal elsewhere (config/payments.ts).
+  const country = await memberCountry(database, params.userId);
+  const route = routeFor(country);
+  if (route.status !== 'ready') throw new DomainError('integration_unconfigured', 'payments.error.country');
+  const provider = route.provider;
 
   const [user] = await database.select({ status: users.status }).from(users).where(eq(users.id, params.userId)).limit(1);
   if (!user || user.status !== 'active') throw new DomainError('forbidden', 'payments.error.account');
@@ -40,8 +45,10 @@ export async function startTokenPurchase(
     intent: { packageKey: pkg.key, tokens: pkg.tokens },
     idempotencyKey: `tokens:${params.userId}:${params.attemptId}`,
     description: params.description,
-    // Coming back here proves nothing; the page shows what the provider confirmed.
-    returnUrl: `${base}/account/tokens?purchase=returned`,
+    // Coming back proves nothing. PayPal returns through its own route, which
+    // settles server to server; dLocal Go reports by notification.
+    returnUrl: provider.key === 'paypal' ? `${base}/api/payments/paypal/return` : `${base}/account/tokens?purchase=returned`,
+    country,
     cancelUrl: `${base}/account/tokens?purchase=cancelled`,
   });
   return { reference, redirectUrl };

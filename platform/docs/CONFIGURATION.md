@@ -183,32 +183,34 @@ redirects there and nowhere else. Refunds are not automated: `refund()`
 exists in the adapter, but no screen calls it yet, and a refund
 notification is recorded without changing balances.
 
-## Payments — PayPal
+## Payments — PayPal (countries dLocal Go does not reach)
 
-**Needed for:** token purchases, Works subscriptions, and later YavayaGo
-commercial flows.
+**Why:** dLocal Go only takes payers from countries it is licensed in. Of
+Yavaya's countries, Nicaragua, Honduras, El Salvador and Belize are not among
+them. `config/payments.ts` routes each member by the country in their
+profile: dLocal Go where it works, PayPal everywhere else. The tokens page
+shows the table, country by country.
 
-**Current state:** `src/server/domains/payments/providers/paypal.ts` is a real
-adapter shell implementing the `PaymentProvider` interface. Every method that
-would move money throws `ProviderUnconfiguredError`. `availability()` reports
-`false` *even when credentials are present*, because the API calls are not
-implemented — reporting otherwise would be exactly the fake success this
-codebase forbids.
+**How a PayPal purchase works:** Yavaya creates an order (Orders v2), the
+member approves it on PayPal, PayPal returns them to
+`/api/payments/paypal/return`, and Yavaya captures the order server to
+server. Only the capture's answer — completed, for exactly the price asked —
+credits tokens. A member who closes the tab after approving is captured by
+`reconcile-payments`. No webhooks are needed.
 
-**To complete:**
+**Owner setup (about two minutes):**
 
-1. Set `PAYPAL_ENV`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_WEBHOOK_ID`.
-2. Implement `createCheckout` — Orders v2 `POST /v2/checkout/orders`.
-3. Implement `capture` — `POST /v2/checkout/orders/{id}/capture`.
-4. Implement `verifyWebhook` — `POST /v1/notifications/verify-webhook-signature`.
-   Verify server-side. Never trust the payload alone.
-5. Change `availability()` to report readiness once the above are real.
-6. Register a fulfiller for the `tokens` payment domain
-   (`registerFulfiller('tokens', …)`) that calls `creditPurchasedTokens`.
-7. Confirm the merchant account may operate in each target country.
+1. Go to developer.paypal.com, log in with the PayPal **Business** account,
+   open **Apps & Credentials**, switch to **Live**, and **Create App**
+   (type: Merchant).
+2. Copy the **Client ID** and **Secret**.
+3. In Railway, on both `yavaya-web` and `yavaya-scheduler`, set
+   `PAYPAL_ENV=live`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`.
+   (`PAYPAL_ENV=sandbox` with sandbox credentials is test mode: only
+   administrators can buy.)
 
-**Architectural note:** nothing outside the adapter knows PayPal exists. Adding
-a second provider, or replacing this one, is an adapter change.
+The PayPal connector used in conversations with the assistant is not these
+credentials: it acts for the owner, not for the website.
 
 **Phase 1 YavayaGo payment model is deliberately not automated.** The customer
 pays the restaurant directly; the restaurant receives its own money directly;

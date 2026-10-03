@@ -25,6 +25,8 @@ export type CheckoutRequest = {
   description: string;
   returnUrl: string;
   cancelUrl: string;
+  /** The payer's country (ISO 3166-1 alpha-2), when known; lets a provider skip asking. */
+  country?: string | null;
   metadata?: Record<string, string>;
 };
 
