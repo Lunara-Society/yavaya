@@ -574,6 +574,7 @@ export const siteEn: SiteContent = {
       perToken: '{price} per token',
       saving: 'Save {percent}%',
       bestValue: 'Best price per token',
+      buyCta: 'Buy',
       useHead: { eyebrow: 'What they are for', title: 'Actions' },
       useTable: {
         head: ['Action', 'Cost'],

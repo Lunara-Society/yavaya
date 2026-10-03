@@ -12,6 +12,8 @@ import { countryRoutes, memberCountry, routeFor } from '@/server/domains/payment
 import { myTokenPurchases } from '@/server/domains/payments/token-purchase';
 import { isAdmin } from '@/server/domains/access/authorize';
 import { buyTokensAction } from './actions';
+import { TokenPack } from '@/ui/tokens/pack';
+import { TokenCoin } from '@/ui/site/icons';
 import { packageSavingPercent, TOKEN_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 
@@ -43,6 +45,11 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
     memberCountry(db(), userId),
     countryRoutes(db(), locale),
   ]);
+  const offered = packages
+    .filter((pkg) => pkg.tokens <= TOKEN_RULES.maxTokensPerPurchase)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  // Lowest price per token: the only thing "best value" may mean.
+  const best = [...offered].sort((a, b) => a.priceMinor / a.tokens - b.priceMinor / b.tokens)[0];
   // One id per page view: a double click on the same form is one purchase.
   const attempt = randomUUID();
   const errorKey = query.error && /^(payments\.error\.[a-z_]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
@@ -57,45 +64,56 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
-      <h1 className="text-2xl font-semibold tracking-tight">{t('tokens.name')}</h1>
-
-      <section className="surface-card mt-4 p-5">
-        <p className="text-sm text-[var(--text-muted)]">{t('tokens.balance')}</p>
-        <p className="text-4xl font-semibold tabular-nums">{balance}</p>
-        <p className="mt-3 text-sm text-[var(--text-secondary)]">{t('tokens.description')}</p>
+      {/* The balance, as the reward it is. */}
+      <section className="tk-hero">
+        <div className="tk-hero-glow" aria-hidden="true" />
+        <TokenCoin className="tk-hero-coin" />
+        <div className="tk-hero-text">
+          <h1 className="tk-hero-label">{t('tokens.balance')}</h1>
+          <p className="tk-hero-n">{balance}</p>
+          <p className="tk-hero-sub">{t('tokens.description')}</p>
+        </div>
+        <a className="tk-hero-go" href="#paquetes">
+          {t('tokens.get_more')}
+        </a>
       </section>
 
-      <section className="mt-8">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold tracking-tight">{t('tokens.packages')}</h2>
+      <section id="paquetes" className="tk-shop">
+        <div className="tk-shop-head">
+          <div>
+            <p className="tk-eyebrow">{t('tokens.packages')}</p>
+            <h2 className="tk-shop-title">{t('tokens.shop_title')}</h2>
+          </div>
           <CapabilityBadge state={paymentsReady ? 'REAL' : 'REQUIRES_CONFIGURATION'} t={t} />
         </div>
 
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {packages
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((pkg) => (
-              <li key={pkg.key} className="surface-card p-4 text-center">
-                <p className="text-2xl font-semibold tabular-nums">{pkg.tokens}</p>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  {formatPrice(pkg.priceMinor, pkg.currency)}
-                </p>
-                {packageSavingPercent(pkg, packages) > 0 ? (
-                  <p className="mt-1 text-2xs font-semibold" style={{ color: 'var(--color-positive)' }}>
-                    {t('payments.saving', { percent: packageSavingPercent(pkg, packages) })}
-                  </p>
-                ) : null}
-                {paymentsReady && pkg.tokens <= TOKEN_RULES.maxTokensPerPurchase ? (
-                  <form action={buyTokensAction} className="mt-3">
+        <ul className="tk-packs">
+          {offered.map((pkg, index) => {
+            const saving = packageSavingPercent(pkg, offered);
+            return (
+              <TokenPack
+                key={pkg.key}
+                pack={pkg}
+                index={index}
+                name={t(`tokens.pack.${pkg.key}` as MessageKey)}
+                tokensWord={t('tokens.word')}
+                perToken={t('tokens.per_token', { price: formatPrice(Math.round(pkg.priceMinor / pkg.tokens), pkg.currency) })}
+                saving={saving > 0 ? t('payments.saving', { percent: saving }) : null}
+                bestLabel={t('tokens.best_value')}
+                best={pkg.key === best?.key}
+              >
+                {paymentsReady ? (
+                  <form action={buyTokensAction}>
                     <input type="hidden" name="package" value={pkg.key} />
                     <input type="hidden" name="attempt" value={attempt} />
-                    <button type="submit" className="btn btn-gold w-full">
-                      {t('payments.buy')}
+                    <button type="submit" className="tk-buy">
+                      <span>{t('payments.buy')}</span>
                     </button>
                   </form>
                 ) : null}
-              </li>
-            ))}
+              </TokenPack>
+            );
+          })}
         </ul>
 
         {query.purchase === 'paid' ? (

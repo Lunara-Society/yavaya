@@ -93,3 +93,30 @@ export function Mark() {
     </svg>
   );
 }
+
+/**
+ * The Yavaya token: a gold coin with a teal enamel ring. Filled, not a line
+ * icon, so it reads as something of value at any size.
+ */
+export function TokenCoin({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="tkc-face" cx="38%" cy="32%" r="75%">
+          <stop offset="0" stopColor="#fff6c8" />
+          <stop offset="0.35" stopColor="#f2cf5b" />
+          <stop offset="0.75" stopColor="#c8961c" />
+          <stop offset="1" stopColor="#8a6410" />
+        </radialGradient>
+        <linearGradient id="tkc-ring" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#5ff2e0" />
+          <stop offset="1" stopColor="#1a8f9e" />
+        </linearGradient>
+      </defs>
+      <circle cx="16" cy="16" r="14.5" fill="url(#tkc-face)" />
+      <circle cx="16" cy="16" r="11" fill="none" stroke="url(#tkc-ring)" strokeWidth="1.6" />
+      <path d="M11.2 10.5l4.8 6.2 4.8-6.2M16 16.7v5.8" fill="none" stroke="#6b4a08" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <ellipse cx="11.5" cy="9.5" rx="4" ry="2" fill="#fff" opacity="0.35" transform="rotate(-30 11.5 9.5)" />
+    </svg>
+  );
+}

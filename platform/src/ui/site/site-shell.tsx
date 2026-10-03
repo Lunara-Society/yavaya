@@ -6,11 +6,14 @@ import type { LanguagePreference, ThemePreference } from '@/server/preferences';
 import { QuickControls } from '@/ui/components/quick-controls';
 import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
-import { Icon, Mark } from './icons';
+import { Icon, Mark, TokenCoin } from './icons';
 import { Md } from './md';
 
-/** `unread` is the count of unread notifications, shown on the bell. */
-export type ShellMember = { yayId: string; displayName: string; unread?: number } | null;
+/**
+ * `unread` is the count of unread notifications, shown on the bell;
+ * `tokens` is the member's balance, shown on the token chip.
+ */
+export type ShellMember = { yayId: string; displayName: string; unread?: number; tokens?: number } | null;
 
 /**
  * The frame around every page: public pages and the member area alike, so
@@ -72,6 +75,11 @@ export function SiteShell({
           <div className="tools">
             {member ? (
               <>
+                {/* The fastest way to tokens: the balance, always in sight, one tap from the packages. */}
+                <Link className="chip tk-chip" href="/account/tokens#paquetes" aria-label={t('tokens.chip_label', { count: member.tokens ?? 0 })}>
+                  <TokenCoin className="tk-coin" />
+                  <span className="tk-chip-n">{member.tokens ?? 0}</span>
+                </Link>
                 <Link
                   className="chip bell"
                   href="/notifications"
@@ -174,6 +182,13 @@ export function SiteShell({
         <Link href={PAGE_PATHS.districts} aria-current={cur('districts')}>
           <Icon name="grid" />
           <span>{c.nav.districts}</span>
+        </Link>
+        {/* Tokens sit in the middle of the bar, raised, where a thumb lands first. */}
+        <Link className="dock-tokens" href={member ? '/account/tokens#paquetes' : PAGE_PATHS.tokens} aria-current={cur('tokens')}>
+          <span className="dock-orb">
+            <TokenCoin className="tk-coin" />
+          </span>
+          <span>{c.nav.tokens}</span>
         </Link>
         <Link href={PAGE_PATHS.trust} aria-current={cur('trust')}>
           <Icon name="shield" />

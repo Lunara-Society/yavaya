@@ -13,6 +13,7 @@ import {
 import { currentSession } from '@/server/auth/context';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { unreadCount } from '@/server/domains/notifications/service';
+import { getBalance } from '@/server/domains/tokens/service';
 import type { ShellMember } from './components/app-shell';
 
 export type ShellContext = {
@@ -47,9 +48,10 @@ export async function shellContext(): Promise<ShellContext> {
     return { locale, t, language, theme, member: null, userId: null };
   }
 
-  const [[row], unread] = await Promise.all([
+  const [[row], unread, tokens] = await Promise.all([
     db().select({ displayName: users.displayName }).from(users).where(eq(users.id, session.user.userId)).limit(1),
     unreadCount(db(), session.user.userId),
+    getBalance(db(), session.user.userId),
   ]);
 
   return {
@@ -62,6 +64,7 @@ export async function shellContext(): Promise<ShellContext> {
       yayId: formatYayId(session.user.yayId),
       displayName: row?.displayName ?? '',
       unread,
+      tokens,
     },
   };
 }

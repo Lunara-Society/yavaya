@@ -585,7 +585,8 @@ export const siteEs = {
       packagesNote: 'Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta u otro medio, en la página segura de dLocal Go, Stripe o PayPal según tu país. Los tokens llegan cuando el pago se confirma.',
       perToken: '{price} por token',
       saving: 'Ahorras {percent}%',
-      bestValue: 'El mejor precio por token',
+      bestValue: 'Mejor precio por token',
+      buyCta: 'Comprar',
       useHead: { eyebrow: 'Para qué sirven', title: 'Acciones' },
       useTable: {
         head: ['Acción', 'Costo'],

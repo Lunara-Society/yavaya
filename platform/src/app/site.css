@@ -1125,3 +1125,175 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .staff-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .staff-actions .btn, .staff-list .btn { min-height: 38px; padding: 0 14px; font-size: .9rem; }
 .staff-on { border-color: #3fbf7f !important; color: #8fe0b5 !important; }
+
+/* ===========================================================================
+   Tokens — the shortcut in the header and the dock, the balance, the shop.
+   Treasure-like on purpose: every package is a collectible with its own
+   artwork, colour and a slowly turning golden border. Everything that moves
+   stops for prefers-reduced-motion.
+   =========================================================================== */
+@property --tk-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes tk-spin { to { --tk-angle: 360deg; } }
+@keyframes tk-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(-1.5deg); } }
+@keyframes tk-shine { 0% { transform: translateX(-130%) skewX(-20deg); } 55%, 100% { transform: translateX(260%) skewX(-20deg); } }
+@keyframes tk-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(242, 207, 91, 0.55), 0 8px 24px rgba(212, 175, 55, 0.35); } 50% { box-shadow: 0 0 0 8px rgba(242, 207, 91, 0), 0 8px 30px rgba(95, 242, 224, 0.35); } }
+@keyframes tk-rise { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes tk-twinkle { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }
+@keyframes tk-coin-turn { 0%, 70%, 100% { transform: rotateY(0deg); } 85% { transform: rotateY(180deg); } }
+
+.tk-coin { width: 22px; height: 22px; flex: none; filter: drop-shadow(0 0 6px rgba(242, 207, 91, 0.55)); }
+
+/* Header chip: the balance, ringed in moving gold. */
+.chip.tk-chip {
+  position: relative; isolation: isolate; gap: 7px; padding: 0 12px 0 9px; border-color: transparent;
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    conic-gradient(from var(--tk-angle), #f2cf5b, #5ff2e0, #b57cff, #ff7ac8, #f2cf5b) border-box;
+  border: 1.5px solid transparent;
+  animation: tk-spin 6s linear infinite;
+}
+.chip.tk-chip::after { content: ""; position: absolute; inset: -6px; z-index: -1; border-radius: 16px; background: radial-gradient(closest-side, rgba(242, 207, 91, 0.28), transparent); opacity: 0.8; }
+.chip.tk-chip:hover { transform: translateY(-1px); }
+.chip.tk-chip .tk-coin { animation: tk-coin-turn 7s ease-in-out infinite; }
+.tk-chip-n {
+  font: 800 0.95rem/1 var(--sans); letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fff6c8, #f2cf5b 45%, #c8961c); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+:root[data-theme="light"] .chip.tk-chip { background: linear-gradient(var(--bg), var(--bg)) padding-box, conic-gradient(from var(--tk-angle), #c8961c, #1a8f9e, #7b4fd6, #c2357f, #c8961c) border-box; }
+:root[data-theme="light"] .tk-chip-n { background: linear-gradient(180deg, #a87a0c, #6b4a08); -webkit-background-clip: text; background-clip: text; }
+
+/* Dock: tokens in the middle, raised, where a thumb lands first. */
+.dock { grid-template-columns: repeat(5, 1fr); overflow: visible; }
+.dock a.dock-tokens { position: relative; color: var(--text); }
+.dock-orb {
+  width: 54px; height: 54px; margin-top: -26px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, #2a3b66, #0b1430 70%);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 0 2px #f2cf5b, 0 8px 24px rgba(212, 175, 55, 0.35);
+  animation: tk-pulse 2.8s ease-in-out infinite;
+}
+.dock-orb .tk-coin { width: 32px; height: 32px; animation: tk-coin-turn 6s ease-in-out infinite; }
+.dock a.dock-tokens > span:last-child {
+  background: linear-gradient(90deg, #f2cf5b, #5ff2e0); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800;
+}
+:root[data-theme="light"] .dock a.dock-tokens > span:last-child { background: linear-gradient(90deg, #a87a0c, #1a8f9e); -webkit-background-clip: text; background-clip: text; }
+
+/* Balance hero. */
+.tk-hero {
+  position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 18px;
+  margin-top: 8px; padding: 26px 24px; border-radius: 24px; color: #f8f6f1;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(95, 242, 224, 0.18), transparent 55%),
+    radial-gradient(120% 140% at 100% 100%, rgba(181, 124, 255, 0.25), transparent 55%),
+    linear-gradient(135deg, #0b1430, #1a1150 60%, #2a0f45);
+  border: 1px solid rgba(242, 207, 91, 0.35);
+  box-shadow: 0 24px 60px rgba(10, 6, 40, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.tk-hero-glow { position: absolute; inset: -40% -10% auto auto; width: 70%; aspect-ratio: 1; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(242, 207, 91, 0.35), transparent); filter: blur(10px); }
+.tk-hero-coin { width: 72px; height: 72px; filter: drop-shadow(0 0 22px rgba(242, 207, 91, 0.6)); animation: tk-float 5s ease-in-out infinite; }
+.tk-hero-label { margin: 0; font: 800 0.78rem/1.2 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: #5ff2e0; }
+.tk-hero-n {
+  margin: 2px 0 4px; font: 700 clamp(3rem, 12vw, 4.4rem)/1 var(--serif); font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fffbe6, #f2cf5b 50%, #c8961c); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(242, 207, 91, 0.35));
+}
+.tk-hero-sub { margin: 0; font-size: 0.92rem; line-height: 1.5; color: rgba(248, 246, 241, 0.78); max-width: 52ch; }
+.tk-hero-go {
+  grid-column: 1 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 20px; border-radius: 999px;
+  font-weight: 800; text-decoration: none; color: #081120; background: linear-gradient(180deg, #fff1b3, #f2cf5b 45%, #d4a52a);
+  box-shadow: 0 10px 26px rgba(242, 207, 91, 0.35);
+}
+.tk-hero-go::after { content: "↓"; }
+
+/* The shop. */
+.tk-shop { margin-top: 34px; scroll-margin-top: 90px; }
+.tk-shop-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.tk-eyebrow { margin: 0; font: 800 0.75rem/1 var(--sans); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+.tk-shop-title {
+  margin: 6px 0 0; font: 700 clamp(1.7rem, 6vw, 2.4rem)/1.1 var(--serif);
+  background: linear-gradient(90deg, #f2cf5b, #ffe7a0 30%, #5ff2e0 65%, #b57cff); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+:root[data-theme="light"] .tk-shop-title { background: linear-gradient(90deg, #8f6f10, #1a8f9e 60%, #7b4fd6); -webkit-background-clip: text; background-clip: text; }
+
+.tk-packs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (min-width: 720px) { .tk-packs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+
+.tk-pack {
+  --hue: #f2cf5b; --hue-2: #5ff2e0;
+  position: relative; isolation: isolate; border-radius: 22px; padding: 1.5px;
+  background: conic-gradient(from var(--tk-angle), var(--hue), transparent 25%, var(--hue-2) 50%, transparent 75%, var(--hue));
+  animation: tk-spin 7s linear infinite, tk-rise 0.6s cubic-bezier(.2,.8,.2,1) both;
+  animation-delay: 0s, calc(var(--i) * 70ms);
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.tk-pack::before { content: ""; position: absolute; inset: 10px; z-index: -1; border-radius: 22px; background: radial-gradient(closest-side, color-mix(in srgb, var(--hue) 45%, transparent), transparent); filter: blur(18px); opacity: 0.55; transition: opacity 0.25s ease; }
+.tk-pack:hover, .tk-pack:focus-within { transform: translateY(-4px); }
+.tk-pack:hover::before, .tk-pack:focus-within::before { opacity: 0.9; }
+.tk-pack-in {
+  height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 12px 12px 14px; border-radius: 21px; color: #f8f6f1;
+  background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--hue) 22%, #0b1430), #070d1c 70%);
+}
+.tk-art { position: relative; width: 100%; aspect-ratio: 1; margin-bottom: 4px; }
+.tk-art img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; display: block;
+  -webkit-mask-image: radial-gradient(closest-side, #000 70%, transparent); mask-image: radial-gradient(closest-side, #000 70%, transparent);
+  animation: tk-float 6s ease-in-out infinite; animation-delay: calc(var(--i) * -0.9s); }
+.tk-sparkles { position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 18% 28%, #fff, transparent), radial-gradient(1.5px 1.5px at 78% 22%, #fff6c8, transparent),
+    radial-gradient(2px 2px at 85% 70%, #5ff2e0, transparent), radial-gradient(1.5px 1.5px at 25% 78%, #f2cf5b, transparent),
+    radial-gradient(1px 1px at 55% 12%, #fff, transparent);
+  animation: tk-twinkle 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * -0.4s); }
+.tk-name { margin: 0; font: 800 0.72rem/1.2 var(--sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--hue); }
+.tk-amount { margin: 4px 0 0; display: flex; align-items: baseline; gap: 6px; }
+.tk-num {
+  font: 700 clamp(2rem, 8vw, 2.6rem)/1 var(--serif); font-variant-numeric: tabular-nums;
+  background: linear-gradient(180deg, #fffbe6, var(--hue) 60%, color-mix(in srgb, var(--hue) 70%, #000)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.tk-word { font-size: 0.8rem; font-weight: 700; color: rgba(248, 246, 241, 0.7); }
+.tk-price { margin: 8px 0 0; font: 800 1.25rem/1 var(--sans); color: #fff; }
+.tk-per { margin: 4px 0 0; font-size: 0.74rem; color: rgba(248, 246, 241, 0.6); }
+.tk-save {
+  margin: 8px 0 0; padding: 4px 10px; border-radius: 999px; font: 800 0.72rem/1.2 var(--sans); letter-spacing: 0.04em;
+  color: #062018; background: linear-gradient(90deg, #5ff2e0, #9dffb0);
+}
+.tk-save-none { visibility: hidden; }
+.tk-cta { width: 100%; margin-top: 12px; }
+.tk-buy {
+  position: relative; overflow: hidden; width: 100%; min-height: 46px; border: 0; border-radius: 14px; cursor: pointer;
+  font: 800 1rem/1 var(--sans); letter-spacing: 0.02em; color: #1a1205;
+  background: linear-gradient(180deg, #fff1b3, #f2cf5b 45%, #d4a52a);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--hue) 40%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.tk-buy::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent); animation: tk-shine 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * 0.35s); }
+.tk-buy:hover { transform: translateY(-1px); box-shadow: 0 12px 30px color-mix(in srgb, var(--hue) 55%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.tk-buy:active { transform: translateY(1px) scale(0.98); }
+.tk-buy:focus-visible { outline: 3px solid #5ff2e0; outline-offset: 3px; }
+
+/* Each tier its own colour world. */
+.tk-pack[data-tier="tokens_2"] { --hue: #5ff2e0; --hue-2: #f2cf5b; }
+.tk-pack[data-tier="tokens_10"] { --hue: #f2cf5b; --hue-2: #ffb35c; }
+.tk-pack[data-tier="tokens_25"] { --hue: #3ff2a0; --hue-2: #5ff2e0; }
+.tk-pack[data-tier="tokens_50"] { --hue: #b57cff; --hue-2: #f2cf5b; }
+.tk-pack[data-tier="tokens_100"] { --hue: #ff7ac8; --hue-2: #f2cf5b; }
+.tk-pack[data-tier="tokens_500"] { --hue: #f2cf5b; --hue-2: #b57cff; }
+.tk-pack.tk-best { background: conic-gradient(from var(--tk-angle), #f2cf5b, #5ff2e0, #b57cff, #ff7ac8, #f2cf5b); padding: 2px; }
+.tk-pack.tk-best .tk-pack-in { background: radial-gradient(120% 80% at 50% 0%, #3a2a66, #0a0820 70%); }
+.tk-ribbon {
+  position: absolute; z-index: 2; top: -11px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+  padding: 5px 12px; border-radius: 999px; font: 800 0.68rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+  color: #1a1205; background: linear-gradient(90deg, #f2cf5b, #fff1b3, #5ff2e0); box-shadow: 0 6px 18px rgba(242, 207, 91, 0.45);
+}
+@media (max-width: 380px) { .tk-pack-in { padding: 10px 8px 12px; } .tk-ribbon { font-size: 0.6rem; padding: 4px 8px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .chip.tk-chip, .chip.tk-chip .tk-coin, .dock-orb, .dock-orb .tk-coin, .tk-hero-coin, .tk-pack, .tk-art img, .tk-sparkles, .tk-buy::after { animation: none !important; }
+  .tk-pack, .tk-buy, .chip.tk-chip { transition: none; }
+}
+@media (max-width: 479px) {
+  /* On a phone the coin shrinks so the text keeps its width. */
+  .tk-hero { gap: 14px; padding: 20px 18px; align-items: start; }
+  .tk-hero-coin { width: 48px; height: 48px; margin-top: 4px; }
+  .dock a { font-size: 0.66rem; }
+}
