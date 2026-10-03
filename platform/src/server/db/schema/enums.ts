@@ -325,3 +325,16 @@ export const safeSpaceMemberStatusEnum = pgEnum('safe_space_member_status', ['ac
 export const safeSpaceReportStatusEnum = pgEnum('safe_space_report_status', ['open', 'dismissed', 'removed', 'banned']);
 export const workEmployerStatusEnum = pgEnum('work_employer_status', ['pending', 'approved', 'rejected', 'suspended']);
 export const workProfileStatusEnum = pgEnum('work_profile_status', ['active', 'suspended']);
+
+// --- YavayaGo --------------------------------------------------------------------
+export const goStoreStatusEnum = pgEnum('go_store_status', ['pending', 'approved', 'rejected', 'suspended']);
+export const goDriverStatusEnum = pgEnum('go_driver_status', ['pending', 'approved', 'rejected', 'suspended']);
+export const goOrderStatusEnum = pgEnum('go_order_status', [
+  'placed', // the customer sent it; the store has not answered
+  'accepted', // the store is preparing it
+  'ready', // waiting at the store for a driver
+  'picked_up', // a driver has it and is on the way
+  'delivered',
+  'cancelled', // by the customer before the store accepted, or by the store
+  'rejected', // the store could not take it
+]);

@@ -124,19 +124,27 @@ export async function markRemoved(tx: Executor, ids: string[]): Promise<void> {
     .where(and(inArray(media.id, ids), eq(media.status, 'active')));
 }
 
-/** An active image's bytes, for the serving route. */
+/**
+ * Purposes whose images the public route never serves: identity documents.
+ * They are read through a route that checks the reader's permission instead.
+ */
+export const PRIVATE_MEDIA_PURPOSES: readonly string[] = ['go_driver_document'];
+
+/** An active image's bytes, for the serving route. Private images only when the caller says the reader may see them. */
 export async function readActiveImage(
   executor: Executor,
   id: string,
+  options: { allowPrivate?: boolean } = {},
 ): Promise<{ body: Buffer; contentType: string } | null> {
   const storage = mediaStorage();
   if (!storage) return null;
   const [row] = await executor
-    .select({ storageKey: media.storageKey, contentType: media.contentType })
+    .select({ storageKey: media.storageKey, contentType: media.contentType, purpose: media.purpose })
     .from(media)
     .where(and(eq(media.id, id), eq(media.status, 'active')))
     .limit(1);
   if (!row) return null;
+  if (PRIVATE_MEDIA_PURPOSES.includes(row.purpose) && !options.allowPrivate) return null;
   const body = await storage.get(row.storageKey);
   return body ? { body, contentType: row.contentType } : null;
 }

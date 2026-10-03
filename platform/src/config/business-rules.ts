@@ -473,3 +473,34 @@ export const NOTIFICATION_RULES = {
   /** Members mailed per scheduler run, so one run never floods the provider. */
   digestBatchSize: 200,
 } as const;
+
+/**
+ * YavayaGo. Prices and delivery fees are the store's own; these are the
+ * platform's limits around them, mirrored into `system_settings`.
+ *
+ * Several are operational guesses rather than specification, and flagged as
+ * such in CONFIGURATION.md: the specification defines who may drive and what
+ * the customer sees, not how long a store has to answer.
+ */
+export const GO_RULES = {
+  /** A store that has not answered within this is presumed away; the order is cancelled and the customer told. */
+  storeAnswerMinutes: 15,
+  /** A ready order nobody picked up in this long is flagged to the store, which may cancel it. */
+  pickupWaitMinutes: 45,
+  maxLinesPerOrder: 30,
+  maxQuantityPerLine: 20,
+  /** Orders a customer may have open at once: a brake on prank orders paid in cash. */
+  maxOpenOrdersPerCustomer: 2,
+  /** Distance from the store, straight line, beyond which an order is refused. */
+  maxDeliveryKm: 15,
+  /** Driver position updates accepted at most this often. */
+  trackingMinIntervalSeconds: 3,
+  /** A position older than this is shown as "last seen", not as live. */
+  trackingStaleSeconds: 90,
+  /** How often the customer's map asks for the driver's position. */
+  trackingPollSeconds: 5,
+  /** A driver not heard from in this long is taken offline. */
+  driverIdleMinutes: 20,
+  menuMaxItems: 200,
+  maxPhotos: 1,
+} as const;

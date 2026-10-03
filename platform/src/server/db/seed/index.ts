@@ -24,8 +24,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES,
-} from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
@@ -333,6 +332,9 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'sanctuary.max_devotionals_per_church_per_day', value: SANCTUARY_RULES.maxDevotionalsPerChurchPerDay, description: 'Prayers or words one church may publish for the same day' },
     { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },
     { key: 'demo.real_inventory_threshold', value: DEMO_CONTENT_RULES.realInventoryThreshold, description: 'Real items per district that end demo mode early' },
+    { key: 'go.store_answer_minutes', value: GO_RULES.storeAnswerMinutes, description: 'YavayaGo: minutes a store has to accept an order before it is cancelled' },
+    { key: 'go.max_open_orders_per_customer', value: GO_RULES.maxOpenOrdersPerCustomer, description: 'YavayaGo: open cash orders one customer may have at once' },
+    { key: 'go.max_delivery_km', value: GO_RULES.maxDeliveryKm, description: 'YavayaGo: straight-line delivery limit from the store' },
   ];
 
   for (const setting of settings) {

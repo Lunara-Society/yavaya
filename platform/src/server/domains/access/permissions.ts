@@ -36,6 +36,7 @@ export const PERMISSIONS = {
   // District operations -----------------------------------------------------
   'drivers.review': 'delivery',
   'drivers.approve': 'delivery',
+  'stores.review': 'delivery',
   'causes.review': 'community',
   'causes.approve': 'community',
   'adoptions.review': 'animals',
@@ -102,11 +103,12 @@ export const SYSTEM_ROLES: Record<
   },
   district_reviewer: {
     name: 'District reviewer',
-    description: 'Reviews driver applications, causes, adoption applications, churches, professional licences and employers.',
+    description: 'Reviews YavayaGo stores and drivers, causes, adoption applications, churches, professional licences and employers.',
     permissions: [
       'users.read',
       'drivers.review',
       'drivers.approve',
+      'stores.review',
       'causes.review',
       'causes.approve',
       'adoptions.review',
