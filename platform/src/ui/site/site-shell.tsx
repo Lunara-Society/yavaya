@@ -143,7 +143,7 @@ export function SiteShell({
           <div className="foot-grid">
             <div className="foot-brand">
               <Link className="brand" href="/">
-                <Mark />
+                <Mark id="ymf" />
                 <span>YAVAYA</span>
               </Link>
               <p className="muted mt">{c.ui.footer.about}</p>

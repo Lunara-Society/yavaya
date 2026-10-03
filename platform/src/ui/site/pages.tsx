@@ -21,7 +21,7 @@ import {
   Table,
   type SiteState,
 } from './blocks';
-import { Icon, type IconName } from './icons';
+import { Icon, Mark, type IconName } from './icons';
 import { Md, Paras } from './md';
 
 /**
@@ -41,6 +41,9 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
         <div className="wrap">
           <div className="hero-mark">
             <Guilloche className="hero-seal" size={520} lobes={36} rings={12} strokeWidth={0.45} />
+            <span className="hero-emblem">
+              <Mark id="ymh" />
+            </span>
             <h1 className="h-xl">YAVAYA</h1>
           </div>
           <p className="hero-sub">{p.sub}</p>

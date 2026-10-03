@@ -77,21 +77,21 @@ export function Icon({ name, className }: { name: IconName; className?: string }
   );
 }
 
-/** The Yavaya mark: a gold Y on navy. */
-export function Mark() {
-  return (
-    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-      <rect x="1" y="1" width="30" height="30" rx="9" fill="#081120" stroke="#d4af37" strokeWidth="1.5" />
-      <path
-        d="M8.5 9l7.5 8.5L23.5 9M16 17.5V24"
-        fill="none"
-        stroke="#d4af37"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+/**
+ * The Yavaya mark: a Y that is also a person with open arms, holding up a
+ * light, under a crown of the districts' colours. One welcome, many
+ * communities. Drawn, not traced, so it stays sharp from a 16px tab to a
+ * billboard; public/favicon.svg and the PNG icons are made from the same drawing.
+ *
+ * Gradient ids are prefixed per instance: two marks on one page must not
+ * share ids, or a hidden one (the header on a phone) can take the other's
+ * gradients with it.
+ */
+const MARK_BODY = `<defs><radialGradient id="bg" cx="50%" cy="28%" r="80%"><stop offset="0" stop-color="#1b2f52"/><stop offset="0.55" stop-color="#0b1730"/><stop offset="1" stop-color="#040913"/></radialGradient><linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0b0"/><stop offset="0.35" stop-color="#d4af37"/><stop offset="0.7" stop-color="#8a6410"/><stop offset="1" stop-color="#e9c95c"/></linearGradient><linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff4c4"/><stop offset="0.3" stop-color="#f2cf5b"/><stop offset="0.7" stop-color="#d4a52a"/><stop offset="1" stop-color="#9c7314"/></linearGradient><radialGradient id="sun" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffffff"/><stop offset="0.3" stop-color="#fff1b0"/><stop offset="0.75" stop-color="#f0c040"/><stop offset="1" stop-color="#c48a12"/></radialGradient><radialGradient id="halo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffd76a" stop-opacity="0.55"/><stop offset="1" stop-color="#ffd76a" stop-opacity="0"/></radialGradient><linearGradient id="gold2" x1="0" y1="0" x2="0.3" y2="1"><stop offset="0" stop-color="#fff6d0"/><stop offset="0.25" stop-color="#f5d469"/><stop offset="0.6" stop-color="#d9a92c"/><stop offset="1" stop-color="#8f6610"/></linearGradient><linearGradient id="shine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect x="1.5" y="1.5" width="61" height="61" rx="18" fill="url(#bg)"/><rect x="1.5" y="1.5" width="61" height="61" rx="18" fill="none" stroke="url(#rim)" stroke-width="1.5"/><circle cx="32" cy="21" r="14" fill="url(#halo)"/><g fill="none" stroke-width="2.1" stroke-linecap="butt"><path d="M21.04 17.86A11.4 11.4 0 0 1 22.21 15.16" stroke="#1f9d6b"/><path d="M22.66 14.46A11.4 11.4 0 0 1 24.65 12.29" stroke="#1aa3a3"/><path d="M25.31 11.77A11.4 11.4 0 0 1 27.89 10.37" stroke="#3c6df0"/><path d="M28.68 10.09A11.4 11.4 0 0 1 31.58 9.61" stroke="#9366e0"/><path d="M32.42 9.61A11.4 11.4 0 0 1 35.32 10.09" stroke="#a57cf0"/><path d="M36.11 10.37A11.4 11.4 0 0 1 38.69 11.77" stroke="#c8a165"/><path d="M39.35 12.29A11.4 11.4 0 0 1 41.34 14.46" stroke="#f07a1f"/><path d="M41.79 15.16A11.4 11.4 0 0 1 42.96 17.86" stroke="#3f8f4a"/></g><path filter="url(#glow)" fill="url(#gold2)" d="M13.2 12.6C13.4 27.6 21 35.6 29.6 38.9L29.6 51.2A2.4 2.4 0 0 0 34.4 51.2L34.4 38.9C42.6 35.8 50.6 27.6 50.8 12.6C47.6 25.6 40.8 31.8 32 34.2C23.2 31.8 16.4 25.6 13.2 12.6Z"/><circle cx="32" cy="21" r="4.6" fill="url(#sun)" filter="url(#glow)"/>`;
+
+export function Mark({ id = 'ym' }: { id?: string }) {
+  const body = MARK_BODY.replace(/id="([a-z0-9]+)"/g, `id="${id}-$1"`).replace(/url\(#([a-z0-9]+)\)/g, `url(#${id}-$1)`);
+  return <svg className="brand-mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: body }} />;
 }
 
 /**
