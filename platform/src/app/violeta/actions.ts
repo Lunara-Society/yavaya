@@ -19,6 +19,7 @@ import {
   resolveReport,
   sendThreadMessage,
   setPresenceVisible,
+  setPrivatePractice,
   setThreadBlocked,
   startThread,
   type ReportDecision,
@@ -157,6 +158,17 @@ export async function reportAction(formData: FormData): Promise<void> {
 export async function presenceAction(formData: FormData): Promise<void> {
   const { member } = await acting();
   await db().transaction((tx) => setPresenceVisible(tx, { memberId: member.id, visible: field(formData, 'visible') === '1' }));
+  redirect('/violeta/ajustes?saved=1');
+}
+
+/** A professional's choice to be reachable outside Yavaya by women who wrote to them here. */
+export async function privatePracticeAction(formData: FormData): Promise<void> {
+  const { member } = await acting();
+  try {
+    await db().transaction((tx) => setPrivatePractice(tx, { member, offered: field(formData, 'offered') === '1' }));
+  } catch (error) {
+    redirect(back('/violeta/ajustes', errorKey(error)));
+  }
   redirect('/violeta/ajustes?saved=1');
 }
 

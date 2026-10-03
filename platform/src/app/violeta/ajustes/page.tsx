@@ -3,7 +3,7 @@ import { SAFE_SPACE_RULES } from '@/config/business-rules';
 import { ErrorNote, VioletaShell, Who } from '@/ui/violeta/parts';
 import { VIOLETA_METADATA } from '../meta';
 import { violetaPage } from '../guard';
-import { changeHandleAction, leaveAction, presenceAction } from '../actions';
+import { changeHandleAction, leaveAction, presenceAction, privatePracticeAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -45,6 +45,25 @@ export default async function VioletaSettings({ searchParams }: { searchParams: 
             </button>
           </form>
         </section>
+
+        {member.kind === 'professional' ? (
+          <section className="vt-section">
+            <h2 className="vt-h">{t('violeta.practice.title')}</h2>
+            <p className="muted">{t('violeta.practice.explain')}</p>
+            <ul className="vt-list muted">
+              <li>{t('violeta.practice.rule_free')}</li>
+              <li>{t('violeta.practice.rule_she_decides')}</li>
+              <li>{t('violeta.practice.rule_shown')}</li>
+            </ul>
+            <p>{t(member.offersPrivatePractice ? 'violeta.practice.on' : 'violeta.practice.off')}</p>
+            <form action={privatePracticeAction}>
+              <input type="hidden" name="offered" value={member.offersPrivatePractice ? '0' : '1'} />
+              <button className={member.offersPrivatePractice ? 'btn btn-line' : 'btn btn-gold'} type="submit">
+                {t(member.offersPrivatePractice ? 'violeta.practice.turn_off' : 'violeta.practice.turn_on')}
+              </button>
+            </form>
+          </section>
+        ) : null}
 
         <section className="vt-section">
           <h2 className="vt-h">{t('violeta.settings.device_title')}</h2>

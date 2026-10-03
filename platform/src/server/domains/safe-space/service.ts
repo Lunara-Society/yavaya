@@ -173,6 +173,61 @@ export async function setPresenceVisible(tx: Executor, params: { memberId: strin
   await tx.update(safeSpaceMembers).set({ showPresence: params.visible }).where(eq(safeSpaceMembers.id, params.memberId));
 }
 
+/**
+ * A professional chooses whether women may continue with them outside Yavaya.
+ * Off by default: being findable outside is the professional's decision, and
+ * a professional who never turns it on is never revealed.
+ */
+export async function setPrivatePractice(tx: Executor, params: { member: Member; offered: boolean }): Promise<void> {
+  if (params.member.kind !== 'professional') throw new DomainError('forbidden', 'violeta.error.not_professional');
+  await tx.update(safeSpaceMembers).set({ offersPrivatePractice: params.offered }).where(eq(safeSpaceMembers.id, params.member.id));
+}
+
+export type PrivatePracticeCard = { displayName: string; yayId: string; profession: string | null; licence: string | null; whatsappE164: string };
+
+/**
+ * How a woman continues with a professional outside Yavaya, where the two may
+ * agree on paid sessions. Violeta stays free; this is the way professionals
+ * can make a living from the help they give here without anyone being charged
+ * inside the space.
+ *
+ * Shown only to the woman, and only when every one of these holds — each one
+ * is a protection, not a formality:
+ * - she is the woman in the conversation (a professional sees nothing: her
+ *   identity is never revealed, and she decides whether to write outside);
+ * - the professional offered it, and still holds a verified licence;
+ * - the professional has already answered her here, so the connection was
+ *   made in the space first and the offer is never a cold advertisement;
+ * - the conversation is not closed by either of them.
+ */
+export async function privatePracticeCard(executor: Executor, viewer: Member, threadId: string): Promise<PrivatePracticeCard | null> {
+  if (viewer.kind !== 'member') return null;
+  const thread = await threadFor(executor, viewer, threadId);
+  if (thread.blockedBy) return null;
+  const otherId = thread.memberA === viewer.id ? thread.memberB : thread.memberA;
+  const [pro] = await executor
+    .select({ userId: safeSpaceMembers.userId, kind: safeSpaceMembers.kind, status: safeSpaceMembers.status, offered: safeSpaceMembers.offersPrivatePractice, profession: safeSpaceMembers.profession })
+    .from(safeSpaceMembers)
+    .where(eq(safeSpaceMembers.id, otherId))
+    .limit(1);
+  if (!pro || pro.kind !== 'professional' || pro.status !== 'active' || !pro.offered) return null;
+  if (!(await professionalEligible(executor, pro.userId))) return null;
+  const [answered] = await executor
+    .select({ id: safeSpaceThreadMessages.id })
+    .from(safeSpaceThreadMessages)
+    .where(and(eq(safeSpaceThreadMessages.threadId, thread.id), eq(safeSpaceThreadMessages.authorMemberId, otherId)))
+    .limit(1);
+  if (!answered) return null;
+  const [row] = await executor
+    .select({ displayName: users.displayName, yayId: users.yayId, licence: servicesProviderProfiles.licenceClaim, whatsappE164: servicesProviderProfiles.whatsappE164 })
+    .from(users)
+    .innerJoin(servicesProviderProfiles, eq(servicesProviderProfiles.userId, users.id))
+    .where(eq(users.id, pro.userId))
+    .limit(1);
+  if (!row) return null;
+  return { ...row, profession: pro.profession };
+}
+
 /** A new name, for a woman who feels recognised. Conversations stay; others see the new name. */
 export async function changeHandle(tx: Executor, params: { memberId: string; now?: Date }): Promise<string> {
   const now = params.now ?? new Date();

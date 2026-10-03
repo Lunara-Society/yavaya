@@ -1,0 +1,1 @@
+ALTER TABLE "safe_space_members" ADD COLUMN "offers_private_practice" boolean DEFAULT false NOT NULL;

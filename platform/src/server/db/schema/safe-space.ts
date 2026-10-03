@@ -29,6 +29,13 @@ export const safeSpaceMembers = pgTable(
     status: safeSpaceMemberStatusEnum('status').notNull().default('active'),
     /** Off: nobody sees when she is here. */
     showPresence: boolean('show_presence').notNull().default(true),
+    /**
+     * Professionals only, off until they turn it on: a woman who has talked
+     * with them here may choose to continue with them outside Yavaya, and
+     * only then sees who they are and how to reach them. Whatever they agree
+     * there, including a fee, is between the two; Violeta itself stays free.
+     */
+    offersPrivatePractice: boolean('offers_private_practice').notNull().default(false),
     lastSeenAt: timestamp('last_seen_at', { withTimezone: true }),
     handleChangedAt: timestamp('handle_changed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

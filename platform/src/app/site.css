@@ -1108,6 +1108,8 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .vt-sealed::before { content: "🔒 "; }
 .vt-block { margin-top: 18px; }
 .vt-section { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.vt-practice { margin-top: 18px; padding: 18px; border: 1px solid color-mix(in srgb, var(--violeta) 45%, transparent); border-radius: 16px; background: color-mix(in srgb, var(--violeta) 8%, transparent); }
+.vt-practice .btn { margin: 4px 6px 4px 0; }
 .vt-danger-zone .btn { border-color: #d64545; }
 .vt-case blockquote { margin: 10px 0; }
 

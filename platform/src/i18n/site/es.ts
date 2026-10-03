@@ -949,6 +949,7 @@ export const siteEs = {
             'Nada del espacio llega a tus notificaciones ni a tu correo, y no queda registrado en el historial de auditoría que entraste o escribiste.',
             'Los mensajes de la sala se borran a los 30 días y los privados a los 90. Si sales del espacio, borramos todo lo tuyo al instante.',
             'Guardamos la relación entre tu cuenta y tu nombre del espacio solo para poder expulsar a quien abuse.',
+            'El espacio es gratis. Si eres profesional y lo permites, una mujer a quien ya respondiste puede ver tu nombre, licencia y WhatsApp para continuar fuera de Yavaya. Lo que acuerden allí, incluido el pago, es entre ustedes; Yavaya no participa ni cobra comisión.',
           ],
         },
         {

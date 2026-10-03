@@ -937,6 +937,7 @@ export const siteEn: SiteContent = {
             'Nothing from the space reaches your notifications or your email, and the audit log does not record that you entered or wrote.',
             'Room messages are deleted after 30 days and private ones after 90. If you leave the space, we erase everything of yours at once.',
             'We keep the link between your account and your name in the space only so we can remove someone who abuses it.',
+            'The space is free. If you are a professional and allow it, a woman you have already answered can see your name, licence and WhatsApp to continue outside Yavaya. Whatever you agree there, payment included, is between you; Yavaya takes no part and no commission.',
           ],
         },
         {

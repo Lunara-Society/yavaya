@@ -25,7 +25,10 @@ import {
   whoIsHere,
   professionals,
   setPresenceVisible,
+  setPrivatePractice,
+  privatePracticeCard,
 } from '@/server/domains/safe-space/service';
+import { getBalance } from '@/server/domains/tokens/service';
 import { MEMBER_PLEDGES, MEMBER_WORDS, PROFESSIONAL_PLEDGES, PROFESSIONAL_WORDS } from '@/config/safe-space';
 import { resetTransactionalData } from '../helpers/database';
 
@@ -148,6 +151,53 @@ describe('Espacio Violeta', () => {
     const view = await getThread(db(), ana, threadId);
     expect(view.other.kind).toBe('professional');
     expect(view.messages[0]?.kind).toBe('professional');
+  });
+
+  it('is free: a woman with no tokens at all can do everything here', async () => {
+    const ana = await woman();
+    const proUser = await licensedPsychologist();
+    const pro = await db().transaction((tx) => join(tx, { userId: proUser, kind: 'professional', profession: 'psychology', pledges: [...PROFESSIONAL_PLEDGES] }));
+    expect(await getBalance(db(), ana.userId)).toBe(0);
+    await db().transaction((tx) => postRoomMessage(tx, { memberId: ana.id, text: 'Hola a todas' }));
+    const threadId = await db().transaction((tx) => startThread(tx, { member: ana, otherMemberId: pro.id }));
+    await db().transaction((tx) => sendThreadMessage(tx, { viewer: ana, threadId, text: 'Necesito hablar con alguien' }));
+    await db().transaction((tx) => sendThreadMessage(tx, { viewer: pro, threadId, text: 'Aquí estoy' }));
+    expect(await getBalance(db(), ana.userId)).toBe(0);
+    expect(await getBalance(db(), proUser)).toBe(0);
+  });
+
+  it('lets a woman continue with a professional outside Yavaya only when the professional offers it and has answered her', async () => {
+    const ana = await woman();
+    const proUser = await licensedPsychologist();
+    const pro = await db().transaction((tx) => join(tx, { userId: proUser, kind: 'professional', profession: 'psychology', pledges: [...PROFESSIONAL_PLEDGES] }));
+    const threadId = await db().transaction((tx) => startThread(tx, { member: ana, otherMemberId: pro.id }));
+    await db().transaction((tx) => sendThreadMessage(tx, { viewer: ana, threadId, text: 'Hola' }));
+
+    // Not offered: nothing.
+    expect(await privatePracticeCard(db(), ana, threadId)).toBeNull();
+    await db().transaction((tx) => setPrivatePractice(tx, { member: pro, offered: true }));
+    // Offered, but the professional has not answered her yet: still nothing.
+    expect(await privatePracticeCard(db(), ana, threadId)).toBeNull();
+
+    await db().transaction((tx) => sendThreadMessage(tx, { viewer: pro, threadId, text: 'Hola, aquí estoy' }));
+    const card = await privatePracticeCard(db(), ana, threadId);
+    expect(card).toMatchObject({ displayName: 'Dra. López', whatsappE164: '+50588881234', licence: 'Psicóloga, registro 1234, MINSA', profession: 'psychology' });
+
+    // The professional never sees anything about her.
+    expect(await privatePracticeCard(db(), pro, threadId)).toBeNull();
+
+    // A closed conversation, or a withdrawn licence, hides it again.
+    await db().transaction((tx) => setThreadBlocked(tx, { viewer: ana, threadId, blocked: true }));
+    expect(await privatePracticeCard(db(), ana, threadId)).toBeNull();
+    await db().transaction((tx) => setThreadBlocked(tx, { viewer: ana, threadId, blocked: false }));
+    expect(await privatePracticeCard(db(), ana, threadId)).not.toBeNull();
+    await db().update(servicesProviderProfiles).set({ licenceStatus: 'rejected' }).where(eq(servicesProviderProfiles.userId, proUser));
+    expect(await privatePracticeCard(db(), ana, threadId)).toBeNull();
+  });
+
+  it('lets only professionals offer practice outside', async () => {
+    const ana = await woman();
+    await expect(db().transaction((tx) => setPrivatePractice(tx, { member: ana, offered: true }))).rejects.toMatchObject({ messageKey: 'violeta.error.not_professional' });
   });
 
   it('closes a conversation for both when either blocks it', async () => {

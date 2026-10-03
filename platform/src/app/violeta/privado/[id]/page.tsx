@@ -4,7 +4,7 @@ import { db } from '@/server/db/client';
 import { isDomainError } from '@/server/errors';
 import { shellContext } from '@/ui/shell-context';
 import { SAFE_SPACE_RULES } from '@/config/business-rules';
-import { getThread, markThreadRead } from '@/server/domains/safe-space/service';
+import { getThread, markThreadRead, privatePracticeCard } from '@/server/domains/safe-space/service';
 import { ErrorNote, VioletaShell, when, Who } from '@/ui/violeta/parts';
 import { LiveRefresh } from '@/ui/violeta/client';
 import { VIOLETA_METADATA } from '../../meta';
@@ -18,7 +18,7 @@ export const metadata = VIOLETA_METADATA;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** A private conversation. Only these two people can read it. */
-export default async function PrivateThread({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; reported?: string }> }) {
+export default async function PrivateThread({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; reported?: string; continuar?: string }> }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!UUID.test(id)) notFound();
   const { t, locale, userId } = await shellContext();
@@ -33,6 +33,7 @@ export default async function PrivateThread({ params, searchParams }: { params: 
   await db().transaction((tx) => markThreadRead(tx, { viewer: member, threadId: id }));
   const page = `/violeta/privado/${id}`;
   const otherIsPro = thread.other.kind === 'professional';
+  const practice = otherIsPro ? await privatePracticeCard(db(), member, id) : null;
 
   return (
     <VioletaShell t={t} active="private" guardian={guardian}>
@@ -90,6 +91,37 @@ export default async function PrivateThread({ params, searchParams }: { params: 
             </button>
           </form>
         )}
+
+        {practice ? (
+          <section className="vt-section vt-practice" id="continuar">
+            <h2 className="vt-h">{t('violeta.practice.continue_title')}</h2>
+            {query.continuar ? (
+              <>
+                <p>
+                  <strong>{practice.displayName}</strong>
+                  {practice.profession ? ` · ${t(practice.profession === 'psychiatry' ? 'violeta.profession.psychiatry' : 'violeta.profession.psychology')}` : null}
+                </p>
+                {practice.licence ? <p className="muted">{t('violeta.practice.licence', { licence: practice.licence })}</p> : null}
+                <p>
+                  <a className="btn btn-gold" href={`https://wa.me/${practice.whatsappE164.replace(/^\+/, '')}`} target="_blank" rel="noopener noreferrer">
+                    {t('violeta.practice.whatsapp')}
+                  </a>{' '}
+                  <Link className="btn btn-line" href={`/services/providers/${practice.yayId}`}>
+                    {t('violeta.practice.profile')}
+                  </Link>
+                </p>
+                <p className="hint muted">{t('violeta.practice.after')}</p>
+              </>
+            ) : (
+              <>
+                <p className="muted">{t('violeta.practice.continue_explain')}</p>
+                <Link className="btn btn-line" href={`${page}?continuar=1#continuar`} rel="nofollow">
+                  {t('violeta.practice.continue_show')}
+                </Link>
+              </>
+            )}
+          </section>
+        ) : null}
 
         <form action={blockAction} className="vt-block">
           <input type="hidden" name="threadId" value={id} />
