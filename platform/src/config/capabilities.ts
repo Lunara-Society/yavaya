@@ -312,9 +312,32 @@ export const CAPABILITIES: readonly Capability[] = [
     key: 'districts',
     nameKey: 'capability.districts.name',
     detailKey: 'capability.districts.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'yavayago',
+    nameKey: 'capability.yavayago.name',
+    detailKey: 'capability.yavayago.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    // Driver position from the phone's browser, shown to that one customer,
+    // on maps whose tiles are proxied through Yavaya (see /api/map).
+    key: 'live_tracking',
+    nameKey: 'capability.live_tracking.name',
+    detailKey: 'capability.live_tracking.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'yavayago_card_payments',
+    nameKey: 'capability.yavayago_card_payments.name',
+    detailKey: 'capability.yavayago_card_payments.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Six of seven are built: Mercadito, Servicios, Trabajo, Comunidad, Santuario and Animales. YavayaGo (delivery network, driver approval) is not built yet.',
+    blockedBy: 'Orders are paid in cash to the driver. Paying by card would make Yavaya collect money for stores and drivers and pay it out (a marketplace payout account and a regulatory decision per country). Not built; see CONFIGURATION.md.',
   },
 
   // --- Integrations ---------------------------------------------------------

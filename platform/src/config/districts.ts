@@ -99,7 +99,8 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     nameKey: 'district.yavayago.name',
     taglineKey: 'district.yavayago.tagline',
     phase: 2,
-    status: 'planned',
+    // Stores, checked drivers, cash orders and live tracking: built and tested (tests/integration/go.test.ts).
+    status: 'available',
     theme: { accent: 'orange', tokenSet: 'district-yavayago', layout: 'motion-map' },
   },
   community: {

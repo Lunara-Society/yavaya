@@ -278,6 +278,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.animals_detail',
   },
   {
+    category: 'yavayago',
+    channel: 'in_app',
+    labelKey: 'settings.notify.yavayago',
+    detailKey: 'settings.notify.yavayago_detail',
+  },
+  {
     category: 'moderation',
     channel: 'in_app',
     labelKey: 'settings.notify.moderation',

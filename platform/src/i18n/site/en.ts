@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito, Services, Work, Community, Sanctuary and Animals are open. YavayaGo opens later.',
+      text: 'Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals are open.',
       link: 'What works today',
     },
     states: {
@@ -223,10 +223,10 @@ export const siteEn: SiteContent = {
       title: 'Local, to your door',
       description: 'YavayaGo: delivery and local commerce in Central America. Food, groceries, essentials and businesses near you.',
       lead: 'Food, groceries, essentials and the businesses near you. Fast, local and reliable, with verified drivers.',
-      routeHead: { eyebrow: 'How it will work', title: 'From the business to your door' },
+      routeHead: { eyebrow: 'How it works', title: 'From the business to your door' },
       route: [
         { title: 'You order', text: 'From a restaurant or local business near you.' },
-        { title: 'The business prepares', text: 'Your payment goes straight to the business. Yavaya does not hold its money.' },
+        { title: 'The business prepares', text: 'You pay in cash on delivery. Yavaya never touches your money and takes no commission.' },
         { title: 'A verified driver picks up', text: 'Identity, photo and vehicle checked.' },
         { title: 'You receive', text: 'Knowing at every moment who is bringing your order.' },
       ],
@@ -242,7 +242,7 @@ export const siteEn: SiteContent = {
         'Identity verification.',
         'A photo that must match the person.',
         'Vehicle information.',
-        'Verified phone.',
+        'Phone checked with a call.',
         'Background checks where the law allows.',
       ],
       focusHead: { eyebrow: 'What you can order', title: 'Your neighbourhood, in one place' },
@@ -706,7 +706,7 @@ export const siteEn: SiteContent = {
         {
           title: 'Phase 2 · Work and movement',
           state: 'dev',
-          text: 'Work is open, and free while subscriptions cannot be paid. No driver will be active before approval.',
+          text: 'Work and YavayaGo are open. No driver or store works before a person approves them.',
           items: ['Work', 'YavayaGo', 'Driver network', 'Restaurants'],
         },
         {
@@ -853,7 +853,7 @@ export const siteEn: SiteContent = {
         },
         {
           title: '8. Dealings between people',
-          text: 'When districts open, sales, services, deliveries and donations will be agreements between the people taking part. **Yavaya is not a party to them and today holds nobody’s money.** Until a real payment protection system exists, Yavaya does not guarantee any transaction, and will never say otherwise.',
+          text: 'Sales, services, deliveries and donations are agreements between the people taking part. **Yavaya is not a party to them and today holds nobody’s money.** Until a real payment protection system exists, Yavaya does not guarantee any transaction, and will never say otherwise. On YavayaGo, each store answers for what it sells, its quality and its price; each driver is an independent person Yavaya checked, not a Yavaya employee; and the order is paid in cash on delivery. Yavaya takes no commission on orders.',
         },
         {
           title: '9. What is free and what is not',
@@ -938,6 +938,17 @@ export const siteEn: SiteContent = {
             'Room messages are deleted after 30 days and private ones after 90. If you leave the space, we erase everything of yours at once.',
             'We keep the link between your account and your name in the space only so we can remove someone who abuses it.',
             'The space is free. If you are a professional and allow it, a woman you have already answered can see your name, licence and WhatsApp to continue outside Yavaya. Whatever you agree there, payment included, is between you; Yavaya takes no part and no commission.',
+          ],
+        },
+        {
+          title: 'If you use YavayaGo',
+          text: 'For an order to arrive, some people need to know where and to whom. Only those people, and only while it is needed.',
+          list: [
+            'The exact drop-off point, the directions and your WhatsApp are seen only by the driver who takes your order, from when they take it. The store does not see them. They are erased a day after the order ends.',
+            'If you deliver: your name, photo, vehicle and plate are seen by the customers of your deliveries. Your location is sent only while you hold an order and the delivery page is open, it is seen only by that customer, and we keep only the latest point, erased when the order ends. We do not keep your route.',
+            'The photo of your identity document is stored privately and seen only by the Yavaya reviewer of your application. It is never shown to customers or stores.',
+            'Maps load through Yavaya, not directly from the map service: that service does not see your IP address or which part of the map you look at.',
+            'If you run a store: its name, address, location, hours, menu and WhatsApp are public, as a shopfront is.',
           ],
         },
         {

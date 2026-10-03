@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito, Servicios, Trabajo, Comunidad, Santuario y Animales ya están abiertos. YavayaGo abrirá después.',
+      text: 'Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales ya están abiertos.',
       link: 'Qué funciona hoy',
     },
     states: {
@@ -235,10 +235,10 @@ export const siteEs = {
       title: 'Lo local, a tu puerta',
       description: 'YavayaGo: entregas y comercio local en Centroamérica. Comida, mandado, lo esencial y negocios de tu zona.',
       lead: 'Comida, mandado, lo esencial y los negocios de tu zona. Rápido, cercano y confiable, con repartidores verificados.',
-      routeHead: { eyebrow: 'Cómo funcionará', title: 'Del negocio a tu puerta' },
+      routeHead: { eyebrow: 'Cómo funciona', title: 'Del negocio a tu puerta' },
       route: [
         { title: 'Pides', text: 'A un restaurante o negocio local de tu zona.' },
-        { title: 'El negocio prepara', text: 'Tu pago va directo al negocio. Yavaya no retiene su dinero.' },
+        { title: 'El negocio prepara', text: 'Tú pagas en efectivo al recibir. Yavaya no toca tu dinero ni cobra comisión.' },
         { title: 'Un repartidor verificado recoge', text: 'Con identidad, foto y vehículo revisados.' },
         { title: 'Recibes', text: 'Sabiendo en todo momento quién trae tu pedido.' },
       ],
@@ -254,7 +254,7 @@ export const siteEs = {
         'Verificación de identidad.',
         'Foto que debe coincidir con la persona.',
         'Información del vehículo.',
-        'Teléfono verificado.',
+        'Teléfono comprobado con una llamada.',
         'Revisión de antecedentes donde la ley lo permita.',
       ],
       focusHead: { eyebrow: 'Qué podrás pedir', title: 'Tu barrio, en un solo lugar' },
@@ -718,7 +718,7 @@ export const siteEs = {
         {
           title: 'Fase 2 · Trabajo y movimiento',
           state: 'dev',
-          text: 'Trabajo ya está abierto y es gratis mientras no se puedan pagar suscripciones. Ningún repartidor estará activo antes de su aprobación.',
+          text: 'Trabajo y YavayaGo ya están abiertos. Ningún repartidor ni negocio trabaja antes de que una persona lo apruebe.',
           items: ['Trabajo', 'YavayaGo', 'Red de repartidores', 'Restaurantes'],
         },
         {
@@ -865,7 +865,7 @@ export const siteEs = {
         },
         {
           title: '8. Tratos entre personas',
-          text: 'Cuando los distritos abran, las ventas, servicios, entregas y donaciones serán acuerdos entre las personas que participan. **Yavaya no es parte de esos tratos y hoy no retiene dinero de nadie.** Hasta que exista un sistema real de protección de pagos, Yavaya no garantiza ninguna transacción, y nunca dirá lo contrario.',
+          text: 'Las ventas, servicios, entregas y donaciones son acuerdos entre las personas que participan. **Yavaya no es parte de esos tratos y hoy no retiene dinero de nadie.** Hasta que exista un sistema real de protección de pagos, Yavaya no garantiza ninguna transacción, y nunca dirá lo contrario. En YavayaGo, cada negocio responde por lo que vende, su calidad y su precio; cada repartidor es una persona independiente que Yavaya revisó, no un empleado de Yavaya; y el pedido se paga en efectivo al recibirlo. Yavaya no cobra comisión por los pedidos.',
         },
         {
           title: '9. Lo que es gratis y lo que no',
@@ -950,6 +950,17 @@ export const siteEs = {
             'Los mensajes de la sala se borran a los 30 días y los privados a los 90. Si sales del espacio, borramos todo lo tuyo al instante.',
             'Guardamos la relación entre tu cuenta y tu nombre del espacio solo para poder expulsar a quien abuse.',
             'El espacio es gratis. Si eres profesional y lo permites, una mujer a quien ya respondiste puede ver tu nombre, licencia y WhatsApp para continuar fuera de Yavaya. Lo que acuerden allí, incluido el pago, es entre ustedes; Yavaya no participa ni cobra comisión.',
+          ],
+        },
+        {
+          title: 'Si usas YavayaGo',
+          text: 'Para que un pedido llegue, algunas personas necesitan saber dónde y a quién. Solo esas, y solo mientras hace falta.',
+          list: [
+            'El punto exacto de entrega, cómo llegar y tu WhatsApp los ve solo el repartidor que toma tu pedido, desde que lo toma. El negocio no los ve. Se borran un día después de que el pedido termina.',
+            'Si repartes: tu nombre, tu foto, tu vehículo y su placa los ven los clientes de tus entregas. Tu ubicación se envía solo mientras tienes un pedido y la página de entrega está abierta, la ve solo ese cliente, y guardamos únicamente el último punto, que se borra al terminar el pedido. No guardamos el recorrido.',
+            'La foto de tu documento de identidad se guarda en privado y solo la ve la persona de Yavaya que revisa tu solicitud. Nunca se muestra a clientes ni negocios.',
+            'Los mapas se cargan a través de Yavaya, no directamente desde el servicio de mapas: ese servicio no ve tu dirección IP ni qué parte del mapa miras.',
+            'Si tienes un negocio: su nombre, dirección, ubicación, horario, menú y WhatsApp son públicos, como lo es un local.',
           ],
         },
         {

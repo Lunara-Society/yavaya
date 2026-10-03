@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto';
 import { and, asc, desc, eq, gt, inArray, isNull, lt, ne, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Database, Executor } from '@/server/db/client';
-import { goDrivers, goMenuItems, goOrders, goStores, goTracking, locations, users, type GoOrderLine } from '@/server/db/schema';
+import { goDrivers, goMenuItems, goOrders, goStores, goTracking, locations, userProfiles, users, type GoOrderLine } from '@/server/db/schema';
 import { GO_RULES as R } from '@/config/business-rules';
 import { GO_CATEGORIES, GO_VEHICLES, VEHICLES_WITH_PLATE } from '@/config/go';
 import { DomainError, errors } from '@/server/errors';
@@ -171,8 +171,8 @@ async function cancelStoreOrders(tx: Executor, storeId: string, reason: string, 
   if (cancelled.length === 0) return;
   await tx.delete(goTracking).where(inArray(goTracking.orderId, cancelled.map((o) => o.id)));
   await notify(tx, [
-    ...cancelled.map((o) => ({ userId: o.customerUserId, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: o.code }, href: `/yavayago/pedido/${o.id}`, subjectId: o.id })),
-    ...cancelled.filter((o) => o.driverUserId).map((o) => ({ userId: o.driverUserId!, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: o.code }, href: '/yavayago/repartidor', subjectId: o.id })),
+    ...cancelled.map((o) => ({ userId: o.customerUserId, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: o.code }, href: `/yavayago/orders/${o.id}`, subjectId: o.id })),
+    ...cancelled.filter((o) => o.driverUserId).map((o) => ({ userId: o.driverUserId!, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: o.code }, href: '/yavayago/driver', subjectId: o.id })),
   ]);
 }
 
@@ -192,7 +192,7 @@ export async function reviewStore(tx: Executor, params: { actor: AuthContext | n
     .where(eq(goStores.id, store.id));
   if (status === 'suspended') await cancelStoreOrders(tx, store.id, 'store_suspended', now);
   await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: `go.store_${status}`, subjectType: STORE, subjectId: store.id, district: 'yavayago' });
-  await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: `go.store_${status}`, titleKey: `notify.go.store_${status}`, href: '/yavayago/negocio' }]);
+  await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: `go.store_${status}`, titleKey: `notify.go.store_${status}`, href: '/yavayago/store' }]);
 }
 
 export async function storeReviewQueue(executor: Executor, actor: AuthContext | null) {
@@ -396,7 +396,7 @@ export async function reviewDriver(
     district: 'yavayago',
     metadata: params.decision === 'approve' ? { phoneConfirmedByCall: Boolean(params.phoneConfirmed) } : {},
   });
-  await notify(tx, [{ userId: driver.userId, category: 'yavayago', type: `go.driver_${status}`, titleKey: `notify.go.driver_${status}`, href: '/yavayago/repartidor' }]);
+  await notify(tx, [{ userId: driver.userId, category: 'yavayago', type: `go.driver_${status}`, titleKey: `notify.go.driver_${status}`, href: '/yavayago/driver' }]);
 }
 
 export async function driverReviewQueue(executor: Executor, actor: AuthContext | null) {
@@ -536,7 +536,7 @@ export async function placeOrder(tx: Executor, params: { customerUserId: string;
     .returning({ id: goOrders.id });
   const id = order!.id;
   await recordAudit(tx, { actorType: 'user', actorUserId: params.customerUserId, action: 'go.order_placed', subjectType: ORDER, subjectId: id, district: 'yavayago', ipHash: params.audit?.ipHash, userAgentHash: params.audit?.userAgentHash, metadata: { storeId: store.id, totalMinor: total, currency: store.currency } });
-  await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: 'go.order_new', titleKey: 'notify.go.order_new', params: { code, name: customer.displayName.split(' ')[0] ?? '' }, href: '/yavayago/negocio', subjectId: id, dedupeKey: `go.order_new:${id}` }]);
+  await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: 'go.order_new', titleKey: 'notify.go.order_new', params: { code, name: customer.displayName.split(' ')[0] ?? '' }, href: '/yavayago/store', subjectId: id, dedupeKey: `go.order_new:${id}` }]);
   return { id, code };
 }
 
@@ -561,7 +561,7 @@ async function transition(
   await recordAudit(tx, { actorType: 'user', actorUserId: params.actorUserId, action: `go.order_${params.to}`, subjectType: ORDER, subjectId: params.order.id, district: 'yavayago', metadata: params.reason ? { reason: params.reason } : {} });
 }
 
-const customerLink = (orderId: string) => `/yavayago/pedido/${orderId}`;
+const customerLink = (orderId: string) => `/yavayago/orders/${orderId}`;
 
 /** The store accepts or turns down a new order. */
 export async function storeAnswer(tx: Executor, params: { userId: string; orderId: string; accept: boolean; reason?: string | null; now?: Date }): Promise<void> {
@@ -588,7 +588,7 @@ async function alertDrivers(tx: Executor, store: typeof goStores.$inferSelect, o
     .limit(50);
   await notify(
     tx,
-    drivers.map((d) => ({ userId: d.userId, category: 'yavayago' as const, type: 'go.order_available', titleKey: 'notify.go.order_available', params: { store: store.name }, href: '/yavayago/repartidor', subjectId: order.id, dedupeKey: `go.order_available:${order.id}:${d.userId}` })),
+    drivers.map((d) => ({ userId: d.userId, category: 'yavayago' as const, type: 'go.order_available', titleKey: 'notify.go.order_available', params: { store: store.name }, href: '/yavayago/driver', subjectId: order.id, dedupeKey: `go.order_available:${order.id}:${d.userId}` })),
   );
 }
 
@@ -599,7 +599,7 @@ export async function storeMarkReady(tx: Executor, params: { userId: string; ord
   if (order.status !== 'accepted') throw errors.conflict('go.error.order_state');
   const now = params.now ?? new Date();
   await transition(tx, { order, to: 'ready', actorUserId: params.userId, set: { readyAt: now }, now });
-  if (order.driverUserId) await notify(tx, [{ userId: order.driverUserId, category: 'yavayago', type: 'go.order_ready', titleKey: 'notify.go.order_ready', params: { code: order.code, store: store.name }, href: '/yavayago/repartidor', subjectId: order.id }]);
+  if (order.driverUserId) await notify(tx, [{ userId: order.driverUserId, category: 'yavayago', type: 'go.order_ready', titleKey: 'notify.go.order_ready', params: { code: order.code, store: store.name }, href: '/yavayago/driver', subjectId: order.id }]);
 }
 
 /** The store cancels an order it accepted, before a driver has it. */
@@ -612,7 +612,7 @@ export async function storeCancel(tx: Executor, params: { userId: string; orderI
   await transition(tx, { order, to: 'cancelled', actorUserId: params.userId, reason: params.reason || 'store_cancelled', now });
   await notify(tx, [
     { userId: order.customerUserId, category: 'yavayago', type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: order.code }, href: customerLink(order.id), subjectId: order.id },
-    ...(order.driverUserId ? [{ userId: order.driverUserId, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: order.code }, href: '/yavayago/repartidor', subjectId: order.id }] : []),
+    ...(order.driverUserId ? [{ userId: order.driverUserId, category: 'yavayago' as const, type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: order.code }, href: '/yavayago/driver', subjectId: order.id }] : []),
   ]);
 }
 
@@ -624,7 +624,7 @@ export async function customerCancel(tx: Executor, params: { userId: string; ord
   const now = params.now ?? new Date();
   await transition(tx, { order, to: 'cancelled', actorUserId: params.userId, reason: 'customer_cancelled', now });
   const [store] = await tx.select({ ownerUserId: goStores.ownerUserId }).from(goStores).where(eq(goStores.id, order.storeId)).limit(1);
-  if (store) await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: order.code }, href: '/yavayago/negocio', subjectId: order.id }]);
+  if (store) await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: 'go.order_cancelled', titleKey: 'notify.go.order_cancelled', params: { code: order.code }, href: '/yavayago/store', subjectId: order.id }]);
 }
 
 async function activeDriver(executor: Executor, userId: string) {
@@ -652,7 +652,7 @@ export async function claimOrder(tx: Executor, params: { userId: string; orderId
   const [me] = await tx.select({ displayName: users.displayName }).from(users).where(eq(users.id, params.userId)).limit(1);
   await notify(tx, [
     { userId: order.customerUserId, category: 'yavayago', type: 'go.driver_assigned', titleKey: 'notify.go.driver_assigned', params: { code: order.code, driver: me?.displayName ?? '' }, href: customerLink(order.id), subjectId: order.id },
-    { userId: store.ownerUserId, category: 'yavayago', type: 'go.driver_assigned', titleKey: 'notify.go.driver_assigned_store', params: { code: order.code, driver: me?.displayName ?? '' }, href: '/yavayago/negocio', subjectId: order.id },
+    { userId: store.ownerUserId, category: 'yavayago', type: 'go.driver_assigned', titleKey: 'notify.go.driver_assigned_store', params: { code: order.code, driver: me?.displayName ?? '' }, href: '/yavayago/store', subjectId: order.id },
   ]);
 }
 
@@ -689,7 +689,7 @@ export async function markDelivered(tx: Executor, params: { userId: string; orde
   const [store] = await tx.select({ ownerUserId: goStores.ownerUserId }).from(goStores).where(eq(goStores.id, order.storeId)).limit(1);
   await notify(tx, [
     { userId: order.customerUserId, category: 'yavayago', type: 'go.order_delivered', titleKey: 'notify.go.order_delivered', params: { code: order.code }, href: customerLink(order.id), subjectId: order.id },
-    ...(store ? [{ userId: store.ownerUserId, category: 'yavayago' as const, type: 'go.order_delivered', titleKey: 'notify.go.order_delivered', params: { code: order.code }, href: '/yavayago/negocio', subjectId: order.id }] : []),
+    ...(store ? [{ userId: store.ownerUserId, category: 'yavayago' as const, type: 'go.order_delivered', titleKey: 'notify.go.order_delivered', params: { code: order.code }, href: '/yavayago/store', subjectId: order.id }] : []),
   ]);
 }
 
@@ -902,4 +902,43 @@ export async function goUpkeep(database: Database, now = new Date()): Promise<{ 
     .returning({ id: goOrders.id });
 
   return { expired, offline: offline.length, erased: erased.length };
+}
+
+/**
+ * Where a map should open for this member: their own place if they set one,
+ * otherwise the first city of the first market Yavaya serves. Read from the
+ * rows, never a place written into the code.
+ */
+export async function mapStart(executor: Executor, userId: string | null): Promise<{ latitude: number; longitude: number }> {
+  if (userId) {
+    const [own] = await executor
+      .select({ latitude: locations.latitude, longitude: locations.longitude })
+      .from(userProfiles)
+      .innerJoin(locations, eq(locations.id, userProfiles.locationId))
+      .where(eq(userProfiles.userId, userId))
+      .limit(1);
+    if (own?.latitude != null && own.longitude != null) return { latitude: own.latitude, longitude: own.longitude };
+  }
+  const [first] = await executor
+    .select({ latitude: locations.latitude, longitude: locations.longitude })
+    .from(locations)
+    .where(and(eq(locations.level, 'city'), eq(locations.isActive, true), sql`${locations.latitude} is not null`, sql`exists (select 1 from locations c where c.is_supported_market and c.code = any(${locations.path}))`))
+    .orderBy(asc(locations.sortOrder), asc(locations.name))
+    .limit(1);
+  return { latitude: first?.latitude ?? 0, longitude: first?.longitude ?? 0 };
+}
+
+/** A city's own coordinates, to open a map where a store or driver says they are. */
+export async function placePoint(executor: Executor, locationId: string): Promise<{ latitude: number; longitude: number } | null> {
+  const [row] = await executor.select({ latitude: locations.latitude, longitude: locations.longitude }).from(locations).where(eq(locations.id, locationId)).limit(1);
+  return row?.latitude != null && row.longitude != null ? { latitude: row.latitude, longitude: row.longitude } : null;
+}
+
+/** Every city's coordinates, so a map can follow the city chosen in a form. */
+export async function cityPoints(executor: Executor): Promise<Record<string, { latitude: number; longitude: number }>> {
+  const rows = await executor
+    .select({ id: locations.id, latitude: locations.latitude, longitude: locations.longitude })
+    .from(locations)
+    .where(and(eq(locations.isActive, true), sql`${locations.latitude} is not null`, sql`${locations.longitude} is not null`));
+  return Object.fromEntries(rows.map((row) => [row.id, { latitude: row.latitude!, longitude: row.longitude! }]));
 }

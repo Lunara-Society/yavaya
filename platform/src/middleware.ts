@@ -178,6 +178,9 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
     // Nothing third-party is contacted from the browser. Widening this is a
     // deliberate decision, not a convenience.
     `connect-src 'self'`,
+    // The map library draws in a worker it creates from a blob. Tiles still
+    // come only from this origin (see /api/map).
+    `worker-src 'self' blob:`,
     `object-src 'none'`,
     `base-uri 'self'`,
     // A purchase form posts here and is redirected to the payment provider's
@@ -247,7 +250,7 @@ export const config = {
      * without a document context and need no policy.
      */
     {
-      source: '/((?!_next/static|_next/image|favicon.ico).*)',
+      source: '/((?!_next/static|_next/image|favicon.ico|maplibre/).*)',
       missing: [
         { type: 'header', key: 'next-router-prefetch' },
         { type: 'header', key: 'purpose', value: 'prefetch' },

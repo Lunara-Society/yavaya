@@ -773,3 +773,36 @@ waiting.
   is append-only by design, which interacts with erasure requests: the
   resolution is to store no personal data in audit metadata (already the rule)
   and to erase the referenced records instead.
+
+## YavayaGo
+
+**Live.** Stores, menus, checked drivers, cash orders and live tracking.
+
+**Money.** Customers pay the driver in cash on delivery, the price the store
+set. Stores set their own delivery fee, which goes to the driver. Yavaya
+takes no commission, per the specification ("Stream 4 — not immediately;
+build trust with restaurants first"). Card payment for orders is **not
+built**: it would make Yavaya collect money on behalf of stores and drivers
+and pay it out, which needs a marketplace payout account and a decision per
+country. It shows as `REQUIRES_CONFIGURATION` on /status.
+
+**Drivers.** The specification requires identity, a matching photo, vehicle
+details, a verified phone, and background checks where legally possible.
+SMS is not configured (Twilio), so a reviewer confirms the phone by calling
+it; approval is refused without that box or an SMS-verified phone, and
+without a note of what was checked. Background checks are left to the
+reviewer's judgement and local law and are recorded in the note.
+`KYC_PROVIDER=manual` reflects that documents go to this human review.
+
+**Maps.** Tiles from OpenFreeMap (no key, no account), proxied through
+`/api/map` so visitors never contact a third party. If OpenFreeMap ever has
+to be replaced, only that route's `UPSTREAM` and allowed paths change. The
+map worker is a copy of `maplibre-gl`'s own file in
+`public/maplibre/<version>/`; upgrading the package means copying the new
+one (a unit test checks they match).
+
+**Operational guesses, not specification** (in `GO_RULES`, retunable):
+15 minutes for a store to answer before the order is cancelled; 2 open cash
+orders per customer; 15 km maximum straight-line delivery distance; one
+order at a time per driver; drivers offline after 20 idle minutes; exact
+drop-off points and phone numbers erased 24 hours after an order ends.
