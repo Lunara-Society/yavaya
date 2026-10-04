@@ -1337,7 +1337,8 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 .go-store-hero { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); }
 .go-store-map { margin: 8px 0 24px; }
 .go-store-body { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 960px) { .go-store-body { grid-template-columns: minmax(0, 1fr) 340px; } .go-checkout { grid-column: 1 / -1; } }
+/* The cart follows the menu only beside it; on one column it would sit over the checkout below. */
+@media (min-width: 960px) { .go-store-body { grid-template-columns: minmax(0, 1fr) 340px; } .go-cart { position: sticky; top: 90px; } .go-checkout { grid-column: 1 / -1; } }
 .go-menu-h { font-family: var(--serif); font-size: 1.3rem; margin: 0 0 12px; }
 .go-sub { font-size: 1rem; margin: 18px 0 8px; color: var(--yavayago); }
 .go-items { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 10px; }
@@ -1349,7 +1350,7 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 .go-qty { display: flex; align-items: center; gap: 8px; font-weight: 800; }
 .go-qty-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font-size: 1.3rem; line-height: 1; cursor: pointer; }
 .go-qty-btn.add { background: var(--yavayago); border-color: var(--yavayago); color: #160b02; }
-.go-cart { position: sticky; top: 90px; align-self: start; padding: 18px; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--yavayago) 40%, var(--line)); background: var(--surface); }
+.go-cart { align-self: start; padding: 18px; border-radius: var(--radius); border: 1px solid color-mix(in srgb, var(--yavayago) 40%, var(--line)); background: var(--surface); }
 .go-cart-line { display: flex; justify-content: space-between; gap: 12px; margin: 6px 0; }
 .go-cart-total { font-weight: 800; font-size: 1.1rem; border-top: 1px solid var(--line); padding-top: 8px; }
 .go-warn { color: #f0a35b; font-weight: 700; }
