@@ -1361,7 +1361,8 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 .go-map-track, .go-map-drive { height: min(62vh, 520px); }
 .go-map-bar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
 .go-map-note { margin-top: 8px; font-weight: 700; color: var(--yavayago); }
-.go-map-age { position: absolute; left: 12px; bottom: 12px; margin: 0; padding: 6px 10px; border-radius: 999px; background: rgba(5, 11, 22, .82); font-size: .85rem; }
+/* Top-left: the bottom edge belongs to the map attribution, which expands. */
+.go-map-age { position: absolute; left: 12px; top: 12px; margin: 0; padding: 6px 10px; border-radius: 999px; background: rgba(5, 11, 22, .82); font-size: .85rem; }
 .go-pin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
 .go-pin-store { background: var(--yavayago); }
 .go-pin-store::after { content: ''; position: absolute; inset: 9px; border-radius: 3px; background: #fff; }
