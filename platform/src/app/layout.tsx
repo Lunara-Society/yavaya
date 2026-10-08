@@ -31,7 +31,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
     icons: {
       icon: [
-        { url: '/favicon.svg', type: 'image/svg+xml' },
         { url: '/favicon.ico', sizes: '48x48' },
         { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       ],

@@ -42,7 +42,7 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
           <div className="hero-mark">
             <Guilloche className="hero-seal" size={520} lobes={36} rings={12} strokeWidth={0.45} />
             <span className="hero-emblem">
-              <Mark id="ymh" />
+              <Mark size={240} />
             </span>
             <h1 className="h-xl">YAVAYA</h1>
           </div>
