@@ -9,13 +9,15 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { formatDate } from '@/ui/mercadito/format';
 import { whatsappLink } from '@/server/domains/mercadito/rules';
 import { hasPermission } from '@/server/domains/access/authorize';
-import { getPost, getProfile, WORK_REPORT_CATEGORIES } from '@/server/domains/work/service';
-import { applicationStepAction, applyAction, closePostAction, reportWorkAction } from '../../actions';
+import { getPost, getProfile, WORK_REPORT_CATEGORIES, workPricingRules } from '@/server/domains/work/service';
+import { actionCost, getBalance } from '@/server/domains/tokens/service';
+import { FeatureOffer } from '@/ui/promotion/feature-offer';
+import { applicationStepAction, applyAction, closePostAction, featurePostAction, reportWorkAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; applied?: string; published?: string; reported?: string }> };
+type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; applied?: string; published?: string; reported?: string; feature?: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
@@ -35,6 +37,13 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
   const { post, isEmployer, applications, myApplication, employerWhatsapp, employerReputation } = found;
   const page = `/work/posts/${post.id}`;
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
+  // What featuring costs and whether the employer can pay: only they see it.
+  const feature =
+    isEmployer && post.status === 'open' && userId
+      ? await Promise.all([actionCost(db(), 'work.feature_post'), getBalance(db(), userId), workPricingRules(db())]).then(([cost, balance, rules]) =>
+          cost === null ? null : { cost, balance, days: rules.featureDays },
+        )
+      : null;
   const limits = { min: WORK_RULES.messageMinLength, max: WORK_RULES.messageMaxLength, limit: WORK_RULES.maxOpenApplicationsPerCandidate };
 
   return (
@@ -49,6 +58,7 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
         {error ? <p className="mk-error">{t(error as MessageKey, limits)}</p> : null}
 
         <article className="sv-detail">
+          {post.featured ? <span className="mk-featured-tag">{t('mercadito.feature.tag')}</span> : null}
           <p className="sv-kicker">
             {t(`work.kind.${post.kind}` as MessageKey)} · {t(`work.field.${post.field}` as MessageKey)} · {t(`work.status.${post.status}` as MessageKey)}
           </p>
@@ -129,6 +139,23 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
                 ))}
               </div>
             )}
+            {feature ? (
+              <div style={{ marginTop: 18 }}>
+                <FeatureOffer
+                  t={t}
+                  locale={locale}
+                  action={featurePostAction}
+                  hidden={{ postId: post.id }}
+                  featuredUntil={post.featuredUntil}
+                  cost={feature.cost}
+                  balance={feature.balance}
+                  days={feature.days}
+                  outcome={query.feature ?? null}
+                  titleKey="promotion.title_post"
+                  bodyKey="promotion.body_post"
+                />
+              </div>
+            ) : null}
             {post.status === 'open' ? (
               <div className="btn-row" style={{ marginTop: 18 }}>
                 <form action={closePostAction}>

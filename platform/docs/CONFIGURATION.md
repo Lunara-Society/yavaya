@@ -697,10 +697,22 @@ for people, paid by those who earn, growth first.**
   hold a card. Mobile wallets, carrier billing and cash collection are not
   configured; see "Payments".
 
-**Next phases, not built yet:** business plans for YavayaGo stores after a
-free launch period, paid job posts for employers in Trabajo, and priority
-placement for professionals in Servicios. Each needs its prices decided and
-is deliberately left free until the district has enough people in it.
+**Phase 2 (built):** the same rule in two more districts. Basic use stays
+free; what is paid is optional placement, or volume beyond a free allowance.
+
+| Setting / action | Default | What it is |
+| --- | --- | --- |
+| `work.free_open_posts` | 2 | Open Trabajo posts an employer may have at once without paying |
+| `work.publish_post` | 3 tokens | Each open post beyond the allowance (employers only; candidates never pay) |
+| `work.feature_post` / `work.feature_days` | 3 tokens / 7 days | Featured post: first on the board, labelled |
+| `go.feature_store` / `go.feature_days` | 5 tokens / 7 days | Featured store: first among open stores, labelled; still no commission on orders |
+
+Placement rules live in `server/domains/promotion/featured.ts`: a feature
+lasts a fixed number of days, buying again extends it from its end, and
+whatever is featured carries a "Destacado" label.
+
+**Not built yet:** priority placement for professionals in Servicios needs
+a public directory of professionals first, which does not exist yet.
 
 ## IP geolocation — `GEOIP_PROVIDER`
 

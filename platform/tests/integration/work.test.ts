@@ -15,6 +15,7 @@ import {
   reviewEmployer,
   saveEmployer,
   expireWorkPosts,
+  featurePost,
   getPost,
   listPosts,
   postInputSchema,
@@ -25,6 +26,8 @@ import {
   saveProfile,
   workReviewQueue,
 } from '@/server/domains/work/service';
+import { getBalance, grantReward } from '@/server/domains/tokens/service';
+import { WORK_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 
 const context = { networkHash: null, addressHash: 'work-test', deviceFingerprint: null, userAgent: 'vitest' };
@@ -231,5 +234,48 @@ describe('reports', () => {
     expect(post!.status).toBe('removed');
     expect((await listNotifications(db(), candidate)).some((n) => n.titleKey === 'notify.work.post_closed')).toBe(true);
     await expect(db().transaction((tx) => saveEmployer(tx, { userId: employer, input: business() }))).rejects.toMatchObject({ messageKey: 'work.error.employer_suspended' });
+  });
+});
+
+async function giveTokens(userId: string, amount: number) {
+  await db().transaction((tx) => grantReward(tx, { userId, ruleKey: 'test.tokens', amount, dedupeKey: crypto.randomUUID() }));
+}
+
+describe('what employers pay', () => {
+  it('publishes free within the allowance, then charges per post, once per retried submission', async () => {
+    const employer = await verifiedEmployer();
+    for (let i = 0; i < WORK_RULES.freeOpenPosts; i += 1) {
+      await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: `Puesto número ${i + 1}` }) }));
+    }
+    await expect(
+      db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: 'Uno más' }) })),
+    ).rejects.toMatchObject({ code: 'insufficient_tokens' });
+
+    await giveTokens(employer, 5);
+    const postId = crypto.randomUUID();
+    const first = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: 'Uno más' }), postId }));
+    const retry = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: 'Uno más' }), postId }));
+    expect(retry).toBe(first);
+    expect(await getBalance(db(), employer)).toBe(2);
+  });
+
+  it('features a post first on the board, labelled, and never for someone else', async () => {
+    const employer = await verifiedEmployer();
+    const other = await verifiedEmployer('Panadería');
+    const mine = await db().transaction((tx) => publishPost(tx, { employerUserId: employer, input: job({ title: 'Cajera' }) }));
+    await db().transaction((tx) => publishPost(tx, { employerUserId: other, input: job({ title: 'Panadero' }) }));
+    await giveTokens(employer, 3);
+    await giveTokens(other, 3);
+
+    await expect(
+      db().transaction((tx) => featurePost(tx, { employerUserId: other, postId: mine, purchaseId: crypto.randomUUID() })),
+    ).rejects.toMatchObject({ code: 'not_found' });
+    await db().transaction((tx) => featurePost(tx, { employerUserId: employer, postId: mine, purchaseId: crypto.randomUUID() }));
+    expect(await getBalance(db(), employer)).toBe(0);
+
+    const { items } = await listPosts(db(), { locale: 'es' });
+    expect(items[0]?.id).toBe(mine);
+    expect(items[0]?.featured).toBe(true);
+    expect(items[1]?.featured).toBe(false);
   });
 });

@@ -249,7 +249,7 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.work_subscriptions.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Card payments are live for tokens, but recurring subscriptions are not built yet and the owner has not set their start date. Until then posting and applying are free.',
+    blockedBy: 'Card payments are live for tokens, but recurring subscriptions are not built yet and the owner has not set their start date. Until then applying is free and each employer posts up to 2 open offers free (beyond that, tokens).',
   },
   {
     key: 'safe_space',

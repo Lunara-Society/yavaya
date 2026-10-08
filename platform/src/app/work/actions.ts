@@ -12,6 +12,7 @@ import {
   APPLICATION_STEPS,
   closePost,
   decideApplication,
+  featurePost,
   EMPLOYER_DECISIONS,
   employerInputSchema,
   reviewEmployer,
@@ -102,7 +103,10 @@ export async function publishPostAction(formData: FormData): Promise<void> {
   let id: string;
   try {
     const audit = await auditContext();
-    id = await db().transaction((tx) => publishPost(tx, { employerUserId: session.user.userId, input: parsed.data, audit }));
+    const postId = field(formData, 'postId');
+    id = await db().transaction((tx) =>
+      publishPost(tx, { employerUserId: session.user.userId, input: parsed.data, postId: UUID.test(postId) ? postId : undefined, audit }),
+    );
   } catch (error) {
     redirect(back(form, errorKey(error)));
   }
@@ -147,6 +151,24 @@ export async function applicationStepAction(formData: FormData): Promise<void> {
   }
   revalidatePath(page);
   redirect(page);
+}
+
+/** "Destacar": pays tokens to put this post first on the board for a week. */
+export async function featurePostAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const postId = field(formData, 'postId');
+  const purchaseId = field(formData, 'purchaseId');
+  if (!UUID.test(postId) || !UUID.test(purchaseId)) redirect('/work/mine');
+  let outcome = 'ok';
+  try {
+    const audit = await auditContext();
+    await db().transaction((tx) => featurePost(tx, { employerUserId: session.user.userId, postId, purchaseId, audit }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    outcome = error.code === 'insufficient_tokens' ? 'tokens' : 'failed';
+  }
+  revalidatePath('/work');
+  redirect(`/work/posts/${postId}?feature=${outcome}#destacar`);
 }
 
 export async function closePostAction(formData: FormData): Promise<void> {

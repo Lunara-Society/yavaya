@@ -14,6 +14,9 @@ import { formatYayId } from '@/server/domains/identity/yay-id';
 import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { insertMediaRows, type StoredImage } from '@/server/domains/media/service';
 import { notify } from '@/server/domains/notifications/service';
+import { chargeForAction } from '@/server/domains/tokens/service';
+import { getSetting } from '@/server/domains/platform/settings';
+import { featuredFirst, featuredUntilAfterPurchase, isFeatured } from '@/server/domains/promotion/featured';
 
 /**
  * YavayaGo: stores, their menus, the drivers Yavaya checked, and the orders
@@ -159,6 +162,45 @@ export async function setStoreOpen(tx: Executor, params: { userId: string; open:
   await tx.update(goStores).set({ isOpen: params.open, updatedAt: new Date() }).where(eq(goStores.id, store.id));
 }
 
+export async function goFeatureDays(executor: Executor): Promise<number> {
+  return getSetting(executor, 'go.feature_days', R.featureDays);
+}
+
+/**
+ * Features the owner's store: listed first among open stores, labelled
+ * "Destacado", for `go.feature_days`. Stores pay no commission on orders;
+ * this optional placement is what YavayaGo charges for.
+ */
+export async function featureStore(
+  tx: Executor,
+  params: { userId: string; purchaseId: string; now?: Date },
+): Promise<{ featuredUntil: Date; cost: number }> {
+  const now = params.now ?? new Date();
+  const [store] = await tx.select().from(goStores).where(eq(goStores.ownerUserId, params.userId)).limit(1).for('update');
+  if (!store) throw errors.notFound(STORE);
+  if (store.status !== 'approved') throw new DomainError('forbidden', 'go.error.store_not_approved');
+  const featuredUntil = featuredUntilAfterPurchase(store.featuredUntil, await goFeatureDays(tx), now);
+  const charge = await chargeForAction(tx, {
+    userId: params.userId,
+    actionKey: 'go.feature_store',
+    idempotencyKey: `go.feature:${params.purchaseId}`,
+    relatedType: STORE,
+    relatedId: store.id,
+  });
+  if (charge.deduplicated && charge.cost > 0) return { featuredUntil: store.featuredUntil ?? featuredUntil, cost: charge.cost };
+  await tx.update(goStores).set({ featuredUntil, updatedAt: now }).where(eq(goStores.id, store.id));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.userId,
+    action: 'go.store_featured',
+    subjectType: STORE,
+    subjectId: store.id,
+    district: 'yavayago',
+    metadata: { cost: charge.cost, featuredUntil: featuredUntil.toISOString(), wasFeatured: isFeatured(store.featuredUntil, now) },
+  });
+  return { featuredUntil, cost: charge.cost };
+}
+
 export type ReviewDecision = 'approve' | 'reject' | 'suspend' | 'reinstate';
 
 /** Cancels every open order of a store that can no longer serve them, telling each customer. */
@@ -220,7 +262,8 @@ export async function browseStores(executor: Executor, params: { locationIds?: s
     .from(goStores)
     .innerJoin(locations, eq(locations.id, goStores.locationId))
     .where(and(...filters))
-    .orderBy(desc(goStores.isOpen), asc(goStores.name))
+    // Open first; among them, featured stores (paid, and labelled) lead.
+    .orderBy(desc(goStores.isOpen), featuredFirst(goStores.featuredUntil), asc(goStores.name))
     .limit(200);
   return rows.map((row) => ({ ...row.store, placeName: row.placeName }));
 }

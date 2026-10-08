@@ -26,6 +26,7 @@ import {
   storeMarkReady,
   updateMenuItem,
   type ReviewDecision,
+  featureStore,
 } from '@/server/domains/go/service';
 
 /** YavayaGo's buttons. Every one re-checks on the server who may press it; the page only decides what to show. */
@@ -105,6 +106,23 @@ const STORE_PATH = '/yavayago/store';
 
 export async function storeOpenAction(formData: FormData): Promise<void> {
   await step(STORE_PATH, (userId) => db().transaction((tx) => setStoreOpen(tx, { userId, open: field(formData, 'open') === '1' })));
+}
+
+/** "Destacar": pays tokens to list the store first for a week. */
+export async function storeFeatureAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login?next=/yavayago/store');
+  const purchaseId = field(formData, 'purchaseId');
+  if (!UUID.test(purchaseId)) redirect(STORE_PATH);
+  let outcome = 'ok';
+  try {
+    await db().transaction((tx) => featureStore(tx, { userId: session.user.userId, purchaseId }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    outcome = error.code === 'insufficient_tokens' ? 'tokens' : 'failed';
+  }
+  revalidatePath('/yavayago', 'layout');
+  redirect(`${STORE_PATH}?feature=${outcome}#destacar`);
 }
 
 export async function storeAnswerAction(formData: FormData): Promise<void> {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { randomUUID } from 'node:crypto';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -8,7 +9,8 @@ import { EMPLOYMENT_TYPES, PLACE_MODES, WORK_FIELDS } from '@/config/work';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { placeOptions } from '@/server/domains/mercadito/service';
-import { getEmployer } from '@/server/domains/work/service';
+import { getEmployer, openPostCount, workPricingRules } from '@/server/domains/work/service';
+import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { publishPostAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +28,18 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
   const kind = query.kind === 'project' ? 'project' : 'job';
-  const [countries, employer] = await Promise.all([placeOptions(db(), locale), getEmployer(db(), userId)]);
+  const [countries, employer, open, pricing, cost, balance] = await Promise.all([
+    placeOptions(db(), locale),
+    getEmployer(db(), userId),
+    openPostCount(db(), userId),
+    workPricingRules(db()),
+    actionCost(db(), 'work.publish_post'),
+    getBalance(db(), userId),
+  ]);
+  // What this post will cost: free inside the allowance. The server decides
+  // again when it is published; this is only what the page says.
+  const freeLeft = Math.max(0, pricing.freeOpenPosts - open);
+  const price = freeLeft > 0 ? 0 : (cost ?? 0);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   // Only a verified employer sees the form; everyone else sees where they stand.
@@ -75,9 +88,16 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
           </Link>
         </nav>
         <p className="muted">{t('work.form.lead')}</p>
+        <p className="card">
+          {price === 0
+            ? t('work.pricing.free', { left: freeLeft, max: pricing.freeOpenPosts })
+            : t('work.pricing.paid', { cost: price, max: pricing.freeOpenPosts, balance })}
+        </p>
         {error ? <p className="mk-error">{t(error as MessageKey, LIMITS)}</p> : null}
         <form action={publishPostAction} className="mk-form" style={{ marginTop: 18 }}>
           <input type="hidden" name="kind" value={kind} />
+          {/* Names the post before it exists: a retried submission is one post, one charge. */}
+          <input type="hidden" name="postId" value={randomUUID()} />
           <label>
             {t('work.form.post_title')}
             <span className="hint">{t(kind === 'project' ? 'work.form.post_title_hint_project' : 'work.form.post_title_hint_job')}</span>
@@ -165,7 +185,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
             <span className="hint">{t('work.form.no_fee_hint')}</span>
           </label>
           <button className="btn btn-gold" type="submit">
-            {t('work.form.submit')}
+            {price === 0 ? t('work.form.submit') : t('work.pricing.submit_paid', { cost: price })}
           </button>
         </form>
       </div>

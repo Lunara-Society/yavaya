@@ -9,7 +9,9 @@ import { formatDate } from '@/ui/mercadito/format';
  */
 export function PostCard({ post, t, locale, footer }: { post: PostCardView; t: Translator; locale: string; footer?: string }) {
   return (
-    <article className="wk-post">
+    <article className={post.featured ? 'wk-post is-featured' : 'wk-post'}>
+      {/* Paid placement is always labelled. */}
+      {post.featured ? <span className="mk-featured-tag">{t('mercadito.feature.tag')}</span> : null}
       <p className="sv-kicker">
         {t(`work.kind.${post.kind}` as MessageKey)} · {t(`work.field.${post.field}` as MessageKey)}
         {post.status !== 'open' ? ` · ${t(`work.status.${post.status}` as MessageKey)}` : ''}

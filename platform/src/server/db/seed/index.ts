@@ -24,7 +24,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES, GO_RULES, REFERRAL_RULES } from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES, REFERRAL_RULES, WORK_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
@@ -276,6 +276,10 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
     { key: 'mercadito.publish_listing', district: 'mercadito', cost: 1, description: 'Publish a Mercadito listing beyond the free allowance' },
     { key: 'mercadito.publish_listing_free', district: 'mercadito', cost: 0, description: 'Publish a Mercadito listing within the free allowance (free)' },
     { key: 'mercadito.feature_listing', district: 'mercadito', cost: 3, description: 'Feature a Mercadito listing at the top for a week' },
+    { key: 'work.publish_post', district: 'works', cost: 3, description: 'Publish a Trabajo post beyond the free allowance (employers only)' },
+    { key: 'work.publish_post_free', district: 'works', cost: 0, description: 'Publish a Trabajo post within the free allowance (free)' },
+    { key: 'work.feature_post', district: 'works', cost: 3, description: 'Feature a Trabajo post at the top for a week' },
+    { key: 'go.feature_store', district: 'yavayago', cost: 5, description: 'Feature a YavayaGo store at the top for a week' },
     { key: 'services.publish_request', district: 'services', cost: 1, description: 'Publish a service request' },
     { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
     { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
@@ -332,6 +336,9 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
     { key: 'mercadito.free_open_listings', value: MERCADITO_RULES.freeOpenListings, description: 'Open listings a member may have at once without paying' },
     { key: 'mercadito.feature_days', value: MERCADITO_RULES.featureDays, description: 'Days a listing stays featured after one purchase' },
+    { key: 'work.free_open_posts', value: WORK_RULES.freeOpenPosts, description: 'Open Trabajo posts an employer may have at once without paying' },
+    { key: 'work.feature_days', value: WORK_RULES.featureDays, description: 'Days a Trabajo post stays featured after one purchase' },
+    { key: 'go.feature_days', value: GO_RULES.featureDays, description: 'Days a YavayaGo store stays featured after one purchase' },
     { key: 'referral.inviter_reward', value: REFERRAL_RULES.inviterReward, description: 'Tokens for a member whose invitee verifies their email' },
     { key: 'referral.invitee_reward', value: REFERRAL_RULES.inviteeReward, description: 'Tokens for a new member who joined by invitation, on email verification' },
     { key: 'referral.max_rewarded_per_month', value: REFERRAL_RULES.maxRewardedPerMonth, description: 'Rewarded invitations per inviter per 30 days' },

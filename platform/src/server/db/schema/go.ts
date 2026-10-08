@@ -47,6 +47,8 @@ export const goStores = pgTable(
     prepMinutes: integer('prep_minutes').notNull().default(20),
     /** Taking orders right now. Only an approved store can be open. */
     isOpen: boolean('is_open').notNull().default(false),
+    /** Paid placement: listed first, labelled "Destacado", until this moment. */
+    featuredUntil: timestamp('featured_until', { withTimezone: true }),
     status: goStoreStatusEnum('status').notNull().default('pending'),
     reviewNote: text('review_note'),
     reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),

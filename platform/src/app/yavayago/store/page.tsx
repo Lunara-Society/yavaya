@@ -11,8 +11,10 @@ import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, moneyInput, waLink } from '@/ui/go/format';
 import { placeOptions } from '@/server/domains/mercadito/service';
-import { cityPoints, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
-import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, storeAnswerAction, storeCancelAction, storeOpenAction, storeReadyAction } from '../actions';
+import { cityPoints, goFeatureDays, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
+import { actionCost, getBalance } from '@/server/domains/tokens/service';
+import { FeatureOffer } from '@/ui/promotion/feature-offer';
+import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, storeAnswerAction, storeCancelAction, storeFeatureAction, storeOpenAction, storeReadyAction } from '../actions';
 import { mapLabels } from '../labels';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +25,7 @@ export const metadata: Metadata = { robots: { index: false } };
  * page keeps itself current; the owner never sees where a customer lives —
  * only what they ordered and their first name.
  */
-export default async function StoreDashboard({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string; added?: string }> }) {
+export default async function StoreDashboard({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string; added?: string; feature?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login?next=/yavayago/store');
@@ -33,6 +35,12 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
     store ? storeOrders(db(), userId) : Promise.resolve([]),
     store ? Promise.resolve({ latitude: store.latitude, longitude: store.longitude }) : mapStart(db(), userId),
   ]);
+  const feature =
+    store?.status === 'approved'
+      ? await Promise.all([actionCost(db(), 'go.feature_store'), getBalance(db(), userId), goFeatureDays(db())]).then(([cost, balance, days]) =>
+          cost === null ? null : { cost, balance, days },
+        )
+      : null;
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const when = new Intl.DateTimeFormat(locale, { timeStyle: 'short' });
   const groups = {
@@ -234,6 +242,22 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
                 </form>
               ) : null}
             </section>
+
+            {feature ? (
+              <FeatureOffer
+                t={t}
+                locale={locale}
+                action={storeFeatureAction}
+                hidden={{}}
+                featuredUntil={store.featuredUntil}
+                cost={feature.cost}
+                balance={feature.balance}
+                days={feature.days}
+                outcome={query.feature ?? null}
+                titleKey="promotion.title_store"
+                bodyKey="promotion.body_store"
+              />
+            ) : null}
 
             {store.status === 'approved' ? (
               <section className="go-board" aria-live="polite">

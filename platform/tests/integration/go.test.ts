@@ -8,6 +8,8 @@ import { readActiveImage } from '@/server/domains/media/service';
 import {
   addMenuItem,
   applyDriver,
+  browseStores,
+  featureStore,
   availableOrders,
   canSeeDriverDocument,
   claimOrder,
@@ -33,6 +35,7 @@ import {
   parseMoney,
 } from '@/server/domains/go/service';
 import { GO_RULES } from '@/config/business-rules';
+import { getBalance, grantReward } from '@/server/domains/tokens/service';
 import { resetTransactionalData } from '../helpers/database';
 
 const context = { networkHash: null, addressHash: 'go-test', deviceFingerprint: null, userAgent: 'vitest' };
@@ -299,5 +302,30 @@ describe('YavayaGo', () => {
     expect(store).toMatchObject({ status: 'suspended', isOpen: false });
     const [row] = await db().select().from(goOrders).where(eq(goOrders.id, id));
     expect(row?.status).toBe('cancelled');
+  });
+});
+
+describe('featured stores', () => {
+  it('lists a featured store first among open ones, for five tokens', async () => {
+    const first = await openStore();
+    const second = await openStore();
+    await db().transaction((tx) => grantReward(tx, { userId: second.owner, ruleKey: 'test.tokens', amount: 5, dedupeKey: crypto.randomUUID() }));
+
+    const purchaseId = crypto.randomUUID();
+    await db().transaction((tx) => featureStore(tx, { userId: second.owner, purchaseId }));
+    await db().transaction((tx) => featureStore(tx, { userId: second.owner, purchaseId }));
+    expect(await getBalance(db(), second.owner)).toBe(0);
+
+    const stores = await browseStores(db(), {});
+    expect(stores[0]?.id).toBe(second.storeId);
+    expect(stores.map((s) => s.id)).toContain(first.storeId);
+  });
+
+  it('refuses a store that is not approved, and an owner without tokens', async () => {
+    const { owner } = await openStore();
+    await expect(db().transaction((tx) => featureStore(tx, { userId: owner, purchaseId: crypto.randomUUID() }))).rejects.toMatchObject({ code: 'insufficient_tokens' });
+    const pending = await member('Don Pedro');
+    await db().transaction((tx) => saveStore(tx, { userId: pending, input: storeInput() }));
+    await expect(db().transaction((tx) => featureStore(tx, { userId: pending, purchaseId: crypto.randomUUID() }))).rejects.toMatchObject({ code: 'forbidden' });
   });
 });

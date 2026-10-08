@@ -315,6 +315,15 @@ export const WORK_RULES = {
   employerAboutMaxLength: 1000,
   /** A post stays open this long unless closed or filled sooner. */
   postOpenDays: 30,
+  /**
+   * Open posts an employer may have at once without paying; each one beyond
+   * costs the `work.publish_post` price. A family hiring help never reaches
+   * it; a company hiring at scale does. Candidates never pay (no-fee promise).
+   * Owner's decision (October 2026): free for people, paid by those who earn.
+   */
+  freeOpenPosts: 2,
+  /** Days a post stays featured after one purchase. */
+  featureDays: 7,
   /** Members told about one new post, at most (once a day per field each). */
   newPostNotifyLimit: 200,
   pageSize: 20,
@@ -525,4 +534,6 @@ export const GO_RULES = {
   driverIdleMinutes: 20,
   menuMaxItems: 200,
   maxPhotos: 1,
+  /** Days a store stays featured ("Destacado") after one purchase. */
+  featureDays: 7,
 } as const;

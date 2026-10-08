@@ -57,6 +57,8 @@ export const workPosts = pgTable(
     whatsappE164: text('whatsapp_e164').notNull(),
     status: workPostStatusEnum('status').notNull().default('open'),
     expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    /** Paid placement: sorts first, labelled "Destacado", until this moment. */
+    featuredUntil: timestamp('featured_until', { withTimezone: true }),
     removedBy: uuid('removed_by').references(() => users.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

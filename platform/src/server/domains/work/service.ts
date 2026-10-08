@@ -13,6 +13,9 @@ import { formatYayId } from '@/server/domains/identity/yay-id';
 import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { dayKey, notify } from '@/server/domains/notifications/service';
+import { chargeForAction } from '@/server/domains/tokens/service';
+import { getSetting } from '@/server/domains/platform/settings';
+import { featuredFirst, featuredUntilAfterPurchase, isFeatured } from '@/server/domains/promotion/featured';
 
 /**
  * Trabajo: jobs and professional projects, without auctions.
@@ -290,7 +293,31 @@ async function tellMatchingProfessionals(tx: Executor, params: { postId: string;
   );
 }
 
-export async function publishPost(tx: Executor, params: { employerUserId: string; input: PostInput; audit?: AuditContext; now?: Date }): Promise<string> {
+/** How many open posts publish free, and how long a feature lasts. */
+export async function workPricingRules(executor: Executor) {
+  const [freeOpenPosts, featureDays] = await Promise.all([
+    getSetting(executor, 'work.free_open_posts', R.freeOpenPosts),
+    getSetting(executor, 'work.feature_days', R.featureDays),
+  ]);
+  return { freeOpenPosts, featureDays };
+}
+
+export async function openPostCount(executor: Executor, employerUserId: string): Promise<number> {
+  const [open] = await executor
+    .select({ count: sql<number>`count(*)::int` })
+    .from(workPosts)
+    .where(and(eq(workPosts.employerUserId, employerUserId), eq(workPosts.status, 'open')));
+  return open?.count ?? 0;
+}
+
+/**
+ * `postId` is chosen by the form before submission, so a retried submission
+ * names the same post: it is published, and charged, once.
+ */
+export async function publishPost(
+  tx: Executor,
+  params: { employerUserId: string; input: PostInput; postId?: string; audit?: AuditContext; now?: Date },
+): Promise<string> {
   await activeMember(tx, params.employerUserId);
   const employer = await getEmployer(tx, params.employerUserId);
   if (!employer) throw new DomainError('forbidden', 'work.error.employer_needed');
@@ -300,14 +327,20 @@ export async function publishPost(tx: Executor, params: { employerUserId: string
   const { input } = params;
   const [place] = await tx.select({ id: locations.id }).from(locations).where(eq(locations.id, input.locationId)).limit(1);
   if (!place) throw errors.validation('work.error.location');
-  const [open] = await tx
-    .select({ count: sql<number>`count(*)::int` })
-    .from(workPosts)
-    .where(and(eq(workPosts.employerUserId, params.employerUserId), eq(workPosts.status, 'open')));
-  if ((open?.count ?? 0) >= R.maxOpenPostsPerEmployer) throw errors.conflict('work.error.too_many_posts', { limit: R.maxOpenPostsPerEmployer });
+  if (params.postId) {
+    const [existing] = await tx.select({ employer: workPosts.employerUserId }).from(workPosts).where(eq(workPosts.id, params.postId)).limit(1);
+    if (existing) {
+      if (existing.employer !== params.employerUserId) throw errors.conflict('work.error.conflict');
+      return params.postId;
+    }
+  }
+  const openBefore = await openPostCount(tx, params.employerUserId);
+  if (openBefore >= R.maxOpenPostsPerEmployer) throw errors.conflict('work.error.too_many_posts', { limit: R.maxOpenPostsPerEmployer });
+  const { freeOpenPosts } = await workPricingRules(tx);
   const [post] = await tx
     .insert(workPosts)
     .values({
+      ...(params.postId ? { id: params.postId } : {}),
       employerUserId: params.employerUserId,
       kind: input.kind,
       employment: input.employment,
@@ -327,6 +360,14 @@ export async function publishPost(tx: Executor, params: { employerUserId: string
     })
     .returning({ id: workPosts.id });
   const id = post!.id;
+  // Employers pay beyond the allowance; candidates never pay anything.
+  const charge = await chargeForAction(tx, {
+    userId: params.employerUserId,
+    actionKey: openBefore < freeOpenPosts ? 'work.publish_post_free' : 'work.publish_post',
+    idempotencyKey: `work.post:${id}:publish`,
+    relatedType: POST,
+    relatedId: id,
+  });
   await recordAudit(tx, {
     actorType: 'user',
     actorUserId: params.employerUserId,
@@ -337,10 +378,53 @@ export async function publishPost(tx: Executor, params: { employerUserId: string
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
     // The promise is part of the record: a post found charging candidates broke it.
-    metadata: { kind: input.kind, field: input.field, noFeePromise: true },
+    metadata: { kind: input.kind, field: input.field, noFeePromise: true, cost: charge.cost },
   });
   await tellMatchingProfessionals(tx, { postId: id, employerUserId: params.employerUserId, field: input.field, now });
   return id;
+}
+
+/**
+ * Features an open post: it sorts first on the board, labelled, for
+ * `featureDays`. `purchaseId` comes from the page, so a retried submission
+ * is one purchase.
+ */
+export async function featurePost(
+  tx: Executor,
+  params: { employerUserId: string; postId: string; purchaseId: string; now?: Date; audit?: AuditContext },
+): Promise<{ featuredUntil: Date; cost: number }> {
+  const now = params.now ?? new Date();
+  const [post] = await tx
+    .select({ employer: workPosts.employerUserId, status: workPosts.status, featuredUntil: workPosts.featuredUntil })
+    .from(workPosts)
+    .where(eq(workPosts.id, params.postId))
+    .limit(1)
+    .for('update');
+  if (!post || post.employer !== params.employerUserId) throw errors.notFound('work_post');
+  if (post.status !== 'open') throw errors.conflict('work.error.not_featurable');
+  const { featureDays } = await workPricingRules(tx);
+  const featuredUntil = featuredUntilAfterPurchase(post.featuredUntil, featureDays, now);
+  const charge = await chargeForAction(tx, {
+    userId: params.employerUserId,
+    actionKey: 'work.feature_post',
+    idempotencyKey: `work.feature:${params.purchaseId}`,
+    relatedType: POST,
+    relatedId: params.postId,
+  });
+  if (charge.deduplicated && charge.cost > 0) return { featuredUntil: post.featuredUntil ?? featuredUntil, cost: charge.cost };
+  await tx.update(workPosts).set({ featuredUntil, updatedAt: now }).where(eq(workPosts.id, params.postId));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.employerUserId,
+    action: 'work.post_featured',
+    subjectType: POST,
+    subjectId: params.postId,
+    district: 'works',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+    metadata: { cost: charge.cost, featuredUntil: featuredUntil.toISOString(), wasFeatured: isFeatured(post.featuredUntil, now) },
+  });
+  return { featuredUntil, cost: charge.cost };
 }
 
 export async function closePost(tx: Executor, params: { employerUserId: string; postId: string; outcome: 'filled' | 'closed' }): Promise<void> {
@@ -559,6 +643,9 @@ export type PostCard = {
   /** `person` or `business` when a reviewer verified the employer; null for posts from before verification. */
   employerVerified: 'person' | 'business' | null;
   applicationCount: number;
+  /** Paid placement in force: shown with a "Destacado" label. */
+  featured: boolean;
+  featuredUntil: Date | null;
 };
 
 const cardColumns = {
@@ -579,6 +666,8 @@ const cardColumns = {
   employerName: users.displayName,
   employerVerified: sql<'person' | 'business' | null>`(select e.kind from work_employers e where e.user_id = ${workPosts.employerUserId} and e.status = 'approved')`,
   applicationCount: sql<number>`(select count(*)::int from work_applications a where a.post_id = ${workPosts.id} and a.status <> 'withdrawn')`,
+  featured: sql<boolean>`coalesce(${workPosts.featuredUntil} > now(), false)`,
+  featuredUntil: workPosts.featuredUntil,
 };
 
 type CardRow = Omit<PostCard, 'placeName'> & { placeName: string; placeNames: unknown };
@@ -603,7 +692,7 @@ export async function listPosts(
     .innerJoin(locations, eq(locations.id, workPosts.locationId))
     .innerJoin(users, eq(users.id, workPosts.employerUserId))
     .where(and(...conditions))
-    .orderBy(desc(workPosts.createdAt))
+    .orderBy(featuredFirst(workPosts.featuredUntil), desc(workPosts.createdAt))
     .limit(R.pageSize + 1)
     .offset((page - 1) * R.pageSize);
   return { items: rows.slice(0, R.pageSize).map((row) => toCard(row as CardRow, params.locale)), hasMore: rows.length > R.pageSize, page };

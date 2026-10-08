@@ -125,7 +125,8 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
           <ul className="go-stores">
             {stores.map((s) => (
               <li key={s.id}>
-                <Link className={`go-store-card${s.isOpen ? '' : ' closed'}`} href={`/yavayago/stores/${s.id}`}>
+                <Link className={`go-store-card${s.isOpen ? '' : ' closed'}${s.featuredUntil && s.featuredUntil.getTime() > Date.now() ? ' is-featured' : ''}`} href={`/yavayago/stores/${s.id}`}>
+                  {s.featuredUntil && s.featuredUntil.getTime() > Date.now() ? <span className="mk-featured-tag go-featured-tag">{t('mercadito.feature.tag')}</span> : null}
                   <div className="go-store-photo">
                     {s.photoMediaId ? <img src={`/media/${s.photoMediaId}`} alt="" loading="lazy" /> : <span aria-hidden="true">{s.name.slice(0, 1)}</span>}
                     <span className={`go-badge ${s.isOpen ? 'open' : 'shut'}`}>{s.isOpen ? t('go.store.open') : t('go.store.closed')}</span>
