@@ -155,6 +155,13 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'trust',
   },
   {
+    key: 'referrals',
+    nameKey: 'capability.referrals.name',
+    detailKey: 'capability.referrals.detail',
+    state: 'REAL',
+    group: 'trust',
+  },
+  {
     key: 'reputation',
     nameKey: 'capability.reputation.name',
     detailKey: 'capability.reputation.detail',

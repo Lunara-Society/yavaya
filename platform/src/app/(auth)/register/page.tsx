@@ -4,11 +4,16 @@ import { NEW_USER_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
 import { shellContext } from '@/ui/shell-context';
 import { RegisterForm } from './register-form';
+import { db } from '@/server/db/client';
+import { referralRules } from '@/server/domains/referrals/service';
 
 export const metadata: Metadata = { title: 'Create account' };
 
-export default async function RegisterPage() {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ invita?: string }> }) {
   const { locale, t, language, theme, member } = await shellContext();
+  // An invitation link carries the inviter's YAY ID; the server checks it.
+  const invita = (await searchParams).invita?.trim().slice(0, 20) || null;
+  const rules = invita ? await referralRules(db()) : null;
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
@@ -16,8 +21,15 @@ export default async function RegisterPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t('auth.register.title')}</h1>
         <p className="mt-1 text-[var(--text-secondary)]">{t('auth.register.subtitle')}</p>
 
+        {invita && rules ? (
+          <p className="surface-card mt-4 p-3 text-sm" role="status">
+            {t('invite.register_banner', { invitee: rules.inviteeReward })}
+          </p>
+        ) : null}
+
         <RegisterForm
           locale={locale}
+          inviter={invita}
           labels={{
             email: t('auth.email'),
             password: t('auth.password'),

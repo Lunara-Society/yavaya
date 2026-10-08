@@ -52,6 +52,24 @@ export async function newSellerRules(executor: Executor) {
   return { windowDays, maxListings };
 }
 
+/** How many open listings publish free, and how long a feature lasts. */
+export async function pricingRules(executor: Executor) {
+  const [freeOpenListings, featureDays] = await Promise.all([
+    getSetting(executor, 'mercadito.free_open_listings', MERCADITO_RULES.freeOpenListings),
+    getSetting(executor, 'mercadito.feature_days', MERCADITO_RULES.featureDays),
+  ]);
+  return { freeOpenListings, featureDays };
+}
+
+/** Open listings a member has right now: what the free allowance counts. */
+export async function openListingCount(executor: Executor, userId: string): Promise<number> {
+  const [row] = await executor
+    .select({ open: count() })
+    .from(mercaditoListings)
+    .where(and(eq(mercaditoListings.sellerUserId, userId), inArray(mercaditoListings.status, [...OPEN_STATUSES])));
+  return row?.open ?? 0;
+}
+
 /**
  * Whether a member may publish, and why not. The publish page asks this
  * before showing a form, so nobody fills one in only to be refused.
@@ -229,6 +247,10 @@ export async function publishListing(
 
   checkPhotoCount(params.images.length);
   await resolvePlace(tx, input.locationId, input.currency);
+  // Counted before this listing exists: the allowance is "this many open at
+  // once", so closing or selling one frees its place for the next.
+  const [{ freeOpenListings }, openBefore] = await Promise.all([pricingRules(tx), openListingCount(tx, params.sellerUserId)]);
+  const actionKey = openBefore < freeOpenListings ? 'mercadito.publish_listing_free' : 'mercadito.publish_listing';
   const flags = await screen(tx, {
     listingId: params.listingId,
     sellerUserId: params.sellerUserId,
@@ -257,7 +279,7 @@ export async function publishListing(
   // tokens), so the refusal rolls back everything above with it.
   const charge = await chargeForAction(tx, {
     userId: params.sellerUserId,
-    actionKey: 'mercadito.publish_listing',
+    actionKey,
     idempotencyKey: `mercadito.listing:${params.listingId}:publish`,
     relatedType: 'mercadito_listing',
     relatedId: params.listingId,
@@ -445,7 +467,7 @@ export async function closeListing(
 
 async function lockOwnListing(tx: Executor, listingId: string, sellerUserId: string) {
   const [listing] = await tx
-    .select({ status: mercaditoListings.status, sellerUserId: mercaditoListings.sellerUserId })
+    .select({ status: mercaditoListings.status, sellerUserId: mercaditoListings.sellerUserId, featuredUntil: mercaditoListings.featuredUntil })
     .from(mercaditoListings)
     .where(eq(mercaditoListings.id, listingId))
     .limit(1)
@@ -502,6 +524,8 @@ export type ListingCard = {
   placeName: string;
   coverMediaId: string | null;
   publishedAt: Date;
+  /** Paid placement in force: the card says "Destacado" so buyers know. */
+  featured: boolean;
   /**
    * The seller's trust, on every card — "never hide trust" (Master Bible).
    * Derived from the same evidence as the Trust Shield, never stored.
@@ -519,6 +543,7 @@ const cardColumns = {
   condition: mercaditoListings.condition,
   status: mercaditoListings.status,
   publishedAt: mercaditoListings.publishedAt,
+  featuredUntil: mercaditoListings.featuredUntil,
   placeName: locations.name,
   placeNames: locations.names,
   sellerStatus: users.status,
@@ -529,8 +554,15 @@ const cardColumns = {
 };
 
 type CardRow = {
-  [K in keyof typeof cardColumns]: (typeof cardColumns)[K]['_']['data'] | (K extends 'sellerScore' | 'sellerEmailVerifiedAt' | 'sellerIdentityVerifiedAt' ? null : never);
+  [K in keyof typeof cardColumns]: (typeof cardColumns)[K]['_']['data'] | (K extends 'sellerScore' | 'sellerEmailVerifiedAt' | 'sellerIdentityVerifiedAt' | 'featuredUntil' ? null : never);
 } & { coverMediaId: string | null };
+
+function isFeatured(until: Date | null, now = new Date()): boolean {
+  return until !== null && until.getTime() > now.getTime();
+}
+
+/** Featured listings first, while their week lasts; then the usual order. */
+const featuredFirst = sql`(coalesce(${mercaditoListings.featuredUntil}, 'epoch'::timestamptz) > now()) desc`;
 
 function toCard(row: CardRow, locale: string): ListingCard {
   const score = row.sellerScore ?? REPUTATION_RULES.initialScore;
@@ -543,6 +575,7 @@ function toCard(row: CardRow, locale: string): ListingCard {
     condition: row.condition,
     status: row.status,
     publishedAt: row.publishedAt,
+    featured: isFeatured(row.featuredUntil),
     placeName: localized(row.placeName, row.placeNames, locale),
     coverMediaId: row.coverMediaId,
     trust: {
@@ -605,7 +638,7 @@ export async function browseListings(
     .where(and(...conditions))
     // "Listings with no phone: reduced visibility" (Master Bible): a seller
     // buyers cannot reach sorts after those they can, never out of sight.
-    .orderBy(sql`(${userProfiles.whatsappE164} is null)`, desc(mercaditoListings.publishedAt))
+    .orderBy(featuredFirst, sql`(${userProfiles.whatsappE164} is null)`, desc(mercaditoListings.publishedAt))
     .limit(size + 1)
     .offset((page - 1) * size);
 
@@ -617,6 +650,7 @@ export async function browseListings(
 }
 
 export type ListingDetail = Omit<ListingCard, 'trust'> & {
+  featuredUntil: Date | null;
   description: string;
   flags: string[];
   updatedAt: Date;
@@ -646,6 +680,7 @@ export async function getListing(executor: Executor, id: string, locale: string)
       status: mercaditoListings.status,
       flags: mercaditoListings.flags,
       publishedAt: mercaditoListings.publishedAt,
+      featuredUntil: mercaditoListings.featuredUntil,
       updatedAt: mercaditoListings.updatedAt,
       locationId: mercaditoListings.locationId,
       placeName: locations.name,
@@ -694,6 +729,8 @@ export async function getListing(executor: Executor, id: string, locale: string)
     status: row.status,
     flags: row.flags,
     publishedAt: row.publishedAt,
+    featured: isFeatured(row.featuredUntil),
+    featuredUntil: row.featuredUntil,
     updatedAt: row.updatedAt,
     locationId: row.locationId,
     placeName: localized(row.placeName, row.placeNames, locale),
@@ -804,6 +841,52 @@ export async function setReserved(
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
   });
+}
+
+/**
+ * Features a listing: it sorts first in Mercadito, labelled "Destacado", for
+ * `featureDays`. Buying again while it is featured adds a week to the end.
+ *
+ * `purchaseId` is chosen by the page that offers the button, so a retried
+ * submission names the same purchase and is charged once.
+ */
+export async function featureListing(
+  tx: Executor,
+  params: { listingId: string; sellerUserId: string; purchaseId: string; now?: Date; audit?: AuditContext },
+): Promise<{ featuredUntil: Date; cost: number }> {
+  const now = params.now ?? new Date();
+  const listing = await lockOwnListing(tx, params.listingId, params.sellerUserId);
+  if (listing.status !== 'published') throw errors.conflict('mercadito.error.not_featurable');
+  const { featureDays } = await pricingRules(tx);
+  const from = isFeatured(listing.featuredUntil, now) ? listing.featuredUntil! : now;
+  const featuredUntil = new Date(from.getTime() + featureDays * 24 * 60 * 60 * 1000);
+
+  const charge = await chargeForAction(tx, {
+    userId: params.sellerUserId,
+    actionKey: 'mercadito.feature_listing',
+    idempotencyKey: `mercadito.feature:${params.purchaseId}`,
+    relatedType: 'mercadito_listing',
+    relatedId: params.listingId,
+  });
+  // A zero-cost feature (a promotion set by operations) also reports
+  // `deduplicated`; only a real repeat of a paid purchase is skipped.
+  if (charge.deduplicated && charge.cost > 0) {
+    // The same purchase, retried: already applied, so nothing moves twice.
+    return { featuredUntil: listing.featuredUntil ?? featuredUntil, cost: charge.cost };
+  }
+  await tx.update(mercaditoListings).set({ featuredUntil, updatedAt: now }).where(eq(mercaditoListings.id, params.listingId));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.sellerUserId,
+    action: 'mercadito.listing_featured',
+    subjectType: 'mercadito_listing',
+    subjectId: params.listingId,
+    district: 'mercadito',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+    metadata: { cost: charge.cost, featuredUntil: featuredUntil.toISOString() },
+  });
+  return { featuredUntil, cost: charge.cost };
 }
 
 /** Other open listings in the same category, newest first — "you may also like". */

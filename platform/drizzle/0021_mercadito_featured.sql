@@ -1,0 +1,2 @@
+ALTER TABLE "mercadito_listings" ADD COLUMN "featured_until" timestamp with time zone;--> statement-breakpoint
+CREATE INDEX "mercadito_listings_featured_idx" ON "mercadito_listings" USING btree ("featured_until");

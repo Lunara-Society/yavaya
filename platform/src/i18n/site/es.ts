@@ -218,7 +218,7 @@ export const siteEs = {
         'Automático: detectamos la **misma foto** subida por vendedores distintos y el **mismo título** repetido por un vendedor; ambos casos pasan a revisión de un moderador.',
         'Automático: quitamos de cada foto la **ubicación GPS** y los datos de la cámara antes de guardarla.',
         'Cualquier miembro puede **reportar** una publicación. Un moderador revisa cada caso y puede retirarla o advertir al vendedor.',
-        'Cada publicación cuesta un token y hay límites por hora, lo que frena la publicación masiva.',
+        'Hay límites por hora y, a partir de 5 publicaciones activas a la vez, cada una cuesta un token: eso frena la publicación masiva sin cobrarle nada a quien vende sus propias cosas.',
         '**Todavía no** detectamos fotos copiadas de otros sitios, palabras típicas de estafa ni precios imposibles. Lo diremos aquí cuando exista.',
       ],
       newSellerHead: { eyebrow: 'Vendedores nuevos', title: 'La confianza se construye paso a paso' },
@@ -227,7 +227,7 @@ export const siteEs = {
         'Una publicación sin número de contacto aparece después de las que sí lo tienen.',
         'Un número de WhatsApp aparece como **verificado** solo si el vendedor confirmó ese mismo número por SMS. Si no, la publicación dice que no está verificado.',
       ],
-      payNote: '**Yavaya no procesa pagos en Mercadito.** El pago es entre comprador y vendedor, en efectivo por defecto. Publicar cuesta un token; buscar, comprar y escribir al vendedor no cuestan nada.',
+      payNote: '**Yavaya no procesa pagos en Mercadito.** El pago es entre comprador y vendedor, en efectivo por defecto. Publicar es gratis (hasta 5 publicaciones activas a la vez), y buscar, comprar y escribir al vendedor tampoco cuestan nada.',
     },
 
     yavayago: {
@@ -573,7 +573,7 @@ export const siteEs = {
       eyebrow: 'Tokens Yavaya',
       title: 'Créditos para participar. Nada más.',
       description: 'Los Tokens Yavaya son créditos de participación en la plataforma. No son criptomoneda ni inversión. Paquetes, usos y límites.',
-      lead: 'Los tokens sirven para participar en la plataforma: publicar, destacar, aparecer. No son criptomoneda, no son una inversión y no se intercambian.',
+      lead: 'Publicar es gratis. Los tokens son para quien quiere vender más rápido: destacar una publicación o tener más de 5 activas a la vez. No son criptomoneda, no son una inversión y no se intercambian.',
       pillars: [
         { icon: 'coin', title: 'No son criptomoneda', text: 'Sin lenguaje de inversión, sin especulación, sin mercados de tokens.' },
         { icon: 'cash', title: 'Siempre opcionales', text: 'El efectivo es la opción por defecto. Nadie está obligado a usar tokens.' },
@@ -591,19 +591,18 @@ export const siteEs = {
       useTable: {
         head: ['Acción', 'Costo'],
         rows: [
-          ['Estándar (publicar, participar)', '1 token'],
-          ['Premium (impulsar, destacar, resaltar)', '3–10 tokens'],
+          ['Publicar en Mercadito (hasta 5 publicaciones activas)', 'Gratis'],
+          ['Cada publicación activa a partir de la sexta', '1 token'],
+          ['Destacar una publicación durante 7 días', '3 tokens'],
+          ['Pedir ayuda, Comunidad, Animales, Santuario, Trabajo, YavayaGo y Espacio Violeta', 'Gratis'],
         ],
       },
       earnHead: { eyebrow: 'Cómo se ganan', title: 'Límites' },
       earnTable: {
         head: ['Fuente', 'Límite'],
         rows: [
-          ['Entrar cada día', 'Máximo 1 token por día'],
-          ['Reseñas', 'Máximo 3 premiadas por semana'],
-          ['Referidos', 'Solo con teléfono y correo verificados, cuenta de más de 7 días y actividad real'],
-          ['Reportes de fraude', 'Solo si la moderación los confirma'],
-          ['Comunidad y animales', 'Tope semanal'],
+          ['Bienvenida', '2 tokens al día durante tu primera semana, desde que verificas tu correo'],
+          ['Invitar amigos', '3 tokens por cada amigo que verifique su correo (y 2 para tu amigo), hasta 10 al mes'],
         ],
       },
       payHead: { eyebrow: 'Pagos', title: 'El efectivo manda' },
@@ -869,7 +868,7 @@ export const siteEs = {
         },
         {
           title: '9. Lo que es gratis y lo que no',
-          text: 'Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones son siempre gratis. Cualquier cosa de pago se anuncia con su precio antes de cobrarse. Hoy lo único que se puede pagar son los paquetes de tokens.',
+          text: 'Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones son siempre gratis. Cualquier cosa de pago se anuncia con su precio antes de cobrarse. Publicar en Mercadito es gratis hasta 5 publicaciones activas a la vez. Hoy lo único que se puede pagar son los paquetes de tokens, que sirven para destacar publicaciones y para tener más de 5 activas a la vez.',
         },
         {
           title: '10. Privacidad',

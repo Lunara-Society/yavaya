@@ -206,7 +206,7 @@ export const siteEn: SiteContent = {
         'Automatic: we detect the **same photo** uploaded by different sellers and the **same title** repeated by one seller; both go to a moderator for review.',
         'Automatic: we strip **GPS location** and camera data from every photo before storing it.',
         'Any member can **report** a listing. A moderator reviews every case and can remove it or warn the seller.',
-        'Every listing costs a token and there are hourly limits, which slows mass posting.',
+        'There are hourly limits and, beyond 5 open listings at once, each one costs a token: that slows mass posting without charging anyone selling their own things.',
         '**Not yet**: detecting photos copied from other sites, typical scam wording, or impossible prices. We will say so here when it exists.',
       ],
       newSellerHead: { eyebrow: 'New sellers', title: 'Trust is built step by step' },
@@ -215,7 +215,7 @@ export const siteEn: SiteContent = {
         'A listing without a contact number appears after those that have one.',
         'A WhatsApp number shows as **verified** only if the seller confirmed that same number by SMS. Otherwise the listing says it is not verified.',
       ],
-      payNote: '**Yavaya does not process Mercadito payments.** Payment is between buyer and seller, cash by default. Publishing costs one token; browsing, buying and messaging the seller cost nothing.',
+      payNote: '**Yavaya does not process Mercadito payments.** Payment is between buyer and seller, cash by default. Publishing is free (up to 5 open listings at once), and browsing, buying and messaging the seller cost nothing either.',
     },
 
     yavayago: {
@@ -561,7 +561,7 @@ export const siteEn: SiteContent = {
       eyebrow: 'Yavaya Tokens',
       title: 'Credits for taking part. Nothing more.',
       description: 'Yavaya Tokens are platform participation credits. Not cryptocurrency, not an investment. Packages, uses and limits.',
-      lead: 'Tokens are for taking part in the platform: posting, featuring, being seen. They are not cryptocurrency, not an investment, and they cannot be traded.',
+      lead: 'Publishing is free. Tokens are for people who want to sell faster: featuring a listing, or having more than 5 open at once. They are not cryptocurrency, not an investment, and they cannot be traded.',
       pillars: [
         { icon: 'coin', title: 'Not cryptocurrency', text: 'No investment language, no speculation, no token markets.' },
         { icon: 'cash', title: 'Always optional', text: 'Cash is the default. Nobody is ever required to use tokens.' },
@@ -579,19 +579,18 @@ export const siteEn: SiteContent = {
       useTable: {
         head: ['Action', 'Cost'],
         rows: [
-          ['Standard (post, take part)', '1 token'],
-          ['Premium (boost, feature, highlight)', '3–10 tokens'],
+          ['Publish in Mercadito (up to 5 open listings)', 'Free'],
+          ['Each open listing from the sixth on', '1 token'],
+          ['Feature a listing for 7 days', '3 tokens'],
+          ['Asking for help, Community, Animals, Sanctuary, Work, YavayaGo and Espacio Violeta', 'Free'],
         ],
       },
       earnHead: { eyebrow: 'How they are earned', title: 'Limits' },
       earnTable: {
         head: ['Source', 'Limit'],
         rows: [
-          ['Daily visit', 'At most 1 token per day'],
-          ['Reviews', 'At most 3 rewarded per week'],
-          ['Referrals', 'Only with verified phone and email, an account older than 7 days, and real activity'],
-          ['Fraud reports', 'Only when confirmed by moderation'],
-          ['Community and animals', 'Weekly cap'],
+          ['Welcome', '2 tokens a day during your first week, from when you verify your email'],
+          ['Inviting friends', '3 tokens for each friend who verifies their email (and 2 for your friend), up to 10 a month'],
         ],
       },
       payHead: { eyebrow: 'Payments', title: 'Cash comes first' },
@@ -857,7 +856,7 @@ export const siteEn: SiteContent = {
         },
         {
           title: '9. What is free and what is not',
-          text: 'Signing up, creating an account, viewing listings, reading content and receiving donations are always free. Anything paid is announced with its price before it is charged. Today the only thing you can pay for is token packages.',
+          text: 'Signing up, creating an account, viewing listings, reading content and receiving donations are always free. Anything paid is announced with its price before it is charged. Publishing in Mercadito is free up to 5 open listings at once. Today the only thing you can pay for is token packages, used to feature listings and to have more than 5 open at once.',
         },
         {
           title: '10. Privacy',

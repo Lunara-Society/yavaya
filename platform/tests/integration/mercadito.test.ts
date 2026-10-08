@@ -21,6 +21,7 @@ import { useMediaStorageForTests, type MediaStorage } from '@/server/domains/med
 import {
   browseListings,
   closeListing,
+  featureListing,
   getListing,
   publishListing,
   sellerListings,
@@ -30,7 +31,7 @@ import {
 } from '@/server/domains/mercadito/service';
 import { listingQueue, reportListing, resolveListingTicket } from '@/server/domains/mercadito/moderation';
 import { listingInputSchema, parsePriceToMinor, normalizeWhatsapp } from '@/server/domains/mercadito/rules';
-import { REPUTATION_RULES } from '@/config/business-rules';
+import { MERCADITO_RULES, REPUTATION_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 
 /** In-memory object store: the S3 adapter's contract, without a network. */
@@ -193,11 +194,11 @@ describe('input rules', () => {
 });
 
 describe('publishing', () => {
-  it('charges one token, stores the listing and audits it', async () => {
+  it('publishes free within the allowance, stores the listing and audits it', async () => {
     const seller = await createMember({ tokens: 2 });
     const { listingId } = await publish(seller);
 
-    expect(await getBalance(db(), seller)).toBe(1);
+    expect(await getBalance(db(), seller)).toBe(2);
     const listing = await getListing(db(), listingId, 'es');
     expect(listing?.status).toBe('published');
     expect(listing?.photos).toHaveLength(1);
@@ -212,11 +213,13 @@ describe('publishing', () => {
     expect(image?.contentType).toBe('image/webp');
   });
 
-  it('never charges twice for a retried submission', async () => {
-    const seller = await createMember({ tokens: 4 });
+  it('charges one token per listing beyond the free allowance, and never twice for a retry', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 4 });
+    for (let seed = 1; seed <= MERCADITO_RULES.freeOpenListings; seed += 1) await publish(seller, seed, { title: `Artículo número ${seed}` });
+    expect(await getBalance(db(), seller)).toBe(4);
     const listingId = crypto.randomUUID();
     for (let attempt = 0; attempt < 2; attempt += 1) {
-      const images = await storeImages({ ownerUserId: seller, purpose: 'listing_photo', files: [await jpeg(5)] });
+      const images = await storeImages({ ownerUserId: seller, purpose: 'listing_photo', files: [await jpeg(50)] });
       const result = await db().transaction((tx) =>
         publishListing(tx, { listingId, sellerUserId: seller, input: input(), images }),
       );
@@ -225,16 +228,25 @@ describe('publishing', () => {
     expect(await getBalance(db(), seller)).toBe(3);
   });
 
-  it('rolls everything back when the seller has no tokens', async () => {
-    const seller = await createMember({ tokens: 2 });
-    await publish(seller, 1);
-    await publish(seller, 2);
-    await expect(publish(seller, 3)).rejects.toMatchObject({ code: 'insufficient_tokens' });
+  it('rolls everything back when a listing beyond the allowance cannot be paid', async () => {
+    const free = MERCADITO_RULES.freeOpenListings;
+    const seller = await createMember({ ageDays: 8, tokens: 0 });
+    for (let seed = 1; seed <= free; seed += 1) await publish(seller, seed, { title: `Artículo número ${seed}` });
+    await expect(publish(seller, 99, { title: 'Uno de más' })).rejects.toMatchObject({ code: 'insufficient_tokens' });
 
     const rows = await db().select().from(mercaditoListings).where(eq(mercaditoListings.sellerUserId, seller));
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(free);
     const mediaRows = await db().select().from(media).where(eq(media.ownerUserId, seller));
-    expect(mediaRows).toHaveLength(2);
+    expect(mediaRows).toHaveLength(free);
+  });
+
+  it('frees a place in the allowance when a listing is sold', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 0 });
+    const ids: string[] = [];
+    for (let seed = 1; seed <= MERCADITO_RULES.freeOpenListings; seed += 1) ids.push((await publish(seller, seed, { title: `Artículo número ${seed}` })).listingId);
+    await db().transaction((tx) => closeListing(tx, { listingId: ids[0]!, sellerUserId: seller, outcome: 'sold' }));
+    await publish(seller, 77, { title: 'Otro artículo' });
+    expect(await getBalance(db(), seller)).toBe(0);
   });
 
   it('holds a new account to three listings', async () => {
@@ -245,7 +257,7 @@ describe('publishing', () => {
     });
     const standing = await sellerStanding(db(), seller);
     expect(standing.allowed).toBe(false);
-    expect(await getBalance(db(), seller)).toBe(3);
+    expect(await getBalance(db(), seller)).toBe(6);
   });
 
   it('lifts the limit once the account is a week old', async () => {
@@ -281,6 +293,52 @@ describe('publishing', () => {
   });
 });
 
+describe('featuring a listing', () => {
+  it('charges three tokens and puts the listing first, labelled', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 4 });
+    const other = await createMember({ ageDays: 8 });
+    const { listingId } = await publish(seller, 1, { title: 'Mesa de comedor' });
+    await publish(other, 2, { title: 'Silla de oficina' });
+
+    await db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID() }));
+    expect(await getBalance(db(), seller)).toBe(1);
+
+    const { items } = await browseListings(db(), { locale: 'es' });
+    expect(items[0]?.id).toBe(listingId);
+    expect(items[0]?.featured).toBe(true);
+    expect(items.find((card) => card.id !== listingId)?.featured).toBe(false);
+    const [audit] = await db().select().from(auditEvents).where(eq(auditEvents.action, 'mercadito.listing_featured'));
+    expect(audit?.subjectId).toBe(listingId);
+  });
+
+  it('charges a retried purchase once, and adds a week when bought again', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 6 });
+    const { listingId } = await publish(seller, 1);
+    const purchaseId = crypto.randomUUID();
+    const first = await db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: seller, purchaseId }));
+    const retry = await db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: seller, purchaseId }));
+    expect(retry.featuredUntil.getTime()).toBe(first.featuredUntil.getTime());
+    expect(await getBalance(db(), seller)).toBe(3);
+
+    const again = await db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID() }));
+    expect(again.featuredUntil.getTime() - first.featuredUntil.getTime()).toBe(MERCADITO_RULES.featureDays * 86_400_000);
+    expect(await getBalance(db(), seller)).toBe(0);
+  });
+
+  it('refuses without enough tokens, and refuses someone else\'s listing', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 2 });
+    const stranger = await createMember({ ageDays: 8, tokens: 4 });
+    const { listingId } = await publish(seller, 1);
+    await expect(
+      db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID() })),
+    ).rejects.toMatchObject({ code: 'insufficient_tokens' });
+    await expect(
+      db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: stranger, purchaseId: crypto.randomUUID() })),
+    ).rejects.toMatchObject({ code: 'not_found' });
+    expect((await getListing(db(), listingId, 'es'))?.featured).toBe(false);
+  });
+});
+
 describe('editing and closing', () => {
   it('lets the seller change details and photos, free of charge', async () => {
     const seller = await createMember({ tokens: 2 });
@@ -303,7 +361,8 @@ describe('editing and closing', () => {
     expect(listing?.priceMinor).toBe(120_000);
     expect(listing?.photos.map((photo) => photo.mediaId)).toEqual([added[0]!.id]);
     expect(await readActiveImage(db(), images[0]!.id)).toBeNull();
-    expect(await getBalance(db(), seller)).toBe(1);
+    // Publishing was free (within the allowance) and editing is free too.
+    expect(await getBalance(db(), seller)).toBe(2);
   });
 
   it('keeps other members out of a listing', async () => {

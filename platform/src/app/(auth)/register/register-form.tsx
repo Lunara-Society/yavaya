@@ -12,9 +12,11 @@ import { registerAction, type ActionState } from '../actions';
  */
 export function RegisterForm({
   locale,
+  inviter,
   labels,
 }: {
   locale: string;
+  inviter?: string | null;
   labels: {
     email: string;
     password: string;
@@ -72,6 +74,7 @@ export function RegisterForm({
   return (
     <form action={formAction} className="mt-6 space-y-4" noValidate>
       <input type="hidden" name="locale" value={locale} />
+      {inviter ? <input type="hidden" name="inviter" value={inviter} /> : null}
 
       <Field label={labels.displayName} name="displayName" autoComplete="name" minLength={2} maxLength={60} />
       <Field label={labels.email} name="email" type="email" autoComplete="email" inputMode="email" />

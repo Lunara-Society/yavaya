@@ -59,6 +59,7 @@ export async function registerAction(
     displayName: String(formData.get('displayName') ?? ''),
     locale: String(formData.get('locale') ?? 'es'),
     acceptedTerms: formData.get('acceptedTerms') === 'on',
+    inviter: String(formData.get('inviter') ?? '').trim() || undefined,
   });
 
   if (!parsed.success) {

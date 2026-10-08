@@ -43,6 +43,7 @@ export async function resetTransactionalData(): Promise<void> {
       demo_content,
       rate_limit_counters,
       safe_space_reports,
+      referrals,
       go_tracking,
       go_orders,
       go_menu_items,

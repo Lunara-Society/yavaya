@@ -148,6 +148,20 @@
       "when": 1791059626112,
       "tag": "0020_yavayago",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791477794862,
+      "tag": "0021_mercadito_featured",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791477984977,
+      "tag": "0022_referrals",
+      "breakpoints": true
     }
   ]
 }

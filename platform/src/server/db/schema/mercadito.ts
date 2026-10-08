@@ -47,6 +47,11 @@ export const mercaditoListings = pgTable(
      */
     flags: jsonb('flags').$type<string[]>().notNull().default([]),
     publishedAt: timestamp('published_at', { withTimezone: true }).notNull().defaultNow(),
+    /**
+     * Paid placement: until this moment the listing sorts first and carries a
+     * "Destacado" label, so buyers always know which places were bought.
+     */
+    featuredUntil: timestamp('featured_until', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     closedAt: timestamp('closed_at', { withTimezone: true }),
@@ -57,6 +62,7 @@ export const mercaditoListings = pgTable(
     index('mercadito_listings_seller_idx').on(table.sellerUserId, table.createdAt),
     index('mercadito_listings_category_idx').on(table.category, table.status),
     index('mercadito_listings_location_idx').on(table.locationId),
+    index('mercadito_listings_featured_idx').on(table.featuredUntil),
   ],
 );
 

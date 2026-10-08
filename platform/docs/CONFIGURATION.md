@@ -636,7 +636,11 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
 | `mercadito.new_seller_max_listings` | 3 | same |
 | `mercadito.restricted_categories_unverified` | `[]` | **Undecided** — see below |
 | Photos per listing | 1–6 | Technical default, not from the Bible |
-| Cost of publishing | 1 token | `billable_actions` row `mercadito.publish_listing` |
+| `mercadito.free_open_listings` | 5 | Owner decision, October 2026 (see "Revenue model") |
+| `mercadito.feature_days` | 7 | same |
+| Publishing within the allowance | free | `billable_actions` row `mercadito.publish_listing_free` (cost 0) |
+| Each open listing beyond the allowance | 1 token | `billable_actions` row `mercadito.publish_listing` |
+| Featuring a listing ("Destacado") | 3 tokens | `billable_actions` row `mercadito.feature_listing` |
 
 **Decisions the specification leaves open:**
 
@@ -665,6 +669,38 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
    listing page say so.
 
 ---
+
+## Revenue model (owner decision, October 2026)
+
+The owner asked for the strategy with the best chance of reaching the most
+people and earning the most, and delegated the choice. The decision: **free
+for people, paid by those who earn, growth first.**
+
+- **People never need tokens to take part.** Publishing in Mercadito is free
+  up to `mercadito.free_open_listings` open listings at once (5). Asking for
+  help, Community, Animales, Santuario, Trabajo, YavayaGo and Espacio Violeta
+  were already free and stay free.
+- **Tokens buy speed and volume, which only sellers need.** Featuring a
+  listing for `mercadito.feature_days` (7) costs 3 tokens; each open listing
+  beyond the allowance costs 1. A featured listing is always labelled
+  "Destacado" on its card and page: paid placement is never passed off as
+  relevance.
+- **Tokens can be earned without paying.** The starter allocation (2 a day
+  for the first week) and invitations: when an invited friend verifies their
+  email, the inviter gets `referral.inviter_reward` (3) and the friend
+  `referral.invitee_reward` (2), up to `referral.max_rewarded_per_month` (10)
+  rewarded invitations per inviter in any 30 days. An invitation where
+  registration found the two accounts sharing a device or network is recorded
+  as `suspect` and never pays.
+- **Payment rail:** Stripe (cards) is the only live one. That fits the model:
+  the people who pay are sellers and businesses, the members most likely to
+  hold a card. Mobile wallets, carrier billing and cash collection are not
+  configured; see "Payments".
+
+**Next phases, not built yet:** business plans for YavayaGo stores after a
+free launch period, paid job posts for employers in Trabajo, and priority
+placement for professionals in Servicios. Each needs its prices decided and
+is deliberately left free until the district has enough people in it.
 
 ## IP geolocation — `GEOIP_PROVIDER`
 

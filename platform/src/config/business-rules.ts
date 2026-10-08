@@ -243,6 +243,28 @@ export const MERCADITO_RULES = {
   pageSize: 24,
   /** Saved searches per member: enough to follow what you want, not a scraper. */
   maxSavedSearches: 20,
+  /**
+   * Publishing is free for people. A member may have this many open listings
+   * at once without paying; each one beyond costs the
+   * `mercadito.publish_listing` price. Someone selling their own things never
+   * reaches it; a reseller or a dealer does, and they are the ones earning.
+   * The owner's decision (October 2026): free for people, paid by those who earn.
+   */
+  freeOpenListings: 5,
+  /** Days a listing stays featured ("Destacado") after one purchase. */
+  featureDays: 7,
+} as const;
+
+/**
+ * Invitations. A member who brings someone in is thanked in tokens once the
+ * new account verifies its email, and so is the newcomer. The cap stops one
+ * person from farming throwaway accounts: past it, invitations still work,
+ * they just stop paying.
+ */
+export const REFERRAL_RULES = {
+  inviterReward: 3,
+  inviteeReward: 2,
+  maxRewardedPerMonth: 10,
 } as const;
 
 /**

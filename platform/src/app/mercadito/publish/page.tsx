@@ -9,7 +9,7 @@ import { ListingForm } from '@/ui/mercadito/listing-form';
 import { listingFormProps } from '@/ui/mercadito/form-props';
 import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
-import { getWhatsapp, placeOptions, sellerStanding } from '@/server/domains/mercadito/service';
+import { getWhatsapp, openListingCount, placeOptions, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 
 export const dynamic = 'force-dynamic';
@@ -61,14 +61,19 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
     return shell(<p className="mk-banner">{t('mercadito.publish.unavailable')}</p>);
   }
 
-  const [standing, balance, cost, whatsapp, countries] = await Promise.all([
+  const [standing, balance, cost, whatsapp, countries, open, pricing] = await Promise.all([
     sellerStanding(db(), userId),
     getBalance(db(), userId),
     actionCost(db(), 'mercadito.publish_listing'),
     getWhatsapp(db(), userId),
     placeOptions(db(), locale),
+    openListingCount(db(), userId),
+    pricingRules(db()),
   ]);
-  const price = cost ?? 0;
+  // Free while the member has fewer open listings than the allowance; the
+  // server decides again at publish time, this is only what the page says.
+  const freeLeft = Math.max(0, pricing.freeOpenListings - open);
+  const price = freeLeft > 0 ? 0 : (cost ?? 0);
   const limits = { max: standing.newSeller.max, days: standing.newSeller.windowDays, used: standing.newSeller.used };
 
   if (!standing.allowed) {
@@ -84,12 +89,16 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
     );
   }
 
-  const form = listingFormProps(t, t('mercadito.form.submit_create', { cost: price }));
+  const form = listingFormProps(t, price === 0 ? t('mercadito.form.submit_free') : t('mercadito.form.submit_create', { cost: price }));
 
   return shell(
     <>
       <div className="card">
-        <p>{t('mercadito.publish.cost', { cost: price })}</p>
+        <p>
+          {price === 0
+            ? t('mercadito.publish.free', { left: freeLeft, max: pricing.freeOpenListings })
+            : t('mercadito.publish.cost_beyond', { cost: price, max: pricing.freeOpenListings })}
+        </p>
         <p className="mb0">
           {t('mercadito.publish.balance', { balance })} <Link href="/account/tokens">{t('mercadito.publish.see_tokens')}</Link>
         </p>

@@ -78,6 +78,11 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
         </a>
       </section>
 
+      {/* The free way first: inviting friends. */}
+      <a className="surface-card mt-4 block p-4 text-sm font-semibold" href="/account/invite">
+        ✦ {t('invite.cta')} →
+      </a>
+
       <section id="paquetes" className="tk-shop">
         <div className="tk-shop-head">
           <div>

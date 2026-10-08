@@ -505,6 +505,12 @@ td strong { color: var(--text); }
 .mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 14px; margin-top: 22px; }
 .mk-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; text-decoration: none; color: var(--text); }
 .mk-card:hover { border-color: var(--tone); }
+.mk-card .ph { position: relative; }
+.mk-card.is-featured { border-color: color-mix(in srgb, var(--gold) 70%, var(--line)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 35%, transparent), 0 10px 30px rgba(212, 175, 55, 0.12); }
+.mk-featured-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #1a1406; background: linear-gradient(180deg, #fff0b8, var(--gold) 60%, #c39a33); }
+.mk-featured-tag.on-photo { position: absolute; left: 10px; top: 10px; z-index: 1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+.mk-feature { display: grid; gap: 10px; padding: 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--line)); background: color-mix(in srgb, var(--gold) 7%, var(--surface)); }
+.mk-feature-h { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-weight: 700; }
 .mk-card .ph { aspect-ratio: 1; background: var(--surface-2); display: grid; place-items: center; color: var(--text-3); font-size: 0.8rem; }
 .mk-card .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .mk-card .bd { padding: 10px 12px 12px; display: grid; gap: 2px; }

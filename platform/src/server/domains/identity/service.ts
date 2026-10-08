@@ -17,6 +17,7 @@ import { RATE_LIMITS, consumeRateLimit } from '@/server/security/rate-limit';
 import { recordAudit } from '@/server/domains/audit/service';
 import { applyRule, initializeReputation } from '@/server/domains/reputation/service';
 import { ensureUserAccount, grantStarterTokensForPeriod } from '@/server/domains/tokens/service';
+import { recordReferral, rewardReferral } from '@/server/domains/referrals/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { canonicalEmail, emailDomain, normalizeDisplayName, signalEmail } from './normalize';
 import { evaluateRisk, recordSignals, storeAssessment } from './risk';
@@ -40,6 +41,8 @@ export const registrationSchema = z.object({
   locale: z.enum(['es', 'en']).default('es'),
   locationId: z.string().uuid().optional(),
   acceptedTerms: z.literal(true),
+  /** The YAY ID from an invitation link, if the person arrived through one. */
+  inviter: z.string().trim().max(20).optional(),
 });
 
 export type RegistrationInput = z.infer<typeof registrationSchema>;
@@ -173,6 +176,10 @@ export async function register(
           reasons: evaluation.factors.map((factor) => ({ code: factor.code, weight: factor.weight })),
         })
         .onConflictDoNothing({ target: [duplicateCandidates.userId, duplicateCandidates.matchedUserId] });
+    }
+
+    if (parsed.inviter) {
+      await recordReferral(tx, { inviteeUserId: userId, inviterCode: parsed.inviter, matchedUserIds: evaluation.matchedUserIds });
     }
 
     await initializeReputation(tx, userId);
@@ -362,6 +369,9 @@ export async function consumeVerificationCode(
     const [verified] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.userId));
     if (verified?.status === 'active') {
       await grantStarterTokensForPeriod(tx, { userId: params.userId, verifiedAt: now, now });
+      // An invitation is thanked here, not at registration: an unverified
+      // throwaway address earns its inviter nothing.
+      await rewardReferral(tx, { inviteeUserId: params.userId, now });
     }
 
     // The reputation table's own rule for it, once per member.

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { randomUUID } from 'node:crypto';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -11,17 +12,18 @@ import { formatDate, formatPrice } from '@/ui/mercadito/format';
 import { Gallery } from '@/ui/mercadito/gallery';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { hasPermission } from '@/server/domains/access/authorize';
-import { getListing, similarListings, type ListingDetail } from '@/server/domains/mercadito/service';
+import { getListing, pricingRules, similarListings, type ListingDetail } from '@/server/domains/mercadito/service';
+import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { ListingCard } from '@/ui/mercadito/listing-card';
 import { OPEN_STATUSES, PUBLIC_STATUSES, whatsappLink } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation';
-import { closeListingAction, reportListingAction, reserveListingAction } from '../actions';
+import { closeListingAction, featureListingAction, reportListingAction, reserveListingAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ reported?: string; report?: string }> };
+type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ reported?: string; report?: string; feature?: string }> };
 
 /**
  * Who may see a listing: anyone while it is up or once sold; only its seller
@@ -56,6 +58,12 @@ export default async function ListingPage({ params, searchParams }: Params) {
     similarListings(db(), { listingId: listing.id, category: listing.category, locale }),
   ]);
   const own = userId === listing.seller.userId;
+  // What featuring costs, and whether the seller can pay: only the seller sees it.
+  const feature = own
+    ? await Promise.all([actionCost(db(), 'mercadito.feature_listing'), getBalance(db(), userId!), pricingRules(db())]).then(
+        ([cost, balance, rules]) => ({ cost, balance, days: rules.featureDays, outcome: query.feature ?? null }),
+      )
+    : null;
   const listingUrl = `${serverEnv().APP_URL.replace(/\/$/, '')}/mercadito/${listing.id}`;
 
   return (
@@ -118,7 +126,7 @@ export default async function ListingPage({ params, searchParams }: Params) {
               </p>
 
               {own ? (
-                <SellerControls listing={listing} t={t} />
+                <SellerControls listing={listing} t={t} locale={locale} feature={feature} />
               ) : !(OPEN_STATUSES as readonly string[]).includes(listing.status) ? null : !member ? (
                 <Link className="btn btn-gold" href="/login" style={{ width: '100%' }}>
                   {t('mercadito.listing.sign_in_to_contact')}
@@ -221,10 +229,25 @@ export default async function ListingPage({ params, searchParams }: Params) {
   );
 }
 
-function SellerControls({ listing, t }: { listing: ListingDetail; t: Parameters<typeof TrustShieldCard>[0]['t'] }) {
+type FeatureOffer = { cost: number | null; balance: number; days: number; outcome: string | null };
+
+function SellerControls({
+  listing,
+  t,
+  locale,
+  feature,
+}: {
+  listing: ListingDetail;
+  t: Parameters<typeof TrustShieldCard>[0]['t'];
+  locale: string;
+  feature: FeatureOffer | null;
+}) {
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <p className="mk-banner mb0">{t('mercadito.listing.own')}</p>
+      {listing.status === 'published' && feature && feature.cost !== null ? (
+        <FeatureCard listing={listing} t={t} locale={locale} feature={feature as FeatureOffer & { cost: number }} />
+      ) : null}
       {(OPEN_STATUSES as readonly string[]).includes(listing.status) ? (
         <>
           <Link className="btn btn-gold" href={`/mercadito/${listing.id}/edit`}>
@@ -253,6 +276,58 @@ function SellerControls({ listing, t }: { listing: ListingDetail; t: Parameters<
           </form>
         </>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * "Destacar": the one thing a seller can pay for. Shown with its price and
+ * the seller's balance up front, and a way to get tokens free (inviting
+ * friends) next to the way to buy them.
+ */
+function FeatureCard({
+  listing,
+  t,
+  locale,
+  feature,
+}: {
+  listing: ListingDetail;
+  t: Parameters<typeof TrustShieldCard>[0]['t'];
+  locale: string;
+  feature: FeatureOffer & { cost: number };
+}) {
+  const enough = feature.balance >= feature.cost;
+  return (
+    <div className="mk-feature" id="destacar">
+      <p className="mk-feature-h">
+        {listing.featured ? <span className="mk-featured-tag">{t('mercadito.feature.tag')}</span> : null}
+        {listing.featured && listing.featuredUntil
+          ? t('mercadito.feature.active', { date: formatDate(listing.featuredUntil, locale) })
+          : t('mercadito.feature.title')}
+      </p>
+      <p className="hint muted mb0">{t('mercadito.feature.body', { days: feature.days })}</p>
+      {feature.outcome === 'ok' ? <p className="mk-banner mb0" role="status">{t('mercadito.feature.done')}</p> : null}
+      {feature.outcome === 'tokens' ? <p className="mk-error mb0" role="alert">{t('mercadito.feature.no_tokens')}</p> : null}
+      {feature.outcome === 'failed' ? <p className="mk-error mb0" role="alert">{t('mercadito.feature.failed')}</p> : null}
+      {enough ? (
+        <form action={featureListingAction}>
+          <input type="hidden" name="listingId" value={listing.id} />
+          <input type="hidden" name="purchaseId" value={randomUUID()} />
+          <button className="btn btn-gold" type="submit" style={{ width: '100%' }}>
+            {t(listing.featured ? 'mercadito.feature.extend' : 'mercadito.feature.buy', { cost: feature.cost, days: feature.days })}
+          </button>
+        </form>
+      ) : (
+        <div style={{ display: 'grid', gap: 8 }}>
+          <p className="hint mb0">{t('mercadito.feature.balance', { balance: feature.balance, cost: feature.cost })}</p>
+          <Link className="btn btn-gold" href="/account/invite">
+            {t('mercadito.feature.invite')}
+          </Link>
+          <Link className="btn btn-line" href="/account/tokens#paquetes">
+            {t('mercadito.feature.get_tokens')}
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

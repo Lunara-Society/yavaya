@@ -139,6 +139,12 @@ export default async function AccountPage() {
         >
           {t('tokens.view_history')}
         </Link>
+        <Link
+          href="/account/invite"
+          className="mt-4 ml-2 inline-flex min-h-touch items-center rounded-xl border px-4 text-sm font-medium"
+        >
+          {t('invite.cta')}
+        </Link>
       </section>
 
       <section className="mt-8">
@@ -188,6 +194,7 @@ const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = 
   { href: '/animals/mine', labelKey: 'animals.mine.title', glyph: '♥' },
   { href: '/sanctuary', labelKey: 'nav.sanctuary', glyph: '✝' },
   { href: '/account/tokens', labelKey: 'nav.tokens', glyph: '◆' },
+  { href: '/account/invite', labelKey: 'invite.title', glyph: '✦' },
   { href: '/account/phone', labelKey: 'nav.phone', glyph: '✆' },
   { href: '/settings#notifications', labelKey: 'nav.notifications', glyph: '◔' },
   { href: '/settings#location', labelKey: 'nav.location', glyph: '◎' },

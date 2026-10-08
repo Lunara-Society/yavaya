@@ -24,7 +24,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES, GO_RULES } from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES, REFERRAL_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
@@ -273,7 +273,9 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
    * price people out of the parts of Yavaya that exist to help them.
    */
   const actions = [
-    { key: 'mercadito.publish_listing', district: 'mercadito', cost: 1, description: 'Publish a Mercadito listing' },
+    { key: 'mercadito.publish_listing', district: 'mercadito', cost: 1, description: 'Publish a Mercadito listing beyond the free allowance' },
+    { key: 'mercadito.publish_listing_free', district: 'mercadito', cost: 0, description: 'Publish a Mercadito listing within the free allowance (free)' },
+    { key: 'mercadito.feature_listing', district: 'mercadito', cost: 3, description: 'Feature a Mercadito listing at the top for a week' },
     { key: 'services.publish_request', district: 'services', cost: 1, description: 'Publish a service request' },
     { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
     { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
@@ -328,6 +330,11 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'demo.lifetime_days', value: DEMO_CONTENT_RULES.defaultLifetimeDays, description: 'Days before demo content expires' },
     { key: 'mercadito.new_seller_window_days', value: MERCADITO_RULES.newSellerWindowDays, description: 'Account age, in days, under which the new-seller listing limit applies' },
     { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
+    { key: 'mercadito.free_open_listings', value: MERCADITO_RULES.freeOpenListings, description: 'Open listings a member may have at once without paying' },
+    { key: 'mercadito.feature_days', value: MERCADITO_RULES.featureDays, description: 'Days a listing stays featured after one purchase' },
+    { key: 'referral.inviter_reward', value: REFERRAL_RULES.inviterReward, description: 'Tokens for a member whose invitee verifies their email' },
+    { key: 'referral.invitee_reward', value: REFERRAL_RULES.inviteeReward, description: 'Tokens for a new member who joined by invitation, on email verification' },
+    { key: 'referral.max_rewarded_per_month', value: REFERRAL_RULES.maxRewardedPerMonth, description: 'Rewarded invitations per inviter per 30 days' },
     { key: 'sanctuary.max_churches_per_owner', value: SANCTUARY_RULES.maxChurchesPerOwner, description: 'Churches one member may register in Sanctuary' },
     { key: 'sanctuary.max_devotionals_per_church_per_day', value: SANCTUARY_RULES.maxDevotionalsPerChurchPerDay, description: 'Prayers or words one church may publish for the same day' },
     { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },

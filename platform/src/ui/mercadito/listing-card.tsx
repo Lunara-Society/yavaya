@@ -20,8 +20,10 @@ export function ListingCard({
   showStatus?: boolean;
 }) {
   return (
-    <Link className="mk-card" href={`/mercadito/${listing.id}`} data-tilt="">
+    <Link className={listing.featured ? 'mk-card is-featured' : 'mk-card'} href={`/mercadito/${listing.id}`} data-tilt="">
       <div className="ph">
+        {/* Paid placement is always labelled, never passed off as relevance. */}
+        {listing.featured ? <span className="mk-featured-tag on-photo">{t('mercadito.feature.tag')}</span> : null}
         {listing.coverMediaId ? (
           // eslint-disable-next-line @next/next/no-img-element -- served already sized by the media pipeline
           <img src={`/media/${listing.coverMediaId}`} alt="" loading="lazy" decoding="async" />

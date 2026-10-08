@@ -6,7 +6,7 @@ import { db } from '@/server/db/client';
 import { currentSession, requestContext, userAgentHash } from '@/server/auth/context';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { isDomainError } from '@/server/errors';
-import { closeListing, deleteSavedSearch, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
+import { closeListing, deleteSavedSearch, featureListing, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
 import { LISTING_CATEGORIES, normalizeWhatsapp, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES, reportListing, type ListingReportCategory } from '@/server/domains/mercadito/moderation';
 
@@ -106,6 +106,26 @@ export async function reserveListingAction(formData: FormData): Promise<void> {
   }
   revalidatePath('/mercadito', 'layout');
   redirect(`/mercadito/${listingId}`);
+}
+
+/** "Destacar": pays tokens to sort this listing first for a week. */
+export async function featureListingAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const listingId = String(formData.get('listingId') ?? '');
+  const purchaseId = String(formData.get('purchaseId') ?? '');
+  if (!UUID.test(listingId) || !UUID.test(purchaseId)) redirect('/mercadito/mine');
+
+  const audit = await auditContext();
+  let outcome = 'ok';
+  try {
+    await db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: session.user.userId, purchaseId, audit }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    outcome = error.code === 'insufficient_tokens' ? 'tokens' : 'failed';
+  }
+  revalidatePath('/mercadito', 'layout');
+  redirect(`/mercadito/${listingId}?feature=${outcome}#destacar`);
 }
 
 export async function saveSearchAction(formData: FormData): Promise<void> {
