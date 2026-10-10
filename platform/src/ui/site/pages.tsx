@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import type { CSSProperties } from 'react';
 import { packageSavingPercent, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { TokenPack } from '@/ui/tokens/pack';
 import { DistrictScene, Guilloche, HeroScene, OrnamentRule } from './art';
+import { HeroCinema } from './cinema';
 import type { SiteContent } from '@/i18n/site';
 import {
   Badge,
@@ -38,13 +40,32 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
     <>
       <section className="hero">
         <HeroScene className="hero-art" />
+        <HeroCinema />
+        {/* The opening shot: letterbox bars that part, then light falling from the seal and a lens flare. */}
+        <span className="hero-bars" aria-hidden="true" />
         <div className="wrap">
           <div className="hero-mark">
             <Guilloche className="hero-seal" size={520} lobes={36} rings={12} strokeWidth={0.45} />
             <span className="hero-emblem">
-              <Mark size={240} />
+              <span className="hero-rays" aria-hidden="true" />
+              <span className="hero-flare" aria-hidden="true" />
+              {/* A coin in three dimensions: it tilts towards the pointer and catches the light. */}
+              <span className="seal-3d">
+                <span className="seal-tilt">
+                  <span className="seal-edge" aria-hidden="true" />
+                  <Mark size={240} priority />
+                  <span className="seal-glare" aria-hidden="true" />
+                </span>
+              </span>
             </span>
-            <h1 className="h-xl">YAVAYA</h1>
+            {/* Each letter rises on its own; the label makes the word read once, whole, and keeps the text a single word. */}
+            <h1 className="h-xl hero-title" aria-label="YAVAYA">
+              {Array.from('YAVAYA', (letter, i) => (
+                <span key={i} className="hero-letter" aria-hidden="true" style={{ '--i': i } as CSSProperties}>
+                  {letter}
+                </span>
+              ))}
+            </h1>
           </div>
           <p className="hero-sub">{p.sub}</p>
           <ul className="hero-verbs">

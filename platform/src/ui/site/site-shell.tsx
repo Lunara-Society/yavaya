@@ -56,6 +56,8 @@ export function SiteShell({
   return (
     <div className="site" data-district={district}>
       <Alive />
+      {/* The soft light that follows a mouse across the dark; moved by Alive, styled in site.css. */}
+      <div className="cine-spot" aria-hidden="true" />
       <a className="skip" href="#main">
         {c.ui.skip}
       </a>

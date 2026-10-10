@@ -19,6 +19,11 @@
   font-display: swap;
 }
 
+/* Animatable values for the cinema effects (see "Cinema" in the components layer). */
+/* <length-percentage>, not <percentage>: the minifier writes 0% as 0, which only this syntax accepts. */
+@property --gilt { syntax: "<length-percentage>"; inherits: false; initial-value: 0%; }
+@property --edge { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
 @layer components {
 :root {
   --navy: #081120;
@@ -192,7 +197,8 @@ ul, ol { margin: 0; padding: 0; }
 /* ── Home hero ──────────────────────────────────────────────────────── */
 .hero { position: relative; min-height: min(92vh, 860px); display: flex; align-items: center; padding: clamp(72px, 11vw, 130px) 0 clamp(70px, 9vw, 120px); text-align: center; overflow: hidden; background: #050b16; color: #f8f6f1; }
 .hero-art { position: absolute; inset: 0; overflow: hidden; background: #050b16; }
-.hero-photo { position: absolute; inset: -3%; width: 106%; height: 106%; object-fit: cover; object-position: 50% 60%; animation: kenburns 22s cubic-bezier(.2,.6,.2,1) both; }
+/* max-width: none, or the base reset holds it to 100% and an edge shows as it drifts. */
+.hero-photo { position: absolute; inset: -3%; width: 106%; max-width: none; height: 106%; object-fit: cover; object-position: 50% 60%; animation: kenburns 22s cubic-bezier(.2,.6,.2,1) both; }
 .alive .hero-photo { translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -10px + var(--sy, 0) * 110px); transition: translate 1s cubic-bezier(.2,.7,.2,1); }
 @keyframes kenburns { from { transform: scale(1.12); filter: brightness(0.7); } to { transform: scale(1); filter: none; } }
 .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(50% 42% at 50% 50%, rgba(5, 11, 22, 0.55), rgba(5, 11, 22, 0.1) 75%), linear-gradient(180deg, rgba(5,11,22,0.55) 0%, rgba(5,11,22,0) 22%, rgba(5,11,22,0) 72%, var(--bg) 100%); pointer-events: none; }
@@ -227,17 +233,29 @@ ul, ol { margin: 0; padding: 0; }
 .gates { display: grid; gap: 14px; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .gates { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1000px) { .gates { grid-template-columns: repeat(3, 1fr); gap: 18px; } }
+/* Seven doors in a grid of two or three leave one alone on the last row; instead the
+   first and last open wide, like a film's establishing and closing shots. */
+@media (min-width: 640px) { .gates > :nth-child(7):nth-last-child(1) { grid-column: span 2; } }
+@media (min-width: 1000px) { .gates > :nth-child(1):nth-last-child(7) { grid-column: span 2; } }
+@media (min-width: 640px) {
+  .gates > :nth-child(7):nth-last-child(1) .gate-scene { aspect-ratio: 32 / 10; }
+}
+@media (min-width: 1000px) {
+  .gates > :nth-child(1):nth-last-child(7) .gate-scene { aspect-ratio: 32 / 10; }
+}
 .gate {
-  position: relative; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; text-decoration: none;
+  /* No overflow clipping here: clipping would flatten the card, and its layers stand apart in depth. The scene clips itself. */
+  position: relative; display: flex; flex-direction: column; border-radius: 20px; text-decoration: none;
   color: #fff; border: 1px solid rgba(212, 175, 55, 0.18);
   background: linear-gradient(180deg, color-mix(in srgb, var(--tone) 22%, #081120) 0%, #070f1d 100%);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px rgba(0, 0, 0, 0.28);
   transition: transform 0.45s cubic-bezier(.2,.7,.2,1), box-shadow 0.45s ease, border-color 0.45s ease;
 }
 .gate:hover, .gate:focus-visible { transform: translateY(-4px); border-color: rgba(212, 175, 55, 0.55); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(212, 175, 55, 0.25); }
-.gate-scene { display: block; aspect-ratio: 16 / 10; overflow: hidden; position: relative; }
+.gate-scene { display: block; aspect-ratio: 16 / 10; overflow: hidden; position: relative; border-radius: 19px 19px 0 0; }
 .gate-scene img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 1.4s cubic-bezier(.2,.7,.2,1), filter 1.4s ease; filter: saturate(0.92); }
-.gate:hover .gate-scene img { transform: scale(1.06); filter: saturate(1.08); }
+.gate-scene img { transition: scale 1.4s cubic-bezier(.2,.7,.2,1), translate 0.9s cubic-bezier(.2,.7,.2,1), filter 1.4s ease; }
+.gate:hover .gate-scene img { scale: 1.08; filter: saturate(1.12) brightness(1.05); }
 .gate-scene::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 12px; z-index: 1; pointer-events: none; }
 .gate-scene::after { content: ""; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--tone) 10%, #070f1d)); pointer-events: none; }
 .gate-body { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 26px 24px 24px; }
@@ -572,7 +590,7 @@ td strong { color: var(--text); }
 .page-hero.with-photo { min-height: clamp(380px, 52vh, 560px); display: flex; align-items: flex-end; color: #f8f6f1; border-bottom: 0; background: #050b16; }
 .page-hero.with-photo > .wrap { position: relative; z-index: 1; width: 100%; }
 .page-hero-photo { position: absolute; inset: 0; overflow: hidden; }
-.page-photo { position: absolute; inset: -3%; width: 106%; height: 106%; object-fit: cover; animation: kenburns 20s cubic-bezier(.2,.6,.2,1) both; }
+.page-photo { position: absolute; inset: -3%; width: 106%; max-width: none; height: 106%; object-fit: cover; animation: kenburns 20s cubic-bezier(.2,.6,.2,1) both; }
 .alive .page-photo { translate: calc(var(--px, 0) * -12px) calc(var(--py, 0) * -8px); transition: translate 1s cubic-bezier(.2,.7,.2,1); }
 .page-hero.with-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,11,22,0.88) 0%, rgba(5,11,22,0.55) 45%, rgba(5,11,22,0.1) 100%), linear-gradient(180deg, rgba(5,11,22,0) 55%, var(--bg) 100%); }
 .page-hero.with-photo h1 { color: #f8f6f1; text-shadow: 0 2px 30px rgba(0,0,0,0.35); }
@@ -694,9 +712,11 @@ td strong { color: var(--text); }
 .cm-gate { margin-top: 28px; }
 
 /* ── Motion and finish ──────────────────────────────────────────────────
- * "Use sparingly. Trust platforms should feel stable." (Master Bible)
- * Things arrive once, gently; the only continuous motion is slow enough to
- * be felt rather than watched. All of it stops for prefers-reduced-motion.
+ * The Master Bible asked for motion used sparingly; the owner has since asked
+ * for a cinematic, three-dimensional site (see "Cinema" below). What has not
+ * changed: words are never waiting on an effect, continuous motion is slow,
+ * the expensive parts run only where the device can afford them, and all of
+ * it stops for prefers-reduced-motion.
  */
 .seal-section { position: relative; overflow: hidden; }
 .seal-section > .wrap { position: relative; }
@@ -726,15 +746,6 @@ td strong { color: var(--text); }
 @keyframes trail { 0% { stroke-dashoffset: 420; } 60%, 100% { stroke-dashoffset: 0; } }
 @keyframes gilt { 0%, 100% { background-position: 100% 0; } 50% { background-position: 0% 0; } }
 @keyframes seal-turn { to { transform: rotate(360deg); } }
-
-/* Sections settle into place as they scroll in, where the browser can do it without script. */
-@supports (animation-timeline: view()) {
-  .section .section-head, .section .grid > *, .section .gates > *, .section .split > * {
-    /* Movement only, never opacity: content must be readable even where
-       nothing scrolls — a crawler, a print, a full-page capture. */
-    animation: settle linear both; animation-timeline: view(); animation-range: entry 0% entry 45%;
-  }
-}
 
 /* A faint paper grain over everything: the difference between a screen and a printed certificate. */
 .site::after {
@@ -783,6 +794,264 @@ td strong { color: var(--text); }
 .site::before {
   content: ""; position: fixed; left: 0; top: 0; height: 2px; width: 100%; z-index: 101; pointer-events: none;
   background: linear-gradient(90deg, #b8912a, #f3dc8a); transform-origin: 0 50%; transform: scaleX(var(--read, 0));
+}
+
+/* ── Cinema ─────────────────────────────────────────────────────────────
+ * The opening shot of the home page, and depth everywhere after it.
+ * Rules of the house: everything here is transform, opacity or a small
+ * composited layer, so it stays smooth on an inexpensive phone; nothing
+ * hides words from someone without JavaScript; and print and reduced
+ * motion get the still page.
+ */
+
+/* The hero is its own stage: blending stays inside it. */
+.hero { isolation: isolate; }
+.hero > .wrap { z-index: 2; transform-origin: 50% 0; }
+.hero-cinema { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; mix-blend-mode: screen; opacity: 0; transition: opacity 2.6s ease; }
+.hero-cinema.is-on { opacity: 1; }
+
+/* Letterbox bars part as the film begins. */
+.hero-bars { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.hero-bars::before, .hero-bars::after { content: ""; position: absolute; left: 0; right: 0; height: 14%; background: #000; animation: bars-open 1.7s cubic-bezier(.75,0,.2,1) 0.25s forwards; }
+.hero-bars::before { top: 0; transform-origin: 50% 0; }
+.hero-bars::after { bottom: 0; transform-origin: 50% 100%; }
+@keyframes bars-open { to { transform: scaleY(0); } }
+
+/* Light falling through the seal, turning slowly. */
+.hero-emblem { z-index: 0; }
+.hero-rays {
+  position: absolute; left: 50%; top: 50%; z-index: -1; width: min(1500px, 230vw); aspect-ratio: 1; translate: -50% -50%; pointer-events: none; opacity: 0;
+  background: conic-gradient(from 0deg,
+    transparent 0deg, rgba(255, 214, 130, 0.20) 5deg, transparent 12deg, transparent 33deg, rgba(255, 228, 165, 0.13) 37deg, transparent 45deg,
+    transparent 68deg, rgba(255, 214, 130, 0.18) 72deg, transparent 79deg, transparent 104deg, rgba(255, 236, 190, 0.10) 110deg, transparent 121deg,
+    transparent 150deg, rgba(255, 214, 130, 0.16) 154deg, transparent 161deg, transparent 189deg, rgba(255, 228, 165, 0.14) 195deg, transparent 203deg,
+    transparent 232deg, rgba(255, 214, 130, 0.19) 236deg, transparent 243deg, transparent 271deg, rgba(255, 236, 190, 0.11) 278deg, transparent 288deg,
+    transparent 315deg, rgba(255, 214, 130, 0.15) 320deg, transparent 328deg, transparent 360deg);
+  -webkit-mask: radial-gradient(circle, #000 6%, rgba(0, 0, 0, 0.55) 20%, transparent 46%);
+  mask: radial-gradient(circle, #000 6%, rgba(0, 0, 0, 0.55) 20%, transparent 46%);
+  animation: rays-in 3.2s ease 1.1s forwards, rays-turn 180s linear infinite;
+}
+@keyframes rays-in { to { opacity: 1; } }
+@keyframes rays-turn { to { rotate: 360deg; } }
+
+/* An anamorphic flare: a streak of light across the lens as the seal lands. */
+.hero-flare {
+  position: absolute; left: 50%; top: 50%; z-index: 2; width: min(1100px, 170vw); height: 7px; translate: -50% -50%; pointer-events: none; opacity: 0;
+  background: radial-gradient(closest-side, rgba(255, 246, 220, 0.95), rgba(255, 205, 120, 0.5) 30%, rgba(130, 175, 255, 0.18) 65%, transparent);
+  animation: flare 3s cubic-bezier(.2,.7,.2,1) 1.25s forwards;
+}
+.hero-flare::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 46vmin; height: 46vmin; translate: -50% -50%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 180, 0.45), rgba(255, 200, 110, 0.12) 40%, transparent 70%);
+}
+@keyframes flare {
+  0% { opacity: 0; scale: 0.15 1; }
+  22% { opacity: 1; scale: 1 1.8; }
+  100% { opacity: 0.22; scale: 0.75 1; }
+}
+
+/* The seal: a coin that spins into place, then turns towards you. */
+.seal-3d { display: block; width: 100%; height: 100%; perspective: 900px; animation: seal-in 2.2s cubic-bezier(.16,1,.3,1) 0.35s both; }
+@keyframes seal-in {
+  0% { opacity: 0; transform: perspective(900px) rotateY(-220deg) scale(0.35); filter: blur(12px) brightness(2.4); }
+  55% { opacity: 1; filter: blur(0) brightness(1.5); }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+.seal-tilt { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(.2,.7,.2,1); }
+.seal-tilt .brand-mark { position: relative; display: block; }
+.pointer-fine .seal-tilt { transform: rotateX(calc(var(--py, 0) * -16deg)) rotateY(calc(var(--px, 0) * 24deg)); }
+@media (hover: none) { .alive .seal-tilt { animation: seal-sway 11s ease-in-out 2.6s infinite; } }
+@keyframes seal-sway {
+  0%, 100% { transform: rotateY(-16deg) rotateX(5deg); }
+  50% { transform: rotateY(16deg) rotateX(-5deg); }
+}
+/* Its thickness: a darker gold disc behind the face, seen at the rim when it turns. */
+.seal-edge {
+  position: absolute; inset: 4%; border-radius: 50%; transform: translateZ(-12px);
+  background: radial-gradient(circle at 50% 50%, #7a5714 0%, #3a2806 72%);
+  box-shadow: 0 0 0 2px #9c7820, 0 0 0 5px #5c430e, 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+/* Its shine: a highlight that follows the pointer, and a glint that crosses it now and then. */
+.seal-glare {
+  position: absolute; inset: 5%; border-radius: 50%; overflow: hidden; pointer-events: none; transform: translateZ(1px);
+  background: radial-gradient(circle at calc(50% - var(--px, 0) * 38%) calc(50% - var(--py, 0) * 38%), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 46%);
+}
+.seal-glare::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 34%; translate: -160% 0; rotate: 22deg;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 225, 0.55), transparent);
+  animation: glint 7s cubic-bezier(.4,0,.2,1) 3s infinite;
+}
+@keyframes glint { 0% { translate: -160% 0; } 22%, 100% { translate: 420% 0; } }
+
+/* The name: each letter rises from below the horizon, then gold runs through the word. */
+.hero .hero-title { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #d4af37; animation: none; perspective: 700px; }
+.hero-letter {
+  display: inline-block; transform-origin: 50% 100%;
+  background: linear-gradient(100deg, #b8912a 0%, #f3dc8a 22%, #d4af37 42%, #fff1c1 50%, #d4af37 58%, #b8912a 100%);
+  background-size: 600% 100%; background-position: calc(var(--i, 0) * 20% + var(--gilt)) 0;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: letter-in 1.4s cubic-bezier(.16,1,.3,1) calc(1.05s + var(--i, 0) * 0.09s) both, gilt-run 8s ease-in-out 3.4s infinite;
+}
+.hero-letter:last-child { margin-right: -0.12em; }
+@keyframes letter-in {
+  from { opacity: 0; transform: translateY(0.5em) rotateX(-100deg); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes gilt-run { 0%, 100% { --gilt: 0%; } 50% { --gilt: 100%; } }
+.hero .hero-sub { animation-delay: 1.6s; } .hero .hero-verbs { animation-delay: 1.75s; } .hero .hero-one { animation-delay: 1.9s; } .hero .btn-row { animation-delay: 2.05s; }
+.hero-mark { animation: none; }
+.hero-seal { animation: seal-turn 240s linear infinite, fade-in 2.4s ease 0.7s both; }
+@keyframes fade-in { from { opacity: 0; } }
+
+/* Scrolling away: the camera pulls back and the stage tips away from you. */
+.alive .hero > .wrap {
+  transform: perspective(1200px) rotateX(calc(var(--sy, 0) * 14deg));
+  opacity: calc(1 - var(--sy, 0) * 1.25);
+}
+.alive .hero-photo { scale: calc(1 + var(--sy, 0) * 0.16); }
+
+/* The main call to action breathes, so the eye finds it. */
+.hero .btn-gold { animation: cta-glow 3.8s ease-in-out 3s infinite; }
+@keyframes cta-glow {
+  0%, 100% { box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 22px rgba(212, 175, 55, 0.22); }
+  50% { box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 10px 40px rgba(243, 220, 138, 0.55), 0 0 0 6px rgba(212, 175, 55, 0.12); }
+}
+
+/* ── Rising into view (classes set by Alive) ── */
+.section .grid:has(> .rv), .section .gates:has(> .rv), .section .split:has(> .rv), .section .steps:has(> .rv), .section .wrap:has(> .rv),
+.mk-grid:has(> .rv), .go-stores:has(> .rv), .an-grid:has(> .rv) { perspective: 1400px; }
+.alive .rv { opacity: 0; translate: 0 70px; rotate: x 24deg; scale: 0.94; transform-origin: 50% 100%; }
+.pointer-fine .rv { filter: blur(8px); }
+.alive .rv.in {
+  opacity: 1; translate: none; rotate: none; scale: none; filter: none;
+  transition:
+    opacity 1s cubic-bezier(.2,.7,.2,1) var(--rv-delay, 0ms),
+    translate 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
+    rotate 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
+    scale 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
+    filter 1s ease var(--rv-delay, 0ms);
+}
+/* The eyebrow's rule draws itself in after the heading lands. */
+.alive .rv .eyebrow::before { transform: scaleX(0); transform-origin: 0 50%; }
+.alive .rv.in .eyebrow::before { transform: none; transition: transform 1s cubic-bezier(.16,1,.3,1) calc(var(--rv-delay, 0ms) + 0.45s); }
+
+/* ── District gateways as portals ── */
+.gate:hover, .gate:focus-visible { translate: 0 -8px; }
+.gate-body { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.gate-art { transition: transform 0.6s cubic-bezier(.2,.7,.2,1), box-shadow 0.6s ease; }
+/* Under the mouse the card's layers separate: words forward, the picture moving behind them. */
+.pointer-fine .gate:hover .gate-body { transform: translateZ(34px); }
+.pointer-fine .gate:hover .gate-art { transform: translateZ(30px) scale(1.08); box-shadow: 0 0 0 4px #070f1d, 0 18px 34px rgba(0, 0, 0, 0.6), 0 0 26px rgba(243, 220, 138, 0.35); }
+.pointer-fine .gate:hover .gate-scene img { translate: calc(var(--ry, 0) * -1.6px) calc(var(--rx, 0) * 1.6px); }
+/* A thread of light runs around the edge of the card under the mouse. */
+.gate::after {
+  content: ""; position: absolute; inset: -1px; z-index: 3; border-radius: inherit; padding: 1.5px; pointer-events: none; opacity: 0;
+  background: conic-gradient(from var(--edge), transparent 0%, transparent 52%, rgba(243, 220, 138, 0) 58%, rgba(255, 240, 190, 0.95) 70%, rgba(243, 220, 138, 0) 82%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  /* Paused unless shown: an animated gradient repaints, and seven of them would cost a phone dearly. */
+  animation: edge-run 3s linear infinite paused; transition: opacity 0.5s ease;
+}
+.gate:hover::after, .gate:focus-visible::after { opacity: 1; animation-play-state: running; }
+@keyframes edge-run { to { --edge: 360deg; } }
+
+/* Scroll-linked depth where the browser can do it on its own thread. */
+@supports (animation-timeline: view()) {
+  /* The photograph in each portal drifts as the card passes, like a window onto somewhere. */
+  .gate-scene img { animation: scene-pan linear both; animation-timeline: view(); }
+  /* On touch screens there is no mouse to tilt to, so the cards tip as they pass through the screen. */
+  @media (hover: none) {
+    .gates > .gate { animation: gate-sway linear both; animation-timeline: view(); }
+  }
+}
+@keyframes scene-pan { from { transform: translateY(-7%) scale(1.16); } to { transform: translateY(7%) scale(1.16); } }
+@keyframes gate-sway {
+  0% { transform: perspective(900px) rotateX(20deg) scale(0.92); }
+  32%, 62% { transform: perspective(900px) rotateX(0deg) scale(1); }
+  100% { transform: perspective(900px) rotateX(-12deg) scale(0.95); }
+}
+
+/* ── Cards with depth ── */
+.card .ico, .card h3 { transition: transform 0.55s cubic-bezier(.2,.7,.2,1); }
+.pointer-fine .card[data-tilt]:hover .ico { transform: translateZ(42px) scale(1.06); }
+.pointer-fine .card[data-tilt]:hover h3 { transform: translateZ(22px); }
+.pointer-fine .card[data-tilt]:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(212, 175, 55, 0.22); }
+
+/* ── Buttons that lean towards the mouse ── */
+.pointer-fine .btn { translate: var(--bx, 0) var(--by, 0); transition: translate 0.35s cubic-bezier(.2,.7,.2,1), filter 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+
+/* ── A soft light that follows the mouse across the dark ── */
+.cine-spot { display: none; }
+.pointer-fine .cine-spot {
+  display: block; position: fixed; left: -320px; top: -320px; width: 640px; height: 640px; z-index: 99; border-radius: 50%; pointer-events: none; will-change: transform;
+  background: radial-gradient(circle, rgba(243, 220, 138, 0.075), rgba(243, 220, 138, 0.025) 42%, transparent 70%); mix-blend-mode: screen;
+}
+:root[data-theme="light"] .cine-spot { display: none; }
+
+/* ── Living backgrounds: slow aurora behind the alternate sections ── */
+.section.alt { position: relative; isolation: isolate; overflow: clip; }
+.section.alt::before {
+  content: ""; position: absolute; inset: -25%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(36% 30% at 24% 34%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+    radial-gradient(34% 28% at 76% 66%, rgba(60, 109, 240, 0.08), transparent 70%),
+    radial-gradient(28% 24% at 56% 14%, rgba(147, 102, 224, 0.06), transparent 70%);
+  animation: aurora 34s ease-in-out infinite alternate;
+}
+@keyframes aurora {
+  from { transform: translate3d(-6%, -3%, 0) rotate(0deg) scale(1); }
+  to { transform: translate3d(6%, 4%, 0) rotate(9deg) scale(1.12); }
+}
+
+/* The closing seal lies down into an orbit and turns, like a dial of light. */
+.seal-bg { animation: disk-spin 150s linear infinite; }
+@keyframes disk-spin {
+  from { transform: translateY(-50%) perspective(1100px) rotateX(62deg) rotateZ(0deg); }
+  to { transform: translateY(-50%) perspective(1100px) rotateX(62deg) rotateZ(360deg); }
+}
+.seal-section::before {
+  content: ""; position: absolute; right: -10%; top: 50%; width: 70%; height: 120%; translate: 0 -50%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 12%, transparent), transparent);
+  animation: breathe 9s ease-in-out infinite;
+}
+
+/* ── Page headers: titles tip up into place, light passes over the photograph ── */
+.page-hero h1 { transform-origin: 50% 100%; animation: title-in 1.3s cubic-bezier(.16,1,.3,1) 0.12s both; }
+.page-hero .lead { animation: rise 1s cubic-bezier(.2,.7,.2,1) 0.45s both; }
+@keyframes title-in {
+  from { opacity: 0; transform: perspective(800px) rotateX(-60deg) translateY(0.35em); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.page-hero.with-photo::before {
+  content: ""; position: absolute; top: -10%; bottom: -10%; left: 0; z-index: 1; width: 45%; pointer-events: none; rotate: 12deg; translate: -140% 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 228, 160, 0.10) 40%, rgba(255, 244, 214, 0.16) 50%, rgba(255, 228, 160, 0.10) 60%, transparent);
+  mix-blend-mode: screen; animation: sweep 11s cubic-bezier(.45,0,.2,1) 0.9s infinite;
+}
+@keyframes sweep { 0% { translate: -140% 0; } 40%, 100% { translate: 330% 0; } }
+.page-photo { animation: kenburns 20s cubic-bezier(.2,.6,.2,1) both, drift 30s ease-in-out infinite alternate; }
+@keyframes drift { from { scale: 1; } to { scale: 1.08; } }
+
+/* ── District storefronts ── */
+/* The header photograph drifts like a slow camera, and light passes over it. */
+.mk-head-art img, .cm-head-art img { animation: head-drift 26s ease-in-out infinite alternate; transform-origin: 70% 50%; }
+@keyframes head-drift { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.14) translate3d(-2%, -1%, 0); } }
+.mk-head::before, .cm-head::before {
+  content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; z-index: 1; width: 40%; pointer-events: none; rotate: 14deg; translate: -150% 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tone, var(--accent)) 14%, transparent) 45%, rgba(255, 244, 214, 0.08) 50%, color-mix(in srgb, var(--tone, var(--accent)) 14%, transparent) 55%, transparent);
+  animation: sweep 13s cubic-bezier(.45,0,.2,1) 1.2s infinite;
+}
+.mk-head h1, .cm-head h1 { transform-origin: 50% 100%; animation: title-in 1.2s cubic-bezier(.16,1,.3,1) 0.1s both; }
+/* Listings and shops: the photograph leans in under the pointer. */
+.mk-card .ph img, .go-store-photo img { transition: scale 0.9s cubic-bezier(.2,.7,.2,1); }
+.mk-card:hover .ph img, .go-store-card:hover .go-store-photo img { scale: 1.07; }
+.pointer-fine .mk-card[data-tilt]:hover, .pointer-fine .go-store-card[data-tilt]:hover { box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4); }
+
+@media print {
+  .rv { opacity: 1 !important; translate: none !important; rotate: none !important; scale: none !important; filter: none !important; }
+  .hero-bars, .hero-cinema, .cine-spot { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-bars, .hero-cinema, .cine-spot, .hero-flare { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1329,7 +1598,8 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .go-empty { padding: 32px; border: 1px dashed var(--line-strong); border-radius: var(--radius); text-align: center; }
 .go-stores { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .go-store-card { display: block; text-decoration: none; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: var(--surface); transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .35s; }
-.go-store-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--yavayago) 60%, transparent); }
+/* translate, not transform: transform belongs to the pointer tilt (data-tilt). */
+.go-store-card:hover { translate: 0 -3px; border-color: color-mix(in srgb, var(--yavayago) 60%, transparent); }
 .go-store-card.closed { opacity: .72; }
 .go-store-photo { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(135deg, color-mix(in srgb, var(--yavayago) 55%, #2a1203), #1b0e05); display: grid; place-items: center; }
 .go-store-photo img { width: 100%; height: 100%; object-fit: cover; }

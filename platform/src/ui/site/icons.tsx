@@ -84,7 +84,7 @@ export function Icon({ name, className }: { name: IconName; className?: string }
  * display size), cut out of the owner's artwork with a transparent
  * background. The favicon, app icons and share card are made from the same file.
  */
-export function Mark({ size = 34 }: { size?: number }) {
+export function Mark({ size = 34, priority }: { size?: number; priority?: boolean }) {
   return (
     <img
       className="brand-mark"
@@ -95,6 +95,8 @@ export function Mark({ size = 34 }: { size?: number }) {
       height={size}
       alt=""
       decoding="async"
+      // The home page's seal spins into place on arrival; it must be there to be seen.
+      fetchPriority={priority ? 'high' : undefined}
     />
   );
 }
