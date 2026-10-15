@@ -1054,6 +1054,111 @@ td strong { color: var(--text); }
   .hero-bars, .hero-cinema, .cine-spot, .hero-flare { display: none; }
 }
 
+/* ── Epic: the finish over every page ──────────────────────────────────
+ * One layer of surface and light shared by the whole site: a night sky
+ * behind everything, glass that catches gold at its edges, headings struck
+ * in gold, and controls that glow when touched. Dark theme carries the full
+ * treatment; light theme keeps its calm and gets only the shapes.
+ */
+:root:not([data-theme="light"]) body {
+  background:
+    radial-gradient(1200px 700px at 85% -10%, rgba(60, 109, 240, 0.10), transparent 60%),
+    radial-gradient(900px 600px at -10% 30%, rgba(212, 175, 55, 0.07), transparent 60%),
+    radial-gradient(1000px 800px at 60% 110%, rgba(147, 102, 224, 0.08), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* Header: deeper glass, a gold seam of light along its edge. */
+.top { background: color-mix(in srgb, var(--bg) 72%, transparent); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); }
+:root:not([data-theme="light"]) .top { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35); }
+.top::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 70%, transparent) 30%, #fff1c1 50%, color-mix(in srgb, var(--accent) 70%, transparent) 70%, transparent);
+  background-size: 200% 100%; animation: seam 9s linear infinite; opacity: 0.65; }
+@keyframes seam { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.nav a { position: relative; transition: color 0.25s ease, background 0.25s ease; }
+.nav a::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 3px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, #b8912a, #f3dc8a, #b8912a); transform: scaleX(0); transition: transform 0.35s cubic-bezier(.2,.7,.2,1); }
+.nav a:hover::after, .nav a[aria-current="page"]::after { transform: scaleX(1); }
+.nav a[aria-current="page"]::after { box-shadow: 0 0 12px rgba(243, 220, 138, 0.7); }
+.brand .brand-mark { transition: transform 0.6s cubic-bezier(.2,.7,.2,1), filter 0.6s ease; }
+.brand:hover .brand-mark { transform: rotate(-12deg) scale(1.08); filter: drop-shadow(0 0 10px rgba(243, 220, 138, 0.6)); }
+.chip { transition: border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease; }
+.chip:hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+
+/* The ribbon: a slow gold current runs through it. */
+:root:not([data-theme="light"]) .ribbon {
+  background: linear-gradient(90deg, rgba(212,175,55,0.06), rgba(212,175,55,0.16), rgba(212,175,55,0.06));
+  background-size: 200% 100%; animation: seam 14s linear infinite;
+}
+
+/* Headings struck in gold on the dark. */
+:root:not([data-theme="light"]) .section-head h2, :root:not([data-theme="light"]) .page-hero:not(.with-photo) h1 {
+  background: linear-gradient(180deg, #ffffff 0%, #f8f1dc 55%, #e6cf8c 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.eyebrow { text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* Glass surfaces: cards, steps, tables, listings and shops. */
+:root:not([data-theme="light"]) :is(.card, .steps li, .table-wrap, .mk-card, .go-store-card) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01)) padding-box,
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(160deg, rgba(243, 220, 138, 0.38), rgba(255, 255, 255, 0.06) 35%, rgba(255, 255, 255, 0.03) 65%, rgba(147, 102, 224, 0.25)) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 20px 50px rgba(0, 0, 0, 0.28);
+}
+:root:not([data-theme="light"]) :is(.card, .mk-card, .go-store-card):hover {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 30px 70px rgba(0, 0, 0, 0.45), 0 0 40px color-mix(in srgb, var(--tone, var(--accent)) 18%, transparent);
+}
+.card .ico { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent), 0 0 28px color-mix(in srgb, var(--accent) 22%, transparent); }
+.steps li::before { box-shadow: 0 0 18px color-mix(in srgb, var(--tone, var(--accent)) 35%, transparent); }
+.table-wrap th { letter-spacing: 0.06em; }
+
+/* Paid placement keeps its gold frame, brighter than the rest. */
+:root:not([data-theme="light"]) :is(.mk-card, .go-store-card).is-featured {
+  background:
+    linear-gradient(180deg, rgba(243, 220, 138, 0.08), rgba(255, 255, 255, 0.01)) padding-box,
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(160deg, #f3dc8a, #b8912a 40%, rgba(243, 220, 138, 0.3) 70%, #f3dc8a) border-box;
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 18px 44px rgba(212, 175, 55, 0.16);
+}
+
+/* Buttons: gold with weight and light; outlined ones glow when touched. */
+.btn { transition: translate 0.35s cubic-bezier(.2,.7,.2,1), box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease, filter 0.2s ease; }
+.btn-gold { background-image: linear-gradient(180deg, #f6dc7c 0%, #d9b443 45%, #b8912a 100%); box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 -2px 0 rgba(0,0,0,0.15) inset, 0 10px 28px rgba(212, 175, 55, 0.32); text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3); }
+.btn-gold:hover { box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset, 0 14px 40px rgba(243, 220, 138, 0.5), 0 0 0 4px rgba(212, 175, 55, 0.15); }
+.btn-gold:active { translate: 0 1px; filter: brightness(0.96); }
+:root:not([data-theme="light"]) .btn-line { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(6px); }
+.btn-line:hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent), 0 0 26px color-mix(in srgb, var(--accent) 25%, transparent); }
+
+/* Fields: a gold ring of light when you type. */
+.site :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]), select, textarea) { transition: border-color 0.25s ease, box-shadow 0.25s ease; }
+.site :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]), select, textarea):focus {
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent), 0 0 24px color-mix(in srgb, var(--accent) 18%, transparent);
+  outline: none;
+}
+
+/* Badges glow in their own colour. */
+.badge-live { box-shadow: 0 0 14px rgba(63, 191, 127, 0.25); }
+.badge-live::before { animation: pulse-dot 2.4s ease-in-out infinite; }
+@keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 0 4px transparent; } }
+
+/* Footer: a horizon of gold above the night. */
+.foot { position: relative; }
+.foot::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: linear-gradient(90deg, transparent, #d4af37 50%, transparent); box-shadow: 0 0 22px 2px rgba(212, 175, 55, 0.35); }
+:root:not([data-theme="light"]) .foot { background: radial-gradient(800px 260px at 50% 0%, rgba(212, 175, 55, 0.08), transparent 70%), var(--bg-deep); }
+.foot .brand-mark { filter: drop-shadow(0 0 14px rgba(243, 220, 138, 0.35)); }
+.foot a { transition: color 0.2s ease, padding-left 0.25s ease; }
+.foot a:hover { padding-left: 4px; }
+
+/* Bottom dock on small screens: glass and a lit current item. */
+.dock a[aria-current="page"] { color: var(--accent); text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent); }
+
+/* Selection and scrollbar in the house colours. */
+::selection { background: rgba(212, 175, 55, 0.35); color: #fff; }
+:root:not([data-theme="light"]) { scrollbar-color: #3a3220 #050b16; }
+
 @media (prefers-reduced-motion: reduce) {
   .site *, .site *::before, .site *::after { animation: none !important; transition: none !important; }
 }
