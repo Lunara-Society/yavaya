@@ -135,8 +135,34 @@ async function requestPairing() {
 }
 
 // ── Sending, within the owner's mode and the two limits ──────────────────
+// ── Official WhatsApp API (coexistence, through Dualhook) ─────────────────
+// When the key is set, every send goes through the official API, and the
+// unofficial linked device is not used at all.
+const CLOUD_API_KEY = process.env.DUALHOOK_API_KEY || '';
+const CLOUD_BASE = 'https://api.dualhook.com/v25.0';
+const cloudOn = () => Boolean(CLOUD_API_KEY && (process.env.CLOUD_PHONE_NUMBER_ID || store.cloud?.phoneNumberId));
+const cloudPhoneId = () => process.env.CLOUD_PHONE_NUMBER_ID || store.cloud?.phoneNumberId;
+const cloudWabaId = () => process.env.CLOUD_WABA_ID || store.cloud?.wabaId;
+async function cloudCall(pathname, body, method = 'POST') {
+  const r = await fetch(`${CLOUD_BASE}/${pathname}`, { method, headers: { Authorization: `Bearer ${CLOUD_API_KEY}`, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`WhatsApp API: ${data?.error?.message || r.status}${data?.error?.code ? ` (code ${data.error.code})` : ''}`);
+  return data;
+}
+const digitsOf = (jid) => jid.split('@')[0].replace(/\D/g, '');
+/** Whether the person wrote in the last 24 hours: outside that window WhatsApp accepts only approved templates. */
+function windowOpen(jid) {
+  const last = (store.chats[jid] || []).filter((m) => !m.fromMe).at(-1);
+  return Boolean(last && Date.now() - last.at < 24 * 3600_000);
+}
+
 async function resolveChat(to) {
   if (to.includes('@')) return to;
+  if (cloudOn()) {
+    const digits = to.replace(/\D/g, '');
+    if (digits.length < 8) throw new Error('Use a full number with country code (e.g. 50588887777).');
+    return `${digits}@s.whatsapp.net`;
+  }
   const digits = to.replace(/\D/g, '');
   if (digits.length < 8) throw new Error('Use a chat id, or a full number with country code (e.g. 50588887777).');
   const [hit] = await sock.onWhatsApp(digits);
@@ -153,7 +179,7 @@ function usage(now = Date.now()) {
 function holdReason(jid, by) {
   if (store.settings.mode === 'paused') return 'sending is paused by the owner';
   if (by === 'claude' && store.settings.mode === 'approval') return 'the owner approves every message';
-  if (!state.connected) return 'WhatsApp is not linked right now';
+  if (!cloudOn() && !state.connected) return 'WhatsApp is not linked right now';
   const { hour, newToday } = usage();
   if (hour >= SEND_PER_HOUR) return `hourly limit reached (${SEND_PER_HOUR})`;
   if (!isGroup(jid) && !hasHistory(jid) && newToday >= NEW_CHATS_PER_DAY) return `limit of first messages to new people reached today (${NEW_CHATS_PER_DAY})`;
@@ -166,7 +192,25 @@ async function deliver(item, by) {
   const quoted = item.replyTo ? (store.chats[item.to] || []).find((m) => m.id === item.replyTo) : null;
   const options = quoted ? { quoted: { key: { remoteJid: item.to, id: quoted.id, fromMe: quoted.fromMe, participant: quoted.participant || undefined }, message: { conversation: quoted.text } } } : {};
   const newChat = !isGroup(item.to) && !hasHistory(item.to);
-  const result = await sock.sendMessage(item.to, content, options);
+  let result;
+  if (cloudOn()) {
+    const to = digitsOf(item.to);
+    const base = { messaging_product: 'whatsapp', recipient_type: 'individual', to };
+    let body;
+    if (item.template) body = { ...base, type: 'template', template: { name: item.template.name, language: { code: item.template.language || 'es' }, components: item.template.components || [] } };
+    else {
+      if (!windowOpen(item.to)) throw new Error('This person has not written in the last 24 hours: WhatsApp only allows an approved template. Use send_template.');
+      body = item.media
+        ? { ...base, type: item.media.kind, [item.media.kind]: { link: item.media.url, ...(item.text ? { caption: item.text } : {}), ...(item.media.kind === 'document' && item.media.fileName ? { filename: item.media.fileName } : {}) } }
+        : { ...base, type: 'text', text: { body: item.text, preview_url: true } };
+      if (quoted) body.context = { message_id: quoted.id };
+    }
+    const data = await cloudCall(`${cloudPhoneId()}/messages`, body);
+    result = { key: { id: data?.messages?.[0]?.id || null } };
+    rememberCloud(item.to, { id: result.key.id || crypto.randomUUID(), type: 'text', text: { body: item.template ? `[plantilla ${item.template.name}] ${item.text || ''}`.trim() : item.text || `[${item.media?.kind || 'mensaje'}]` } }, true, null);
+  } else {
+    result = await sock.sendMessage(item.to, content, options);
+  }
   store.sent.unshift({ at: Date.now(), to: item.to, name: nameOf(item.to), text: item.text || '', media: item.media?.kind || null, by, newChat, id: result?.key?.id || null });
   store.sent = store.sent.slice(0, 500);
   dirty = true;
@@ -202,7 +246,7 @@ function buildMcp() {
 
   tool('whatsapp_status', 'Whether the account is linked, the owner\'s sending mode, and how much of the hourly and new-chat limits is used.', {}, async () => {
     const { hour, newToday } = usage();
-    return { linked: state.connected, account: state.me, mode: store.settings.mode, sent_last_hour: `${hour}/${SEND_PER_HOUR}`, first_messages_today: `${newToday}/${NEW_CHATS_PER_DAY}`, drafts_waiting: store.drafts.filter((d) => d.status === 'waiting').length };
+    return { official_api: cloudOn() ? { phone_number_id: cloudPhoneId(), waba_id: cloudWabaId() || null, webhook_events: store.cloud?.events || 0 } : (CLOUD_API_KEY ? 'key set; waiting for the first webhook to learn the number id' : false), linked_device: state.connected, linked: cloudOn() || state.connected, account: state.me, mode: store.settings.mode, sent_last_hour: `${hour}/${SEND_PER_HOUR}`, first_messages_today: `${newToday}/${NEW_CHATS_PER_DAY}`, drafts_waiting: store.drafts.filter((d) => d.status === 'waiting').length };
   });
 
   tool('list_chats', 'Recent chats, newest first, with unread counts.', { limit: z.number().int().min(1).max(100).default(30) }, async ({ limit }) =>
@@ -267,6 +311,33 @@ function buildMcp() {
   tool('list_sent', 'What went out recently, and who sent it (Claude or the owner from the panel).', { limit: z.number().int().min(1).max(100).default(30) }, async ({ limit }) =>
     store.sent.slice(0, limit).map((s) => ({ at: new Date(s.at).toISOString(), to: s.name, by: s.by, media: s.media, text: s.text.slice(0, 200) })));
 
+  tool('list_templates', 'Approved and pending message templates (official API). A template is the only way to write first to someone who has not written in the last 24 hours.', {}, async () => {
+    if (!cloudOn() || !cloudWabaId()) throw new Error('The official API is not connected yet (the business account id arrives with the first webhook).');
+    const data = await cloudCall(`${cloudWabaId()}/message_templates?limit=100`, null, 'GET');
+    return (data.data || []).map((t) => ({ name: t.name, language: t.language, status: t.status, category: t.category, components: t.components }));
+  });
+
+  tool('create_template', 'Submit a message template to WhatsApp for approval (usually minutes to hours). The body may use {{1}}, {{2}}… placeholders, with one example each.', {
+    name: z.string().regex(/^[a-z0-9_]{1,512}$/, 'lowercase letters, digits and _ only'), category: z.enum(['MARKETING', 'UTILITY']), language: z.string().default('es'),
+    body: z.string().min(1).max(1024), body_examples: z.array(z.string()).default([]), footer: z.string().max(60).optional(),
+    buttons: z.array(z.object({ type: z.enum(['URL', 'QUICK_REPLY']), text: z.string().max(25), url: z.string().url().optional() })).max(3).optional(),
+  }, async ({ name, category, language, body, body_examples, footer, buttons }) => {
+    if (!cloudOn() || !cloudWabaId()) throw new Error('The official API is not connected yet.');
+    const components = [{ type: 'BODY', text: body, ...(body_examples.length ? { example: { body_text: [body_examples] } } : {}) }];
+    if (footer) components.push({ type: 'FOOTER', text: footer });
+    if (buttons?.length) components.push({ type: 'BUTTONS', buttons: buttons.map((b) => (b.type === 'URL' ? { type: 'URL', text: b.text, url: b.url } : { type: 'QUICK_REPLY', text: b.text })) });
+    const data = await cloudCall(`${cloudWabaId()}/message_templates`, { name, category, language, components });
+    return { submitted: true, id: data.id, status: data.status };
+  });
+
+  tool('send_template', 'Send an approved template to one person: the way to write first. values fill {{1}}, {{2}}… in the body.', {
+    to: z.string(), name: z.string(), language: z.string().default('es'), values: z.array(z.string()).default([]),
+  }, async ({ to, name, language, values }) => {
+    if (!cloudOn()) throw new Error('The official API is not connected.');
+    const components = values.length ? [{ type: 'body', parameters: values.map((v) => ({ type: 'text', text: v })) }] : [];
+    return sendOrHold({ to: await resolveChat(to), text: values.join(' · '), template: { name, language, components } });
+  });
+
   tool('list_drafts', 'Messages waiting on the owner, and what happened to earlier ones.', {}, async () =>
     store.drafts.slice(0, 50).map(({ id, name, text, status, reason }) => ({ id, to: name, status, reason, text: (text || '').slice(0, 200) })));
   return mcp;
@@ -319,6 +390,7 @@ app.post('/cloud/webhook/:key', cloudGuard, (req, res) => {
       for (const change of entry.changes || []) {
         const v = change.value || {};
         if (v.metadata?.phone_number_id) store.cloud.phoneNumberId = v.metadata.phone_number_id;
+        if (entry.id) store.cloud.wabaId = entry.id;
         for (const c of v.contacts || []) if (c.wa_id && c.profile?.name) store.names[`${c.wa_id}@s.whatsapp.net`] ||= c.profile.name;
         for (const m of v.messages || []) rememberCloud(`${m.from}@s.whatsapp.net`, m, false, store.names[`${m.from}@s.whatsapp.net`]);
         // What the owner sends from the Business app on the phone.
@@ -383,7 +455,7 @@ app.post('/panel/:token/draft/:id', guard, async (req, res) => {
   if (d && req.body.do === 'send') {
     // The owner's own press: the mode does not apply, the limits and the link still do.
     const reason = store.settings.mode === 'paused' ? null : holdReason(d.to, 'owner');
-    if (!state.connected) d.error = 'not linked';
+    if (!cloudOn() && !state.connected) d.error = 'not linked';
     else if (reason && !reason.startsWith('sending is paused')) d.error = reason;
     else {
       try { await deliver(d, 'owner'); d.status = 'sent'; d.sentAt = Date.now(); } catch (e) { d.status = 'failed'; d.error = e.message; }
@@ -401,4 +473,6 @@ app.listen(PORT, () => {
     console.log(`PRIVATE — Claude connector: ${host}/mcp/${TOKEN}`);
   }
 });
-connect().catch((e) => { console.error(e); process.exit(1); });
+// The unofficial linked device runs only when the official API is not set up
+// and it has not been switched off: WhatsApp removes such devices for outreach.
+if (!CLOUD_API_KEY && process.env.LINKED_DEVICE !== 'off') connect().catch((e) => { console.error(e); process.exit(1); });
