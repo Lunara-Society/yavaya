@@ -9,10 +9,11 @@ import { WORK_RULES } from '@/config/business-rules';
 import { WORK_FIELDS } from '@/config/work';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { getProfile } from '@/server/domains/work/service';
 import { saveProfileAction } from '../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -29,7 +30,7 @@ export default async function WorkProfilePage({ searchParams }: { searchParams: 
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const [profile, countries, [me]] = await Promise.all([getProfile(db(), userId), placeOptions(db(), locale), db().select({ yayId: users.yayId }).from(users).where(eq(users.id, userId)).limit(1)]);
+  const [profile, [me]] = await Promise.all([getProfile(db(), userId), db().select({ yayId: users.yayId }).from(users).where(eq(users.id, userId)).limit(1)]);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const next = query.next && /^[0-9a-f-]{36}$/i.test(query.next) ? query.next : null;
   const links = [...(profile?.portfolioLinks ?? []), '', '', ''].slice(0, WORK_RULES.maxPortfolioLinks);
@@ -86,20 +87,7 @@ export default async function WorkProfilePage({ searchParams }: { searchParams: 
           </fieldset>
           <label>
             {t('work.form.location')}
-            <select name="locationId" required defaultValue={profile?.locationId ?? ''}>
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={profile?.locationId} required />
           </label>
           <label>
             {t('services.provider.whatsapp')}

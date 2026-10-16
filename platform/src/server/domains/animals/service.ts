@@ -26,6 +26,7 @@ import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { insertMediaRows, markRemoved, type StoredImage } from '@/server/domains/media/service';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { notify } from '@/server/domains/notifications/service';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Animales: welfare first, adoption earned. See the schema for the three
@@ -227,6 +228,7 @@ export async function publishAnimal(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { species: params.input.species },
   });
+  await publishActivity(tx, { kind: 'animal_listed', district: 'animals', locationId: params.input.locationId, subject: { type: LISTING, id } });
   return id;
 }
 
@@ -380,6 +382,8 @@ export async function completeAdoption(tx: Executor, params: { rescuerUserId: st
     .returning({ applicantUserId: animalsApplications.applicantUserId });
   await applyRule(tx, { userId: application.applicantUserId, ruleKey: 'approved_animal_adoption', source: 'animals', idempotencyKey: `animals.adoption:${application.id}` });
   await recordAudit(tx, { actorType: 'user', actorUserId: params.rescuerUserId, action: 'animals.adoption_completed', subjectType: LISTING, subjectId: listing.id, district: 'animals', metadata: { applicationId: application.id, adopter: application.applicantUserId } });
+  // Where the animal was, never who took it home.
+  await publishActivity(tx, { kind: 'animal_adopted', district: 'animals', locationId: listing.locationId, subject: { type: LISTING, id: listing.id } });
   await notify(tx, [
     { userId: application.applicantUserId, category: 'animals', type: 'animals.adopted', titleKey: 'notify.animals.adopted', params: { name: listing.name }, href: `/animals/${listing.id}`, dedupeKey: `animals.adopted:${application.id}`, subjectId: listing.id },
     ...others.map((row) => ({ userId: row.applicantUserId, category: 'animals' as const, type: 'animals.listing_closed', titleKey: 'notify.animals.found_home', params: { name: listing.name }, href: '/animals', subjectId: listing.id })),

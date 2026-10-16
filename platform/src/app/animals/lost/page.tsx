@@ -6,8 +6,10 @@ import { SPECIES } from '@/config/animals';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { LostCard } from '@/ui/animals/lost-card';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { listLostFound, myLostFound } from '@/server/domains/animals/lost-found';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function LostFoundPage({ searchParams }: { searchParams: Promise<{ kind?: string; species?: string; place?: string; page?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const countries = await placeOptions(db(), locale);
-  const place = countries.some((country) => country.code === query.place) ? query.place : undefined;
+  const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const kind = query.kind === 'lost' || query.kind === 'found' ? query.kind : undefined;
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
   const [posts, mine] = await Promise.all([
@@ -32,7 +33,7 @@ export default async function LostFoundPage({ searchParams }: { searchParams: Pr
     const search = new URLSearchParams();
     if (next.kind) search.set('kind', next.kind);
     if (query.species) search.set('species', query.species);
-    if (place) search.set('place', place);
+    if (placeLink) search.set('place', placeLink);
     if (next.page && next.page > 1) search.set('page', String(next.page));
     const text = search.toString();
     return text ? `/animals/lost?${text}` : '/animals/lost';
@@ -95,14 +96,7 @@ export default async function LostFoundPage({ searchParams }: { searchParams: Pr
             </label>
             <label>
               <span className="sr-only">{t('animals.form.location')}</span>
-              <select name="place" defaultValue={place ?? ''}>
-                <option value="">{t('sanctuary.churches.any_place')}</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
+              <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
             </label>
             <button className="btn btn-line" type="submit">
               {t('sanctuary.churches.filter')}

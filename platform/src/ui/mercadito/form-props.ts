@@ -3,6 +3,7 @@ import type { MessageKey, Translator } from '@/i18n';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { LISTING_CATEGORIES, LISTING_CONDITIONS } from '@/server/domains/mercadito/rules';
 import type { ListingFormLabels } from './listing-form';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 /** Translated labels and option lists for the listing form. */
 export function listingFormProps(t: Translator, submit: string) {
@@ -27,6 +28,7 @@ export function listingFormProps(t: Translator, submit: string) {
   };
   return {
     labels,
+    placeLabels: placePickerLabels(t),
     maxPhotos: MERCADITO_RULES.maxPhotos,
     categories: LISTING_CATEGORIES.map((value) => ({ value, label: t(`mercadito.category.${value}` as MessageKey) })),
     conditions: LISTING_CONDITIONS.map((value) => ({ value, label: t(`mercadito.condition.${value}` as MessageKey) })),

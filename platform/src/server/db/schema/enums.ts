@@ -167,6 +167,12 @@ export const activityKindEnum = pgEnum('activity_kind', [
   'project_published',
   'cause_goal_reached',
   'member_joined',
+  'animal_listed',
+  'pet_lost',
+  'pet_found',
+  'church_joined',
+  'community_post_published',
+  'job_published',
 ]);
 
 // --- Payments ---------------------------------------------------------------

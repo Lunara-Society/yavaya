@@ -10,12 +10,13 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, moneyInput, waLink } from '@/ui/go/format';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { cityPoints, goFeatureDays, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { FeatureOffer } from '@/ui/promotion/feature-offer';
 import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, storeAnswerAction, storeCancelAction, storeFeatureAction, storeOpenAction, storeReadyAction } from '../actions';
 import { mapLabels } from '../labels';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -29,7 +30,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login?next=/yavayago/store');
-  const [store, countries, points] = await Promise.all([myStore(db(), userId), placeOptions(db(), locale), cityPoints(db())]);
+  const [store, points] = await Promise.all([myStore(db(), userId), cityPoints(db())]);
   const [items, orders, start] = await Promise.all([
     store ? storeMenu(db(), store.id, { includeUnavailable: true }) : Promise.resolve([]),
     store ? storeOrders(db(), userId) : Promise.resolve([]),
@@ -140,20 +141,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
       </label>
       <label>
         <span>{t('go.form.city')}</span>
-        <select name="locationId" required defaultValue={store?.locationId ?? ''}>
-          <option value="" disabled>
-            {t('mercadito.form.choose')}
-          </option>
-          {countries.map((country) => (
-            <optgroup key={country.code} label={country.name}>
-              {country.places.map((place) => (
-                <option key={place.id} value={place.id}>
-                  {place.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+        <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={store?.locationId} required />
       </label>
       <label>
         <span>{t('go.form.address')}</span>

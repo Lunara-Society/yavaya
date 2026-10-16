@@ -7,7 +7,6 @@ import { SANCTUARY_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { ChurchForm } from '@/ui/sanctuary/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { registerChurchAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +20,6 @@ export default async function RegisterChurchPage({ searchParams }: { searchParam
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const countries = await placeOptions(db(), locale);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
@@ -41,7 +39,7 @@ export default async function RegisterChurchPage({ searchParams }: { searchParam
             {t(error as MessageKey, { limit: SANCTUARY_RULES.maxChurchesPerOwner, min: SANCTUARY_RULES.descriptionMinLength, max: SANCTUARY_RULES.descriptionMaxLength })}
           </p>
         ) : null}
-        <ChurchForm t={t} countries={countries} action={registerChurchAction} />
+        <ChurchForm t={t} action={registerChurchAction} />
       </div>
     </SiteShell>
   );

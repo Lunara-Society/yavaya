@@ -6,9 +6,10 @@ import type { MessageKey } from '@/i18n';
 import { WORK_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { EMPLOYER_KINDS, getEmployer } from '@/server/domains/work/service';
 import { saveEmployerAction } from '../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export default async function EmployerPage({ searchParams }: { searchParams: Pro
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const [employer, countries] = await Promise.all([getEmployer(db(), userId), placeOptions(db(), locale)]);
+  const employer = await getEmployer(db(), userId);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const kind = query.kind === 'business' || query.kind === 'person' ? query.kind : (employer?.kind ?? 'business');
   const status = employer?.status ?? null;
@@ -92,20 +93,7 @@ export default async function EmployerPage({ searchParams }: { searchParams: Pro
               </label>
               <label>
                 {t('work.form.location')}
-                <select name="locationId" required defaultValue={employer?.locationId ?? ''}>
-                  <option value="" disabled>
-                    {t('mercadito.form.choose')}
-                  </option>
-                  {countries.map((country) => (
-                    <optgroup key={country.code} label={country.name}>
-                      {country.places.map((place) => (
-                        <option key={place.id} value={place.id}>
-                          {place.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={employer?.locationId} required />
               </label>
               <label>
                 {t('services.provider.whatsapp')}

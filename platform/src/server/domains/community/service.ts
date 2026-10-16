@@ -22,6 +22,7 @@ import { applyRule } from '@/server/domains/reputation/service';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { dayKey, notify } from '@/server/domains/notifications/service';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Community: the town square — local help, the prayer wall, family support.
@@ -122,6 +123,16 @@ export async function createPost(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { kind: input.kind, anonymous },
   });
+  // Asking for or offering help is news for the town; prayers and family support are not
+  // announced anywhere, not even without a name.
+  if (!DISCREET_KINDS.includes(input.kind)) {
+    await publishActivity(tx, {
+      kind: 'community_post_published',
+      district: 'community',
+      locationId: input.locationId,
+      subject: { type: 'community_post', id: postId },
+    });
+  }
   return postId;
 }
 

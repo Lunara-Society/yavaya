@@ -714,6 +714,60 @@ whatever is featured carries a "Destacado" label.
 **Not built yet:** priority placement for professionals in Servicios needs
 a public directory of professionals first, which does not exist yet.
 
+## Places, the location bar and live messages
+
+**Places.** 2,162 cities and towns across the seven launch countries, from
+GeoNames (licence CC BY 4.0; attribution is in the site footer and in
+`src/server/db/seed/places-data.ts`). The import includes every municipal
+seat, plus every other populated place with at least 1,000 inhabitants.
+Each row carries its GeoNames population and coordinates. Operations can
+deactivate a place, or add one, in the `locations` table.
+
+- **Data caveats.** Population figures are GeoNames' and of uneven age, and
+  some towns have none. El Salvador's places follow its 2024 municipal
+  reorganisation.
+- **Size tiers** (`PLACE_RULES.sizeTiers`: large / medium / small city and
+  town) are a reading aid in the picker only. They set no price, limit or
+  permission. The thresholds (250k / 75k for cities, 10k / 5k for towns) are
+  a judgement, not specification.
+
+**Location bar.** The place chosen in the header is stored in a cookie,
+`yav_place`, holding the place code. It is a browsing preference, not a
+claim about where someone is.
+
+- Every district list defaults to that place, and `?place=all` overrides it.
+- "Use my location" rounds the browser's position to about 1 km, sends it
+  once to `/api/places?near=`, and keeps only the nearest town. The position
+  itself is never stored.
+
+**Live messages.** These are the rotating messages at the bottom of the
+screen, and they show real `activity_events` only. When nothing has
+happened, nothing is shown. The pacing (`LIVE_FEED_RULES`) is a judgement:
+
+| Setting | Value |
+|---|---|
+| First message after the page opens | 8 s |
+| Time each message stays on screen | 7 s |
+| Gap between messages | 25 s when busy, 50 s when quiet |
+| A seen message may repeat after | 30 min |
+| Refetch interval | 2 min |
+| "Pausar" lasts | 45 min |
+
+- The "En vivo" pill brings the messages back at any time. Pausing and
+  seen-state are kept in that browser's localStorage.
+- The messages never appear in Espacio Violeta, in administration or in
+  sign-in.
+- **What is announced:**
+  - Mercadito listings.
+  - Service requests, except in sensitive categories.
+  - Jobs and projects.
+  - Animals listed, adopted, lost and found.
+  - First approval of a YavayaGo store.
+  - Approval of a church.
+  - Community requests and offers of help.
+- **Never announced:** prayers, family support, anything from Espacio
+  Violeta, or any person's name.
+
 ## IP geolocation — `GEOIP_PROVIDER`
 
 **Needed for:** suggesting a country and city on first visit.

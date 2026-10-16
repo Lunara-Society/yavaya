@@ -9,12 +9,12 @@ import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import {
   getWhatsapp,
   listSavedSearches,
-  placeOptions,
   sellerListings,
   type SavedSearch,
 } from '@/server/domains/mercadito/service';
 import type { MessageKey } from '@/i18n';
 import { deleteSavedSearchAction } from '../actions';
+import { placeByCode } from '@/server/domains/geography/places';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,13 +28,19 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
 
-  const [listings, whatsapp, saved, countries] = await Promise.all([
+  const [listings, whatsapp, saved] = await Promise.all([
     sellerListings(db(), userId, locale),
     getWhatsapp(db(), userId),
     listSavedSearches(db(), userId),
-    placeOptions(db(), locale),
   ]);
-  const countryName = (code: string | null) => countries.find((country) => country.code === code)?.name ?? null;
+  const placeNames = new Map(
+    await Promise.all(
+      [...new Set(saved.map((search) => search.placeCode).filter((code): code is string => Boolean(code)))].map(
+        async (code) => [code, (await placeByCode(db(), code, locale))?.name ?? null] as const,
+      ),
+    ),
+  );
+  const placeName = (code: string | null) => (code ? placeNames.get(code) ?? null : null);
   const searchHref = (search: SavedSearch) => {
     const params = new URLSearchParams();
     if (search.query) params.set('q', search.query);
@@ -83,7 +89,7 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
                       {[
                         search.query ? `“${search.query}”` : null,
                         search.category ? t(`mercadito.category.${search.category}` as MessageKey) : null,
-                        countryName(search.placeCode ?? null),
+                        placeName(search.placeCode ?? null),
                       ]
                         .filter(Boolean)
                         .join(' · ') || t('mercadito.saved.anything')}

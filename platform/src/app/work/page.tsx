@@ -7,8 +7,10 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { DistrictScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/work/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { getProfile, listPosts } from '@/server/domains/work/service';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,8 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function WorkBoard({ searchParams }: { searchParams: Promise<{ field?: string; kind?: string; place?: string; remote?: string; page?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const countries = await placeOptions(db(), locale);
-  const place = countries.some((country) => country.code === query.place) ? query.place : undefined;
+  const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const field = (WORK_FIELDS as readonly string[]).includes(query.field ?? '') ? query.field : undefined;
   const kind = query.kind === 'job' || query.kind === 'project' ? query.kind : undefined;
   const remote = query.remote === '1';
@@ -32,7 +33,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
     const search = new URLSearchParams();
     if (field) search.set('field', field);
     if (kind) search.set('kind', kind);
-    if (place) search.set('place', place);
+    if (placeLink) search.set('place', placeLink);
     if (remote) search.set('remote', '1');
     if (to > 1) search.set('page', String(to));
     const text = search.toString();
@@ -101,14 +102,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           </label>
           <label>
             <span className="sr-only">{t('work.form.location')}</span>
-            <select name="place" defaultValue={place ?? ''}>
-              <option value="">{t('sanctuary.churches.any_place')}</option>
-              {countries.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
+            <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
           </label>
           <label className="wk-check">
             <input type="checkbox" name="remote" value="1" defaultChecked={remote} /> {t('work.filter.remote')}

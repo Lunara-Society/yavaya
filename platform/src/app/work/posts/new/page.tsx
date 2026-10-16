@@ -8,10 +8,11 @@ import { WORK_RULES } from '@/config/business-rules';
 import { EMPLOYMENT_TYPES, PLACE_MODES, WORK_FIELDS } from '@/config/work';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { getEmployer, openPostCount, workPricingRules } from '@/server/domains/work/service';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { publishPostAction } from '../../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -28,8 +29,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
   const kind = query.kind === 'project' ? 'project' : 'job';
-  const [countries, employer, open, pricing, cost, balance] = await Promise.all([
-    placeOptions(db(), locale),
+  const [employer, open, pricing, cost, balance] = await Promise.all([
     getEmployer(db(), userId),
     openPostCount(db(), userId),
     workPricingRules(db()),
@@ -148,20 +148,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
           <p className="muted">{employer.kind === 'business' ? t('work.employer.posts_as_business', { name: employer.name }) : t('work.employer.posts_as_person')}</p>
           <label>
             {t('work.form.location')}
-            <select name="locationId" required defaultValue="">
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} required />
           </label>
           <label>
             {t('work.form.place_mode')}

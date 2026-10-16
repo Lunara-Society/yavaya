@@ -8,6 +8,14 @@ import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
 import { Icon, Mark, TokenCoin } from './icons';
 import { Md } from './md';
+import { LocationBar } from './location-bar';
+import { LiveTicker } from './live-ticker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { db } from '@/server/db/client';
+import { placeCountries } from '@/server/domains/geography/places';
+import { chosenPlace, PLACE_COOKIE } from '@/server/place-choice';
+import { resolveLocale } from '@/server/preferences';
+import { LIVE_FEED_RULES, PLACE_RULES } from '@/config/business-rules';
 
 /**
  * `unread` is the count of unread notifications, shown on the bell;
@@ -22,7 +30,7 @@ export type ShellMember = { yayId: string; displayName: string; unread?: number;
  * Sign-in and account links come from the real session. The ribbon says
  * plainly what is open and what is not; it is content, not decoration.
  */
-export function SiteShell({
+export async function SiteShell({
   c,
   t,
   language,
@@ -46,6 +54,12 @@ export function SiteShell({
   children: ReactNode;
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
+  const locale = await resolveLocale();
+  // The location bar is a convenience: if places cannot be read, the page still renders without a choice.
+  const [place, countries] = await Promise.all([
+    chosenPlace(locale).catch(() => null),
+    placeCountries(db(), locale).catch(() => []),
+  ]);
   const primary: PageId[] = ['districts', 'trust', 'reputation', 'tokens', 'status'];
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],
@@ -75,6 +89,25 @@ export function SiteShell({
             ))}
           </nav>
           <div className="tools">
+            <LocationBar
+              labels={{
+                label: t('place.bar.label'),
+                everywhere: t('place.bar.everywhere'),
+                title: t('place.bar.title'),
+                intro: t('place.bar.intro'),
+                useLocation: t('place.bar.use_location'),
+                locating: t('place.bar.locating'),
+                locationFailed: t('place.bar.location_failed'),
+                countries: t('place.bar.countries'),
+                close: t('place.bar.close'),
+                privacy: t('place.bar.privacy'),
+                picker: placePickerLabels(t),
+              }}
+              initial={place ? { code: place.code, name: place.name, context: place.context } : null}
+              countries={countries.map((country) => ({ code: country.code, name: country.name }))}
+              cookieName={PLACE_COOKIE}
+              maxAgeSeconds={PLACE_RULES.choiceCookieSeconds}
+            />
             {member ? (
               <>
                 {/* The fastest way to tokens: the balance, always in sight, one tap from the packages. */}
@@ -173,8 +206,25 @@ export function SiteShell({
             <span>{c.ui.footer.honest}</span>
           </div>
           <p className="foot-note">{c.ui.footer.imagery}</p>
+          <p className="foot-note">{t('place.attribution')}</p>
         </div>
       </footer>
+
+      <LiveTicker
+        place={place?.code ?? null}
+        rules={LIVE_FEED_RULES}
+        labels={{
+          label: t('live.label'),
+          region: t('live.region'),
+          snooze: t('live.snooze'),
+          resume: t('live.resume'),
+          close: t('live.close'),
+          nearby: t('live.nearby'),
+          agoNow: t('live.ago_now'),
+          agoMinutes: t('live.ago_minutes', { count: '{count}' }),
+          agoHours: t('live.ago_hours', { count: '{count}' }),
+        }}
+      />
 
       <nav className="dock" aria-label={c.ui.dockLabel}>
         <Link href="/" aria-current={cur('home')}>

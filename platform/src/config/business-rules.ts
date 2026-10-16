@@ -537,3 +537,51 @@ export const GO_RULES = {
   /** Days a store stays featured ("Destacado") after one purchase. */
   featureDays: 7,
 } as const;
+
+/**
+ * Places and the live feed.
+ *
+ * Size tiers are a reading aid in the place picker ("ciudad grande",
+ * "pueblo pequeño"), drawn from the GeoNames population figure. They decide
+ * nothing: no price, limit or permission depends on how big a town is.
+ *
+ * The live-feed pacing is a judgement about attention, not a specification:
+ * often enough that something new is seen, rarely enough that it never
+ * becomes noise. It is flagged in CONFIGURATION.md.
+ */
+export const PLACE_RULES = {
+  /** Lower population bound of each tier, largest first; a place takes the first it reaches. */
+  sizeTiers: [
+    { tier: 'city_big', level: 'city', minPopulation: 250_000 },
+    { tier: 'city_medium', level: 'city', minPopulation: 75_000 },
+    { tier: 'city_small', level: 'city', minPopulation: 0 },
+    { tier: 'town_big', level: 'town', minPopulation: 10_000 },
+    { tier: 'town_medium', level: 'town', minPopulation: 5_000 },
+    { tier: 'town_small', level: 'town', minPopulation: 0 },
+  ],
+  searchMinChars: 2,
+  searchMaxResults: 12,
+  /** The place list changes only when operations add places; minutes it is held in memory. */
+  indexCacheMinutes: 10,
+  /** Seconds a stored location-bar choice lasts in the visitor's browser. */
+  choiceCookieSeconds: 180 * 24 * 60 * 60,
+} as const;
+
+export const LIVE_FEED_RULES = {
+  /** Events older than this are no longer "new". */
+  windowHours: 24,
+  maxItems: 12,
+  /** Seconds after a page opens before the first message. */
+  firstDelaySeconds: 8,
+  /** Seconds a message stays on screen. */
+  showSeconds: 7,
+  /** Gap between messages: short when there is a lot happening, long when there is little. */
+  gapSecondsBusy: 25,
+  gapSecondsQuiet: 50,
+  /** A message already seen may come back after this long, if nothing newer has replaced it. */
+  repeatAfterMinutes: 30,
+  /** How often the browser asks for news while the page stays open. */
+  refreshSeconds: 120,
+  /** "Pausar" holds messages for this long; the "En vivo" pill turns them back on at any time. */
+  snoozeMinutes: 45,
+} as const;

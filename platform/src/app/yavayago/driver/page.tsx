@@ -10,10 +10,11 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, waLink } from '@/ui/go/format';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { availableOrders, driverCurrentOrder, myDriver } from '@/server/domains/go/service';
 import { claimAction, deliveredAction, driverOnlineAction, pickedUpAction, releaseAction } from '../actions';
 import { mapLabels } from '../labels';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -27,7 +28,7 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login?next=/yavayago/driver');
-  const [driver, countries] = await Promise.all([myDriver(db(), userId), placeOptions(db(), locale)]);
+  const driver = await myDriver(db(), userId);
   const approved = driver?.status === 'approved';
   const [current, available] = await Promise.all([approved ? driverCurrentOrder(db(), userId) : Promise.resolve(null), approved && driver.online ? availableOrders(db(), userId) : Promise.resolve([])]);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
@@ -213,20 +214,7 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
               </label>
               <label>
                 <span>{t('go.form.city')}</span>
-                <select name="locationId" required defaultValue={driver?.locationId ?? ''}>
-                  <option value="" disabled>
-                    {t('mercadito.form.choose')}
-                  </option>
-                  {countries.map((country) => (
-                    <optgroup key={country.code} label={country.name}>
-                      {country.places.map((place) => (
-                        <option key={place.id} value={place.id}>
-                          {place.label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={driver?.locationId} required />
               </label>
               <label>
                 <span>{t('go.form.whatsapp')}</span>

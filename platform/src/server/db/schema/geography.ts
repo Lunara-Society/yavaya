@@ -45,6 +45,12 @@ export const locations = pgTable(
     /** Materialised path of ancestor codes, root first. Enables subtree queries. */
     path: text('path').array().notNull().default([]),
     depth: integer('depth').notNull().default(0),
+    /**
+     * Approximate population of a settlement (GeoNames, CC BY 4.0), used to
+     * rank search results and to describe a place as a big city or a small
+     * town. Null where no figure is published; never shown as a statistic.
+     */
+    population: integer('population'),
     latitude: doublePrecision('latitude'),
     longitude: doublePrecision('longitude'),
     timezone: text('timezone'),

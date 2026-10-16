@@ -9,7 +9,6 @@ import { SANCTUARY_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { ChurchForm } from '@/ui/sanctuary/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { getChurch } from '@/server/domains/sanctuary/service';
 import { updateChurchAction } from '../../../actions';
 
@@ -26,7 +25,6 @@ export default async function EditChurchPage({ params, searchParams }: { params:
   const church = await getChurch(db(), { churchId: id, viewerId: userId, locale });
   if (!church || church.ownerUserId !== userId) notFound();
   const [row] = await db().select({ locationId: sanctuaryChurches.locationId }).from(sanctuaryChurches).where(eq(sanctuaryChurches.id, church.id));
-  const countries = await placeOptions(db(), locale);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
@@ -47,7 +45,7 @@ export default async function EditChurchPage({ params, searchParams }: { params:
         ) : null}
         <ChurchForm
           t={t}
-          countries={countries}
+         
           action={updateChurchAction}
           churchId={church.id}
           initial={{

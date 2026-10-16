@@ -12,6 +12,7 @@ import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { insertMediaRows, markRemoved, type StoredImage } from '@/server/domains/media/service';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { dayKey, notify } from '@/server/domains/notifications/service';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Lost and found. Any active member may post — a lost dog cannot wait for a
@@ -111,6 +112,7 @@ export async function publishLostFound(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { species: input.species },
   });
+  await publishActivity(tx, { kind: input.kind === 'found' ? 'pet_found' : 'pet_lost', district: 'animals', locationId: input.locationId, subject: { type: SUBJECT, id } });
 
   if (input.kind === 'found') {
     // Someone may be looking for exactly this animal.

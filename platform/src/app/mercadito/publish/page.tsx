@@ -9,7 +9,7 @@ import { ListingForm } from '@/ui/mercadito/listing-form';
 import { listingFormProps } from '@/ui/mercadito/form-props';
 import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
-import { getWhatsapp, openListingCount, placeOptions, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
+import { getWhatsapp, openListingCount, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 
 export const dynamic = 'force-dynamic';
@@ -61,12 +61,11 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
     return shell(<p className="mk-banner">{t('mercadito.publish.unavailable')}</p>);
   }
 
-  const [standing, balance, cost, whatsapp, countries, open, pricing] = await Promise.all([
+  const [standing, balance, cost, whatsapp, open, pricing] = await Promise.all([
     sellerStanding(db(), userId),
     getBalance(db(), userId),
     actionCost(db(), 'mercadito.publish_listing'),
     getWhatsapp(db(), userId),
-    placeOptions(db(), locale),
     openListingCount(db(), userId),
     pricingRules(db()),
   ]);
@@ -116,7 +115,7 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
           </noscript>
           {/* A fresh id per visit names this listing before it exists, so a
               retried submission cannot publish (or charge) twice. */}
-          <ListingForm mode="create" listingId={randomUUID()} countries={countries} {...form} />
+          <ListingForm mode="create" listingId={randomUUID()} {...form} />
         </>
       )}
     </>,

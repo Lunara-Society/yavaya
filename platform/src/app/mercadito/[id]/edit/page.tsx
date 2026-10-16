@@ -6,7 +6,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { ListingForm } from '@/ui/mercadito/listing-form';
 import { listingFormProps } from '@/ui/mercadito/form-props';
 import { priceInputValue } from '@/ui/mercadito/format';
-import { getListing, placeOptions } from '@/server/domains/mercadito/service';
+import { getListing } from '@/server/domains/mercadito/service';
 import { OPEN_STATUSES } from '@/server/domains/mercadito/rules';
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +29,6 @@ export default async function EditListingPage({ params }: { params: Promise<{ id
   if (!listing || listing.seller.userId !== userId) notFound();
   if (!(OPEN_STATUSES as readonly string[]).includes(listing.status)) redirect(`/mercadito/${id}`);
 
-  const countries = await placeOptions(db(), locale);
   const form = listingFormProps(t, t('mercadito.form.submit_edit'));
 
   return (
@@ -46,7 +45,7 @@ export default async function EditListingPage({ params }: { params: Promise<{ id
         <ListingForm
           mode="edit"
           listingId={listing.id}
-          countries={countries}
+         
           initial={{
             title: listing.title,
             description: listing.description,

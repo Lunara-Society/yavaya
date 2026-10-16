@@ -7,8 +7,11 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { DistrictScene } from '@/ui/site/art';
 import { money } from '@/ui/go/format';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { browseStores, myDriver, myStore } from '@/server/domains/go/service';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { subtreeIds } from '@/server/domains/geography/service';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,20 +23,23 @@ export async function generateMetadata(): Promise<Metadata> {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** YavayaGo: stores near you that deliver, by drivers Yavaya checked. Public to browse. */
-export default async function YavayaGo({ searchParams }: { searchParams: Promise<{ city?: string; category?: string }> }) {
+export default async function YavayaGo({ searchParams }: { searchParams: Promise<{ city?: string; place?: string; category?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const countries = await placeOptions(db(), locale);
+  // `city` (a location id) is what older links carry; `place` is any town, department or country.
   const city = query.city && UUID.test(query.city) ? query.city : null;
+  const { code: place, link: placeLink } = city ? { code: undefined, link: undefined } : await browsePlace(query.place, locale);
+  const locationIds = city ? [city] : place ? await subtreeIds(db(), place) : null;
   const category = (GO_CATEGORIES as readonly string[]).includes(query.category ?? '') ? query.category! : null;
   const [stores, store, driver] = await Promise.all([
-    browseStores(db(), { locationIds: city ? [city] : null, category }),
+    browseStores(db(), { locationIds, category }),
     userId ? myStore(db(), userId) : Promise.resolve(null),
     userId ? myDriver(db(), userId) : Promise.resolve(null),
   ]);
   const link = (nextCategory: string | null) => {
     const search = new URLSearchParams();
     if (city) search.set('city', city);
+    if (placeLink) search.set('place', placeLink);
     if (nextCategory) search.set('category', nextCategory);
     const text = search.toString();
     return text ? `/yavayago?${text}` : '/yavayago';
@@ -81,18 +87,7 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
         <form className="go-filters" action="/yavayago">
           <label>
             <span className="sr-only">{t('go.home.city')}</span>
-            <select name="city" defaultValue={city ?? ''}>
-              <option value="">{t('go.home.all_cities')}</option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
           </label>
           {category ? <input type="hidden" name="category" value={category} /> : null}
           <button className="btn btn-line" type="submit">

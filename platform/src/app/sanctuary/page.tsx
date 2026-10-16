@@ -5,8 +5,10 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { PageHero } from '@/ui/site/blocks';
 import { ChurchRow, WordCard } from '@/ui/sanctuary/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { followedChurches, listChurches, listDevotionals } from '@/server/domains/sanctuary/service';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,8 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SanctuaryPage({ searchParams }: { searchParams: Promise<{ q?: string; place?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const countries = await placeOptions(db(), locale);
-  const place = countries.some((country) => country.code === query.place) ? query.place : undefined;
+  const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const search = (query.q ?? '').trim().slice(0, 80) || undefined;
 
   const [words, churches, mine, mineWords] = await Promise.all([
@@ -82,14 +83,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
               </label>
               <label>
                 <span className="sr-only">{t('sanctuary.churches.place')}</span>
-                <select name="place" defaultValue={place ?? ''}>
-                  <option value="">{t('sanctuary.churches.any_place')}</option>
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
+                <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
               </label>
               <button className="btn btn-line" type="submit">
                 {t('sanctuary.churches.filter')}

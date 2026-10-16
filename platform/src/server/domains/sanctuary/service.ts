@@ -22,6 +22,7 @@ import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { notify } from '@/server/domains/notifications/service';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Sanctuary: a space of faith inside Community.
@@ -396,6 +397,9 @@ export async function reviewChurch(
     district: 'sanctuary',
     metadata: { ownerUserId: church.ownerUserId },
   });
+  if (status === 'approved') {
+    await publishActivity(tx, { kind: 'church_joined', district: 'sanctuary', locationId: church.locationId, subject: { type: SUBJECT, id: church.id } });
+  }
   await notify(tx, [
     {
       userId: church.ownerUserId,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CountryOption } from '@/server/domains/mercadito/service';
+import { PlacePicker, type PlacePickerLabels } from '@/ui/components/place-picker';
 import { MERCADITO_RULES } from '@/config/business-rules';
 
 /**
@@ -62,7 +62,7 @@ export function ListingForm({
   labels,
   categories,
   conditions,
-  countries,
+  placeLabels,
   initial,
   maxPhotos,
 }: {
@@ -71,7 +71,7 @@ export function ListingForm({
   labels: ListingFormLabels;
   categories: Array<{ value: string; label: string }>;
   conditions: Array<{ value: string; label: string }>;
-  countries: CountryOption[];
+  placeLabels: PlacePickerLabels;
   initial?: {
     title: string;
     description: string;
@@ -87,20 +87,19 @@ export function ListingForm({
   const [photos, setPhotos] = useState<Photo[]>(
     () => initial?.photoIds.map((mediaId) => ({ key: mediaId, kind: 'existing' as const, mediaId })) ?? [],
   );
-  const [locationId, setLocationId] = useState(initial?.locationId ?? '');
+  // The currency of the chosen place's country; undefined until a saved place has been looked up.
+  const [placeCurrency, setPlaceCurrency] = useState<string | null | undefined>(initial?.locationId ? undefined : null);
   const [currency, setCurrency] = useState(initial?.currency ?? '');
   const [phase, setPhase] = useState<'idle' | 'preparing' | 'submitting'>('idle');
   const [error, setError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const errorBox = useRef<HTMLDivElement>(null);
 
-  const countryCurrency = useMemo(() => {
-    for (const country of countries) {
-      if (country.places.some((place) => place.id === locationId)) return country.currencyCode;
-    }
-    return null;
-  }, [countries, locationId]);
-  const currencies = countryCurrency ? [...new Set([countryCurrency, 'USD'])] : ['USD'];
+  const currencies = useMemo(() => {
+    // While a saved place is still being looked up, keep the saved currency rather than resetting it.
+    if (placeCurrency === undefined) return [...new Set([initial?.currency ?? 'USD', 'USD'])];
+    return placeCurrency ? [...new Set([placeCurrency, 'USD'])] : ['USD'];
+  }, [placeCurrency, initial?.currency]);
 
   // Moving the listing to another country resets a currency that no longer applies.
   useEffect(() => {
@@ -249,32 +248,19 @@ export function ListingForm({
       <div className="row">
         <label>
           {labels.location}
-          <select
+          <PlacePicker
             name="locationId"
+            labels={placeLabels}
+            initial={initial?.locationId}
             required
-            value={locationId}
-            onChange={(event) => {
-              const next = event.currentTarget.value;
-              setLocationId(next);
-              // Buyers there price in the local currency first; dollars stay one click away.
-              const country = countries.find((option) => option.places.some((place) => place.id === next));
-              if (country) setCurrency(country.currencyCode);
-            }}
             disabled={busy}
-          >
-            <option value="" disabled>
-              {labels.choose}
-            </option>
-            {countries.map((country) => (
-              <optgroup key={country.code} label={country.name}>
-                {country.places.map((place) => (
-                  <option key={place.id} value={place.id}>
-                    {place.label}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+            onLoad={(place) => setPlaceCurrency(place?.currencyCode ?? null)}
+            onChange={(place) => {
+              setPlaceCurrency(place?.currencyCode ?? null);
+              // Buyers there price in the local currency first; dollars stay one click away.
+              if (place) setCurrency(place.currencyCode);
+            }}
+          />
         </label>
         <label>
           {labels.price}

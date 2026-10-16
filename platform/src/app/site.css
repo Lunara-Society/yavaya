@@ -1811,3 +1811,119 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 .go-review-photos figcaption { font-size: .8rem; color: var(--text-3); text-align: center; }
 .go-review-store-photo { width: 100%; max-height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
 .maplibregl-ctrl-attrib { font-size: 10px; }
+
+/* ── Places: the picker, the location bar ─────────────────────────────── */
+.place-picker { position: relative; width: 100%; min-width: 220px; }
+.place-picker .pp-field { position: relative; display: flex; align-items: center; }
+.place-picker .pp-pin { position: absolute; left: 12px; width: 18px; height: 18px; color: var(--accent); pointer-events: none; }
+.place-picker input[type="text"] {
+  width: 100%; min-height: 44px; padding: 8px 40px 8px 38px; font: inherit; font-weight: 600;
+  background: var(--surface); color: var(--text); border: 1px solid var(--line-strong); border-radius: 10px;
+}
+.place-picker input[type="text"]::placeholder { color: var(--text-3); font-weight: 500; }
+.place-picker .pp-context {
+  position: absolute; right: 40px; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 0.76rem; font-weight: 600; color: var(--text-3); pointer-events: none;
+}
+.place-picker .pp-clear {
+  position: absolute; right: 6px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent;
+  color: var(--text-3); font-size: 1.3rem; line-height: 1; cursor: pointer;
+}
+.place-picker .pp-clear:hover { color: var(--text); background: var(--surface-2); }
+.place-picker .pp-list {
+  position: absolute; z-index: 80; left: 0; right: 0; top: calc(100% + 6px); max-height: min(360px, 60vh); overflow: auto;
+  margin: 0; padding: 6px; list-style: none; background: var(--surface); border: 1px solid var(--line-strong);
+  border-radius: 14px; box-shadow: var(--shadow);
+}
+.place-picker .pp-list li[role="option"] { display: grid; gap: 1px; padding: 9px 12px; border-radius: 10px; cursor: pointer; }
+.place-picker .pp-list li.is-active { background: var(--accent-soft); }
+.place-picker .pp-name { font-weight: 700; color: var(--text); }
+.place-picker .pp-meta { font-size: 0.78rem; color: var(--text-3); }
+.place-picker .pp-head { padding: 8px 12px 4px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); }
+.place-picker .pp-empty { padding: 10px 12px; color: var(--text-3); font-size: 0.9rem; }
+.mk-bar .place-picker, .go-filters .place-picker { flex: 1 1 240px; }
+
+.locbar { position: relative; }
+.locbar-chip { max-width: 180px; }
+.locbar-chip .locbar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.locbar-chip.is-set { color: var(--text); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.locbar-chip svg { color: var(--accent); flex: none; }
+.locbar-panel {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 90; width: min(380px, calc(100vw - 24px));
+  display: grid; gap: 10px; padding: 16px; background: var(--surface); border: 1px solid var(--line-strong);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.locbar-top { display: flex; align-items: center; justify-content: space-between; }
+.locbar-top strong { font-size: 1.05rem; }
+.locbar-x { width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--text-3); font-size: 1.4rem; cursor: pointer; }
+.locbar-x:hover { background: var(--surface-2); color: var(--text); }
+.locbar-intro, .locbar-privacy { margin: 0; font-size: 0.86rem; color: var(--text-2); }
+.locbar-privacy { font-size: 0.76rem; color: var(--text-3); }
+.locbar-gps { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; }
+.locbar-gps svg { width: 18px; height: 18px; }
+.locbar-fail { margin: 0; font-size: 0.84rem; color: #f0a35e; }
+.locbar-countries { display: flex; flex-wrap: wrap; gap: 6px; }
+.locbar-countries .chip { min-height: 36px; font-size: 0.78rem; }
+.locbar-countries .chip.is-on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.locbar .menu-label { padding: 4px 0 0; }
+@media (max-width: 999px) {
+  /* On a phone the bar is a pin first; the name shows once a place is chosen. */
+  .locbar-chip { max-width: 128px; padding: 0 10px; position: relative; }
+  .locbar-chip:not(.is-set) .locbar-name { display: none; }
+}
+@media (max-width: 479px) {
+  /* Too narrow for a name beside the sign-in button: the pin alone, with a gold dot once a place is set. */
+  .locbar-chip .locbar-name { display: none; }
+  .locbar-chip { min-width: 40px; padding: 0 8px; }
+  .locbar-chip.is-set::after { content: ""; position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .tools .btn { padding: 0 10px; }
+}
+@media (max-width: 999px) {
+  .locbar-panel { position: fixed; left: 12px; right: 12px; top: 72px; width: auto; }
+}
+
+/* ── Live messages ────────────────────────────────────────────────────── */
+.live { position: fixed; z-index: 70; left: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); max-width: min(420px, calc(100vw - 32px)); pointer-events: none; }
+@media (min-width: 1000px) { .live { left: 24px; bottom: 24px; } }
+.live > * { pointer-events: auto; }
+.live-toast {
+  --tone: var(--accent);
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 10px 12px 14px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in srgb, var(--tone) 45%, var(--line-strong)); border-radius: 16px;
+  box-shadow: var(--shadow), 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 28px color-mix(in srgb, var(--tone) 22%, transparent);
+  animation: live-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.live-toast.is-leaving { animation: live-out 0.45s ease both; }
+.live-toast[data-district="mercadito"] { --tone: var(--mercadito); }
+.live-toast[data-district="yavayago"] { --tone: var(--yavayago); }
+.live-toast[data-district="services"] { --tone: var(--services); }
+.live-toast[data-district="work"] { --tone: var(--work); }
+.live-toast[data-district="community"] { --tone: var(--community); }
+.live-toast[data-district="sanctuary"] { --tone: var(--sanctuary); }
+.live-toast[data-district="animals"] { --tone: var(--animals); }
+.live-body { display: grid; gap: 2px; min-width: 0; }
+.live-meta { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tone, var(--accent)); }
+.live-text { color: var(--text); font-weight: 600; line-height: 1.35; text-decoration: none; }
+a.live-text:hover { text-decoration: underline; }
+.live-x { flex: none; width: 30px; height: 30px; margin: -4px 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: var(--text-3); font-size: 1.2rem; cursor: pointer; }
+.live-x:hover { background: var(--surface-2); color: var(--text); }
+.live-dot { flex: none; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: var(--tone, #3ddc84); box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone, #3ddc84) 60%, transparent); animation: live-pulse 2s infinite; }
+.live-pill {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 12px; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 999px; background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: var(--text-2); font: 800 0.68rem/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase;
+  animation: live-in 0.4s ease both;
+}
+.live-pill .live-dot { margin-top: 0; width: 8px; height: 8px; background: #3ddc84; }
+.live-pill.is-paused .live-dot { background: var(--text-3); animation: none; }
+.live-pill:hover { color: var(--text); border-color: var(--accent); }
+@keyframes live-in { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: none; } }
+@keyframes live-out { to { opacity: 0; transform: translateY(10px) scale(0.98); } }
+@keyframes live-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tone, #3ddc84) 55%, transparent); } 70% { box-shadow: 0 0 0 8px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+@media (prefers-reduced-motion: reduce) {
+  .live-toast, .live-toast.is-leaving, .live-pill { animation: none; }
+  .live-dot { animation: none; }
+}
+@media print { .live, .locbar { display: none; } }

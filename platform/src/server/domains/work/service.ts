@@ -16,6 +16,7 @@ import { dayKey, notify } from '@/server/domains/notifications/service';
 import { chargeForAction } from '@/server/domains/tokens/service';
 import { getSetting } from '@/server/domains/platform/settings';
 import { featuredFirst, featuredUntilAfterPurchase, isFeatured } from '@/server/domains/promotion/featured';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Trabajo: jobs and professional projects, without auctions.
@@ -380,6 +381,7 @@ export async function publishPost(
     // The promise is part of the record: a post found charging candidates broke it.
     metadata: { kind: input.kind, field: input.field, noFeePromise: true, cost: charge.cost },
   });
+  await publishActivity(tx, { kind: input.kind === 'project' ? 'project_published' : 'job_published', district: 'work', locationId: input.locationId, subject: { type: POST, id } });
   await tellMatchingProfessionals(tx, { postId: id, employerUserId: params.employerUserId, field: input.field, now });
   return id;
 }

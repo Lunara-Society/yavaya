@@ -24,6 +24,7 @@ import { formatYayId } from '@/server/domains/identity/yay-id';
 import { normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { dayKey, notify } from '@/server/domains/notifications/service';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * Servicios: someone does something for me.
@@ -234,6 +235,10 @@ export async function createRequest(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { category: input.category, urgent: input.urgent },
   });
+  // Plumbing is news; a request about someone's marriage or health is not announced, even without a name.
+  if (!isSensitive(input.category)) {
+    await publishActivity(tx, { kind: 'service_request_published', district: 'services', locationId: input.locationId, subject: { type: REQUEST, id } });
+  }
 
   // Urgent: everyone available today in the category, now. Otherwise one
   // quiet message a day per provider and category, however many requests.

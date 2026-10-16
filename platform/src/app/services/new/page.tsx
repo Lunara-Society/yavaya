@@ -8,8 +8,9 @@ import { SERVICE_CATEGORIES, SERVICE_CATEGORY_KEYS } from '@/config/services';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { categoryName } from '@/ui/services/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { createRequestAction } from '../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,6 @@ export default async function NewRequestPage({ searchParams }: { searchParams: P
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const countries = await placeOptions(db(), locale);
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
   const initial = (SERVICE_CATEGORY_KEYS as readonly string[]).includes(params.cat ?? '') ? params.cat : '';
 
@@ -74,20 +74,7 @@ export default async function NewRequestPage({ searchParams }: { searchParams: P
           </label>
           <label>
             {t('services.form.location')}
-            <select name="locationId" required defaultValue="">
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} required />
           </label>
           <label>
             <span>

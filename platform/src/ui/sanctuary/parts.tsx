@@ -3,6 +3,8 @@ import type { MessageKey, Translator } from '@/i18n';
 import type { ChurchCard, DevotionalView } from '@/server/domains/sanctuary/service';
 import { SANCTUARY_RULES } from '@/config/business-rules';
 import { SERVICE_ROWS } from './config';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 /** "today at 19:00", "Sunday at 09:00" — always in the church's own time. */
 export function whenText(t: Translator, next: { weekday: number; startTime: string; inDays: number }): string {
@@ -61,7 +63,6 @@ export function WordCard({ word, t, locale, full = false }: { word: DevotionalVi
   );
 }
 
-type CountryOptions = Array<{ code: string; name: string; places: Array<{ id: string; label: string }> }>;
 type ChurchValues = {
   name: string;
   denomination: string | null;
@@ -76,13 +77,11 @@ type ChurchValues = {
 /** The church form: registration and editing. Plain HTML, no JavaScript. */
 export function ChurchForm({
   t,
-  countries,
   action,
   churchId,
   initial,
 }: {
   t: Translator;
-  countries: CountryOptions;
   action: (formData: FormData) => Promise<void>;
   churchId?: string;
   initial?: ChurchValues;
@@ -109,20 +108,7 @@ export function ChurchForm({
       <div className="sc-two">
         <label>
           {t('sanctuary.form.place')}
-          <select name="locationId" required defaultValue={initial?.locationId ?? ''}>
-            <option value="" disabled>
-              {t('mercadito.form.choose')}
-            </option>
-            {countries.map((country) => (
-              <optgroup key={country.code} label={country.name}>
-                {country.places.map((place) => (
-                  <option key={place.id} value={place.id}>
-                    {place.label}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+          <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={initial?.locationId} required />
         </label>
         <label>
           {t('sanctuary.form.address')}

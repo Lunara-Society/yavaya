@@ -7,7 +7,8 @@ import { ANIMALS_RULES, MEDIA_RULES } from '@/config/business-rules';
 import { SPECIES } from '@/config/animals';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { placeOptions } from '@/server/domains/mercadito/service';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -17,7 +18,6 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
   const kind = query.kind === 'found' ? 'found' : 'lost';
-  const countries = await placeOptions(db(), locale);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const today = new Date().toISOString().slice(0, 10);
 
@@ -66,20 +66,7 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
           </label>
           <label>
             {t('animals.form.location')}
-            <select name="locationId" required defaultValue="">
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} required />
           </label>
           <label>
             {t('services.provider.whatsapp')}

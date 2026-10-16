@@ -34,6 +34,7 @@ import { grantRole } from '@/server/domains/access/authorize';
 import { applyRule } from '@/server/domains/reputation/service';
 import { canonicalEmail } from '@/server/domains/identity/normalize';
 import { GEOGRAPHY_SEED } from './geography-data';
+import { PLACES } from './places-data';
 
 /**
  * Idempotent seed.
@@ -105,6 +106,63 @@ async function seedGeography(database: Database): Promise<void> {
         }
       }
     }
+  }
+}
+
+/**
+ * The cities and towns of the launch countries, in bulk: some two thousand
+ * rows, so one statement per few hundred rather than two queries per place.
+ * Runs after `seedGeography`, which creates the departments they hang from.
+ */
+async function seedPlaces(database: Database): Promise<void> {
+  const states = await database
+    .select({ id: locations.id, code: locations.code, path: locations.path, timezone: locations.timezone, supported: locations.isSupportedMarket })
+    .from(locations)
+    .where(eq(locations.level, 'state'));
+  const byCode = new Map(states.map((state) => [state.code, state]));
+  // Rank within each department by size, so the largest places come first.
+  const rank = new Map<string, number>();
+  const rows = PLACES.flatMap(([code, stateCode, name, level, population, latitude, longitude]) => {
+    const state = byCode.get(stateCode);
+    if (!state) return [];
+    const order = rank.get(stateCode) ?? 0;
+    rank.set(stateCode, order + 1);
+    return [{
+      code,
+      name,
+      level,
+      population,
+      latitude,
+      longitude,
+      parentId: state.id,
+      path: [...state.path, state.code],
+      depth: state.path.length + 1,
+      timezone: state.timezone,
+      isSupportedMarket: state.supported,
+      sortOrder: order,
+    }];
+  });
+  for (let start = 0; start < rows.length; start += 400) {
+    await database
+      .insert(locations)
+      .values(rows.slice(start, start + 400))
+      .onConflictDoUpdate({
+        target: locations.code,
+        set: {
+          name: sql`excluded.name`,
+          level: sql`excluded.level`,
+          population: sql`excluded.population`,
+          latitude: sql`excluded.latitude`,
+          longitude: sql`excluded.longitude`,
+          parentId: sql`excluded.parent_id`,
+          path: sql`excluded.path`,
+          depth: sql`excluded.depth`,
+          timezone: sql`excluded.timezone`,
+          isSupportedMarket: sql`excluded.is_supported_market`,
+          sortOrder: sql`excluded.sort_order`,
+          updatedAt: new Date(),
+        },
+      });
   }
 }
 
@@ -494,6 +552,7 @@ async function main(): Promise<void> {
   const database = db();
 
   await seedGeography(database);
+  await seedPlaces(database);
   await seedAccessControl(database);
   await seedDistricts(database);
   await seedTokenConfiguration(database);

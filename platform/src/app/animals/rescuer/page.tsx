@@ -8,9 +8,10 @@ import { RESCUER_KINDS, SEXES, SIZES, SPECIES } from '@/config/animals';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { AnimalCard } from '@/ui/animals/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { getRescuer, rescuerListings } from '@/server/domains/animals/service';
 import { rescuerAction } from '../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,7 @@ export default async function RescuerPage({ searchParams }: { searchParams: Prom
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const [rescuer, countries] = await Promise.all([getRescuer(db(), userId), placeOptions(db(), locale)]);
+  const rescuer = await getRescuer(db(), userId);
   const listings = rescuer?.status === 'approved' ? await rescuerListings(db(), { userId, locale }) : [];
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const errorParams = {
@@ -38,20 +39,7 @@ export default async function RescuerPage({ searchParams }: { searchParams: Prom
     maxMegabytes: MEDIA_RULES.maxUploadBytes / 1024 / 1024,
   };
   const PlaceSelect = ({ value }: { value?: string }) => (
-    <select name="locationId" required defaultValue={value ?? ''}>
-      <option value="" disabled>
-        {t('mercadito.form.choose')}
-      </option>
-      {countries.map((country) => (
-        <optgroup key={country.code} label={country.name}>
-          {country.places.map((place) => (
-            <option key={place.id} value={place.id}>
-              {place.label}
-            </option>
-          ))}
-        </optgroup>
-      ))}
-    </select>
+    <PlacePicker name="locationId" labels={placePickerLabels(t)} initial={value} required />
   );
 
   return (

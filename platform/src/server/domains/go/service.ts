@@ -17,6 +17,7 @@ import { notify } from '@/server/domains/notifications/service';
 import { chargeForAction } from '@/server/domains/tokens/service';
 import { getSetting } from '@/server/domains/platform/settings';
 import { featuredFirst, featuredUntilAfterPurchase, isFeatured } from '@/server/domains/promotion/featured';
+import { publishActivity } from '@/server/domains/notifications/activity';
 
 /**
  * YavayaGo: stores, their menus, the drivers Yavaya checked, and the orders
@@ -234,6 +235,10 @@ export async function reviewStore(tx: Executor, params: { actor: AuthContext | n
     .where(eq(goStores.id, store.id));
   if (status === 'suspended') await cancelStoreOrders(tx, store.id, 'store_suspended', now);
   await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: `go.store_${status}`, subjectType: STORE, subjectId: store.id, district: 'yavayago' });
+  // A first approval is news; a reinstatement after suspension is not.
+  if (params.decision === 'approve') {
+    await publishActivity(tx, { kind: 'restaurant_joined', district: 'yavayago', locationId: store.locationId, subject: { type: STORE, id: store.id } });
+  }
   await notify(tx, [{ userId: store.ownerUserId, category: 'yavayago', type: `go.store_${status}`, titleKey: `notify.go.store_${status}`, href: '/yavayago/store' }]);
 }
 

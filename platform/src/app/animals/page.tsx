@@ -8,8 +8,10 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon } from '@/ui/site/icons';
 import { AnimalCard } from '@/ui/animals/parts';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { getCertificate, getRescuer, listAnimals } from '@/server/domains/animals/service';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,8 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AnimalsHome({ searchParams }: { searchParams: Promise<{ species?: string; size?: string; place?: string; page?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  const countries = await placeOptions(db(), locale);
-  const place = countries.some((country) => country.code === query.place) ? query.place : undefined;
+  const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
   const [animals, certificate, rescuer] = await Promise.all([
     listAnimals(db(), { locale, species: query.species, size: query.size, placeCode: place, page }),
@@ -38,7 +39,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
     const search = new URLSearchParams();
     if (query.species) search.set('species', query.species);
     if (query.size) search.set('size', query.size);
-    if (place) search.set('place', place);
+    if (placeLink) search.set('place', placeLink);
     if (to > 1) search.set('page', String(to));
     const text = search.toString();
     return text ? `/animals?${text}` : '/animals';
@@ -121,14 +122,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
             </label>
             <label>
               <span className="sr-only">{t('animals.form.location')}</span>
-              <select name="place" defaultValue={place ?? ''}>
-                <option value="">{t('sanctuary.churches.any_place')}</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
+              <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
             </label>
             <button className="btn btn-line" type="submit">
               {t('sanctuary.churches.filter')}

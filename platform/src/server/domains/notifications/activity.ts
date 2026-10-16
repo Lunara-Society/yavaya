@@ -1,6 +1,7 @@
 import { and, desc, eq, gte, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { activityEvents, locations } from '@/server/db/schema';
+import { LIVE_FEED_RULES } from '@/config/business-rules';
 
 /**
  * Live activity.
@@ -20,8 +21,14 @@ export type ActivityKind =
   | 'restaurant_joined'
   | 'animal_adopted'
   | 'project_published'
+  | 'job_published'
   | 'cause_goal_reached'
-  | 'member_joined';
+  | 'member_joined'
+  | 'animal_listed'
+  | 'pet_lost'
+  | 'pet_found'
+  | 'church_joined'
+  | 'community_post_published';
 
 export type PublishActivityInput = {
   kind: ActivityKind;
@@ -37,7 +44,7 @@ export type PublishActivityInput = {
   /** How long the event stays in the feed. */
   visibleForSeconds?: number;
   /** The row the event is about, so the feed can drop it once that row is gone. */
-  subject?: { type: 'mercadito_listing'; id: string };
+  subject?: { type: string; id: string };
 };
 
 export async function publishActivity(
@@ -87,7 +94,7 @@ export async function recentActivity(
 ): Promise<FeedItem[]> {
   const conditions = [
     eq(activityEvents.isDemo, false),
-    gte(activityEvents.occurredAt, new Date(Date.now() - 24 * 60 * 60 * 1000)),
+    gte(activityEvents.occurredAt, new Date(Date.now() - LIVE_FEED_RULES.windowHours * 60 * 60 * 1000)),
     sql`(${activityEvents.visibleUntil} is null or ${activityEvents.visibleUntil} > now())`,
     // A listing that was withdrawn, sold or removed no longer counts as news.
     sql`(${activityEvents.subjectType} is distinct from 'mercadito_listing' or exists (

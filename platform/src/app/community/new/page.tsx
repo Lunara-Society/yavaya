@@ -6,9 +6,10 @@ import type { MessageKey } from '@/i18n';
 import { COMMUNITY_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { placeOptions } from '@/server/domains/mercadito/service';
 import { NEIGHBOUR_KINDS } from '@/server/domains/community/service';
 import { createPostAction } from '../actions';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,6 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
-  const countries = await placeOptions(db(), locale);
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
   // A prayer request is written here too, but presented as the Sanctuary's.
   const prayer = params.kind === 'prayer';
@@ -72,18 +72,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
           </label>
           <label>
             {t('community.form.location_optional')}
-            <select name="locationId" defaultValue="">
-              <option value="">—</option>
-              {countries.map((country) => (
-                <optgroup key={country.code} label={country.name}>
-                  {country.places.map((place) => (
-                    <option key={place.id} value={place.id}>
-                      {place.label}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} />
           </label>
           <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontWeight: 600 }}>
             <input type="checkbox" name="anonymous" style={{ width: 'auto', marginTop: 4 }} />

@@ -7,9 +7,12 @@ import { ListingCard } from '@/ui/mercadito/listing-card';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon, type IconName } from '@/ui/site/icons';
 import type { MessageKey } from '@/i18n';
-import { browseListings, markSavedSearchSeen, placeOptions } from '@/server/domains/mercadito/service';
+import { browseListings, markSavedSearchSeen } from '@/server/domains/mercadito/service';
 import { saveSearchAction } from './actions';
 import { LISTING_CATEGORIES, type ListingCategory } from '@/server/domains/mercadito/rules';
+import { PlacePicker } from '@/ui/components/place-picker';
+import { placePickerLabels } from '@/ui/components/place-labels';
+import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,8 +46,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   const category = (LISTING_CATEGORIES as readonly string[]).includes(params.cat ?? '')
     ? (params.cat as ListingCategory)
     : undefined;
-  const countries = await placeOptions(db(), locale);
-  const placeCode = countries.some((country) => country.code === params.place) ? params.place : undefined;
+  const { code: placeCode, link: placeLink } = await browsePlace(params.place, locale);
   const query = params.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
 
@@ -55,7 +57,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   const filtered = Boolean(query || category || placeCode);
 
   const href = (next: Partial<Record<keyof Search, string | undefined>>) => {
-    const merged = { q: query, cat: category, place: placeCode, ...next };
+    const merged = { q: query, cat: category, place: placeLink, ...next };
     const search = new URLSearchParams();
     for (const [key, value] of Object.entries(merged)) if (value) search.set(key, value);
     const text = search.toString();
@@ -104,14 +106,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
             </label>
             <label>
               {t('mercadito.browse.place_label')}
-              <select name="place" defaultValue={placeCode ?? ''}>
-                <option value="">{t('mercadito.browse.all_places')}</option>
-                {countries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
+              <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
             </label>
             <button className="btn btn-gold" type="submit" style={{ minHeight: 44 }}>
               {t('mercadito.browse.submit')}

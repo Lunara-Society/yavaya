@@ -1,0 +1,1 @@
+ALTER TYPE "public"."activity_kind" ADD VALUE 'job_published';
