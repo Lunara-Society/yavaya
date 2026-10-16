@@ -281,6 +281,60 @@ const guard = (req, res, next) => (same(req.params.token) ? next() : res.status(
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+// ── Official WhatsApp Cloud API (coexistence) webhook ──────────────────
+// Meta (through the provider's webhook override) delivers the business
+// number's messages here: incoming ones, and echoes of what the owner sends
+// from the WhatsApp Business app. The path carries a secret key so nobody
+// else can post fake messages; the verify token answers Meta's handshake.
+// Both live only in Railway's variables.
+const CLOUD_KEY = process.env.CLOUD_WEBHOOK_KEY || '';
+const CLOUD_VERIFY = process.env.CLOUD_VERIFY_TOKEN || '';
+const cloudGuard = (req, res, next) => (CLOUD_KEY.length >= 24 && req.params.key.length === CLOUD_KEY.length && crypto.timingSafeEqual(Buffer.from(req.params.key), Buffer.from(CLOUD_KEY)) ? next() : res.status(404).end());
+store.cloud ||= { events: 0, lastAt: null, phoneNumberId: null };
+
+app.get('/cloud/webhook/:key', cloudGuard, (req, res) => {
+  if (req.query['hub.mode'] === 'subscribe' && CLOUD_VERIFY && req.query['hub.verify_token'] === CLOUD_VERIFY) return res.status(200).send(String(req.query['hub.challenge'] ?? ''));
+  res.status(403).end();
+});
+
+function cloudText(m) {
+  return m.text?.body || m.image?.caption || m.video?.caption || m.document?.caption || m.button?.text || m.interactive?.button_reply?.title || m.interactive?.list_reply?.title
+    || (m.image ? '[foto]' : m.video ? '[video]' : m.audio ? '[audio]' : m.document ? `[documento ${m.document.filename || ''}]`.trim() : m.sticker ? '[sticker]' : m.location ? '[ubicación]' : m.type ? `[${m.type}]` : null);
+}
+function rememberCloud(jid, m, fromMe, sender) {
+  const text = cloudText(m);
+  if (!text) return;
+  const list = (store.chats[jid] ||= []);
+  if (list.some((x) => x.id === m.id)) return;
+  list.push({ id: m.id, fromMe, participant: null, sender: sender || null, at: Number(m.timestamp || 0) * 1000 || Date.now(), text, read: fromMe, via: 'cloud' });
+  list.sort((a, b) => a.at - b.at);
+  if (list.length > MAX_PER_CHAT) list.splice(0, list.length - MAX_PER_CHAT);
+}
+
+app.post('/cloud/webhook/:key', cloudGuard, (req, res) => {
+  // Answer at once; Meta retries anything slow.
+  res.sendStatus(200);
+  try {
+    for (const entry of req.body?.entry || []) {
+      for (const change of entry.changes || []) {
+        const v = change.value || {};
+        if (v.metadata?.phone_number_id) store.cloud.phoneNumberId = v.metadata.phone_number_id;
+        for (const c of v.contacts || []) if (c.wa_id && c.profile?.name) store.names[`${c.wa_id}@s.whatsapp.net`] ||= c.profile.name;
+        for (const m of v.messages || []) rememberCloud(`${m.from}@s.whatsapp.net`, m, false, store.names[`${m.from}@s.whatsapp.net`]);
+        // What the owner sends from the Business app on the phone.
+        for (const m of v.message_echoes || []) if (m.to) rememberCloud(`${m.to}@s.whatsapp.net`, m, true, null);
+        // One-time history sync, if the owner approved it.
+        for (const h of v.history || []) for (const t of h.threads || []) for (const m of t.messages || []) {
+          const other = t.id || m.to || m.from; if (!other) continue;
+          rememberCloud(`${other}@s.whatsapp.net`, m, m.from !== other, null);
+        }
+        store.cloud.events += 1; store.cloud.lastAt = Date.now();
+      }
+    }
+    dirty = true;
+  } catch (e) { console.error('cloud webhook', e.message); }
+});
+
 app.all('/mcp/:token', guard, async (req, res) => {
   // Stateless: a fresh server and transport per request.
   const mcp = buildMcp();
