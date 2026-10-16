@@ -74,8 +74,11 @@ function textOf(m) {
     || (msg.imageMessage ? '[foto]' : msg.videoMessage ? '[video]' : msg.audioMessage ? '[audio]' : msg.documentMessage ? `[documento ${msg.documentMessage.fileName || ''}]`.trim()
       : msg.stickerMessage ? '[sticker]' : msg.locationMessage ? '[ubicación]' : msg.contactMessage ? `[contacto ${msg.contactMessage.displayName || ''}]`.trim() : null);
 }
+// WhatsApp now addresses many people by a privacy id (@lid). Where the phone
+// number form is known, keep the chat under it, so a person is one chat.
+const chatOf = (key) => (key?.remoteJid?.endsWith('@lid') && key.remoteJidAlt ? key.remoteJidAlt : key?.remoteJid);
 function remember(m) {
-  const jid = m.key?.remoteJid;
+  const jid = chatOf(m.key);
   if (!jid || jid === 'status@broadcast') return;
   const text = textOf(m);
   if (!text) return;
@@ -84,7 +87,7 @@ function remember(m) {
   list.push({ id: m.key.id, fromMe: !!m.key.fromMe, participant: m.key.participant || null, sender: m.pushName || null, at: Number(m.messageTimestamp || 0) * 1000 || Date.now(), text, read: !!m.key.fromMe });
   list.sort((a, b) => a.at - b.at);
   if (list.length > MAX_PER_CHAT) list.splice(0, list.length - MAX_PER_CHAT);
-  if (m.pushName && !m.key.fromMe) store.names[m.key.participant || jid] ||= m.pushName;
+  if (m.pushName && !m.key.fromMe) store.names[m.key.participantAlt || m.key.participant || jid] ||= m.pushName;
   dirty = true;
 }
 const nameOf = (jid) => store.names[jid] || jid.split('@')[0];
@@ -97,14 +100,14 @@ let state = { connected: false, pairingCode: null, pairingAt: 0, me: null, lastE
 async function connect() {
   const { state: auth, saveCreds } = await useMultiFileAuthState(path.join(DATA, 'auth'));
   const { version } = await fetchLatestBaileysVersion().catch(() => ({ version: undefined }));
-  sock = makeWASocket({ auth, version, logger: log, browser: Browsers.macOS('Chrome'), printQRInTerminal: false, syncFullHistory: false, markOnlineOnConnect: false });
+  sock = makeWASocket({ auth, version, logger: log, browser: Browsers.macOS('Chrome'), printQRInTerminal: false, syncFullHistory: false, markOnlineOnConnect: false, getMessage: async () => undefined });
   sock.ev.on('creds.update', saveCreds);
   sock.ev.on('messaging-history.set', ({ messages, contacts }) => {
     for (const m of messages || []) remember(m);
     for (const c of contacts || []) if (c.name || c.notify) store.names[c.id] = c.name || c.notify;
   });
   sock.ev.on('messages.upsert', ({ messages }) => { for (const m of messages) remember(m); });
-  sock.ev.on('contacts.upsert', (cs) => { for (const c of cs) if (c.name || c.notify) { store.names[c.id] = c.name || c.notify; dirty = true; } });
+  sock.ev.on('contacts.upsert', (cs) => { for (const c of cs) if (c.name || c.notify) { store.names[c.phoneNumber || c.id] = c.name || c.notify; dirty = true; } });
   sock.ev.on('contacts.update', (cs) => { for (const c of cs) if (c.name || c.notify) { store.names[c.id] = c.name || c.notify; dirty = true; } });
   sock.ev.on('groups.upsert', (gs) => { for (const g of gs) { store.names[g.id] = g.subject; dirty = true; } });
   sock.ev.on('connection.update', (u) => {
