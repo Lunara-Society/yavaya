@@ -133,8 +133,9 @@ const LEVEL_WEIGHT: Record<string, number> = { country: 0, state: 1, city: 2, to
 /**
  * Places whose name matches what was typed, best first.
  *
- * Exact name, then name beginning with it, then a word beginning with it,
- * then anywhere in the name; ties go to the bigger place. `settlementsOnly`
+ * A department or country of exactly that name, then names beginning with it,
+ * then a word beginning with it, then anywhere in the name; within each, the
+ * bigger place first. `settlementsOnly`
  * leaves out departments and countries, for forms that need a town.
  */
 export async function searchPlaces(
@@ -152,7 +153,11 @@ export async function searchPlaces(
     if (options.settlementsOnly && !(SETTLEMENT_LEVELS as readonly string[]).includes(place.level)) continue;
     if (options.countryCode && place.countryCode !== options.countryCode) continue;
     let score: number;
-    if (place.key === folded) score = 0;
+    // An exact name only outranks for a department or country: a hamlet called
+    // "San Cristóbal" must not bury San Cristóbal de las Casas. Among towns,
+    // starting with what was typed is enough, and the bigger place comes first.
+    const regionLevel = place.level === 'state' || place.level === 'country';
+    if (place.key === folded && regionLevel) score = 0;
     else if (place.key.startsWith(folded)) score = 1;
     else if (place.words.some((word) => word.startsWith(folded))) score = 2;
     else if (place.key.includes(folded)) score = 3;

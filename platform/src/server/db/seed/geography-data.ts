@@ -6,7 +6,8 @@
  *    modelled under North America and marked as an expansion market, because
  *    Mexico is not a Central American country. It is supported geographically
  *    without being misfiled.
- *  - `isSupportedMarket` marks the seven launch countries. Everything else is
+ *  - `isSupportedMarket` marks the launch countries: the seven of Central
+ *    America, and Mexico. Everything else is
  *    addressable but closed to new activity until it is opened deliberately.
  *  - Cities listed here are a starting set, not a fixed list. Towns, villages
  *    and neighborhoods are added as data — never as code.
@@ -311,8 +312,8 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
     names: { es: 'América del Norte', en: 'North America' },
     countries: [
       {
-        // Mexico is an expansion market, modelled where it actually belongs.
-        // It is addressable from day one and closed to activity until opened.
+        // Mexico is modelled where it actually belongs, under North America,
+        // and opened as a launch market by owner decision (October 2026).
         code: 'na.mx',
         name: 'México',
         names: { es: 'México', en: 'Mexico' },
@@ -320,7 +321,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         phonePrefix: '+52',
         currencyCode: 'MXN',
         timezone: 'America/Mexico_City',
-        supported: false,
+        supported: true,
         states: [
           {
             code: 'na.mx.cmx',

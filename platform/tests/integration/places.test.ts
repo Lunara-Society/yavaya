@@ -21,12 +21,26 @@ describe('place search', () => {
     expect(foldText('  LEÓN ')).toBe('leon');
   });
 
-  it('finds a town from the first letters, bigger places first among equals', async () => {
+  it('finds a town from the first letters, bigger places first', async () => {
     const hits = await searchPlaces(db(), 'leon', { settlementsOnly: true });
-    expect(hits.length).toBeGreaterThan(0);
-    expect(foldText(hits[0]!.name)).toBe('leon');
+    expect(hits.some((hit) => foldText(hit.name) === 'leon')).toBe(true);
     // A namesake is told apart by its department and country.
-    expect(hits[0]!.context).toMatch(/,/);
+    expect(hits.every((hit) => /,/.test(hit.context))).toBe(true);
+    const prefixed = hits.filter((hit) => foldText(hit.name).startsWith('leon'));
+    const populations = prefixed.map((hit) => hit.population ?? 0);
+    expect(populations).toEqual([...populations].sort((a, b) => b - a));
+  });
+
+  it('does not let a hamlet of the exact name bury a city that starts with it', async () => {
+    const hits = await searchPlaces(db(), 'san cristobal', { settlementsOnly: true, limit: 50 });
+    const city = hits.findIndex((hit) => hit.code === 'na.mx.chp.san-cristobal-de-las-casas');
+    expect(city).toBe(0);
+  });
+
+  it('includes Mexico, in pesos, now that it is open', async () => {
+    const [tulum] = await searchPlaces(db(), 'tulum', { settlementsOnly: true });
+    expect(tulum?.countryCode).toBe('na.mx');
+    expect(tulum?.currencyCode).toBe('MXN');
   });
 
   it('ranks a name that starts with the query above one that merely contains it', async () => {

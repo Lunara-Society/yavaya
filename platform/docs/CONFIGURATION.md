@@ -37,8 +37,8 @@ EMAIL_FROM="Yavaya <no-reply@your-domain>"
 ```
 
 Any SMTP provider works, so choosing a vendor is a credentials change rather
-than a code change. Pick one with reliable delivery to all seven launch
-countries.
+than a code change. Pick one with reliable delivery to all eight launch
+countries (Central America and Mexico).
 
 **Where outbound SMTP is blocked, use the Resend adapter.** Railway blocks
 SMTP on every plan below Pro: an SMTP provider there hangs until its timeout
@@ -716,10 +716,21 @@ a public directory of professionals first, which does not exist yet.
 
 ## Places, the location bar and live messages
 
-**Places.** 2,162 cities and towns across the seven launch countries, from
+**Mexico** was opened as a launch market by owner decision (October 2026),
+alongside the seven countries of Central America. It stays filed under North
+America, where it belongs, and uses the same rules, prices and districts.
+dLocal Go already lists Mexico, and prices may be in MXN or USD. Two things
+are still undecided and flagged here, not guessed:
+- whether Mexico needs its own legal text (terms, privacy under the LFPDPPP);
+- whether the brand tagline ("…de Centroamérica") should change.
+
+**Places.** 6,531 cities and towns across the eight launch countries, from
 GeoNames (licence CC BY 4.0; attribution is in the site footer and in
-`src/server/db/seed/places-data.ts`). The import includes every municipal
-seat, plus every other populated place with at least 1,000 inhabitants.
+`src/server/db/seed/places-data.ts`). In Central America the import includes
+every municipal seat, plus every other populated place with at least 1,000
+inhabitants. Mexico has several times more small localities than the rest
+together, so there the line is INEGI's own urban threshold: every municipal
+seat, plus every locality of 2,500 or more (4,369 places).
 Each row carries its GeoNames population and coordinates. Operations can
 deactivate a place, or add one, in the `locations` table.
 
@@ -871,7 +882,8 @@ waiting.
 - **Pharmacy pickup in YavayaGo.** Legal only in some jurisdictions and often
   only for specific product classes.
 - **Data protection.** Retention periods, subject-access rights and breach
-  notification duties differ across the seven launch countries. The audit log
+  notification duties differ across the eight launch countries (Mexico's
+  LFPDPPP included). The audit log
   is append-only by design, which interacts with erasure requests: the
   resolution is to store no personal data in audit metadata (already the rule)
   and to erase the referenced records instead.
