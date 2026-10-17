@@ -4,7 +4,8 @@ import { closeDb, db } from '@/server/db/client';
 import { auditEvents, users, workEmployers } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { grantRole, hasPermission } from '@/server/domains/access/authorize';
-import { appoint, removeAppointment, searchMembers, staffList } from '@/server/domains/access/staff';
+import { appoint, publicTeamRole, removeAppointment, searchMembers, staffList } from '@/server/domains/access/staff';
+import { hasUnseenWelcome, markWelcomeSeen, welcomeFor } from '@/server/domains/access/welcome';
 import { listNotifications } from '@/server/domains/notifications/service';
 import { queuesFor } from '@/server/domains/ops/queues';
 import { recordJobRun, sendOpsEmails } from '@/server/domains/ops/alerts';
@@ -43,6 +44,30 @@ describe('team and operations', () => {
 
     await db().transaction((tx) => removeAppointment(tx, { actor: as(admin), userId: maria, role: 'safe_space_guardian' }));
     expect(await hasPermission(db(), maria, 'safe_space.review')).toBe(false);
+  });
+
+  it('welcomes a community manager once, with a public badge and no power to suspend', async () => {
+    const admin = await account('Dueña');
+    await db().transaction((tx) => grantRole(tx, { userId: admin, roleKey: 'admin', grantedBy: null }));
+    const tania = await account('Tania Ponce');
+    expect(await publicTeamRole(db(), tania)).toBeNull();
+    await db().transaction((tx) => appoint(tx, { actor: as(admin), userId: tania, role: 'community_manager' }));
+
+    expect(await hasPermission(db(), tania, 'moderation.ticket.resolve')).toBe(true);
+    expect(await hasPermission(db(), tania, 'users.suspend')).toBe(false);
+    expect(await publicTeamRole(db(), tania)).toBe('community_manager');
+    const [note] = await listNotifications(db(), tania, 10);
+    expect(note).toMatchObject({ titleKey: 'notify.staff.appointed.community_manager', href: '/welcome' });
+
+    expect(await hasUnseenWelcome(db(), tania)).toBe(true);
+    expect(await welcomeFor(db(), tania)).toMatchObject({ displayName: 'Tania Ponce', roles: ['community_manager'] });
+    await markWelcomeSeen(db(), tania);
+    expect(await hasUnseenWelcome(db(), tania)).toBe(false);
+
+    // A private role is never shown as a badge.
+    const guardian = await account('Guardiana');
+    await db().transaction((tx) => appoint(tx, { actor: as(admin), userId: guardian, role: 'safe_space_guardian' }));
+    expect(await publicTeamRole(db(), guardian)).toBeNull();
   });
 
   it('never appoints an admin, a non-admin never appoints, and an unconfirmed account is refused', async () => {

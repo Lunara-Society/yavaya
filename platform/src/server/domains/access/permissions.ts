@@ -119,6 +119,29 @@ export const SYSTEM_ROLES: Record<
     ],
   },
   /*
+   * The face of the community: welcomes people, looks after the town square
+   * and the causes, and handles reports there. Deliberately without
+   * suspending or banning accounts — that stays with moderators, so the
+   * person members know as their friendly contact is never also the one who
+   * shuts them out.
+   */
+  community_manager: {
+    name: 'Community manager',
+    description: 'Looks after the community: handles reports, removes harmful posts, reviews causes. Cannot suspend or ban.',
+    permissions: [
+      'users.read',
+      'reputation.read',
+      'moderation.queue.read',
+      'moderation.ticket.assign',
+      'moderation.ticket.resolve',
+      'moderation.content.remove',
+      'causes.review',
+      'causes.approve',
+      'listings.moderate',
+      'work.moderate',
+    ],
+  },
+  /*
    * Espacio Violeta's reports are read only by guardians the owner chose by
    * name — not by every moderator. A reported message there can be about
    * abuse, and the person who reads it should have been picked for that.

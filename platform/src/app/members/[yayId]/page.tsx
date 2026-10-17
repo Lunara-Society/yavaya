@@ -11,6 +11,9 @@ import { formatDate } from '@/ui/mercadito/format';
 import { findPublicMember } from '@/server/domains/identity/profile';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { sellerListings } from '@/server/domains/mercadito/service';
+import { publicTeamRole } from '@/server/domains/access/staff';
+import { Icon } from '@/ui/site/icons';
+import type { MessageKey } from '@/i18n/dictionaries/es';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,9 +36,10 @@ export default async function MemberProfilePage({ params }: Params) {
   const profile = await findPublicMember(db(), yayId);
   if (!profile) notFound();
 
-  const [shield, listings] = await Promise.all([
+  const [shield, listings, team] = await Promise.all([
     buildTrustShield(db(), profile.userId),
     sellerListings(db(), profile.userId, locale, { publicOnly: true }),
+    publicTeamRole(db(), profile.userId),
   ]);
   if (!shield) notFound();
 
@@ -47,6 +51,14 @@ export default async function MemberProfilePage({ params }: Params) {
           <div className="member-hero-text">
             <p className="member-hero-eyebrow">{t('profile.eyebrow')}</p>
             <h1>{profile.displayName}</h1>
+            {team ? (
+              <p className="team-badge">
+                <span className="team-badge-heart">
+                  <Icon name="heart" />
+                </span>
+                {t(`staff.role.${team}` as MessageKey)} · {t('profile.team')}
+              </p>
+            ) : null}
             <p>{t('profile.since', { date: formatDate(profile.memberSince, locale) })}</p>
           </div>
         </section>

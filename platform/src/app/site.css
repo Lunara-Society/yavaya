@@ -1936,3 +1936,54 @@ a.live-text:hover { text-decoration: underline; }
   .live-dot { animation: none; }
 }
 @media print { .live, .locbar { display: none; } }
+
+/* ── Welcome to the team ─────────────────────────────────────────────── */
+.wl-page { position: relative; overflow: hidden; padding: clamp(28px, 6vw, 72px) 16px 80px; min-height: 80vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 111, 165, 0.22), transparent 45%),
+    radial-gradient(circle at 85% 20%, rgba(180, 140, 255, 0.22), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(245, 192, 74, 0.22), transparent 55%); }
+.wl-confetti { position: absolute; inset: 0; pointer-events: none; }
+.wl-bit { position: absolute; top: -24px; animation-name: wl-fall; animation-timing-function: linear; animation-iteration-count: infinite; opacity: 0.85; }
+.wl-dot { width: 10px; height: 10px; border-radius: 50%; }
+.wl-star { width: 12px; height: 12px; clip-path: polygon(50% 0, 61% 38%, 100% 38%, 69% 61%, 80% 100%, 50% 76%, 20% 100%, 31% 61%, 0 38%, 39% 38%); }
+.wl-heart { width: 14px; height: 13px; clip-path: path('M7 13 C7 13 0 8.5 0 4 C0 1.5 2 0 4 0 C5.5 0 6.5 1 7 2 C7.5 1 8.5 0 10 0 C12 0 14 1.5 14 4 C14 8.5 7 13 7 13 Z'); }
+.wl-rose { background: #ff6fa5; } .wl-gold { background: #f5c04a; } .wl-lilac { background: #b48cff; } .wl-mint { background: #5fe0b7; } .wl-sky { background: #6cc6ff; }
+@keyframes wl-fall { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(105vh) rotate(540deg); } }
+.wl-card { position: relative; box-sizing: border-box; width: 100%; max-width: 640px; margin: 0 auto; text-align: center; padding: clamp(26px, 5vw, 48px);
+  border-radius: 32px; background: var(--surface, var(--bg)); border: 1px solid rgba(255, 111, 165, 0.35);
+  box-shadow: 0 30px 80px -30px rgba(255, 111, 165, 0.55), 0 0 0 8px rgba(255, 255, 255, 0.04);
+  animation: wl-rise 900ms cubic-bezier(.2,.8,.2,1) both; }
+@keyframes wl-rise { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+.wl-eyebrow { font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; font-size: 0.75rem; color: #ff6fa5; margin: 0 0 18px; }
+.wl-badge { position: relative; width: 156px; height: 156px; margin: 0 auto 26px; display: grid; place-items: center; }
+.wl-badge-ring { position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(#ff6fa5, #f5c04a, #5fe0b7, #6cc6ff, #b48cff, #ff6fa5); animation: wl-spin 9s linear infinite;
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 63%); mask: radial-gradient(circle, transparent 62%, #000 63%); }
+@keyframes wl-spin { to { transform: rotate(360deg); } }
+.wl-badge-core { width: 104px; height: 104px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+  background: radial-gradient(circle at 35% 30%, #ffc2da, #ff6fa5 55%, #e0457f); box-shadow: inset 0 -8px 18px rgba(0,0,0,0.18), 0 10px 30px -8px rgba(255, 111, 165, 0.8);
+  animation: wl-beat 2.4s ease-in-out infinite; }
+.wl-badge-core svg { width: 46px; height: 46px; stroke-width: 2; }
+@keyframes wl-beat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.08); } 24% { transform: scale(1); } 36% { transform: scale(1.05); } }
+.wl-badge-ribbon { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 6px 16px; border-radius: 999px;
+  font-weight: 800; font-size: 0.82rem; color: #3a1530; background: linear-gradient(90deg, #f5c04a, #ffd98a); box-shadow: 0 6px 16px -6px rgba(245, 192, 74, 0.9); }
+.wl-title { font-family: var(--serif); font-size: clamp(2rem, 6vw, 3rem); line-height: 1.08; margin: 18px 0 12px;
+  background: linear-gradient(90deg, #ff6fa5, #b48cff 50%, #f5c04a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wl-lead { font-size: 1.15rem; color: var(--text); margin: 0 auto 26px; max-width: 30em; }
+.wl-note { text-align: left; padding: 22px 24px; border-radius: 22px; background: rgba(255, 111, 165, 0.08); border: 1px dashed rgba(255, 111, 165, 0.45); display: grid; gap: 10px; margin-bottom: 24px; }
+.wl-note p { margin: 0; line-height: 1.6; }
+.wl-sign { font-family: var(--serif); font-style: italic; color: #ff6fa5; text-align: right; }
+.wl-can { text-align: left; display: grid; gap: 8px; margin-bottom: 28px; }
+.wl-can h2 { font-size: 1.05rem; margin: 0 0 4px; }
+.wl-can p { margin: 0; display: flex; gap: 8px; align-items: flex-start; color: var(--text-2); }
+.wl-can svg { width: 18px; height: 18px; flex: none; color: #ff6fa5; margin-top: 3px; }
+.wl-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.team-badge { display: inline-flex; align-items: center; gap: 8px; margin: 6px 0 8px; padding: 6px 14px 6px 6px; border-radius: 999px; font-weight: 800; font-size: 0.85rem;
+  color: #3a1530; background: linear-gradient(90deg, #ffd1e3, #ffe9b0); box-shadow: 0 6px 18px -8px rgba(255, 111, 165, 0.9); }
+.team-badge-heart { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: #fff; background: radial-gradient(circle at 35% 30%, #ffc2da, #ff6fa5 60%); }
+.team-badge-heart svg { width: 15px; height: 15px; }
+@media (prefers-reduced-motion: reduce) {
+  .wl-bit, .wl-badge-ring, .wl-badge-core, .wl-card { animation: none; }
+  .wl-confetti { display: none; }
+}

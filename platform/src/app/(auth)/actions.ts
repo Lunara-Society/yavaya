@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { hasUnseenWelcome } from '@/server/domains/access/welcome';
 import { db } from '@/server/db/client';
 import { serverEnv } from '@/config/env';
 import { VERIFICATION_RULES } from '@/config/business-rules';
@@ -132,6 +133,7 @@ export async function loginAction(
     return localizedError('error.validation_failed');
   }
 
+  let welcome = false;
   try {
     const context = await requestContext();
     const result = await authenticate(db(), { email, password }, context);
@@ -151,12 +153,14 @@ export async function loginAction(
     );
 
     await setSessionCookie(session.token, session.expiresAt);
+    welcome = await hasUnseenWelcome(db(), result.userId);
   } catch (error) {
     const clientError = toClientError(error);
     return localizedError(clientError.messageKey, clientError.details);
   }
 
-  redirect('/');
+  // Someone just named to the team sees their welcome first, once.
+  redirect(welcome ? '/welcome' : '/');
 }
 
 export type VerifyState =

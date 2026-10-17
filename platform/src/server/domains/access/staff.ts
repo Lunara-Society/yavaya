@@ -1,5 +1,5 @@
 import 'server-only';
-import { and, asc, desc, eq, ilike, isNull, ne, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, ilike, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { userRoles, users } from '@/server/db/schema';
 import { DomainError, errors } from '@/server/errors';
@@ -16,8 +16,28 @@ import { grantRole, requirePermission, revokeRole, type AuthContext } from './au
  * or by hand, never by a form that a stolen admin session could use to make
  * a second admin.
  */
-export const APPOINTABLE_ROLES = ['moderator', 'district_reviewer', 'safe_space_guardian', 'support'] as const;
+export const APPOINTABLE_ROLES = ['community_manager', 'moderator', 'district_reviewer', 'safe_space_guardian', 'support'] as const;
+
+/**
+ * Roles shown on the holder's public profile as a team badge. The others stay
+ * private on purpose: who reads Espacio Violeta's reports, or who can see
+ * accounts, is not something to advertise.
+ */
+export const PUBLIC_TEAM_ROLES = ['community_manager'] as const;
+
+/** The public team badge a member wears, if any. */
+export async function publicTeamRole(executor: Executor, userId: string): Promise<(typeof PUBLIC_TEAM_ROLES)[number] | null> {
+  const [row] = await executor
+    .select({ roleKey: userRoles.roleKey })
+    .from(userRoles)
+    .where(and(eq(userRoles.userId, userId), isNull(userRoles.revokedAt), eq(userRoles.scope, 'global'), inArray(userRoles.roleKey, [...PUBLIC_TEAM_ROLES]), or(isNull(userRoles.expiresAt), gt(userRoles.expiresAt, new Date()))))
+    .limit(1);
+  return (row?.roleKey as (typeof PUBLIC_TEAM_ROLES)[number] | undefined) ?? null;
+}
 export type AppointableRole = (typeof APPOINTABLE_ROLES)[number];
+
+/** Notification type of an appointment; unread, it means the welcome has not been seen. */
+export const STAFF_WELCOME_TYPE = 'staff.appointed';
 
 export type Member = { id: string; displayName: string; email: string; yayId: string; status: string; roles: string[] };
 
@@ -64,13 +84,15 @@ export async function staffList(executor: Executor, actor: AuthContext | null) {
 export async function appoint(tx: Executor, params: { actor: AuthContext | null; userId: string; role: string }): Promise<void> {
   const actor = await requirePermission(tx, params.actor, 'roles.manage');
   if (!(APPOINTABLE_ROLES as readonly string[]).includes(params.role)) throw errors.validation('staff.error.role');
-  const [user] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.userId)).limit(1);
+  const [user] = await tx.select({ status: users.status, displayName: users.displayName }).from(users).where(eq(users.id, params.userId)).limit(1);
   if (!user) throw errors.notFound('user');
   // Staff act for everyone; an account that has not confirmed its email, or is restricted, cannot.
   if (user.status !== 'active') throw new DomainError('conflict', 'staff.error.not_active');
   await grantRole(tx, { userId: params.userId, roleKey: params.role, grantedBy: actor.userId });
   await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: 'roles.appointed', subjectType: 'user', subjectId: params.userId, metadata: { role: params.role } });
-  await notify(tx, [{ userId: params.userId, category: 'account', type: 'staff.appointed', titleKey: `notify.staff.appointed.${params.role}`, href: '/admin' }]);
+  // The note opens the welcome page, and the next sign-in goes there too
+  // (see loginAction) until it has been seen once.
+  await notify(tx, [{ userId: params.userId, category: 'account', type: STAFF_WELCOME_TYPE, titleKey: `notify.staff.appointed.${params.role}`, params: { name: user.displayName }, href: '/welcome' }]);
 }
 
 export async function removeAppointment(tx: Executor, params: { actor: AuthContext | null; userId: string; role: string }): Promise<void> {
