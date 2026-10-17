@@ -272,6 +272,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.sanctuary_detail',
   },
   {
+    category: 'daily',
+    channel: 'in_app',
+    labelKey: 'settings.notify.daily',
+    detailKey: 'settings.notify.daily_detail',
+  },
+  {
     category: 'animals',
     channel: 'in_app',
     labelKey: 'settings.notify.animals',

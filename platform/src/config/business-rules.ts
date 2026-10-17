@@ -473,6 +473,20 @@ export const SANCTUARY_RULES = {
    * not so early that a phone buzzes at night.
    */
   wordDeliveryLocalHour: 6,
+  /**
+   * The daily light (a prayer, saying, quote or blessing for everyone, from
+   * Yavaya itself): the day's text changes, and members hear of it, at this
+   * local hour. The owner asked for 8 in the morning.
+   */
+  dailyLightLocalHour: 8,
+  /**
+   * For a member with no place, and for visitors, the day turns at this UTC
+   * hour instead — 08:00 in the region's westernmost offset (UTC−6), so
+   * nobody gets "tomorrow's" text in the evening.
+   */
+  dailyLightFallbackUtcHour: 14,
+  /** Members notified per scheduler run; the rest follow on the next tick. */
+  dailyLightBatchSize: 500,
 } as const;
 
 /**

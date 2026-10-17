@@ -586,6 +586,20 @@ Undecided (flagged rather than guessed):
   church is (`SANCTUARY_RULES.wordDeliveryLocalHour`), via the scheduler's
   `deliver-words` job. A word whose day passed while the scheduler was down
   is not sent late. Decided under the owner's delegation; retune freely.
+- **The daily light** (owner's request, Oct 2026): 365 texts written by
+  Yavaya — 92 prayers, 91 sayings, 91 quotes, 91 blessings — in
+  `src/i18n/daily/`, one a day, on the Sanctuary page. Deliberately not tied
+  to any one tradition: no names, scriptures or formulas of a particular
+  church, so anyone can read them. Quotes are Yavaya's own and unsigned on
+  purpose (attributing a line to someone who did not say it would be
+  inventing); sayings are popular proverbs. The text changes at 08:00 local
+  (`SANCTUARY_RULES.dailyLightLocalHour`; 14:00 UTC without a place) and the
+  `daily-light` job sends members one in-app note then — category `daily`,
+  switchable in settings, and never included in the email summary. Members
+  tick which kinds they want; default and "none ticked" mean all four, which
+  is what gives a different text every day of the year. Fewer kinds repeat
+  through the year on a shorter cycle. Editing a text is safe; inserting or
+  removing one shifts every later day.
 
 ---
 

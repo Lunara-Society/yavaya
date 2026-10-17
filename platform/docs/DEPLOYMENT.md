@@ -55,6 +55,7 @@ missed tick costs nothing and an overlapping one is harmless:
 | Purge expired rate limits | `jobs.cjs purge-rate-limits` | hourly |
 | Verify the audit chain | `jobs.cjs verify-audit-chain` | daily, alert on failure |
 | Deliver words prepared ahead | `jobs.cjs deliver-words` | every 15 min |
+| Daily light: tell members at their 8 a.m. | `jobs.cjs daily-light` | every 15 min |
 | Adoption follow-ups (30 days) | `jobs.cjs adoption-follow-ups` | hourly |
 | Close lost-and-found posts (60 days) | `jobs.cjs expire-lost-found` | hourly |
 | Close work posts (30 days) | `jobs.cjs expire-work-posts` | hourly |

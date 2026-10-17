@@ -27,6 +27,8 @@ import {
   type ServiceInput,
 } from '@/server/domains/sanctuary/service';
 import { SERVICE_ROWS } from '@/ui/sanctuary/config';
+import { setDailyKinds } from '@/server/domains/sanctuary/daily';
+import { isDailyKind } from '@/i18n/daily';
 
 /**
  * Sanctuary's mutations: plain forms, no JavaScript needed. A refusal
@@ -228,4 +230,18 @@ export async function resolveSanctuaryReportAction(formData: FormData): Promise<
   }
   revalidatePath('/sanctuary', 'layout');
   redirect('/admin/sanctuary?done=1');
+}
+
+/**
+ * Which kinds of daily light the member wants: the ticked boxes. Their own
+ * preference, so being signed in is the whole permission. Nothing ticked
+ * means everything (see `setDailyKinds`).
+ */
+export async function setDailyKindsAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const kinds = formData.getAll('kind').map(String).filter(isDailyKind);
+  await setDailyKinds(db(), session.user.userId, kinds);
+  revalidatePath('/sanctuary');
+  redirect('/sanctuary?saved=daily#daily');
 }

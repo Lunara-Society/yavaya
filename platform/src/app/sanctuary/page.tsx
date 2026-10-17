@@ -9,6 +9,17 @@ import { followedChurches, listChurches, listDevotionals } from '@/server/domain
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { DAILY_KINDS, dailyLight, type DailyKind } from '@/i18n/daily';
+import type { MessageKey } from '@/i18n/dictionaries/es';
+import { currentLightDate, memberTimezone, readDailyKinds } from '@/server/domains/sanctuary/daily';
+import { setDailyKindsAction } from './actions';
+
+const KIND_LABEL: Record<DailyKind, MessageKey> = {
+  prayer: 'sanctuary.daily.kind.prayer',
+  saying: 'sanctuary.daily.kind.saying',
+  quote: 'sanctuary.daily.kind.quote',
+  blessing: 'sanctuary.daily.kind.blessing',
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -22,18 +33,21 @@ export async function generateMetadata(): Promise<Metadata> {
  * and service times are meant to be found. Following a church, writing to
  * it, and registering one take an account.
  */
-export default async function SanctuaryPage({ searchParams }: { searchParams: Promise<{ q?: string; place?: string }> }) {
+export default async function SanctuaryPage({ searchParams }: { searchParams: Promise<{ q?: string; place?: string; saved?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const search = (query.q ?? '').trim().slice(0, 80) || undefined;
 
-  const [words, churches, mine, mineWords] = await Promise.all([
+  const [words, churches, mine, mineWords, kinds, timezone] = await Promise.all([
     listDevotionals(db(), { locale, limit: 6 }),
     listChurches(db(), { locale, placeCode: place, query: search }),
     userId ? followedChurches(db(), { userId, locale }) : Promise.resolve([]),
     userId ? listDevotionals(db(), { locale, followedBy: userId, limit: 3 }) : Promise.resolve([]),
+    userId ? readDailyKinds(db(), userId) : Promise.resolve([...DAILY_KINDS]),
+    userId ? memberTimezone(db(), userId) : Promise.resolve(null),
   ]);
+  const light = dailyLight(currentLightDate(timezone), kinds, locale);
   const yours = new Set(mineWords.map((word) => word.id));
   const others = words.filter((word) => !yours.has(word.id));
 
@@ -43,6 +57,37 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
 
       <div className="wrap sc-page">
         <div className="sc-main">
+          <section id="daily" className="card sc-daily" aria-labelledby="daily-title">
+            <h2 id="daily-title" className="sc-h-sm">
+              {t('sanctuary.daily.title')}
+            </h2>
+            <p className="sc-sub">{t(KIND_LABEL[light.kind])}</p>
+            <blockquote className="sc-daily-text">{light.text}</blockquote>
+            <p className="muted sc-hint">{t('sanctuary.daily.note')}</p>
+            {query.saved === 'daily' ? <p className="sc-daily-saved">{t('sanctuary.daily.saved')}</p> : null}
+            <details className="sc-daily-pick" open={query.saved === 'daily'}>
+              <summary>{t('sanctuary.daily.choose')}</summary>
+              {member ? (
+                <form action={setDailyKindsAction} className="sc-daily-form">
+                  {DAILY_KINDS.map((kind) => (
+                    <label key={kind} className="sc-daily-box">
+                      <input type="checkbox" name="kind" value={kind} defaultChecked={kinds.includes(kind)} />
+                      <span>{t(KIND_LABEL[kind])}</span>
+                    </label>
+                  ))}
+                  <button className="btn btn-line" type="submit">
+                    {t('sanctuary.daily.save')}
+                  </button>
+                  <p className="muted sc-hint">{t('sanctuary.daily.choose_hint')}</p>
+                </form>
+              ) : (
+                <p className="muted">
+                  <Link href="/login">{t('sanctuary.daily.sign_in')}</Link>
+                </p>
+              )}
+            </details>
+          </section>
+
           <section aria-labelledby="today">
             <h2 id="today" className="sc-h">
               {t('sanctuary.today.title')}

@@ -401,6 +401,7 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'referral.invitee_reward', value: REFERRAL_RULES.inviteeReward, description: 'Tokens for a new member who joined by invitation, on email verification' },
     { key: 'referral.max_rewarded_per_month', value: REFERRAL_RULES.maxRewardedPerMonth, description: 'Rewarded invitations per inviter per 30 days' },
     { key: 'sanctuary.max_churches_per_owner', value: SANCTUARY_RULES.maxChurchesPerOwner, description: 'Churches one member may register in Sanctuary' },
+    { key: 'sanctuary.daily_light_local_hour', value: SANCTUARY_RULES.dailyLightLocalHour, description: 'Local hour at which the daily prayer, saying, quote or blessing changes and members are told' },
     { key: 'sanctuary.max_devotionals_per_church_per_day', value: SANCTUARY_RULES.maxDevotionalsPerChurchPerDay, description: 'Prayers or words one church may publish for the same day' },
     { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },
     { key: 'demo.real_inventory_threshold', value: DEMO_CONTENT_RULES.realInventoryThreshold, description: 'Real items per district that end demo mode early' },

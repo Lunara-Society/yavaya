@@ -6,6 +6,7 @@ import { purgeExpiredSessions } from '@/server/auth/session';
 import { purgeExpiredRateLimits } from '@/server/security/rate-limit';
 import { verifyAuditChain } from '@/server/domains/audit/service';
 import { deliverScheduledWords } from '@/server/domains/sanctuary/service';
+import { deliverDailyLight } from '@/server/domains/sanctuary/daily';
 import { sendDailyDigests } from '@/server/domains/notifications/digest';
 import { sendAdoptionFollowUps } from '@/server/domains/animals/service';
 import { expireLostFound } from '@/server/domains/animals/lost-found';
@@ -100,6 +101,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `announced ${result.delivered} word(s) to ${result.notified} follower(s); ${result.skipped} past their day` };
   },
 
+  /** The daily prayer, saying, quote or blessing: members are told at their 8 o'clock. */
+  'daily-light': async () => {
+    const result = await deliverDailyLight(db());
+    return { summary: `announced ${result.notified} daily light(s)` };
+  },
+
   /** A month after an adoption, adopter and rescuer are asked how it is going. */
   'adoption-follow-ups': async () => {
     const result = await sendAdoptionFollowUps(db());
@@ -165,7 +172,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

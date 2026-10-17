@@ -1,6 +1,6 @@
 import 'server-only';
 import { createHmac } from 'node:crypto';
-import { and, desc, eq, gte, inArray, isNull, lte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, inArray, isNull, lte, ne, sql } from 'drizzle-orm';
 import type { Database, Executor } from '@/server/db/client';
 import { notificationPreferences, notifications } from '@/server/db/schema';
 import { serverEnv } from '@/config/env';
@@ -23,6 +23,13 @@ import type { EmailMessage } from './email/provider';
  */
 
 export const DIGEST_CATEGORY = 'digest';
+
+/**
+ * Notifications that never go into the summary. The daily light arrives for
+ * every member every morning; mailing it would turn a gentle in-app note into
+ * a daily email nobody asked for.
+ */
+const NOT_SUMMARISED = 'daily';
 
 /** Signs "this member may switch the summary off" without a session. */
 export function unsubscribeSignature(userId: string): string {
@@ -74,7 +81,7 @@ async function dueRecipients(database: Database, now: Date): Promise<Recipient[]
       )
       and exists (
         select 1 from notifications n
-        where n.user_id = u.id and n.read_at is null and n.emailed_at is null
+        where n.user_id = u.id and n.read_at is null and n.emailed_at is null and n.category <> ${NOT_SUMMARISED}
           and n.created_at >= ${oldest.toISOString()}::timestamptz and n.created_at <= ${youngest.toISOString()}::timestamptz
       )
       and not exists (
@@ -143,6 +150,7 @@ export async function sendDailyDigests(
           eq(notifications.userId, recipient.userId),
           isNull(notifications.readAt),
           isNull(notifications.emailedAt),
+          ne(notifications.category, NOT_SUMMARISED),
           gte(notifications.createdAt, oldest),
           lte(notifications.createdAt, youngest),
         ),
