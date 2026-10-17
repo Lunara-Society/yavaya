@@ -934,3 +934,67 @@ one (a unit test checks they match).
 orders per customer; 15 km maximum straight-line delivery distance; one
 order at a time per driver; drivers offline after 20 idle minutes; exact
 drop-off points and phone numbers erased 24 hours after an order ends.
+
+### How YavayaGo earns — decided October 2026 (owner's delegation)
+
+The owner asked for the model that works best, after weighing the big
+delivery apps' commission model, and delegated every choice. Decided:
+
+- **No commission, ever, on orders.** Restaurants in the region already pay
+  30–35% to the incumbent and say so publicly; "0% commission" is the one
+  promise a newcomer can make that they cannot, and it is what every
+  restaurant contacted has been told.
+- **A flat monthly plan instead** (`GO_PLAN_RULES`): 30 delivered orders a
+  month free; beyond that the Plan Negocio, US$19 a month. A flat fee is
+  collectable in a cash economy; a per-order commission would have to be
+  invoiced and chased store by store.
+- **Founding stores free for 12 months** from approval, for stores approved
+  on or before 31 March 2027 (`foundingUntil`, set at first approval and
+  backfilled by the seed for stores approved earlier). This keeps the
+  promise made in the outreach.
+- **Billing the plan is not built.** Stores see where they stand ("este mes:
+  12 de 30 gratis"); nothing is charged and nothing is blocked. Charging needs
+  a recurring card or transfer collection per country — `REQUIRES_CONFIGURATION`
+  on /status. Stores are to be told before it starts.
+- **Launch city: Managua** (`GO_TRIP_RULES.launchPlaceCode`, mirrored to the
+  `go.launch_place` setting). Chosen because the team, the WhatsApp line and
+  the first restaurants are there, motorcycle delivery is already how the
+  city orders, and one city with real volume beats eight countries with
+  none. Other cities keep working; Managua is what is shown first.
+- **Gift orders** ("es para otra persona"): anyone can order to someone
+  else's door — family abroad sending food home is the target. The person
+  receiving pays in cash; paying by card from abroad needs the same payout
+  capability as card orders and is not built.
+- **WhatsApp ordering link**: each approved store gets its public page link
+  and a ready text for its WhatsApp Business auto-reply, so orders arrive
+  structured instead of typed out by hand.
+
+### Viajes y mandados — rides, parcels, errands, personal help
+
+**Live.** A customer asks for a checked driver for a ride (motorcycle or
+car), a parcel, an errand (buy or collect something, with a spending limit
+repaid in cash on delivery) or personal help in one place. They propose the
+fare; online drivers in that city whose vehicle fits accept it or counter;
+the customer chooses. Cash to the driver, who keeps all of it.
+
+Privacy: before a driver is chosen, drivers see the kind, description,
+distance, fare and a ~1 km rough area — never the door or the phone. The
+chosen driver sees both until the trip ends; they are erased 24 hours later.
+The customer can share a live, read-only link with someone they trust; it
+dies when the trip ends. One job per driver at a time, across orders and
+trips.
+
+Operational guesses (in `GO_TRIP_RULES`, retunable): 20 minutes to choose
+before a request closes; one active request per customer; 60 km maximum;
+one passenger on a motorcycle, four in a car; counter-offers at most five
+times the customer's price.
+
+**Owner decisions still open:**
+- **Legality of paid rides per country.** Carrying passengers for money may
+  need a transport licence or permit (and insurance) in some countries.
+  Yavaya connects people and checks drivers; it does not hold a transport
+  licence. Confirm with a local lawyer before promoting rides outside
+  parcels and errands.
+- **Driver earnings model.** Drivers keep 100% at launch. A future weekly
+  driver plan (never a cut of fares) is possible; not decided.
+- **Ratings after a trip** are not built.

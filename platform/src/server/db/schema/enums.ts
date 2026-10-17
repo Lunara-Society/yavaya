@@ -344,3 +344,21 @@ export const goOrderStatusEnum = pgEnum('go_order_status', [
   'cancelled', // by the customer before the store accepted, or by the store
   'rejected', // the store could not take it
 ]);
+
+/** Viajes y mandados: what the person needs a driver for. */
+export const goTripKindEnum = pgEnum('go_trip_kind', [
+  'ride', // take me somewhere
+  'parcel', // carry this from here to there
+  'errand', // buy or collect something and bring it
+  'assist', // personal help: queue for me, carry shopping, go with someone
+]);
+export const goTripStatusEnum = pgEnum('go_trip_status', [
+  'open', // waiting for drivers' offers
+  'accepted', // the customer chose a driver, who is on the way
+  'arrived', // the driver is at the pick-up point
+  'in_progress', // under way
+  'completed',
+  'cancelled',
+  'expired', // nobody was chosen in time
+]);
+export const goTripOfferStatusEnum = pgEnum('go_trip_offer_status', ['pending', 'accepted', 'declined', 'withdrawn']);

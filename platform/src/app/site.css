@@ -1771,6 +1771,39 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 @media (prefers-reduced-motion: reduce) { .go-pin-driver::before, .go-pin-me::before { animation: none; } }
 .go-order-title { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; }
 .go-code { font-family: ui-monospace, monospace; font-size: .8em; letter-spacing: .12em; padding: 2px 10px; border-radius: 8px; background: color-mix(in srgb, var(--yavayago) 18%, transparent); color: var(--yavayago); }
+.go-trips-banner { display: grid; gap: 4px; margin: 22px 0 0; padding: 18px 20px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--yavayago) 55%, var(--line)); background: linear-gradient(120deg, color-mix(in srgb, var(--yavayago) 18%, var(--surface)), var(--surface)); }
+.go-trips-banner strong { color: var(--yavayago); }
+.go-trips-banner span { color: var(--text-2); font-size: .95rem; }
+.go-launch { display: inline-block; margin: 6px 0 4px; padding: 6px 14px; border-radius: 999px; font-weight: 700; background: color-mix(in srgb, var(--yavayago) 20%, transparent); }
+.go-how { list-style: none; counter-reset: how; padding: 0; margin: 24px 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.go-how li { counter-increment: how; padding: 16px 18px 16px 52px; position: relative; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); }
+.go-how li::before { content: counter(how); position: absolute; left: 16px; top: 15px; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .85rem; background: var(--yavayago); color: #fff; }
+.go-kinds { border: 0; padding: 0; margin: 0 0 8px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.go-kind { display: grid !important; gap: 4px; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); cursor: pointer; }
+.go-kind input { position: absolute; opacity: 0; pointer-events: none; }
+.go-kind.on { border-color: var(--yavayago); box-shadow: 0 0 0 2px color-mix(in srgb, var(--yavayago) 40%, transparent); }
+.go-kind span { font-size: .85rem; }
+.go-two { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.go-trip-more { margin-top: 36px; }
+.go-offers { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 12px; }
+.go-offer { display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); }
+.go-offer img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.go-offer p { margin: 2px 0; }
+.go-offer-price strong { font-size: 1.15rem; }
+.go-counter { color: var(--text-3); font-size: .85rem; }
+@media (max-width: 520px) { .go-offer { grid-template-columns: 52px 1fr; } .go-offer img { width: 52px; height: 52px; } .go-offer form { grid-column: 1 / -1; } }
+.go-waiting { color: var(--text-2); font-style: italic; }
+.go-share { margin: 18px 0; padding: 16px 18px; border-radius: var(--radius-sm); border: 1px dashed color-mix(in srgb, var(--yavayago) 55%, var(--line)); }
+.go-offer-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+.go-offer-form label { display: grid; gap: 4px; font-size: .85rem; }
+.go-offer-form input { width: 110px; }
+.go-plan, .go-link-box { margin: 18px 0; padding: 18px 20px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); display: grid; gap: 8px; }
+.go-plan.founding { border-color: color-mix(in srgb, var(--yavayago) 60%, var(--line)); background: linear-gradient(120deg, color-mix(in srgb, var(--yavayago) 14%, var(--surface)), var(--surface)); }
+.go-plan p, .go-link-box p { margin: 0; }
+.go-plan-zero { font-weight: 800; color: var(--yavayago); }
+.go-link-input, .go-link-text { width: 100%; font-family: inherit; }
+.go-for-other { margin-top: 6px; }
 .go-steps { list-style: none; padding: 0; margin: 18px 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; counter-reset: step; }
 .go-steps li { position: relative; padding-top: 14px; font-size: .82rem; color: var(--text-3); text-align: center; border-top: 4px solid var(--line-strong); }
 .go-steps li.done { color: var(--text); border-top-color: var(--yavayago); font-weight: 700; }

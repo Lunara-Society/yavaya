@@ -16,6 +16,7 @@ import { expireWorkPosts } from '@/server/domains/work/service';
 import { reconcilePendingPayments } from '@/server/domains/payments/service';
 import { grantDueStarterTokens } from '@/server/domains/tokens/service';
 import { goUpkeep } from '@/server/domains/go/service';
+import { tripsUpkeep } from '@/server/domains/go/trips';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -140,8 +141,11 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
   /** YavayaGo: unanswered orders cancelled, idle drivers offline, old drop-off points erased. */
   'go-upkeep': async () => {
     const result = await goUpkeep(db());
-    if (result.expired + result.offline + result.erased === 0) return { summary: 'no YavayaGo upkeep needed' };
-    return { summary: `cancelled ${result.expired} unanswered order(s), ${result.offline} driver(s) offline, erased ${result.erased} old address(es)` };
+    const trips = await tripsUpkeep(db());
+    if (result.expired + result.offline + result.erased + trips.expired + trips.erased === 0) return { summary: 'no YavayaGo upkeep needed' };
+    return {
+      summary: `cancelled ${result.expired} unanswered order(s), ${result.offline} driver(s) offline, erased ${result.erased} old address(es); closed ${trips.expired} unchosen trip request(s), erased ${trips.erased} old trip point(s)`,
+    };
   },
 
   /** Days 1 to 6 of the starter tokens, for members verified in the last 7 days. */

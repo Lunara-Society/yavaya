@@ -79,7 +79,9 @@ export async function placeOrderAction(formData: FormData): Promise<void> {
     whatsapp: field(formData, 'whatsapp'),
     payingWith: field(formData, 'payingWith'),
     note: field(formData, 'note'),
+    recipientName: formData.get('forOther') === 'on' ? field(formData, 'recipientName') : '',
   });
+  if (formData.get('forOther') === 'on' && !field(formData, 'recipientName').trim()) redirect(back(storePath, 'go.error.recipient_name'));
   if (!parsed.success) redirect(back(storePath, parsed.error.issues[0]?.message ?? 'error.validation_failed'));
   const limit = await consumeRateLimit(db(), RATE_LIMITS.publishStandard, `go-order:${session.user.userId}`);
   if (!limit.allowed) redirect(back(storePath, 'go.error.rate_limited'));

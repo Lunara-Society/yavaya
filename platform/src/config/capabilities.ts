@@ -339,12 +339,29 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    // Rides, parcels, errands and personal help with fares the customer
+    // proposes and drivers accept or counter; cash to the driver.
+    key: 'yavayago_trips',
+    nameKey: 'capability.yavayago_trips.name',
+    detailKey: 'capability.yavayago_trips.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'yavayago_store_plan',
+    nameKey: 'capability.yavayago_store_plan.name',
+    detailKey: 'capability.yavayago_store_plan.detail',
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'district',
+    blockedBy: 'Stores see their founding year and their free orders this month, but charging the Plan Negocio is not built: it needs recurring collection (card or transfer) per country. Until then nothing is charged and nothing is blocked; stores are to be told before it starts.',
+  },
+  {
     key: 'yavayago_card_payments',
     nameKey: 'capability.yavayago_card_payments.name',
     detailKey: 'capability.yavayago_card_payments.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'district',
-    blockedBy: 'Orders are paid in cash to the driver. Paying by card would make Yavaya collect money for stores and drivers and pay it out (a marketplace payout account and a regulatory decision per country). Not built; see CONFIGURATION.md.',
+    blockedBy: 'Orders and trips are paid in cash to the driver, including gift orders sent from abroad (the person receiving pays). Paying by card would make Yavaya collect money for stores and drivers and pay it out (a marketplace payout account and a regulatory decision per country). Not built; see CONFIGURATION.md.',
   },
 
   // --- Integrations ---------------------------------------------------------

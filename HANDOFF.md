@@ -59,6 +59,17 @@ Read this first in a new chat. No secrets here; they live in Railway variables.
 - **Pitch (only what is real):** 0% commission; they set their own prices and delivery fee; drivers checked by a person; live map tracking; cash on delivery. Register at yavaya.lat/yavayago.
 - **Calls:** offer a call with the team. The owner makes it from the app.
 
+## Business model and YavayaGo (decided Oct 17, 2026, owner delegated)
+- **No commission on orders, ever.** Flat restaurant plan instead: 30 delivered orders/month free, then Plan Negocio US$19/month (billing NOT built; nothing charged).
+- **Founding restaurants:** free 12 months from approval, for stores approved by 2027-03-31.
+- **Launch city: Managua** (setting `go.launch_place`).
+- **Gift orders:** "es para otra persona" at checkout. The recipient pays cash; card from abroad is not built.
+- **WhatsApp ordering link** plus ready auto-reply text in each store's dashboard.
+- **Viajes y mandados** (/yavayago/viajes): rides, parcels, errands and personal help.
+  - Customer proposes the fare; drivers accept or counter; customer chooses; cash; 0% commission.
+  - Live map and a share link for a trusted contact.
+- **Open for the owner:** legality of paid passenger rides per country, the future driver plan, and ratings.
+
 ## Open items
 - Owner: rotate the Dualhook key, and add a payment method in WhatsApp Manager if templates stay pending.
 - Brand tagline ("…de Centroamérica") with Mexico now open: owner's decision.

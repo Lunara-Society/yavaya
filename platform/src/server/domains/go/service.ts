@@ -18,6 +18,10 @@ import { chargeForAction } from '@/server/domains/tokens/service';
 import { getSetting } from '@/server/domains/platform/settings';
 import { featuredFirst, featuredUntilAfterPurchase, isFeatured } from '@/server/domains/promotion/featured';
 import { publishActivity } from '@/server/domains/notifications/activity';
+import { foundingUntilFor } from './plan';
+import { activeMember, cityExists, currencyOf, DRIVER_ACTIVE_ORDER_STATUSES, driverCard, driverIsBusy, type DriverCard } from './shared';
+
+export type { DriverCard };
 
 /**
  * YavayaGo: stores, their menus, the drivers Yavaya checked, and the orders
@@ -44,7 +48,7 @@ export const DRIVER_PHOTO_PURPOSE = 'go_driver_photo';
 export const DRIVER_DOCUMENT_PURPOSE = 'go_driver_document';
 
 const OPEN_STATUSES = ['placed', 'accepted', 'ready', 'picked_up'] as const;
-const DRIVER_ACTIVE_STATUSES = ['accepted', 'ready', 'picked_up'] as const;
+const DRIVER_ACTIVE_STATUSES = DRIVER_ACTIVE_ORDER_STATUSES;
 
 const text = (min: number, max: number, key: string) =>
   z
@@ -75,30 +79,6 @@ const money = (key: string) =>
     if (minor === null) ctx.addIssue({ code: 'custom', message: key });
     return minor ?? 0;
   });
-
-async function activeMember(executor: Executor, userId: string): Promise<{ displayName: string }> {
-  const [user] = await executor.select({ status: users.status, displayName: users.displayName }).from(users).where(eq(users.id, userId)).limit(1);
-  if (!user) throw errors.unauthenticated();
-  if (user.status === 'pending_verification') throw new DomainError('forbidden', 'go.error.verify_email');
-  if (user.status !== 'active') throw new DomainError('forbidden', 'go.error.account_restricted');
-  return { displayName: user.displayName };
-}
-
-/** The currency of the country a place belongs to. A store prices in it; nothing converts. */
-async function currencyOf(executor: Executor, locationId: string): Promise<string> {
-  const [self] = await executor.select({ path: locations.path, currency: locations.currencyCode }).from(locations).where(eq(locations.id, locationId)).limit(1);
-  if (!self) throw errors.validation('go.error.location');
-  if (self.currency) return self.currency;
-  const chain = self.path.length > 0 ? await executor.select({ currency: locations.currencyCode, depth: locations.depth }).from(locations).where(inArray(locations.code, self.path)).orderBy(desc(locations.depth)) : [];
-  const currency = chain.find((node) => node.currency)?.currency;
-  if (!currency) throw errors.validation('go.error.location');
-  return currency;
-}
-
-async function cityExists(executor: Executor, locationId: string): Promise<void> {
-  const [row] = await executor.select({ id: locations.id }).from(locations).where(and(eq(locations.id, locationId), eq(locations.isActive, true))).limit(1);
-  if (!row) throw errors.validation('go.error.location');
-}
 
 // --- Stores ------------------------------------------------------------------------
 
@@ -229,9 +209,11 @@ export async function reviewStore(tx: Executor, params: { actor: AuthContext | n
   if ((params.decision === 'reject' || params.decision === 'suspend') && !params.note) throw errors.validation('go.error.review_note');
   const now = params.now ?? new Date();
   const status = params.decision === 'approve' || params.decision === 'reinstate' ? 'approved' : params.decision === 'reject' ? 'rejected' : 'suspended';
+  // A first approval before the founding cut-off starts the store's free year.
+  const founding = params.decision === 'approve' && !store.foundingUntil ? foundingUntilFor(now) : null;
   await tx
     .update(goStores)
-    .set({ status, reviewNote: params.note, reviewedBy: actor.userId, reviewedAt: now, updatedAt: now, ...(status === 'approved' ? {} : { isOpen: false }) })
+    .set({ status, reviewNote: params.note, reviewedBy: actor.userId, reviewedAt: now, updatedAt: now, ...(status === 'approved' ? {} : { isOpen: false }), ...(founding ? { foundingUntil: founding } : {}) })
     .where(eq(goStores.id, store.id));
   if (status === 'suspended') await cancelStoreOrders(tx, store.id, 'store_suspended', now);
   await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: `go.store_${status}`, subjectType: STORE, subjectId: store.id, district: 'yavayago' });
@@ -514,6 +496,14 @@ export const orderInputSchema = z.object({
     .transform((value) => value.replace(/\s+/g, ' ').trim())
     .pipe(z.string().max(300, { message: 'go.error.note' }))
     .transform((value) => value || null),
+  /** Set when the order is a gift for someone else; the WhatsApp is then theirs. */
+  recipientName: z
+    .string()
+    .transform((value) => value.replace(/\s+/g, ' ').trim())
+    .pipe(z.string().max(80, { message: 'go.error.recipient_name' }))
+    .transform((value) => value || null)
+    .optional()
+    .default(''),
 });
 export type OrderInput = z.output<typeof orderInputSchema>;
 
@@ -577,6 +567,7 @@ export async function placeOrder(tx: Executor, params: { customerUserId: string;
       dropoffLongitude: input.dropoffLongitude,
       dropoffDirections: input.dropoffDirections,
       customerWhatsappE164: input.whatsapp,
+      recipientName: input.recipientName ?? null,
       note: input.note,
       placedAt: now,
       updatedAt: now,
@@ -686,8 +677,7 @@ export async function claimOrder(tx: Executor, params: { userId: string; orderId
   const driver = await activeDriver(tx, params.userId);
   if (!driver.online) throw new DomainError('forbidden', 'go.error.driver_offline');
   const now = params.now ?? new Date();
-  const [busy] = await tx.select({ id: goOrders.id }).from(goOrders).where(and(eq(goOrders.driverUserId, params.userId), inArray(goOrders.status, [...DRIVER_ACTIVE_STATUSES]))).limit(1);
-  if (busy) throw errors.conflict('go.error.driver_busy');
+  if (await driverIsBusy(tx, params.userId)) throw errors.conflict('go.error.driver_busy');
   const order = await lockOrder(tx, params.orderId);
   if (order.driverUserId) throw errors.conflict('go.error.already_taken');
   if (order.status !== 'accepted' && order.status !== 'ready') throw errors.conflict('go.error.order_state');
@@ -742,18 +732,6 @@ export async function markDelivered(tx: Executor, params: { userId: string; orde
 }
 
 // --- What each side sees -----------------------------------------------------------------
-
-export type DriverCard = { name: string; photoMediaId: string; vehicleType: string; vehicleDescription: string; plate: string | null; whatsappE164: string };
-
-async function driverCard(executor: Executor, userId: string): Promise<DriverCard | null> {
-  const [row] = await executor
-    .select({ name: users.displayName, photoMediaId: goDrivers.photoMediaId, vehicleType: goDrivers.vehicleType, vehicleDescription: goDrivers.vehicleDescription, plate: goDrivers.plate, whatsappE164: goDrivers.whatsappE164 })
-    .from(goDrivers)
-    .innerJoin(users, eq(users.id, goDrivers.userId))
-    .where(eq(goDrivers.userId, userId))
-    .limit(1);
-  return row ?? null;
-}
 
 /** The customer's view of their own order, with the driver's card once assigned. */
 export async function orderForCustomer(executor: Executor, userId: string, orderId: string) {
@@ -945,7 +923,7 @@ export async function goUpkeep(database: Database, now = new Date()): Promise<{ 
   const eraseBefore = new Date(now.getTime() - 24 * 3_600_000);
   const erased = await database
     .update(goOrders)
-    .set({ dropoffLatitude: null, dropoffLongitude: null, dropoffDirections: null, customerWhatsappE164: null })
+    .set({ dropoffLatitude: null, dropoffLongitude: null, dropoffDirections: null, customerWhatsappE164: null, recipientName: null })
     .where(and(lt(goOrders.closedAt, eraseBefore), or(sql`${goOrders.dropoffLatitude} is not null`, sql`${goOrders.customerWhatsappE164} is not null`)))
     .returning({ id: goOrders.id });
 

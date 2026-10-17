@@ -56,8 +56,11 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
           <h1>{t('go.home.title')}</h1>
           <p className="lead">{t('go.home.lead')}</p>
           <div className="btn-row">
+            <Link className="btn btn-gold" href="/yavayago/viajes">
+              {t('go.home.trips')}
+            </Link>
             {member ? (
-              <Link className="btn btn-gold" href="/yavayago/orders">
+              <Link className="btn btn-line" href="/yavayago/orders">
                 {t('go.home.my_orders')}
               </Link>
             ) : null}
@@ -72,6 +75,11 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
       </section>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
+        <Link className="go-trips-banner" href="/yavayago/viajes">
+          <strong>{t('go.home.trips_banner_title')}</strong>
+          <span>{t('go.home.trips_banner_text')}</span>
+        </Link>
+
         <ul className="go-promises">
           <li>
             <strong>{t('go.promise.driver_title')}</strong> {t('go.promise.driver_text')}

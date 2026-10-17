@@ -24,13 +24,14 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES, GO_RULES, REFERRAL_RULES, WORK_RULES } from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
 import { TREASURY_HANDLE } from '@/server/domains/tokens/service';
 import { recordAudit } from '@/server/domains/audit/service';
 import { grantRole } from '@/server/domains/access/authorize';
+import { backfillFoundingStores } from '@/server/domains/go/plan';
 import { applyRule } from '@/server/domains/reputation/service';
 import { canonicalEmail } from '@/server/domains/identity/normalize';
 import { GEOGRAPHY_SEED } from './geography-data';
@@ -405,6 +406,10 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'sanctuary.max_devotionals_per_church_per_day', value: SANCTUARY_RULES.maxDevotionalsPerChurchPerDay, description: 'Prayers or words one church may publish for the same day' },
     { key: 'mercadito.restricted_categories_unverified', value: MERCADITO_RULES.restrictedCategoriesForUnverified, description: 'Categories closed to sellers without identity verification (undecided; empty)' },
     { key: 'demo.real_inventory_threshold', value: DEMO_CONTENT_RULES.realInventoryThreshold, description: 'Real items per district that end demo mode early' },
+    { key: 'go.free_orders_per_month', value: GO_PLAN_RULES.freeOrdersPerMonth, description: 'YavayaGo: delivered orders a month a store gets free outside its founding year' },
+    { key: 'go.plan_price_usd_cents', value: GO_PLAN_RULES.planPriceUsdCents, description: 'YavayaGo: Plan Negocio, US cents a month (billing not built yet)' },
+    { key: 'go.launch_place', value: GO_TRIP_RULES.launchPlaceCode, description: 'YavayaGo: location code of the launch city, shown first' },
+    { key: 'go.trip_offer_window_minutes', value: GO_TRIP_RULES.offerWindowMinutes, description: 'Viajes y mandados: minutes an open request waits for the customer to choose a driver' },
     { key: 'go.store_answer_minutes', value: GO_RULES.storeAnswerMinutes, description: 'YavayaGo: minutes a store has to accept an order before it is cancelled' },
     { key: 'go.max_open_orders_per_customer', value: GO_RULES.maxOpenOrdersPerCustomer, description: 'YavayaGo: open cash orders one customer may have at once' },
     { key: 'go.max_delivery_km', value: GO_RULES.maxDeliveryKm, description: 'YavayaGo: straight-line delivery limit from the store' },
@@ -562,6 +567,9 @@ async function main(): Promise<void> {
   await seedTreasury(database);
   await bootstrapAdministrator(database);
   await backfillVerificationRewards(database);
+  const founding = await backfillFoundingStores(database);
+  // eslint-disable-next-line no-console
+  if (founding > 0) console.log(`founding stores dated: ${founding}`);
 
   const [{ count } = { count: 0 }] = await database
     .select({ count: sql<number>`count(*)::int` })

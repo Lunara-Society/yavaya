@@ -2,7 +2,7 @@ import { boolean, doublePrecision, index, integer, jsonb, pgTable, text, timesta
 import { users } from './identity';
 import { locations } from './geography';
 import { media } from './media';
-import { goDriverStatusEnum, goOrderStatusEnum, goStoreStatusEnum } from './enums';
+import { goDriverStatusEnum, goOrderStatusEnum, goStoreStatusEnum, goTripKindEnum, goTripOfferStatusEnum, goTripStatusEnum } from './enums';
 
 /**
  * YavayaGo: delivery from local stores, by drivers Yavaya has checked.
@@ -49,6 +49,13 @@ export const goStores = pgTable(
     isOpen: boolean('is_open').notNull().default(false),
     /** Paid placement: listed first, labelled "Destacado", until this moment. */
     featuredUntil: timestamp('featured_until', { withTimezone: true }),
+    /**
+     * A founding store uses the plan free until this moment, whatever its
+     * orders. Set once, at first approval, for stores approved before the
+     * founding cut-off (see GO_PLAN_RULES): the "0% commission, free" promise
+     * made to the first restaurants is kept in the data, not in someone's memory.
+     */
+    foundingUntil: timestamp('founding_until', { withTimezone: true }),
     status: goStoreStatusEnum('status').notNull().default('pending'),
     reviewNote: text('review_note'),
     reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
@@ -156,6 +163,12 @@ export const goOrders = pgTable(
     dropoffLongitude: doublePrecision('dropoff_longitude'),
     dropoffDirections: text('dropoff_directions'),
     customerWhatsappE164: text('customer_whatsapp_e164'),
+    /**
+     * When the order is for someone else — family in another city, a friend
+     * who is ill — the name the driver asks for at the door. The WhatsApp
+     * above is then theirs. Null when the customer receives it themselves.
+     */
+    recipientName: text('recipient_name'),
     note: text('note'),
     placedAt: timestamp('placed_at', { withTimezone: true }).notNull().defaultNow(),
     acceptedAt: timestamp('accepted_at', { withTimezone: true }),
@@ -188,6 +201,106 @@ export const goTracking = pgTable('go_tracking', {
   latitude: doublePrecision('latitude').notNull(),
   longitude: doublePrecision('longitude').notNull(),
   /** Metres, as the phone reports it. */
+  accuracy: integer('accuracy'),
+  heading: integer('heading'),
+  recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
+ * Viajes y mandados: a driver for anything — a ride, a parcel, an errand, a
+ * hand with something. The customer proposes a price; drivers accept it or
+ * offer their own; the customer chooses. Paid in cash to the driver, who
+ * keeps all of it (no commission at launch).
+ *
+ * Privacy is the same bargain as orders: until the customer chooses a
+ * driver, drivers see only the kind of job, the distance and a rough area;
+ * the exact pick-up and drop-off and the customer's WhatsApp go to the chosen
+ * driver alone, and are erased a day after the trip ends.
+ */
+export const goTrips = pgTable(
+  'go_trips',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    code: text('code').notNull(),
+    kind: goTripKindEnum('kind').notNull(),
+    customerUserId: uuid('customer_user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    driverUserId: uuid('driver_user_id').references(() => users.id, { onDelete: 'set null' }),
+    /** The city it happens in; drivers of that city see it. */
+    locationId: uuid('location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'restrict' }),
+    /** `any`, or a vehicle key from config/go.ts. */
+    vehicleWanted: text('vehicle_wanted').notNull().default('any'),
+    passengers: integer('passengers').notNull().default(1),
+    /** What to carry, buy or do. Optional for a ride. */
+    description: text('description'),
+    pickupLatitude: doublePrecision('pickup_latitude'),
+    pickupLongitude: doublePrecision('pickup_longitude'),
+    pickupDirections: text('pickup_directions'),
+    /** Null for help given in one place. */
+    dropoffLatitude: doublePrecision('dropoff_latitude'),
+    dropoffLongitude: doublePrecision('dropoff_longitude'),
+    dropoffDirections: text('dropoff_directions'),
+    /** Straight line, pick-up to drop-off, kept after the points are erased. */
+    distanceKm: doublePrecision('distance_km'),
+    currency: text('currency').notNull(),
+    offeredFareMinor: integer('offered_fare_minor').notNull(),
+    agreedFareMinor: integer('agreed_fare_minor'),
+    /** For an errand: the most the driver may spend on the purchase, repaid in cash on delivery. */
+    purchaseBudgetMinor: integer('purchase_budget_minor'),
+    customerWhatsappE164: text('customer_whatsapp_e164'),
+    /** Opens a read-only live view for someone the customer trusts. Rotated never; dies with the trip. */
+    shareToken: text('share_token').notNull(),
+    status: goTripStatusEnum('status').notNull().default('open'),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    acceptedAt: timestamp('accepted_at', { withTimezone: true }),
+    arrivedAt: timestamp('arrived_at', { withTimezone: true }),
+    startedAt: timestamp('started_at', { withTimezone: true }),
+    completedAt: timestamp('completed_at', { withTimezone: true }),
+    closedAt: timestamp('closed_at', { withTimezone: true }),
+    closedReason: text('closed_reason'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('go_trips_code_key').on(table.code),
+    uniqueIndex('go_trips_share_key').on(table.shareToken),
+    index('go_trips_customer_idx').on(table.customerUserId, table.createdAt),
+    index('go_trips_driver_idx').on(table.driverUserId, table.status),
+    index('go_trips_open_idx').on(table.status, table.locationId, table.createdAt),
+  ],
+);
+
+/** A driver's answer to an open trip: the customer's price, or their own. */
+export const goTripOffers = pgTable(
+  'go_trip_offers',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tripId: uuid('trip_id')
+      .notNull()
+      .references(() => goTrips.id, { onDelete: 'cascade' }),
+    driverUserId: uuid('driver_user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    fareMinor: integer('fare_minor').notNull(),
+    /** Minutes until the driver can be at the pick-up point. */
+    etaMinutes: integer('eta_minutes').notNull(),
+    status: goTripOfferStatusEnum('status').notNull().default('pending'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('go_trip_offers_key').on(table.tripId, table.driverUserId), index('go_trip_offers_trip_idx').on(table.tripId, table.status)],
+);
+
+/** Where the driver is on a trip: the latest point only, deleted when the trip ends. */
+export const goTripTracking = pgTable('go_trip_tracking', {
+  tripId: uuid('trip_id')
+    .primaryKey()
+    .references(() => goTrips.id, { onDelete: 'cascade' }),
+  latitude: doublePrecision('latitude').notNull(),
+  longitude: doublePrecision('longitude').notNull(),
   accuracy: integer('accuracy'),
   heading: integer('heading'),
   recordedAt: timestamp('recorded_at', { withTimezone: true }).notNull().defaultNow(),

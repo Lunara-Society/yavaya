@@ -553,6 +553,57 @@ export const GO_RULES = {
 } as const;
 
 /**
+ * How YavayaGo earns, decided by the owner's delegation (Oct 2026) after
+ * weighing the commission model of the big delivery apps.
+ *
+ * No commission, ever: restaurants in the region already pay 30–35% to the
+ * incumbents and say so publicly; "0% commission" is the one thing a new
+ * app can promise that they cannot. Instead a store pays a flat monthly
+ * plan once it gets real volume from Yavaya — easy to collect in a cash
+ * economy, where a per-order commission would have to be chased store by
+ * store. Stores approved before the founding cut-off use it free for their
+ * first year, which is what the first restaurants were told.
+ *
+ * Billing the plan is not built (see the capability register); until it is,
+ * nothing is charged and nothing is blocked — the store simply sees where it
+ * stands.
+ */
+export const GO_PLAN_RULES = {
+  /** Delivered orders per calendar month a store gets free, beyond its founding year. */
+  freeOrdersPerMonth: 30,
+  /** The Plan Negocio, in US cents a month, shown in dollars in every market. */
+  planPriceUsdCents: 1900,
+  /** Stores approved on or before this date are founding stores. */
+  foundingCutoff: '2027-03-31',
+  foundingMonths: 12,
+} as const;
+
+/**
+ * Viajes y mandados: rides, parcels, errands and personal help, priced the
+ * way people here already agree a fare — the customer proposes, drivers
+ * accept or counter, the customer chooses. Drivers keep the whole fare.
+ */
+export const GO_TRIP_RULES = {
+  /** An open request nobody was chosen for closes after this. */
+  offerWindowMinutes: 20,
+  /** Requests a customer may have going at once. */
+  maxActivePerCustomer: 1,
+  maxDistanceKm: 60,
+  maxEtaMinutes: 120,
+  /** Riders on a car trip; a motorcycle carries one. */
+  maxPassengers: 4,
+  descriptionMaxLength: 500,
+  /** A counter-offer may not be more than this many times the customer's price — a brake on absurd bids. */
+  maxCounterMultiple: 5,
+  /** Drivers told of a new request at most. */
+  alertDrivers: 50,
+  /** Rough area shown before a driver is chosen: coordinates rounded to this many decimals (~1 km). */
+  roughAreaDecimals: 2,
+  /** The city where YavayaGo starts, as a location code; operations can move it. */
+  launchPlaceCode: 'ca.ni.mn.managua',
+} as const;
+
+/**
  * Places and the live feed.
  *
  * Size tiers are a reading aid in the place picker ("ciudad grande",

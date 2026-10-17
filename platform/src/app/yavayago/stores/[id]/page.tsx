@@ -111,6 +111,11 @@ export default async function StorePage({ params, searchParams }: { params: Prom
               place: t('go.checkout.place'),
               signIn: t('go.checkout.sign_in'),
               closed: own ? t('go.cart.own_store') : t('go.cart.closed'),
+              forOther: t('go.checkout.for_other'),
+              forOtherHint: t('go.checkout.for_other_hint'),
+              recipientName: t('go.checkout.recipient_name'),
+              recipientWhatsapp: t('go.checkout.recipient_whatsapp'),
+              recipientPays: t('go.checkout.recipient_pays'),
               map: mapLabels(t),
             }}
           />

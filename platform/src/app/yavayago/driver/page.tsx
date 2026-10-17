@@ -11,6 +11,9 @@ import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, waLink } from '@/ui/go/format';
 import { availableOrders, driverCurrentOrder, myDriver } from '@/server/domains/go/service';
+import { availableTrips, driverCurrentTrip } from '@/server/domains/go/trips';
+import { arrivedAction, completeTripAction, dropTripAction, offerTripAction, startTripAction, withdrawOfferAction } from '../viajes/actions';
+import { moneyInput } from '@/ui/go/format';
 import { claimAction, deliveredAction, driverOnlineAction, pickedUpAction, releaseAction } from '../actions';
 import { mapLabels } from '../labels';
 import { PlacePicker } from '@/ui/components/place-picker';
@@ -30,13 +33,19 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
   if (!userId) redirect('/login?next=/yavayago/driver');
   const driver = await myDriver(db(), userId);
   const approved = driver?.status === 'approved';
-  const [current, available] = await Promise.all([approved ? driverCurrentOrder(db(), userId) : Promise.resolve(null), approved && driver.online ? availableOrders(db(), userId) : Promise.resolve([])]);
+  const [current, available, currentTrip, trips] = await Promise.all([
+    approved ? driverCurrentOrder(db(), userId) : Promise.resolve(null),
+    approved && driver.online ? availableOrders(db(), userId) : Promise.resolve([]),
+    approved ? driverCurrentTrip(db(), userId) : Promise.resolve(null),
+    approved && driver.online ? availableTrips(db(), userId) : Promise.resolve([]),
+  ]);
+  const busy = Boolean(current || currentTrip);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
-      {approved && driver.online && !current ? <Refresher seconds={15} /> : null}
-      {current ? <Refresher seconds={30} /> : null}
+      {approved && driver.online && !busy ? <Refresher seconds={15} /> : null}
+      {busy ? <Refresher seconds={30} /> : null}
       <div className="wrap go-page cm-column">
         <p>
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>
@@ -59,7 +68,7 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
               <form action={driverOnlineAction} className="go-open-toggle">
                 <input type="hidden" name="online" value={driver.online ? '0' : '1'} />
                 <span className={`go-badge ${driver.online ? 'open' : 'shut'}`}>{driver.online ? t('go.driver.online') : t('go.driver.offline')}</span>
-                {!current ? (
+                {!busy ? (
                   <button className={driver.online ? 'btn btn-line' : 'btn btn-gold'} type="submit">
                     {driver.online ? t('go.driver.go_offline') : t('go.driver.go_online')}
                   </button>
@@ -104,9 +113,9 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
                   </a>
                 ) : null}
               </dd>
-              <dt>{t('go.driver.customer')}</dt>
+              <dt>{current.order.recipientName ? t('go.driver.recipient') : t('go.driver.customer')}</dt>
               <dd>
-                {current.customerName.split(' ')[0]}{' '}
+                {current.order.recipientName ? t('go.driver.recipient_for', { name: current.order.recipientName, from: current.customerName.split(' ')[0] ?? '' }) : current.customerName.split(' ')[0]}{' '}
                 {current.order.customerWhatsappE164 ? (
                   <a href={waLink(current.order.customerWhatsappE164, t('go.driver.wa_customer', { code: current.order.code }))} target="_blank" rel="noopener noreferrer">
                     WhatsApp
@@ -152,8 +161,171 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
               )}
             </div>
           </section>
+        ) : currentTrip ? (
+          <section className="go-current">
+            <p className="eyebrow">{t('go.trip.driver_current')}</p>
+            <h2>
+              {t(`go.trip.kind.${currentTrip.trip.kind}` as MessageKey)} <span className="go-code">#{currentTrip.trip.code}</span>
+            </h2>
+            <p className={`go-status s-${currentTrip.trip.status}`}>{t(`go.trip.status.${currentTrip.trip.status}` as MessageKey)}</p>
+            {currentTrip.trip.pickupLatitude !== null && currentTrip.trip.pickupLongitude !== null ? (
+              <div className="go-track">
+                <GoMap
+                  mode="drive"
+                  orderId={currentTrip.trip.id}
+                  positionUrl="/api/go/trips/position"
+                  idField="tripId"
+                  store={{ latitude: currentTrip.trip.pickupLatitude, longitude: currentTrip.trip.pickupLongitude }}
+                  dropoff={currentTrip.trip.dropoffLatitude !== null && currentTrip.trip.dropoffLongitude !== null ? { latitude: currentTrip.trip.dropoffLatitude, longitude: currentTrip.trip.dropoffLongitude } : null}
+                  minIntervalSeconds={GO_RULES.trackingMinIntervalSeconds + 1}
+                  labels={mapLabels(t)}
+                />
+              </div>
+            ) : null}
+            <p className="hint muted">{t('go.trip.driver_sharing_note')}</p>
+            <dl className="go-facts">
+              {currentTrip.trip.description ? (
+                <>
+                  <dt>{t('go.trip.what')}</dt>
+                  <dd>{currentTrip.trip.description}</dd>
+                </>
+              ) : null}
+              <dt>{t('go.trip.pickup_at')}</dt>
+              <dd>
+                {currentTrip.trip.pickupDirections}{' '}
+                {currentTrip.trip.pickupLatitude !== null ? (
+                  <a href={`https://www.google.com/maps/dir/?api=1&destination=${currentTrip.trip.pickupLatitude},${currentTrip.trip.pickupLongitude}`} target="_blank" rel="noopener noreferrer">
+                    {t('go.driver.directions')}
+                  </a>
+                ) : null}
+              </dd>
+              {currentTrip.trip.dropoffDirections ? (
+                <>
+                  <dt>{t('go.trip.dropoff_at')}</dt>
+                  <dd>
+                    {currentTrip.trip.dropoffDirections}{' '}
+                    {currentTrip.trip.dropoffLatitude !== null ? (
+                      <a href={`https://www.google.com/maps/dir/?api=1&destination=${currentTrip.trip.dropoffLatitude},${currentTrip.trip.dropoffLongitude}`} target="_blank" rel="noopener noreferrer">
+                        {t('go.driver.directions')}
+                      </a>
+                    ) : null}
+                  </dd>
+                </>
+              ) : null}
+              <dt>{t('go.driver.customer')}</dt>
+              <dd>
+                {currentTrip.customerName.split(' ')[0]}{' '}
+                {currentTrip.trip.customerWhatsappE164 ? (
+                  <a href={waLink(currentTrip.trip.customerWhatsappE164, t('go.trip.wa_customer', { code: currentTrip.trip.code }))} target="_blank" rel="noopener noreferrer">
+                    WhatsApp
+                  </a>
+                ) : null}
+              </dd>
+              <dt>{t('go.driver.collect')}</dt>
+              <dd>
+                <strong>{money(currentTrip.trip.agreedFareMinor ?? currentTrip.trip.offeredFareMinor, currentTrip.trip.currency)}</strong>
+                {currentTrip.trip.purchaseBudgetMinor ? ` · ${t('go.trip.plus_purchase', { amount: money(currentTrip.trip.purchaseBudgetMinor, currentTrip.trip.currency) })}` : ''}
+              </dd>
+            </dl>
+            <div className="btn-row">
+              {currentTrip.trip.status === 'accepted' ? (
+                <form action={arrivedAction}>
+                  <input type="hidden" name="tripId" value={currentTrip.trip.id} />
+                  <button className="btn btn-gold" type="submit">
+                    {t('go.trip.arrived')}
+                  </button>
+                </form>
+              ) : null}
+              {currentTrip.trip.status === 'accepted' || currentTrip.trip.status === 'arrived' ? (
+                <>
+                  <form action={startTripAction}>
+                    <input type="hidden" name="tripId" value={currentTrip.trip.id} />
+                    <button className={currentTrip.trip.status === 'arrived' ? 'btn btn-gold' : 'btn btn-line'} type="submit">
+                      {t('go.trip.start')}
+                    </button>
+                  </form>
+                  <form action={dropTripAction}>
+                    <input type="hidden" name="tripId" value={currentTrip.trip.id} />
+                    <button className="btn btn-line" type="submit">
+                      {t('go.trip.drop')}
+                    </button>
+                  </form>
+                </>
+              ) : null}
+              {currentTrip.trip.status === 'in_progress' ? (
+                <form action={completeTripAction}>
+                  <input type="hidden" name="tripId" value={currentTrip.trip.id} />
+                  <button className="btn btn-gold" type="submit">
+                    {t('go.trip.complete')}
+                  </button>
+                </form>
+              ) : null}
+            </div>
+          </section>
         ) : approved && driver.online ? (
           <section>
+            <h2 className="go-menu-h">{t('go.trip.driver_available')}</h2>
+            {trips.length === 0 ? <p className="muted">{t('go.trip.driver_none')}</p> : null}
+            <ul className="go-incoming-list">
+              {trips.map((trip) => (
+                <li key={trip.id} className="go-incoming go-trip-request">
+                  <p className="go-incoming-head">
+                    <strong>{t(`go.trip.kind.${trip.kind}` as MessageKey)}</strong>
+                    <span className="go-code">#{trip.code}</span>
+                  </p>
+                  {trip.description ? <p>{trip.description}</p> : null}
+                  <p className="muted">
+                    {trip.distanceKm !== null ? t('go.trip.distance', { km: trip.distanceKm }) : t('go.trip.one_place')}
+                    {trip.kind === 'ride' ? ` · ${t('go.trip.riders', { count: trip.passengers })}` : ''}
+                    {trip.area ? (
+                      <>
+                        {' · '}
+                        <a href={`https://www.google.com/maps/search/?api=1&query=${trip.area.latitude},${trip.area.longitude}`} target="_blank" rel="noopener noreferrer">
+                          {t('go.trip.area')}
+                        </a>
+                      </>
+                    ) : null}
+                  </p>
+                  <p>
+                    {t('go.trip.they_offer', { fare: money(trip.offeredFareMinor, trip.currency) })}
+                    {trip.purchaseBudgetMinor ? ` · ${t('go.trip.budget_for_driver', { amount: money(trip.purchaseBudgetMinor, trip.currency) })}` : ''}
+                  </p>
+                  {trip.myOffer && trip.myOffer.status === 'pending' ? (
+                    <div className="btn-row">
+                      <p className="go-waiting">{t('go.trip.you_offered', { fare: money(trip.myOffer.fareMinor, trip.currency), minutes: trip.myOffer.etaMinutes })}</p>
+                      <form action={withdrawOfferAction}>
+                        <input type="hidden" name="tripId" value={trip.id} />
+                        <button className="btn btn-line" type="submit">
+                          {t('go.trip.withdraw')}
+                        </button>
+                      </form>
+                    </div>
+                  ) : (
+                    <form action={offerTripAction} className="go-offer-form">
+                      <input type="hidden" name="tripId" value={trip.id} />
+                      <label>
+                        <span>{t('go.trip.your_fare')}</span>
+                        <input name="fare" inputMode="decimal" required defaultValue={moneyInput(trip.offeredFareMinor)} />
+                      </label>
+                      <label>
+                        <span>{t('go.trip.your_eta')}</span>
+                        <select name="eta" defaultValue="10">
+                          {[3, 5, 10, 15, 20, 30, 45, 60].map((m) => (
+                            <option key={m} value={m}>
+                              {t('go.trip.minutes', { minutes: m })}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button className="btn btn-gold" type="submit">
+                        {t('go.trip.send_offer')}
+                      </button>
+                    </form>
+                  )}
+                </li>
+              ))}
+            </ul>
+
             <h2 className="go-menu-h">{t('go.driver.available')}</h2>
             {available.length === 0 ? <p className="muted">{t('go.driver.none_available')}</p> : null}
             <ul className="go-incoming-list">

@@ -11,6 +11,8 @@ import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, moneyInput, waLink } from '@/ui/go/format';
 import { cityPoints, goFeatureDays, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
+import { planStatus } from '@/server/domains/go/plan';
+import { siteUrl } from '@/server/seo';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { FeatureOffer } from '@/ui/promotion/feature-offer';
 import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, storeAnswerAction, storeCancelAction, storeFeatureAction, storeOpenAction, storeReadyAction } from '../actions';
@@ -42,6 +44,9 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
           cost === null ? null : { cost, balance, days },
         )
       : null;
+  const plan = store?.status === 'approved' ? await planStatus(db(), store) : null;
+  const orderLink = store ? `${siteUrl()}/yavayago/stores/${store.id}` : '';
+  const autoReply = store ? t('go.link.auto_reply', { store: store.name, link: orderLink }) : '';
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const when = new Intl.DateTimeFormat(locale, { timeStyle: 'short' });
   const groups = {
@@ -245,6 +250,45 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
                 titleKey="promotion.title_store"
                 bodyKey="promotion.body_store"
               />
+            ) : null}
+
+            {plan ? (
+              <section className={`go-plan${plan.founding ? ' founding' : ''}`} aria-labelledby="plan-title">
+                <h2 id="plan-title" className="go-menu-h">
+                  {plan.founding ? t('go.plan.founding_title') : t('go.plan.title')}
+                </h2>
+                <p className="go-plan-zero">{t('go.plan.zero')}</p>
+                {plan.founding && plan.foundingUntil ? (
+                  <p>{t('go.plan.founding_until', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(plan.foundingUntil) })}</p>
+                ) : (
+                  <p>{t('go.plan.this_month', { count: plan.deliveredThisMonth, free: plan.freeOrdersPerMonth })}</p>
+                )}
+                {plan.planWouldApply ? <p className="go-warn">{t('go.plan.would_apply', { price: (plan.planPriceUsdCents / 100).toFixed(0) })}</p> : null}
+                <p className="hint muted">{t('go.plan.how', { free: plan.freeOrdersPerMonth, price: (plan.planPriceUsdCents / 100).toFixed(0) })}</p>
+              </section>
+            ) : null}
+
+            {store.status === 'approved' ? (
+              <section className="go-link-box" aria-labelledby="link-title">
+                <h2 id="link-title" className="go-menu-h">
+                  {t('go.link.title')}
+                </h2>
+                <p className="muted">{t('go.link.lead')}</p>
+                <label>
+                  <span className="sr-only">{t('go.link.title')}</span>
+                  <input className="go-link-input" readOnly value={orderLink} />
+                </label>
+                <label>
+                  <span>{t('go.link.auto_reply_label')}</span>
+                  <textarea className="go-link-text" readOnly rows={4} value={autoReply} />
+                </label>
+                <p className="btn-row">
+                  <a className="btn btn-gold" href={`https://wa.me/?text=${encodeURIComponent(autoReply)}`} target="_blank" rel="noopener noreferrer">
+                    {t('go.link.share')}
+                  </a>
+                </p>
+                <p className="hint muted">{t('go.link.how')}</p>
+              </section>
             ) : null}
 
             {store.status === 'approved' ? (

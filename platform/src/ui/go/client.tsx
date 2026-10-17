@@ -43,7 +43,12 @@ type CartLabels = Record<
   | 'cash'
   | 'place'
   | 'signIn'
-  | 'closed',
+  | 'closed'
+  | 'forOther'
+  | 'forOtherHint'
+  | 'recipientName'
+  | 'recipientWhatsapp'
+  | 'recipientPays',
   string
 > & { map: Record<string, string> };
 
@@ -76,6 +81,7 @@ export function StoreCart({
 }) {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [checkingOut, setCheckingOut] = useState(false);
+  const [forOther, setForOther] = useState(false);
   const sections = useMemo(() => {
     const map = new Map<string, CartItem[]>();
     for (const item of items) map.set(item.section, [...(map.get(item.section) ?? []), item]);
@@ -181,10 +187,22 @@ export function StoreCart({
             <span>{labels.directions}</span>
             <textarea name="directions" required minLength={5} maxLength={300} placeholder={labels.directionsHint} />
           </label>
+          <label className="go-check go-for-other">
+            <input type="checkbox" name="forOther" checked={forOther} onChange={(event) => setForOther(event.target.checked)} /> {labels.forOther}
+          </label>
+          {forOther ? (
+            <>
+              <p className="hint muted">{labels.forOtherHint}</p>
+              <label>
+                <span>{labels.recipientName}</span>
+                <input name="recipientName" required maxLength={80} autoComplete="off" />
+              </label>
+            </>
+          ) : null}
           <label>
-            <span>{labels.whatsapp}</span>
+            <span>{forOther ? labels.recipientWhatsapp : labels.whatsapp}</span>
             <input name="whatsapp" type="tel" required inputMode="tel" placeholder="+505 8888 1234" />
-            <small className="hint muted">{labels.whatsappHint}</small>
+            <small className="hint muted">{forOther ? labels.recipientPays : labels.whatsappHint}</small>
           </label>
           <label>
             <span>{labels.payingWith}</span>

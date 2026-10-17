@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import type { Map as MapLibreMap, Marker } from 'maplibre-gl';
 
 /**
- * YavayaGo's maps. One component, four jobs:
+ * YavayaGo's maps — for orders and for trips. One component, four jobs:
  *  - `pick`: choose a point (a store's door, a customer's drop-off). Writes
  *    two hidden inputs so the surrounding form works as a plain form.
  *  - `view`: show the store and the drop-off.
@@ -29,8 +29,8 @@ type Labels = Record<string, string>;
 type Props =
   | { mode: 'pick'; initial: Point; zoom?: number; name: string; labels: Labels; follow?: { select: string; points: Record<string, Point> } }
   | { mode: 'view'; store: Point; dropoff?: Point | null; labels: Labels }
-  | { mode: 'track'; orderId: string; pollSeconds: number; driverPhoto: string | null; labels: Labels }
-  | { mode: 'drive'; orderId: string; store: Point; dropoff: Point | null; minIntervalSeconds: number; labels: Labels };
+  | { mode: 'track'; orderId: string; pollSeconds: number; driverPhoto: string | null; labels: Labels; trackingUrl?: string }
+  | { mode: 'drive'; orderId: string; store: Point; dropoff: Point | null; minIntervalSeconds: number; labels: Labels; positionUrl?: string; idField?: 'orderId' | 'tripId' };
 
 type Tracking = {
   status: string;
@@ -57,7 +57,7 @@ function pin(kind: 'store' | 'home' | 'driver' | 'me', photo?: string | null): H
   return element;
 }
 
-const CLOSED = new Set(['delivered', 'cancelled', 'rejected']);
+const CLOSED = new Set(['delivered', 'cancelled', 'rejected', 'completed', 'expired']);
 
 export function GoMap(props: Props) {
   const container = useRef<HTMLDivElement>(null);
@@ -174,10 +174,10 @@ export function GoMap(props: Props) {
             const now = Date.now();
             if (now - lastSent < props.minIntervalSeconds * 1000) return;
             lastSent = now;
-            const response = await fetch('/api/go/position', {
+            const response = await fetch(props.positionUrl ?? '/api/go/position', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId: props.orderId, ...point, accuracy: position.coords.accuracy ?? null, heading: position.coords.heading ?? null }),
+              body: JSON.stringify({ [props.idField ?? 'orderId']: props.orderId, ...point, accuracy: position.coords.accuracy ?? null, heading: position.coords.heading ?? null }),
             }).catch(() => null);
             if (response?.status === 404) {
               // The order is no longer theirs to report on: stop at once.
@@ -200,7 +200,7 @@ export function GoMap(props: Props) {
       let framed = false;
       let lastStatus: string | null = null;
       const poll = async () => {
-        const response = await fetch(`/api/go/orders/${props.orderId}/tracking`, { cache: 'no-store' }).catch(() => null);
+        const response = await fetch(props.trackingUrl ?? `/api/go/orders/${props.orderId}/tracking`, { cache: 'no-store' }).catch(() => null);
         if (!response?.ok || cancelled) return;
         const data = (await response.json()) as Tracking;
         if (!store) store = new maplibre.Marker({ element: pin('store') }).setLngLat([data.store.longitude, data.store.latitude]).addTo(instance);

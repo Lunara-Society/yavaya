@@ -115,8 +115,9 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             <span>{t('go.cart.total')}</span>
             <span>{money(order.totalMinor, order.currency)}</span>
           </p>
+          {order.recipientName ? <p className="hint">{t('go.order.for_recipient', { name: order.recipientName })}</p> : null}
           <p className="hint muted">
-            {t('go.order.cash_note')}
+            {order.recipientName ? t('go.order.recipient_cash_note') : t('go.order.cash_note')}
             {order.payingWithMinor ? ` ${t('go.order.paying_with', { amount: money(order.payingWithMinor, order.currency) })}` : ''}
           </p>
           <p className="hint muted">{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(order.placedAt)}</p>

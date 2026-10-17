@@ -183,6 +183,13 @@
       "when": 1792114503430,
       "tag": "0025_job_published_activity",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792270911916,
+      "tag": "0026_trips_and_store_plan",
+      "breakpoints": true
     }
   ]
 }
