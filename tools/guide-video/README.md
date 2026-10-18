@@ -29,6 +29,20 @@ in the media bucket under `guide/` and posters/captions in
 | `captions_en.py`, `make_en_vtt.py` | English subtitles, cue for cue on the Spanish timings. |
 | `upload.py` | Puts finished files in the bucket through `/api/ops/guide-upload` (token read from a local file, never committed). |
 
+### The 9:16 cuts for social media
+
+Every film re-made upright (1080×1920) from the same timeline and the same
+mixes, plus the intro on its own as a teaser that starts a beat before the
+first word. Served at `/video/<key>-v1-916.mp4` (see `SOCIAL_KEYS`).
+
+| File | What it is |
+| --- | --- |
+| `crops.py` → `crops_auto.json` | Where the tall window sits on each still: on the faces (YuNet face detector, `models/yunet.onnx` from opencv_zoo), panning between two people who don't fit, on the salient region when there are none. |
+| `crops_fix_src.py` → `crops_fix.json`, `crop_sheet.py` | Crops corrected by eye on contact sheets (animals the detector can't see, handshakes, a pan from Carlos to his bike). |
+| `overlays_v.py`, `ovshot_v.cjs` | Vertical title cards, callouts, the district list, end cards and the real screens as large browser cards, all clear of the platforms' own buttons. |
+| `captions_v.py` | Burned-in captions (social video plays muted): short phrases, the spoken word in gold, from the narration's word timings. |
+| `render_v.py`, `teaser_audio.py`, `assemble_v.py`, `pipeline_v.sh` | Picture, teaser sound, final cuts. |
+
 ## Version 2 — planned for late October 2026
 
 The owner's decision on 18 October: re-make the guide with **Higgsfield and
