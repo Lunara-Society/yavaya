@@ -998,3 +998,30 @@ times the customer's price.
 - **Driver earnings model.** Drivers keep 100% at launch. A future weekly
   driver plan (never a cut of fares) is possible; not decided.
 - **Ratings after a trip** are not built.
+
+## The guide in video — `GUIDE_UPLOAD_TOKEN`
+
+Ten films explain Yavaya in Spanish: one per district (shown at the top of
+that district's page, and on `/trust` and `/tokens` for trust and tokens) and
+the whole guide stitched into one at `/guia`, with chapters. The list, running
+times and chapter times are in `src/config/guide.ts`.
+
+- **Where the files are.** The MP4s are too large for the repository. They
+  live in the media bucket under `guide/` and `/video/[file]` streams them in
+  byte ranges, so a viewer starts at once and can jump to any chapter. Only the
+  names in `config/guide.ts` are served. Posters and captions (WebVTT) are
+  small and ship in `public/guide/`.
+- **Two sizes.** Each film exists in 1080p and 720p; touch screens get 720p,
+  which is lighter on a phone's data plan.
+- **Putting files in the bucket.** The bucket's keys are not handed out, so the
+  site writes them itself through `/api/ops/guide-upload` (multipart, 8 MB
+  parts). That route answers 404 unless `GUIDE_UPLOAD_TOKEN` is set (32+
+  characters) and is called with it. Set it for an upload, then blank it.
+  Each finished file is recorded in the audit log as `guide.video_uploaded`.
+- **A new cut.** Raise `GUIDE_VERSION`: every file name changes, so browsers
+  that cached the old films (they are cached for a year) fetch the new ones.
+- **What the films show.** The scenes are illustrations made for Yavaya, and
+  the page says so; the screens are real captures of the live site. Every fact
+  narrated is taken from the site as it works today. When a district changes,
+  its film can say something that is no longer true, so a change to a
+  district's rules is also a reason to re-cut its film.

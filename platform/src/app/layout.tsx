@@ -61,6 +61,10 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export const viewport: Viewport = {
   width: '1200',
+  // Next adds initial-scale=1 unless told otherwise, and on a phone that
+  // overrides the width: the page opens at full size showing its left third.
+  // Without it the phone fits the 1200px layout to the screen, as intended.
+  initialScale: undefined,
   themeColor: '#081120',
 };
 

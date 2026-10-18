@@ -219,6 +219,18 @@ non-owner role would need policies written first.
 This is the single most important thing to preserve when moving to another
 managed platform.
 
+## Operator channel for the guide videos
+
+`/api/ops/guide-upload` writes the guide films into the media bucket. It is
+the only route that writes there without a member session, so it is shut by
+default: unless `GUIDE_UPLOAD_TOKEN` is set it answers 404, and with it set it
+requires that token as a bearer credential, compared in constant time. It can
+write only the file names listed in `src/config/guide.ts` (never a member's
+photo), takes parts of at most 16 MB, and records each finished file in the
+audit log. The token is meant to exist for the length of an upload and be
+blanked afterwards. `/video/[file]` reads the same short list and nothing
+else.
+
 ## Known gaps
 
 Stated plainly rather than left for someone to discover.

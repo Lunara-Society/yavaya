@@ -113,6 +113,13 @@ const serverSchema = z.object({
   // cannot delete a variable can still blank it without breaking every page.
   PREVIEW_ACCESS_KEY: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(16).optional()),
 
+  /**
+   * Opens /api/ops/guide-upload, the operator channel that puts the guide videos
+   * into the media bucket. Set it for an upload, then blank it: unset or empty,
+   * the route answers 404 as if it did not exist.
+   */
+  GUIDE_UPLOAD_TOKEN: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(32).optional()),
+
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.
   // ---------------------------------------------------------------------------
