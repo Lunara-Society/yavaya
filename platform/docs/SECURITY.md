@@ -19,13 +19,46 @@ result.
 
 Session tokens are 32 random bytes. The database stores only the SHA-256, so a
 database leak cannot be replayed as a login. Three independent expiries apply —
-idle timeout, absolute lifetime, and explicit revocation — and tokens rotate
-hourly. A banned or suspended account's sessions stop working immediately,
-without waiting for a revocation sweep.
+idle timeout, absolute lifetime, and explicit revocation. The idle timeout is two
+hours without activity (the owner's decision, October 2026), measured from the
+session's last use, which every visit moves forward (written at most every five
+minutes); the absolute lifetime is 30 days. A banned or suspended account's
+sessions stop working immediately, without waiting for a revocation sweep.
 
 The cookie is `httpOnly` (an XSS bug cannot read it), `sameSite=lax` (a
 cross-site form post cannot carry it), and `secure` everywhere except local
-HTTP.
+HTTP. It lives until the absolute expiry: the browser cannot see activity, so a
+cookie that expired by itself after two hours would sign out someone still using
+the site. The server is what enforces the idle window.
+
+### Continuar con Google
+
+OpenID Connect authorization-code flow with PKCE, a `state` value and a nonce,
+all held in a sealed (HMAC), `httpOnly`, ten-minute cookie scoped to
+`/auth/google`. The ID token comes straight from Google's token endpoint over
+TLS in exchange for the client secret, so its signature is trusted to that
+channel (OpenID Connect Core §3.1.3.7); its claims are still checked: issuer,
+audience, expiry, nonce, and `email_verified`.
+
+Google is trusted for one fact only: that the person controls the address.
+
+- A Google account already linked signs in to its account.
+- Not linked, and an account uses the address: they are joined. If that account
+  had confirmed its address, nothing else changes and its password keeps
+  working. If it had not, whoever set its password never proved they own the
+  address: the password is replaced with a random one nobody knows, the
+  account's other sessions end, and the address is marked confirmed. The person
+  Google vouches for keeps the account. (Otherwise someone could register with
+  a stranger's address and share the account with its real owner.)
+- No account: a new member still has to accept the terms on a page of our own
+  before anything is created. The address Google confirmed travels to that page
+  in a sealed cookie, never a form field, so it cannot be swapped. The
+  registration is the same as a password one — risk checks, YAY ID, the 72-hour
+  watch, invitations — with the address already confirmed.
+
+The browser remembers which Google account last signed in (Google's opaque id,
+never displayed, in an `httpOnly` cookie), so after a sign-out "Continuar con
+Google" goes straight back in. "Usar otra cuenta de Google" forgets it.
 
 Registration signs the new account in immediately. The session grants nothing
 by itself — the account is `pending_verification` — but it is what lets the
@@ -232,6 +265,12 @@ blanked afterwards. `/video/[file]` reads the same short list and nothing
 else.
 
 ## Known gaps
+
+- **Session tokens are not rotated yet.** The session layer computes when a
+  token is due for re-issue, but nothing re-issues it: that needs a point that
+  can write the cookie on an ordinary page view (middleware, which runs on the
+  edge without the database, or a route handler). A stolen cookie is limited by
+  the two-hour idle window and the 30-day absolute lifetime instead.
 
 Stated plainly rather than left for someone to discover.
 

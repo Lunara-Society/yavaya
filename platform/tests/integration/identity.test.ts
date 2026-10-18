@@ -148,7 +148,7 @@ describe('authentication', () => {
     await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
 
     const ok = await authenticate(db(), { email: input.email, password: input.password }, context);
@@ -186,7 +186,7 @@ describe('email verification', () => {
     const first = await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
     expect(first.ok).toBe(true);
 
@@ -197,7 +197,7 @@ describe('email verification', () => {
     const replay = await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
     expect(replay.ok).toBe(false);
     expect(replay.reason).toBe('no_challenge');
@@ -261,7 +261,7 @@ describe('resending a verification code', () => {
     const withOldCode = await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
     expect(withOldCode.ok).toBe(false);
 
@@ -292,7 +292,7 @@ describe('resending a verification code', () => {
     await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
     await ageChallenges(created.userId, VERIFICATION_RULES.resendCooldownSeconds + 1);
 
@@ -333,7 +333,7 @@ describe('monitoring graduation', () => {
     await consumeVerificationCode(db(), {
       userId: created.userId,
       kind: 'email',
-      code: created.emailVerificationCode,
+      code: created.emailVerificationCode!,
     });
 
     // Nothing graduates while the window is open.

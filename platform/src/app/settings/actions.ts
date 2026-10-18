@@ -145,7 +145,8 @@ export async function signOutAction(): Promise<void> {
   }
   await clearSessionCookie();
   revalidatePath('/', 'layout');
-  redirect('/');
+  // To the way back in: with Google, one tap returns to the same account.
+  redirect('/login?salida=1');
 }
 
 /** Reads the signed-in member's notification preferences for display. */

@@ -173,10 +173,22 @@ export const DEMO_CONTENT_RULES = {
 } as const;
 
 export const SESSION_RULES = {
-  idleTimeoutMinutes: 60 * 24 * 7,
+  /**
+   * Signed out after two hours without activity (the owner's decision, 18
+   * October 2026). Every visit extends it, so someone using Yavaya is never
+   * thrown out mid-task; a phone left on a table is.
+   */
+  idleTimeoutMinutes: 120,
+  /** Activity is written at most this often, so a busy page is not a database write per request. */
+  touchAfterMinutes: 5,
   absoluteTimeoutDays: 30,
   /** Sessions are re-issued this often to limit the value of a stolen cookie. */
   rotateAfterMinutes: 60,
+  /**
+   * How long the browser remembers which Google account last signed in here,
+   * so "Continuar con Google" goes straight back in after a sign-out.
+   */
+  googleHintDays: 90,
   cookieName: 'yav_session',
 } as const;
 

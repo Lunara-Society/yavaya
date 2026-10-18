@@ -29,7 +29,7 @@ async function join(options: { inviter?: string; device?: string; verify?: boole
     contextFor(options.device ?? crypto.randomUUID()),
   );
   if (options.verify !== false) {
-    await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode });
+    await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode! });
   }
   return created;
 }
@@ -55,7 +55,7 @@ describe('invitations', () => {
     // Nothing is paid for an account that has not proved its email.
     expect(await getBalance(db(), inviter.userId)).toBe(before);
 
-    await consumeVerificationCode(db(), { userId: friend.userId, kind: 'email', code: friend.emailVerificationCode });
+    await consumeVerificationCode(db(), { userId: friend.userId, kind: 'email', code: friend.emailVerificationCode! });
     expect(await getBalance(db(), inviter.userId)).toBe(before + REFERRAL_RULES.inviterReward);
     expect(await getBalance(db(), friend.userId)).toBe(starterDay0 + REFERRAL_RULES.inviteeReward);
 

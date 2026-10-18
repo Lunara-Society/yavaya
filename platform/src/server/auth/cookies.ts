@@ -10,6 +10,11 @@ import { serverEnv } from '@/config/env';
  * `sameSite: lax` blocks cross-site form submissions from carrying it while
  * still allowing ordinary top-level navigation back into Yavaya.
  * `secure` is on everywhere except local development over plain HTTP.
+ *
+ * The cookie lives until the session's absolute expiry. The idle window is
+ * enforced by the server, which extends it on activity; a cookie that expired
+ * on its own after two hours would sign out someone who was still using the
+ * site, because the browser cannot see that activity moved the window.
  */
 export async function setSessionCookie(token: string, expiresAt: Date): Promise<void> {
   const store = await cookies();

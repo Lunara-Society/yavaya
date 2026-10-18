@@ -26,6 +26,7 @@ export async function resetTransactionalData(): Promise<void> {
       devices,
       verification_challenges,
       sessions,
+      external_identities,
       user_roles,
       user_profiles,
       yay_id_registry,

@@ -6,6 +6,7 @@ import { emailAvailability } from '@/server/domains/notifications/email/service'
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 import { safeSpaceAvailable } from '@/server/domains/safe-space/service';
 import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
+import { googleSignIn } from '@/server/domains/identity/google';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -38,6 +39,7 @@ export function integrationCapabilities(): Capability[] {
   const env = serverEnv();
   const media = mediaStorageAvailability();
   const sms = phoneVerifierAvailability();
+  const google = googleSignIn();
 
   const integrations: Capability[] = [
     {
@@ -64,6 +66,15 @@ export function integrationCapabilities(): Capability[] {
       state: smsCapabilityState(),
       group: 'integration',
       blockedBy: sms.available && sms.provider !== 'console' ? undefined : sms.available ? 'SMS_PROVIDER=console writes codes to the log and sends nothing.' : sms.reason,
+    },
+    {
+      key: 'google_sign_in',
+      nameKey: 'capability.google_sign_in.name',
+      detailKey: 'capability.google_sign_in.detail',
+      // Measured: the button exists only when the OAuth client is configured.
+      state: google.available ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: google.available ? undefined : google.reason,
     },
     {
       key: 'kyc',

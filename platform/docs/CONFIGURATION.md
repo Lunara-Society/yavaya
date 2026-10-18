@@ -999,6 +999,36 @@ times the customer's price.
   driver plan (never a cut of fares) is possible; not decided.
 - **Ratings after a trip** are not built.
 
+## Continuar con Google — `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+
+Built and tested; the button appears (in the bar at the top of every page, and
+on the sign-in and registration pages) only once both values are set. Until
+then `/status` lists it as requiring configuration and nothing shows.
+
+To switch it on (about ten minutes, in a Google account the owner controls):
+
+1. Google Cloud Console → create a project (for example "Yavaya").
+2. **APIs & Services → OAuth consent screen**: user type *External*; app name
+   *Yavaya*; support email; authorized domain `yavaya.lat`; links to
+   `https://yavaya.lat/privacy` and `https://yavaya.lat/terms`. Scopes: only
+   `openid`, `email`, `profile` — these need no review by Google. Then
+   **Publish app** (in "Testing" only listed test users can sign in).
+3. **Credentials → Create credentials → OAuth client ID**: type *Web
+   application*; authorized redirect URI exactly
+   `https://yavaya.lat/auth/google/callback`.
+4. Put the client ID and client secret in the web service's variables on
+   Railway as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The deploy that
+   follows turns the button on; nothing else changes.
+
+How accounts are matched and why is in `SECURITY.md` → *Continuar con Google*.
+
+## Signing out after inactivity (owner decision, October 2026)
+
+A member is signed out after **two hours without activity**
+(`SESSION_RULES.idleTimeoutMinutes`); using the site keeps the session open.
+The bar at the top then says the session closed and offers the quickest way
+back in — with Google, a single tap to the same account.
+
 ## The guide in video — `GUIDE_UPLOAD_TOKEN`
 
 Ten films explain Yavaya in Spanish: one per district (shown at the top of

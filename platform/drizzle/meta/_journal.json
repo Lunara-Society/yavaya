@@ -190,6 +190,13 @@
       "when": 1792270911916,
       "tag": "0026_trips_and_store_plan",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792330764477,
+      "tag": "0027_external_identities",
+      "breakpoints": true
     }
   ]
 }

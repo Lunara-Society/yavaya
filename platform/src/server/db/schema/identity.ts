@@ -154,6 +154,30 @@ export const sessions = pgTable(
   ],
 );
 
+/**
+ * Sign-in providers attached to an account (today: Google). The provider's own
+ * stable subject identifies the person; the address is kept only as it was
+ * when linked, for support. One provider identity belongs to one account.
+ */
+export const externalIdentities = pgTable(
+  'external_identities',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    provider: text('provider').notNull(),
+    subject: text('subject').notNull(),
+    emailAtLink: text('email_at_link').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex('external_identities_provider_subject_key').on(table.provider, table.subject),
+    index('external_identities_user_idx').on(table.userId),
+  ],
+);
+
 export const devices = pgTable(
   'devices',
   {

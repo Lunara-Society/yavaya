@@ -1,17 +1,35 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { AppShell } from '@/ui/components/app-shell';
+import { AuthEntry } from '@/ui/components/auth-entry';
 import { shellContext } from '@/ui/shell-context';
+import { readSessionCookie } from '@/server/auth/cookies';
+import { googleHint } from '@/server/auth/google-cookies';
+import { googleSignIn } from '@/server/domains/identity/google';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = { title: 'Sign in' };
 
-export default async function LoginPage() {
+const GOOGLE_NOTICES = ['cancelled', 'failed', 'unavailable', 'busy'] as const;
+
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ salida?: string; google?: string }> }) {
   const { t, language, theme, member } = await shellContext();
+  const query = await searchParams;
+  const googleNotice = GOOGLE_NOTICES.find((code) => code === query.google) ?? null;
+  // A session cookie the server no longer honours: closed by the idle window.
+  const ended = !member && Boolean(await readSessionCookie());
+  const notice = googleNotice ?? (query.salida ? 'signed_out' : ended ? 'ended' : null);
 
   return (
-    <AppShell t={t} language={language} theme={theme} member={member}>
+    <AppShell t={t} language={language} theme={theme} member={member} authBar={false}>
       <div className="mx-auto w-full max-w-md">
+        <AuthEntry
+          t={t}
+          active="login"
+          google={googleSignIn().available}
+          googleHref="/auth/google"
+          remembered={Boolean(await googleHint())}
+          notice={notice}
+        />
         <h1 className="text-2xl font-semibold tracking-tight">{t('auth.login.title')}</h1>
 
         <LoginForm
@@ -21,13 +39,6 @@ export default async function LoginPage() {
             submit: t('auth.submit_login'),
           }}
         />
-
-        <p className="mt-6 text-sm text-[var(--text-secondary)]">
-          {t('auth.no_account')}{' '}
-          <Link href="/register" className="font-medium underline underline-offset-4">
-            {t('auth.submit_register')}
-          </Link>
-        </p>
       </div>
     </AppShell>
   );

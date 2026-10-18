@@ -87,7 +87,7 @@ export async function registerAction(
         userAgent: context.userAgent,
       }),
     );
-    await setSessionCookie(session.token, session.expiresAt);
+    await setSessionCookie(session.token, session.absoluteExpiresAt);
 
     const env = serverEnv();
 
@@ -98,7 +98,8 @@ export async function registerAction(
      */
     const delivery = await sendVerificationCode({
       to: parsed.data.email,
-      code: result.emailVerificationCode,
+      // Always set here: only a provider-confirmed registration has no code.
+      code: result.emailVerificationCode ?? '',
       locale: parsed.data.locale,
       expiresInMinutes: VERIFICATION_RULES.emailCodeTtlMinutes,
     });
@@ -114,7 +115,7 @@ export async function registerAction(
       status: 'registered',
       yayId: formatYayId(result.yayId),
       verificationNotice: 'undeliverable',
-      code: env.APP_ENV === 'local' ? result.emailVerificationCode : undefined,
+      code: env.APP_ENV === 'local' ? (result.emailVerificationCode ?? undefined) : undefined,
     };
   } catch (error) {
     const clientError = toClientError(error);
@@ -152,7 +153,7 @@ export async function loginAction(
       }),
     );
 
-    await setSessionCookie(session.token, session.expiresAt);
+    await setSessionCookie(session.token, session.absoluteExpiresAt);
     welcome = await hasUnseenWelcome(db(), result.userId);
   } catch (error) {
     const clientError = toClientError(error);

@@ -19,6 +19,7 @@ export async function AppShell({
   theme,
   member,
   district,
+  authBar,
   children,
 }: {
   t: Translator;
@@ -27,11 +28,13 @@ export async function AppShell({
   member: ShellMember;
   /** Applies the district's colour world to everything inside. */
   district?: string;
+  /** Off on the sign-in pages, which are the way in themselves. */
+  authBar?: boolean;
   children: ReactNode;
 }) {
   const c = siteContent(await resolveLocale());
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} district={district}>
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} district={district} authBar={authBar}>
       <div className="mx-auto w-full max-w-5xl px-4 pt-8 pb-20">{children}</div>
     </SiteShell>
   );

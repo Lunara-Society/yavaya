@@ -5,7 +5,8 @@ import { signalHash } from '@/server/security/crypto';
 import { serverEnv } from '@/config/env';
 import { clientAddress, describeNetwork } from '@/server/security/network';
 import type { RequestContext } from '@/server/domains/identity/service';
-import { validateSession, type ValidatedSession } from './session';
+import { SESSION_RULES } from '@/config/business-rules';
+import { touchSession, validateSession, type ValidatedSession } from './session';
 import { readSessionCookie } from './cookies';
 
 /**
@@ -37,12 +38,23 @@ export async function requestContext(): Promise<RequestContext> {
   };
 }
 
-/** The signed-in user, or null. Never throws. */
+/**
+ * The signed-in user, or null. Never throws.
+ *
+ * Reading the session is also what keeps it alive: the idle window runs from
+ * the last activity, so each visit pushes it forward (at most every few
+ * minutes, to spare the database).
+ */
 export async function currentSession(): Promise<ValidatedSession | null> {
   const token = await readSessionCookie();
   if (!token) return null;
-  return validateSession(db(), token);
+  const session = await validateSession(db(), token);
+  if (session && Date.now() - session.lastUsedAt.getTime() >= SESSION_RULES.touchAfterMinutes * 60_000) {
+    await touchSession(db(), session.sessionId).catch(() => {});
+  }
+  return session;
 }
+
 
 /** Hash of the user agent, for audit records that must not store the raw value. */
 export async function userAgentHash(): Promise<string | null> {

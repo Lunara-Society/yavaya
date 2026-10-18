@@ -2066,3 +2066,38 @@ a.live-text:hover { text-decoration: underline; }
 .gv-fine { font-size: 0.85rem; margin-top: 20px; }
 .gv-band { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: center; }
 .gv-band img { width: 100%; height: auto; border-radius: var(--radius); aspect-ratio: 16 / 9; object-fit: cover; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); }
+
+/* The way in, above the header, for someone signed out (auth-bar.tsx). */
+.authbar { position: relative; z-index: 51; background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 16%, var(--surface)), var(--surface) 55%);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.authbar-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 68px; padding-top: 10px; padding-bottom: 10px; }
+.authbar-text { margin: 0; font-size: 1rem; color: var(--text); }
+.authbar-actions { display: flex; align-items: center; gap: 10px; flex: none; }
+.authbar .btn { min-height: 46px; padding: 0 20px; white-space: nowrap; }
+/* Phones see this site at its full width, scaled down: on a touch screen the bar
+   is drawn large, so its buttons stay big enough for a thumb. */
+@media (pointer: coarse) {
+  .authbar-in { flex-direction: column; align-items: stretch; gap: 16px; padding-top: 22px; padding-bottom: 22px; }
+  .authbar-text { font-size: 2rem; line-height: 1.3; text-align: center; }
+  .authbar-actions { gap: 16px; }
+  .authbar-actions > * { flex: 1 1 auto; }
+  .authbar .btn, .authbar .btn-google { min-height: 104px; font-size: 2rem; border-radius: 22px; padding: 0 24px; }
+  .authbar .btn-google-mark { width: 40px; height: 40px; }
+}
+
+/* "Continuar con Google": Google's mark on a light button, as their guidelines ask. */
+.btn-google { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 46px; padding: 0 20px; border-radius: 14px;
+  background: #ffffff; color: #1f1f1f; border: 1px solid #747775; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.btn-google:hover, .btn-google:focus-visible { background: #f2f2f2; }
+.btn-google-mark { width: 20px; height: 20px; flex: none; }
+.btn-google-wide { width: 100%; min-height: 52px; font-size: 1.02rem; }
+
+/* Sign-in and registration pages: tabs, notice, Google first (auth-entry.tsx). */
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); margin-bottom: 22px; }
+.auth-tabs a { display: flex; align-items: center; justify-content: center; min-height: 46px; border-radius: 11px; font-weight: 700; color: var(--text-2, var(--text)); text-decoration: none; }
+.auth-tabs a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.auth-notice { margin: 0 0 18px; padding: 12px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.auth-google { display: grid; gap: 10px; margin-bottom: 22px; }
+.auth-other { justify-self: center; font-size: 0.92rem; color: var(--text-2, var(--text)); text-decoration: underline; text-underline-offset: 3px; }
+.auth-or { display: flex; align-items: center; gap: 14px; margin: 8px 0 0; color: var(--muted, var(--text-2)); font-size: 0.92rem; }
+.auth-or::before, .auth-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }

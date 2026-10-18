@@ -40,7 +40,7 @@ async function createUser(): Promise<{ userId: string; createdAt: Date }> {
     context,
   );
   // Starter tokens arrive with verification; these tests start from them.
-  await consumeVerificationCode(db(), { userId: result.userId, kind: 'email', code: result.emailVerificationCode });
+  await consumeVerificationCode(db(), { userId: result.userId, kind: 'email', code: result.emailVerificationCode! });
   const [row] = await db()
     .select({ createdAt: users.createdAt })
     .from(users)
@@ -240,7 +240,7 @@ describe('starter allocation', () => {
     await grantDueStarterTokens(db());
     expect(await getBalance(db(), userId)).toBe(0);
 
-    expect((await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode })).ok).toBe(true);
+    expect((await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode! })).ok).toBe(true);
     expect(await getBalance(db(), userId)).toBe(TOKEN_RULES.starterGrantPerDay);
     // Same period again, from the scheduler: nothing.
     await grantDueStarterTokens(db());
@@ -249,7 +249,7 @@ describe('starter allocation', () => {
 
   it('grants 2 per day for the 7 days after verification, then stops for good', async () => {
     const { userId, emailVerificationCode } = await registerUnverified();
-    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode });
+    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode! });
     const [row] = await db().select({ verifiedAt: users.emailVerifiedAt }).from(users).where(eq(users.id, userId));
     const verifiedAt = row!.verifiedAt!;
 
@@ -274,7 +274,7 @@ describe('starter allocation', () => {
 
   it('gives nothing to an account that is not active', async () => {
     const { userId, emailVerificationCode } = await registerUnverified();
-    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode });
+    await consumeVerificationCode(db(), { userId, kind: 'email', code: emailVerificationCode! });
     const before = await getBalance(db(), userId);
     await db().update(users).set({ status: 'restricted' }).where(eq(users.id, userId));
     const [row] = await db().select({ verifiedAt: users.emailVerifiedAt }).from(users).where(eq(users.id, userId));

@@ -181,7 +181,7 @@ describe('verifying an email', () => {
     const start = await getScore(db(), created.userId);
     const delta = REPUTATION_RULE_DEFAULTS.find((rule) => rule.key === 'email_verified')!.delta;
 
-    expect((await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode })).ok).toBe(true);
+    expect((await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode! })).ok).toBe(true);
     expect(await getScore(db(), created.userId)).toBe(start + delta);
   });
 });
@@ -258,7 +258,7 @@ describe('the daily email summary', () => {
       { email: `d-${crypto.randomUUID()}@example.com`, password: 'a-sufficiently-long-passphrase', displayName: 'Doña Marta', locale: 'es', acceptedTerms: true },
       context,
     );
-    await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode });
+    await consumeVerificationCode(db(), { userId: created.userId, kind: 'email', code: created.emailVerificationCode! });
     await db().update(users).set({ status: 'active' }).where(eq(users.id, created.userId));
     // No place set: the summary goes out in the fallback UTC window.
     await db().update(userProfiles).set({ locationId: null }).where(eq(userProfiles.userId, created.userId));

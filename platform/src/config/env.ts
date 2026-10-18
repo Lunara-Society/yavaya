@@ -114,6 +114,14 @@ const serverSchema = z.object({
   PREVIEW_ACCESS_KEY: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(16).optional()),
 
   /**
+   * "Continuar con Google". Both come from one OAuth client (type: web
+   * application) in Google Cloud, with https://<APP_URL host>/auth/google/callback
+   * as its redirect URI. Unset, the button is not shown anywhere.
+   */
+  GOOGLE_CLIENT_ID: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(10).optional()),
+  GOOGLE_CLIENT_SECRET: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(10).optional()),
+
+  /**
    * Opens /api/ops/guide-upload, the operator channel that puts the guide videos
    * into the media bucket. Set it for an upload, then blank it: unset or empty,
    * the route answers 404 as if it did not exist.

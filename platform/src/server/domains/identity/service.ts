@@ -4,6 +4,7 @@ import type { Database, Executor } from '@/server/db/client';
 import {
   devices,
   duplicateCandidates,
+  externalIdentities,
   notificationPreferences,
   userDevices,
   userProfiles,
@@ -57,17 +58,22 @@ export type RequestContext = {
 export type RegistrationResult = {
   userId: string;
   yayId: string;
-  status: 'pending_verification' | 'restricted';
+  /** `active` only when a sign-in provider already confirmed the address. */
+  status: 'pending_verification' | 'restricted' | 'active';
   riskBand: 'low' | 'elevated' | 'review' | 'block';
   monitoredUntil: Date;
   /**
    * The email verification code. Returned so the caller can hand it to the
    * delivery layer. When no email provider is configured it is the only way to
    * complete verification, and the caller must say so rather than pretend a
-   * message was sent.
+   * message was sent. Null when the address arrived already confirmed by a
+   * sign-in provider.
    */
-  emailVerificationCode: string;
+  emailVerificationCode: string | null;
 };
+
+/** A sign-in provider that has already confirmed the address (Google). */
+export type ConfirmedBy = { provider: 'google'; subject: string };
 
 /**
  * Registers an account.
@@ -81,6 +87,7 @@ export async function register(
   database: Database,
   input: RegistrationInput,
   context: RequestContext,
+  confirmedBy?: ConfirmedBy,
 ): Promise<RegistrationResult> {
   const parsed = registrationSchema.parse(input);
 
@@ -189,14 +196,18 @@ export async function register(
 
     // No starter tokens yet: they begin when the email address is verified.
 
-    await tx.insert(verificationChallenges).values({
-      userId,
-      kind: 'email',
-      target: email,
-      codeHash: sha256(verificationCode),
-      maxAttempts: VERIFICATION_RULES.maxAttemptsPerChallenge,
-      expiresAt: new Date(now.getTime() + VERIFICATION_RULES.emailCodeTtlMinutes * 60_000),
-    });
+    if (!confirmedBy) {
+      await tx.insert(verificationChallenges).values({
+        userId,
+        kind: 'email',
+        target: email,
+        codeHash: sha256(verificationCode),
+        maxAttempts: VERIFICATION_RULES.maxAttemptsPerChallenge,
+        expiresAt: new Date(now.getTime() + VERIFICATION_RULES.emailCodeTtlMinutes * 60_000),
+      });
+    } else {
+      await tx.insert(externalIdentities).values({ userId, provider: confirmedBy.provider, subject: confirmedBy.subject, emailAtLink: email });
+    }
 
     await recordAudit(tx, {
       actorType: 'user',
@@ -213,16 +224,22 @@ export async function register(
         riskBand: evaluation.band,
         riskAssessmentId: assessmentId,
         monitoredUntil: monitoredUntil.toISOString(),
+        ...(confirmedBy ? { via: confirmedBy.provider } : {}),
       },
     });
 
+    // The provider already proved the address: the account opens now, exactly
+    // as it would after the emailed code.
+    if (confirmedBy) await markEmailVerified(tx, { userId, method: confirmedBy.provider, now });
+
+    const [final] = await tx.select({ status: users.status }).from(users).where(eq(users.id, userId));
     return {
       userId,
       yayId,
-      status,
+      status: (final?.status ?? status) as RegistrationResult['status'],
       riskBand: evaluation.band,
       monitoredUntil,
-      emailVerificationCode: verificationCode,
+      emailVerificationCode: confirmedBy ? null : verificationCode,
     };
   });
 }
@@ -352,45 +369,59 @@ export async function consumeVerificationCode(
       .set({ status: 'approved', consumedAt: now })
       .where(eq(verificationChallenges.id, challenge.id));
 
-    await tx
-      .update(users)
-      .set({
-        emailVerifiedAt: now,
-        // Verification lifts a pending account into normal use. A restricted
-        // account stays restricted until a human clears its review case.
-        status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
-      })
-      .where(eq(users.id, params.userId));
-
-    // Day 0 of the starter allocation; the scheduler grants days 1 to 6. A
-    // restricted account waits: it gets nothing until a human clears it, and
-    // by then its window may have passed — free tokens are not owed to an
-    // account under review.
-    const [verified] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.userId));
-    if (verified?.status === 'active') {
-      await grantStarterTokensForPeriod(tx, { userId: params.userId, verifiedAt: now, now });
-      // An invitation is thanked here, not at registration: an unverified
-      // throwaway address earns its inviter nothing.
-      await rewardReferral(tx, { inviteeUserId: params.userId, now });
-    }
-
-    // The reputation table's own rule for it, once per member.
-    await applyRule(tx, {
-      userId: params.userId,
-      ruleKey: 'email_verified',
-      source: 'verification',
-      idempotencyKey: `identity.email_verified:${params.userId}`,
-    });
-
-    await recordAudit(tx, {
-      actorType: 'user',
-      actorUserId: params.userId,
-      action: 'identity.email_verified',
-      subjectType: 'user',
-      subjectId: params.userId,
-    });
-
+    await markEmailVerified(tx, { userId: params.userId, method: 'code', now });
     return { ok: true };
+  });
+}
+
+/**
+ * Everything that follows a confirmed address, however it was confirmed (the
+ * emailed code, or a sign-in provider that vouches for it): the account
+ * opens, the starter tokens begin, an invitation is thanked, the reputation
+ * rule applies, and the audit says how.
+ */
+export async function markEmailVerified(
+  tx: Executor,
+  params: { userId: string; method: 'code' | 'google'; now?: Date },
+): Promise<void> {
+  const now = params.now ?? new Date();
+  await tx
+    .update(users)
+    .set({
+      emailVerifiedAt: now,
+      // Verification lifts a pending account into normal use. A restricted
+      // account stays restricted until a human clears its review case.
+      status: sql`case when ${users.status} = 'pending_verification' then 'active'::account_status else ${users.status} end`,
+    })
+    .where(eq(users.id, params.userId));
+
+  // Day 0 of the starter allocation; the scheduler grants days 1 to 6. A
+  // restricted account waits: it gets nothing until a human clears it, and
+  // by then its window may have passed — free tokens are not owed to an
+  // account under review.
+  const [verified] = await tx.select({ status: users.status }).from(users).where(eq(users.id, params.userId));
+  if (verified?.status === 'active') {
+    await grantStarterTokensForPeriod(tx, { userId: params.userId, verifiedAt: now, now });
+    // An invitation is thanked here, not at registration: an unverified
+    // throwaway address earns its inviter nothing.
+    await rewardReferral(tx, { inviteeUserId: params.userId, now });
+  }
+
+  // The reputation table's own rule for it, once per member.
+  await applyRule(tx, {
+    userId: params.userId,
+    ruleKey: 'email_verified',
+    source: 'verification',
+    idempotencyKey: `identity.email_verified:${params.userId}`,
+  });
+
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.userId,
+    action: 'identity.email_verified',
+    subjectType: 'user',
+    subjectId: params.userId,
+    metadata: { method: params.method },
   });
 }
 

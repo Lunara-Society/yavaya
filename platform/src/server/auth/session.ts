@@ -11,9 +11,10 @@ import { generateToken, sha256 } from '@/server/security/crypto';
  * of the request that created it. The database stores only its SHA-256, so a
  * database leak cannot be replayed as a login.
  *
- * Three independent expiries apply: idle timeout, absolute lifetime, and
- * explicit revocation. Tokens rotate periodically to limit the value of one
- * that has been stolen.
+ * Three independent expiries apply: idle timeout (from the last activity),
+ * absolute lifetime, and explicit revocation. When a token is due for
+ * re-issue is computed below, but nothing re-issues it yet — see the known
+ * gaps in docs/SECURITY.md.
  */
 
 export type SessionUser = {
@@ -27,6 +28,8 @@ export type SessionUser = {
 
 export type ValidatedSession = {
   sessionId: string;
+  /** When the session last saw activity; the idle window runs from here. */
+  lastUsedAt: Date;
   user: SessionUser;
   /** True when the caller should issue a fresh token and replace the cookie. */
   shouldRotate: boolean;
@@ -35,7 +38,7 @@ export type ValidatedSession = {
 export async function createSession(
   tx: Executor,
   params: { userId: string; deviceId?: string | null; ipHash?: string | null; userAgent?: string | null },
-): Promise<{ token: string; sessionId: string; expiresAt: Date }> {
+): Promise<{ token: string; sessionId: string; expiresAt: Date; absoluteExpiresAt: Date }> {
   const token = generateToken(32);
   const now = new Date();
   const expiresAt = new Date(now.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000);
@@ -55,7 +58,7 @@ export async function createSession(
     .returning({ id: sessions.id });
 
   if (!row) throw new Error('session insert returned no row');
-  return { token, sessionId: row.id, expiresAt };
+  return { token, sessionId: row.id, expiresAt, absoluteExpiresAt };
 }
 
 /**
@@ -97,6 +100,9 @@ export async function validateSession(
   const now = new Date();
   if (row.revokedAt) return null;
   if (row.expiresAt <= now) return null;
+  // The idle rule is checked from the last activity too, so a change to it
+  // applies to sessions issued under the old one.
+  if (row.lastUsedAt.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000 <= now.getTime()) return null;
   if (row.absoluteExpiresAt <= now) return null;
   if (row.deactivatedAt) return null;
   // A banned account's sessions stop working immediately, without waiting for
@@ -107,6 +113,7 @@ export async function validateSession(
 
   return {
     sessionId: row.sessionId,
+    lastUsedAt: row.lastUsedAt,
     shouldRotate: now >= rotateAfter,
     user: {
       userId: row.userId,

@@ -16,6 +16,9 @@ import { placeCountries } from '@/server/domains/geography/places';
 import { chosenPlace, PLACE_COOKIE } from '@/server/place-choice';
 import { resolveLocale } from '@/server/preferences';
 import { LIVE_FEED_RULES, PLACE_RULES } from '@/config/business-rules';
+import { readSessionCookie } from '@/server/auth/cookies';
+import { googleSignIn } from '@/server/domains/identity/google';
+import { AuthBar } from './auth-bar';
 
 /**
  * `unread` is the count of unread notifications, shown on the bell;
@@ -39,6 +42,7 @@ export async function SiteShell({
   current,
   district,
   tone,
+  authBar = true,
   children,
 }: {
   c: SiteContent;
@@ -51,6 +55,8 @@ export async function SiteShell({
   district?: string;
   /** A website district page's colour (tone-*), applied to the body only. */
   tone?: string;
+  /** The sign-in bar for signed-out visitors; off on the sign-in pages themselves. */
+  authBar?: boolean;
   children: ReactNode;
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
@@ -60,6 +66,8 @@ export async function SiteShell({
     chosenPlace(locale).catch(() => null),
     placeCountries(db(), locale).catch(() => []),
   ]);
+  // Signed out with a session cookie still present: the server closed it.
+  const ended = !member && Boolean(await readSessionCookie());
   const primary: PageId[] = ['districts', 'trust', 'reputation', 'tokens', 'status'];
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],
@@ -75,6 +83,7 @@ export async function SiteShell({
       <a className="skip" href="#main">
         {c.ui.skip}
       </a>
+      {!member && authBar ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
       <header className="top">
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label={`${c.ui.brand} — ${c.nav.home}`}>
@@ -127,16 +136,7 @@ export async function SiteShell({
                   {member.displayName || member.yayId}
                 </Link>
               </>
-            ) : (
-              <>
-                <Link className="chip member-chip" href="/login">
-                  {t('nav.sign_in')}
-                </Link>
-                <Link className="btn btn-gold" href="/register" style={{ minHeight: 44 }}>
-                  {t('auth.submit_register')}
-                </Link>
-              </>
-            )}
+            ) : null /* signed out, the way in is the bar above the header */}
             <QuickControls t={t} language={language} theme={theme} member={member} />
             <details className="menu">
               <summary className="chip" aria-label={c.ui.menuOpen}>
