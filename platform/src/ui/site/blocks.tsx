@@ -35,6 +35,7 @@ export const PAGE_PATHS: Record<PageId, string> = {
   status: '/status',
   roadmap: '/roadmap',
   about: '/about',
+  guide: '/guia',
   help: '/help',
   privacy: '/privacy',
   terms: '/terms',

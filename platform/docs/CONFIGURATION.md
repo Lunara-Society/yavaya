@@ -1011,6 +1011,11 @@ times and chapter times are in `src/config/guide.ts`.
   byte ranges, so a viewer starts at once and can jump to any chapter. Only the
   names in `config/guide.ts` are served. Posters and captions (WebVTT) are
   small and ship in `public/guide/`.
+- **Subtitles.** Every film has Spanish captions and English subtitles, cue for
+  cue on the same timings (a test checks this). English subtitles switch on by
+  themselves for someone reading the site in English; Spanish captions stay
+  off unless chosen, since the narration is Spanish. A re-cut needs both
+  tracks rewritten: the timings come from the new narration.
 - **Two sizes.** Each film exists in 1080p and 720p; touch screens get 720p,
   which is lighter on a phone's data plan.
 - **Putting files in the bucket.** The bucket's keys are not handed out, so the

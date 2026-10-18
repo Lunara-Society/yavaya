@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { GO_CATEGORIES } from '@/config/go';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { money } from '@/ui/go/format';
 import { browseStores, myDriver, myStore } from '@/server/domains/go/service';
@@ -73,6 +74,9 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
           </div>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="yavayago" title={t('guide.watch_title', { name: c.nav.yavayago })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
         <Link className="go-trips-banner" href="/yavayago/viajes">

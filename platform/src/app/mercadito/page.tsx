@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { ListingCard } from '@/ui/mercadito/listing-card';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon, type IconName } from '@/ui/site/icons';
@@ -137,6 +138,9 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
           </nav>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="mercadito" title={t('guide.watch_title', { name: c.nav.mercadito })} t={t} locale={locale} />
+      </div>
 
       <section className="wrap" aria-label={t('mercadito.browse.results_label')} style={{ paddingBottom: 48 }}>
         {result.items.length === 0 ? (

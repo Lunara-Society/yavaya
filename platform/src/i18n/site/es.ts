@@ -77,6 +77,7 @@ export const siteEs = {
     status: 'Estado',
     roadmap: 'Hoja de ruta',
     about: 'Nosotros',
+    guide: 'Guía en video',
     help: 'Ayuda',
     privacy: 'Privacidad',
     terms: 'Términos',

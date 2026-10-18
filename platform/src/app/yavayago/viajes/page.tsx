@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { GO_TRIP_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { TripForm, type TripFormLabels } from '@/ui/go/trip-form';
 import { PlacePicker } from '@/ui/components/place-picker';
@@ -27,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function TripsPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const query = await searchParams;
-  const { c, t, language, theme, member, userId } = await siteContext();
+  const { c, t, locale, language, theme, member, userId } = await siteContext();
   const [start, launch, active, driver, window] = await Promise.all([
     tripStartCity(db(), userId),
     launchCity(db()),
@@ -83,6 +84,9 @@ export default async function TripsPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="yavayago" title={t('guide.watch_title', { name: c.nav.yavayago })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap go-page cm-column" style={{ paddingBottom: 56 }}>
         <ol className="go-how">

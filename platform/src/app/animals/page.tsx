@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { SIZES, SPECIES } from '@/config/animals';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon } from '@/ui/site/icons';
 import { AnimalCard } from '@/ui/animals/parts';
@@ -57,6 +58,9 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
           <p className="lead">{t('animals.home.lead')}</p>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="animales" title={t('guide.watch_title', { name: c.nav.animals })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
         <div className="an-doors">

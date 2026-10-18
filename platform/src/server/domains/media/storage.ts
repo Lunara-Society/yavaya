@@ -33,7 +33,7 @@ export interface MediaStorage {
    * neither direction ever holds a whole video in memory. Optional: a store
    * without them simply cannot serve video.
    */
-  stream?(objectKey: string, range?: ByteRange): Promise<StoredStream | null>;
+  stream?(objectKey: string, range?: ByteRange): Promise<StoredStream | UnsatisfiableRange | null>;
   multipart?: MultipartWriter;
 }
 
@@ -49,6 +49,9 @@ export type StoredStream = {
   range: { start: number; end: number } | null;
   contentType: string | null;
 };
+
+/** A range that starts past the end of the object: the answer is 416, which needs the size. */
+export type UnsatisfiableRange = { unsatisfiable: true; size: number };
 
 export interface MultipartWriter {
   start(objectKey: string, contentType: string): Promise<string>;
@@ -126,7 +129,7 @@ class S3MediaStorage implements MediaStorage {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: objectKey }));
   }
 
-  async stream(objectKey: string, range?: ByteRange): Promise<StoredStream | null> {
+  async stream(objectKey: string, range?: ByteRange): Promise<StoredStream | UnsatisfiableRange | null> {
     try {
       if (!range) {
         const head = await this.client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: objectKey }));
@@ -143,6 +146,10 @@ class S3MediaStorage implements MediaStorage {
       return { body: response.Body?.transformToWebStream() ?? null, length: end - start + 1, size, range: { start, end }, contentType: response.ContentType ?? null };
     } catch (error) {
       if (error instanceof NoSuchKey || error instanceof NotFound) return null;
+      if (range && (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode === 416) {
+        const head = await this.client.send(new HeadObjectCommand({ Bucket: this.bucket, Key: objectKey }));
+        return { unsatisfiable: true, size: Number(head.ContentLength ?? 0) };
+      }
       throw error;
     }
   }

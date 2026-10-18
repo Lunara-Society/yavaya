@@ -1,5 +1,9 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { GUIDE_CHAPTERS, GUIDE_KEYS, GUIDE_SECONDS, GUIDE_VERSION, guideFiles, guideObjectKey } from '@/config/guide';
+import { GUIDE_CHAPTERS, GUIDE_KEYS, GUIDE_SECONDS, GUIDE_VERSION, guideDuration, guideFiles, guideObjectKey } from '@/config/guide';
+
+const PUBLIC = join(__dirname, '..', '..', 'public');
 
 describe('guide videos', () => {
   it('serves only the listed films, at the current version', () => {
@@ -27,5 +31,23 @@ describe('guide videos', () => {
     expect(at).toEqual([...at].sort((a, b) => a - b));
     expect(at[0]).toBe(0);
     expect(at.at(-1)!).toBeLessThan(GUIDE_SECONDS.guia);
+  });
+
+  it('ships the poster and both subtitle tracks of every film with the site', () => {
+    for (const key of GUIDE_KEYS) {
+      const files = guideFiles(key);
+      for (const path of [files.poster, files.captions, files.subtitlesEn]) {
+        expect(existsSync(join(PUBLIC, path)), path).toBe(true);
+      }
+      // the English track is a translation on the Spanish timings, cue for cue
+      const cues = (path: string) => readFileSync(join(PUBLIC, path), 'utf8').match(/^\d\d:\d\d:\d\d\.\d{3} --> .+$/gm) ?? [];
+      expect(cues(files.subtitlesEn)).toEqual(cues(files.captions));
+      expect(cues(files.captions).length).toBeGreaterThan(0);
+    }
+  });
+
+  it('gives search engines an ISO 8601 duration', () => {
+    expect(guideDuration('guia')).toBe(`PT${Math.floor(GUIDE_SECONDS.guia / 60)}M${GUIDE_SECONDS.guia % 60}S`);
+    for (const key of GUIDE_KEYS) expect(guideDuration(key)).toMatch(/^PT\d+M\d{1,2}S$/);
   });
 });

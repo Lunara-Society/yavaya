@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { PageHero } from '@/ui/site/blocks';
 import { ChurchRow, WordCard } from '@/ui/sanctuary/parts';
 import { followedChurches, listChurches, listDevotionals } from '@/server/domains/sanctuary/service';
@@ -54,6 +55,9 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
       <PageHero eyebrow={t('sanctuary.eyebrow')} title={t('sanctuary.title')} lead={t('sanctuary.lead')} photo="sanctuary" />
+      <div className="wrap">
+        <GuideVideo guideKey="santuario" title={t('guide.watch_title', { name: c.nav.sanctuary })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap sc-page">
         <div className="sc-main">

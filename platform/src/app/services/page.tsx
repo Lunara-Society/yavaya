@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { SERVICE_CATEGORIES, SERVICE_CATEGORY_KEYS, type ServiceCategoryKey } from '@/config/services';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { CategoryIcon, RequestCard, categoryName } from '@/ui/services/parts';
 import { getProviderProfile, listBoard } from '@/server/domains/services/service';
@@ -66,6 +67,9 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
           </div>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="servicios" title={t('guide.watch_title', { name: c.nav.services })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
         {error ? <p className="mk-error">{t(error as MessageKey)}</p> : null}

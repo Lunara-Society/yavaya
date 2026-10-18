@@ -5,6 +5,7 @@ import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/community/post-card';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
@@ -62,6 +63,9 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           </div>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="comunidad" title={t('guide.watch_title', { name: c.nav.community })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap cm-column" style={{ paddingBottom: 56 }}>
         {!feed ? (

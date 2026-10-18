@@ -7,6 +7,7 @@ import { MEMBER_PLEDGES, PROFESSIONAL_PLEDGES, PROFESSIONS } from '@/config/safe
 import { SAFE_SPACE_RULES } from '@/config/business-rules';
 import { getMember, professionalEligible, safeSpaceAvailable } from '@/server/domains/safe-space/service';
 import { ErrorNote, VioletaShell } from '@/ui/violeta/parts';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { VIOLETA_METADATA } from './meta';
 import { joinAction } from './actions';
 
@@ -18,7 +19,7 @@ const PROMISES = ['name', 'sealed', 'private', 'silent', 'erase', 'exit'] as con
 /** The door: what this space is, what it promises and what it cannot. */
 export default async function VioletaDoor({ searchParams }: { searchParams: Promise<{ error?: string; left?: string }> }) {
   const query = await searchParams;
-  const { t, userId } = await shellContext();
+  const { t, locale, userId } = await shellContext();
   const available = safeSpaceAvailable();
   const member = available && userId ? await getMember(db(), userId) : null;
   if (member?.status === 'active' && !query.error) redirect('/violeta/sala');
@@ -34,6 +35,8 @@ export default async function VioletaDoor({ searchParams }: { searchParams: Prom
         <ErrorNote t={t} error={query.error} />
 
         <p className="vt-danger">{t('violeta.door.danger')}</p>
+
+        <GuideVideo guideKey="violeta" title={t('guide.watch_title', { name: t('guide.chapter.violeta') })} t={t} locale={locale} note={t('guide.violeta_privacy')} />
 
         <h2 className="vt-h">{t('violeta.door.promises_title')}</h2>
         <ul className="vt-list">

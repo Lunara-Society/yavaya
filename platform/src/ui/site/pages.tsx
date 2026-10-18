@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { packageSavingPercent, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
@@ -34,7 +35,7 @@ import { Md, Paras } from './md';
 
 type Cta = { href: string; label: string };
 
-export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta }) {
+export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primaryCta: Cta; afterHero?: ReactNode }) {
   const p = c.pages.home;
   return (
     <>
@@ -84,6 +85,7 @@ export function HomeBody({ c, primaryCta }: { c: SiteContent; primaryCta: Cta })
           </div>
         </div>
       </section>
+      {afterHero}
       <section className="section" id="distritos" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <OrnamentRule className="ornament" />
@@ -559,11 +561,12 @@ export function AnimalsBody({ c }: { c: SiteContent }) {
   );
 }
 
-export function TrustBody({ c }: { c: SiteContent }) {
+export function TrustBody({ c, afterHero }: { c: SiteContent; afterHero?: ReactNode }) {
   const p = c.pages.trust;
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="trust" />
+      {afterHero}
       <section className="section">
         <div className="wrap">
           <p className="quote">
@@ -712,13 +715,14 @@ export function ReputationBody({ c }: { c: SiteContent }) {
   );
 }
 
-export function TokensBody({ c }: { c: SiteContent }) {
+export function TokensBody({ c, afterHero }: { c: SiteContent; afterHero?: ReactNode }) {
   const p = c.pages.tokens;
   const offered = TOKEN_PACKAGES.filter((pk) => pk.enabled && pk.tokens <= TOKEN_RULES.maxTokensPerPurchase);
   const best = [...offered].sort((a, b) => a.priceMinor / a.tokens - b.priceMinor / b.tokens)[0];
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
+      {afterHero}
       <section className="section">
         <div className="wrap">
           <Cards items={p.pillars} />

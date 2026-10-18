@@ -40,6 +40,7 @@ async function serve(request: Request, file: string, withBody: boolean) {
 
   const stored = await storage.stream(key, range ?? undefined);
   if (!stored) return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+  if ('unsatisfiable' in stored) return new Response(null, { status: 416, headers: { ...HEADERS, 'Content-Range': `bytes */${stored.size}` } });
 
   const headers: Record<string, string> = { ...HEADERS, 'Content-Length': String(stored.length) };
   if (stored.range) headers['Content-Range'] = `bytes ${stored.range.start}-${stored.range.end}/${stored.size}`;

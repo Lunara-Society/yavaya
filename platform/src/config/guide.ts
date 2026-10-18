@@ -8,6 +8,9 @@
  */
 export const GUIDE_VERSION = 1;
 
+/** The day this version of the films went up, for search engines' video listings. */
+export const GUIDE_PUBLISHED = '2026-10-18';
+
 export const GUIDE_KEYS = ['guia', 'mercadito', 'servicios', 'trabajo', 'yavayago', 'comunidad', 'violeta', 'santuario', 'animales', 'confianza'] as const;
 export type GuideKey = (typeof GUIDE_KEYS)[number];
 
@@ -40,6 +43,12 @@ export const GUIDE_CHAPTERS: { key: GuideKey | 'intro' | 'cierre'; at: number }[
   { key: 'cierre', at: 773 },
 ];
 
+/** ISO 8601 duration ("PT1M21S"), the form schema.org wants. */
+export function guideDuration(key: GuideKey): string {
+  const seconds = GUIDE_SECONDS[key];
+  return `PT${Math.floor(seconds / 60)}M${seconds % 60}S`;
+}
+
 export function isGuideKey(value: string): value is GuideKey {
   return (GUIDE_KEYS as readonly string[]).includes(value);
 }
@@ -53,6 +62,8 @@ export function guideFiles(key: GuideKey) {
     sd: `/video/${name}-720.mp4`,
     poster: `/guide/${name}.jpg`,
     captions: `/guide/${name}.vtt`,
+    /** English subtitles on the same cue timings as the Spanish captions. */
+    subtitlesEn: `/guide/${name}.en.vtt`,
   };
 }
 

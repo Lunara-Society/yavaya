@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { WORK_FIELDS } from '@/config/work';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/work/parts';
 import { getProfile, listPosts } from '@/server/domains/work/service';
@@ -65,6 +66,9 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </section>
+      <div className="wrap">
+        <GuideVideo guideKey="trabajo" title={t('guide.watch_title', { name: c.nav.work })} t={t} locale={locale} />
+      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
         <div className="wk-principles">

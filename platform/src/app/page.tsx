@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { guideFiles } from '@/config/guide';
 import { HomeBody } from '@/ui/site/pages';
 import { JsonLd } from '@/ui/site/json-ld';
 import { servedCountryNames, siteUrl } from '@/server/seo';
@@ -36,7 +38,29 @@ export default async function HomePage() {
           { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Yavaya', url: base, inLanguage: 'es' },
         ]}
       />
-      <HomeBody c={c} primaryCta={primaryCta} />
+      <HomeBody
+        c={c}
+        primaryCta={primaryCta}
+        afterHero={
+          <section className="section">
+            <div className="wrap gv-band">
+              <Link href="/guia" aria-label={t('guide.home_cta')}>
+                <img src={guideFiles('guia').poster} alt="" width={1280} height={720} loading="lazy" />
+              </Link>
+              <div>
+                <p className="eyebrow">{t('guide.home_eyebrow')}</p>
+                <h2 className="h-md">{t('guide.home_title')}</h2>
+                <p className="lead">{t('guide.home_text')}</p>
+                <p className="btn-row">
+                  <Link className="btn btn-gold" href="/guia">
+                    ▶ {t('guide.home_cta')}
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </section>
+        }
+      />
     </SiteShell>
   );
 }

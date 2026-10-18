@@ -65,6 +65,7 @@ export const siteEn: SiteContent = {
     status: 'Status',
     roadmap: 'Roadmap',
     about: 'About',
+    guide: 'Video guide',
     help: 'Help',
     privacy: 'Privacy',
     terms: 'Terms',

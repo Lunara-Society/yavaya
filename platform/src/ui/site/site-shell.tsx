@@ -64,7 +64,7 @@ export async function SiteShell({
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],
     [c.ui.menu.platform, ['trust', 'reputation', 'tokens', 'pricing', 'transparency']],
-    [c.ui.menu.yavaya, ['about', 'roadmap', 'status', 'help', 'privacy', 'terms']],
+    [c.ui.menu.yavaya, ['about', 'guide', 'roadmap', 'status', 'help', 'privacy', 'terms']],
   ];
 
   return (
