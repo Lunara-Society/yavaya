@@ -3,7 +3,7 @@ import { and, asc, desc, eq, gt, ilike, inArray, isNull, ne, or, sql } from 'dri
 import type { Executor } from '@/server/db/client';
 import { userRoles, users } from '@/server/db/schema';
 import { DomainError, errors } from '@/server/errors';
-import { recordAudit } from '@/server/domains/audit/service';
+import { recentAuditEvents, recordAudit } from '@/server/domains/audit/service';
 import { formatYayId, parseYayId } from '@/server/domains/identity/yay-id';
 import { notify } from '@/server/domains/notifications/service';
 import { grantRole, requirePermission, revokeRole, type AuthContext } from './authorize';
@@ -86,6 +86,14 @@ export async function appoint(tx: Executor, params: { actor: AuthContext | null;
   if (!(APPOINTABLE_ROLES as readonly string[]).includes(params.role)) throw errors.validation('staff.error.role');
   const [user] = await tx.select({ status: users.status, displayName: users.displayName }).from(users).where(eq(users.id, params.userId)).limit(1);
   if (!user) throw errors.notFound('user');
+  // Already holding it: nothing happens. A double click or a resubmitted form
+  // must not send a second welcome or write a second appointment.
+  const [held] = await tx
+    .select({ roleKey: userRoles.roleKey })
+    .from(userRoles)
+    .where(and(eq(userRoles.userId, params.userId), eq(userRoles.roleKey, params.role), eq(userRoles.scope, 'global'), isNull(userRoles.revokedAt), or(isNull(userRoles.expiresAt), gt(userRoles.expiresAt, new Date()))))
+    .limit(1);
+  if (held) return;
   // Staff act for everyone; an account that has not confirmed its email, or is restricted, cannot.
   if (user.status !== 'active') throw new DomainError('conflict', 'staff.error.not_active');
   await grantRole(tx, { userId: params.userId, roleKey: params.role, grantedBy: actor.userId });
@@ -100,4 +108,24 @@ export async function removeAppointment(tx: Executor, params: { actor: AuthConte
   if (!(APPOINTABLE_ROLES as readonly string[]).includes(params.role)) throw errors.validation('staff.error.role');
   await revokeRole(tx, { userId: params.userId, roleKey: params.role });
   await recordAudit(tx, { actorType: 'admin', actorUserId: actor.userId, action: 'roles.removed', subjectType: 'user', subjectId: params.userId, metadata: { role: params.role } });
+}
+
+export type TeamChange = { at: Date; change: 'appointed' | 'removed'; role: string; name: string | null; by: string | null };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** The latest appointments and removals, newest first, from the audit log. Admin only. */
+export async function recentTeamChanges(executor: Executor, actor: AuthContext | null, limit = 20): Promise<TeamChange[]> {
+  await requirePermission(executor, actor, 'roles.manage');
+  const events = await recentAuditEvents(executor, { actions: ['roles.appointed', 'roles.removed'], limit });
+  const ids = [...new Set(events.flatMap((e) => [e.subjectId, e.actorUserId]).filter((id): id is string => Boolean(id && UUID.test(id))))];
+  const people = ids.length ? await executor.select({ id: users.id, displayName: users.displayName }).from(users).where(inArray(users.id, ids)) : [];
+  const nameOf = new Map(people.map((p) => [p.id, p.displayName]));
+  return events.map((e) => ({
+    at: e.occurredAt,
+    change: e.action === 'roles.appointed' ? 'appointed' : 'removed',
+    role: String(e.metadata.role ?? ''),
+    name: (e.subjectId && nameOf.get(e.subjectId)) ?? null,
+    by: (e.actorUserId && nameOf.get(e.actorUserId)) ?? null,
+  }));
 }

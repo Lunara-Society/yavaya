@@ -1526,6 +1526,12 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .staff-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .staff-actions .btn, .staff-list .btn { min-height: 38px; padding: 0 14px; font-size: .9rem; }
 .staff-on { border-color: #3fbf7f !important; color: #8fe0b5 !important; }
+.staff-on[aria-disabled="true"] { cursor: default; }
+.staff-remove { margin-top: 8px; }
+.staff-remove summary { cursor: pointer; color: var(--muted, inherit); font-size: .9rem; width: max-content; }
+.staff-remove form { margin-top: 8px; }
+.staff-danger { border-color: #e0605e !important; color: #f2a19f !important; }
+.staff-history { list-style: none; padding: 0; display: grid; gap: 6px; margin-top: 10px; font-size: .95rem; }
 
 /* ===========================================================================
    Tokens — the shortcut in the header and the dock, the balance, the shop.

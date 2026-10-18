@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { asc, sql } from 'drizzle-orm';
+import { asc, desc, inArray, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { auditEvents } from '@/server/db/schema';
 
@@ -105,6 +105,19 @@ type HashableEvent = {
   userAgentHash: string | null;
   metadata: Record<string, unknown>;
 };
+
+/**
+ * The latest events with these action names, newest first. Reading is free;
+ * writing only ever goes through recordAudit.
+ */
+export async function recentAuditEvents(executor: Executor, params: { actions: string[]; limit: number }) {
+  return executor
+    .select({ occurredAt: auditEvents.occurredAt, action: auditEvents.action, actorUserId: auditEvents.actorUserId, subjectId: auditEvents.subjectId, metadata: auditEvents.metadata })
+    .from(auditEvents)
+    .where(inArray(auditEvents.action, params.actions))
+    .orderBy(desc(auditEvents.id))
+    .limit(params.limit);
+}
 
 export function computeEventHash(prevHash: string | null, event: HashableEvent): string {
   return createHash('sha256')

@@ -4,7 +4,7 @@ import { closeDb, db } from '@/server/db/client';
 import { auditEvents, users, workEmployers } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { grantRole, hasPermission } from '@/server/domains/access/authorize';
-import { appoint, publicTeamRole, removeAppointment, searchMembers, staffList } from '@/server/domains/access/staff';
+import { appoint, publicTeamRole, recentTeamChanges, removeAppointment, searchMembers, staffList } from '@/server/domains/access/staff';
 import { hasUnseenWelcome, markWelcomeSeen, welcomeFor } from '@/server/domains/access/welcome';
 import { listNotifications } from '@/server/domains/notifications/service';
 import { queuesFor } from '@/server/domains/ops/queues';
@@ -44,6 +44,27 @@ describe('team and operations', () => {
 
     await db().transaction((tx) => removeAppointment(tx, { actor: as(admin), userId: maria, role: 'safe_space_guardian' }));
     expect(await hasPermission(db(), maria, 'safe_space.review')).toBe(false);
+  });
+
+  it('ignores a second click on appoint, and keeps a readable history of changes', async () => {
+    const admin = await account('Dueña');
+    await db().transaction((tx) => grantRole(tx, { userId: admin, roleKey: 'admin', grantedBy: null }));
+    const tania = await account('Tania Ponce');
+    await db().transaction((tx) => appoint(tx, { actor: as(admin), userId: tania, role: 'community_manager' }));
+    await db().transaction((tx) => appoint(tx, { actor: as(admin), userId: tania, role: 'community_manager' }));
+
+    expect((await listNotifications(db(), tania, 10)).filter((n) => n.titleKey === 'notify.staff.appointed.community_manager')).toHaveLength(1);
+    expect(await db().select().from(auditEvents).where(eq(auditEvents.action, 'roles.appointed'))).toHaveLength(1);
+    expect(await publicTeamRole(db(), tania)).toBe('community_manager');
+
+    await db().transaction((tx) => removeAppointment(tx, { actor: as(admin), userId: tania, role: 'community_manager' }));
+    const history = await recentTeamChanges(db(), as(admin));
+    expect(history.map((h) => [h.change, h.role, h.name, h.by])).toEqual([
+      ['removed', 'community_manager', 'Tania Ponce', 'Dueña'],
+      ['appointed', 'community_manager', 'Tania Ponce', 'Dueña'],
+    ]);
+    // the history is for admins only
+    await expect(recentTeamChanges(db(), as(tania))).rejects.toThrow();
   });
 
   it('welcomes a community manager once, with a public badge and no power to suspend', async () => {
