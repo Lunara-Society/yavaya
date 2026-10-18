@@ -1,0 +1,36 @@
+{
+ "starts": {
+  "intro": 0.0,
+  "mercadito": 63.31999999999999,
+  "servicios": 139.51999999999998,
+  "trabajo": 223.23999999999998,
+  "yavayago": 303.2,
+  "comunidad": 384.91999999999996,
+  "violeta": 453.03999999999996,
+  "santuario": 537.0,
+  "animales": 610.96,
+  "confianza": 686.0600000000001,
+  "cierre": 773.1400000000001
+ },
+ "cuts": {
+  "intro": 64.52,
+  "mercadito": 77.4,
+  "servicios": 84.92,
+  "trabajo": 81.16,
+  "yavayago": 82.92,
+  "comunidad": 69.32000000000001,
+  "violeta": 85.16,
+  "santuario": 75.16,
+  "animales": 76.3,
+  "confianza": 88.28,
+  "cierre": 32.760000000000005
+ },
+ "length": 805.9000000000001,
+ "xfade": 1.2,
+ "jump": {
+  "at": 384.31999999999994,
+  "to": 178.05999999999983,
+  "section": "comunidad",
+  "level_diff_db": 0.06
+ }
+}

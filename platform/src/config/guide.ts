@@ -49,6 +49,19 @@ export function guideDuration(key: GuideKey): string {
   return `PT${Math.floor(seconds / 60)}M${seconds % 60}S`;
 }
 
+/**
+ * The 9:16 cuts for social media: every film re-framed for a phone held
+ * upright, with the words burned in (social video plays muted), plus the
+ * intro on its own as a teaser. Served for download; the site shows the 16:9
+ * films.
+ */
+export const SOCIAL_KEYS = [...GUIDE_KEYS, 'intro'] as const;
+export type SocialKey = (typeof SOCIAL_KEYS)[number];
+
+export function socialFile(key: SocialKey): string {
+  return `/video/${key}-v${GUIDE_VERSION}-916.mp4`;
+}
+
 export function isGuideKey(value: string): value is GuideKey {
   return (GUIDE_KEYS as readonly string[]).includes(value);
 }
@@ -69,7 +82,8 @@ export function guideFiles(key: GuideKey) {
 
 /** The bucket key behind a /video/ file name, or null for anything that is not a guide video. */
 export function guideObjectKey(file: string): string | null {
-  const match = /^([a-z]+)-v(\d+)(-720)?\.mp4$/.exec(file);
-  if (!match || !isGuideKey(match[1]!) || Number(match[2]) !== GUIDE_VERSION) return null;
-  return `guide/${file}`;
+  const match = /^([a-z]+)-v(\d+)(-720|-916)?\.mp4$/.exec(file);
+  if (!match || Number(match[2]) !== GUIDE_VERSION) return null;
+  const known = match[3] === '-916' ? (SOCIAL_KEYS as readonly string[]).includes(match[1]!) : isGuideKey(match[1]!);
+  return known ? `guide/${file}` : null;
 }

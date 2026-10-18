@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { GUIDE_CHAPTERS, GUIDE_KEYS, GUIDE_SECONDS, GUIDE_VERSION, guideDuration, guideFiles, guideObjectKey } from '@/config/guide';
+import { GUIDE_CHAPTERS, GUIDE_KEYS, GUIDE_SECONDS, GUIDE_VERSION, SOCIAL_KEYS, guideDuration, guideFiles, guideObjectKey, socialFile } from '@/config/guide';
 
 const PUBLIC = join(__dirname, '..', '..', 'public');
 
@@ -15,6 +15,15 @@ describe('guide videos', () => {
     expect(guideObjectKey(`mercadito-v${GUIDE_VERSION + 1}.mp4`)).toBeNull();
     expect(guideObjectKey(`mercadito-v${GUIDE_VERSION}.mp4.bak`)).toBeNull();
     expect(guideObjectKey(`Mercadito-v${GUIDE_VERSION}.mp4`)).toBeNull();
+  });
+
+  it('serves the 9:16 social cuts, including the intro teaser, and nothing else under that suffix', () => {
+    for (const key of SOCIAL_KEYS) expect(guideObjectKey(socialFile(key).replace('/video/', ''))).toBe(`guide/${key}-v${GUIDE_VERSION}-916.mp4`);
+    // the intro exists only as a vertical teaser
+    expect(guideObjectKey(`intro-v${GUIDE_VERSION}.mp4`)).toBeNull();
+    expect(guideObjectKey(`intro-v${GUIDE_VERSION}-720.mp4`)).toBeNull();
+    expect(guideObjectKey(`secret-v${GUIDE_VERSION}-916.mp4`)).toBeNull();
+    expect(guideObjectKey(`mercadito-v${GUIDE_VERSION + 1}-916.mp4`)).toBeNull();
   });
 
   it('names every file it links to so the route will serve it', () => {
