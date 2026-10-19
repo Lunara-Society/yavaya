@@ -1,5 +1,5 @@
 import 'server-only';
-import { createHash } from 'node:crypto';
+import { createHash, createPublicKey, verify, type JsonWebKey } from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { serverEnv } from '@/config/env';
 import type { Database } from '@/server/db/client';
@@ -100,6 +100,40 @@ export function readIdToken(idToken: string, expect: { clientId: string; nonce: 
   if (typeof claims.sub !== 'string' || !claims.sub || typeof claims.email !== 'string' || !claims.email.includes('@')) return null;
   const name = typeof claims.name === 'string' && claims.name.trim() ? claims.name.trim() : claims.email.split('@')[0]!;
   return { subject: claims.sub, email: claims.email, name: name.slice(0, 60) };
+}
+
+const CERTS_URL = 'https://www.googleapis.com/oauth2/v3/certs';
+let certs: { keys: Map<string, JsonWebKey>; until: number } | null = null;
+
+async function googleKey(kid: string): Promise<JsonWebKey | null> {
+  if (!certs || certs.until < Date.now() || !certs.keys.has(kid)) {
+    const response = await fetch(CERTS_URL, { signal: AbortSignal.timeout(10_000) });
+    if (!response.ok) return null;
+    const body = (await response.json()) as { keys?: Array<JsonWebKey & { kid?: string }> };
+    const maxAge = Number(/max-age=(\d+)/.exec(response.headers.get('cache-control') ?? '')?.[1] ?? 3600);
+    certs = { keys: new Map((body.keys ?? []).filter((k) => k.kid).map((k) => [k.kid!, k])), until: Date.now() + maxAge * 1000 };
+  }
+  return certs.keys.get(kid) ?? null;
+}
+
+/**
+ * An ID token that reached us through the browser (the sign-in prompt), not
+ * straight from Google's token endpoint: its signature must be checked against
+ * Google's published keys before any claim in it means anything.
+ */
+export async function verifyBrowserIdToken(idToken: string, expect: { clientId: string; nonce: string }): Promise<GoogleProfile | null> {
+  try {
+    const [head, payload, signature] = idToken.split('.');
+    if (!head || !payload || !signature) return null;
+    const header = JSON.parse(Buffer.from(head, 'base64url').toString('utf8')) as { alg?: string; kid?: string };
+    if (header.alg !== 'RS256' || !header.kid) return null;
+    const jwk = await googleKey(header.kid);
+    if (!jwk) return null;
+    const valid = verify('RSA-SHA256', Buffer.from(`${head}.${payload}`), createPublicKey({ key: jwk, format: 'jwk' }), Buffer.from(signature, 'base64url'));
+    return valid ? readIdToken(idToken, expect) : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Trades the one-time code for an ID token. Null on any failure; nothing about it is shown to the visitor. */

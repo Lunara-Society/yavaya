@@ -20,6 +20,7 @@ export async function AppShell({
   member,
   district,
   authBar,
+  googlePrompt,
   children,
 }: {
   t: Translator;
@@ -30,11 +31,13 @@ export async function AppShell({
   district?: string;
   /** Off on the sign-in pages, which are the way in themselves. */
   authBar?: boolean;
+  /** Google's sign-in prompt for signed-out visitors; see SiteShell. */
+  googlePrompt?: 'auto' | 'after-sign-out' | 'off';
   children: ReactNode;
 }) {
   const c = siteContent(await resolveLocale());
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} district={district} authBar={authBar}>
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} district={district} authBar={authBar} googlePrompt={googlePrompt}>
       <div className="mx-auto w-full max-w-5xl px-4 pt-8 pb-20">{children}</div>
     </SiteShell>
   );

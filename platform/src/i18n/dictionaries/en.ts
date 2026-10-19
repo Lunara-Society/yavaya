@@ -87,6 +87,7 @@ export const en: Dictionary = {
   'auth.register.title': 'Create your Yavaya account',
   'auth.register.subtitle': 'One person, one account. Your YAY ID is permanent.',
   'auth.login.title': 'Sign in to Yavaya',
+  'auth.login.subtitle': 'With your Google account or your email.',
   'auth.email': 'Email address',
   'auth.password': 'Password',
   'auth.display_name': 'Display name',

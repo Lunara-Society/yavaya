@@ -2093,9 +2093,14 @@ a.live-text:hover { text-decoration: underline; }
 .btn-google-wide { width: 100%; min-height: 52px; font-size: 1.02rem; }
 
 /* Sign-in and registration pages: tabs, notice, Google first (auth-entry.tsx). */
-.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); margin-bottom: 22px; }
-.auth-tabs a { display: flex; align-items: center; justify-content: center; min-height: 46px; border-radius: 11px; font-weight: 700; color: var(--text-2, var(--text)); text-decoration: none; }
-.auth-tabs a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.auth-card { width: 100%; max-width: 440px; margin: 8px auto 0; padding: 32px 30px 26px; border-radius: 24px; background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28); }
+.auth-head { display: grid; justify-items: center; text-align: center; gap: 8px; margin-bottom: 22px; }
+.auth-head h1 { margin: 6px 0 0; font-family: "Fraunces", Georgia, serif; font-size: 1.7rem; line-height: 1.15; }
+.auth-head p { margin: 0; color: var(--text-2, var(--text)); }
+.auth-switch { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); text-align: center; color: var(--text-2, var(--text)); }
+.auth-switch a { font-weight: 700; color: var(--accent); text-decoration: none; }
+.auth-card form { margin-top: 0 !important; }
 .auth-notice { margin: 0 0 18px; padding: 12px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
 .auth-google { display: grid; gap: 10px; margin-bottom: 22px; }
 .auth-other { justify-self: center; font-size: 0.92rem; color: var(--text-2, var(--text)); text-decoration: underline; text-underline-offset: 3px; }

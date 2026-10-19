@@ -172,12 +172,16 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
   const csp = [
     `default-src 'self'`,
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDevelopment ? " 'unsafe-eval'" : ''}`,
-    `style-src 'self' 'unsafe-inline'`,
+    // Google's sign-in prompt (accounts.google.com/gsi): its script, its
+    // stylesheet, the frame it draws in and the calls it makes. Nothing else
+    // from Google, and nothing from anyone else.
+    `style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style`,
+    `frame-src https://accounts.google.com/gsi/`,
     `img-src 'self' blob: data:`,
     `font-src 'self'`,
-    // Nothing third-party is contacted from the browser. Widening this is a
-    // deliberate decision, not a convenience.
-    `connect-src 'self'`,
+    // Nothing third-party is contacted from the browser except Google's
+    // sign-in prompt. Widening this is a deliberate decision, not a convenience.
+    `connect-src 'self' https://accounts.google.com/gsi/`,
     // The map library draws in a worker it creates from a blob. Tiles still
     // come only from this origin (see /api/map).
     `worker-src 'self' blob:`,

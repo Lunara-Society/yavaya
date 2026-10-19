@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
-import { AuthEntry } from '@/ui/components/auth-entry';
+import { AuthCard } from '@/ui/components/auth-card';
 import { googleHint } from '@/server/auth/google-cookies';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { shellContext } from '@/ui/shell-context';
@@ -19,18 +19,16 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member} authBar={false}>
-      <div className="mx-auto w-full max-w-md">
-        <AuthEntry
-          t={t}
-          active="register"
-          google={googleSignIn().available}
-          googleHref={invita ? `/auth/google?invita=${encodeURIComponent(invita)}` : '/auth/google'}
-          remembered={Boolean(await googleHint())}
-          notice={null}
-        />
-        <h1 className="text-2xl font-semibold tracking-tight">{t('auth.register.title')}</h1>
-        <p className="mt-1 text-[var(--text-secondary)]">{t('auth.register.subtitle')}</p>
-
+      <AuthCard
+        t={t}
+        mode="register"
+        title={t('auth.register.title')}
+        subtitle={t('auth.register.subtitle')}
+        notice={null}
+        google={googleSignIn().available}
+        googleHref={invita ? `/auth/google?invita=${encodeURIComponent(invita)}` : '/auth/google'}
+        remembered={Boolean(await googleHint())}
+      >
         {invita && rules ? (
           <p className="surface-card mt-4 p-3 text-sm" role="status">
             {t('invite.register_banner', { invitee: rules.inviteeReward })}
@@ -56,8 +54,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
             verifyContinue: t('auth.verify.continue'),
           }}
         />
-
-      </div>
+      </AuthCard>
     </AppShell>
   );
 }

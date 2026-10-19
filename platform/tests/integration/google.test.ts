@@ -3,7 +3,9 @@ import { and, eq } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
 import { auditEvents, externalIdentities, sessions, users, verificationChallenges } from '@/server/db/schema';
 import { authenticate, register } from '@/server/domains/identity/service';
-import { authorizationUrl, readIdToken, registerWithGoogle, signInWithGoogle, type GoogleProfile } from '@/server/domains/identity/google';
+import { authorizationUrl, readIdToken, registerWithGoogle, signInWithGoogle, verifyBrowserIdToken, type GoogleProfile } from '@/server/domains/identity/google';
+import { generateKeyPairSync, sign } from 'node:crypto';
+import { vi } from 'vitest';
 import { getBalance } from '@/server/domains/tokens/service';
 import { createSession, validateSession } from '@/server/auth/session';
 import { seal, unseal } from '@/server/auth/sealed';
@@ -60,6 +62,31 @@ describe('Google sign-in: what Google sends back', () => {
     expect(safeNext('//evil.example')).toBe('/');
     expect(safeNext('https://evil.example')).toBe('/');
     expect(safeNext(null)).toBe('/');
+  });
+});
+
+describe('Google sign-in prompt: tokens that came through the browser', () => {
+  it('accepts only a token signed with one of Google\'s published keys', async () => {
+    const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256', use: 'sig' };
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ keys: [jwk] }), { headers: { 'cache-control': 'max-age=60' } }));
+    const part = (value: object) => Buffer.from(JSON.stringify(value)).toString('base64url');
+    const claims = { iss: 'https://accounts.google.com', aud: CLIENT, exp: Math.floor(Date.now() / 1000) + 600, nonce: 'n1', sub: 'g-9', email: 'b@gmail.com', email_verified: true, name: 'B' };
+    const signed = (header: object, body: object) => {
+      const data = `${part(header)}.${part(body)}`;
+      return `${data}.${sign('RSA-SHA256', Buffer.from(data), privateKey).toString('base64url')}`;
+    };
+    try {
+      expect(await verifyBrowserIdToken(signed({ alg: 'RS256', kid: 'k1' }, claims), { clientId: CLIENT, nonce: 'n1' })).toMatchObject({ subject: 'g-9' });
+      const genuine = signed({ alg: 'RS256', kid: 'k1' }, claims);
+      const [h, , sig] = genuine.split('.');
+      expect(await verifyBrowserIdToken(`${h}.${part({ ...claims, email: 'victim@gmail.com' })}.${sig}`, { clientId: CLIENT, nonce: 'n1' })).toBeNull();
+      expect(await verifyBrowserIdToken(`${part({ alg: 'none' })}.${part(claims)}.`, { clientId: CLIENT, nonce: 'n1' })).toBeNull();
+      expect(await verifyBrowserIdToken(signed({ alg: 'RS256', kid: 'unknown' }, claims), { clientId: CLIENT, nonce: 'n1' })).toBeNull();
+      expect(await verifyBrowserIdToken(signed({ alg: 'RS256', kid: 'k1' }, claims), { clientId: CLIENT, nonce: 'other' })).toBeNull();
+    } finally {
+      fetchMock.mockRestore();
+    }
   });
 });
 

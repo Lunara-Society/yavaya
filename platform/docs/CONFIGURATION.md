@@ -1015,7 +1015,8 @@ To switch it on (about ten minutes, in a Google account the owner controls):
    **Publish app** (in "Testing" only listed test users can sign in).
 3. **Credentials → Create credentials → OAuth client ID**: type *Web
    application*; authorized redirect URI exactly
-   `https://yavaya.lat/auth/google/callback`.
+   `https://yavaya.lat/auth/google/callback`; authorized JavaScript origin
+   `https://yavaya.lat` (needed by the sign-in prompt shown on arrival).
 4. Put the client ID and client secret in the web service's variables on
    Railway as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The deploy that
    follows turns the button on; nothing else changes.

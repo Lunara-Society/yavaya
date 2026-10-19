@@ -19,6 +19,7 @@ import { LIVE_FEED_RULES, PLACE_RULES } from '@/config/business-rules';
 import { readSessionCookie } from '@/server/auth/cookies';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { AuthBar } from './auth-bar';
+import { GooglePrompt } from '@/ui/components/google-prompt';
 
 /**
  * `unread` is the count of unread notifications, shown on the bell;
@@ -43,6 +44,7 @@ export async function SiteShell({
   district,
   tone,
   authBar = true,
+  googlePrompt = 'auto',
   children,
 }: {
   c: SiteContent;
@@ -57,6 +59,11 @@ export async function SiteShell({
   tone?: string;
   /** The sign-in bar for signed-out visitors; off on the sign-in pages themselves. */
   authBar?: boolean;
+  /**
+   * Google's sign-in prompt, offered to signed-out visitors on arrival.
+   * `after-sign-out` shows it without signing anyone straight back in.
+   */
+  googlePrompt?: 'auto' | 'after-sign-out' | 'off';
   children: ReactNode;
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
@@ -84,6 +91,7 @@ export async function SiteShell({
         {c.ui.skip}
       </a>
       {!member && authBar ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
+      {!member && googlePrompt !== 'off' && googleSignIn().available ? <GooglePrompt locale={locale} afterSignOut={googlePrompt === 'after-sign-out'} /> : null}
       <header className="top">
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label={`${c.ui.brand} — ${c.nav.home}`}>

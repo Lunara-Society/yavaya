@@ -56,6 +56,17 @@ Google is trusted for one fact only: that the person controls the address.
   registration is the same as a password one — risk checks, YAY ID, the 72-hour
   watch, invitations — with the address already confirmed.
 
+**The sign-in prompt** ("Continuar como Ana", offered when a signed-out visitor
+arrives) is Google's own script, the one third party the browser talks to:
+the Content-Security-Policy allows `accounts.google.com/gsi` for its script
+(via `strict-dynamic`), stylesheet, frame and requests, and nothing else of
+Google's. Its ID token reaches us through the page, not from Google's token
+endpoint, so its RS256 signature is verified against Google's published keys
+before any claim is read; the nonce comes from a sealed cookie we set, and the
+endpoint accepts posts only from our own origin. Returning members with one
+Google account go straight in (auto-select), except right after signing out,
+when the prompt waits to be tapped.
+
 The browser remembers which Google account last signed in (Google's opaque id,
 never displayed, in an `httpOnly` cookie), so after a sign-out "Continuar con
 Google" goes straight back in. "Usar otra cuenta de Google" forgets it.
