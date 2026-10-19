@@ -118,10 +118,16 @@ export async function exchangeCode(config: GoogleConfig, code: string, verifier:
       }),
       signal: AbortSignal.timeout(10_000),
     });
-    if (!response.ok) return null;
-    const body = (await response.json()) as { id_token?: unknown };
+    const body = (await response.json().catch(() => ({}))) as { id_token?: unknown; error?: unknown };
+    if (!response.ok) {
+      // Google's short reason ("invalid_client" is a wrong secret, "invalid_grant"
+      // a used or expired code) is what an operator needs; it carries nothing secret.
+      console.warn(`google sign-in: token exchange refused (${response.status} ${typeof body.error === 'string' ? body.error : 'no reason'})`);
+      return null;
+    }
     return typeof body.id_token === 'string' ? body.id_token : null;
-  } catch {
+  } catch (error) {
+    console.warn(`google sign-in: token exchange failed (${error instanceof Error ? error.name : 'error'})`);
     return null;
   }
 }
