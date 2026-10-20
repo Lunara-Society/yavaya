@@ -11,6 +11,11 @@ import { OPS_RULES } from '@/config/business-rules';
 import { jobHealth } from '@/server/domains/ops/alerts';
 import { isAdmin } from '@/server/domains/access/authorize';
 import { intlLocale } from '@/ui/mercadito/format';
+import { currentSession } from '@/server/auth/context';
+import { ownerOverview, type OverviewEvent } from '@/server/domains/ops/overview';
+import { recentActivity, type FeedItem } from '@/server/domains/notifications/activity';
+import { isTwoStepEnabled, twoStepAvailable } from '@/server/domains/identity/two-step';
+import { LIVE_FEED_RULES } from '@/config/business-rules';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -27,6 +32,36 @@ export default async function OpsPage() {
     hasPermission(db(), userId, 'users.read'),
   ]);
   const health = admin ? await jobHealth(db()) : null;
+  const session = await currentSession();
+  // The owner's overview: roles.manage only; ownerOverview checks it again.
+  const [overview, week, twoStepOn] = await Promise.all([
+    canManage && session ? ownerOverview(db(), { userId, status: session.user.status }) : Promise.resolve(null),
+    canManage ? recentActivity(db(), { week: true, limit: 40, locale }) : Promise.resolve([] as FeedItem[]),
+    isTwoStepEnabled(db(), userId),
+  ]);
+  // One list, newest first: what members did and what the team did.
+  type Line = { at: Date; key: string; text: string };
+  const lines: Line[] = [
+    ...week.map((item) => ({ at: item.occurredAt, key: `a-${item.id}`, text: t(`activity.${item.kind}` as MessageKey, { place: t('place.bar.everywhere'), ...item.params }) })),
+    ...(overview?.events ?? []).map((event: OverviewEvent, i: number) => ({
+      at: event.at,
+      key: `e-${i}`,
+      text: t(`ops.event.${event.action}` as MessageKey, {
+        by: event.by ?? t('ops.someone'),
+        who: event.who ?? t('ops.someone'),
+        role: event.role ? t(`staff.role.${event.role}` as MessageKey) : '',
+      }),
+    })),
+  ]
+    .sort((a, b) => b.at.getTime() - a.at.getTime())
+    .slice(0, 30);
+  const relative = new Intl.RelativeTimeFormat(intlLocale(locale), { numeric: 'auto' });
+  const ago = (at: Date) => {
+    const minutes = Math.round((at.getTime() - Date.now()) / 60_000);
+    if (minutes > -60) return relative.format(minutes, 'minute');
+    if (minutes > -24 * 60) return relative.format(Math.round(minutes / 60), 'hour');
+    return relative.format(Math.round(minutes / 1440), 'day');
+  };
   const tick = health?.latest.find((j) => j.job === 'tick') ?? null;
   const fmt = (d: Date) => new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' }).format(d);
   const now = Date.now();
@@ -43,6 +78,80 @@ export default async function OpsPage() {
         </div>
       </section>
       <div className="wrap" style={{ paddingBottom: 56 }}>
+        {/* Everyone on the team holds keys to members' data: two-step first. */}
+        {!twoStepOn && twoStepAvailable() ? (
+          <p className="mk-banner ops-two-step" role="note">
+            {t('ops.two_step_prompt')}{' '}
+            <Link href="/settings/dos-pasos">{t('ops.two_step_cta')}</Link>
+          </p>
+        ) : null}
+
+        {overview ? (
+          <>
+            <div className="ops-stats">
+              <div className="ops-stat">
+                <span className="ops-count">{overview.counts.members}</span>
+                <span className="ops-label">{t('ops.overview.members')}</span>
+              </div>
+              <div className="ops-stat">
+                <span className="ops-count">{overview.counts.newMembers}</span>
+                <span className="ops-label">{t('ops.overview.new_members', { days: LIVE_FEED_RULES.keepDays })}</span>
+              </div>
+              <div className="ops-stat">
+                <span className="ops-count">{overview.counts.newListings}</span>
+                <span className="ops-label">{t('ops.overview.new_listings', { days: LIVE_FEED_RULES.keepDays })}</span>
+              </div>
+              <div className="ops-stat">
+                <span className="ops-count">{waiting}</span>
+                <span className="ops-label">{t('ops.overview.waiting')}</span>
+              </div>
+            </div>
+
+            <section className="card ops-section">
+              <h2>{t('ops.overview.latest')}</h2>
+              <p className="muted">{t('ops.overview.latest_note', { days: LIVE_FEED_RULES.keepDays })}</p>
+              {lines.length === 0 ? (
+                <p className="muted mb0">{t('ops.overview.latest_empty', { days: LIVE_FEED_RULES.keepDays })}</p>
+              ) : (
+                <ul className="ops-feed">
+                  {lines.map((line) => (
+                    <li key={line.key}>
+                      <span>{line.text}</span>
+                      <time dateTime={line.at.toISOString()}>{ago(line.at)}</time>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section className="card ops-section">
+              <h2>{t('ops.overview.team')}</h2>
+              {overview.team.length === 0 ? <p className="muted">{t('staff.none')}</p> : null}
+              <ul className="ops-team">
+                {overview.team.map((person) => (
+                  <li key={person.id}>
+                    <div>
+                      <strong>{person.displayName}</strong> <span className="muted">· {person.yayId}</span>
+                      <span className="ops-roles">{person.roles.map((role) => t(`staff.role.${role}` as MessageKey)).join(' · ')}</span>
+                    </div>
+                    <div className="ops-team-meta">
+                      <span>{person.lastActiveAt ? t('ops.overview.last_active', { when: ago(person.lastActiveAt) }) : t('ops.overview.never_active')}</span>
+                      <span className={person.twoStep ? 'ops-ok' : 'ops-warn'}>{person.twoStep ? t('ops.overview.two_step_on') : t('ops.overview.two_step_off')}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="mb0" style={{ marginTop: 12 }}>
+                <Link className="btn btn-line" href="/admin/team">
+                  {t('ops.overview.team_manage')}
+                </Link>
+              </p>
+            </section>
+
+            <h2 className="h-md" style={{ fontSize: '1.3rem', marginTop: 28 }}>{t('ops.overview.queues')}</h2>
+          </>
+        ) : null}
+
         <div className="ops-grid">
           {sorted.map((q) => {
             const h = hours(q.oldestAt);

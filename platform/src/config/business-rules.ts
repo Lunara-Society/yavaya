@@ -668,6 +668,13 @@ export const PLACE_RULES = {
 export const LIVE_FEED_RULES = {
   /** Events older than this are no longer "new". */
   windowHours: 24,
+  /**
+   * How long activity is kept at all (the owner's decision, 20 October 2026):
+   * the account page and the panel list the last week, newest first, and the
+   * scheduler deletes anything older. The audit log is not this — it is
+   * permanent by design and only ever shown for the same week.
+   */
+  keepDays: 7,
   maxItems: 12,
   /** Seconds after a page opens before the first message. */
   firstDelaySeconds: 8,

@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { activityEvents, locations } from '@/server/db/schema';
 import { LIVE_FEED_RULES } from '@/config/business-rules';
@@ -90,12 +90,15 @@ export type FeedItem = {
  */
 export async function recentActivity(
   executor: Executor,
-  options: { limit?: number; locationCode?: string; locale?: string } = {},
+  options: { limit?: number; locationCode?: string; locale?: string; week?: boolean } = {},
 ): Promise<FeedItem[]> {
+  // `week`: everything still kept (the last LIVE_FEED_RULES.keepDays), not
+  // just what is new enough for the live messages.
+  const since = options.week ? LIVE_FEED_RULES.keepDays * 24 : LIVE_FEED_RULES.windowHours;
   const conditions = [
     eq(activityEvents.isDemo, false),
-    gte(activityEvents.occurredAt, new Date(Date.now() - LIVE_FEED_RULES.windowHours * 60 * 60 * 1000)),
-    sql`(${activityEvents.visibleUntil} is null or ${activityEvents.visibleUntil} > now())`,
+    gte(activityEvents.occurredAt, new Date(Date.now() - since * 60 * 60 * 1000)),
+    ...(options.week ? [] : [sql`(${activityEvents.visibleUntil} is null or ${activityEvents.visibleUntil} > now())`]),
     // A listing that was withdrawn, sold or removed no longer counts as news.
     sql`(${activityEvents.subjectType} is distinct from 'mercadito_listing' or exists (
       select 1 from mercadito_listings l
@@ -143,4 +146,11 @@ export async function recentActivity(
     },
     occurredAt: row.occurredAt,
   }));
+}
+
+/** Deletes activity older than LIVE_FEED_RULES.keepDays. Run by the scheduler. */
+export async function purgeOldActivity(executor: Executor, now = new Date()): Promise<number> {
+  const cutoff = new Date(now.getTime() - LIVE_FEED_RULES.keepDays * 24 * 60 * 60 * 1000);
+  const removed = await executor.delete(activityEvents).where(lt(activityEvents.occurredAt, cutoff)).returning({ id: activityEvents.id });
+  return removed.length;
 }

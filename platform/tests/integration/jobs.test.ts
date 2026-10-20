@@ -51,6 +51,7 @@ describe('scheduled jobs', () => {
       'go-upkeep',
       'graduate-monitored',
       'ops-email',
+      'purge-activity',
       'purge-rate-limits',
       'purge-safe-space',
       'purge-sessions',

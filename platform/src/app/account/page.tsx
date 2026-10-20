@@ -11,7 +11,7 @@ import { buildTrustShield } from '@/server/domains/trust/shield';
 import { getBalance } from '@/server/domains/tokens/service';
 import { hasPermission, isAdmin } from '@/server/domains/access/authorize';
 import { recentActivity } from '@/server/domains/notifications/activity';
-import { NEW_USER_RULES } from '@/config/business-rules';
+import { LIVE_FEED_RULES, NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
 
@@ -28,13 +28,20 @@ export const dynamic = 'force-dynamic';
  * none, so it shows an honest empty state rather than invented activity.
  */
 export default async function AccountPage() {
-  const { t, language, theme, member, userId } = await shellContext();
+  const { t, locale, language, theme, member, userId } = await shellContext();
   if (!userId || !member) redirect('/login');
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  const ago = (at: Date) => {
+    const minutes = Math.round((at.getTime() - Date.now()) / 60_000);
+    if (minutes > -60) return relative.format(minutes, 'minute');
+    if (minutes > -24 * 60) return relative.format(Math.round(minutes / 60), 'hour');
+    return relative.format(Math.round(minutes / 1440), 'day');
+  };
 
   const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian, workReviewer, ops] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
-    recentActivity(db(), { limit: 6 }),
+    recentActivity(db(), { limit: 20, week: true, locale }),
     hasPermission(db(), userId, 'listings.moderate'),
     isAdmin(db(), userId),
     hasPermission(db(), userId, 'sanctuary.review'),
@@ -86,6 +93,29 @@ export default async function AccountPage() {
             </p>
           ) : null}
         </div>
+      </section>
+
+      {/* What happened lately, newest first, at the top where it is seen. Kept
+          a week (LIVE_FEED_RULES.keepDays), then deleted by the scheduler. */}
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold tracking-tight">{t('account.activity')}</h2>
+        <p className="mt-1 text-xs text-[var(--text-secondary)]">{t('account.activity_week', { days: LIVE_FEED_RULES.keepDays })}</p>
+        {activity.length === 0 ? (
+          <p className="mt-3 rounded-xl border px-4 py-6 text-center text-sm text-[var(--text-secondary)]">
+            {t('account.activity_empty')}
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y rounded-xl border">
+            {activity.map((item) => (
+              <li key={item.id} className="flex items-baseline justify-between gap-3 p-3 text-sm">
+                <span>{t(`activity.${item.kind}` as MessageKey, { place: t('place.bar.everywhere'), ...item.params })}</span>
+                <time className="shrink-0 text-xs text-[var(--text-secondary)]" dateTime={item.occurredAt.toISOString()}>
+                  {ago(item.occurredAt)}
+                </time>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <div className="mt-6">
@@ -169,22 +199,6 @@ export default async function AccountPage() {
         </ul>
       </section>
 
-      <section className="mt-8">
-        <h2 className="text-lg font-semibold tracking-tight">{t('account.activity')}</h2>
-        {activity.length === 0 ? (
-          <p className="mt-3 rounded-xl border px-4 py-6 text-center text-sm text-[var(--text-secondary)]">
-            {t('account.activity_empty')}
-          </p>
-        ) : (
-          <ul className="mt-3 divide-y rounded-xl border">
-            {activity.map((item) => (
-              <li key={item.id} className="p-3 text-sm">
-                {t(`activity.${item.kind}` as MessageKey, item.params)}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
     </AppShell>
   );
 }

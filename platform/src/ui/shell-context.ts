@@ -14,6 +14,7 @@ import { currentSession } from '@/server/auth/context';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { unreadCount } from '@/server/domains/notifications/service';
 import { getBalance } from '@/server/domains/tokens/service';
+import { hasPermission } from '@/server/domains/access/authorize';
 import type { ShellMember } from './components/app-shell';
 
 export type ShellContext = {
@@ -48,10 +49,11 @@ export async function shellContext(): Promise<ShellContext> {
     return { locale, t, language, theme, member: null, userId: null };
   }
 
-  const [[row], unread, tokens] = await Promise.all([
+  const [[row], unread, tokens, owner] = await Promise.all([
     db().select({ displayName: users.displayName }).from(users).where(eq(users.id, session.user.userId)).limit(1),
     unreadCount(db(), session.user.userId),
     getBalance(db(), session.user.userId),
+    hasPermission(db(), session.user.userId, 'roles.manage'),
   ]);
 
   return {
@@ -65,6 +67,7 @@ export async function shellContext(): Promise<ShellContext> {
       displayName: row?.displayName ?? '',
       unread,
       tokens,
+      owner,
     },
   };
 }

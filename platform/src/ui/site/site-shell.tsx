@@ -25,7 +25,14 @@ import { GooglePrompt } from '@/ui/components/google-prompt';
  * `unread` is the count of unread notifications, shown on the bell;
  * `tokens` is the member's balance, shown on the token chip.
  */
-export type ShellMember = { yayId: string; displayName: string; unread?: number; tokens?: number } | null;
+export type ShellMember = {
+  yayId: string;
+  displayName: string;
+  unread?: number;
+  tokens?: number;
+  /** Holds roles.manage — today only the owner's account, since admin cannot be appointed. Gets the Panel shortcut. */
+  owner?: boolean;
+} | null;
 
 /**
  * The frame around every page: public pages and the member area alike, so
@@ -127,6 +134,13 @@ export async function SiteShell({
             />
             {member ? (
               <>
+                {/* The owner's way into what is happening: the panel, one tap from anywhere. A shortcut, not a permission — /admin checks again. */}
+                {member.owner ? (
+                  <Link className="chip panel-chip" href="/admin">
+                    <Icon name="grid" />
+                    <span>{t('nav.panel')}</span>
+                  </Link>
+                ) : null}
                 {/* The fastest way to tokens: the balance, always in sight, one tap from the packages. */}
                 <Link className="chip tk-chip" href="/account/tokens#paquetes" aria-label={t('tokens.chip_label', { count: member.tokens ?? 0 })}>
                   <TokenCoin className="tk-coin" />
@@ -250,10 +264,17 @@ export async function SiteShell({
           </span>
           <span>{c.nav.tokens}</span>
         </Link>
-        <Link href={PAGE_PATHS.trust} aria-current={cur('trust')}>
-          <Icon name="shield" />
-          <span>{c.nav.trust}</span>
-        </Link>
+        {member?.owner ? (
+          <Link href="/admin">
+            <Icon name="grid" />
+            <span>{t('nav.panel')}</span>
+          </Link>
+        ) : (
+          <Link href={PAGE_PATHS.trust} aria-current={cur('trust')}>
+            <Icon name="shield" />
+            <span>{c.nav.trust}</span>
+          </Link>
+        )}
         <Link href={member ? '/account' : '/login'}>
           <Icon name="id" />
           <span>{member ? t('nav.member_area') : t('nav.sign_in')}</span>
