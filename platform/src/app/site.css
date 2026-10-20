@@ -678,6 +678,56 @@ td strong { color: var(--text); }
 
 /* ── Mercadito: saved searches, similar listings ─────────────────────── */
 .mk-save { margin-top: 12px; }
+
+/* ── Mercadito: a market stall (mercadito/page.tsx) ── */
+.mc-top { position: relative; overflow: hidden; padding: 0 0 18px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, color-mix(in srgb, var(--mercadito) 16%, var(--bg)) 0%, var(--bg) 100%); }
+/* The awning: emerald and cream stripes with a scalloped edge, like the cloth over a market stall. */
+.mc-awning { --cream: #efe4c8; position: relative; z-index: 2; height: 26px; background: repeating-linear-gradient(90deg, var(--mercadito) 0 36px, var(--cream) 36px 72px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28); }
+.mc-awning::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 14px;
+  background: radial-gradient(circle at 18px 0, var(--mercadito) 17px, transparent 18px) 0 0 / 72px 14px repeat-x,
+              radial-gradient(circle at 54px 0, var(--cream) 17px, transparent 18px) 0 0 / 72px 14px repeat-x;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25)); }
+.mc-top-art { position: absolute; inset: 26px 0 0 auto; width: min(52%, 700px); opacity: 0.35; -webkit-mask-image: linear-gradient(90deg, transparent, #000 50%); mask-image: linear-gradient(90deg, transparent, #000 50%); }
+.mc-top-art img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+.mc-top-in { position: relative; z-index: 1; padding-top: 30px; }
+.mc-head { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: end; }
+.mc-head h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0 0 6px; }
+.mc-head .lead { font-size: 1rem; max-width: 560px; }
+.mc-search { margin-top: 18px; max-width: 760px; }
+.mc-search-row { display: flex; gap: 8px; }
+.mc-search-row input { flex: 1 1 auto; min-width: 0; min-height: 52px; font-size: 1.05rem; padding: 0 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--mercadito) 50%, var(--line)); background: var(--surface); }
+.mc-search-row .btn { min-height: 52px; border-radius: 14px; }
+.mc-place { margin-top: 8px; font-size: 0.9rem; }
+.mc-place summary { cursor: pointer; color: var(--text-2); width: max-content; max-width: 100%; }
+.mc-place[open] summary { margin-bottom: 8px; }
+.mc-cats { display: flex; gap: 8px; margin-top: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.mc-cats::-webkit-scrollbar { display: none; }
+.mc-cats a { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: 7px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 0.9rem; font-weight: 700; text-decoration: none; color: var(--text-2); }
+.mc-cats a svg { width: 17px; height: 17px; color: var(--mercadito); }
+.mc-cats a[aria-current="true"] { border-color: var(--mercadito); color: var(--text); background: color-mix(in srgb, var(--mercadito) 20%, var(--surface)); }
+.mc-market { padding-bottom: 36px; }
+/* Two goods side by side on a phone, like a market table; more as the screen widens. */
+.mc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 640px) { .mc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; } }
+@media (min-width: 1000px) { .mc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mc-grid .mk-card .pr { color: color-mix(in srgb, var(--mercadito) 55%, var(--text)); font-size: 1.12rem; }
+.mc-opening { margin-top: 26px; padding: clamp(22px, 4vw, 40px); border-radius: 20px; text-align: center; border: 1px solid color-mix(in srgb, var(--mercadito) 40%, var(--line)); background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--mercadito) 14%, var(--surface)), var(--surface)); }
+.mc-opening h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); margin: 4px 0 8px; }
+.mc-steps { list-style: none; padding: 0; margin: 22px auto 22px; max-width: 860px; display: grid; gap: 12px; text-align: left; }
+@media (min-width: 760px) { .mc-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.mc-steps li { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: start; padding: 14px; border-radius: 14px; background: color-mix(in srgb, var(--bg) 50%, transparent); border: 1px solid var(--line); }
+.mc-steps li span:last-child { grid-column: 2; font-size: 0.9rem; color: var(--text-2); }
+.mc-step-n { grid-row: span 2; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: #062016; background: var(--mercadito); }
+.mc-opening-cta { min-width: 220px; justify-content: center; }
+.mc-opening-fine { font-size: 0.86rem; margin-top: 10px; }
+.mc-guide { padding-bottom: 48px; }
+/* The floating "post" button: phones only, above the bottom bar. */
+.mc-fab { position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 55; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; min-height: 50px; border-radius: 999px; font-weight: 800; text-decoration: none; color: #062016; background: var(--mercadito); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4), 0 0 0 3px color-mix(in srgb, var(--mercadito) 30%, transparent); }
+.mc-fab span { font-size: 1.4rem; line-height: 1; }
+@media (min-width: 1000px) { .mc-fab { display: none; } }
+/* The live messages rise above the button instead of covering it. */
+@media (max-width: 999px) { .site:has(.mc-fab) .live { bottom: calc(146px + env(safe-area-inset-bottom)); } }
+@media print { .mc-fab { display: none; } }
 .mk-save .chip { cursor: pointer; }
 .mk-similar { margin: 8px 0 56px; }
 .mk-saved { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
