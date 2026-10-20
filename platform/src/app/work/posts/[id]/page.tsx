@@ -210,7 +210,7 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
               <div className="cm-gate card">
                 <p>{t('work.post.sign_in_to_apply')}</p>
                 <Link className="btn btn-gold" href="/login">
-                  {t('community.square.sign_in')}
+                  {t('auth.sign_in_to_continue')}
                 </Link>
               </div>
             ) : !profile ? (

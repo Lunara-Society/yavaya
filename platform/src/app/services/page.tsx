@@ -107,7 +107,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
               <p>{t('services.board.members_only')}</p>
               <div className="btn-row">
                 <Link className="btn btn-gold" href="/login">
-                  {t('community.square.sign_in')}
+                  {t('auth.sign_in_to_continue')}
                 </Link>
                 <Link className="btn btn-line" href="/register">
                   {t('auth.submit_register')}

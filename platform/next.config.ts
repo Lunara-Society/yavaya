@@ -82,7 +82,17 @@ const nextConfig: NextConfig = {
     }));
   },
   async headers() {
-    return [{ source: '/:path*', headers: securityHeaders }];
+    return [
+      { source: '/:path*', headers: securityHeaders },
+      // Files in /public keep their names when they are replaced (the art was
+      // swapped for the guide's stills under the same names), so a day, not a
+      // year — but not zero either: on a slow connection, re-checking every
+      // photo and font on every page is time a phone does not have.
+      ...['art', 'brand', 'fonts', 'tokens', 'guide', 'share'].map((folder) => ({
+        source: `/${folder}/:path*`,
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+      })),
+    ];
   },
 };
 

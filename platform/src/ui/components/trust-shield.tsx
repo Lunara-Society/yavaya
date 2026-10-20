@@ -31,7 +31,7 @@ export function TrustShieldCard({ shield, t }: { shield: TrustShield; t: Transla
 
   return (
     <section className="idcard" aria-label={t('trust.shield')}>
-      <Guilloche className="idcard-seal" size={360} lobes={30} rings={9} strokeWidth={0.5} />
+      <Guilloche className="idcard-seal" variant="idcard" />
       <header className="idcard-top">
         <span className="idcard-brand">YAVAYA</span>
         <span className="idcard-status">{t(shield.statusKey as MessageKey)}</span>

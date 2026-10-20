@@ -101,7 +101,7 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
                 <>
                   <p>{t('animals.lost.sign_in_to_contact')}</p>
                   <Link className="btn btn-gold" href="/login">
-                    {t('community.square.sign_in')}
+                    {t('auth.sign_in_to_continue')}
                   </Link>
                 </>
               ) : null}

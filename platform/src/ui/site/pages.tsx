@@ -46,7 +46,7 @@ export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primary
         <span className="hero-bars" aria-hidden="true" />
         <div className="wrap">
           <div className="hero-mark">
-            <Guilloche className="hero-seal" size={520} lobes={36} rings={12} strokeWidth={0.45} />
+            <Guilloche className="hero-seal" variant="hero" />
             <span className="hero-emblem">
               <span className="hero-rays" aria-hidden="true" />
               <span className="hero-flare" aria-hidden="true" />
@@ -111,7 +111,7 @@ export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primary
         </div>
       </section>
       <section className="section seal-section">
-        <Guilloche className="seal-bg" size={600} lobes={40} rings={12} strokeWidth={0.4} />
+        <Guilloche className="seal-bg" variant="band" />
         <div className="wrap">
           <p className="quote">
             <Md text={p.quote} />

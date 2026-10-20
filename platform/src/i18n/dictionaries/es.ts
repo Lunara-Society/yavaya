@@ -90,6 +90,7 @@ export const es = {
   'auth.google.error.failed': 'No pudimos completar la entrada con Google. Inténtalo de nuevo.',
   'auth.google.error.unavailable': 'No pudimos abrir una sesión con esa cuenta. Si fue suspendida, te enviamos un correo con el motivo y cómo apelar.',
   'auth.login.unavailable': 'Esta cuenta no se puede usar ahora. Si fue suspendida, te enviamos un correo con el motivo, hasta cuándo dura y cómo apelar.',
+  'auth.sign_in_to_continue': 'Entrar para continuar',
   'auth.google.error.busy': 'Demasiados intentos seguidos. Espera unos minutos e inténtalo de nuevo.',
   'auth.google.signup.title': 'Crea tu cuenta con Google',
   'auth.google.signup.lead': 'Google confirmó tu correo, {email}. Solo falta tu nombre y aceptar los términos.',

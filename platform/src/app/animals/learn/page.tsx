@@ -98,7 +98,7 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
             <div className="cm-gate card">
               <p>{t('animals.quiz.sign_in')}</p>
               <Link className="btn btn-gold" href="/login">
-                {t('community.square.sign_in')}
+                {t('auth.sign_in_to_continue')}
               </Link>
             </div>
           ) : !answered || !passed ? (

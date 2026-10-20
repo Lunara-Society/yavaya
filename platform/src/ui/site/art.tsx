@@ -16,7 +16,6 @@
  * assistive technology.
  */
 
-import type { ReactNode } from 'react';
 import type { DistrictId } from './blocks';
 
 // --- Deterministic helpers -----------------------------------------------------
@@ -50,38 +49,48 @@ export function rosettePath(options: {
   return `M${points.join('L')}Z`;
 }
 
-/** A banknote rosette: many phased curves laid over each other. */
-export function Guilloche({
-  size = 400,
-  lobes = 18,
-  rings = 9,
-  className,
-  strokeWidth = 0.6,
-}: {
-  size?: number;
-  lobes?: number;
-  rings?: number;
-  className?: string;
-  strokeWidth?: number;
-}) {
+/**
+ * The rosettes in use, by name. Each is tens of thousands of points, so it is
+ * served once as an SVG file (`/seal/<name>.svg`, cached by the browser) and
+ * painted through a CSS mask — drawn inline, the same paths went out twice
+ * per page (in the HTML and in the React payload) and made the home page
+ * over a megabyte of markup. A mask keeps `currentColor`, so the seal still
+ * takes its colour from the stylesheet.
+ */
+export const GUILLOCHE_VARIANTS = {
+  hero: { size: 520, lobes: 36, rings: 12, strokeWidth: 0.45 },
+  band: { size: 600, lobes: 40, rings: 12, strokeWidth: 0.4 },
+  idcard: { size: 360, lobes: 30, rings: 9, strokeWidth: 0.5 },
+} as const;
+
+export type GuillocheVariant = keyof typeof GUILLOCHE_VARIANTS;
+
+/** A banknote rosette as a standalone SVG document: many phased curves laid over each other. */
+export function guillocheSvg(variant: GuillocheVariant): string {
+  const { size, lobes, rings, strokeWidth } = GUILLOCHE_VARIANTS[variant];
   const c = size / 2;
-  const paths: ReactNode[] = [];
+  const paths: string[] = [];
   for (let i = 0; i < rings; i += 1) {
     const shift = (i / rings) * ((Math.PI * 2) / lobes);
-    paths.push(<path key={`o${i}`} d={rosettePath({ cx: c, cy: c, radius: c * 0.95, lobes, depth: 0.05, phase: shift * lobes })} />);
-    paths.push(<path key={`m${i}`} d={rosettePath({ cx: c, cy: c, radius: c * 0.8, lobes: lobes + 6, depth: 0.07, phase: -shift * (lobes + 6) })} />);
-    paths.push(<path key={`i${i}`} d={rosettePath({ cx: c, cy: c, radius: c * 0.58, lobes: Math.round(lobes * 0.75), depth: 0.1, phase: shift * lobes * 0.75 })} />);
+    paths.push(rosettePath({ cx: c, cy: c, radius: c * 0.95, lobes, depth: 0.05, phase: shift * lobes }));
+    paths.push(rosettePath({ cx: c, cy: c, radius: c * 0.8, lobes: lobes + 6, depth: 0.07, phase: -shift * (lobes + 6) }));
+    paths.push(rosettePath({ cx: c, cy: c, radius: c * 0.58, lobes: Math.round(lobes * 0.75), depth: 0.1, phase: shift * lobes * 0.75 }));
   }
-  return (
-    <svg className={className} viewBox={`0 0 ${size} ${size}`} aria-hidden="true" focusable="false">
-      <g fill="none" stroke="currentColor" strokeWidth={strokeWidth}>
-        {paths}
-        <circle cx={c} cy={c} r={c * 0.99} strokeWidth={strokeWidth * 1.6} />
-        <circle cx={c} cy={c} r={c * 0.93} />
-        <circle cx={c} cy={c} r={c * 0.36} strokeWidth={strokeWidth * 1.4} />
-      </g>
-    </svg>
-  );
+  return [
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">`,
+    `<g fill="none" stroke="#000" stroke-width="${strokeWidth}">`,
+    ...paths.map((d) => `<path d="${d}"/>`),
+    `<circle cx="${c}" cy="${c}" r="${c * 0.99}" stroke-width="${strokeWidth * 1.6}"/>`,
+    `<circle cx="${c}" cy="${c}" r="${c * 0.93}"/>`,
+    `<circle cx="${c}" cy="${c}" r="${c * 0.36}" stroke-width="${strokeWidth * 1.4}"/>`,
+    '</g></svg>',
+  ].join('');
+}
+
+/** A banknote rosette, in the colour of its `color`. Size and position come from `className`; `maxWidth` matches what the stylesheet gives an inline svg. */
+export function Guilloche({ variant, className }: { variant: GuillocheVariant; className?: string }) {
+  const mask = `url(/seal/${variant}.svg) center / contain no-repeat`;
+  return <span className={className} aria-hidden="true" style={{ display: 'block', maxWidth: '100%', aspectRatio: '1 / 1', backgroundColor: 'currentColor', WebkitMask: mask, mask }} />;
 }
 
 /** A thin ornamental band — the rule between sections of a certificate. */

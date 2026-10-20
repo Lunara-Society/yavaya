@@ -80,6 +80,7 @@ export const en: Dictionary = {
   'auth.google.error.failed': 'We could not finish signing in with Google. Please try again.',
   'auth.google.error.unavailable': 'We could not open a session with that account. If it was suspended, we emailed you the reason and how to appeal.',
   'auth.login.unavailable': 'This account can\'t be used right now. If it was suspended, we emailed you the reason, how long it lasts and how to appeal.',
+  'auth.sign_in_to_continue': 'Sign in to continue',
   'auth.google.error.busy': 'Too many attempts in a row. Wait a few minutes and try again.',
   'auth.google.signup.title': 'Create your account with Google',
   'auth.google.signup.lead': 'Google confirmed your email, {email}. All that is left is your name and accepting the terms.',

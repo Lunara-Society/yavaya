@@ -872,13 +872,15 @@ concurrent users; revisit with the same seam if not.
 so there is no PostGIS dependency. If proximity search becomes hot, install
 PostGIS and rewrite that one function.
 
-**Background jobs.** Three things need scheduling and have no runner yet:
-`graduateMonitoredAccounts` (72-hour window), `expireDueDemoContent`, and
-`purgeExpiredSessions` / `purgeExpiredRateLimits`. All are idempotent and safe
-to run repeatedly.
+**Background jobs.** Settled: the `yavaya-scheduler` service runs
+`jobs.cjs tick` every 15 minutes (the full list is in `DEPLOYMENT.md`), and a
+failed job reaches the admins in the daily operations email. The open part
+is scale — the tick runs jobs one after another, which is fine while each
+takes seconds.
 
-**Audit chain verification.** `verifyAuditChain` should run on a schedule and
-alert on failure. A hash chain nobody checks proves nothing.
+**Audit chain verification.** Settled: `verify-audit-chain` runs once a day
+in the tick, and a broken chain fails the job, which is reported like any
+other failure.
 
 ---
 
