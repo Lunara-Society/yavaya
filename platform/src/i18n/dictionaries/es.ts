@@ -98,6 +98,7 @@ export const es = {
   'auth.register.subtitle': 'Una persona, una cuenta. Tu YAY ID es permanente.',
   'auth.login.title': 'Entrar a Yavaya',
   'auth.login.subtitle': 'Con tu cuenta de Google o con tu correo.',
+  'auth.login.subtitle_email': 'Con tu correo y tu contraseña.',
   'auth.email': 'Correo electrónico',
   'auth.password': 'Contraseña',
   'auth.display_name': 'Nombre para mostrar',

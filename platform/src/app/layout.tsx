@@ -53,18 +53,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /*
- * Every visitor gets the desktop layout, phones included: the owner's
- * decision. A fixed layout width makes a phone render the full desktop page
- * scaled to fit. Zoom stays enabled — pinch-to-zoom is how small text is read.
- * To return to a phone layout, use width 'device-width' with initialScale 1;
- * the stylesheets still carry the mobile rules.
+ * Phones get a phone layout. Until 20 October 2026 every visitor was served
+ * the desktop page at a fixed 1200px, which a phone shrank to a third of its
+ * size — body text near five pixels. The owner reversed that once it was seen
+ * on a real phone. The stylesheets are mobile-first (min-width queries), so
+ * device-width is all it takes. Zoom stays enabled.
  */
 export const viewport: Viewport = {
-  width: '1200',
-  // Next adds initial-scale=1 unless told otherwise, and on a phone that
-  // overrides the width: the page opens at full size showing its left third.
-  // Without it the phone fits the 1200px layout to the screen, as intended.
-  initialScale: undefined,
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#081120',
 };
 

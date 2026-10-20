@@ -18,6 +18,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   // A session cookie the server no longer honours: closed by the idle window.
   const ended = !member && Boolean(await readSessionCookie());
   const signedOut = Boolean(query.salida);
+  const google = googleSignIn().available;
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member} authBar={false} googlePrompt={signedOut ? 'after-sign-out' : 'auto'}>
@@ -25,9 +26,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         t={t}
         mode="login"
         title={t('auth.login.title')}
-        subtitle={t('auth.login.subtitle')}
+        subtitle={t(google ? 'auth.login.subtitle' : 'auth.login.subtitle_email')}
         notice={googleNotice ?? (signedOut ? 'signed_out' : ended ? 'ended' : null)}
-        google={googleSignIn().available}
+        google={google}
         googleHref="/auth/google"
         remembered={Boolean(await googleHint())}
       >
