@@ -4,10 +4,10 @@
  *
  *   npx tsx scripts/roxi-knowledge.ts
  *
- * Output goes to docs/roxi/knowledge/, next to the hand-written guide for
- * helping members (docs/roxi/como-ayudar.md). Run it after changing site
- * texts, the dictionaries or the business rules, then replace the documents
- * on the agent (docs/roxi/README.md says how).
+ * Output goes to docs/roxi/knowledge/; how Roxi behaves is in
+ * docs/roxi/prompt.md. Run it after changing site texts, the dictionaries
+ * or the business rules, then replace the documents on the agent
+ * (docs/roxi/README.md says how).
  *
  * Spanish only, on purpose: it is the reference locale, the model answers in
  * the member's language anyway, and one copy keeps retrieval from returning

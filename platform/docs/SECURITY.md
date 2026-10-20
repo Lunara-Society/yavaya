@@ -298,7 +298,9 @@ Applied globally in `next.config.ts`: HSTS with preload,
 `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
 `Referrer-Policy: strict-origin-when-cross-origin`,
 `Cross-Origin-Opener-Policy: same-origin`, and a `Permissions-Policy` that
-denies camera, microphone and payment while allowing same-origin geolocation.
+denies camera and payment and allows the microphone and geolocation to this
+origin only (the microphone for talking to Roxi; the browser still asks the
+member first).
 
 A Content-Security-Policy is set per request in `src/middleware.ts` with a
 fresh nonce, so `script-src` carries no `unsafe-inline` and an injected script
@@ -306,6 +308,10 @@ will not execute. `style-src` still allows inline styles: React writes inline
 `style` attributes for the district accent tokens and there is no nonce
 mechanism for those. Style injection is a far smaller hazard than script
 injection, and the alternative would be abandoning per-district theming.
+
+`connect-src` names exactly two outside hosts: Google's sign-in prompt and
+`api.elevenlabs.io` (HTTPS and WebSocket) for Roxi. Nothing else in the page
+can call out.
 
 CSRF is handled by Next.js Server Actions, which validate origin on POST, plus
 `sameSite=lax` cookies.
@@ -338,6 +344,44 @@ photo), takes parts of at most 16 MB, and records each finished file in the
 audit log. The token is meant to exist for the length of an upload and be
 blanked afterwards. `/video/[file]` reads the same short list and nothing
 else.
+
+## Roxi
+
+Roxi (`docs/roxi/README.md`) is an AI agent hosted by ElevenLabs that talks to
+signed-in members. The design keeps it from becoming a way around anything
+above:
+
+- **No authority of its own.** Roxi's tools run in the member's browser and
+  call Yavaya's routes with the member's own session; ElevenLabs holds no
+  Yavaya credential, and the agent can see only what the member could open.
+  `/api/roxi/search` and `/api/roxi/me` are read-only, scoped to the session
+  user, `no-store`, and limited per member (120 an hour).
+- **Never acts.** Roxi cannot publish, pay, message or change anything. A
+  draft opens in the ordinary form, held in memory in the tab, and goes
+  through the same server validation, permissions and audit as one typed by
+  hand; a listing published from it records `assistedBy: 'roxi'`.
+- **Prompt injection.** Listings, notifications and search results reach the
+  model as data. The prompt tells Roxi to treat them as content, the agent's
+  prompt-injection guardrail is on, and — the real control — no tool can do
+  anything the member could not already do. A test checks that Roxi refuses
+  to reveal its instructions or grant tokens.
+- **Who can open a conversation.** `/api/roxi/start` requires a session,
+  same-origin POST, and the member's daily allowance (20). The agent accepts
+  only `yavaya.lat` and `www.yavaya.lat` with the origin header required.
+  Without `ELEVENLABS_API_KEY` the agent id is public, so someone could still
+  script a conversation from a forged origin, at Yavaya's cost, up to the
+  agent's own ceilings (25 at once, 1 500 a day). Setting the key and turning
+  on the agent's authentication closes that: every conversation then needs a
+  link minted for a signed-in member.
+- **What leaves Yavaya.** At start: first name, YAY ID, place, whether the
+  email is verified, language, the current page and the platform status. Then
+  whatever the member says, the photos they send, and the results of their
+  own look-ups. Voice is not recorded; transcripts are kept 30 days at
+  ElevenLabs. The privacy page (`/privacy#roxi`) names ElevenLabs and the
+  model providers.
+- **Where it is absent.** Not in Espacio Violeta or on the sign-in, register,
+  verification, reset and appeal pages; opening Espacio Violeta ends the
+  conversation, and nothing from it is ever sent.
 
 ## Known gaps
 
@@ -372,5 +416,9 @@ Stated plainly rather than left for someone to discover.
   Supabase. It grants nothing on its own — there are no table privileges and
   RLS denies every non-owner role — but it is why a privilege audit shows
   `has_schema_privilege('anon','public','USAGE')` as true.
+- **Roxi's agent id is public until `ELEVENLABS_API_KEY` is set** (see
+  "Roxi"): conversations can be opened outside Yavaya, at Yavaya's cost, up
+  to the agent's daily ceiling. Transcripts are not redacted automatically
+  (that needs an enterprise plan).
 - **`style-src` permits inline styles**, as explained above. Tightening it
   would require moving every district accent to a stylesheet-generated class.

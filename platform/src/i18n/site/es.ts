@@ -1002,10 +1002,10 @@ export const siteEs = {
         {
           id: 'roxi',
           title: 'Si hablas con Roxi',
-          text: 'Roxi es la asistente de Yavaya, con inteligencia artificial. Funciona con **ElevenLabs**, que convierte tu voz en texto y su respuesta en voz, y con un modelo de lenguaje de **Anthropic** (Claude) que ElevenLabs usa para responder. Solo participa si tú abres una conversación.',
+          text: 'Roxi es la asistente de Yavaya, con inteligencia artificial. Funciona con **ElevenLabs**, que convierte tu voz en texto y su respuesta en voz, y con un modelo de lenguaje de **OpenAI** que ElevenLabs usa para responder; si ese modelo no responde a tiempo, ElevenLabs usa uno de **Google**. Solo participa si tú abres una conversación.',
           list: [
             'Al empezar, Roxi recibe tu primer nombre, tu YAY ID, tu ciudad, si verificaste tu correo, tu idioma y la página en la que estás. Nada más de tu cuenta.',
-            'Lo que le dices o escribes, y las fotos que le envías, los procesan ElevenLabs y el modelo de lenguaje para responderte. **Tu voz no se graba.** El texto de la conversación se guarda en ElevenLabs 30 días, para revisar la calidad y posibles abusos, y después se borra.',
+            'Lo que le dices o escribes, y las fotos que le envías, los procesan ElevenLabs y esos modelos de lenguaje para responderte. **Tu voz no se graba.** El texto de la conversación se guarda en ElevenLabs 30 días, para revisar la calidad y posibles abusos, y después se borra.',
             'Cuando Roxi busca en los distritos o mira tu cuenta (tokens, reputación, tus publicaciones, tus notificaciones), lo hace con tu propia sesión: ve solo lo que tú podrías abrir, y eso pasa a la conversación.',
             'Roxi no publica, no paga y no envía nada a otras personas. Prepara un borrador en el mismo formulario de siempre y tú decides si lo envías. En Mercadito, el registro de auditoría anota que Roxi ayudó a escribir la publicación.',
             'Roxi no está en el Espacio Violeta ni en las páginas para entrar o registrarse, y nada del Espacio Violeta le llega. Hay un límite diario de conversaciones por persona.',
@@ -1022,7 +1022,7 @@ export const siteEs = {
             '**dLocal Go**, **Stripe** y **PayPal** procesan los pagos cuando compras tokens, según tu país: reciben el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
             '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
-            '**ElevenLabs**, y el modelo de lenguaje de **Anthropic** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',
+            '**ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',
           ],
         },
         {

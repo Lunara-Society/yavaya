@@ -990,10 +990,10 @@ export const siteEn: SiteContent = {
         {
           id: 'roxi',
           title: 'If you talk to Roxi',
-          text: 'Roxi is Yavaya\'s assistant, powered by artificial intelligence. She runs on **ElevenLabs**, which turns your voice into text and her answer into speech, and on a language model from **Anthropic** (Claude) that ElevenLabs uses to answer. She only takes part when you open a conversation.',
+          text: 'Roxi is Yavaya\'s assistant, powered by artificial intelligence. She runs on **ElevenLabs**, which turns your voice into text and her answer into speech, and on a language model from **OpenAI** that ElevenLabs uses to answer; if that model does not answer in time, ElevenLabs uses one from **Google**. She only takes part when you open a conversation.',
           list: [
             'When it starts, Roxi receives your first name, your YAY ID, your city, whether you verified your email, your language and the page you are on. Nothing else from your account.',
-            'What you say or write, and the photos you send her, are processed by ElevenLabs and the language model to answer you. **Your voice is not recorded.** The text of the conversation is kept at ElevenLabs for 30 days, to review quality and possible abuse, and is then deleted.',
+            'What you say or write, and the photos you send her, are processed by ElevenLabs and those language models to answer you. **Your voice is not recorded.** The text of the conversation is kept at ElevenLabs for 30 days, to review quality and possible abuse, and is then deleted.',
             'When Roxi searches the districts or looks at your account (tokens, reputation, your listings, your notifications), she does it with your own session: she sees only what you could open yourself, and that goes into the conversation.',
             'Roxi does not publish, pay or send anything to other people. She prepares a draft in the usual form and you decide whether to send it. On Mercadito, the audit record notes that Roxi helped write the listing.',
             'Roxi is not available in Espacio Violeta or on the sign-in and sign-up pages, and nothing from Espacio Violeta reaches her. There is a daily limit of conversations per person.',
@@ -1010,7 +1010,7 @@ export const siteEn: SiteContent = {
             '**dLocal Go**, **Stripe** and **PayPal** process payments when you buy tokens, depending on your country: they receive the amount, a purchase reference and the details you enter on their payment page. Yavaya does not receive your card details.',
             '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
-            '**ElevenLabs**, and the **Anthropic** language model it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
+            '**ElevenLabs**, and the **OpenAI** and **Google** language models it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
           ],
         },
         {

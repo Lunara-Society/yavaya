@@ -696,6 +696,11 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
    not built (capability `listing_screening`).
 6. **Payments.** Yavaya does not process Mercadito payments; the site and the
    listing page say so.
+7. **Prohibited items.** There is no written list of what may not be sold,
+   and nothing in the form refuses a category of goods; moderation acts on
+   reports. Whether animals may be sold here is also undecided (Animales
+   handles adoption). Roxi declines the obvious cases on her own — see
+   "Roxi" below.
 
 ---
 
@@ -1138,3 +1143,52 @@ times and chapter times are in `src/config/guide.ts`.
   narrated is taken from the site as it works today. When a district changes,
   its film can say something that is no longer true, so a change to a
   district's rules is also a reason to re-cut its film.
+
+## Roxi — `ROXI_AGENT_ID`, `ELEVENLABS_API_KEY`
+
+Roxi, the assistant, is an ElevenLabs agent (`docs/roxi/README.md` has the
+agent, its tools, knowledge and tests). The capability register reports her
+`REAL` when `ROXI_AGENT_ID` is set, and the button appears for signed-in
+members; without it there is no button and `/status` says why.
+
+- **`ROXI_AGENT_ID`** — the agent's id (`agent_…`). Not a secret: the browser
+  needs it to connect.
+- **`ELEVENLABS_API_KEY`** — optional. With it, `/api/roxi/start` asks
+  ElevenLabs for a signed link valid for one conversation and hands that to
+  the member's browser; the agent can then be switched to *require* signed
+  links (agent → Security → enable authentication), so nobody can open a
+  conversation outside Yavaya even from an allowed origin. Without it, the
+  browser connects with the agent id and what holds the agent is its allowlist
+  (`yavaya.lat`, `www.yavaya.lat`, origin header required) and its own limits.
+  Give the key only the Agents permission.
+
+**What it costs and what limits it.** Every conversation is billed by
+ElevenLabs (voice and model). Three ceilings hold the bill:
+
+| Limit | Value | Where |
+| --- | --- | --- |
+| Conversations per member per day | 20 | `RATE_LIMITS.roxiConversation` |
+| Searches and account look-ups per member per hour | 120 | `RATE_LIMITS.roxiLookup` |
+| Conversation length | 10 minutes | agent setting |
+| Conversations at once / per day, all members | 25 / 1 500 | agent setting |
+
+These are cost guards set as technical defaults, not business rules from the
+specification; raise or lower them with the ElevenLabs plan.
+
+**Language model.** ElevenLabs runs the model. Claude models did not answer
+on this workspace, so Roxi uses OpenAI's top model with Google's as backup;
+the privacy page names both. Changing provider means changing the privacy
+page (`/privacy#roxi`) in the same change.
+
+**Voice.** A premade multilingual voice is in use until a Latin American
+voice from the library is added to the workspace (see the README).
+
+**Open decision — what may not be sold.** Mercadito has no written list of
+prohibited items (see "Mercadito — rules and open decisions"), so Roxi quotes
+none. She declines on her own to prepare listings for weapons, drugs,
+identity documents, things that look stolen, or photos of people, and sends
+anyone wanting to sell an animal to Animales, where animals are adopted.
+Whether animals may be sold on Mercadito at all is **undecided**; the
+publish form does not refuse it. When the owner decides a list, it belongs in
+`MERCADITO_RULES` (so the form enforces it) and Roxi's knowledge picks it up
+on the next regeneration.
