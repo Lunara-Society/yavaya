@@ -1,17 +1,19 @@
 /**
  * Yavaya's imagery.
  *
- * Two layers. Photography carries the places — volcano and lake, market,
- * plaza, city, wildlife — graded to navy, gold and each district's colour.
+ * Two layers. Photography carries the life of each district — a sale in the
+ * street, a courier at a grandmother's door, a congregation, a family and
+ * its new dog — and the places around it.
  * Over it, drawn in code, the marks of something official and lasting: the
  * guilloché seal and ornamental rules of a banknote or a certificate, which
  * is what "government-level trust, private-bank quality" (Master Bible)
  * looks like.
  *
  * The photographs are illustrative scenes made for Yavaya (see
- * docs/CONFIGURATION.md, "Imagery"). None shows a person, so nothing can be
- * taken for a real member, seller or listing, and the site says so in its
- * footer. All imagery is decorative and hidden from assistive technology.
+ * docs/CONFIGURATION.md, "Imagery"). The people in them are not members: they
+ * never carry a name, a rating, a price or a listing, and the footer says the
+ * photographs are illustrative. All imagery is decorative and hidden from
+ * assistive technology.
  */
 
 import type { ReactNode } from 'react';

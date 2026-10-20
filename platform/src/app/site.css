@@ -257,6 +257,9 @@ ul, ol { margin: 0; padding: 0; }
 .gate-scene { display: block; aspect-ratio: 16 / 10; overflow: hidden; position: relative; border-radius: 19px 19px 0 0; }
 .gate-scene img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 1.4s cubic-bezier(.2,.7,.2,1), filter 1.4s ease; filter: saturate(0.92); }
 .gate-scene img { transition: scale 1.4s cubic-bezier(.2,.7,.2,1), translate 0.9s cubic-bezier(.2,.7,.2,1), filter 1.4s ease; }
+/* The scenes have people in them, faces in the upper third: crop towards them, more so in the wide cards. */
+.gate-scene img { object-position: 50% 32%; }
+.gates > :nth-child(1):nth-last-child(7) .gate-scene img, .gates > :nth-child(7):nth-last-child(1) .gate-scene img { object-position: 50% 18%; }
 .gate:hover .gate-scene img { scale: 1.08; filter: saturate(1.12) brightness(1.05); }
 .gate-scene::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 12px; z-index: 1; pointer-events: none; }
 .gate-scene::after { content: ""; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--tone) 10%, #070f1d)); pointer-events: none; }

@@ -310,14 +310,23 @@ stayed.
 
 ## Imagery
 
-The photographs in `public/art/` (home hero and the six district scenes) are
-illustrative scenes generated for Yavaya with an image model through the
-owner's ElevenLabs account, then re-encoded here to WebP at three widths with
-no metadata. The prompts excluded people, text and logos, so nothing in them
-can be taken for a real member, seller, listing or brand, and the site footer
-says the photographs are illustrative. Replacing any of them with licensed or
-commissioned photography is a file swap: keep the name and widths
-(`<name>-<width>.webp`).
+The photographs in `public/art/` are illustrative scenes generated for Yavaya
+with an image model through the owner's ElevenLabs account, re-encoded here to
+WebP at three widths with no metadata.
+
+Since 20 October 2026 the district scenes and the trust, reputation, tokens
+and districts pages show people — the same stills as the video guide (shot ids
+in `tools/guide-video/shots.py`: mercadito m4, services s2, work t3,
+yavayago g3, community c2, animals a3, sanctuary card sa4 and page sa1,
+impact c7, tokens cf6, reputation cf1, trust i7, districts i1). The earlier
+set had no people at all, which made the site read as a travel brochure. The
+rule that keeps them honest: a person in a photograph never carries a name,
+rating, price or listing, so nothing can be taken for a real member, seller or
+review — and the footer says the photographs are illustrative. The hero,
+roadmap, status, transparency and street scenes are places and stay so.
+
+Replacing any of them with licensed or commissioned photography is a file
+swap: keep the name and widths (`<name>-<width>.webp`).
 
 The guilloché seal and ornamental rules are drawn in code
 (`src/ui/site/art.tsx`).
