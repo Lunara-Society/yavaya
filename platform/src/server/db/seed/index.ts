@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import { closeDb, db, type Database, type Executor } from '../client';
 import {
   billableActions,
@@ -14,6 +14,7 @@ import {
   tokenAccounts,
   tokenPackages,
   tokenLedger,
+  userRoles,
   users,
 } from '../schema';
 import {
@@ -505,6 +506,20 @@ async function bootstrapAdministrator(database: Database): Promise<void> {
     console.log(
       `admin bootstrap: no account for ${email} yet — register it, then re-run the seed to grant the admin role`,
     );
+    return;
+  }
+
+  // The seed runs on every deploy. Once the role is held there is nothing to
+  // do — and nothing to record: re-granting it each time added a role row
+  // and an audit event per deploy.
+  const [held] = await database
+    .select({ id: userRoles.id })
+    .from(userRoles)
+    .where(and(eq(userRoles.userId, admin.id), eq(userRoles.roleKey, 'admin'), eq(userRoles.scope, 'global'), isNull(userRoles.scopeRef), isNull(userRoles.revokedAt)))
+    .limit(1);
+  if (held) {
+    // eslint-disable-next-line no-console
+    console.log(`admin bootstrap: ${email} already holds the admin role`);
     return;
   }
 

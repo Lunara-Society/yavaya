@@ -125,7 +125,14 @@ export async function grantRole(
     })
     .onConflictDoUpdate({
       target: [userRoles.userId, userRoles.roleKey, userRoles.scope, userRoles.scopeRef],
-      set: { revokedAt: null, grantedAt: new Date(), expiresAt: params.expiresAt ?? null },
+      // Granting a role someone already holds changes nothing about since
+      // when they hold it; only bringing back a revoked one starts afresh.
+      set: {
+        revokedAt: null,
+        grantedAt: sql`case when "user_roles"."revoked_at" is null then "user_roles"."granted_at" else now() end`,
+        grantedBy: sql`case when "user_roles"."revoked_at" is null then "user_roles"."granted_by" else excluded."granted_by" end`,
+        expiresAt: params.expiresAt ?? null,
+      },
     });
 }
 
@@ -142,6 +149,7 @@ export async function revokeRole(
         eq(userRoles.roleKey, params.roleKey),
         eq(userRoles.scope, params.scope ?? 'global'),
         params.scopeRef ? eq(userRoles.scopeRef, params.scopeRef) : isNull(userRoles.scopeRef),
+        isNull(userRoles.revokedAt),
       ),
     );
 }

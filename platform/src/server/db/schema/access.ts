@@ -4,6 +4,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
@@ -73,7 +74,12 @@ export const userRoles = pgTable(
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
   },
   (table) => [
-    uniqueIndex('user_roles_key').on(table.userId, table.roleKey, table.scope, table.scopeRef),
+    // NULLS NOT DISTINCT: a global role has no scope_ref, and with plain
+    // uniqueness two NULLs never clash — so `grantRole`'s ON CONFLICT never
+    // fired for a global role and each grant added another row (the admin
+    // bootstrap, run on every deploy, stacked the owner's admin role ~100
+    // times). Fixed in 0031.
+    unique('user_roles_key').on(table.userId, table.roleKey, table.scope, table.scopeRef).nullsNotDistinct(),
     index('user_roles_user_idx').on(table.userId),
   ],
 );

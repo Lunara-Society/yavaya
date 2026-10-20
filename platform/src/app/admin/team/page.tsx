@@ -42,7 +42,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
         {query.done ? <p className="mk-banner" role="status">{t('staff.done')}</p> : null}
         {error ? <p className="mk-error">{t(error as MessageKey)}</p> : null}
 
-        <h2 className="h-md" style={{ fontSize: '1.3rem' }}>{t('staff.roles_title')}</h2>
+        <h2 className="h-md" style={{ fontSize: '1.3rem', marginTop: 28 }}>{t('staff.roles_title')}</h2>
         <ul className="staff-roles">
           {APPOINTABLE_ROLES.map((role) => (
             <li key={role}>
