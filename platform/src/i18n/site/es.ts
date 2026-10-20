@@ -167,7 +167,7 @@ export const siteEs = {
       description: 'Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales: los distritos de Yavaya y la capa de confianza que los une.',
       lead: 'Cada distrito tiene su propio ambiente, su propio diseño y su propio propósito. Todos comparten tu cuenta, tu identidad y tu reputación.',
       layer: {
-        eyebrow: 'El séptimo distrito',
+        eyebrow: 'Debajo de los siete',
         title: 'La capa de confianza',
         lead: 'Es invisible y sostiene todo lo demás. Es el sistema más importante de Yavaya.',
         items: [
@@ -641,16 +641,16 @@ export const siteEs = {
       paidTable: {
         head: ['Producto', 'Precio', 'Cuándo'],
         rows: [
-          ['Trabajo · semanal', '$4.99 por semana', 'Al lanzamiento de Trabajo'],
-          ['Trabajo · mensual', '$14.99 por mes', 'Al lanzamiento de Trabajo'],
+          ['Trabajo · semanal', '$4.99 por semana', 'Sin fecha todavía'],
+          ['Trabajo · mensual', '$14.99 por mes', 'Sin fecha todavía'],
           ['Trabajo · negocio', '$39.99 por mes', 'Más adelante'],
           ['Trabajo · agencia', '$79.99 por mes', 'Más adelante'],
-          ['Visibilidad (destacar, ubicación, insignias)', 'Por anunciar', 'Con cada distrito'],
+          ['Destacar en Mercadito, Trabajo y YavayaGo', 'En tokens (ver Tokens)', 'Ya disponible'],
           ['Verificación premium (negocio, profesional, organización)', 'Por anunciar', 'Más adelante'],
           ['Herramientas para negocios y restaurantes', 'Por anunciar', 'Más adelante'],
         ],
       },
-      paidNote: '**Nada de esto se puede pagar todavía.** La publicidad, si llega, será solo promoción local relevante. Nunca un infierno de banners.',
+      paidNote: '**Hoy solo se pagan tokens**, con tarjeta, y siempre son opcionales. Lo demás de esta tabla todavía no se puede pagar. La publicidad, si llega, será solo promoción local relevante. Nunca un infierno de banners.',
       founderHead: { eyebrow: 'La regla del fundador', title: 'Toda decisión de cobro pasa tres pruebas' },
       founder: [
         { title: '¿Aumenta la confianza?', text: 'Si la daña, no se construye.' },
@@ -674,7 +674,7 @@ export const siteEs = {
         { icon: 'heart', title: 'Adopciones exitosas', text: 'Con sus historias.' },
         { icon: 'work', title: 'Proyectos exitosos', text: 'Completados en Trabajo y Servicios.' },
       ],
-      nowNote: '**Todavía no hay cifras que mostrar.** Mercadito acaba de abrir y esta página aún no está conectada a los datos reales. Cuando lo esté, mostrará números reales. Nunca estimaciones, nunca números de relleno.',
+      nowNote: '**Todavía no hay cifras que mostrar.** Yavaya acaba de abrir y esta página aún no está conectada a los datos reales. Cuando lo esté, mostrará números reales. Nunca estimaciones, nunca números de relleno.',
       demoHead: { eyebrow: 'Contenido de demostración', title: 'Cómo manejamos los ejemplos' },
       demo: [
         { title: 'Fase 1', text: 'Se muestra contenido de demostración, **claramente marcado DEMO**.' },

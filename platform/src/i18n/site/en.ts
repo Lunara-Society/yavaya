@@ -155,7 +155,7 @@ export const siteEn: SiteContent = {
       description: 'Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals: the districts of Yavaya and the trust layer that connects them.',
       lead: 'Each district has its own atmosphere, its own design and its own purpose. All of them share your account, your identity and your reputation.',
       layer: {
-        eyebrow: 'The seventh district',
+        eyebrow: 'Beneath all seven',
         title: 'The trust layer',
         lead: 'It is invisible and it holds everything else up. It is the most important system in Yavaya.',
         items: [
@@ -629,16 +629,16 @@ export const siteEn: SiteContent = {
       paidTable: {
         head: ['Product', 'Price', 'When'],
         rows: [
-          ['Work · weekly', '$4.99 per week', 'When Work launches'],
-          ['Work · monthly', '$14.99 per month', 'When Work launches'],
+          ['Work · weekly', '$4.99 per week', 'No date yet'],
+          ['Work · monthly', '$14.99 per month', 'No date yet'],
           ['Work · business', '$39.99 per month', 'Later'],
           ['Work · agency', '$79.99 per month', 'Later'],
-          ['Visibility (featuring, placement, badges)', 'To be announced', 'With each district'],
+          ['Featuring in Mercadito, Work and YavayaGo', 'In tokens (see Tokens)', 'Available now'],
           ['Premium verification (business, professional, organization)', 'To be announced', 'Later'],
           ['Tools for businesses and restaurants', 'To be announced', 'Later'],
         ],
       },
-      paidNote: '**None of this can be paid for yet.** Advertising, if it ever comes, will only be relevant local promotion. Never banner-ad hell.',
+      paidNote: '**Today only tokens are paid for**, by card, and they are always optional. Nothing else in this table can be paid for yet. Advertising, if it ever comes, will only be relevant local promotion. Never banner-ad hell.',
       founderHead: { eyebrow: 'The founder rule', title: 'Every pricing decision passes three tests' },
       founder: [
         { title: 'Does it increase trust?', text: 'If it damages trust, it is not built.' },
@@ -662,7 +662,7 @@ export const siteEn: SiteContent = {
         { icon: 'heart', title: 'Successful adoptions', text: 'With their stories.' },
         { icon: 'work', title: 'Successful projects', text: 'Completed on Work.' },
       ],
-      nowNote: '**There are no numbers to show yet.** Mercadito has just opened and this page is not connected to the real data yet. When it is, it will show real numbers. Never estimates, never filler.',
+      nowNote: '**There are no numbers to show yet.** Yavaya has just opened and this page is not connected to the real data yet. When it is, it will show real numbers. Never estimates, never filler.',
       demoHead: { eyebrow: 'Demo content', title: 'How we handle examples' },
       demo: [
         { title: 'Phase 1', text: 'Demo content is shown, **clearly marked DEMO**.' },

@@ -280,7 +280,7 @@ export const es = {
   'capability.identity.name': 'Identidad y YAY ID',
   'capability.identity.detail': 'Registro, identificador permanente de 8 dígitos y verificación.',
   'capability.authentication.name': 'Autenticación y sesiones',
-  'capability.authentication.detail': 'Contraseñas con scrypt, sesiones con rotación y revocación.',
+  'capability.authentication.detail': 'Contraseñas con scrypt, sesiones que se cierran solas tras un tiempo sin actividad y se pueden revocar.',
   'capability.email_verification.name': 'Verificación de correo',
   'capability.email_verification.detail':
     'Código de 6 dígitos con vencimiento, límite de intentos y reenvío controlado.',

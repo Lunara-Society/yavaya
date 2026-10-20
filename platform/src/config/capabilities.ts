@@ -188,7 +188,8 @@ export const CAPABILITIES: readonly Capability[] = [
     detailKey: 'capability.moderation.detail',
     state: 'REQUIRES_CONFIGURATION',
     group: 'trust',
-    blockedBy: 'Schema and enforcement records exist; reporting flows and the moderation queue are Phase 1.',
+    blockedBy:
+      'Reports, shared tickets and removal of content work in the districts (see each district\'s own entry). Not built: account-level sanctions — there is no operator tool to suspend or ban a member.',
   },
   {
     key: 'live_activity',

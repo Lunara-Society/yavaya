@@ -261,7 +261,7 @@ export const en: Dictionary = {
   'capability.identity.name': 'Identity and YAY ID',
   'capability.identity.detail': 'Registration, permanent 8-digit identifier and verification.',
   'capability.authentication.name': 'Authentication and sessions',
-  'capability.authentication.detail': 'scrypt passwords, sessions with rotation and revocation.',
+  'capability.authentication.detail': 'scrypt passwords, sessions that close on their own after a spell of inactivity and can be revoked.',
   'capability.email_verification.name': 'Email verification',
   'capability.email_verification.detail':
     'A 6-digit code with expiry, an attempt limit, and a rate-controlled resend.',
