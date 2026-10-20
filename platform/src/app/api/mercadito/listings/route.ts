@@ -105,7 +105,14 @@ export async function POST(request: Request) {
 
     if (mode === 'create') {
       const result = await db().transaction((tx) =>
-        publishListing(tx, { listingId, sellerUserId: userId, input: parsed.data, images: stored, audit }),
+        publishListing(tx, {
+          listingId,
+          sellerUserId: userId,
+          input: parsed.data,
+          images: stored,
+          audit,
+          assistedBy: form.get('assistant') === 'roxi' ? 'roxi' : undefined,
+        }),
       );
       // A replayed submission stored a second copy of the photos that the
       // first one already holds; those copies are not referenced by anything.

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PlacePicker, type PlacePickerLabels } from '@/ui/components/place-picker';
 import { MERCADITO_RULES } from '@/config/business-rules';
+import { RoxiPrefill } from '@/ui/roxi/prefill';
 
 /**
  * Publish and edit form.
@@ -65,6 +66,7 @@ export function ListingForm({
   placeLabels,
   initial,
   maxPhotos,
+  prefillNotice,
 }: {
   mode: 'create' | 'edit';
   listingId: string;
@@ -83,6 +85,8 @@ export function ListingForm({
     photoIds: string[];
   };
   maxPhotos: number;
+  /** When set, a draft Roxi prepared fills a new listing; the member still publishes it. */
+  prefillNotice?: string;
 }) {
   const [photos, setPhotos] = useState<Photo[]>(
     () => initial?.photoIds.map((mediaId) => ({ key: mediaId, kind: 'existing' as const, mediaId })) ?? [],
@@ -175,6 +179,7 @@ export function ListingForm({
 
   return (
     <form className="mk-form" onSubmit={submit} noValidate={false}>
+      {mode === 'create' && prefillNotice ? <RoxiPrefill form="mercadito_listing" notice={prefillNotice} /> : null}
       {error ? (
         <div className="mk-error" role="alert" tabIndex={-1} ref={errorBox}>
           {error}

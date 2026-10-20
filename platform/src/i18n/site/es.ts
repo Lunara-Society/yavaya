@@ -795,15 +795,16 @@ export const siteEs = {
       lead: 'Si tu pregunta no está aquí, probablemente todavía no tiene respuesta: Yavaya está en construcción.',
       faq: [
         { q: '¿Qué es Yavaya?', a: 'Un ecosistema digital para Centroamérica: comprar y vender, pedir a domicilio, encontrar trabajo, apoyar causas, adoptar animales y acompañarse en comunidad, todo con una sola cuenta y una sola reputación.' },
-        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes comprar y vender en Mercadito; los demás distritos abrirán por fases.' },
-        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta: Mercadito y Comunidad son los primeros distritos. No damos fechas que no podamos cumplir para los demás; la hoja de ruta muestra el orden en que se abrirán.' },
-        { q: '¿Cuánto cuesta?', a: ['Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones es **siempre gratis**.', 'Lo que se paga es opcional: suscripciones de Trabajo para profesionales y opciones de visibilidad. Hoy no se puede pagar nada.'] },
+        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes usar todos los distritos abiertos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales.' },
+        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta, con siete distritos funcionando. La página de Estado muestra qué funciona hoy y qué falta, sin adornos; la hoja de ruta, lo que viene. No damos fechas que no podamos cumplir.' },
+        { q: '¿Cuánto cuesta?', a: ['Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones es **siempre gratis**.', 'Lo que se paga es opcional. Hoy solo se compran tokens, con tarjeta: para destacar una publicación o tener más publicaciones activas que las gratuitas. Las suscripciones de Trabajo todavía no se pueden pagar.'] },
         { q: '¿Los tokens son criptomoneda?', a: 'No. Son créditos para participar en la plataforma: publicar, destacar, aparecer. No son una inversión, no se intercambian y no hay mercado de tokens.' },
         { q: '¿Tengo que usar tokens?', a: 'Nunca. El efectivo es siempre la opción por defecto y los tokens son siempre opcionales.' },
         { q: '¿Cómo evitan las estafas?', a: 'Con verificación por niveles, una sola cuenta por persona, reputación visible, revisión de publicaciones y causas, límites para cuentas nuevas y moderación visible. La página de Confianza lo explica.' },
         { q: '¿Yavaya cobra comisión en las donaciones?', a: 'No. Las causas de Comunidad tienen 0 % de comisión de Yavaya.' },
         { q: '¿En qué países estará?', a: 'Guatemala, Belice, El Salvador, Honduras, Nicaragua, Costa Rica y Panamá.' },
         { q: '¿Cómo los contacto?', a: 'Por WhatsApp al +505 5836 5522. El enlace está al pie de cada página.' },
+        { q: '¿Quién es Roxi?', a: 'La asistente de Yavaya, con inteligencia artificial. Con tu sesión iniciada, el botón «Habla con Roxi» te deja hablarle o escribirle: te explica cómo funciona todo, busca por ti en los distritos y prepara tus publicaciones. Si le mandas la foto de algo que quieres vender, escribe el anuncio y tú pones el precio y lo publicas. Roxi nunca publica, paga ni envía nada por ti, y puede equivocarse: revisa siempre.' },
         { q: '¿Qué significa "DEMO"?', a: 'Un ejemplo ilustrativo. No es una persona ni una publicación real, no cuenta en ninguna estadística y desaparece cuando llega actividad real.' },
       ],
     },
@@ -817,7 +818,7 @@ export const siteEs = {
       sections: [
         {
           title: '1. Qué es Yavaya hoy',
-          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla, tener tu identidad y tu reputación, y comprar y vender en Mercadito. Los demás distritos abrirán por fases. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
+          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla, tener tu identidad y tu reputación, y usar los siete distritos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
         },
         {
           title: '2. Tu cuenta',
@@ -999,6 +1000,18 @@ export const siteEs = {
           ],
         },
         {
+          id: 'roxi',
+          title: 'Si hablas con Roxi',
+          text: 'Roxi es la asistente de Yavaya, con inteligencia artificial. Funciona con **ElevenLabs**, que convierte tu voz en texto y su respuesta en voz, y con un modelo de lenguaje de **Anthropic** (Claude) que ElevenLabs usa para responder. Solo participa si tú abres una conversación.',
+          list: [
+            'Al empezar, Roxi recibe tu primer nombre, tu YAY ID, tu ciudad, si verificaste tu correo, tu idioma y la página en la que estás. Nada más de tu cuenta.',
+            'Lo que le dices o escribes, y las fotos que le envías, los procesan ElevenLabs y el modelo de lenguaje para responderte. **Tu voz no se graba.** El texto de la conversación se guarda en ElevenLabs 30 días, para revisar la calidad y posibles abusos, y después se borra.',
+            'Cuando Roxi busca en los distritos o mira tu cuenta (tokens, reputación, tus publicaciones, tus notificaciones), lo hace con tu propia sesión: ve solo lo que tú podrías abrir, y eso pasa a la conversación.',
+            'Roxi no publica, no paga y no envía nada a otras personas. Prepara un borrador en el mismo formulario de siempre y tú decides si lo envías. En Mercadito, el registro de auditoría anota que Roxi ayudó a escribir la publicación.',
+            'Roxi no está en el Espacio Violeta ni en las páginas para entrar o registrarse, y nada del Espacio Violeta le llega. Hay un límite diario de conversaciones por persona.',
+          ],
+        },
+        {
           title: 'Para proteger a todos',
           text: 'Para cumplir la regla de una persona, una cuenta, guardamos señales de seguridad en forma de resúmenes cifrados, nunca en claro. Las acciones importantes quedan en un registro de auditoría que no se puede reescribir; ese registro guarda resúmenes, no tu dirección IP.',
         },
@@ -1009,6 +1022,7 @@ export const siteEs = {
             '**dLocal Go**, **Stripe** y **PayPal** procesan los pagos cuando compras tokens, según tu país: reciben el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
             '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
+            '**ElevenLabs**, y el modelo de lenguaje de **Anthropic** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',
           ],
         },
         {

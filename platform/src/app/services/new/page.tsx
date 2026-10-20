@@ -11,6 +11,7 @@ import { categoryName } from '@/ui/services/parts';
 import { createRequestAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { RoxiPrefill } from '@/ui/roxi/prefill';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,7 @@ export default async function NewRequestPage({ searchParams }: { searchParams: P
         <p className="muted">{t('services.form.free')}</p>
         {error ? <p className="mk-error">{t(error as MessageKey, LIMITS[error] ?? {})}</p> : null}
         <form action={createRequestAction} className="mk-form" style={{ marginTop: 18 }}>
+          <RoxiPrefill form="service_request" notice={t('roxi.prefill.notice')} />
           <label>
             {t('services.form.category')}
             <select name="category" required defaultValue={initial}>

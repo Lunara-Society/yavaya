@@ -1,0 +1,2646 @@
+# Textos de la plataforma
+
+Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mensajes de error, agrupados por área. La clave dice dónde aparece cada texto (por ejemplo `mercadito.error.*` son los errores al publicar en Mercadito). Las palabras entre llaves, como {max}, se reemplazan por un número real cuando se muestran.
+
+## brand
+- `brand.name`: Yavaya
+- `brand.tagline`: La infraestructura digital de Centroamérica
+- `brand.description`: Una identidad. Una reputación. Múltiples distritos. Yavaya conecta el comercio diario, los servicios, el trabajo profesional, las entregas y el apoyo comunitario en una sola plataforma.
+
+## nav
+- `nav.primary`: Navegación principal
+- `nav.home`: Inicio
+- `nav.districts`: Distritos
+- `nav.settings`: Ajustes
+- `nav.status`: Estado
+- `nav.sign_in`: Entrar
+- `nav.member_area`: Área de miembro
+- `nav.panel`: Panel
+- `nav.tokens`: Mis tokens
+- `nav.notifications`: Avisos
+- `nav.location`: Ubicación y privacidad
+- `nav.security`: Cuenta y seguridad
+- `nav.skip_to_content`: Saltar al contenido
+- `nav.services`: Servicios
+- `nav.admin_services`: Revisión de Servicios
+- `nav.admin_animals`: Revisión de Animales
+- `nav.admin_work`: Revisión de Trabajo
+- `nav.admin_violeta`: Reportes del Espacio Violeta
+- `nav.violeta`: Espacio Violeta
+- `nav.work_employer`: Empleador verificado
+- `nav.ops`: Panel de operaciones
+- `nav.moderation_community`: Moderación · Comunidad
+- `nav.sanctuary`: Santuario
+- `nav.moderation_sanctuary`: Revisión · Santuario
+- `nav.phone`: Teléfono
+- `nav.moderation`: Moderación
+
+## controls
+- `controls.title`: Ajustes
+- `controls.open`: Abrir ajustes rápidos
+- `controls.shortcuts`: Accesos directos
+
+## districts
+- `districts.title`: Distritos de Yavaya
+- `districts.subtitle`: Ocho experiencias distintas, una sola identidad y una sola reputación.
+
+## district
+- `district.services.name`: Servicios
+- `district.services.tagline`: Oficios, reparaciones urgentes y profesionales cerca de ti.
+- `district.mercadito.name`: Mercadito
+- `district.mercadito.tagline`: El mercado regional, más claro y más confiable.
+- `district.yavayago.name`: YavayaGo
+- `district.yavayago.tagline`: Entregas y logística local.
+- `district.works.name`: Trabajo
+- `district.works.tagline`: Empleos y proyectos profesionales, sin guerras de precios.
+- `district.community.name`: Comunidad
+- `district.community.tagline`: Apoyo humano, cercano y respetuoso.
+- `district.sanctuary.name`: Santuario
+- `district.sanctuary.tagline`: Tu iglesia, la palabra del día y la oración.
+- `district.animals.name`: Animales
+- `district.animals.tagline`: Adopción, rescate y bienestar animal.
+- `district.status.available`: Disponible
+- `district.status.in_development`: En desarrollo
+- `district.status.planned`: Planificado
+- `district.status.planned_note`: Este distrito todavía no está construido.
+- `district.phase`: Fase {phase}
+
+## trust
+- `trust.shield`: Escudo de Confianza
+- `trust.identity_verified`: Identidad verificada
+- `trust.email_verified`: Correo verificado
+- `trust.phone_verified`: Teléfono verificado
+- `trust.account_age`: Antigüedad de la cuenta
+- `trust.account_age_days`: {days} días
+- `trust.score`: Puntaje de confianza
+- `trust.transactions`: Transacciones exitosas
+- `trust.status.trusted`: Miembro de confianza
+- `trust.status.established`: Miembro establecido
+- `trust.status.new`: Miembro nuevo
+- `trust.status.new_member`: Miembro nuevo
+- `trust.status.restricted`: Cuenta restringida
+- `trust.status.suspended`: Cuenta suspendida
+- `trust.status.removed`: Cuenta retirada
+- `trust.status.unverified`: Sin verificar
+- `trust.caution.new_account`: Cuenta reciente: toma precauciones normales.
+- `trust.caution.restricted`: Esta cuenta está restringida mientras se revisa.
+
+## auth
+- `auth.bar.label`: Entrar o crear tu cuenta
+- `auth.bar.lead`: Bienvenida, bienvenido a Yavaya. Crear tu cuenta es gratis.
+- `auth.bar.ended`: Tu sesión se cerró tras {hours} horas sin actividad. Vuelve a entrar en un toque.
+- `auth.bar.register`: Crear cuenta gratis
+- `auth.notice.signed_out`: Cerraste sesión. Para volver, un toque basta.
+- `auth.or_email`: o con tu correo
+- `auth.google.continue`: Continuar con Google
+- `auth.google.register`: Crear cuenta con Google
+- `auth.google.other`: Usar otra cuenta de Google
+- `auth.google.error.cancelled`: Cancelaste la entrada con Google. Puedes intentarlo otra vez cuando quieras.
+- `auth.google.error.failed`: No pudimos completar la entrada con Google. Inténtalo de nuevo.
+- `auth.google.error.unavailable`: No pudimos abrir una sesión con esa cuenta. Si fue suspendida, te enviamos un correo con el motivo y cómo apelar.
+- `auth.login.unavailable`: Esta cuenta no se puede usar ahora. Si fue suspendida, te enviamos un correo con el motivo, hasta cuándo dura y cómo apelar.
+- `auth.sign_in_to_continue`: Entrar para continuar
+- `auth.google.error.busy`: Demasiados intentos seguidos. Espera unos minutos e inténtalo de nuevo.
+- `auth.google.signup.title`: Crea tu cuenta con Google
+- `auth.google.signup.lead`: Google confirmó tu correo, {email}. Solo falta tu nombre y aceptar los términos.
+- `auth.google.signup.submit`: Crear mi cuenta
+- `auth.google.signup.name_required`: Escribe tu nombre, de 2 a 60 letras.
+- `auth.google.signup.terms_required`: Para crear tu cuenta, acepta los términos de uso.
+- `auth.register.title`: Crear tu cuenta Yavaya
+- `auth.register.subtitle`: Una persona, una cuenta. Tu YAY ID es permanente.
+- `auth.login.title`: Entrar a Yavaya
+- `auth.login.subtitle`: Con tu cuenta de Google o con tu correo.
+- `auth.login.subtitle_email`: Con tu correo y tu contraseña.
+- `auth.email`: Correo electrónico
+- `auth.password`: Contraseña
+- `auth.display_name`: Nombre para mostrar
+- `auth.accept_terms`: Acepto los términos de uso de Yavaya.
+- `auth.read_terms`: Leer los términos de uso
+- `auth.submit_register`: Crear cuenta
+- `auth.submit_login`: Entrar
+- `auth.sign_out`: Salir
+- `auth.member_prompt`: Entra o crea tu cuenta para usar todo Yavaya.
+- `auth.have_account`: ¿Ya tienes cuenta?
+- `auth.no_account`: ¿No tienes cuenta?
+- `auth.yay_id_explained`: Tu YAY ID identifica tu cuenta públicamente y no cambia nunca.
+- `auth.registered.title`: Cuenta creada
+- `auth.registered.body`: Tu YAY ID es {yayId}. Verifica tu correo para activar la cuenta.
+- `auth.monitoring_notice`: Las cuentas nuevas pasan por un período de supervisión de {hours} horas antes de alcanzar el estado estándar.
+- `auth.verification_undeliverable`: El envío de correo no está configurado, así que el código no se pudo entregar. Configúralo antes de abrir el registro al público.
+- `auth.verify.title`: Verifica tu correo
+- `auth.verify.subtitle`: Enviamos un código de 6 dígitos a {email}.
+- `auth.verify.code`: Código de verificación
+- `auth.verify.code_hint`: El código vence en {minutes} minutos.
+- `auth.verify.submit`: Verificar cuenta
+- `auth.verify.resend`: Enviar un código nuevo
+- `auth.verify.resend_hint`: ¿No te llegó? Revisa la carpeta de spam. Un código nuevo anula el anterior.
+- `auth.verify.resent`: Enviamos un código nuevo. El anterior ya no sirve.
+- `auth.verify.already_verified`: Tu correo ya está verificado.
+- `auth.verify.continue`: Verificar mi correo
+- `auth.verify.error_format`: El código tiene 6 dígitos.
+- `auth.verify.error_mismatch`: Ese código no es correcto. Revísalo e inténtalo de nuevo.
+- `auth.verify.error_expired`: Ese código venció. Pide uno nuevo.
+- `auth.verify.error_no_challenge`: No hay ningún código pendiente. Pide uno nuevo.
+- `auth.verify.error_too_many_attempts`: Demasiados intentos con este código. Pide uno nuevo.
+- `auth.verify.error_cooldown`: Espera {seconds} segundos antes de pedir otro código.
+- `auth.verify.error_daily_limit`: Alcanzaste el máximo de códigos por hoy. Inténtalo mañana o escribe a soporte.
+- `auth.forgot.link`: ¿Olvidaste tu contraseña?
+- `auth.forgot.title`: Recupera tu cuenta
+- `auth.forgot.lead`: Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.
+- `auth.forgot.submit`: Enviar enlace
+- `auth.forgot.sent`: Si hay una cuenta con ese correo, te enviamos un enlace. Vence en {minutes} minutos. Revisa también la carpeta de spam.
+- `auth.forgot.unavailable`: El envío de correos no está disponible en este momento, así que no podemos enviar el enlace. Si entrabas con Google, usa “Continuar con Google”.
+- `auth.reset.title`: Crea una contraseña nueva
+- `auth.reset.lead`: Al guardarla, se cerrará tu sesión en todos los dispositivos.
+- `auth.reset.password`: Contraseña nueva
+- `auth.reset.confirm`: Repítela
+- `auth.reset.submit`: Guardar contraseña
+- `auth.reset.mismatch`: Las dos contraseñas no coinciden.
+- `auth.reset.invalid`: Este enlace ya se usó o venció. Pide uno nuevo.
+- `auth.reset.ask_again`: Pedir otro enlace
+- `auth.notice.password_reset`: Tu contraseña cambió. Entra con la nueva.
+
+## settings
+- `settings.title`: Ajustes
+- `settings.subtitle`: Idioma, apariencia, avisos y privacidad.
+- `settings.notifications`: Avisos
+- `settings.location`: Ubicación y privacidad
+- `settings.location.explain`: Elige con cuánta precisión se muestra tu ubicación a otras personas.
+- `settings.location.gps_note`: Dar permiso de GPS nunca aumenta esta precisión. Solo tú la cambias aquí.
+- `settings.location.country`: País
+- `settings.location.city`: Ciudad
+- `settings.location.neighborhood`: Barrio
+- `settings.location.exact`: Exacta
+- `settings.security`: Cuenta y seguridad
+- `settings.password.title`: Contraseña
+- `settings.password.current`: Contraseña actual
+- `settings.password.new`: Contraseña nueva
+- `settings.password.submit`: Cambiar contraseña
+- `settings.password.wrong`: La contraseña actual no es correcta.
+- `settings.password.done`: Listo. Cerramos tu sesión en los demás dispositivos.
+- `settings.password.google_hint`: ¿Creaste tu cuenta con Google y nunca pusiste contraseña? Usa “¿Olvidaste tu contraseña?” para crear una.
+- `settings.sessions.title`: Dónde tienes la sesión abierta
+- `settings.sessions.this_device`: Este dispositivo
+- `settings.sessions.last_active`: Última actividad: {when}
+- `settings.sessions.unknown_device`: Dispositivo desconocido
+- `settings.sessions.sign_out_others`: Cerrar sesión en los demás dispositivos
+- `settings.sessions.signed_out_others`: Cerramos la sesión en {count} dispositivos.
+- `settings.sign_in_required`: Entra a tu cuenta para cambiar esto.
+- `settings.status_pointer`: ¿Quieres saber qué funciona hoy?
+- `settings.notify.account`: Mi cuenta
+- `settings.notify.account_detail`: Verificación, seguridad y cambios importantes.
+- `settings.notify.orders`: Pedidos y entregas
+- `settings.notify.orders_detail`: Estado de tus pedidos y solicitudes.
+- `settings.notify.moderation`: Reportes y moderación
+- `settings.notify.moderation_detail`: Respuestas a tus reportes y decisiones sobre lo que publicas.
+- `settings.notify.tokens`: Tokens
+- `settings.notify.tokens_detail`: Movimientos de tu saldo.
+- `settings.notify.live_activity`: Actividad cercana
+- `settings.notify.live_activity_detail`: Solo eventos reales de tu zona.
+- `settings.notify.marketing`: Novedades por correo
+- `settings.notify.marketing_detail`: Desactivado por defecto.
+- `settings.notify.community`: Comunidad
+- `settings.notify.community_detail`: Respuestas y apoyos a lo que publicas.
+- `settings.notify.mercadito`: Mercadito
+- `settings.notify.mercadito_detail`: Anuncios nuevos que coinciden con tus búsquedas guardadas.
+- `settings.notify.sanctuary`: Santuario
+- `settings.notify.sanctuary_detail`: La palabra del día de las iglesias que sigues.
+- `settings.notify.digest`: Resumen diario por correo
+- `settings.notify.digest_detail`: Un correo por la mañana, solo si tienes avisos sin leer. Nunca más de uno al día.
+- `settings.notify.services`: Servicios
+- `settings.notify.services_detail`: Respuestas a tus pedidos y pedidos nuevos en tus áreas.
+- `settings.notify.animals`: Animales
+- `settings.notify.animals_detail`: Solicitudes de adopción, decisiones y seguimiento.
+- `settings.notify.work`: Trabajo
+- `settings.notify.work_detail`: Postulaciones a tus ofertas, respuestas a las tuyas y ofertas nuevas en tus áreas.
+- `settings.notify.yavayago`: YavayaGo
+- `settings.notify.yavayago_detail`: Tus pedidos, tu negocio y tus entregas.
+- `settings.notify.daily`: La luz de cada día
+- `settings.notify.daily_detail`: Un aviso cada mañana a las 8 cuando hay una nueva oración, refrán, frase o bendición.
+
+## two_step
+- `two_step.title`: Verificación en dos pasos
+- `two_step.code.title`: Escribe tu código
+- `two_step.code.lead`: Abre tu app de autenticación y escribe los 6 números que muestra para Yavaya.
+- `two_step.code.label`: Código de 6 números
+- `two_step.code.recovery_label`: Código de respaldo
+- `two_step.code.use_recovery`: ¿No tienes el teléfono? Usa un código de respaldo
+- `two_step.code.use_app`: Usar el código de la app
+- `two_step.code.submit`: Entrar
+- `two_step.code.start_over`: Volver a empezar
+- `two_step.error.mismatch`: Ese código no es correcto o ya se usó. Espera el siguiente y vuelve a intentarlo.
+- `two_step.error.rate_limited`: Demasiados intentos. Espera unos minutos y vuelve a intentarlo.
+- `two_step.error.expired`: Pasó demasiado tiempo. Vuelve a entrar.
+- `two_step.error.unavailable`: La verificación en dos pasos no está disponible en este momento.
+- `two_step.error.already_on`: La verificación en dos pasos ya está activa.
+- `two_step.settings.off_lead`: Al entrar, además de tu contraseña o de Google, te pedimos un código de tu teléfono. Si alguien consigue tu contraseña, igual no puede entrar. Es gratis.
+- `two_step.settings.turn_on`: Activar la verificación en dos pasos
+- `two_step.settings.on`: Activa desde el {date}.
+- `two_step.settings.recovery_left`: Te quedan {count} códigos de respaldo.
+- `two_step.settings.manage`: Administrar
+- `two_step.setup.lead`: Tres pasos y menos de un minuto.
+- `two_step.setup.step1`: Instala una app de autenticación en tu teléfono, si no tienes una. Hay varias, todas gratis.
+- `two_step.setup.step2`: En la app, agrega una cuenta y escanea este código.
+- `two_step.setup.open_app`: Abrir en la app de este teléfono
+- `two_step.setup.manual`: Si no puedes escanear, escribe esta clave en la app:
+- `two_step.setup.step3`: Escribe el código de 6 números que aparece en la app.
+- `two_step.setup.submit`: Activar
+- `two_step.setup.mismatch`: Ese código no coincide. Revisa que la hora del teléfono esté en automático y prueba con el siguiente.
+- `two_step.setup.expired`: Pasó demasiado tiempo. Empieza de nuevo para recibir un código nuevo.
+- `two_step.setup.restart`: Empezar de nuevo
+- `two_step.recovery.title`: Guarda tus códigos de respaldo
+- `two_step.recovery.lead`: Cada uno sirve una sola vez para entrar si pierdes el teléfono. Guárdalos fuera del teléfono: en papel o en un lugar seguro. No los volveremos a mostrar.
+- `two_step.recovery.done`: Ya los guardé
+- `two_step.recovery.used_notice`: Entraste con un código de respaldo. Te quedan {count}. Si perdiste el teléfono, genera códigos nuevos y vuelve a activar la verificación con tu teléfono nuevo.
+- `two_step.manage.on`: La verificación en dos pasos está activa.
+- `two_step.manage.code_label`: Código de la app o de respaldo
+- `two_step.manage.new_codes`: Generar códigos de respaldo nuevos
+- `two_step.manage.new_codes_lead`: Los anteriores dejan de servir. Escribe un código para confirmar.
+- `two_step.manage.off`: Desactivar
+- `two_step.manage.off_lead`: Tu cuenta quedará protegida solo por la contraseña o por Google. Escribe un código para confirmar.
+- `two_step.manage.off_done`: La verificación en dos pasos está desactivada.
+
+## account
+- `account.subtitle`: Tu identidad, tu reputación y tu saldo.
+- `account.shortcuts`: Accesos directos
+- `account.activity`: Actividad reciente
+- `account.activity_week`: Lo más nuevo arriba. Se borra solo a los {days} días.
+- `account.activity_empty`: Todavía no hay actividad real que mostrar. Yavaya nunca inventa eventos para llenar este espacio.
+- `account.role.admin`: Administrador · acceso completo a la plataforma
+- `account.role.moderator`: Moderador · puedes revisar reportes y retirar publicaciones
+
+## tokens
+- `tokens.name`: Tokens Yavaya
+- `tokens.balance`: Saldo
+- `tokens.description`: Los Tokens Yavaya son créditos de uso de la plataforma. No son criptomoneda, no representan participación ni depósitos, y no son una inversión.
+- `tokens.starter_grant`: Al verificar tu correo recibes {perDay} tokens cada 24 horas durante {days} días, hasta {max}. Después ya no llegan más.
+- `tokens.cost_publish`: Publicar contenido que califica cuesta {cost} token.
+- `tokens.view_history`: Ver mi historial
+- `tokens.history`: Historial
+- `tokens.packages`: Paquetes
+- `tokens.purchase_unavailable`: La compra de tokens no está disponible: todavía no hay un proveedor de pagos configurado. Los paquetes se muestran solo como información.
+- `tokens.purchase_limit`: La compra máxima es de {limit} tokens por transacción.
+- `tokens.reason.starter_grant`: Tokens de bienvenida
+- `tokens.reason.purchase`: Compra
+- `tokens.reason.admin_grant`: Otorgado por administración
+- `tokens.reason.admin_revoke`: Retirado por administración
+- `tokens.reason.admin_correction`: Corrección administrativa
+- `tokens.reason.reward`: Recompensa
+- `tokens.reason.referral`: Referido
+- `tokens.reason.tavern_reward`: Premio de la Taberna
+- `tokens.reason.action_charge`: Publicación
+- `tokens.reason.action_refund`: Reembolso
+- `tokens.reason.transfer_in`: Transferencia recibida
+- `tokens.reason.transfer_out`: Transferencia enviada
+- `tokens.chip_label`: Tienes {count} tokens. Comprar más
+- `tokens.get_more`: Conseguir más tokens
+- `tokens.shop_title`: Elige tu tesoro
+- `tokens.word`: tokens
+- `tokens.per_token`: {price} por token
+- `tokens.best_value`: Mejor precio por token
+- `tokens.pack.tokens_2`: Para probar
+- `tokens.pack.tokens_10`: Básico
+- `tokens.pack.tokens_25`: Plus
+- `tokens.pack.tokens_50`: Pro
+- `tokens.pack.tokens_100`: Negocio
+- `tokens.pack.tokens_500`: Empresa
+- `tokens.pack.tokens_5`: 5 tokens
+
+## place
+- `place.picker.placeholder`: Escribe tu ciudad o pueblo…
+- `place.picker.empty`: No encontramos ese lugar. Prueba con otra forma de escribirlo.
+- `place.picker.required`: Elige un lugar de la lista.
+- `place.picker.clear`: Quitar lugar
+- `place.picker.suggested`: Ciudades principales
+- `place.picker.any`: Centroamérica y México
+- `place.kind.city_big`: Ciudad grande
+- `place.kind.city_medium`: Ciudad mediana
+- `place.kind.city_small`: Ciudad pequeña
+- `place.kind.town_big`: Pueblo grande
+- `place.kind.town_medium`: Pueblo mediano
+- `place.kind.town_small`: Pueblo pequeño
+- `place.kind.city`: Ciudad
+- `place.kind.town`: Pueblo
+- `place.kind.village`: Aldea
+- `place.kind.neighborhood`: Barrio
+- `place.kind.state`: Departamento
+- `place.kind.country`: País
+- `place.kind.region`: Región
+- `place.bar.label`: Tu lugar
+- `place.bar.everywhere`: Centroamérica y México
+- `place.bar.title`: ¿Dónde estás?
+- `place.bar.intro`: Elige tu ciudad o pueblo y cada distrito te mostrará primero lo que hay cerca. Se guarda solo en este navegador.
+- `place.bar.use_location`: Usar mi ubicación
+- `place.bar.locating`: Buscando…
+- `place.bar.location_failed`: No pudimos saber dónde estás. Escribe tu ciudad o pueblo.
+- `place.bar.countries`: Países
+- `place.bar.close`: Cerrar
+- `place.bar.privacy`: Tu posición solo se usa para encontrar el pueblo más cercano; no se guarda.
+- `place.attribution`: Lugares y población: GeoNames (CC BY 4.0).
+
+## live
+- `live.label`: En vivo
+- `live.region`: Novedades en vivo
+- `live.snooze`: Pausar avisos
+- `live.resume`: Ver novedades en vivo
+- `live.close`: Cerrar aviso
+- `live.ago_now`: ahora
+- `live.ago_minutes`: hace {count} min
+- `live.ago_hours`: hace {count} h
+- `live.nearby`: Cerca de ti
+- `live.somewhere`: la región
+
+## activity
+- `activity.listing_published`: Nueva publicación en {place}
+- `activity.service_request_published`: Nueva solicitud de servicio en {place}
+- `activity.restaurant_joined`: Un negocio se unió a YavayaGo en {place}
+- `activity.animal_adopted`: Un animal fue adoptado en {place}
+- `activity.project_published`: Nuevo proyecto publicado en {place}
+- `activity.job_published`: Nuevo empleo publicado en {place}
+- `activity.cause_goal_reached`: Una causa alcanzó su meta en {place}
+- `activity.member_joined`: Un nuevo miembro se unió en {place}
+- `activity.animal_listed`: Un animal busca hogar en {place}
+- `activity.pet_lost`: Se perdió una mascota en {place}
+- `activity.pet_found`: Encontraron una mascota en {place}
+- `activity.church_joined`: Una iglesia se unió a Santuario en {place}
+- `activity.community_post_published`: Nueva publicación en la comunidad de {place}
+
+## status
+- `status.note_label`: Qué falta (nota técnica, en inglés)
+- `status.title`: Estado de la plataforma
+- `status.subtitle`: Lo que funciona hoy, sin adornos.
+- `status.legend`: Qué significa cada estado
+- `status.group.platform`: Plataforma
+- `status.group.trust`: Confianza y seguridad
+- `status.group.district`: Distritos
+- `status.group.integration`: Integraciones externas
+- `status.integration_note`: Las integraciones sin configurar se reportan como no disponibles. Yavaya nunca simula un resultado exitoso.
+
+## demo
+- `demo.badge`: DEMO
+- `demo.explanation`: Contenido de demostración. No es real y no cuenta en ninguna estadística.
+
+## common
+- `common.loading`: Cargando
+- `common.empty`: Todavía no hay nada aquí.
+- `common.retry`: Reintentar
+- `common.on`: Activado
+- `common.off`: Desactivado
+- `common.language`: Idioma
+- `common.language.auto`: Automático
+- `common.language.auto_hint`: Sigue el idioma de tu dispositivo.
+- `common.language.es`: Español
+- `common.language.en`: English
+- `common.theme`: Tema
+- `common.theme.light`: Claro
+- `common.theme.dark`: Oscuro
+- `common.theme.system`: Sistema
+- `common.theme.system_hint`: Sigue la apariencia de tu dispositivo.
+
+## error
+- `error.unauthenticated`: Necesitas iniciar sesión.
+- `error.forbidden`: No tienes permiso para hacer esto.
+- `error.not_found`: No se encontró.
+- `error.validation_failed`: Revisa los datos e inténtalo de nuevo.
+- `error.rate_limited`: Demasiados intentos. Intenta de nuevo en {retryAfterSeconds} segundos.
+- `error.risk_blocked`: No podemos completar esta acción ahora. Un revisor la evaluará.
+- `error.insufficient_tokens`: No tienes tokens suficientes. Necesitas {required} y tienes {available}.
+- `error.action_not_billable`: Esta acción no está disponible.
+- `error.integration_unconfigured`: Esta función todavía no está configurada.
+- `error.internal`: Algo salió mal. Inténtalo de nuevo.
+- `error.page.title`: Esta página no existe
+- `error.page.body`: El enlace puede estar mal escrito o la página ya no está disponible.
+- `error.boundary.title`: Algo falló de nuestro lado
+- `error.boundary.body`: No es culpa tuya. Puedes reintentar o volver al inicio.
+- `error.boundary.retry`: Reintentar
+- `error.boundary.reference`: Referencia: {digest}
+- `error.password.too_short`: La contraseña debe tener al menos 10 caracteres.
+- `error.registration.email_unavailable`: No pudimos crear la cuenta con ese correo.
+- `error.tokens.invalid_amount`: Cantidad de tokens inválida.
+- `error.tokens.purchase_limit_exceeded`: La compra máxima es de {limit} tokens.
+
+## media
+- `media.error.empty`: El archivo está vacío.
+- `media.error.too_large`: Cada foto puede pesar hasta {maxMegabytes} MB.
+- `media.error.unsupported_type`: Solo aceptamos fotos JPEG, PNG o WebP.
+- `media.error.unreadable`: No pudimos leer una de las fotos. Prueba con otra.
+
+## mercadito
+- `mercadito.error.title`: El título debe tener entre {titleMin} y {titleMax} caracteres.
+- `mercadito.error.description`: La descripción debe tener entre {descriptionMin} y {descriptionMax} caracteres.
+- `mercadito.error.price`: Escribe un precio válido, por ejemplo 1500 o 1500.50.
+- `mercadito.error.currency`: Elige la moneda del país de la publicación o dólares.
+- `mercadito.error.category`: Elige una categoría.
+- `mercadito.error.condition`: Elige el estado del artículo.
+- `mercadito.error.location`: Elige una ciudad de la lista.
+- `mercadito.error.photo_count`: Agrega entre {min} y {max} fotos.
+- `mercadito.error.verify_email`: Verifica tu correo antes de publicar.
+- `mercadito.error.account_restricted`: Tu cuenta no puede publicar en este momento.
+- `mercadito.error.category_restricted`: Esta categoría requiere una cuenta con identidad verificada.
+- `mercadito.error.new_seller_limit`: Durante sus primeros {days} días, una cuenta puede crear hasta {max} publicaciones.
+- `mercadito.error.conflict`: Esta publicación ya existe.
+- `mercadito.error.not_editable`: Esta publicación ya no se puede cambiar.
+- `mercadito.error.whatsapp`: Escribe el número con el código de país, por ejemplo +505 8888 8888.
+- `mercadito.report.error.own`: No puedes reportar tu propia publicación.
+- `mercadito.category.vehicles`: Vehículos
+- `mercadito.category.real_estate`: Bienes raíces
+- `mercadito.category.electronics`: Electrónica
+- `mercadito.category.services`: Servicios
+- `mercadito.category.fashion`: Moda
+- `mercadito.category.home`: Hogar
+- `mercadito.category.sports`: Deportes
+- `mercadito.category.classifieds`: Clasificados
+- `mercadito.condition.new`: Nuevo
+- `mercadito.condition.like_new`: Como nuevo
+- `mercadito.condition.used`: Usado
+- `mercadito.condition.for_parts`: Para repuestos
+- `mercadito.condition.not_applicable`: No aplica
+- `mercadito.status.published`: Publicada
+- `mercadito.status.sold`: Vendida
+- `mercadito.status.withdrawn`: Retirada
+- `mercadito.status.removed`: Retirada por moderación
+- `mercadito.browse.lead`: Compra y vende en Centroamérica y México. Cada vendedor muestra su reputación antes de que le escribas.
+- `mercadito.browse.search_label`: Buscar en Mercadito
+- `mercadito.browse.search_placeholder`: ¿Qué buscas?
+- `mercadito.browse.category_label`: Categoría
+- `mercadito.browse.place_label`: Lugar
+- `mercadito.browse.all_categories`: Todas las categorías
+- `mercadito.browse.all_places`: Centroamérica y México
+- `mercadito.browse.submit`: Buscar
+- `mercadito.browse.clear`: Quitar filtros
+- `mercadito.browse.publish`: Publicar
+- `mercadito.browse.publish_free`: Publicar gratis
+- `mercadito.browse.place_chosen`: elegido
+- `mercadito.opening.eyebrow`: Mercadito abre sus puestos
+- `mercadito.opening.title`: Pon tu puesto en tres pasos
+- `mercadito.opening.step1`: Toma fotos
+- `mercadito.opening.step1_text`: Con el teléfono, con buena luz. Quitamos la ubicación de cada foto.
+- `mercadito.opening.step2`: Pon precio y lugar
+- `mercadito.opening.step2_text`: Un título claro, el precio y tu ciudad o pueblo.
+- `mercadito.opening.step3`: Compártelo por WhatsApp
+- `mercadito.opening.step3_text`: Tu publicación tiene su enlace: mándalo a tus grupos y contactos.
+- `mercadito.opening.free`: Publicar es gratis: hasta {count} publicaciones activas a la vez.
+- `mercadito.browse.mine`: Mis publicaciones
+- `mercadito.browse.how`: Cómo funciona Mercadito
+- `mercadito.browse.none`: No hay publicaciones que coincidan con tu búsqueda.
+- `mercadito.browse.empty`: Mercadito acaba de abrir y todavía no hay publicaciones. La primera puede ser la tuya.
+- `mercadito.browse.previous`: Anterior
+- `mercadito.browse.next`: Siguiente
+- `mercadito.browse.results_label`: Publicaciones
+- `mercadito.browse.no_photo`: Sin foto
+- `mercadito.listing.published_on`: Publicada el {date}
+- `mercadito.listing.place`: Ubicación
+- `mercadito.listing.category`: Categoría
+- `mercadito.listing.condition`: Estado
+- `mercadito.listing.description`: Descripción
+- `mercadito.listing.seller`: Vendedor
+- `mercadito.listing.member_since`: Miembro desde {date}
+- `mercadito.listing.contact`: Escribir por WhatsApp
+- `mercadito.listing.contact_message`: Hola, vi tu publicación "{title}" en Yavaya: {url}
+- `mercadito.listing.phone_unverified`: Número no verificado por SMS.
+- `mercadito.listing.no_phone`: Este vendedor no ha agregado un número de contacto.
+- `mercadito.listing.sign_in_to_contact`: Inicia sesión para contactar al vendedor
+- `mercadito.listing.photo_alt`: Foto {n} de {total}: {title}
+- `mercadito.listing.own`: Esta es tu publicación.
+- `mercadito.listing.edit`: Editar
+- `mercadito.listing.mark_sold`: Marcar como vendida
+- `mercadito.listing.withdraw`: Retirar publicación
+- `mercadito.listing.banner_sold`: Esta publicación ya se vendió.
+- `mercadito.listing.banner_withdrawn`: Retiraste esta publicación. Nadie más puede verla.
+- `mercadito.listing.banner_removed`: Un moderador retiró esta publicación. Nadie más puede verla.
+- `mercadito.listing.back`: Volver a Mercadito
+- `mercadito.safety.title`: Compra con cuidado
+- `mercadito.safety.one`: Revisa el artículo en persona antes de pagar.
+- `mercadito.safety.two`: Queda en un lugar público y concurrido, de día.
+- `mercadito.safety.three`: Nunca pagues por adelantado a alguien que no conoces.
+- `mercadito.safety.four`: Yavaya no procesa pagos en Mercadito: el trato es entre comprador y vendedor.
+- `mercadito.report.title`: Reportar esta publicación
+- `mercadito.report.category`: Motivo
+- `mercadito.report.details`: Detalles (opcional)
+- `mercadito.report.submit`: Enviar reporte
+- `mercadito.report.limited`: Enviaste muchos reportes en poco tiempo. Intenta más tarde.
+- `mercadito.report.done`: Recibimos tu reporte. Número de caso: {code}.
+- `mercadito.report.category.scam`: Estafa
+- `mercadito.report.category.fraud`: Fraude
+- `mercadito.report.category.fake_listing`: Publicación falsa
+- `mercadito.report.category.spam`: Spam
+- `mercadito.report.category.harassment`: Acoso
+- `mercadito.report.category.other`: Otro
+- `mercadito.publish.title`: Publicar en Mercadito
+- `mercadito.publish.edit_title`: Editar publicación
+- `mercadito.publish.free`: Publicar es gratis. Te quedan {left} de {max} publicaciones activas gratis. Buscar, comprar y escribir a vendedores también es gratis.
+- `mercadito.publish.cost_beyond`: Ya tienes {max} publicaciones activas: cada publicación nueva cuesta {cost} token. Marca como vendidas las que ya vendiste y vuelves a publicar gratis.
+- `mercadito.form.submit_free`: Publicar gratis
+- `mercadito.feature.tag`: Destacado
+- `mercadito.feature.title`: Vende más rápido: destaca tu publicación
+- `mercadito.feature.active`: Destacada hasta el {date}
+- `mercadito.feature.body`: Aparece primero en Mercadito durante {days} días, con la etiqueta «Destacado».
+- `mercadito.feature.buy`: Destacar {days} días por {cost} tokens
+- `mercadito.feature.extend`: Sumar {days} días por {cost} tokens
+- `mercadito.feature.done`: Listo: tu publicación está destacada.
+- `mercadito.feature.no_tokens`: No tienes tokens suficientes para destacar.
+- `mercadito.feature.failed`: No se pudo destacar. Inténtalo de nuevo.
+- `mercadito.feature.balance`: Tienes {balance} tokens; destacar cuesta {cost}.
+- `mercadito.feature.invite`: Consigue tokens gratis invitando amigos
+- `mercadito.feature.get_tokens`: Comprar tokens
+- `mercadito.error.not_featurable`: Solo se puede destacar una publicación activa.
+- `mercadito.publish.cost`: Publicar cuesta {cost} token. Buscar, comprar y escribir a vendedores es gratis.
+- `mercadito.publish.balance`: Tienes {balance} tokens.
+- `mercadito.publish.no_tokens`: No tienes tokens suficientes para publicar.
+- `mercadito.publish.see_tokens`: Ver mis tokens
+- `mercadito.publish.new_seller`: Tu cuenta es nueva: has creado {used} de las {max} publicaciones permitidas en tus primeros {days} días.
+- `mercadito.publish.sign_in`: Inicia sesión para publicar.
+- `mercadito.publish.verify`: Verificar mi correo
+- `mercadito.publish.unavailable`: Publicar no está disponible todavía: el almacenamiento de fotos no está configurado.
+- `mercadito.form.title`: Título
+- `mercadito.form.title_hint`: Qué vendes, en pocas palabras.
+- `mercadito.form.description`: Descripción
+- `mercadito.form.description_hint`: Estado, medidas, qué incluye y cómo entregas.
+- `mercadito.form.price`: Precio
+- `mercadito.form.currency`: Moneda
+- `mercadito.form.category`: Categoría
+- `mercadito.form.condition`: Estado
+- `mercadito.form.location`: Ciudad
+- `mercadito.form.photos`: Fotos
+- `mercadito.form.photos_hint`: Entre {min} y {max} fotos. Antes de guardarlas quitamos sus datos de ubicación y de cámara.
+- `mercadito.form.photo_remove`: Quitar
+- `mercadito.form.choose`: Elige…
+- `mercadito.form.submit_create`: Publicar por {cost} token
+- `mercadito.form.submit_edit`: Guardar cambios
+- `mercadito.form.preparing`: Preparando fotos…
+- `mercadito.form.submitting`: Publicando…
+- `mercadito.form.network_error`: No pudimos conectar. Revisa tu conexión y vuelve a intentarlo.
+- `mercadito.form.needs_js`: Para subir fotos, este formulario necesita JavaScript activado.
+- `mercadito.whatsapp.title`: Tu WhatsApp para compradores
+- `mercadito.whatsapp.hint`: Los compradores con sesión iniciada verán un botón para escribirte. Si es el mismo número que verificaste por SMS, se mostrará como verificado.
+- `mercadito.whatsapp.field`: Número con código de país
+- `mercadito.whatsapp.placeholder`: +505 8888 8888
+- `mercadito.whatsapp.save`: Guardar número
+- `mercadito.whatsapp.remove`: Quitar número
+- `mercadito.whatsapp.current`: Número actual: {phone}
+- `mercadito.whatsapp.missing`: Sin número, tus publicaciones aparecen después de las que sí tienen uno.
+- `mercadito.mine.title`: Mis publicaciones
+- `mercadito.mine.empty`: Todavía no has publicado nada.
+- `mercadito.card.identity_verified`: ✓ Identidad
+- `mercadito.card.email_verified`: ✓ Correo
+- `mercadito.status.reserved`: Reservada
+- `mercadito.listing.banner_reserved`: El vendedor reservó esta publicación para un comprador. Aún puedes escribirle.
+- `mercadito.listing.reserve`: Marcar como reservada
+- `mercadito.listing.unreserve`: Quitar la reserva
+- `mercadito.listing.similar`: Publicaciones parecidas
+- `mercadito.saved.save`: Guardar esta búsqueda
+- `mercadito.saved.title`: Búsquedas guardadas
+- `mercadito.saved.empty`: Aún no guardas ninguna búsqueda. Filtra Mercadito y toca «Guardar esta búsqueda».
+- `mercadito.saved.new`: {count} nuevas
+- `mercadito.saved.none_new`: Nada nuevo
+- `mercadito.saved.open`: Abrir
+- `mercadito.saved.delete`: Quitar
+- `mercadito.saved.ok`: Búsqueda guardada.
+- `mercadito.saved.error.empty`: Elige al menos un filtro para guardar la búsqueda.
+- `mercadito.saved.error.limit`: Puedes guardar hasta {max} búsquedas.
+- `mercadito.saved.limit`: Llegaste al máximo de búsquedas guardadas. Quita una para guardar otra.
+- `mercadito.saved.anything`: Todo
+- `mercadito.listing.phone_verified`: Número verificado por SMS
+- `mercadito.whatsapp.hint_unavailable`: Los compradores con sesión iniciada verán un botón para escribirte. Yavaya todavía no puede verificar números, así que se mostrará como no verificado.
+- `mercadito.mod.title`: Moderación de Mercadito
+- `mercadito.mod.lead`: Casos abiertos: reportes de miembros y señales de la revisión automática.
+- `mercadito.mod.empty`: No hay casos abiertos.
+- `mercadito.mod.reports`: Reportes: {count}
+- `mercadito.mod.flags`: Señales automáticas
+- `mercadito.mod.flag.duplicate_photo`: Foto que ya subió otro vendedor
+- `mercadito.mod.flag.repeated_listing`: Título repetido del mismo vendedor
+- `mercadito.mod.seller`: Vendedor: {name} · {yayId}
+- `mercadito.mod.note`: Nota interna (opcional, nunca visible para el vendedor ni para quien reporta)
+- `mercadito.mod.decision.dismiss`: Sin infracción
+- `mercadito.mod.decision.remove`: Retirar
+- `mercadito.mod.decision.warn`: Retirar y advertir ({delta})
+- `mercadito.mod.decision.fraud`: Fraude confirmado ({delta})
+- `mercadito.mod.priority.low`: Prioridad baja
+- `mercadito.mod.priority.normal`: Prioridad normal
+- `mercadito.mod.priority.high`: Prioridad alta
+- `mercadito.mod.priority.urgent`: Urgente
+
+## moderation
+- `moderation.error.closed`: Este caso ya fue resuelto.
+- `moderation.resolution.removed`: Revisamos el reporte y retiramos la publicación.
+- `moderation.resolution.no_action`: Revisamos el reporte y no encontramos una infracción.
+
+## share
+- `share.whatsapp`: Compartir por WhatsApp
+- `share.own_listing`: Compartir mi publicación por WhatsApp
+- `share.listing`: Mira esto en el Mercadito de Yavaya: {title} {url}
+- `share.job`: Oferta de trabajo en Yavaya: {title} ({pay}) {url}
+- `share.store`: Pide a {name} por YavayaGo: {url}
+- `share.animal`: {name} busca un hogar. Mira su historia en Yavaya: {url}
+- `share.church`: {name} está en el Santuario de Yavaya: {url}
+
+## invite
+- `invite.title`: Invita a tus amigos y gana tokens
+- `invite.subtitle`: Por cada amigo que se una y verifique su correo, tú recibes {inviter} tokens y tu amigo {invitee}. Úsalos para destacar tus publicaciones.
+- `invite.your_link`: Tu enlace de invitación
+- `invite.share_whatsapp`: Compartir por WhatsApp
+- `invite.copy`: Copiar enlace
+- `invite.copied`: Copiado
+- `invite.stat_joined`: Se unieron
+- `invite.stat_verified`: Verificaron su correo
+- `invite.stat_earned`: Tokens ganados
+- `invite.how_title`: Cómo funciona
+- `invite.how_1`: Comparte tu enlace por WhatsApp, Facebook o donde quieras.
+- `invite.how_2`: Tu amigo crea su cuenta desde tu enlace y verifica su correo.
+- `invite.how_3`: Tú recibes {inviter} tokens y tu amigo {invitee}, al instante.
+- `invite.fine_print`: Se premian hasta {max} invitaciones al mes. Las cuentas que parecen ser de la misma persona no cuentan.
+- `invite.use_tokens`: Ver mis publicaciones para destacarlas →
+- `invite.whatsapp_message`: Te invito a Yavaya, el hogar digital de Centroamérica y México: compra, vende, pide ayuda y más, gratis. Crea tu cuenta aquí: {link}
+- `invite.register_banner`: Te invitaron a Yavaya. Al verificar tu correo recibes {invitee} tokens de regalo.
+- `invite.cta`: Consigue tokens gratis: invita a tus amigos
+
+## promotion
+- `promotion.title_post`: Encuentra a la persona indicada más rápido: destaca tu oferta
+- `promotion.body_post`: Tu oferta aparece primero en Trabajo durante {days} días, con la etiqueta «Destacado».
+- `promotion.title_store`: Más pedidos: destaca tu negocio
+- `promotion.body_store`: Tu negocio aparece primero entre los abiertos en YavayaGo durante {days} días, con la etiqueta «Destacado». Seguimos sin cobrar comisión por tus pedidos.
+
+## work
+- `work.pricing.free`: Publicar es gratis: te quedan {left} de {max} ofertas abiertas gratis. Quien busca trabajo nunca paga nada.
+- `work.pricing.paid`: Ya tienes {max} ofertas abiertas: cada oferta nueva cuesta {cost} tokens (tienes {balance}). Cierra las que ya cubriste y vuelves a publicar gratis.
+- `work.pricing.submit_paid`: Publicar por {cost} tokens
+- `work.error.not_featurable`: Solo se puede destacar una oferta abierta.
+- `work.error.conflict`: Esa oferta ya existe. Vuelve a abrir el formulario.
+- `work.back`: Volver a Trabajo
+- `work.board.title`: Trabajo
+- `work.board.lead`: Empleos y proyectos profesionales en tu ciudad o a distancia. Cada oferta dice cuánto paga, y nadie te cobra por postular.
+- `work.board.how`: Cómo funciona
+- `work.board.post`: Publicar una oferta
+- `work.board.create_profile`: Crear mi perfil profesional
+- `work.board.my_profile`: Mi perfil
+- `work.board.mine`: Mis ofertas y postulaciones
+- `work.board.empty`: No hay ofertas abiertas con estos filtros.
+- `work.filter.any_field`: Todas las áreas
+- `work.filter.any_kind`: Empleos y proyectos
+- `work.filter.remote`: Solo a distancia
+- `work.principle.pay_title`: El pago siempre a la vista
+- `work.principle.pay_text`: Quien publica dice cuánto paga. Aquí no hay subastas ni guerras de precios: postulas con tu perfil y un mensaje.
+- `work.principle.fee_title`: Nunca pagues por postular
+- `work.principle.fee_text`: Un trabajo de verdad no te cobra por aplicar, por capacitación ni por materiales. Si te piden dinero, repórtalo.
+- `work.principle.free_now`: Postular es siempre gratis. Cada empleador publica hasta 2 ofertas abiertas gratis.
+- `work.kind.job`: Empleo
+- `work.kind.project`: Proyecto
+- `work.field.technology`: Tecnología
+- `work.field.design`: Diseño
+- `work.field.marketing`: Marketing
+- `work.field.writing`: Redacción y traducción
+- `work.field.finance`: Finanzas y contabilidad
+- `work.field.administration`: Administración
+- `work.field.sales`: Ventas y atención al cliente
+- `work.field.construction`: Construcción e ingeniería
+- `work.field.creative`: Foto, video y arte
+- `work.field.education`: Educación
+- `work.field.health`: Salud
+- `work.field.hospitality`: Turismo y hostelería
+- `work.field.agriculture`: Agricultura
+- `work.field.transport`: Transporte y logística
+- `work.field.other`: Otra área
+- `work.employment.full_time`: Tiempo completo
+- `work.employment.part_time`: Medio tiempo
+- `work.employment.temporary`: Temporal
+- `work.employment.freelance`: Por proyecto
+- `work.place_mode.onsite`: Presencial
+- `work.place_mode.hybrid`: Híbrido
+- `work.place_mode.remote`: A distancia
+- `work.status.open`: Abierta
+- `work.status.closed`: Cerrada
+- `work.status.filled`: Puesto cubierto
+- `work.status.removed`: Retirada por moderación
+- `work.application.status.submitted`: Enviada
+- `work.application.status.shortlisted`: Preseleccionada
+- `work.application.status.declined`: No seleccionada
+- `work.application.status.hired`: Contratada
+- `work.application.status.withdrawn`: Retirada
+- `work.form.title_job`: Publicar un empleo
+- `work.form.title_project`: Publicar un proyecto
+- `work.form.lead`: Di con claridad qué necesitas y cuánto pagas. Las ofertas sin pago claro no se publican.
+- `work.form.kind`: ¿Qué publicas?
+- `work.form.post_title`: Título
+- `work.form.post_title_hint_job`: Por ejemplo: Recepcionista para hotel en el centro
+- `work.form.post_title_hint_project`: Por ejemplo: Logo y tarjetas para una panadería
+- `work.form.field`: Área
+- `work.form.employment`: Tipo de contrato
+- `work.form.place_mode`: Lugar de trabajo
+- `work.form.location`: Ciudad
+- `work.form.company`: Empresa o negocio (opcional)
+- `work.form.company_hint`: Déjalo vacío si contratas a título personal.
+- `work.form.description`: Descripción
+- `work.form.description_hint`: Tareas, horario, cuándo empieza y qué ofreces.
+- `work.form.requirements`: Requisitos (opcional)
+- `work.form.pay`: Pago
+- `work.form.pay_hint`: Obligatorio. Un monto o un rango, con la moneda y el periodo.
+- `work.form.pay_placeholder_job`: Por ejemplo: C$ 12 000 al mes
+- `work.form.pay_placeholder_project`: Por ejemplo: US$ 150 por el proyecto
+- `work.form.whatsapp_hint`: Solo lo ven las personas que preseleccionas o contratas.
+- `work.form.no_fee`: Prometo no cobrar nada a quienes postulen
+- `work.form.no_fee_hint`: Ni por aplicar, ni por capacitación, ni por materiales. Romper esta promesa cierra tu cuenta.
+- `work.form.submit`: Publicar
+- `work.post.published`: Tu oferta está publicada. Te avisaremos cuando alguien postule. Se cierra sola en 30 días.
+- `work.post.by`: Publicado por {name} · reputación {score}
+- `work.post.open_until`: Abierta hasta el {date}
+- `work.post.never_pay`: Nunca pagues por postular. Si te piden dinero, repórtalo.
+- `work.post.applications`: {count} postulaciones
+- `work.post.applications_one`: 1 postulación
+- `work.post.applications_title`: Postulaciones
+- `work.post.no_applications`: Todavía no hay postulaciones.
+- `work.post.shortlist`: Preseleccionar
+- `work.post.decline`: No seleccionar
+- `work.post.hire`: Contratar
+- `work.post.note`: Nota para la persona (opcional)
+- `work.post.close`: Cerrar oferta
+- `work.post.filled`: Este puesto ya está cubierto.
+- `work.post.whatsapp_to_candidate`: Hola, te escribo por tu postulación a «{title}» en Yavaya.
+- `work.post.whatsapp_to_employer`: Hola, te escribo por la oferta «{title}» en Yavaya.
+- `work.post.contact_employer`: Escribir por WhatsApp
+- `work.post.apply_title`: Postular
+- `work.post.apply_lead`: Cuéntale a quien publica por qué eres buena opción. Tu perfil va con tu mensaje.
+- `work.post.message`: Tu mensaje
+- `work.post.message_hint`: Tu experiencia en algo parecido y cuándo podrías empezar.
+- `work.post.apply_submit`: Enviar postulación
+- `work.post.applied`: Tu postulación fue enviada. Te avisaremos cuando haya una respuesta.
+- `work.post.need_profile`: Para postular necesitas un perfil profesional. Toma dos minutos.
+- `work.post.sign_in_to_apply`: Entra a tu cuenta para postular.
+- `work.profile.title`: Mi perfil profesional
+- `work.profile.lead`: Lo ven las personas que publican ofertas cuando postulas, y quienes buscan profesionales en tu área.
+- `work.profile.create`: Guardar perfil
+- `work.profile.saved`: Tu perfil está guardado.
+- `work.profile.headline`: Titular
+- `work.profile.headline_hint`: Por ejemplo: Contadora con experiencia en pequeñas empresas
+- `work.profile.about`: Sobre ti
+- `work.profile.about_hint`: Tu experiencia, lo que sabes hacer bien y cómo trabajas.
+- `work.profile.fields`: Áreas (hasta {max})
+- `work.profile.skills`: Habilidades (opcional)
+- `work.profile.experience`: Años de experiencia (opcional)
+- `work.profile.years`: {count} años de experiencia
+- `work.profile.links`: Enlaces a tu trabajo (hasta {max}, opcional)
+- `work.profile.whatsapp_hint`: Solo lo ven quienes publicaron las ofertas a las que postulas.
+- `work.profile.open_to_work`: Disponible para trabajar
+- `work.profile.open_to_work_hint`: Te avisamos de ofertas nuevas en tus áreas, como mucho una vez al día por área.
+- `work.profile.open_badge`: Disponible
+- `work.mine.posts`: Mis ofertas
+- `work.mine.no_posts`: No has publicado ofertas.
+- `work.mine.applications`: Mis postulaciones
+- `work.mine.no_applications`: No has postulado a ninguna oferta.
+- `work.report.title`: Reportar
+- `work.report.category.scam`: Me pidieron dinero por postular
+- `work.report.category.fraud`: Fraude
+- `work.report.category.fake_listing`: Oferta falsa
+- `work.report.category.harassment`: Acoso
+- `work.report.category.other`: Otro motivo
+- `work.report.error.own`: No puedes reportar tu propia publicación.
+- `work.report.error.category`: Elige un motivo.
+- `work.moderation.title`: Revisión de Trabajo
+- `work.moderation.guidance`: Una oferta que cobra por postular se retira siempre. Suspender un perfil lo oculta y le impide postular.
+- `work.moderation.remove_post`: Retirar la oferta
+- `work.moderation.suspend_profile`: Suspender el perfil
+- `work.moderation.kind.post`: Oferta
+- `work.moderation.kind.profile`: Perfil
+- `work.error.whatsapp`: Revisa el número de WhatsApp, con el código de país.
+- `work.error.verify_email`: Confirma tu correo antes de usar Trabajo.
+- `work.error.account_restricted`: Tu cuenta no puede usar Trabajo ahora.
+- `work.error.headline`: Escribe un titular un poco más claro.
+- `work.error.about`: Cuéntanos un poco más sobre ti.
+- `work.error.field`: Elige un área de la lista.
+- `work.error.fields`: Elige al menos un área, sin pasar del máximo.
+- `work.error.skills`: Las habilidades son demasiado largas.
+- `work.error.experience`: Revisa los años de experiencia.
+- `work.error.link`: Los enlaces deben empezar con https://
+- `work.error.links`: Hay demasiados enlaces.
+- `work.error.location`: Elige una ciudad.
+- `work.error.suspended`: Este perfil está suspendido.
+- `work.error.kind`: Elige si es un empleo o un proyecto.
+- `work.error.employment`: Elige el tipo de contrato. Un proyecto es siempre por proyecto.
+- `work.error.title`: Escribe un título un poco más claro.
+- `work.error.description`: Describe la oferta con un poco más de detalle.
+- `work.error.requirements`: Los requisitos son demasiado largos.
+- `work.error.pay`: Indica cuánto pagas.
+- `work.error.company`: El nombre de la empresa es demasiado largo.
+- `work.error.place_mode`: Elige el lugar de trabajo.
+- `work.error.no_fee`: Para publicar tienes que prometer no cobrar a quienes postulen.
+- `work.error.too_many_posts`: Ya tienes el máximo de ofertas abiertas. Cierra alguna para publicar otra.
+- `work.error.closed`: Esta oferta ya está cerrada.
+- `work.error.need_profile`: Crea tu perfil profesional para postular.
+- `work.error.own`: No puedes postular a tu propia oferta.
+- `work.error.too_many_applications`: Ya tienes el máximo de postulaciones abiertas.
+- `work.error.already_applied`: Ya postulaste a esta oferta.
+- `work.error.message`: Tu mensaje es demasiado corto o demasiado largo.
+- `work.error.not_open`: Esta postulación ya no se puede cambiar.
+- `work.error.review_note`: Escribe una nota que explique la decisión.
+- `work.error.decision`: Esa decisión no corresponde a este reporte.
+- `work.error.rate_limited`: Vas muy rápido. Espera un momento e intenta de nuevo.
+- `work.employer.title`: Empleador verificado
+- `work.employer.lead`: Antes de publicar tu primera oferta, una persona de Yavaya revisa quién eres. Así quienes buscan trabajo saben que la oferta es real y que nadie usa el nombre de otra empresa.
+- `work.employer.gate_title`: Primero, verifica quién contrata
+- `work.employer.gate.none`: Para publicar ofertas necesitas ser empleador verificado. Cuéntanos quién eres; una persona lo revisa antes de tu primera publicación.
+- `work.employer.gate.pending`: Recibimos tu solicitud y una persona la está revisando. Te avisaremos en cuanto esté lista.
+- `work.employer.gate.rejected`: Tu solicitud no fue aprobada. Revisa la nota del revisor, corrige tus datos y envíala otra vez.
+- `work.employer.gate.suspended`: Tu cuenta de empleador está suspendida, así que no puedes publicar ofertas.
+- `work.employer.apply`: Solicitar verificación
+- `work.employer.edit`: Corregir y enviar de nuevo
+- `work.employer.view`: Ver mi solicitud
+- `work.employer.how_title`: Cómo funciona
+- `work.employer.how_check`: Una persona de Yavaya revisa tus datos: el número de registro de una empresa en el registro público, y te escribe por WhatsApp si hace falta.
+- `work.employer.how_name`: Una empresa publica siempre con el nombre que verificamos, nunca con otro.
+- `work.employer.how_change`: Si cambias el nombre, el tipo o el registro, vuelve a revisión. Cambiar la descripción, la web o el WhatsApp no.
+- `work.employer.kind.person`: Persona
+- `work.employer.kind.business`: Empresa o negocio
+- `work.employer.name_business`: Nombre de la empresa o negocio
+- `work.employer.name_business_hint`: Tal como aparece en su registro.
+- `work.employer.name_person`: Tu nombre completo
+- `work.employer.name_person_hint`: Tal como aparece en tu cédula o documento. No se publica: tus ofertas muestran tu nombre de Yavaya.
+- `work.employer.registration`: Número de registro
+- `work.employer.registration_hint`: El número de contribuyente o de registro mercantil que un revisor pueda consultar.
+- `work.employer.about`: Descripción
+- `work.employer.about_business_hint`: Qué hace la empresa, dónde está y qué tipo de personas contrata.
+- `work.employer.about_person_hint`: A qué te dedicas y para qué sueles contratar: tu casa, tu finca, un proyecto propio.
+- `work.employer.website`: Sitio web o red social (opcional)
+- `work.employer.whatsapp_hint`: Solo lo ve el equipo que revisa tu solicitud. Cada oferta tiene su propio contacto.
+- `work.employer.submit`: Enviar a revisión
+- `work.employer.save`: Guardar
+- `work.employer.saved`: Guardado.
+- `work.employer.saved_review`: Guardado. Como cambiaste quién eres, una persona lo revisará otra vez antes de que puedas publicar.
+- `work.employer.status.pending`: En revisión.
+- `work.employer.status.approved`: Verificado.
+- `work.employer.status.rejected`: No aprobado.
+- `work.employer.status.suspended`: Suspendido.
+- `work.employer.status_text.pending`: Una persona está revisando tus datos. Te avisaremos.
+- `work.employer.status_text.approved`: Ya puedes publicar ofertas. Tus ofertas muestran que eres empleador verificado.
+- `work.employer.status_text.rejected`: Corrige tus datos y envíalos otra vez.
+- `work.employer.status_text.suspended`: No puedes publicar ofertas. Si crees que es un error, escríbenos.
+- `work.employer.review_note`: Nota del revisor: {note}
+- `work.employer.posts_as_business`: Publicas como {name}, el nombre verificado.
+- `work.employer.posts_as_person`: Publicas como persona verificada, con tu nombre de Yavaya.
+- `work.employer.verified_business`: Empresa verificada
+- `work.employer.verified_person`: Empleador verificado
+- `work.employer.review_title`: Empleadores por verificar ({count})
+- `work.employer.review_guidance`: Para una empresa, busca el número de registro en el registro público del país y comprueba que el nombre coincide. Para una persona, escríbele por WhatsApp y pregunta qué va a contratar. Ante la duda, no apruebes: una oferta falsa le cuesta caro a quien busca trabajo.
+- `work.employer.review_empty`: No hay empleadores esperando.
+- `work.employer.review_note_label`: Nota (obligatoria si no apruebas)
+- `work.employer.account`: cuenta de {name} ({yay}) desde el {date}
+- `work.employer.approve`: Aprobar
+- `work.employer.reject`: No aprobar
+- `work.employer.approved_list`: Empleadores verificados ({count})
+- `work.employer.suspend_reason`: Motivo de la suspensión
+- `work.employer.suspend`: Suspender
+- `work.error.employer_kind`: Elige si eres una persona o una empresa.
+- `work.error.employer_name`: Revisa el nombre.
+- `work.error.registration`: Una empresa necesita su número de registro.
+- `work.error.employer_about`: Cuéntanos un poco más.
+- `work.error.employer_suspended`: Tu cuenta de empleador está suspendida.
+- `work.error.employer_not_approved`: Este empleador no está verificado.
+- `work.error.employer_not_pending`: Esta solicitud ya fue revisada.
+- `work.error.employer_needed`: Para publicar necesitas ser empleador verificado.
+- `work.error.employer_pending`: Tu solicitud de empleador todavía está en revisión.
+- `work.error.employer_not_allowed`: Tu cuenta de empleador no puede publicar ahora.
+- `work.principle.verified_title`: Empleadores verificados
+- `work.principle.verified_text`: Una persona de Yavaya revisa a cada empleador antes de su primera oferta, y una empresa publica siempre con su nombre verificado.
+
+## profile
+- `profile.eyebrow`: Perfil de miembro
+- `profile.since`: Miembro desde {date}
+- `profile.medals`: Insignias
+- `profile.medals_lead`: Cada insignia se gana con evidencia real. Ninguna se compra ni se asigna a mano.
+- `profile.medal.earned`: Obtenida
+- `profile.medal.not_yet`: Aún no
+- `profile.listings`: Publicaciones en Mercadito
+- `profile.no_listings`: Este miembro no tiene publicaciones activas.
+- `profile.view`: Ver perfil
+- `profile.mine`: Ver mi perfil público
+- `profile.team`: Equipo Yavaya
+
+## community
+- `community.square.title`: La plaza
+- `community.square.lead`: Pide una mano, ofrécela, o comparte lo que llevas. Aquí se viene a sumar.
+- `community.square.members_only`: La plaza es solo para miembros: muchas publicaciones hablan de momentos difíciles y no deben quedar a la vista de todos.
+- `community.square.sign_in`: Entrar para ver la plaza
+- `community.square.new`: Publicar
+- `community.square.all`: Todo
+- `community.square.empty`: La plaza está tranquila. La primera publicación puede ser la tuya.
+- `community.square.how`: Cómo funciona Comunidad
+- `community.kind.help_request`: Necesito ayuda
+- `community.kind.help_offer`: Ofrezco ayuda
+- `community.kind.prayer`: Muro de oración
+- `community.kind.family_support`: Apoyo familiar
+- `community.post.anonymous_author`: Un miembro de Yavaya
+- `community.post.you`: Tú
+- `community.post.resolved`: Resuelto
+- `community.post.withdrawn`: Retiraste esta publicación. Nadie más la ve.
+- `community.post.removed`: Un moderador retiró esta publicación.
+- `community.post.replies`: {count} respuestas
+- `community.post.supporters`: {count} te acompañan
+- `community.post.support`: 🙏 Te acompaño
+- `community.post.supported`: 🙏 Acompañando
+- `community.post.reply_label`: Responder
+- `community.post.reply_submit`: Enviar respuesta
+- `community.post.closed_note`: Esta publicación está resuelta y ya no recibe respuestas.
+- `community.post.mark_resolved`: Ya recibí ayuda — marcar como resuelta
+- `community.post.withdraw`: Retirar publicación
+- `community.post.back`: Volver a la plaza
+- `community.post.report`: Reportar
+- `community.post.report_reply`: Reportar esta respuesta
+- `community.post.reported`: Recibimos tu reporte. Número de caso: {code}.
+- `community.post.no_replies`: Aún no hay respuestas.
+- `community.form.title`: Publicar en la plaza
+- `community.form.kind`: ¿Qué quieres publicar?
+- `community.form.headline`: Título
+- `community.form.body`: Cuéntanos
+- `community.form.body_hint`: Lo necesario para que alguien pueda ayudar. No publiques direcciones exactas ni datos de salud de otras personas.
+- `community.form.location`: Ciudad
+- `community.form.location_optional`: Ciudad (opcional para el muro de oración)
+- `community.form.anonymous`: No mostrar mi nombre a otros miembros
+- `community.form.anonymous_hint`: Solo en oración y apoyo familiar. Los moderadores siempre pueden ver quién publica.
+- `community.form.submit`: Publicar gratis
+- `community.form.free`: Publicar en Comunidad es gratis.
+- `community.error.kind`: Elige qué quieres publicar.
+- `community.error.title`: El título debe tener entre {min} y {max} caracteres.
+- `community.error.body`: El texto debe tener entre {min} y {max} caracteres.
+- `community.error.reply`: La respuesta debe tener entre {min} y {max} caracteres.
+- `community.error.location`: Elige una ciudad de la lista.
+- `community.error.verify_email`: Verifica tu correo antes de publicar.
+- `community.error.account_restricted`: Tu cuenta no puede publicar en este momento.
+- `community.error.closed`: Esta publicación ya no recibe respuestas.
+- `community.error.rate_limited`: Estás respondiendo muy seguido. Intenta en un rato.
+- `community.report.error.own`: No puedes reportar tu propia publicación.
+- `community.report.category.harassment`: Acoso u ofensa
+- `community.report.category.scam`: Estafa
+- `community.report.category.spam`: Spam
+- `community.report.category.fraud`: Engaño
+- `community.report.category.other`: Otro
+- `community.mod.title`: Moderación de Comunidad
+- `community.mod.lead`: Reportes de miembros sobre publicaciones y respuestas de la plaza.
+- `community.mod.empty`: No hay casos abiertos.
+- `community.mod.reported_reply`: Respuesta reportada:
+- `community.mod.decision.dismiss`: Sin infracción
+- `community.mod.decision.remove_post`: Retirar publicación
+- `community.mod.decision.remove_replies`: Retirar solo la respuesta
+- `community.mod.decision.warn`: Retirar y advertir ({delta})
+- `community.post.replies_one`: 1 respuesta
+- `community.post.supporters_one`: 1 te acompaña
+
+## notifications
+- `notifications.title`: Avisos
+- `notifications.bell_unread`: Avisos: {count} sin leer
+- `notifications.mark_all`: Marcar todo como leído
+- `notifications.lead`: Lo que pasó con tus publicaciones, tus iglesias y tus búsquedas.
+- `notifications.settings`: Elegir qué avisos recibir
+- `notifications.empty`: Todavía no tienes avisos. Cuando alguien responda o apoye lo que publicas, lo verás aquí.
+- `notifications.unread`: Sin leer
+
+## notify
+- `notify.community.reply`: Alguien respondió a «{title}»
+- `notify.community.support`: Alguien apoyó «{title}»
+- `notify.mercadito.saved_match`: Hay un anuncio nuevo que coincide con tu búsqueda guardada
+- `notify.moderation.post_removed`: Retiramos una de tus publicaciones en Comunidad por incumplir las normas
+- `notify.moderation.warned`: Recibiste un aviso de moderación por una publicación en Comunidad
+- `notify.moderation.listing_removed`: Retiramos tu anuncio «{title}»
+- `notify.moderation.listing_removed_warned`: Retiramos tu anuncio «{title}» y recibiste un aviso
+- `notify.moderation.words_removed`: Retiramos una palabra publicada por {church}
+- `notify.sanctuary.church_approved`: {church} fue verificada y ya es visible en el Santuario
+- `notify.sanctuary.church_rejected`: La solicitud de {church} no fue aprobada
+- `notify.sanctuary.church_suspended`: {church} fue suspendida en el Santuario
+- `notify.sanctuary.word`: {church} compartió la palabra de hoy: «{title}»
+- `notify.services.urgent`: Pedido urgente cerca de ti: «{title}»
+- `notify.services.new_requests`: Hay pedidos nuevos en tus áreas de servicio
+- `notify.services.response`: Alguien respondió a tu pedido «{title}»
+- `notify.services.accepted`: Te eligieron para «{title}»
+- `notify.services.reviewed`: Recibiste una calificación de {stars} estrellas
+- `notify.services.licence_verified`: Verificamos tu licencia profesional
+- `notify.services.licence_rejected`: No pudimos confirmar tu licencia profesional
+- `notify.services.request_removed`: Retiramos uno de tus pedidos de Servicios
+- `notify.services.provider_suspended`: Tu perfil de servicios fue suspendido
+- `notify.animals.rescuer_approved`: Eres rescatista verificado: ya puedes publicar animales
+- `notify.animals.rescuer_rejected`: Tu solicitud de rescatista no fue aprobada
+- `notify.animals.rescuer_suspended`: Tu cuenta de rescatista fue suspendida
+- `notify.animals.listing_closed`: {name} ya no está disponible para adopción
+- `notify.animals.application`: Nueva solicitud para adoptar a {name}
+- `notify.animals.application_approved`: ¡Te eligieron para adoptar a {name}!
+- `notify.animals.application_rejected`: Tu solicitud para adoptar a {name} no fue elegida
+- `notify.animals.adopted`: {name} ya es parte de tu familia. ¡Gracias por adoptar!
+- `notify.animals.found_home`: {name} encontró hogar con otra familia
+- `notify.animals.application_withdrawn`: Se retiró la solicitud elegida para {name}
+- `notify.animals.follow_up_adopter`: ¿Cómo está {name}? Cuéntale a quien lo rescató
+- `notify.animals.follow_up_rescuer`: Ya pasó un mes desde la adopción de {name}: pregunta cómo está
+- `notify.animals.listing_removed`: Retiramos la publicación de {name}
+- `notify.animals.possible_match`: Encontraron un animal parecido al tuyo en tu ciudad
+- `notify.animals.lost_expired`: Tu publicación de perdidos y encontrados se cerró después de 60 días
+- `notify.animals.lost_removed`: Retiramos una de tus publicaciones de perdidos y encontrados
+- `notify.work.new_posts`: Hay ofertas nuevas en tu área
+- `notify.work.post_closed`: Se cerró la oferta «{title}»
+- `notify.work.post_expired`: Tu oferta «{title}» se cerró después de 30 días
+- `notify.work.application`: Nueva postulación a «{title}»
+- `notify.work.application_shortlisted`: Te preseleccionaron para «{title}»
+- `notify.work.application_declined`: No te seleccionaron para «{title}»
+- `notify.work.application_hired`: ¡Te contrataron para «{title}»!
+- `notify.work.post_removed`: Retiramos una de tus ofertas de Trabajo
+- `notify.work.profile_suspended`: Suspendimos tu perfil de Trabajo
+- `notify.work.employer_approved`: Ya eres empleador verificado: puedes publicar ofertas
+- `notify.work.employer_rejected`: Tu solicitud de empleador no fue aprobada
+- `notify.work.employer_suspended`: Suspendimos tu cuenta de empleador
+- `notify.staff.appointed.community_manager`: 🌸 {name}, ¡bienvenida al equipo! Desde hoy eres la Community Manager de Yavaya ✨
+- `notify.staff.appointed.moderator`: Te nombraron en el equipo de moderación de Yavaya
+- `notify.staff.appointed.district_reviewer`: Te nombraron en el equipo de revisión de distritos de Yavaya
+- `notify.staff.appointed.safe_space_guardian`: Te nombraron guardiana del Espacio Violeta
+- `notify.staff.appointed.support`: Te nombraron en el equipo de soporte de Yavaya
+- `notify.go.trip_available.ride`: Nuevo pedido de viaje cerca (#{code})
+- `notify.go.trip_available.parcel`: Nuevo paquete para llevar cerca (#{code})
+- `notify.go.trip_available.errand`: Nuevo mandado cerca (#{code})
+- `notify.go.trip_available.assist`: Alguien necesita ayuda cerca (#{code})
+- `notify.go.trip_offer`: {driver} te hizo una oferta para #{code}
+- `notify.go.trip_chosen`: ¡Te eligieron para #{code}! Ve al punto de recogida
+- `notify.go.trip_arrived`: Tu conductor llegó (#{code})
+- `notify.go.trip_started`: Tu viaje o mandado #{code} está en camino
+- `notify.go.trip_completed`: #{code} terminado. ¡Gracias por usar YavayaGo!
+- `notify.go.trip_cancelled`: El cliente canceló #{code}
+- `notify.go.trip_dropped`: Tu conductor no pudo ir; avisamos a otros conductores (#{code})
+- `notify.go.trip_expired`: Nadie fue elegido a tiempo para #{code}
+- `notify.go.order_new`: Pedido nuevo {code} de {name}
+- `notify.go.order_accepted`: {store} aceptó tu pedido {code}
+- `notify.go.order_rejected`: {store} no pudo aceptar tu pedido {code}
+- `notify.go.order_cancelled`: Se canceló el pedido {code}
+- `notify.go.order_no_answer`: El negocio no respondió: cancelamos el pedido {code}
+- `notify.go.order_available`: Pedido para llevar en {store}
+- `notify.go.order_ready`: El pedido {code} está listo en {store}
+- `notify.go.driver_assigned`: {driver} lleva tu pedido {code}
+- `notify.go.driver_assigned_store`: {driver} recogerá el pedido {code}
+- `notify.go.driver_released`: Buscamos otro repartidor para tu pedido {code}
+- `notify.go.order_on_the_way`: Tu pedido {code} va en camino
+- `notify.go.order_delivered`: Pedido {code} entregado
+- `notify.go.store_approved`: Tu negocio en YavayaGo fue aprobado
+- `notify.go.store_rejected`: Tu negocio en YavayaGo no fue aprobado
+- `notify.go.store_suspended`: Tu negocio en YavayaGo fue suspendido
+- `notify.go.driver_approved`: Ya puedes repartir con YavayaGo
+- `notify.go.driver_rejected`: Tu solicitud de repartidor no fue aprobada
+- `notify.go.driver_suspended`: Tu cuenta de repartidor fue suspendida
+- `notify.daily.light`: Ya está aquí la luz de hoy
+
+## sanctuary
+- `sanctuary.prayer.title`: Muro de oración
+- `sanctuary.prayer.lead`: Comparte una petición y otros oran contigo. Puedes publicar sin mostrar tu nombre.
+- `sanctuary.prayer.new`: Pedir oración
+- `sanctuary.prayer.empty`: Todavía no hay peticiones. La primera puede ser la tuya.
+- `sanctuary.prayer.members_only`: El muro de oración es solo para miembros: cada petición es algo personal y no se muestra a buscadores ni a visitantes.
+- `sanctuary.prayer.discreet`: Las peticiones se moderan igual que en Comunidad. «Estoy contigo» acompaña sin decir quién eres.
+- `sanctuary.prayer.back`: Volver al muro de oración
+- `sanctuary.prayer.form_title`: Pedir oración
+- `sanctuary.form.leader`: Soy el pastor, sacerdote o responsable de esta iglesia.
+- `sanctuary.form.leader_hint`: Yavaya lo confirma antes de publicarla, por ejemplo escribiendo al número de la iglesia.
+- `sanctuary.error.leader`: Solo quien guía la iglesia puede registrarla. Marca la casilla para confirmarlo.
+- `sanctuary.eyebrow`: Comunidad · Santuario
+- `sanctuary.title`: Santuario
+- `sanctuary.lead`: El distrito de la fe: la oración y la palabra del día que comparten las iglesias, sus horarios y un lugar para encontrarte con la tuya.
+- `sanctuary.honest`: Yavaya no escribe estas palabras. Cada oración la firma una iglesia que una persona de Yavaya revisó.
+- `sanctuary.daily.title`: La luz de hoy
+- `sanctuary.daily.kind.prayer`: Oración
+- `sanctuary.daily.kind.saying`: Refrán
+- `sanctuary.daily.kind.quote`: Frase
+- `sanctuary.daily.kind.blessing`: Bendición
+- `sanctuary.daily.note`: De Yavaya, para todos, crean en lo que crean. Una nueva cada mañana a las 8.
+- `sanctuary.daily.choose`: Elegir qué quiero recibir
+- `sanctuary.daily.choose_hint`: Si no marcas ninguna, recibes todas: así hay una distinta cada día del año.
+- `sanctuary.daily.save`: Guardar
+- `sanctuary.daily.saved`: Listo. Desde ahora verás solo lo que marcaste.
+- `sanctuary.daily.sign_in`: Inicia sesión para elegir entre oraciones, refranes, frases y bendiciones.
+- `sanctuary.today.title`: Oración y palabra del día
+- `sanctuary.today.empty`: Todavía ninguna iglesia ha compartido una palabra para hoy. Cuando lo haga, aparecerá aquí.
+- `sanctuary.today.badge`: Hoy
+- `sanctuary.today.yours`: De las iglesias que sigues
+- `sanctuary.from`: {church} · {place}
+- `sanctuary.read`: Leer completa
+- `sanctuary.mine.title`: Tus iglesias
+- `sanctuary.mine.none`: Sigue a tu iglesia para ver aquí sus horarios y su palabra de cada día.
+- `sanctuary.next`: Próximo servicio: {when}
+- `sanctuary.when.today`: hoy a las {time}
+- `sanctuary.when.tomorrow`: mañana a las {time}
+- `sanctuary.when.day`: el {day} a las {time}
+- `sanctuary.local_time`: Hora local de la iglesia.
+- `sanctuary.weekday.0`: domingo
+- `sanctuary.weekday.1`: lunes
+- `sanctuary.weekday.2`: martes
+- `sanctuary.weekday.3`: miércoles
+- `sanctuary.weekday.4`: jueves
+- `sanctuary.weekday.5`: viernes
+- `sanctuary.weekday.6`: sábado
+- `sanctuary.churches.title`: Iglesias
+- `sanctuary.churches.lead`: Cada iglesia de esta lista fue revisada por una persona de Yavaya antes de aparecer.
+- `sanctuary.churches.empty`: Todavía no hay iglesias aprobadas aquí. Si guías una congregación, la tuya puede ser la primera.
+- `sanctuary.churches.search`: Buscar por nombre
+- `sanctuary.churches.place`: Lugar
+- `sanctuary.churches.any_place`: Centroamérica y México
+- `sanctuary.churches.filter`: Buscar
+- `sanctuary.register.cta`: Registrar mi iglesia
+- `sanctuary.manage.cta`: Mis iglesias
+- `sanctuary.prayer_wall.title`: ¿Necesitas oración?
+- `sanctuary.prayer_wall.text`: Para pedir oración por algo tuyo, comparte tu petición en el muro de oración. Allí otros miembros te acompañan.
+- `sanctuary.prayer_wall.cta`: Ir al muro de oración
+- `sanctuary.verified`: Revisada por Yavaya
+- `sanctuary.church.back`: Volver al Santuario
+- `sanctuary.church.services`: Horarios
+- `sanctuary.church.no_services`: Esta iglesia todavía no ha publicado horarios.
+- `sanctuary.church.watch`: Ver la transmisión
+- `sanctuary.church.watch_note`: Se abre en otro sitio, fuera de Yavaya.
+- `sanctuary.church.whatsapp`: Escribir por WhatsApp
+- `sanctuary.church.whatsapp_message`: Hola, les escribo desde el Santuario de Yavaya: {url}
+- `sanctuary.church.sign_in`: Inicia sesión para seguir a esta iglesia o escribirle
+- `sanctuary.church.follow`: Seguir esta iglesia
+- `sanctuary.church.unfollow`: Dejar de seguir
+- `sanctuary.church.followers_one`: {count} persona la sigue
+- `sanctuary.church.followers`: {count} personas la siguen
+- `sanctuary.church.words`: Su palabra
+- `sanctuary.church.no_words`: Esta iglesia todavía no ha compartido una palabra.
+- `sanctuary.church.address`: Dirección
+- `sanctuary.church.manage`: Administrar mi iglesia
+- `sanctuary.status.pending`: En revisión
+- `sanctuary.status.approved`: Aprobada
+- `sanctuary.status.rejected`: No aprobada
+- `sanctuary.status.suspended`: Suspendida
+- `sanctuary.status.pending_text`: Una persona de Yavaya la revisará antes de que aparezca. Mientras tanto solo tú puedes verla.
+- `sanctuary.status.rejected_text`: No fue aprobada. Motivo: {note} Puedes corregirla y se revisará de nuevo.
+- `sanctuary.status.suspended_text`: Fue suspendida por un revisor. Motivo: {note}
+- `sanctuary.devotional.for`: Para el {date}
+- `sanctuary.devotional.signed`: Compartida por {church}
+- `sanctuary.report.title`: Reportar esta iglesia
+- `sanctuary.report.title_word`: Reportar esta palabra
+- `sanctuary.report.category`: Motivo
+- `sanctuary.report.category.fraud`: Engaño o cobro indebido
+- `sanctuary.report.category.scam`: Estafa
+- `sanctuary.report.category.harassment`: Acoso u ofensa
+- `sanctuary.report.category.spam`: Spam
+- `sanctuary.report.category.other`: Otro
+- `sanctuary.report.description`: Qué pasó (opcional)
+- `sanctuary.report.submit`: Enviar reporte
+- `sanctuary.report.done`: Gracias. Tu reporte ({code}) llegó a los revisores.
+- `sanctuary.report.error.own`: No puedes reportar tu propia iglesia.
+- `sanctuary.form.title_new`: Registrar mi iglesia
+- `sanctuary.form.title_edit`: Editar mi iglesia
+- `sanctuary.form.intro`: Registrar una iglesia es gratis y lo hace quien la guía: su pastor, sacerdote o responsable. Antes de aparecer, una persona de Yavaya la revisa y puede contactarte para confirmar los datos.
+- `sanctuary.form.name`: Nombre de la iglesia
+- `sanctuary.form.denomination`: Denominación o tradición (opcional)
+- `sanctuary.form.denomination_hint`: Como ustedes se describen; por ejemplo: católica, evangélica, bautista.
+- `sanctuary.form.description`: Sobre la iglesia
+- `sanctuary.form.description_hint`: Quiénes son y cómo es un servicio. Entre {min} y {max} caracteres.
+- `sanctuary.form.place`: Ciudad
+- `sanctuary.form.address`: Dirección (opcional)
+- `sanctuary.form.whatsapp`: WhatsApp de la iglesia (opcional)
+- `sanctuary.form.whatsapp_hint`: Con código de país. Los miembros con sesión iniciada verán un botón para escribir.
+- `sanctuary.form.stream`: Enlace de transmisión (opcional)
+- `sanctuary.form.stream_hint`: YouTube, Facebook u otro sitio, empezando con https://
+- `sanctuary.form.services`: Horarios de servicio
+- `sanctuary.form.services_hint`: Deja en blanco las filas que no uses. La hora es la hora local de la iglesia.
+- `sanctuary.form.service_day`: Día
+- `sanctuary.form.service_time`: Hora
+- `sanctuary.form.service_title`: Nombre del servicio
+- `sanctuary.form.service_title_ph`: Culto dominical
+- `sanctuary.form.submit_new`: Enviar a revisión
+- `sanctuary.form.submit_edit`: Guardar cambios
+- `sanctuary.form.rereview_note`: Si cambias el nombre, la denominación, la ciudad, el WhatsApp o el enlace de transmisión, la iglesia vuelve a revisión antes de aparecer de nuevo.
+- `sanctuary.form.saved`: Cambios guardados.
+- `sanctuary.form.saved_review`: Cambios guardados. La iglesia volvió a revisión.
+- `sanctuary.form.submitted`: Recibimos tu iglesia. Aquí verás cuándo esté revisada.
+- `sanctuary.manage.title`: Mis iglesias
+- `sanctuary.manage.empty`: Todavía no registraste una iglesia.
+- `sanctuary.manage.edit`: Editar datos y horarios
+- `sanctuary.manage.view`: Ver página
+- `sanctuary.manage.publish_title`: Compartir la palabra del día
+- `sanctuary.manage.publish_intro`: Escribe una oración o una palabra de guía para un día. Aparece en el Santuario cuando llegue ese día, firmada con el nombre de tu iglesia. Hasta {limit} por día.
+- `sanctuary.manage.date`: Para el día
+- `sanctuary.manage.word_title`: Título
+- `sanctuary.manage.scripture`: Cita bíblica (opcional)
+- `sanctuary.manage.scripture_ph`: Salmo 23:1-4
+- `sanctuary.manage.body`: Oración o palabra
+- `sanctuary.manage.publish`: Publicar
+- `sanctuary.manage.published`: Publicada. Aparecerá en el Santuario el día que elegiste.
+- `sanctuary.manage.words`: Palabras publicadas
+- `sanctuary.manage.withdraw`: Retirar
+- `sanctuary.manage.withdrawn`: Retirada.
+- `sanctuary.manage.no_words`: Todavía no publicaste ninguna palabra.
+- `sanctuary.manage.only_approved`: Podrás compartir la palabra del día cuando la iglesia esté aprobada.
+- `sanctuary.error.name`: El nombre debe tener entre 3 y 120 caracteres.
+- `sanctuary.error.denomination`: La denominación puede tener hasta 80 caracteres.
+- `sanctuary.error.description`: La descripción debe tener entre 20 y 2000 caracteres.
+- `sanctuary.error.location`: Elige una ciudad de la lista.
+- `sanctuary.error.address`: La dirección puede tener hasta 200 caracteres.
+- `sanctuary.error.whatsapp`: Ese número no parece válido. Escríbelo con el código de país.
+- `sanctuary.error.stream`: El enlace de transmisión debe empezar con https:// y ser una dirección web completa.
+- `sanctuary.error.service_time`: Una hora de servicio no es válida.
+- `sanctuary.error.service_title`: Cada servicio necesita un nombre de hasta 60 caracteres.
+- `sanctuary.error.too_many_services`: Son demasiados horarios para una iglesia.
+- `sanctuary.error.church_limit`: Puedes registrar hasta {limit} iglesias.
+- `sanctuary.error.verify_email`: Verifica tu correo antes de registrar una iglesia.
+- `sanctuary.error.account_restricted`: Tu cuenta no puede hacer esto en este momento.
+- `sanctuary.error.suspended`: Esta iglesia está suspendida y no se puede editar.
+- `sanctuary.error.not_approved`: La iglesia todavía no está aprobada.
+- `sanctuary.error.not_pending`: Esta iglesia ya no está esperando revisión.
+- `sanctuary.error.review_note`: Escribe el motivo: la persona responsable lo verá.
+- `sanctuary.error.date`: Elige una fecha.
+- `sanctuary.error.date_range`: La fecha puede ser desde {back} día atrás hasta {ahead} días adelante.
+- `sanctuary.error.devotional_title`: El título debe tener entre 3 y 120 caracteres.
+- `sanctuary.error.scripture`: La cita puede tener hasta 80 caracteres.
+- `sanctuary.error.devotional_body`: La oración o palabra debe tener entre 20 y 4000 caracteres.
+- `sanctuary.error.devotional_limit`: Esta iglesia ya publicó {limit} palabras para ese día.
+- `sanctuary.error.rate_limited`: Demasiados intentos. Espera un rato.
+- `sanctuary.review.title`: Revisión · Santuario
+- `sanctuary.review.pending`: Iglesias por revisar
+- `sanctuary.review.none`: No hay iglesias esperando revisión.
+- `sanctuary.review.reports`: Reportes
+- `sanctuary.review.no_reports`: No hay reportes abiertos.
+- `sanctuary.review.owner`: Registrada por {name} ({yayId}) · {email}
+- `sanctuary.review.guidance`: Antes de aprobar, confirma que la iglesia existe y que quien la registró la representa; por ejemplo, escribiendo al número o revisando su transmisión.
+- `sanctuary.review.note`: Motivo (obligatorio para rechazar o suspender; lo verá la persona responsable)
+- `sanctuary.review.approve`: Aprobar
+- `sanctuary.review.reject`: Rechazar
+- `sanctuary.review.dismiss`: Descartar el reporte
+- `sanctuary.review.remove_words`: Retirar las palabras reportadas
+- `sanctuary.review.suspend_church`: Suspender la iglesia
+- `sanctuary.review.reported_word`: Palabra reportada: {title}
+- `sanctuary.review.done`: Hecho.
+
+## services
+- `services.category.home_repairs`: Hogar y reparaciones
+- `services.category.home_repairs.examples`: techos, plomería, electricidad, cerrajería, pintura
+- `services.category.cleaning_garden`: Limpieza y jardín
+- `services.category.cleaning_garden.examples`: limpieza de casas, jardinería, fumigación
+- `services.category.vehicles`: Vehículos
+- `services.category.vehicles.examples`: mecánica, llantas, electricidad automotriz, grúa
+- `services.category.technology`: Tecnología
+- `services.category.technology.examples`: celulares, computadoras, internet, cámaras
+- `services.category.mental_health`: Salud mental
+- `services.category.mental_health.examples`: psicología, terapia de pareja y de familia, orientación
+- `services.category.health_care`: Salud y cuidado
+- `services.category.health_care.examples`: enfermería a domicilio, fisioterapia, adultos mayores
+- `services.category.children_lessons`: Niños y clases
+- `services.category.children_lessons.examples`: niñeras, tutorías, clases particulares, idiomas
+- `services.category.legal_paperwork`: Legal y trámites
+- `services.category.legal_paperwork.examples`: abogacía, notaría, gestoría, contabilidad
+- `services.category.beauty`: Belleza y cuidado personal
+- `services.category.beauty.examples`: peluquería, barbería, uñas, maquillaje
+- `services.category.events`: Eventos
+- `services.category.events.examples`: fotografía, música, comida, decoración
+- `services.back`: Volver a Servicios
+- `services.board.title`: ¿Qué necesitas?
+- `services.board.lead`: Pide un servicio y te responden personas y profesionales cerca de ti, con su reputación a la vista. Si es urgente, márcalo y lo ven primero quienes pueden ir hoy.
+- `services.board.ask`: Pedir un servicio
+- `services.board.offer`: Ofrecer mis servicios
+- `services.board.my_profile`: Mi perfil de servicios
+- `services.board.mine`: Mis pedidos y respuestas
+- `services.board.empty`: No hay pedidos abiertos aquí todavía.
+- `services.board.members_only`: Los pedidos son solo para miembros: dicen dónde vive alguien y qué pasa en su casa. Entra o crea tu cuenta para pedir u ofrecer servicios.
+- `services.board.how`: Cómo funciona Servicios
+- `services.urgent.badge`: Lo necesito hoy
+- `services.available.on`: Disponible hoy
+- `services.available.off`: No disponible hoy
+- `services.available.explain`: Si estás disponible, los pedidos urgentes de tus categorías te llegan al momento. Se apaga solo en 12 horas.
+- `services.available.turn_on`: Estoy disponible hoy
+- `services.available.turn_off`: Ya no estoy disponible
+- `services.form.title`: Pedir un servicio
+- `services.form.free`: Pedir es gratis. El precio lo acuerdas tú directamente con quien elijas.
+- `services.form.category`: Tipo de servicio
+- `services.form.urgent`: Lo necesito hoy
+- `services.form.urgent_hint`: Un techo que gotea de noche, un inodoro que se desborda, una crisis que no puede esperar. Se muestra primero a quienes están disponibles hoy.
+- `services.form.headline`: En pocas palabras
+- `services.form.headline_hint`: Por ejemplo: «Se me gotea el techo de la cocina».
+- `services.form.body`: Cuéntanos qué pasa
+- `services.form.body_hint`: Qué necesitas, desde cuándo y cualquier detalle que ayude. No escribas tu dirección exacta: la compartes después, con quien elijas.
+- `services.form.location`: Dónde
+- `services.form.anonymous`: Ocultar mi nombre
+- `services.form.anonymous_hint`: Solo en Salud mental y Salud y cuidado. Los moderadores siempre pueden ver quién publicó.
+- `services.form.privacy`: Los pedidos de Salud mental y de Salud y cuidado solo los ven profesionales de esa área.
+- `services.form.submit`: Publicar pedido
+- `services.status.open`: Abierto
+- `services.status.in_progress`: En curso
+- `services.status.completed`: Terminado
+- `services.status.cancelled`: Cancelado
+- `services.status.removed`: Retirado
+- `services.request.yours`: Tu pedido
+- `services.request.name_hidden`: Nombre oculto
+- `services.request.responses`: {count} respuestas
+- `services.request.responses_one`: 1 respuesta
+- `services.request.responses_title`: Respuestas
+- `services.request.waiting`: Todavía nadie respondió. Te avisaremos en cuanto llegue la primera respuesta.
+- `services.request.no_responses`: Este pedido no recibió respuestas.
+- `services.request.created`: Tu pedido está publicado. Te avisaremos cuando alguien responda.
+- `services.request.created_urgent`: Tu pedido urgente está publicado y ya avisamos a quienes están disponibles hoy en tu zona.
+- `services.request.contact_note`: Puedes escribirle por WhatsApp a quien te responda. Cuando decidas quién lo hará, márcalo: así podrás calificarlo al terminar.
+- `services.request.complete`: Ya está hecho
+- `services.request.cancel`: Cancelar pedido
+- `services.response.title`: Responder a este pedido
+- `services.response.message`: Tu respuesta
+- `services.response.message_hint`: Cuándo puedes ir, qué harías y cualquier pregunta.
+- `services.response.price_label`: Precio aproximado (opcional)
+- `services.response.price_hint`: Por ejemplo: «Q300, materiales aparte». Yavaya no cobra ni procesa el pago.
+- `services.response.consent`: Al responder, quien pidió el servicio verá tu número de WhatsApp para escribirte.
+- `services.response.submit`: Enviar respuesta
+- `services.response.sent`: Tu respuesta fue enviada. Si te eligen, te avisaremos.
+- `services.response.price`: Precio aproximado: {price}
+- `services.response.whatsapp`: Escribir por WhatsApp
+- `services.response.whatsapp_message`: Hola, te escribo por tu respuesta en Yavaya a mi pedido: {title}
+- `services.response.choose`: Elegir a esta persona
+- `services.response.chosen`: Elegido
+- `services.response.yours`: Tu respuesta
+- `services.response.you_were_chosen`: Te eligieron para este trabajo
+- `services.response.status.sent`: Respuesta enviada
+- `services.response.status.accepted`: Te eligieron
+- `services.response.status.withdrawn`: Retirada
+- `services.response.status.removed`: Retirada por moderación
+- `services.review.title`: ¿Cómo te fue?
+- `services.review.rating`: Calificación
+- `services.review.stars`: {stars} de 5 estrellas
+- `services.review.body`: Cuéntale a otros cómo fue (opcional)
+- `services.review.submit`: Enviar calificación
+- `services.review.yours`: Tu calificación: {stars} de 5.
+- `services.provider.title`: Mi perfil de servicios
+- `services.provider.lead`: Lo que haces, dónde y cómo contactarte. Tu reputación y tus reseñas en Yavaya se muestran junto a cada respuesta.
+- `services.provider.headline`: Lo que haces, en una línea
+- `services.provider.headline_hint`: Por ejemplo: «Techos y plomería, 20 años de oficio».
+- `services.provider.categories`: Tus áreas (hasta {max})
+- `services.provider.needs_licence`: requiere licencia
+- `services.provider.bio`: Sobre ti y tu trabajo
+- `services.provider.whatsapp`: Tu WhatsApp
+- `services.provider.whatsapp_hint`: Con el código de país. Solo lo ve quien recibe tu respuesta.
+- `services.provider.licence`: Licencia o colegiatura
+- `services.provider.licence_hint`: Obligatoria en Salud mental, Salud y cuidado y Legal: profesión, número y entidad que la emitió. Se muestra como verificada solo cuando la revisamos.
+- `services.provider.licence_rejected`: No pudimos confirmar tu licencia: {note}
+- `services.provider.save`: Guardar cambios
+- `services.provider.create`: Crear mi perfil
+- `services.provider.saved`: Tu perfil está guardado.
+- `services.provider.public_link`: Ver mi perfil como lo ven los demás
+- `services.provider.available_badge`: Disponible hoy
+- `services.provider.reputation`: Reputación {score}
+- `services.provider.rating`: {rating} de 5 en {count} reseñas
+- `services.provider.no_reviews`: Todavía sin reseñas
+- `services.provider.reviews`: Reseñas
+- `services.provider.licence_stated`: Licencia declarada: {claim}.
+- `services.provider.licence_checked`: Revisada por Yavaya.
+- `services.provider.licence_not_checked`: Todavía no revisada por Yavaya.
+- `services.licence.pending`: Licencia sin verificar
+- `services.licence.verified`: Licencia verificada
+- `services.licence.rejected`: Licencia no confirmada
+- `services.mine.requests`: Mis pedidos
+- `services.mine.responses`: Mis respuestas
+- `services.mine.no_requests`: Todavía no pediste ningún servicio.
+- `services.mine.no_responses`: Todavía no respondiste a ningún pedido.
+- `services.report.title`: Reportar este pedido
+- `services.report.provider_title`: Reportar a esta persona
+- `services.report.category`: Motivo
+- `services.report.description`: Qué pasó (opcional)
+- `services.report.submit`: Enviar reporte
+- `services.report.done`: Recibimos tu reporte ({code}). Lo revisará una persona.
+- `services.report.category.scam`: Estafa
+- `services.report.category.fraud`: Fraude
+- `services.report.category.harassment`: Acoso
+- `services.report.category.spam`: Spam
+- `services.report.category.other`: Otro
+- `services.report.error.own`: No puedes reportar lo tuyo.
+- `services.report.error.category`: Elige un motivo.
+- `services.review_queue.title`: Revisión de Servicios
+- `services.review_queue.guidance`: Verifica una licencia solo si la confirmaste en el registro oficial del colegio o la entidad que la emite. Si no puedes confirmarla, recházala y explica por qué.
+- `services.review_queue.licences`: Licencias por revisar
+- `services.review_queue.no_licences`: No hay licencias pendientes.
+- `services.review_queue.verify`: Confirmé la licencia
+- `services.review_queue.reject`: No se pudo confirmar
+- `services.review_queue.remove_request`: Retirar el pedido
+- `services.review_queue.suspend_provider`: Suspender a esta persona
+- `services.review_queue.kind.request`: Pedido
+- `services.review_queue.kind.provider`: Proveedor
+- `services.error.category`: Elige un tipo de servicio.
+- `services.error.categories`: Elige entre 1 y {max} áreas.
+- `services.error.title`: El resumen debe tener entre {min} y {max} caracteres.
+- `services.error.body`: La descripción debe tener entre {min} y {max} caracteres.
+- `services.error.location`: Elige dónde.
+- `services.error.message`: Tu respuesta debe tener entre {min} y {max} caracteres.
+- `services.error.price`: El precio es demasiado largo.
+- `services.error.headline`: La línea debe tener entre {min} y {max} caracteres.
+- `services.error.bio`: La descripción debe tener entre {min} y {max} caracteres.
+- `services.error.whatsapp`: Escribe tu WhatsApp con el código de país, por ejemplo +505 8888 8888.
+- `services.error.licence`: La licencia es demasiado larga.
+- `services.error.licence_required`: Para ofrecer este servicio necesitas declarar tu licencia o colegiatura.
+- `services.error.verify_email`: Verifica tu correo para usar Servicios.
+- `services.error.account_restricted`: Tu cuenta no puede usar Servicios en este momento.
+- `services.error.provider_suspended`: Tu perfil de servicios está suspendido.
+- `services.error.anonymous`: Solo puedes ocultar tu nombre en Salud mental y Salud y cuidado.
+- `services.error.too_many_open`: Ya tienes {limit} pedidos abiertos. Cierra o cancela uno para pedir otro.
+- `services.error.need_profile`: Para responder, primero crea tu perfil de servicios.
+- `services.error.not_your_category`: Este pedido es de un área que no ofreces en tu perfil.
+- `services.error.full`: Este pedido ya recibió el máximo de {limit} respuestas.
+- `services.error.already_responded`: Ya respondiste a este pedido.
+- `services.error.closed`: Este pedido ya no está abierto.
+- `services.error.own`: No puedes responder a tu propio pedido.
+- `services.error.not_in_progress`: Primero elige a quién lo hará.
+- `services.error.rating`: Elige de 1 a 5 estrellas.
+- `services.error.not_completed`: Podrás calificar cuando el trabajo esté terminado.
+- `services.error.already_reviewed`: Ya calificaste este trabajo.
+- `services.error.licence_not_pending`: Esta licencia ya fue revisada.
+- `services.error.review_note`: Escribe una nota que explique la decisión.
+- `services.error.decision`: Esa decisión no corresponde a este reporte.
+- `services.error.rate_limited`: Vas muy rápido. Espera un momento y vuelve a intentarlo.
+
+## animals
+- `animals.back`: Volver a Animales
+- `animals.home.title`: Cada animal merece un hogar seguro
+- `animals.home.lead`: Aquí se aprende a cuidar, se adopta con responsabilidad y se rescata con respaldo. Adoptar no es un clic: primero aprendes, luego solicitas, y quien rescató al animal elige el hogar.
+- `animals.home.learn`: Aprende
+- `animals.home.learn_text`: La guía de cuidado responsable y su prueba. Necesitas el certificado para adoptar.
+- `animals.home.learn_done`: Ya tienes tu certificado de cuidado responsable.
+- `animals.home.adopt`: Adopta
+- `animals.home.adopt_text`: Animales rescatados que buscan familia. Sin precio, con una solicitud completa.
+- `animals.home.rescue`: Rescata
+- `animals.home.rescue_text`: ¿Rescatas animales? Solicita ser rescatista verificado para publicarlos.
+- `animals.home.looking`: Buscan hogar
+- `animals.home.empty`: Todavía no hay animales publicados aquí. Los publican rescatistas verificados por Yavaya.
+- `animals.home.how`: Cómo funciona la adopción en Yavaya
+- `animals.abuse.title`: ¿Ves maltrato?
+- `animals.abuse.text`: Si un animal está en peligro, avisa a las autoridades de tu localidad y a una organización de rescate cercana. Toma fotos o videos con fecha si puedes hacerlo sin ponerte en riesgo. En Centroamérica existen leyes que protegen a los animales y castigan el maltrato. Si el maltrato aparece en una publicación de Yavaya, repórtala desde la publicación.
+- `animals.filter.any_species`: Cualquier especie
+- `animals.filter.any_size`: Cualquier tamaño
+- `animals.species.dog`: Perro
+- `animals.species.cat`: Gato
+- `animals.species.other`: Otro
+- `animals.sex.male`: Macho
+- `animals.sex.female`: Hembra
+- `animals.sex.unknown`: Sexo sin confirmar
+- `animals.size.small`: Pequeño
+- `animals.size.medium`: Mediano
+- `animals.size.large`: Grande
+- `animals.age.unknown`: Edad desconocida
+- `animals.age.month_one`: 1 mes
+- `animals.age.months`: {count} meses
+- `animals.age.year_one`: 1 año
+- `animals.age.years`: {count} años
+- `animals.status.available`: Busca hogar
+- `animals.status.reserved`: Reservado
+- `animals.status.adopted`: Adoptado
+- `animals.status.withdrawn`: Retirado
+- `animals.status.removed`: Retirado por moderación
+- `animals.health.sterilised`: Esterilizado
+- `animals.health.vaccinated`: Vacunado
+- `animals.health.dewormed`: Desparasitado
+- `animals.health.not_sterilised`: Todavía sin esterilizar
+- `animals.health.not_vaccinated`: Todavía sin vacunas
+- `animals.health.not_dewormed`: Todavía sin desparasitar
+- `animals.learn.title`: Guía de cuidado responsable
+- `animals.learn.lead`: Lo básico que todo animal necesita. Léela con calma: al final hay una prueba corta, y aprobarla te da el certificado que hace falta para adoptar en Yavaya.
+- `animals.learn.have_certificate`: Tienes tu certificado de cuidado responsable desde el {date}.
+- `animals.guide.water_food.title`: Agua y comida
+- `animals.guide.water_food.text`: Agua limpia todo el día, en un recipiente a la sombra que no se pueda voltear. Comida adecuada para su especie, tamaño y edad, a horas fijas. Nunca le des chocolate, uvas o pasas, cebolla, ajo, huesos cocidos ni comida muy salada: pueden enfermarlo gravemente o matarlo.
+- `animals.guide.shelter.title`: Techo y sombra
+- `animals.guide.shelter.text`: Un lugar seco, limpio y protegido del sol, la lluvia y el viento, donde pueda descansar tranquilo. Un patio sin sombra o un perro bajo la lluvia no es un hogar. Los gatos y los perros pequeños viven mejor dentro de la casa.
+- `animals.guide.chains.title`: Sin cadenas
+- `animals.guide.chains.text`: Un animal amarrado o encadenado todo el día sufre: se lastima el cuello, se angustia y se vuelve agresivo por miedo. Necesita moverse, jugar y estar con su familia. Si hay que contenerlo, que sea con un patio cercado o paseos con correa, nunca con una cadena permanente.
+- `animals.guide.vet.title`: Veterinario y vacunas
+- `animals.guide.vet.text`: Llévalo al veterinario al adoptarlo y al menos una vez al año. La vacuna contra la rabia es obligatoria y protege también a tu familia. Desparasítalo por dentro y por fuera (pulgas y garrapatas) con la frecuencia que te indique el veterinario.
+- `animals.guide.sterilise.title`: Esterilizar
+- `animals.guide.sterilise.text`: Esterilizar evita camadas que nadie puede cuidar y que terminan en la calle, previene enfermedades graves y reduce peleas y escapadas. Es la forma más eficaz de que haya menos animales abandonados. No cambia el cariño del animal ni lo hace "menos".
+- `animals.guide.training.title`: Educar con respeto
+- `animals.guide.training.text`: Nunca le pegues ni le grites. Se aprende premiando lo que hace bien, con paciencia, constancia y muchas repeticiones. El castigo físico solo le enseña miedo, y un animal con miedo puede morder.
+- `animals.guide.heat.title`: Calor y señales de enfermedad
+- `animals.guide.heat.text`: Con calor, jadeo fuerte, mucha baba, debilidad o vómito pueden ser un golpe de calor: llévalo a la sombra, dale agua fresca y busca al veterinario. Nunca lo dejes dentro de un vehículo cerrado. Falta de apetito, diarrea con sangre o decaimiento de más de un día también son motivo para consultar.
+- `animals.guide.responsibility.title`: Es para toda su vida
+- `animals.guide.responsibility.text`: Un perro o un gato vive entre 10 y 18 años. Adoptar es un compromiso para toda su vida, también cuando envejece o se enferma. Si algún día ya no puedes cuidarlo, devuélvelo a quien te lo dio en adopción o búscale un hogar responsable. Nunca lo abandones: abandonarlo es condenarlo.
+- `animals.quiz.title`: Prueba de cuidado responsable
+- `animals.quiz.lead`: Diez preguntas sobre la guía. Con {pass} respuestas correctas de {total} recibes tu certificado. Puedes intentarlo las veces que necesites.
+- `animals.quiz.submit`: Ver mi resultado
+- `animals.quiz.retry`: Intentar de nuevo
+- `animals.quiz.score`: {score} de {total} correctas.
+- `animals.quiz.passed`: ¡Aprobaste! Ya tienes tu certificado de cuidado responsable y puedes solicitar una adopción.
+- `animals.quiz.failed`: Te faltó poco: necesitas {pass}. Lee las explicaciones, repasa la guía y vuelve a intentarlo.
+- `animals.quiz.continue`: Continuar con mi solicitud
+- `animals.quiz.correct_is`: Respuesta correcta: {answer}
+- `animals.quiz.sign_in`: Entra a tu cuenta para hacer la prueba y obtener tu certificado.
+- `animals.quiz.1.q`: ¿Cuándo necesita agua un perro o un gato?
+- `animals.quiz.1.a`: Solo cuando hace calor
+- `animals.quiz.1.b`: Siempre: agua limpia todo el día, a la sombra
+- `animals.quiz.1.c`: Una vez al día, con la comida
+- `animals.quiz.1.why`: Sin agua un animal se deshidrata en pocas horas, sobre todo con el calor de nuestra región.
+- `animals.quiz.2.q`: ¿Está bien tener a un perro encadenado todo el día?
+- `animals.quiz.2.a`: Sí, si tiene comida y agua
+- `animals.quiz.2.b`: No: le causa sufrimiento, heridas y lo vuelve agresivo
+- `animals.quiz.2.c`: Sí, pero solo de noche
+- `animals.quiz.2.why`: La cadena permanente es una de las formas de maltrato más comunes. Un patio cercado y paseos con correa son la alternativa.
+- `animals.quiz.3.q`: ¿Para qué sirve esterilizar?
+- `animals.quiz.3.a`: Evita camadas no deseadas que terminan en la calle y previene enfermedades
+- `animals.quiz.3.b`: Solo es estético
+- `animals.quiz.3.c`: Le quita el cariño a su familia
+- `animals.quiz.3.why`: Cada camada no planificada son animales que alguien tendrá que rescatar. Esterilizar es la forma más eficaz de reducir el abandono.
+- `animals.quiz.4.q`: ¿Qué pasa con la vacuna contra la rabia?
+- `animals.quiz.4.a`: No hace falta si el animal no sale de la casa
+- `animals.quiz.4.b`: Se pone una sola vez en la vida
+- `animals.quiz.4.c`: Es obligatoria y se repite cuando lo indique el veterinario
+- `animals.quiz.4.why`: La rabia es mortal y se transmite a las personas. La vacuna protege al animal y a tu familia.
+- `animals.quiz.5.q`: ¿Cuál es la mejor manera de educar a un perro?
+- `animals.quiz.5.a`: Pegarle cuando se porta mal
+- `animals.quiz.5.b`: Premiar lo que hace bien, con paciencia y constancia
+- `animals.quiz.5.c`: Gritarle para que entienda
+- `animals.quiz.5.why`: El castigo físico enseña miedo, no obediencia. Un animal con miedo puede morder.
+- `animals.quiz.6.q`: ¿Cuál puede ser una señal de golpe de calor?
+- `animals.quiz.6.a`: Jadeo fuerte, mucha baba y debilidad
+- `animals.quiz.6.b`: Mover la cola al verte
+- `animals.quiz.6.c`: Dormir de noche
+- `animals.quiz.6.why`: El golpe de calor puede matar en minutos: sombra, agua fresca y veterinario de inmediato.
+- `animals.quiz.7.q`: Si un día ya no puedes cuidar a tu animal, ¿qué haces?
+- `animals.quiz.7.a`: Lo dejo en la calle o en el campo
+- `animals.quiz.7.b`: Lo devuelvo a quien me lo dio en adopción o le busco un hogar responsable
+- `animals.quiz.7.c`: Lo dejo amarrado en la casa
+- `animals.quiz.7.why`: Un animal abandonado casi nunca sobrevive. Quien te lo dio en adopción prefiere recibirlo de vuelta.
+- `animals.quiz.8.q`: ¿Qué comida es segura para un perro?
+- `animals.quiz.8.a`: Sobras con huesos cocidos y un poco de chocolate
+- `animals.quiz.8.b`: Alimento adecuado para su especie y edad, sin chocolate, uvas, cebolla ni huesos cocidos
+- `animals.quiz.8.c`: Solo tortilla
+- `animals.quiz.8.why`: El chocolate, las uvas y la cebolla son tóxicos, y los huesos cocidos se astillan y perforan el intestino.
+- `animals.quiz.9.q`: ¿Un gato necesita veterinario?
+- `animals.quiz.9.a`: No, los gatos se cuidan solos
+- `animals.quiz.9.b`: Sí: también necesita vacunas, desparasitación y esterilización
+- `animals.quiz.9.c`: Solo si se pelea
+- `animals.quiz.9.why`: Los gatos esconden el dolor; sin chequeos, sus enfermedades se descubren tarde.
+- `animals.quiz.10.q`: Si ves que alguien maltrata a un animal, ¿qué haces?
+- `animals.quiz.10.a`: Nada, no es asunto mío
+- `animals.quiz.10.b`: Lo documento si es seguro y lo reporto a las autoridades o a una organización de rescate
+- `animals.quiz.10.c`: Me enfrento con violencia
+- `animals.quiz.10.why`: Reportarlo protege al animal sin ponerte en peligro. El maltrato puede denunciarse.
+- `animals.detail.looking_for_home`: busca hogar
+- `animals.detail.published`: El animal está publicado. Te avisaremos cuando llegue una solicitud.
+- `animals.detail.applied`: Tu solicitud fue enviada. Quien rescató al animal la leerá y te avisaremos de su decisión.
+- `animals.detail.how_to_adopt`: Para adoptar necesitas el certificado de cuidado responsable y completar una solicitud. Quien rescató al animal elige el hogar.
+- `animals.detail.apply`: Solicitar adoptar a {name}
+- `animals.detail.not_available`: Este animal ya no está disponible para adopción.
+- `animals.detail.whatsapp`: Escribir a quien lo rescató
+- `animals.detail.whatsapp_message`: Hola, te escribo por la adopción de {name} en Yavaya.
+- `animals.detail.applications`: Solicitudes
+- `animals.detail.no_applications`: Todavía no hay solicitudes.
+- `animals.detail.certified`: Tiene el certificado de cuidado responsable
+- `animals.detail.commitments_accepted`: Aceptó todos los compromisos: sin cadenas, vacunas, esterilización, veterinario, devolverlo antes que abandonarlo y seguimiento.
+- `animals.detail.note`: Nota para quien solicitó (obligatoria si la rechazas)
+- `animals.detail.choose_home`: Elegir este hogar
+- `animals.detail.went_home`: {name} ya se fue a su nuevo hogar
+- `animals.detail.decline`: Rechazar
+- `animals.detail.withdraw`: Retirar este animal
+- `animals.apply.title`: Solicitud para adoptar a {name}
+- `animals.apply.lead`: Responde con sinceridad: quien rescató al animal necesita conocer el hogar donde vivirá los próximos años. No hay respuestas "malas", pero sí hogares que no son para todos los animales.
+- `animals.apply.section_home`: Tu hogar
+- `animals.apply.section_family`: Tu familia
+- `animals.apply.section_care`: El cuidado
+- `animals.apply.section_commitments`: Tus compromisos
+- `animals.apply.home_type`: Tipo de vivienda
+- `animals.apply.home_type.house`: Casa
+- `animals.apply.home_type.apartment`: Apartamento
+- `animals.apply.home_type.farm`: Finca
+- `animals.apply.home_type.other`: Otro
+- `animals.apply.tenure`: La vivienda es
+- `animals.apply.tenure.own`: Propia
+- `animals.apply.tenure.rent`: Alquilada
+- `animals.apply.tenure.family`: De mi familia
+- `animals.apply.landlord`: Si alquilas, ¿el dueño permite animales?
+- `animals.apply.fenced`: ¿Tienes patio cercado?
+- `animals.answer.yes`: Sí
+- `animals.answer.no`: No
+- `animals.answer.na`: No aplica
+- `animals.apply.household`: ¿Quiénes viven en tu casa?
+- `animals.apply.household_hint`: Adultos y niños, con sus edades.
+- `animals.apply.all_agree`: Todas las personas de mi casa están de acuerdo con la adopción
+- `animals.apply.other_animals`: ¿Tienes otros animales?
+- `animals.apply.other_animals_hint`: Cuáles, cuántos y de qué edad. Si no tienes, escribe «Ninguno».
+- `animals.apply.other_sterilised`: ¿Tus otros animales están esterilizados y vacunados?
+- `animals.apply.experience`: ¿Qué experiencia tienes cuidando animales?
+- `animals.apply.hours_alone`: ¿Cuántas horas al día pasaría solo?
+- `animals.apply.sleeps`: ¿Dónde dormiría?
+- `animals.apply.sleeps.inside`: Dentro de la casa
+- `animals.apply.sleeps.outside_sheltered`: Afuera, bajo techo y protegido
+- `animals.apply.sleeps.other`: Otro lugar
+- `animals.apply.vet_plan`: ¿Quién será su veterinario?
+- `animals.apply.vet_plan_hint`: Nombre o lugar de la veterinaria, y cada cuánto lo llevarías.
+- `animals.apply.why`: ¿Por qué quieres adoptar?
+- `animals.apply.commitments_lead`: Para adoptar debes aceptar todos. Son la razón de esta solicitud.
+- `animals.commitment.no_chain`: Nunca lo tendré encadenado ni amarrado
+- `animals.commitment.vaccinate`: Mantendré sus vacunas al día, incluida la de la rabia
+- `animals.commitment.sterilise`: Lo esterilizaré si todavía no lo está
+- `animals.commitment.vet_care`: Lo llevaré al veterinario cuando lo necesite y al menos una vez al año
+- `animals.commitment.return_not_abandon`: Si no puedo cuidarlo, lo devolveré a quien lo rescató; nunca lo abandonaré
+- `animals.commitment.follow_up`: Acepto el seguimiento de quien lo rescató después de la adopción
+- `animals.apply.privacy`: Tus respuestas solo las ve quien rescató a este animal. Si te elige, recibirás su WhatsApp para coordinar.
+- `animals.apply.submit`: Enviar solicitud
+- `animals.application.status.submitted`: Tu solicitud está enviada
+- `animals.application.status.approved`: Te eligieron: coordina la entrega con quien lo rescató
+- `animals.application.status.rejected`: Tu solicitud no fue elegida
+- `animals.application.status.withdrawn`: Retiraste tu solicitud
+- `animals.application.status.completed`: Adoptado: ¡ya es parte de tu familia!
+- `animals.application.withdraw`: Retirar mi solicitud
+- `animals.mine.title`: Mis solicitudes de adopción
+- `animals.mine.certified`: Tienes tu certificado de cuidado responsable.
+- `animals.mine.get_certificate`: Obtén tu certificado de cuidado responsable
+- `animals.mine.none`: Todavía no has solicitado ninguna adopción.
+- `animals.rescuer.title`: Rescatistas
+- `animals.rescuer.lead`: Si rescatas animales, como persona o como organización, puedes publicarlos para adopción una vez que Yavaya revise tu solicitud. Así nadie puede vender animales haciéndose pasar por rescatista.
+- `animals.rescuer.apply`: Solicitar ser rescatista
+- `animals.rescuer.profile`: Tus datos de rescatista
+- `animals.rescuer.kind`: Rescato como
+- `animals.rescuer.kind.person`: Persona
+- `animals.rescuer.kind.organisation`: Organización
+- `animals.rescuer.name`: Nombre (tuyo o de la organización)
+- `animals.rescuer.about`: Cuéntanos de tu trabajo de rescate
+- `animals.rescuer.about_hint`: Desde cuándo rescatas, cuántos animales cuidas, cómo los preparas para la adopción, y redes o referencias que podamos consultar.
+- `animals.rescuer.whatsapp_hint`: Solo lo verá el hogar que elijas, para coordinar la entrega.
+- `animals.rescuer.review_note`: Una persona del equipo de Yavaya revisa cada solicitud. Si cambias tu nombre, tu descripción o tu lugar, se revisa de nuevo.
+- `animals.rescuer.apply_submit`: Enviar solicitud
+- `animals.rescuer.saved`: Tus datos están guardados.
+- `animals.rescuer.status.pending`: Tu solicitud de rescatista está en revisión.
+- `animals.rescuer.status.approved`: Eres rescatista verificado: puedes publicar animales.
+- `animals.rescuer.status.rejected`: Tu solicitud de rescatista no fue aprobada.
+- `animals.rescuer.status.suspended`: Tu cuenta de rescatista está suspendida.
+- `animals.rescuer.verified`: Rescatista verificado
+- `animals.rescuer.my_animals`: Tus animales
+- `animals.rescuer.no_animals`: Todavía no has publicado ningún animal.
+- `animals.rescuer.pending_applications`: {count} solicitudes por revisar
+- `animals.rescuer.publish`: Publicar un animal
+- `animals.rescuer.publish_lead`: Publicar es gratis y en Yavaya ningún animal tiene precio. Cuenta la verdad sobre su salud y su carácter: así llega al hogar correcto.
+- `animals.rescuer.publish_submit`: Publicar
+- `animals.form.species`: Especie
+- `animals.form.name`: Nombre
+- `animals.form.sex`: Sexo
+- `animals.form.size`: Tamaño
+- `animals.form.age`: Edad aproximada en meses
+- `animals.form.age_hint`: Por ejemplo, 18 para un año y medio. Déjalo vacío si no lo sabes.
+- `animals.form.health`: Salud
+- `animals.form.description`: Su historia
+- `animals.form.description_hint`: Cómo lo rescataste, cómo está hoy y qué tipo de hogar necesita.
+- `animals.form.temperament`: Carácter
+- `animals.form.health_notes`: Notas de salud
+- `animals.form.location`: Dónde está
+- `animals.form.photos`: Fotos (de {min} a {max})
+- `animals.review_queue.title`: Revisión de Animales
+- `animals.review_queue.guidance`: Aprueba a un rescatista solo si su trabajo de rescate es real: busca sus redes, referencias o publicaciones anteriores. Si algo indica venta de animales, recházalo y explica por qué.
+- `animals.review_queue.rescuers`: Rescatistas por revisar
+- `animals.review_queue.no_rescuers`: No hay solicitudes de rescatistas pendientes.
+- `animals.review_queue.remove_listing`: Retirar la publicación
+- `animals.review_queue.suspend_rescuer`: Suspender al rescatista
+- `animals.report.title`: Reportar esta publicación
+- `animals.report.category.animal_abuse`: Maltrato animal
+- `animals.report.category.scam`: Estafa o cobro por el animal
+- `animals.report.category.fake_listing`: Publicación falsa
+- `animals.report.category.other`: Otro
+- `animals.report.error.own`: No puedes reportar tu propia publicación.
+- `animals.report.error.category`: Elige un motivo.
+- `animals.error.verify_email`: Verifica tu correo para usar Animales.
+- `animals.error.account_restricted`: Tu cuenta no puede usar Animales en este momento.
+- `animals.error.whatsapp`: Escribe tu WhatsApp con el código de país, por ejemplo +505 8888 8888.
+- `animals.error.kind`: Elige si rescatas como persona o como organización.
+- `animals.error.rescuer_name`: El nombre es demasiado corto o demasiado largo.
+- `animals.error.rescuer_about`: Cuéntanos un poco más de tu trabajo de rescate.
+- `animals.error.location`: Elige dónde.
+- `animals.error.rescuer_suspended`: Tu cuenta de rescatista está suspendida.
+- `animals.error.not_approved`: Este rescatista no está aprobado.
+- `animals.error.not_pending`: Esta solicitud ya fue revisada.
+- `animals.error.review_note`: Escribe una nota que explique la decisión.
+- `animals.error.species`: Elige la especie.
+- `animals.error.name`: Escribe su nombre.
+- `animals.error.sex`: Elige el sexo.
+- `animals.error.size`: Elige el tamaño.
+- `animals.error.notes`: Las notas son demasiado largas.
+- `animals.error.description`: Cuenta su historia con un poco más de detalle.
+- `animals.error.not_rescuer`: Solo los rescatistas verificados pueden publicar animales.
+- `animals.error.photo_count`: Agrega de {min} a {max} fotos.
+- `animals.error.too_many_listings`: Ya tienes {limit} animales publicados.
+- `animals.error.not_available`: Este animal ya no está disponible.
+- `animals.error.answer`: Responde cada pregunta con tus palabras.
+- `animals.error.answer_missing`: Responde todas las preguntas.
+- `animals.error.all_agree`: Todas las personas de tu casa deben estar de acuerdo.
+- `animals.error.hours`: Escribe un número de horas entre 0 y 24.
+- `animals.error.commitments`: Para adoptar debes aceptar todos los compromisos.
+- `animals.error.need_certificate`: Primero obtén tu certificado de cuidado responsable.
+- `animals.error.own`: No puedes solicitar a tu propio animal.
+- `animals.error.too_many_applications`: Ya tienes {limit} solicitudes abiertas.
+- `animals.error.already_applied`: Ya enviaste una solicitud para este animal.
+- `animals.error.not_submitted`: Esta solicitud ya no se puede cambiar.
+- `animals.error.decision_note`: Escribe una nota amable que explique por qué.
+- `animals.error.not_approved_application`: Primero elige este hogar.
+- `animals.error.rate_limited`: Vas muy rápido. Espera un momento y vuelve a intentarlo.
+- `animals.error.upload`: No pudimos guardar las fotos. Inténtalo de nuevo.
+- `animals.home.lost_text`: ¿Se perdió tu animal o encontraste uno? Publícalo y te avisamos si aparece una coincidencia.
+- `animals.lost.title`: Perdidos y encontrados
+- `animals.lost.lead`: Cada hora cuenta. Publica con foto, el lugar y el día: si alguien encuentra un animal de la misma especie en tu ciudad, te avisamos.
+- `animals.lost.post_lost`: Perdí a mi animal
+- `animals.lost.post_found`: Encontré un animal
+- `animals.lost.ransom_warning`: Nunca pagues por adelantado para recuperar a un animal. Si alguien te pide dinero antes de devolverlo, repórtalo.
+- `animals.lost.mine`: Mis publicaciones
+- `animals.lost.empty`: No hay publicaciones abiertas aquí.
+- `animals.lost.kind.lost`: Perdido
+- `animals.lost.kind.found`: Encontrado
+- `animals.lost.status.open`: Abierto
+- `animals.lost.status.reunited`: ¡Ya está en casa!
+- `animals.lost.status.closed`: Cerrado
+- `animals.lost.status.removed`: Retirado por moderación
+- `animals.lost.since`: Perdido desde el {date}
+- `animals.lost.found_on`: Encontrado el {date}
+- `animals.lost.form_lead_lost`: Una buena foto reciente y una descripción clara ayudan a que lo reconozcan: color, tamaño, collar, señas particulares.
+- `animals.lost.form_lead_found`: Gracias por ayudar. Si puedes, dale agua y un lugar seguro mientras aparece su familia. Antes de entregarlo, pide una foto o una prueba de que es suyo.
+- `animals.lost.name`: Su nombre (si lo tiene)
+- `animals.lost.description`: Descripción
+- `animals.lost.description_hint_lost`: Color, tamaño, collar, señas particulares, a qué nombre responde y dónde lo viste por última vez.
+- `animals.lost.description_hint_found`: Color, tamaño, collar, cómo está y en qué calle o sector lo encontraste. No digas todos los detalles: así puedes preguntar a quien lo reclame.
+- `animals.lost.seen_on_lost`: ¿Qué día se perdió?
+- `animals.lost.seen_on_found`: ¿Qué día lo encontraste?
+- `animals.lost.whatsapp_hint`: Solo lo ven miembros con cuenta en Yavaya.
+- `animals.lost.submit`: Publicar
+- `animals.lost.published`: Tu publicación está activa. Te avisaremos si aparece una coincidencia. Se cerrará sola en 60 días.
+- `animals.lost.posted_by`: Publicado por {name} el {date}
+- `animals.lost.reunited`: ¡Ya está en casa!
+- `animals.lost.close`: Cerrar publicación
+- `animals.lost.contact`: Escribir por WhatsApp
+- `animals.lost.whatsapp_lost`: Hola, te escribo por tu animal perdido en Yavaya. Creo que lo vi.
+- `animals.lost.whatsapp_found`: Hola, te escribo por el animal que encontraste en Yavaya. Creo que es mío.
+- `animals.lost.sign_in_to_contact`: Entra a tu cuenta para ver el contacto. Así protegemos a las familias de quienes piden dinero por devolver animales.
+- `animals.lost.matches_lost`: Posibles coincidencias: encontrados en el mismo lugar
+- `animals.lost.matches_found`: Posibles coincidencias: perdidos en el mismo lugar
+- `animals.lost.error.kind`: Elige si se perdió o lo encontraste.
+- `animals.lost.error.description`: Describe al animal con un poco más de detalle.
+- `animals.lost.error.date`: Revisa la fecha: no puede ser futura ni de hace más de tres meses.
+- `animals.lost.error.photo_count`: Agrega de {min} a {max} fotos.
+- `animals.lost.error.too_many`: Ya tienes {limit} publicaciones abiertas.
+- `animals.lost.error.closed`: Esta publicación ya está cerrada.
+
+## violeta
+- `violeta.name`: Espacio Violeta
+- `violeta.exit`: Salir rápido
+- `violeta.exit_hint`: Te lleva a otra página al instante. También puedes pulsar Esc dos veces.
+- `violeta.online`: En línea ahora
+- `violeta.send`: Enviar
+- `violeta.delete`: Borrar
+- `violeta.talk_privately`: Hablar en privado
+- `violeta.unreadable`: Este mensaje ya no se puede leer.
+- `violeta.nav.label`: Espacio Violeta
+- `violeta.nav.room`: Sala
+- `violeta.nav.private`: Privado
+- `violeta.nav.settings`: Mi espacio
+- `violeta.nav.guardian`: Reportes
+- `violeta.door.eyebrow`: Solo para mujeres
+- `violeta.door.title`: Espacio Violeta
+- `violeta.door.lead`: Un lugar protegido para mujeres que están pasando por algo difícil: una pareja que te engañó o te dejó, un embarazo que enfrentas sola, maltrato, ansiedad, tristeza. Aquí nadie sabe quién eres, y hay profesionales de psicología y psiquiatría con licencia verificada para escucharte.
+- `violeta.door.left`: Saliste del Espacio Violeta y borramos todo lo que escribiste. Puedes volver cuando quieras.
+- `violeta.door.danger`: Si estás en peligro ahora mismo, busca un lugar seguro y llama al número de emergencias de tu país. Este espacio acompaña, pero no puede enviar ayuda.
+- `violeta.door.promises_title`: Cómo te protegemos
+- `violeta.door.limits_title`: Lo que debes saber
+- `violeta.door.sign_in`: Entrar con mi cuenta
+- `violeta.door.register`: Crear una cuenta
+- `violeta.promise.name.title`: Un nombre solo de aquí.
+- `violeta.promise.name.text`: Recibes un nombre fácil de recordar, como «Luna 27». Nunca se muestra tu nombre de Yavaya ni tu YAY ID, así que puedes reconocer a otras mujeres sin que nadie sepa quién es.
+- `violeta.promise.sealed.title`: Mensajes cifrados.
+- `violeta.promise.sealed.text`: Todo lo que escribes se guarda cifrado. Nadie del equipo de Yavaya tiene una pantalla para leerlo.
+- `violeta.promise.private.title`: Lo privado es de dos.
+- `violeta.promise.private.text`: Una conversación privada solo la leen las dos personas que están en ella. La única excepción es un mensaje que una de las dos decida reportar.
+- `violeta.promise.silent.title`: Sin avisos que te delaten.
+- `violeta.promise.silent.text`: Nada de este espacio llega a tus notificaciones ni a tu correo. Lo nuevo solo lo ves aquí dentro.
+- `violeta.promise.erase.title`: Se borra solo.
+- `violeta.promise.erase.text`: Los mensajes de la sala se borran después de {days} días y los privados después de {private_days}. Puedes borrar los tuyos cuando quieras, o salir y borrarlo todo.
+- `violeta.promise.exit.title`: Salir rápido.
+- `violeta.promise.exit.text`: El botón de arriba te saca al instante hacia otra página. Esc dos veces hace lo mismo.
+- `violeta.limit.account`: Necesitas una cuenta de Yavaya para entrar. Yavaya guarda la relación entre tu cuenta y tu nombre de aquí solo para poder expulsar a quien abuse; nadie en el espacio puede verla.
+- `violeta.limit.encryption`: Los mensajes se cifran en nuestros servidores, pero no de extremo a extremo: Yavaya guarda la llave y la usa solo para mostrarte tus conversaciones.
+- `violeta.limit.women`: No podemos comprobar que cada persona sea mujer: cada una lo promete al entrar, y quien mienta es expulsada cuando alguien la reporta. Las licencias profesionales sí están verificadas.
+- `violeta.limit.not_emergency`: Quienes son profesionales escuchan y orientan, pero no son un servicio de emergencias. Lo que decidas hacer después es siempre decisión tuya.
+- `violeta.limit.device`: Si alguien revisa tu teléfono, puede ver que usas Yavaya. Usa la navegación privada si puedes, y borra el historial al terminar.
+- `violeta.pledge.woman`: Soy mujer.
+- `violeta.pledge.confidential`: Lo que leo aquí se queda aquí: no lo cuento, no lo copio y no hago capturas.
+- `violeta.pledge.respect`: Trato a todas con respeto, sin juzgar.
+- `violeta.pledge.not_emergency`: Entiendo que este espacio no es un servicio de emergencias.
+- `violeta.pledge.professional`: Respeto el secreto profesional y la ética de mi profesión, y no pido datos personales que no sean necesarios.
+- `violeta.join.title`: Entrar al Espacio Violeta
+- `violeta.join.submit`: Entrar
+- `violeta.join.pro_title`: Para psicólogas, psicólogos y psiquiatras
+- `violeta.join.profession`: Tu profesión
+- `violeta.join.pro_submit`: Entrar como profesional
+- `violeta.join.pro_requirement`: Para entrar como profesional necesitas un perfil en Servicios, en Salud mental, con tu licencia revisada por Yavaya en el registro oficial.
+- `violeta.join.pro_link`: Ir a mi perfil de Servicios
+- `violeta.profession.psychology`: Profesional de psicología
+- `violeta.profession.psychiatry`: Profesional de psiquiatría
+- `violeta.room.title`: La sala
+- `violeta.room.you_are`: Aquí eres
+- `violeta.room.welcome`: Bienvenida. Aquí eres {name}. Ese nombre es solo de este espacio.
+- `violeta.room.empty`: Todavía no hay mensajes. Puedes escribir el primero.
+- `violeta.room.talked_before`: Hablaron antes
+- `violeta.room.write`: Escribe un mensaje
+- `violeta.room.placeholder`: Escribe lo que quieras compartir…
+- `violeta.room.compose_hint`: Todas las mujeres de la sala lo leen. Para algo personal, como tu número o dónde vives, habla en privado.
+- `violeta.here.title`: Aquí ahora ({count})
+- `violeta.here.nobody`: Ahora mismo no hay nadie visible.
+- `violeta.here.you`: tú
+- `violeta.here.hidden_hint`: Quien eligió no ser vista no aparece en esta lista.
+- `violeta.pros.title`: Profesionales
+- `violeta.pros.explain`: Profesionales de psicología y psiquiatría con licencia verificada. Puedes escribirles en privado; no pueden escribirte primero.
+- `violeta.pros.none`: Todavía no hay profesionales en el espacio.
+- `violeta.pros.talk`: Escribir en privado
+- `violeta.private.title`: Conversaciones privadas
+- `violeta.private.lead`: Cada conversación es solo entre dos personas. Los nombres no cambian, así que reconoces a quien ya conoces.
+- `violeta.private.empty`: No tienes conversaciones privadas. En la sala puedes elegir «Hablar en privado» con una mujer o con una profesional.
+- `violeta.private.empty_pro`: Aún nadie te ha escrito. Las mujeres pueden escribirte desde la sala.
+- `violeta.private.closed`: Cerrada
+- `violeta.private.new`: Mensaje nuevo
+- `violeta.private.no_messages`: Sin mensajes
+- `violeta.private.back`: Conversaciones privadas
+- `violeta.private.online_now`: Está aquí ahora.
+- `violeta.private.not_here`: No está aquí ahora. Leerá tu mensaje cuando vuelva.
+- `violeta.private.only_two`: Solo ustedes dos pueden leer esta conversación.
+- `violeta.private.only_two_pro`: Solo tú y esta profesional pueden leer esta conversación.
+- `violeta.private.start`: Todavía no hay mensajes. Saluda cuando quieras.
+- `violeta.private.placeholder`: Escribe en privado…
+- `violeta.private.close`: Cerrar esta conversación
+- `violeta.private.close_hint`: Ninguna de las dos podrá escribir hasta que tú la abras otra vez.
+- `violeta.private.reopen`: Abrir de nuevo la conversación
+- `violeta.private.you_closed`: Cerraste esta conversación.
+- `violeta.private.they_closed`: Esta conversación está cerrada.
+- `violeta.report.title`: Reportar
+- `violeta.report.explain`: Una guardiana de Yavaya leerá solo este mensaje para decidir. No verá el resto de la conversación ni quién eres.
+- `violeta.report.choose`: Elige un motivo
+- `violeta.report.note`: Algo que quieras añadir (opcional)
+- `violeta.report.submit`: Enviar reporte
+- `violeta.report.done`: Gracias. Una guardiana revisará el reporte.
+- `violeta.report.category.not_a_woman`: Creo que no es una mujer
+- `violeta.report.category.harassment`: Acoso o insultos
+- `violeta.report.category.threat`: Amenaza
+- `violeta.report.category.exposure`: Revela datos de otra persona
+- `violeta.report.category.scam`: Pide dinero o es una estafa
+- `violeta.report.category.other`: Otro motivo
+- `violeta.report.error.category`: Elige un motivo.
+- `violeta.report.error.own`: No puedes reportar tu propio mensaje.
+- `violeta.settings.title`: Mi espacio
+- `violeta.settings.saved`: Listo.
+- `violeta.settings.renamed`: Ahora eres {name}.
+- `violeta.settings.name_title`: Tu nombre aquí
+- `violeta.settings.name_text`: Las demás te reconocen por este nombre. Si sientes que alguien sabe quién eres, puedes pedir uno nuevo: tus conversaciones siguen, pero con el nombre nuevo.
+- `violeta.settings.rename`: Pedir un nombre nuevo
+- `violeta.settings.rename_hint`: Puedes cambiarlo una vez cada {days} días.
+- `violeta.settings.presence_title`: Quién te ve en línea
+- `violeta.settings.presence_on`: Las demás ven cuando estás aquí.
+- `violeta.settings.presence_off`: Nadie ve cuando estás aquí.
+- `violeta.settings.hide`: No mostrar cuando estoy aquí
+- `violeta.settings.show`: Mostrar cuando estoy aquí
+- `violeta.settings.device_title`: Cuida tu teléfono
+- `violeta.settings.device_history`: Borra el historial del navegador al terminar, o usa una pestaña privada.
+- `violeta.settings.device_exit`: «Salir rápido» te lleva a otra página y no deja esta en el botón Atrás.
+- `violeta.settings.device_shared`: Si compartes el teléfono, cierra tu sesión de Yavaya al salir.
+- `violeta.settings.leave_title`: Salir y borrarlo todo
+- `violeta.settings.leave_text`: Borramos tu nombre de aquí, todos tus mensajes y tus conversaciones privadas, también para la otra persona. No se puede deshacer.
+- `violeta.settings.leave_confirm`: Entiendo que se borra todo.
+- `violeta.settings.leave`: Salir y borrar todo
+- `violeta.guardian.title`: Reportes del Espacio Violeta
+- `violeta.guardian.guidance`: Lee solo lo que necesitas para decidir. Ante una amenaza o alguien que no es mujer, expulsa: un daño aquí cuesta mucho más que un error. Expulsar borra lo que escribió en la sala y cierra sus conversaciones.
+- `violeta.guardian.done`: Decisión guardada.
+- `violeta.guardian.empty`: No hay reportes pendientes.
+- `violeta.guardian.in_room`: En la sala
+- `violeta.guardian.in_private`: En privado
+- `violeta.guardian.professional`: profesional
+- `violeta.guardian.prior`: {count} reportes antes
+- `violeta.guardian.note`: Nota de quien reporta: {note}
+- `violeta.guardian.dismiss`: Descartar
+- `violeta.guardian.remove`: Borrar el mensaje
+- `violeta.guardian.ban`: Expulsar
+- `violeta.error.unavailable`: El Espacio Violeta todavía no está abierto: falta configurar el cifrado de los mensajes, y sin él no guardamos ninguna conversación.
+- `violeta.error.verify_email`: Confirma tu correo antes de entrar.
+- `violeta.error.account_restricted`: Tu cuenta no puede entrar ahora.
+- `violeta.error.banned`: Ya no puedes entrar al Espacio Violeta.
+- `violeta.error.pledges`: Para entrar tienes que aceptar cada compromiso.
+- `violeta.error.profession`: Elige tu profesión.
+- `violeta.error.not_eligible`: Para entrar como profesional necesitas tu licencia de Salud mental verificada en Servicios.
+- `violeta.error.not_member`: Primero entra al Espacio Violeta.
+- `violeta.error.licence_withdrawn`: Tu licencia ya no está verificada, así que no puedes entrar como profesional.
+- `violeta.error.empty`: Escribe algo antes de enviar.
+- `violeta.error.too_long`: El mensaje es demasiado largo.
+- `violeta.error.handle_cooldown`: Ya cambiaste tu nombre hace poco. Inténtalo en unos días.
+- `violeta.error.professional_first`: Quien entra como profesional no puede escribir primero: espera a que una mujer le escriba.
+- `violeta.error.self`: No puedes hablar en privado contigo misma.
+- `violeta.error.blocked`: Esta conversación está cerrada.
+- `violeta.error.report_closed`: Este reporte ya fue decidido.
+- `violeta.error.rate_limited`: Vas muy rápido. Espera un momento.
+- `violeta.error.confirm_leave`: Marca la casilla para confirmar.
+- `violeta.error.partner_gone`: Esta persona ya no está disponible en el Espacio Violeta. Tu conversación sigue aquí, pero ya no puedes escribirle.
+- `violeta.guardian.left`: (ya salió del espacio)
+- `violeta.practice.title`: Atender fuera de Yavaya
+- `violeta.practice.explain`: Aquí dentro ayudas gratis. Si lo activas, una mujer que ya habló contigo puede elegir continuar contigo fuera de Yavaya, donde ustedes acuerdan sesiones y precio.
+- `violeta.practice.rule_free`: Dentro del Espacio Violeta nunca se cobra ni se pide dinero. Un mensaje que lo haga se puede reportar.
+- `violeta.practice.rule_she_decides`: Ella decide. Tú no recibes su nombre ni su contacto; solo te escribe si quiere.
+- `violeta.practice.rule_shown`: Ella verá tu nombre, tu licencia, tu WhatsApp de Servicios y tu perfil, solo después de que le hayas respondido aquí.
+- `violeta.practice.on`: Activado: las mujeres a quienes respondiste pueden continuar contigo fuera.
+- `violeta.practice.off`: Desactivado: nadie aquí puede ver quién eres.
+- `violeta.practice.turn_on`: Permitir que continúen conmigo
+- `violeta.practice.turn_off`: Dejar de permitirlo
+- `violeta.practice.continue_title`: Continuar el acompañamiento fuera de Yavaya
+- `violeta.practice.continue_explain`: Esta conversación es gratis y seguirá siéndolo. Si quieres más acompañamiento, puedes ver quién es y escribirle fuera. Lo que acuerden, incluido el precio, es entre ustedes. No sabrá quién eres a menos que tú le escribas.
+- `violeta.practice.continue_show`: Ver cómo contactar
+- `violeta.practice.licence`: Licencia: {licence}
+- `violeta.practice.whatsapp`: Escribir por WhatsApp
+- `violeta.practice.profile`: Ver perfil profesional
+- `violeta.practice.after`: Al escribirle fuera, verá tu número. Yavaya no participa en ese acuerdo ni en el pago.
+- `violeta.error.not_professional`: Esta opción es solo para profesionales.
+
+## roxi
+- `roxi.ui.open`: Habla con Roxi
+- `roxi.ui.name`: Roxi
+- `roxi.ui.role`: Tu asistente de Yavaya
+- `roxi.ui.intro`: Hola {name}, soy Roxi. Te ayudo con todo en Yavaya: publicar, buscar, preguntar. Háblame o escríbeme. Si quieres vender algo, mándame una foto.
+- `roxi.ui.talk`: Hablar con Roxi
+- `roxi.ui.type_placeholder`: Escríbele a Roxi…
+- `roxi.ui.send`: Enviar
+- `roxi.ui.photo`: Enviar una foto
+- `roxi.ui.mute`: Silenciar micrófono
+- `roxi.ui.unmute`: Activar micrófono
+- `roxi.ui.end`: Terminar conversación
+- `roxi.ui.minimize`: Minimizar
+- `roxi.ui.restore`: Volver a Roxi
+- `roxi.ui.close`: Cerrar
+- `roxi.ui.status.connecting`: Conectando…
+- `roxi.ui.status.listening`: Te escucho
+- `roxi.ui.status.speaking`: Roxi está hablando
+- `roxi.ui.status.ready`: Lista para ayudarte
+- `roxi.ui.status.ended`: Conversación terminada
+- `roxi.ui.you`: Tú
+- `roxi.ui.mic_denied`: No tengo acceso al micrófono, así que seguimos por escrito. Puedes permitir el micrófono en tu navegador cuando quieras.
+- `roxi.ui.connect_error`: No pude conectarme ahora. Inténtalo otra vez en un momento.
+- `roxi.ui.photo_sending`: Enviando la foto…
+- `roxi.ui.photo_text`: Te mando esta foto.
+- `roxi.ui.photo_error`: No pude enviar la foto. Inténtalo otra vez.
+- `roxi.ui.draft_opened`: Abrí el formulario con tu borrador. Revísalo, completa lo que falte y publícalo cuando esté listo.
+- `roxi.ui.opened`: Abrí la página.
+- `roxi.ui.results`: Lo que encontré
+- `roxi.ui.no_results`: No encontré nada con eso.
+- `roxi.ui.disclosure`: Roxi es una asistente con inteligencia artificial y puede equivocarse: revisa siempre antes de publicar. Lo que le dices y las fotos que le envías los procesa ElevenLabs.
+- `roxi.ui.privacy`: Privacidad
+- `roxi.ui.voice_switch`: Seguir con voz
+- `roxi.ui.new`: Nueva conversación
+- `roxi.error.daily_limit`: Hoy ya hablaste muchas veces con Roxi. Vuelve mañana.
+- `roxi.error.unavailable`: Roxi no está disponible en este momento.
+- `roxi.result.featured`: Destacado
+- `roxi.result.open`: Abierto ahora
+- `roxi.result.closed`: Cerrado ahora
+- `roxi.result.urgent`: Urgente
+- `roxi.prefill.notice`: Roxi llenó este formulario contigo. Revísalo antes de enviarlo.
+
+## sanctions
+- `sanctions.title`: Miembros
+- `sanctions.lead`: Buscar a un miembro por su YAY ID o su correo exacto, ver su estado y, si hace falta, suspenderlo, expulsarlo, reincorporarlo o ayudarlo a recuperar su cuenta. Todo queda en el registro de auditoría.
+- `sanctions.search`: YAY ID o correo
+- `sanctions.search_submit`: Buscar
+- `sanctions.not_found`: No hay ningún miembro con ese YAY ID o correo.
+- `sanctions.status`: Estado
+- `sanctions.joined`: Se unió
+- `sanctions.email_verified`: Correo verificado
+- `sanctions.two_step`: Verificación en dos pasos
+- `sanctions.sessions`: Sesiones abiertas
+- `sanctions.staff`: Rol en el equipo
+- `sanctions.yes`: Sí
+- `sanctions.no`: No
+- `sanctions.history`: Historial de sanciones
+- `sanctions.history_empty`: Sin sanciones.
+- `sanctions.revoked`: levantada
+- `sanctions.reason`: Motivo
+- `sanctions.note`: Nota interna (obligatoria): qué pasó y cómo lo comprobaste
+- `sanctions.do.suspend`: Suspender
+- `sanctions.do.ban`: Expulsar para siempre
+- `sanctions.do.reinstate`: Reincorporar
+- `sanctions.do.two_step`: Quitar la verificación en dos pasos
+- `sanctions.do.sign_out`: Cerrar sesión en todos sus dispositivos
+- `sanctions.two_step_help`: Solo si perdió el teléfono y los códigos de respaldo, y ya comprobaste quién es fuera de Yavaya (por ejemplo, con una llamada).
+- `sanctions.suspend_help`: Cierra todas sus sesiones y le avisa por correo con el motivo (nunca tu nota interna) y un enlace para apelar. Una suspensión con plazo se levanta sola al terminar.
+- `sanctions.done`: Hecho. Quedó registrado.
+- `sanctions.error.self`: No puedes aplicarte esto a ti mismo.
+- `sanctions.error.note`: Escribe una nota que explique el motivo.
+- `sanctions.error.already`: Esta cuenta ya está suspendida o expulsada.
+- `sanctions.error.not_sanctioned`: Esta cuenta no está suspendida ni expulsada.
+- `sanctions.error.no_two_step`: Esta cuenta no tiene la verificación en dos pasos activa.
+- `sanctions.duration`: Duración
+- `sanctions.duration.day_one`: 1 día
+- `sanctions.duration.days`: {count} días
+- `sanctions.duration.review`: Hasta que un administrador lo revise
+- `sanctions.until`: hasta el {date}
+- `sanctions.error.duration`: Elige una duración de la lista.
+- `sanctions.status.pending_verification`: Sin verificar
+- `sanctions.status.active`: Activa
+- `sanctions.status.restricted`: Restringida
+- `sanctions.status.suspended`: Suspendida
+- `sanctions.status.banned`: Expulsada
+- `sanctions.status.deactivated`: Desactivada
+- `sanctions.type.warning`: Advertencia
+- `sanctions.type.restriction`: Restricción
+- `sanctions.type.suspension`: Suspensión
+- `sanctions.type.permanent_removal`: Expulsión
+- `sanctions.reason.fraud`: Fraude
+- `sanctions.reason.scam`: Estafa
+- `sanctions.reason.financial_deception`: Engaño financiero
+- `sanctions.reason.animal_abuse`: Maltrato animal
+- `sanctions.reason.fraudulent_fundraising`: Recaudación fraudulenta
+- `sanctions.reason.multi_account_abuse`: Varias cuentas
+- `sanctions.reason.criminal_misuse`: Uso delictivo
+- `sanctions.reason.harassment`: Acoso
+- `sanctions.reason.spam`: Spam
+- `sanctions.reason.other`: Otro
+
+## appeal
+- `appeal.title`: Apelar una sanción
+- `appeal.invalid`: Este enlace no es válido o ya venció. Las apelaciones se reciben durante {days} días desde el aviso.
+- `appeal.what.suspension`: Tu cuenta fue suspendida el {date}. Motivo: {reason}.
+- `appeal.what.ban`: Tu cuenta fue cerrada de forma permanente el {date}. Motivo: {reason}.
+- `appeal.until`: La suspensión termina el {date}.
+- `appeal.until_review`: La suspensión sigue hasta que un administrador revise tu caso.
+- `appeal.lifted`: Esta sanción ya terminó. Puedes volver a entrar a Yavaya.
+- `appeal.already`: Ya recibimos tu apelación. Un administrador la leerá y te responderá por correo.
+- `appeal.sent`: Recibimos tu apelación. Un administrador la leerá y te responderá por correo. Mientras tanto, la sanción sigue vigente.
+- `appeal.body`: Cuéntanos tu versión
+- `appeal.help`: Explica qué pasó y por qué crees que la decisión debería cambiar. Mínimo {min} caracteres. Se puede apelar una sola vez por sanción, así que incluye todo lo importante.
+- `appeal.submit`: Enviar apelación
+- `appeal.error.link`: Este enlace no es válido o ya venció.
+- `appeal.error.length`: La apelación debe tener entre {min} y {max} caracteres.
+- `appeal.error.response`: Escribe una respuesta para el miembro (al menos 5 caracteres).
+- `appeal.error.decided`: Esta apelación ya fue respondida.
+- `appeal.admin.title`: Apelaciones
+- `appeal.admin.lead`: Miembros que piden revisar una suspensión o una expulsión. Lee su versión junto a la nota interna y decide. Tu respuesta le llega por correo; la nota interna, nunca.
+- `appeal.admin.empty`: No hay apelaciones esperando.
+- `appeal.admin.sanction`: Sanción
+- `appeal.admin.issued`: Aplicada
+- `appeal.admin.until`: Hasta
+- `appeal.admin.note`: Nota interna
+- `appeal.admin.received`: Apelación recibida
+- `appeal.admin.their_words`: Lo que escribió
+- `appeal.admin.response`: Respuesta para el miembro
+- `appeal.admin.response_help`: Se envía tal cual por correo. Sé claro y respetuoso, y no incluyas nada que identifique a quien hizo el reporte.
+- `appeal.admin.lift`: Levantar la sanción
+- `appeal.admin.uphold`: Mantener la sanción
+- `appeal.admin.done_lifted`: Sanción levantada. Le avisamos por correo.
+- `appeal.admin.done_upheld`: Sanción mantenida. Le enviamos tu respuesta por correo.
+
+## guide
+- `guide.eyebrow`: Guía en video
+- `guide.minutes`: {minutes} min
+- `guide.watch_title`: Mira cómo funciona {name}
+- `guide.watch_hint`: Dale play: en menos de {minutes} minutos te mostramos todo lo que puedes hacer aquí.
+- `guide.spoken`: Narrado en español, con subtítulos en español e inglés.
+- `guide.full_link`: Ver la guía completa de Yavaya
+- `guide.captions`: Español
+- `guide.captions_en`: Inglés
+- `guide.video_description`: {name}: guía en video de Yavaya, narrada en español, con subtítulos en español e inglés.
+- `guide.unsupported`: Tu navegador no puede reproducir este video.
+- `guide.meta_title`: Guía en video de Yavaya
+- `guide.meta_description`: Trece minutos para conocer Yavaya, distrito por distrito: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Espacio Violeta, Santuario, Animales y la confianza que lo sostiene todo.
+- `guide.title`: Todo Yavaya, en una sola historia
+- `guide.lead`: Una guía de trece minutos: qué puedes hacer en cada distrito, cómo te cuidamos y por dónde empezar. Dale play y ponte cómodo.
+- `guide.chapters`: Capítulos
+- `guide.chapter_hint`: Toca un capítulo para ir directo.
+- `guide.chapter.intro`: Bienvenida
+- `guide.chapter.mercadito`: Mercadito
+- `guide.chapter.servicios`: Servicios
+- `guide.chapter.trabajo`: Trabajo
+- `guide.chapter.yavayago`: YavayaGo · viajes y mandados
+- `guide.chapter.comunidad`: Comunidad
+- `guide.chapter.violeta`: Espacio Violeta
+- `guide.chapter.santuario`: Santuario
+- `guide.chapter.animales`: Animales
+- `guide.chapter.confianza`: Confianza y tokens
+- `guide.chapter.cierre`: Bienvenida a casa
+- `guide.per_district`: Un video en cada distrito
+- `guide.per_district_lead`: Cada distrito tiene su propio video, en su página, para verlo justo donde lo vas a usar.
+- `guide.illustrative`: Las escenas del video son ilustraciones creadas para Yavaya: no muestran miembros, vendedores ni publicaciones reales. Las pantallas que aparecen son de Yavaya, tal como funciona hoy.
+- `guide.home_eyebrow`: Nuevo · Guía en video
+- `guide.home_title`: Conoce Yavaya en trece minutos
+- `guide.home_text`: Una historia, distrito por distrito: qué puedes hacer, cómo te cuidamos y por dónde empezar.
+- `guide.home_cta`: Ver la guía
+- `guide.watch_title_trust`: Así funcionan la confianza y los tokens
+- `guide.violeta_privacy`: Si alguien puede escucharte, usa audífonos o activa los subtítulos.
+
+## welcome
+- `welcome.meta`: Bienvenida al equipo
+- `welcome.eyebrow`: ✨ Un día especial ✨
+- `welcome.badge_label`: Insignia de {role} del equipo Yavaya
+- `welcome.title`: ¡{name}, ya eres parte del equipo!
+- `welcome.lead`: Desde hoy eres {role} de Yavaya. Y la comunidad acaba de ganar a alguien que la va a cuidar con el corazón.
+- `welcome.note_1`: {name}: te elegimos porque creemos en ti. Yavaya nació para que nadie en Centroamérica se sienta solo, y eso empieza con personas como tú, que saben escuchar, acompañar y hacer que cada quien se sienta en casa.
+- `welcome.note_2`: No tienes que hacerlo todo ni hacerlo perfecto. Sé tú: cercana, honesta y amable. Aquí estamos para lo que necesites. 💛
+- `welcome.signature`: Con cariño, el equipo de Yavaya
+- `welcome.can_title`: Tu nuevo rol
+- `welcome.can`: Lo que hace tu rol: {what}
+- `welcome.badge_public`: Tu insignia ya brilla en tu perfil, para que todos sepan a quién acudir.
+- `welcome.cta_panel`: Abrir mi panel
+- `welcome.cta_profile`: Ver mi insignia
+
+## payments
+- `payments.buy`: Comprar
+- `payments.returned`: Volviste del pago. Tus tokens aparecen en cuanto dLocal Go confirma el pago; si pagaste en efectivo o por transferencia, puede tardar más. Abajo ves el estado de cada compra.
+- `payments.cancelled`: No se hizo ningún cobro. Puedes intentarlo de nuevo cuando quieras.
+- `payments.purchases`: Tus compras
+- `payments.purchase_line`: {tokens} tokens · {price}
+- `payments.checkout.description`: Tokens de Yavaya
+- `payments.status.created`: Iniciando
+- `payments.status.pending_provider`: Esperando confirmación
+- `payments.status.authorized`: Esperando confirmación
+- `payments.status.succeeded`: Pagado — tokens acreditados
+- `payments.status.failed`: No se completó
+- `payments.status.cancelled`: Cancelado
+- `payments.status.refunded`: Reembolsado
+- `payments.status.partially_refunded`: Reembolso parcial
+- `payments.error.duplicate`: Esa compra ya se inició. Revisa el estado abajo antes de intentarlo otra vez.
+- `payments.error.package`: Ese paquete ya no está disponible.
+- `payments.error.account`: Tu cuenta tiene que estar activa para comprar tokens.
+- `payments.error.rate_limited`: Demasiados intentos de pago seguidos. Espera un momento.
+- `payments.error.provider`: No pudimos abrir el pago con dLocal Go. No se hizo ningún cobro; inténtalo en unos minutos.
+- `payments.test_mode`: Modo de prueba: dLocal Go está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.
+- `payments.saving`: Ahorras {percent}%
+- `payments.how.dlocalgo`: En tu país pagas con dLocal Go, en su página segura: tarjeta, efectivo o transferencia según el país. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan cuando dLocal Go confirma el pago, normalmente en segundos.
+- `payments.how.paypal`: En tu país pagas con PayPal: con tu cuenta PayPal o con tarjeta, sin necesidad de cuenta. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan en cuanto PayPal confirma el pago.
+- `payments.method.dlocalgo`: dLocal Go · tarjeta y medios locales
+- `payments.method.paypal`: PayPal · tarjeta o cuenta PayPal
+- `payments.country_pending`: En tu país se paga con {method}, que estamos terminando de conectar. Muy pronto podrás comprar tokens desde aquí.
+- `payments.countries_title`: Cómo se paga en cada país
+- `payments.countries_lead`: Cada país paga con el sistema que funciona allí. Yavaya elige el tuyo según el país de tu perfil; los precios son los mismos en todas partes.
+- `payments.your_country`: Tu país
+- `payments.country_ready`: Disponible
+- `payments.country_soon`: Muy pronto
+- `payments.paid`: ¡Pago confirmado! Tus tokens ya están en tu saldo.
+- `payments.failed`: El pago no se completó y no se te cobró. Puedes intentarlo de nuevo.
+- `payments.error.country`: La compra de tokens todavía no está disponible en tu país. Abajo ves cómo se paga en cada país.
+- `payments.how.stripe`: En tu país pagas con tarjeta en la página segura de Stripe. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan en cuanto Stripe confirma el pago.
+- `payments.method.stripe`: Stripe · tarjeta de crédito o débito
+
+## go
+- `go.home.title`: Lo que necesitas, traído por alguien de confianza
+- `go.home.lead`: Comida, súper, farmacia y negocios de tu ciudad. Cada repartidor fue revisado por una persona de Yavaya, y ves en el mapa dónde va tu pedido.
+- `go.home.my_orders`: Mis pedidos
+- `go.home.my_store`: Mi negocio
+- `go.home.open_store`: Abre tu negocio
+- `go.home.my_driving`: Mis entregas
+- `go.home.drive`: Reparte con YavayaGo
+- `go.home.city`: Ciudad
+- `go.home.all_cities`: Todas las ciudades
+- `go.home.show`: Ver
+- `go.home.categories`: Categorías
+- `go.home.everything`: Todo
+- `go.home.none_title`: Todavía no hay negocios aquí.
+- `go.home.none_text`: YavayaGo acaba de abrir. Los primeros negocios se están revisando; si tienes uno, puedes ser de los primeros.
+- `go.home.how`: Cómo funciona YavayaGo
+- `go.promise.driver_title`: Repartidores revisados.
+- `go.promise.driver_text`: Identidad, foto, vehículo y teléfono, comprobados por una persona antes de su primera entrega.
+- `go.promise.live_title`: En vivo en el mapa.
+- `go.promise.live_text`: Ves el nombre, la cara, el vehículo y la placa de quien trae tu pedido, y dónde va.
+- `go.promise.cash_title`: Pagas al recibir.
+- `go.promise.cash_text`: En efectivo, al repartidor, el precio que puso el negocio. Yavaya no cobra comisión.
+- `go.back_to_stores`: Negocios
+- `go.category.food`: Comida
+- `go.category.groceries`: Súper
+- `go.category.pharmacy`: Farmacia
+- `go.category.bakery`: Panadería
+- `go.category.drinks`: Bebidas
+- `go.category.essentials`: Lo básico
+- `go.category.local`: Negocio local
+- `go.vehicle.motorcycle`: Moto
+- `go.vehicle.car`: Carro
+- `go.vehicle.bicycle`: Bicicleta
+- `go.vehicle.on_foot`: A pie
+- `go.store.open`: Abierto
+- `go.store.closed`: Cerrado
+- `go.store.delivery_fee`: Envío {fee}
+- `go.store.prep`: Listo en unos {minutes} min
+- `go.store.minimum`: Pedido mínimo {amount}
+- `go.store.whatsapp`: Escribir al negocio
+- `go.store.wa_text`: Hola, es sobre mi pedido {code} de YavayaGo.
+- `go.store.no_menu`: Este negocio todavía no publicó su menú.
+- `go.store.yours`: Este es tu negocio: así lo ven los clientes.
+- `go.store.yours_pending`: Tu negocio todavía no está aprobado; solo tú lo ves.
+- `go.cart.add`: Agregar
+- `go.cart.remove`: Quitar uno
+- `go.cart.title`: Tu pedido
+- `go.cart.empty`: Toca + para agregar.
+- `go.cart.subtotal`: Productos
+- `go.cart.delivery`: Envío
+- `go.cart.total`: Total
+- `go.cart.minimum`: El pedido mínimo de este negocio es {amount}.
+- `go.cart.checkout`: Continuar
+- `go.cart.closed`: Este negocio está cerrado ahora.
+- `go.cart.own_store`: No puedes pedir en tu propio negocio.
+- `go.checkout.where`: ¿Dónde te lo llevamos?
+- `go.checkout.directions`: Cómo llegar
+- `go.checkout.directions_hint`: Portón negro, frente a la pulpería, segunda casa a la izquierda
+- `go.checkout.whatsapp`: Tu WhatsApp
+- `go.checkout.whatsapp_hint`: Solo lo ve el repartidor que tome tu pedido, y se borra un día después.
+- `go.checkout.paying_with`: ¿Con cuánto pagas?
+- `go.checkout.paying_with_hint`: Opcional: así el repartidor trae el cambio.
+- `go.checkout.note`: Nota para el negocio
+- `go.checkout.cash`: Pagas en efectivo al repartidor cuando llega.
+- `go.checkout.for_other`: Es para otra persona (un regalo, alguien de tu familia)
+- `go.checkout.for_other_hint`: Pide desde donde estés y llega a su puerta. El repartidor preguntará por su nombre.
+- `go.checkout.recipient_name`: Nombre de quien recibe
+- `go.checkout.recipient_whatsapp`: WhatsApp de quien recibe
+- `go.checkout.recipient_pays`: Quien recibe paga en efectivo al recibir. Todavía no se puede pagar con tarjeta desde otro país.
+- `go.error.recipient_name`: Escribe el nombre de la persona que recibe (hasta 80 caracteres).
+- `go.driver.recipient`: Recibe
+- `go.driver.recipient_for`: {name} (pedido de {from})
+- `go.order.for_recipient`: Para {name}.
+- `go.order.recipient_cash_note`: Quien recibe paga en efectivo al recibir.
+- `go.plan.title`: Tu plan
+- `go.plan.founding_title`: Restaurante fundador
+- `go.plan.zero`: 0% de comisión, siempre. Lo que vendes es tuyo.
+- `go.plan.founding_until`: Usas YavayaGo gratis hasta el {date}, vendas lo que vendas.
+- `go.plan.this_month`: Este mes: {count} pedidos entregados de {free} gratis.
+- `go.plan.would_apply`: Este mes superaste los pedidos gratis. Con más volumen, el Plan Negocio cuesta US${price} al mes. Todavía no cobramos nada: te avisaremos antes de empezar.
+- `go.plan.how`: Cómo funciona: {free} pedidos entregados al mes son gratis. Si vendes más, pagas una cuota fija de US${price} al mes, nunca un porcentaje de tus ventas.
+- `go.link.title`: Tu enlace de pedidos
+- `go.link.lead`: Ponlo en tu WhatsApp, Instagram y Facebook. Tus clientes eligen del menú, piden, y siguen al repartidor en vivo.
+- `go.link.auto_reply_label`: Texto para la respuesta automática de tu WhatsApp Business
+- `go.link.auto_reply`: ¡Hola! Gracias por escribir a {store}. Haz tu pedido aquí y síguelo en vivo en el mapa: {link}
+- `go.link.share`: Compartir por WhatsApp
+- `go.link.how`: En WhatsApp Business: Herramientas para la empresa → Mensaje de bienvenida o Respuestas rápidas, y pega el texto.
+- `go.trip.meta_title`: Viajes y mandados · YavayaGo
+- `go.trip.meta_description`: Un conductor revisado por una persona para lo que necesites: viajes, paquetes, mandados y ayuda personal. Tú propones el precio.
+- `go.trip.eyebrow`: YavayaGo · Viajes y mandados
+- `go.trip.title`: Un conductor de confianza para lo que necesites
+- `go.trip.lead`: Un viaje, un paquete, un mandado o una mano con algo. Tú dices cuánto pagas, los conductores aceptan o te ofrecen su precio, y tú eliges.
+- `go.trip.launch`: Empezamos en {city}.
+- `go.trip.food_link`: Pedir comida
+- `go.trip.drive_link`: Quiero conducir
+- `go.trip.how1_title`: Pide.
+- `go.trip.how1_text`: Dinos qué necesitas, dónde y cuánto pagas.
+- `go.trip.how2_title`: Recibe ofertas.
+- `go.trip.how2_text`: Los conductores cercanos aceptan tu precio o te ofrecen el suyo, con su foto, vehículo y placa.
+- `go.trip.how3_title`: Elige y sigue en vivo.
+- `go.trip.how3_text`: Ves en el mapa dónde viene, y puedes compartir el viaje con alguien de confianza.
+- `go.trip.how4_title`: Paga en efectivo.
+- `go.trip.how4_text`: Al conductor, el precio que acordaron. Yavaya no cobra comisión: todo es para el conductor.
+- `go.trip.kind.ride`: Viaje
+- `go.trip.kind_text.ride`: Llévame a algún lugar, en moto o en carro.
+- `go.trip.kind.parcel`: Paquete
+- `go.trip.kind_text.parcel`: Lleva algo de un lugar a otro.
+- `go.trip.kind.errand`: Mandado
+- `go.trip.kind_text.errand`: Compra o recoge algo y tráemelo.
+- `go.trip.kind.assist`: Ayuda personal
+- `go.trip.kind_text.assist`: Hacer una fila, cargar compras, acompañar a alguien.
+- `go.trip.pickup.ride`: ¿Dónde te recogemos?
+- `go.trip.pickup.parcel`: ¿Dónde recogemos el paquete?
+- `go.trip.pickup.errand`: ¿Dónde se compra o se recoge?
+- `go.trip.pickup.assist`: ¿Dónde se necesita la ayuda?
+- `go.trip.dropoff.ride`: ¿A dónde vas?
+- `go.trip.dropoff.parcel`: ¿A dónde lo llevamos?
+- `go.trip.dropoff.errand`: ¿Dónde lo entregamos?
+- `go.trip.dropoff.assist`: ¿A dónde hay que ir?
+- `go.trip.description.ride`: Nota para el conductor (opcional)
+- `go.trip.description.parcel`: ¿Qué envías?
+- `go.trip.description.errand`: ¿Qué compramos o recogemos?
+- `go.trip.description.assist`: ¿En qué necesitas ayuda?
+- `go.trip.description_hint.ride`: Ej.: llevo una maleta grande.
+- `go.trip.description_hint.parcel`: Ej.: un sobre con documentos, una caja pequeña de 3 kg. No se envía nada ilegal ni peligroso.
+- `go.trip.description_hint.errand`: Ej.: 2 litros de leche y pan en la pulpería de la esquina; la receta en la farmacia.
+- `go.trip.description_hint.assist`: Ej.: hacer la fila del banco por mí; acompañar a mi mamá a su cita médica.
+- `go.trip.form.vehicle`: Vehículo
+- `go.trip.form.vehicle_any`: Cualquiera (moto o carro)
+- `go.trip.form.passengers`: Pasajeros
+- `go.trip.form.fare`: Tu precio
+- `go.trip.form.fare_hint`: Lo que ofreces pagar al conductor. Los conductores pueden aceptarlo u ofrecerte otro precio. Tienes {minutes} minutos para elegir.
+- `go.trip.form.budget`: Para la compra, hasta
+- `go.trip.form.budget_hint`: Lo más que el conductor puede gastar en tu compra. Se lo devuelves en efectivo al recibir, con el recibo.
+- `go.trip.form.whatsapp_hint`: Solo lo verá el conductor que elijas, y se borra un día después.
+- `go.trip.form.submit`: Pedir conductor
+- `go.trip.form.cash`: Pagas en efectivo al conductor. Yavaya no cobra comisión.
+- `go.trip.you_have_one`: Tienes un pedido en curso (#{code}).
+- `go.trip.see_yours`: Ver mi pedido
+- `go.trip.sign_in`: Inicia sesión para pedir un conductor.
+- `go.trip.no_city`: Elige tu ciudad en tu perfil para pedir un conductor.
+- `go.trip.more_title`: ¿Necesitas a un profesional?
+- `go.trip.more_text`: Para plomería, electricidad, limpieza, cuidado y más, en Servicios encuentras profesionales verificados, y «Lo necesito hoy» para lo urgente.
+- `go.trip.services_link`: Ir a Servicios
+- `go.trip.back`: Viajes y mandados
+- `go.trip.requested_banner`: ¡Listo! Avisamos a los conductores cercanos. Las ofertas aparecen aquí.
+- `go.trip.status.open`: Esperando ofertas
+- `go.trip.status.accepted`: Tu conductor va en camino
+- `go.trip.status.arrived`: Tu conductor llegó
+- `go.trip.status.in_progress`: En camino
+- `go.trip.status.completed`: Terminado
+- `go.trip.status.cancelled`: Cancelado
+- `go.trip.status.expired`: Nadie fue elegido a tiempo
+- `go.trip.step.open`: Ofertas
+- `go.trip.step.accepted`: Conductor elegido
+- `go.trip.step.arrived`: Llegó
+- `go.trip.step.in_progress`: En camino
+- `go.trip.step.completed`: Listo
+- `go.trip.reason.customer_cancelled`: Lo cancelaste.
+- `go.trip.reason.no_driver_chosen`: Pasó el tiempo sin elegir conductor. Puedes pedir otra vez, quizá con otro precio.
+- `go.trip.offers_title`: Ofertas
+- `go.trip.offers_lead`: Ofreciste {fare}. Elige antes de las {time}.
+- `go.trip.no_offers_yet`: Esperando a los conductores… Esta página se actualiza sola.
+- `go.trip.eta`: llega en {minutes} min
+- `go.trip.counter`: (su precio)
+- `go.trip.choose`: Elegir
+- `go.trip.your_driver`: Tu conductor
+- `go.trip.check_hint`: Revisa la placa y la cara antes de subir o entregar algo. Dile el código #{code}.
+- `go.trip.wa_text`: Hola, soy tu cliente de Yavaya, pedido #{code}.
+- `go.trip.share_title`: Comparte tu viaje
+- `go.trip.share_lead`: Envía el enlace a alguien de confianza: verá quién te lleva y dónde van, en vivo, mientras dure el viaje.
+- `go.trip.share_button`: Compartir por WhatsApp
+- `go.trip.share_text`: Voy en un viaje de Yavaya. Puedes seguirme en vivo aquí: {link}
+- `go.trip.summary`: Resumen
+- `go.trip.distance`: {km} km en línea recta
+- `go.trip.agreed`: Precio acordado
+- `go.trip.your_price`: Tu precio
+- `go.trip.budget_note`: Más la compra, hasta {amount}, que devuelves en efectivo con el recibo.
+- `go.trip.cash`: Pagas en efectivo al conductor al terminar.
+- `go.trip.cash_errand`: Pagas en efectivo al conductor al recibir: el precio acordado más lo que costó la compra.
+- `go.trip.cancel`: Cancelar
+- `go.trip.new`: Pedir otro
+- `go.trip.shared_eyebrow`: Viaje de {name} con Yavaya
+- `go.trip.shared_over`: Este viaje ya no está en curso.
+- `go.trip.shared_driver`: Conductor
+- `go.trip.shared_checked`: Una persona de Yavaya revisó su identidad, su vehículo y su teléfono.
+- `go.trip.driver_current`: Tu pedido de viaje o mandado
+- `go.trip.driver_sharing_note`: Mientras esta página esté abierta, el cliente ve dónde estás. Deja de compartirse al terminar.
+- `go.trip.what`: Qué
+- `go.trip.pickup_at`: Recoger en
+- `go.trip.dropoff_at`: Llevar a
+- `go.trip.wa_customer`: Hola, soy tu conductor de Yavaya, pedido #{code}.
+- `go.trip.plus_purchase`: más la compra (hasta {amount}) con recibo
+- `go.trip.arrived`: Llegué
+- `go.trip.start`: Empezar
+- `go.trip.drop`: No puedo ir
+- `go.trip.complete`: Terminar
+- `go.trip.driver_available`: Viajes y mandados cerca
+- `go.trip.driver_none`: No hay pedidos de viaje o mandado ahora. Esta página se actualiza sola.
+- `go.trip.one_place`: En un solo lugar
+- `go.trip.riders`: {count} pasajero(s)
+- `go.trip.area`: zona aproximada
+- `go.trip.they_offer`: Ofrece {fare}
+- `go.trip.budget_for_driver`: compra hasta {amount} (te la devuelven)
+- `go.trip.you_offered`: Ofreciste {fare}, llegas en {minutes} min. Esperando que el cliente elija.
+- `go.trip.withdraw`: Retirar oferta
+- `go.trip.your_fare`: Tu precio
+- `go.trip.your_eta`: Llego en
+- `go.trip.minutes`: {minutes} min
+- `go.trip.send_offer`: Enviar oferta
+- `go.trip.error.kind`: Elige qué necesitas.
+- `go.trip.error.passengers`: Revisa el número de pasajeros.
+- `go.trip.error.moto_passengers`: En moto solo puede ir un pasajero.
+- `go.trip.error.ride_vehicle`: Un viaje se hace en moto o en carro.
+- `go.trip.error.description`: Cuéntale al conductor qué necesitas (al menos 5 caracteres).
+- `go.trip.error.fare`: Escribe un precio válido.
+- `go.trip.error.budget`: Revisa el monto para la compra.
+- `go.trip.error.eta`: Elige en cuánto tiempo llegas.
+- `go.trip.error.pickup`: Marca en el mapa dónde empieza.
+- `go.trip.error.dropoff`: Marca en el mapa a dónde va.
+- `go.trip.error.already_active`: Ya tienes un pedido de viaje o mandado en curso.
+- `go.trip.error.too_far`: Es demasiado lejos: el límite es {maxKm} km.
+- `go.trip.error.not_open`: Este pedido ya no está abierto.
+- `go.trip.error.offer_gone`: Esa oferta ya no está disponible. Elige otra.
+- `go.trip.error.driver_taken`: Ese conductor acaba de tomar otro pedido. Elige otra oferta.
+- `go.trip.error.state`: Ese paso ya no aplica a este pedido.
+- `go.trip.error.cancel_too_late`: Ya está en camino: no se puede cancelar desde aquí. Escríbele al conductor.
+- `go.home.trips`: Viajes y mandados
+- `go.home.trips_banner_title`: Nuevo: viajes, paquetes, mandados y ayuda personal →
+- `go.home.trips_banner_text`: Un conductor revisado por una persona para lo que necesites. Tú propones el precio y eliges a quién.
+- `go.trip.whatsapp_driver`: Escribir al conductor
+- `go.checkout.place`: Hacer pedido
+- `go.checkout.sign_in`: Entra para pedir
+- `go.map.aria`: Mapa
+- `go.map.use_my_location`: Usar mi ubicación
+- `go.map.pick_hint`: O toca el mapa, o arrastra el punto, hasta tu puerta.
+- `go.map.no_geolocation`: Este teléfono no puede dar su ubicación. Marca el punto en el mapa.
+- `go.map.location_denied`: No pudimos usar tu ubicación. Revisa el permiso del navegador, o marca el punto a mano.
+- `go.map.sharing`: Compartiendo tu ubicación con el cliente.
+- `go.map.offline`: Sin conexión: tu ubicación se enviará al volver la señal.
+- `go.map.seen`: Ubicación de hace {seconds} s
+- `go.orders.title`: Mis pedidos
+- `go.orders.none`: Todavía no has pedido nada.
+- `go.orders.back`: Mis pedidos
+- `go.order.placed_banner`: Pedido enviado. El negocio tiene {minutes} minutos para aceptarlo; te avisamos aquí.
+- `go.order.summary`: Tu pedido
+- `go.order.cash_note`: Pagas en efectivo al recibir.
+- `go.order.paying_with`: Pagarás con {amount}.
+- `go.order.cancel`: Cancelar pedido
+- `go.order.waiting_driver`: Cuando un repartidor lo tome, verás aquí quién es y dónde va.
+- `go.status.placed`: Enviado
+- `go.status.accepted`: En preparación
+- `go.status.ready`: Listo para recoger
+- `go.status.picked_up`: En camino
+- `go.status.delivered`: Entregado
+- `go.status.cancelled`: Cancelado
+- `go.status.rejected`: No aceptado
+- `go.step.placed`: Enviado
+- `go.step.accepted`: Aceptado
+- `go.step.ready`: Listo
+- `go.step.picked_up`: En camino
+- `go.step.delivered`: Entregado
+- `go.reason.store_declined`: El negocio no pudo aceptar este pedido. No se te cobró nada.
+- `go.reason.store_cancelled`: El negocio canceló el pedido. No se te cobró nada.
+- `go.reason.store_no_answer`: El negocio no respondió a tiempo, así que lo cancelamos. No se te cobró nada.
+- `go.reason.customer_cancelled`: Cancelaste este pedido.
+- `go.reason.store_suspended`: El negocio fue suspendido y el pedido se canceló. No se te cobró nada.
+- `go.driver.your_driver`: Tu repartidor
+- `go.driver.photo_of`: Foto de {name}
+- `go.driver.check_hint`: Antes de pagar, comprueba que la cara y la placa coinciden y pídele el código {code}.
+- `go.driver.whatsapp`: Escribir al repartidor
+- `go.driver.wa_text`: Hola, es sobre el pedido {code} de YavayaGo.
+- `go.store.apply_title`: Abre tu negocio en YavayaGo
+- `go.store.apply_lead`: Pon tu menú y recibe pedidos para entregar en tu ciudad.
+- `go.store.apply_review`: Una persona de Yavaya revisa cada negocio antes de abrirlo: que exista y que tú lo atiendes.
+- `go.store.apply_money`: Tú pones tus precios y tu envío. El cliente paga en efectivo al repartidor; el negocio y el repartidor se arreglan entre ellos.
+- `go.store.apply_free`: Abrir y vender en YavayaGo no cuesta nada por ahora: Yavaya no cobra comisión.
+- `go.store.saved`: Guardado.
+- `go.store.item_added`: Agregado al menú.
+- `go.store.state.pending`: Tu negocio está en revisión. Te avisamos cuando esté aprobado.
+- `go.store.state.approved`: Tu negocio está aprobado.
+- `go.store.state.rejected`: Tu negocio no fue aprobado. Corrige lo que se indica y envíalo de nuevo.
+- `go.store.state.suspended`: Tu negocio está suspendido.
+- `go.store.open_now`: Abrir ahora
+- `go.store.close_now`: Cerrar
+- `go.store.see_public`: Ver como cliente
+- `go.store.orders`: Pedidos
+- `go.store.no_orders`: Sin pedidos por ahora. Esta página se actualiza sola.
+- `go.store.new_orders`: Nuevos ({count})
+- `go.store.preparing`: En preparación
+- `go.store.on_the_way`: En camino
+- `go.store.finished_today`: Terminados hoy ({count})
+- `go.store.accept`: Aceptar
+- `go.store.decline`: No puedo
+- `go.store.ready`: Está listo
+- `go.store.cancel`: Cancelar
+- `go.store.driver_coming`: {name} lo recoge
+- `go.store.no_driver_yet`: Buscando repartidor.
+- `go.store.menu`: Menú
+- `go.store.edit_details`: Datos del negocio
+- `go.store.your_whatsapp`: Tu WhatsApp para clientes:
+- `go.form.name`: Nombre del negocio
+- `go.form.category`: Tipo de negocio
+- `go.form.about`: Qué ofreces
+- `go.form.city`: Ciudad
+- `go.form.address`: Dirección
+- `go.form.address_hint`: Como la darías a alguien: frente al parque, casa verde
+- `go.form.map`: Marca la puerta en el mapa
+- `go.form.whatsapp`: WhatsApp
+- `go.form.hours`: Horario
+- `go.form.hours_hint`: Lunes a sábado, 7 am a 8 pm
+- `go.form.delivery_fee`: Costo de envío
+- `go.form.minimum`: Pedido mínimo
+- `go.form.prep`: Minutos de preparación
+- `go.form.fee_hint`: En la moneda de tu país. El envío lo recibe el repartidor.
+- `go.form.photo`: Foto del negocio (opcional)
+- `go.form.photo_hint`: Hasta {maxMegabytes} MB.
+- `go.form.save`: Guardar
+- `go.form.apply`: Enviar a revisión
+- `go.menu.section`: Sección
+- `go.menu.section_hint`: Pupusas, Bebidas...
+- `go.menu.name`: Producto
+- `go.menu.price`: Precio
+- `go.menu.description`: Descripción (opcional)
+- `go.menu.photo`: Foto (opcional)
+- `go.menu.add`: Agregar al menú
+- `go.menu.sold_out`: Agotado
+- `go.menu.mark_sold_out`: Marcar agotado
+- `go.menu.mark_available`: Volver a ofrecer
+- `go.menu.remove`: Quitar del menú
+- `go.driver.title`: Reparte con YavayaGo
+- `go.driver.applied`: Recibimos tu solicitud. Una persona de Yavaya te llamará al número que diste para comprobarlo.
+- `go.driver.state.pending`: Tu solicitud está en revisión. Te llamaremos al número que diste.
+- `go.driver.state.approved`: Estás aprobado para repartir.
+- `go.driver.state.rejected`: Tu solicitud no fue aprobada. Puedes corregirla y enviarla de nuevo.
+- `go.driver.state.suspended`: Tu cuenta de repartidor está suspendida.
+- `go.driver.online`: Disponible
+- `go.driver.offline`: No disponible
+- `go.driver.go_online`: Empezar a repartir
+- `go.driver.go_offline`: Terminar por hoy
+- `go.driver.current`: Tu entrega
+- `go.driver.sharing_note`: Mientras esta página esté abierta, tu ubicación se comparte solo con este cliente. Al entregar, deja de compartirse.
+- `go.driver.pickup`: Recoger en
+- `go.driver.dropoff`: Entregar en
+- `go.driver.customer`: Cliente
+- `go.driver.collect`: Cobrar
+- `go.driver.change_for`: paga con {amount}, lleva {change} de cambio
+- `go.driver.directions`: Cómo llegar
+- `go.driver.wa_customer`: Hola, soy tu repartidor de YavayaGo, pedido {code}.
+- `go.driver.picked_up`: Ya lo recogí
+- `go.driver.release`: No puedo llevarlo
+- `go.driver.delivered`: Entregado y cobrado
+- `go.driver.available`: Pedidos para llevar
+- `go.driver.none_available`: Nada por ahora. Esta página se actualiza sola.
+- `go.driver.offer`: {items} productos · {km} km hasta el cliente · envío {fee} · cobrar {total}
+- `go.driver.take`: Lo llevo
+- `go.driver.apply_lead`: Reparte en tu ciudad con tu moto, carro, bicicleta o a pie.
+- `go.driver.req_identity`: Tu documento de identidad. Solo lo ve la persona de Yavaya que revisa tu solicitud.
+- `go.driver.req_photo`: Una foto clara de tu cara: es la que verá cada cliente.
+- `go.driver.req_vehicle`: Tu vehículo y su placa, si tiene.
+- `go.driver.req_phone`: Tu teléfono: te llamaremos para comprobarlo.
+- `go.driver.req_money`: Cobras el envío que pone cada negocio; el cliente te paga en efectivo. Yavaya no te cobra comisión.
+- `go.driver.vehicle`: Vehículo
+- `go.driver.vehicle_description`: Marca, modelo y color
+- `go.driver.vehicle_hint`: Honda roja
+- `go.driver.plate`: Placa
+- `go.driver.plate_hint`: Obligatoria para moto y carro.
+- `go.driver.whatsapp_hint`: Lo ven los clientes de tus entregas y la persona que te revise.
+- `go.driver.photo`: Foto de tu cara
+- `go.driver.photo_hint`: De frente, con buena luz, sin lentes oscuros ni gorra.
+- `go.driver.document`: Foto de tu documento de identidad
+- `go.driver.document_hint`: Se guarda en privado. Nunca se muestra a clientes ni negocios.
+- `go.driver.consent`: Acepto que Yavaya revise mi identidad y comparta mi nombre, mi foto, mi vehículo y mi ubicación con los clientes de mis entregas, solo mientras las llevo.
+- `go.driver.apply`: Enviar solicitud
+- `go.review.title`: YavayaGo: negocios y repartidores
+- `go.review.guidance`: Nadie reparte ni vende sin que una persona lo revise. Escribe siempre qué comprobaste.
+- `go.review.drivers`: Repartidores ({count} por revisar)
+- `go.review.drivers_guidance`: Compara la cara con el documento, llama al número que dio y comprueba el vehículo. Escribe qué hiciste; antecedentes, solo donde la ley lo permita.
+- `go.review.stores`: Negocios ({count} por revisar)
+- `go.review.stores_guidance`: Comprueba que el negocio existe en ese lugar y que esta persona lo atiende.
+- `go.review.empty`: Nada por revisar.
+- `go.review.face`: Cara
+- `go.review.document`: Documento (privado)
+- `go.review.phone_sms_verified`: teléfono verificado por SMS
+- `go.review.phone_not_verified`: teléfono sin verificar por SMS
+- `go.review.phone_confirmed`: Llamé a este número y habló la persona de la foto
+- `go.review.note`: Qué comprobaste
+- `go.review.note_hint_driver`: Llamé al número, el documento coincide con la cara, vi la placa...
+- `go.review.note_hint_store`: Visité el lugar, o lo vi en un mapa y hablé con el dueño...
+- `go.review.last_note`: Nota anterior: {note}
+- `go.review.see_on_map`: ver en el mapa
+- `go.review.approve`: Aprobar
+- `go.review.reject`: Rechazar
+- `go.review.suspend`: Suspender
+- `go.review.reinstate`: Reactivar
+- `go.error.store_name`: Escribe el nombre del negocio (2 a 80 caracteres).
+- `go.error.category`: Elige el tipo de negocio.
+- `go.error.about`: Cuenta qué ofreces (10 a 600 caracteres).
+- `go.error.location`: Elige la ciudad.
+- `go.error.address`: Escribe la dirección.
+- `go.error.map_point`: Marca el punto en el mapa.
+- `go.error.whatsapp`: Escribe el WhatsApp con código de país, por ejemplo +505 8888 1234.
+- `go.error.hours`: Escribe el horario.
+- `go.error.delivery_fee`: Escribe el costo de envío, por ejemplo 30 o 1.50.
+- `go.error.minimum_order`: Escribe el pedido mínimo, o 0.
+- `go.error.prep`: El tiempo de preparación va de 5 a 180 minutos.
+- `go.error.store_suspended`: Este negocio está suspendido.
+- `go.error.store_not_approved`: Tu negocio todavía no está aprobado.
+- `go.error.review_state`: Esto ya cambió; recarga la página.
+- `go.error.review_note`: Escribe qué comprobaste.
+- `go.error.section`: Escribe la sección del menú.
+- `go.error.item_name`: Escribe el nombre del producto.
+- `go.error.item_description`: La descripción es demasiado larga.
+- `go.error.price`: Escribe el precio, por ejemplo 45 o 2.50.
+- `go.error.menu_full`: El menú ya tiene el máximo de {max} productos.
+- `go.error.vehicle`: Elige el vehículo.
+- `go.error.vehicle_description`: Describe tu vehículo.
+- `go.error.plate`: Escribe la placa.
+- `go.error.driver_exists`: Ya tienes una solicitud de repartidor.
+- `go.error.driver_documents`: Sube la foto de tu cara y la de tu documento.
+- `go.error.driver_consent`: Para repartir hay que aceptar la revisión y lo que ven los clientes.
+- `go.error.phone_unconfirmed`: Antes de aprobar, llama al número y marca la casilla.
+- `go.error.driver_not_approved`: Tu cuenta de repartidor no está aprobada.
+- `go.error.driver_offline`: Primero ponte disponible.
+- `go.error.driver_busy`: Termina tu entrega actual antes de tomar otra.
+- `go.error.already_taken`: Otro repartidor ya tomó este pedido.
+- `go.error.own_order`: No puedes llevar un pedido tuyo o de tu negocio.
+- `go.error.store`: Ese negocio no existe.
+- `go.error.store_closed`: Este negocio cerró mientras pedías.
+- `go.error.own_store`: No puedes pedir en tu propio negocio.
+- `go.error.too_many_open`: Ya tienes pedidos en curso. Espera a recibirlos para pedir otro.
+- `go.error.too_far`: Ese punto está a más de {maxKm} km del negocio.
+- `go.error.item`: Ese producto no existe.
+- `go.error.item_unavailable`: Algo de tu pedido se agotó. Revisa el carrito.
+- `go.error.quantity`: Cantidad no válida.
+- `go.error.empty_cart`: Tu carrito está vacío.
+- `go.error.too_many_lines`: Demasiados productos distintos en un pedido.
+- `go.error.below_minimum`: Tu pedido no llega al mínimo del negocio.
+- `go.error.paying_with`: Lo que pagas debe cubrir el total.
+- `go.error.directions`: Escribe cómo llegar (al menos 5 caracteres).
+- `go.error.note`: La nota es demasiado larga.
+- `go.error.order_state`: Este pedido ya cambió; recarga la página.
+- `go.error.cancel_too_late`: El negocio ya está preparando tu pedido; escríbele si necesitas cambiar algo.
+- `go.error.verify_email`: Primero verifica tu correo.
+- `go.error.account_restricted`: Tu cuenta no puede hacer esto ahora.
+- `go.error.rate_limited`: Demasiados intentos seguidos. Espera un momento.
+- `go.error.upload`: No pudimos subir la foto. Intenta de nuevo.
+- `go.form.map_hint`: Al elegir la ciudad, el mapa va allí. Luego mueve el punto hasta tu puerta.
+
+## phone
+- `phone.title`: Tu teléfono
+- `phone.subtitle`: Verifica tu número con un código por SMS. Suma la insignia de teléfono verificado a tu perfil, y en Mercadito, si es el mismo número de WhatsApp, los compradores verán que está verificado.
+- `phone.banner`: Verifica tu teléfono
+- `phone.verified_label`: Teléfono verificado
+- `phone.not_verified`: Todavía no has verificado un teléfono.
+- `phone.unavailable`: La verificación por SMS todavía no está activa: Yavaya aún no tiene un proveedor de SMS configurado. Por ahora ningún número se puede verificar, y no se envía nada.
+- `phone.console`: Modo de desarrollo: el código se escribe en el registro del servidor. No se envía ningún SMS.
+- `phone.start`: Verificar un número
+- `phone.change`: Verificar otro número
+- `phone.field`: Número de teléfono
+- `phone.field_hint`: Con el código de país, por ejemplo +52 para México. Te enviaremos un código de 6 dígitos por SMS.
+- `phone.placeholder`: +52 55 1234 5678
+- `phone.send`: Enviar código
+- `phone.code_title`: Escribe el código
+- `phone.sent`: Enviamos un código por SMS a {phone}. Vence en {minutes} minutos.
+- `phone.code`: Código de 6 dígitos
+- `phone.confirm`: Verificar
+- `phone.start_over`: Usar otro número o pedir otro código
+- `phone.done`: Listo: tu teléfono quedó verificado.
+- `phone.whatsapp_differs`: Tu número de WhatsApp en Mercadito ({whatsapp}) no es el verificado, así que tus anuncios lo muestran como no verificado.
+- `phone.use_for_whatsapp`: Usar el número verificado para WhatsApp
+- `phone.whatsapp_updated`: Tu número de WhatsApp en Mercadito ahora es el verificado.
+- `phone.error.invalid_number`: Ese número no parece válido. Escríbelo con el código de país, por ejemplo +52 55 1234 5678.
+- `phone.error.blocked`: Por ahora no podemos enviar SMS a ese número o a ese país.
+- `phone.error.delivery_failed`: El SMS no se pudo enviar. Inténtalo de nuevo en unos minutos.
+- `phone.error.cooldown`: Espera un minuto antes de pedir otro código.
+- `phone.error.daily_limit`: Llegaste al límite de códigos por hoy. Inténtalo mañana.
+- `phone.error.already_verified`: Ese número ya está verificado en tu cuenta.
+- `phone.error.unavailable`: La verificación por SMS no está disponible en este momento.
+- `phone.error.rate_limited`: Demasiados intentos. Espera un rato antes de volver a intentarlo.
+- `phone.error.no_challenge`: No hay un código pendiente. Pide uno nuevo.
+- `phone.error.expired`: El código venció. Pide uno nuevo.
+- `phone.error.too_many_attempts`: Demasiados intentos con ese código. Pide uno nuevo.
+- `phone.error.mismatch`: Ese código no es correcto.
+- `phone.error.failed`: No pudimos comprobar el código en este momento. Inténtalo de nuevo.
+- `phone.error.format`: Escribe los 6 dígitos del código.

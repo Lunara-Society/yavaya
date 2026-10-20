@@ -8,6 +8,7 @@ import { safeSpaceAvailable } from '@/server/domains/safe-space/service';
 import { twoStepAvailable } from '@/server/domains/identity/two-step';
 import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
 import { googleSignIn } from '@/server/domains/identity/google';
+import { roxiAvailability } from '@/server/domains/roxi/service';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -41,6 +42,7 @@ export function integrationCapabilities(): Capability[] {
   const media = mediaStorageAvailability();
   const sms = phoneVerifierAvailability();
   const google = googleSignIn();
+  const roxi = roxiAvailability();
 
   const integrations: Capability[] = [
     {
@@ -78,6 +80,19 @@ export function integrationCapabilities(): Capability[] {
       state: google.available ? 'REAL' : 'REQUIRES_CONFIGURATION',
       group: 'integration',
       blockedBy: google.available ? undefined : google.reason,
+    },
+    {
+      key: 'roxi',
+      nameKey: 'capability.roxi.name',
+      detailKey: 'capability.roxi.detail',
+      // Measured: the button appears only when an agent is configured, and
+      // what Roxi does on the site goes through the same forms and services
+      // as everything else, so there is nothing further to simulate.
+      state: roxi.available ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: roxi.available
+        ? undefined
+        : 'Set ROXI_AGENT_ID to the ElevenLabs agent (docs/roxi/README.md). ELEVENLABS_API_KEY is optional and makes conversations start only from signed links.',
     },
     {
       key: 'kyc',

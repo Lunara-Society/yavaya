@@ -180,8 +180,10 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
     `img-src 'self' blob: data:`,
     `font-src 'self'`,
     // Nothing third-party is contacted from the browser except Google's
-    // sign-in prompt. Widening this is a deliberate decision, not a convenience.
-    `connect-src 'self' https://accounts.google.com/gsi/`,
+    // sign-in prompt and Roxi's conversation with ElevenLabs (one API host:
+    // the WebSocket and photo uploads). Widening this is a deliberate
+    // decision, not a convenience.
+    `connect-src 'self' https://accounts.google.com/gsi/ https://api.elevenlabs.io wss://api.elevenlabs.io`,
     // The map library draws in a worker it creates from a blob. Tiles still
     // come only from this origin (see /api/map).
     `worker-src 'self' blob:`,

@@ -1113,7 +1113,7 @@ export function PrivacyBody({ c }: { c: SiteContent }) {
         <div className="wrap">
           <div className="prose">
             {p.sections.map((s) => (
-              <div key={s.title}>
+              <div key={s.title} id={'id' in s ? s.id : undefined}>
                 <h2>{s.title}</h2>
                 <Paras text={s.text} />
                 {'list' in s && s.list ? (

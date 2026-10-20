@@ -45,6 +45,14 @@ export const RATE_LIMITS = {
    */
   phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
+  /**
+   * Conversations with Roxi a member may start in a day. Each one costs real
+   * money (voice and the model, billed by ElevenLabs), so this is a cost
+   * guard, not a judgement: a member selling a few things uses two or three.
+   */
+  roxiConversation: { bucket: 'roxi_conversation', limit: 20, windowSeconds: 24 * 60 * 60 },
+  /** Searches and look-ups Roxi makes for a member: enough for a busy conversation, not for scraping. */
+  roxiLookup: { bucket: 'roxi_lookup', limit: 120, windowSeconds: 60 * 60 },
   /** Appeals from a sanction notice, per network: one appeal each, a few tries for typos. */
   appeal: { bucket: 'appeal', limit: 5, windowSeconds: 60 * 60 },
   /** Publishing during the 72-hour monitoring window. */

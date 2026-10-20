@@ -1,0 +1,280 @@
+[
+  {
+    "type": "client",
+    "name": "search_yavaya",
+    "description": "Searches ONE Yavaya district for the member, exactly as they would see it there (same visibility rules), and shows the results as tappable cards in the chat. Returns up to 6 results, each with title, detail and url, plus `more` when there are more on the district page. Use it whenever the member wants to find, buy, hire, adopt, order from, or asks whether something exists. Search before saying something is not on Yavaya. Results are real and live: describe only what comes back, never invent items, prices or people.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "description": "Which district to search. mercadito = things for sale (Mercadito). yavayago = stores that deliver (YavayaGo). work = job and project offers (Trabajo). animals = animals for adoption from verified rescuers (Animales). sanctuary = verified churches with their next service (Santuario). services = open requests on the Servicios board, people asking for help that a provider can answer (not a list of providers).",
+          "enum": [
+            "mercadito",
+            "yavayago",
+            "work",
+            "animals",
+            "sanctuary",
+            "services"
+          ]
+        },
+        "query": {
+          "type": "string",
+          "description": "Optional. A few words to look for, in the member's language (for example 'bicicleta', 'iPhone 13', 'pizza'). Leave out to list the newest."
+        },
+        "category": {
+          "type": "string",
+          "description": "Optional. Narrow to one category, using these exact values. mercadito: vehicles, real_estate, electronics, services, fashion, home, sports, classifieds. yavayago: food, groceries, pharmacy, bakery, drinks, essentials, local. work: technology, design, marketing, writing, finance, administration, sales, construction, creative, education, health, hospitality, agriculture, transport, other. animals: dog, cat, other. services: home_repairs, cleaning_garden, vehicles, technology, mental_health, health_care, children_lessons, legal_paperwork, beauty, events. sanctuary: none."
+        },
+        "place": {
+          "type": "string",
+          "description": "Optional. A city or town as the member said it ('Managua', 'León', 'San José'). Includes everything inside that place. Leave out to search everywhere."
+        }
+      },
+      "required": [
+        "scope"
+      ]
+    }
+  },
+  {
+    "type": "client",
+    "name": "my_account",
+    "description": "Reads the member's own account: first name, YAY ID, place, whether the email is verified, whether two-step sign-in is on, whether listings show their WhatsApp, token balance, reputation (score out of max), Mercadito (open listings, free listings left and the free allowance, latest 5 listings with price, status and url), and notifications (unread count and the latest 5). Use it before answering anything about their tokens, listings, reputation, notifications or account security, and before preparing a listing, to tell them whether it will be free.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "type": "client",
+    "name": "prepare_listing",
+    "description": "Prepares a Mercadito listing: opens the publish form on the member's screen and fills it with this draft, attaching the photos the member sent in this conversation. Nothing is published. The member checks it, adds the price if missing and their place, and taps Publicar. Use it when the member wants to sell something, typically after they send a photo. Write the draft yourself from the photo and what they said; ask only for what you cannot see (above all the price, and the condition if unclear).",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Listing title, 4 to 90 characters, specific and honest: what it is, brand or model if visible, key detail (size, color, capacity). In the member's language. Example: 'Camiseta Nike Dri-FIT talla M, azul'."
+        },
+        "description": {
+          "type": "string",
+          "description": "Listing description, 10 to 4000 characters, in the member's language, plain text with short paragraphs or lines: what it is, condition and any visible wear, size or measurements if known, what is included, and pickup or delivery only if the member said so. Never invent specs, defects, warranties or history you cannot see or were not told."
+        },
+        "category": {
+          "type": "string",
+          "description": "Mercadito category. vehicles = Vehículos; real_estate = Bienes raíces; electronics = Electrónica; services = Servicios; fashion = Moda (clothes, shoes, accessories); home = Hogar; sports = Deportes; classifieds = Clasificados (anything else).",
+          "enum": [
+            "vehicles",
+            "real_estate",
+            "electronics",
+            "services",
+            "fashion",
+            "home",
+            "sports",
+            "classifieds"
+          ]
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition. new = Nuevo (unused, with tags or sealed); like_new = Como nuevo; used = Usado; for_parts = Para repuestos; not_applicable = No aplica (services, real estate).",
+          "enum": [
+            "new",
+            "like_new",
+            "used",
+            "for_parts",
+            "not_applicable"
+          ]
+        },
+        "price": {
+          "type": "string",
+          "description": "Optional. ONLY if the member said the price: the number as they said it, without currency symbol (for example '350' or '1200.50'). Never suggest or guess a price into this field."
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "category",
+        "condition"
+      ]
+    }
+  },
+  {
+    "type": "client",
+    "name": "prepare_post",
+    "description": "Prepares a post in one of Yavaya's free forms and opens it on the member's screen, filled in. Nothing is sent: the member reviews and sends it. Forms: community_post (Comunidad: ask for or offer neighbourly help, or family support), prayer_request (a prayer request for the prayer wall), service_request (Servicios: ask for a tradesperson or professional, optionally urgent 'Lo necesito hoy'), lost_pet and found_pet (Animales, Perdidos y encontrados; the photos the member sent are attached).",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "form": {
+          "type": "string",
+          "description": "Which form.",
+          "enum": [
+            "community_post",
+            "prayer_request",
+            "service_request",
+            "lost_pet",
+            "found_pet"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "description": "Title for community_post, prayer_request and service_request (4 to 100 characters). Not used for lost_pet or found_pet."
+        },
+        "body": {
+          "type": "string",
+          "description": "The text, in the member's words, tidied: what is needed or offered, where in general terms, and when. For lost_pet and found_pet: a description of the animal (color, size, collar, marks), where and when it was last seen or found. Never include the member's exact address or phone number; the forms have their own fields for contact."
+        },
+        "kind": {
+          "type": "string",
+          "description": "community_post only: help_request = Necesito ayuda; help_offer = Ofrezco ayuda; family_support = Apoyo familiar.",
+          "enum": [
+            "help_request",
+            "help_offer",
+            "family_support"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "description": "service_request only: home_repairs = Hogar y reparaciones; cleaning_garden = Limpieza y jardín; vehicles = Vehículos; technology = Tecnología; mental_health = Salud mental; health_care = Salud y cuidado; children_lessons = Niños y clases; legal_paperwork = Legal y trámites; beauty = Belleza y cuidado personal; events = Eventos.",
+          "enum": [
+            "home_repairs",
+            "cleaning_garden",
+            "vehicles",
+            "technology",
+            "mental_health",
+            "health_care",
+            "children_lessons",
+            "legal_paperwork",
+            "beauty",
+            "events"
+          ]
+        },
+        "urgent": {
+          "type": "boolean",
+          "description": "service_request only: true when the member needs it today ('Lo necesito hoy')."
+        },
+        "anonymous": {
+          "type": "boolean",
+          "description": "community_post (family_support), prayer_request and service_request in mental_health or health_care: true to hide the member's name from other members. Ask when the subject is personal."
+        },
+        "species": {
+          "type": "string",
+          "description": "lost_pet and found_pet: dog, cat or other.",
+          "enum": [
+            "dog",
+            "cat",
+            "other"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "lost_pet only: the animal's name, if it has one."
+        }
+      },
+      "required": [
+        "form"
+      ]
+    }
+  },
+  {
+    "type": "client",
+    "name": "open_page",
+    "description": "Opens a Yavaya page on the member's screen, by name. The conversation stays open. Use it when the member wants to go somewhere or when showing is easier than explaining. Opening 'violeta' (Espacio Violeta) ends this conversation, because Roxi is not present there: say so first.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "string",
+          "description": "The page. home = /, districts = /districts, mercadito = /mercadito, mercadito_publish = /mercadito/publish, my_listings = /mercadito/mine, yavayago = /yavayago, yavayago_trips = /yavayago/viajes, services = /services, services_new = /services/new, work = /work, community = /community, community_new = /community/new, sanctuary = /sanctuary, prayer_wall = /sanctuary/prayer, animals = /animals, animals_learn = /animals/learn, lost_and_found = /animals/lost, services_mine = /services/mine, services_provider = /services/provider, work_new = /work/posts/new, work_mine = /work/mine, work_profile = /work/profile, work_employer = /work/employer, yavayago_orders = /yavayago/orders, yavayago_store = /yavayago/store, yavayago_driver = /yavayago/driver, animals_mine = /animals/mine, animals_rescuer = /animals/rescuer, sanctuary_register = /sanctuary/register, sanctuary_manage = /sanctuary/manage, violeta = /violeta, account = /account, tokens = /account/tokens, tokens_info = /tokens, invite = /account/invite, phone = /account/phone, notifications = /notifications, settings = /settings, notification_settings = /settings#notifications, security = /settings#security, two_step = /settings/dos-pasos, help = /help, guide = /guia, trust = /trust, reputation = /reputation, pricing = /pricing, status = /status, roadmap = /roadmap, transparency = /transparency, about = /about, privacy = /privacy, terms = /terms",
+          "enum": [
+            "home",
+            "districts",
+            "mercadito",
+            "mercadito_publish",
+            "my_listings",
+            "yavayago",
+            "yavayago_trips",
+            "services",
+            "services_new",
+            "work",
+            "community",
+            "community_new",
+            "sanctuary",
+            "prayer_wall",
+            "animals",
+            "animals_learn",
+            "lost_and_found",
+            "services_mine",
+            "services_provider",
+            "work_new",
+            "work_mine",
+            "work_profile",
+            "work_employer",
+            "yavayago_orders",
+            "yavayago_store",
+            "yavayago_driver",
+            "animals_mine",
+            "animals_rescuer",
+            "sanctuary_register",
+            "sanctuary_manage",
+            "violeta",
+            "account",
+            "tokens",
+            "tokens_info",
+            "invite",
+            "phone",
+            "notifications",
+            "settings",
+            "notification_settings",
+            "security",
+            "two_step",
+            "help",
+            "guide",
+            "trust",
+            "reputation",
+            "pricing",
+            "status",
+            "roadmap",
+            "transparency",
+            "about",
+            "privacy",
+            "terms"
+          ]
+        }
+      },
+      "required": [
+        "page"
+      ]
+    }
+  },
+  {
+    "type": "client",
+    "name": "open_result",
+    "description": "Opens one result from search_yavaya on the member's screen (a listing, store, job, animal, church or service request). Use only a url that search_yavaya returned in this conversation.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "The url exactly as search_yavaya returned it, for example /mercadito/0b6c…"
+        }
+      },
+      "required": [
+        "url"
+      ]
+    }
+  }
+]

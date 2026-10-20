@@ -9,6 +9,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { RoxiPrefill } from '@/ui/roxi/prefill';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -35,6 +36,7 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
           </p>
         ) : null}
         <form action="/api/animals/lost" method="post" encType="multipart/form-data" className="mk-form" style={{ marginTop: 18 }}>
+          <RoxiPrefill form={kind === 'lost' ? 'lost_pet' : 'found_pet'} notice={t('roxi.prefill.notice')} />
           <input type="hidden" name="kind" value={kind} />
           <label>
             {t('animals.form.species')}

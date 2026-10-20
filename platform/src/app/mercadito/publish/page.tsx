@@ -115,7 +115,7 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
           </noscript>
           {/* A fresh id per visit names this listing before it exists, so a
               retried submission cannot publish (or charge) twice. */}
-          <ListingForm mode="create" listingId={randomUUID()} {...form} />
+          <ListingForm mode="create" listingId={randomUUID()} {...form} prefillNotice={t('roxi.prefill.notice')} />
         </>
       )}
     </>,

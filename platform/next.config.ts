@@ -14,7 +14,8 @@ const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'X-DNS-Prefetch-Control', value: 'off' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), payment=(), geolocation=(self)' },
+  // The microphone for this site only: speaking to Roxi. The browser still asks the member first.
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), payment=(), geolocation=(self)' },
   { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   {
     key: 'Strict-Transport-Security',

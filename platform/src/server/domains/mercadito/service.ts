@@ -192,6 +192,8 @@ export async function publishListing(
     input: ListingInput;
     images: StoredImage[];
     audit?: AuditContext;
+    /** Set when Roxi drafted the listing: the member still read it, priced it and sent it. */
+    assistedBy?: 'roxi';
   },
 ): Promise<{ listingId: string; deduplicated: boolean; cost: number }> {
   // Serialises this seller's publishes, so two tabs cannot both pass the
@@ -305,7 +307,13 @@ export async function publishListing(
     district: 'mercadito',
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
-    metadata: { category: input.category, photos: params.images.length, cost: charge.cost, flags },
+    metadata: {
+      category: input.category,
+      photos: params.images.length,
+      cost: charge.cost,
+      flags,
+      ...(params.assistedBy ? { assistedBy: params.assistedBy } : {}),
+    },
   });
   await notifySavedSearchMatches(tx, { listingId: params.listingId, sellerUserId: params.sellerUserId });
 

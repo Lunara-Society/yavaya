@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
 import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
+import { RoxiRoot } from '@/ui/roxi/roxi-root';
 import './globals.css';
 
 /**
@@ -78,7 +79,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
    */
   return (
     <html lang={locale} data-theme={theme ?? undefined}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Roxi, the assistant: here rather than in a page so a conversation survives navigation. */}
+        <RoxiRoot />
+      </body>
     </html>
   );
 }

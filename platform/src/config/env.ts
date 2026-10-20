@@ -131,6 +131,18 @@ const serverSchema = z.object({
    */
   GUIDE_UPLOAD_TOKEN: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(32).optional()),
 
+  /**
+   * Roxi, the assistant: the ElevenLabs agent members talk to. Not a secret —
+   * the browser needs it to connect — but without it Roxi is not offered.
+   */
+  ROXI_AGENT_ID: z.preprocess((value) => (value === '' ? undefined : value), z.string().regex(/^agent_[a-z0-9]+$/).optional()),
+  /**
+   * Optional. With it the agent can require a signed link per conversation,
+   * minted here for a signed-in member, instead of accepting any visitor of an
+   * allowed origin. See CONFIGURATION.md, "Roxi".
+   */
+  ELEVENLABS_API_KEY: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(20).optional()),
+
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.
   // ---------------------------------------------------------------------------

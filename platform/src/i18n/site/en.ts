@@ -783,15 +783,16 @@ export const siteEn: SiteContent = {
       lead: 'If your question is not here, it probably has no answer yet: Yavaya is under construction.',
       faq: [
         { q: 'What is Yavaya?', a: 'A digital ecosystem for Central America: buying and selling, ordering delivery, finding work, supporting causes, adopting animals and being there for each other in community — all with one account and one reputation.' },
-        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can already buy and sell on Mercadito; the other districts open in phases.' },
-        { q: 'When does Yavaya open?', a: 'It is open: Mercadito and Community are the first districts. We do not give dates we cannot keep for the others; the roadmap shows the order in which they will open.' },
-        { q: 'What does it cost?', a: ['Signing up, creating an account, viewing listings, reading content and receiving donations are **always free**.', 'What is paid is optional: Work subscriptions for professionals and visibility options. Nothing can be paid for today.'] },
+        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can use every open district: Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals.' },
+        { q: 'When does Yavaya open?', a: 'It is open, with seven districts working. The Status page shows what works today and what is missing, plainly; the roadmap shows what comes next. We do not give dates we cannot keep.' },
+        { q: 'What does it cost?', a: ['Signing up, creating an account, viewing listings, reading content and receiving donations are **always free**.', 'What is paid is optional. Today only tokens can be bought, by card: to feature a listing or to have more listings open than the free ones. Work subscriptions cannot be paid for yet.'] },
         { q: 'Are tokens cryptocurrency?', a: 'No. They are credits for taking part in the platform: posting, featuring, being seen. They are not an investment, cannot be traded, and there is no token market.' },
         { q: 'Do I have to use tokens?', a: 'Never. Cash is always the default and tokens are always optional.' },
         { q: 'How do you prevent scams?', a: 'With levelled verification, one account per person, visible reputation, review of listings and causes, limits for new accounts and visible moderation. The Trust page explains it.' },
         { q: 'Does Yavaya take a commission on donations?', a: 'No. Community causes have 0% Yavaya commission.' },
         { q: 'Which countries will it cover?', a: 'Guatemala, Belize, El Salvador, Honduras, Nicaragua, Costa Rica and Panama.' },
         { q: 'How do I contact you?', a: 'On WhatsApp at +505 5836 5522. The link is at the bottom of every page.' },
+        { q: 'Who is Roxi?', a: 'Yavaya\'s assistant, powered by artificial intelligence. Once you are signed in, the «Talk to Roxi» button lets you speak or write to her: she explains how everything works, searches the districts for you and prepares your posts. Send her a photo of something you want to sell and she writes the listing; you set the price and publish it. Roxi never publishes, pays or sends anything for you, and she can make mistakes: always check.' },
         { q: 'What does "DEMO" mean?', a: 'An illustrative example. It is not a real person or listing, it never counts in any statistic, and it disappears once real activity arrives.' },
       ],
     },
@@ -805,7 +806,7 @@ export const siteEn: SiteContent = {
       sections: [
         {
           title: '1. What Yavaya is today',
-          text: 'Yavaya is opening in stages. Today you can create your account, verify it, hold your identity and reputation, and buy and sell on Mercadito. The other districts open in phases. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
+          text: 'Yavaya is opening in stages. Today you can create your account, verify it, hold your identity and reputation, and use all seven districts: Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
         },
         {
           title: '2. Your account',
@@ -987,6 +988,18 @@ export const siteEn: SiteContent = {
           ],
         },
         {
+          id: 'roxi',
+          title: 'If you talk to Roxi',
+          text: 'Roxi is Yavaya\'s assistant, powered by artificial intelligence. She runs on **ElevenLabs**, which turns your voice into text and her answer into speech, and on a language model from **Anthropic** (Claude) that ElevenLabs uses to answer. She only takes part when you open a conversation.',
+          list: [
+            'When it starts, Roxi receives your first name, your YAY ID, your city, whether you verified your email, your language and the page you are on. Nothing else from your account.',
+            'What you say or write, and the photos you send her, are processed by ElevenLabs and the language model to answer you. **Your voice is not recorded.** The text of the conversation is kept at ElevenLabs for 30 days, to review quality and possible abuse, and is then deleted.',
+            'When Roxi searches the districts or looks at your account (tokens, reputation, your listings, your notifications), she does it with your own session: she sees only what you could open yourself, and that goes into the conversation.',
+            'Roxi does not publish, pay or send anything to other people. She prepares a draft in the usual form and you decide whether to send it. On Mercadito, the audit record notes that Roxi helped write the listing.',
+            'Roxi is not available in Espacio Violeta or on the sign-in and sign-up pages, and nothing from Espacio Violeta reaches her. There is a daily limit of conversations per person.',
+          ],
+        },
+        {
           title: 'To protect everyone',
           text: 'To enforce one person, one account, we keep security signals as encrypted digests, never in the clear. Important actions go into an audit log that cannot be rewritten; it stores digests, not your IP address.',
         },
@@ -997,6 +1010,7 @@ export const siteEn: SiteContent = {
             '**dLocal Go**, **Stripe** and **PayPal** process payments when you buy tokens, depending on your country: they receive the amount, a purchase reference and the details you enter on their payment page. Yavaya does not receive your card details.',
             '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
+            '**ElevenLabs**, and the **Anthropic** language model it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
           ],
         },
         {
