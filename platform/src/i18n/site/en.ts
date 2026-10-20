@@ -550,7 +550,7 @@ export const siteEn: SiteContent = {
       ],
       journeyHead: { eyebrow: 'Your first steps', title: 'Complete your foundation' },
       journey: [
-        { title: 'Verify your phone', text: 'The first step of trust.' },
+        { title: 'Verify your email', text: 'The first step of trust.' },
         { title: 'Add your photo', text: 'People trust people.' },
         { title: 'Write your description', text: 'Who you are and what you do.' },
         { title: 'Choose your interests', text: 'So we show you what matters to you.' },

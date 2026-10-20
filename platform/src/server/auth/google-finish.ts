@@ -2,11 +2,9 @@ import 'server-only';
 import { db } from '@/server/db/client';
 import { isDomainError } from '@/server/errors';
 import { signInWithGoogle, type GoogleProfile } from '@/server/domains/identity/google';
-import { hasUnseenWelcome } from '@/server/domains/access/welcome';
-import { createSession } from './session';
-import { setSessionCookie } from './cookies';
 import { requestContext } from './context';
-import { holdSignup, rememberGoogle } from './google-cookies';
+import { holdSignup } from './google-cookies';
+import { beginSignIn } from './sign-in';
 
 export type GoogleFinish = { ok: true; to: string } | { ok: false; reason: 'unavailable' | 'busy' | 'failed' };
 
@@ -28,10 +26,6 @@ export async function finishGoogleSignIn(profile: GoogleProfile, next: string, i
     await holdSignup({ profile, next, inviter });
     return { ok: true, to: '/register/google' };
   }
-  const userId = outcome.userId;
-  const session = await db().transaction((tx) => createSession(tx, { userId, ipHash: context.addressHash, userAgent: context.userAgent }));
-  await setSessionCookie(session.token, session.absoluteExpiresAt);
-  await rememberGoogle(profile.subject);
-  // Someone just named to the team sees their welcome first, once.
-  return { ok: true, to: (await hasUnseenWelcome(db(), userId)) ? '/welcome' : next };
+  // With two-step on, Google is the first factor, not the whole way in.
+  return { ok: true, to: await beginSignIn(outcome.userId, next, profile.subject) };
 }

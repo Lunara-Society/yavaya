@@ -1,4 +1,5 @@
 import {
+  bigint,
   boolean,
   char,
   doublePrecision,
@@ -176,6 +177,55 @@ export const externalIdentities = pgTable(
     uniqueIndex('external_identities_provider_subject_key').on(table.provider, table.subject),
     index('external_identities_user_idx').on(table.userId),
   ],
+);
+
+/**
+ * Two-step sign-in: the authenticator secret for an account that turned it
+ * on. Sealed at rest under TWO_STEP_KEY — a database copy alone cannot mint
+ * codes. `lastUsedStep` is the 30-second window of the last accepted code, so
+ * the same code cannot be used twice, even within its own window.
+ */
+export const twoStepFactors = pgTable('two_step_factors', {
+  userId: uuid('user_id')
+    .primaryKey()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  secretSealed: text('secret_sealed').notNull(),
+  lastUsedStep: bigint('last_used_step', { mode: 'number' }).notNull().default(0),
+  enabledAt: timestamp('enabled_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** One-time codes for when the phone is lost. Only their hashes are kept. */
+export const twoStepRecoveryCodes = pgTable(
+  'two_step_recovery_codes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    codeHash: text('code_hash').notNull(),
+    usedAt: timestamp('used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('two_step_recovery_codes_user_idx').on(table.userId), uniqueIndex('two_step_recovery_codes_hash_key').on(table.codeHash)],
+);
+
+/**
+ * Password reset links. The token exists only in the email; this keeps its
+ * hash, so a database copy cannot be used to reset anyone's password.
+ */
+export const passwordResets = pgTable(
+  'password_resets',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    usedAt: timestamp('used_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('password_resets_token_hash_key').on(table.tokenHash), index('password_resets_user_idx').on(table.userId)],
 );
 
 export const devices = pgTable(

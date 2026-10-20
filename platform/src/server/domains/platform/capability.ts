@@ -5,6 +5,7 @@ import { listProviderAvailability } from '@/server/domains/payments/service';
 import { emailAvailability } from '@/server/domains/notifications/email/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 import { safeSpaceAvailable } from '@/server/domains/safe-space/service';
+import { twoStepAvailable } from '@/server/domains/identity/two-step';
 import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
 import { googleSignIn } from '@/server/domains/identity/google';
 
@@ -65,7 +66,9 @@ export function integrationCapabilities(): Capability[] {
       // the console verifier logs codes and sends nothing.
       state: smsCapabilityState(),
       group: 'integration',
-      blockedBy: sms.available && sms.provider !== 'console' ? undefined : sms.available ? 'SMS_PROVIDER=console writes codes to the log and sends nothing.' : sms.reason,
+      // Deferred by the owner (20 October 2026): SMS costs per message, so phone
+      // verification comes later; email, Google and two-step sign-in come first.
+      blockedBy: sms.available && sms.provider !== 'console' ? undefined : sms.available ? 'SMS_PROVIDER=console writes codes to the log and sends nothing.' : `Deferred by the owner's decision (20 October 2026): phone verification comes later. ${sms.reason}`,
     },
     {
       key: 'google_sign_in',
@@ -146,6 +149,12 @@ function measured(capability: Capability): Capability {
   if (capability.key === 'mercadito') {
     const media = mediaStorageAvailability();
     return media.available ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
+  }
+  if (capability.key === 'two_step') {
+    return twoStepAvailable() ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
+  }
+  if (capability.key === 'password_reset') {
+    return emailCapabilityState() === 'REAL' ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
   }
   if (capability.key === 'safe_space') {
     return safeSpaceAvailable() ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;

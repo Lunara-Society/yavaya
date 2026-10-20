@@ -31,6 +31,11 @@ export const RATE_LIMITS = {
   login: { bucket: 'login', limit: 8, windowSeconds: 15 * 60 },
   register: { bucket: 'register', limit: 5, windowSeconds: 60 * 60 },
   verifyCode: { bucket: 'verify_code', limit: 10, windowSeconds: 15 * 60 },
+  /** Reset links asked for, per network and per address: a mailbox is not a target. */
+  passwordResetNetwork: { bucket: 'password_reset_network', limit: 5, windowSeconds: 60 * 60 },
+  passwordResetAddress: { bucket: 'password_reset_address', limit: 3, windowSeconds: 60 * 60 },
+  /** Authenticator codes, per account: six digits fall to guessing without a cap. */
+  twoStep: { bucket: 'two_step', limit: 6, windowSeconds: 15 * 60 },
   resendCode: { bucket: 'resend_code', limit: 5, windowSeconds: 60 * 60 },
   /** Asking for an SMS code, per member. Each one costs money to send. */
   phoneStart: { bucket: 'phone_start', limit: 5, windowSeconds: 60 * 60 },

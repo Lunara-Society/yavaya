@@ -192,8 +192,29 @@ export const SESSION_RULES = {
   cookieName: 'yav_session',
 } as const;
 
+/**
+ * Two-step sign-in with an authenticator app (TOTP, RFC 6238). Free to run —
+ * nothing is sent to anyone — which is why it came before SMS (the owner's
+ * decision, 20 October 2026: phone verification waits; free, strong methods
+ * first).
+ */
+export const TWO_STEP_RULES = {
+  issuer: 'Yavaya',
+  digits: 6,
+  periodSeconds: 30,
+  /** Codes one step either side are accepted: phone clocks drift. */
+  driftSteps: 1,
+  recoveryCodeCount: 10,
+  /** Between the password (or Google) and the code. */
+  pendingMinutes: 5,
+  /** To scan the code and type the first number. */
+  setupMinutes: 15,
+} as const;
+
 export const VERIFICATION_RULES = {
   emailCodeTtlMinutes: 30,
+  /** A reset link is single-use and short-lived: it is a key to the account. */
+  passwordResetTtlMinutes: 30,
   phoneCodeTtlMinutes: 10,
   maxAttemptsPerChallenge: 5,
   resendCooldownSeconds: 60,

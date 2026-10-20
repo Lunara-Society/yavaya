@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: 'Sign in' };
 
 const GOOGLE_NOTICES = ['cancelled', 'failed', 'unavailable', 'busy'] as const;
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ salida?: string; google?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ salida?: string; google?: string; clave?: string }> }) {
   const { t, language, theme, member } = await shellContext();
   const query = await searchParams;
   const googleNotice = GOOGLE_NOTICES.find((code) => code === query.google) ?? null;
@@ -27,12 +27,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         mode="login"
         title={t('auth.login.title')}
         subtitle={t(google ? 'auth.login.subtitle' : 'auth.login.subtitle_email')}
-        notice={googleNotice ?? (signedOut ? 'signed_out' : ended ? 'ended' : null)}
+        notice={googleNotice ?? (query.clave ? 'password_reset' : signedOut ? 'signed_out' : ended ? 'ended' : null)}
         google={google}
         googleHref="/auth/google"
         remembered={Boolean(await googleHint())}
       >
-        <LoginForm labels={{ email: t('auth.email'), password: t('auth.password'), submit: t('auth.submit_login') }} />
+        <LoginForm labels={{ email: t('auth.email'), password: t('auth.password'), submit: t('auth.submit_login'), forgot: t('auth.forgot.link') }} />
       </AuthCard>
     </AppShell>
   );

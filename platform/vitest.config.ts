@@ -27,6 +27,7 @@ export default defineConfig({
       SESSION_SECRET: 'test-session-secret-value-that-is-long-enough-000',
       SIGNAL_PEPPER: 'test-signal-pepper-value-that-is-long-enough-0000',
       SAFE_SPACE_KEY: 'test-safe-space-key-value-that-is-long-enough-00',
+      TWO_STEP_KEY: 'test-two-step-key-value-that-is-long-enough-0000',
       PRIMARY_ADMIN_EMAIL: 'yavayago@gmail.com',
     },
   },

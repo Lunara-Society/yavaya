@@ -1,4 +1,4 @@
-import { and, eq, isNull, lt, sql } from 'drizzle-orm';
+import { and, eq, gt, isNull, lt, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { sessions, users } from '@/server/db/schema';
 import { SESSION_RULES } from '@/config/business-rules';
@@ -193,4 +193,52 @@ export async function purgeExpiredSessions(executor: Executor): Promise<number> 
     .where(lt(sessions.absoluteExpiresAt, new Date()))
     .returning({ id: sessions.id });
   return removed.length;
+}
+
+/** Sessions that can still sign someone in, newest activity first — for "where you're signed in". */
+export async function activeSessions(
+  executor: Executor,
+  userId: string,
+  now = new Date(),
+): Promise<{ id: string; userAgent: string | null; createdAt: Date; lastUsedAt: Date }[]> {
+  const idleCutoff = new Date(now.getTime() - SESSION_RULES.idleTimeoutMinutes * 60_000);
+  return executor
+    .select({ id: sessions.id, userAgent: sessions.userAgent, createdAt: sessions.createdAt, lastUsedAt: sessions.lastUsedAt })
+    .from(sessions)
+    .where(
+      and(
+        eq(sessions.userId, userId),
+        isNull(sessions.revokedAt),
+        gt(sessions.expiresAt, now),
+        gt(sessions.absoluteExpiresAt, now),
+        gt(sessions.lastUsedAt, idleCutoff),
+      ),
+    )
+    .orderBy(sql`${sessions.lastUsedAt} desc`)
+    .limit(20);
+}
+
+/**
+ * A device as a person would name it — browser and system — from the user
+ * agent. Rough on purpose: enough to recognise one's own phone, nothing more.
+ */
+export function describeDevice(userAgent: string | null): { browser: string | null; system: string | null } {
+  if (!userAgent) return { browser: null, system: null };
+  const browser =
+    /Edg\//.test(userAgent) ? 'Edge'
+    : /OPR\/|Opera/.test(userAgent) ? 'Opera'
+    : /SamsungBrowser/.test(userAgent) ? 'Samsung Internet'
+    : /Firefox\//.test(userAgent) ? 'Firefox'
+    : /Chrome\//.test(userAgent) ? 'Chrome'
+    : /Safari\//.test(userAgent) ? 'Safari'
+    : null;
+  const system =
+    /Android/.test(userAgent) ? 'Android'
+    : /iPhone|iPad|iPod/.test(userAgent) ? 'iOS'
+    : /Windows/.test(userAgent) ? 'Windows'
+    : /Mac OS X|Macintosh/.test(userAgent) ? 'macOS'
+    : /CrOS/.test(userAgent) ? 'ChromeOS'
+    : /Linux/.test(userAgent) ? 'Linux'
+    : null;
+  return { browser, system };
 }

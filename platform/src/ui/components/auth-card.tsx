@@ -5,7 +5,7 @@ import { SESSION_RULES } from '@/config/business-rules';
 import { Mark } from '@/ui/site/icons';
 import { GoogleButton } from './google-button';
 
-export type AuthNotice = 'signed_out' | 'ended' | 'cancelled' | 'failed' | 'unavailable' | 'busy' | null;
+export type AuthNotice = 'signed_out' | 'password_reset' | 'ended' | 'cancelled' | 'failed' | 'unavailable' | 'busy' | null;
 
 /**
  * The one shape of every way in: the seal and a title, any notice, Google
@@ -37,11 +37,13 @@ export function AuthCard({
   const noticeText =
     notice === 'signed_out'
       ? t('auth.notice.signed_out')
-      : notice === 'ended'
-        ? t('auth.bar.ended', { hours: SESSION_RULES.idleTimeoutMinutes / 60 })
-        : notice
-          ? t(`auth.google.error.${notice}`)
-          : null;
+      : notice === 'password_reset'
+        ? t('auth.notice.password_reset')
+        : notice === 'ended'
+          ? t('auth.bar.ended', { hours: SESSION_RULES.idleTimeoutMinutes / 60 })
+          : notice
+            ? t(`auth.google.error.${notice}`)
+            : null;
   return (
     <section className="auth-card">
       <header className="auth-head">

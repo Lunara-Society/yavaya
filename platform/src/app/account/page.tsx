@@ -47,14 +47,17 @@ export default async function AccountPage() {
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
+  // Phone verification is deferred (owner's decision, 20 October 2026): no
+  // shortcut to a page where nothing can be verified.
+  const available = SHORTCUTS.filter((shortcut) => shortcut.href !== '/account/phone' || canVerifyPhones());
   const shortcuts = moderator
     ? [
         profileShortcut,
-        ...SHORTCUTS,
+        ...available,
         { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' },
         { href: '/admin/community', labelKey: 'nav.moderation_community' as MessageKey, glyph: '⚑' },
       ]
-    : [profileShortcut, ...SHORTCUTS];
+    : [profileShortcut, ...available];
   // Everyone who reviews anything starts from the one inbox.
   if (ops) shortcuts.unshift({ href: '/admin', labelKey: 'nav.ops' as MessageKey, glyph: '◎' });
   if (sanctuaryReviewer) shortcuts.push({ href: '/admin/sanctuary', labelKey: 'nav.moderation_sanctuary' as MessageKey, glyph: '⚑' });

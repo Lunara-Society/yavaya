@@ -562,7 +562,7 @@ export const siteEs = {
       ],
       journeyHead: { eyebrow: 'Tus primeros pasos', title: 'Completa tu base' },
       journey: [
-        { title: 'Verifica tu teléfono', text: 'El primer paso de confianza.' },
+        { title: 'Verifica tu correo', text: 'El primer paso de confianza.' },
         { title: 'Agrega tu foto', text: 'Las personas confían en personas.' },
         { title: 'Escribe tu descripción', text: 'Quién eres y qué haces.' },
         { title: 'Elige tus intereses', text: 'Para mostrarte lo que te importa.' },

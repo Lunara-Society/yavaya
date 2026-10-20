@@ -1,7 +1,6 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { hasUnseenWelcome } from '@/server/domains/access/welcome';
 import { db } from '@/server/db/client';
 import { serverEnv } from '@/config/env';
 import { VERIFICATION_RULES } from '@/config/business-rules';
@@ -19,6 +18,7 @@ import {
 import { createSession } from '@/server/auth/session';
 import { setSessionCookie } from '@/server/auth/cookies';
 import { currentSession, requestContext } from '@/server/auth/context';
+import { beginSignIn } from '@/server/auth/sign-in';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 
 /**
@@ -134,7 +134,7 @@ export async function loginAction(
     return localizedError('error.validation_failed');
   }
 
-  let welcome = false;
+  let to = '/';
   try {
     const context = await requestContext();
     const result = await authenticate(db(), { email, password }, context);
@@ -145,23 +145,14 @@ export async function loginAction(
       return localizedError('error.unauthenticated');
     }
 
-    const session = await db().transaction((tx) =>
-      createSession(tx, {
-        userId: result.userId,
-        ipHash: context.addressHash,
-        userAgent: context.userAgent,
-      }),
-    );
-
-    await setSessionCookie(session.token, session.absoluteExpiresAt);
-    welcome = await hasUnseenWelcome(db(), result.userId);
+    // A session, or the two-step code page first (sign-in.ts).
+    to = await beginSignIn(result.userId, '/');
   } catch (error) {
     const clientError = toClientError(error);
     return localizedError(clientError.messageKey, clientError.details);
   }
 
-  // Someone just named to the team sees their welcome first, once.
-  redirect(welcome ? '/welcome' : '/');
+  redirect(to);
 }
 
 export type VerifyState =

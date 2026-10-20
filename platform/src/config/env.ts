@@ -73,6 +73,9 @@ const serverSchema = z.object({
   // Checked where it is used, not here: a bad value must close the space,
   // never stop the whole site from starting.
   SAFE_SPACE_KEY: z.string().optional(),
+  // Seals authenticator secrets at rest. Like SAFE_SPACE_KEY: without it,
+  // two-step sign-in is simply not offered.
+  TWO_STEP_KEY: z.string().optional(),
 
   APP_URL: z.string().url().default('http://localhost:3000'),
   APP_ENV: z.enum(['local', 'staging', 'production']).default('local'),

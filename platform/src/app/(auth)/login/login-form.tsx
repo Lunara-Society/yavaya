@@ -1,12 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { useActionState } from 'react';
 import { loginAction, type ActionState } from '../actions';
 
 export function LoginForm({
   labels,
 }: {
-  labels: { email: string; password: string; submit: string };
+  labels: { email: string; password: string; submit: string; forgot: string };
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(loginAction, {
     status: 'idle',
@@ -62,6 +63,11 @@ export function LoginForm({
       >
         {labels.submit}
       </button>
+      <p className="text-center text-sm">
+        <Link href="/login/olvide" className="underline underline-offset-4">
+          {labels.forgot}
+        </Link>
+      </p>
     </form>
   );
 }

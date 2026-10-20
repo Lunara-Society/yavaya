@@ -125,3 +125,58 @@ export async function sendVerificationCode(params: {
     };
   }
 }
+
+/**
+ * Sends a message about the account itself. Returns whether it went out and
+ * never throws: the change it reports has already happened and must stand.
+ */
+async function sendAccountEmail(message: EmailMessage, what: string): Promise<boolean> {
+  try {
+    const result = await sendEmail(message);
+    return result.provider !== 'console';
+  } catch (error) {
+    console.error(`${what} email not delivered:`, error instanceof Error ? error.message : error);
+    return false;
+  }
+}
+
+/** The link that sets a new password. */
+export async function sendPasswordResetLink(params: { to: string; link: string; locale: Locale; expiresInMinutes: number }): Promise<boolean> {
+  const t = createTranslator(params.locale);
+  return sendAccountEmail(
+    {
+      to: params.to,
+      subject: t('email.reset.subject'),
+      text: [
+        t('email.verify.greeting'),
+        '',
+        t('email.reset.body', { minutes: params.expiresInMinutes }),
+        '',
+        params.link,
+        '',
+        t('email.reset.ignore'),
+        '',
+        t('brand.name'),
+      ].join('\n'),
+    },
+    'password reset',
+  );
+}
+
+export type SecurityNotice = 'password_changed' | 'password_reset' | 'two_step_on' | 'two_step_off';
+
+/**
+ * Tells the account's owner that something about how they sign in changed.
+ * If it was not them, this is how they find out.
+ */
+export async function sendSecurityNotice(params: { to: string; locale: Locale; kind: SecurityNotice }): Promise<boolean> {
+  const t = createTranslator(params.locale);
+  return sendAccountEmail(
+    {
+      to: params.to,
+      subject: t(`email.security.${params.kind}.subject`),
+      text: [t('email.verify.greeting'), '', t(`email.security.${params.kind}.body`), '', t('email.security.not_you'), '', t('brand.name')].join('\n'),
+    },
+    'security notice',
+  );
+}

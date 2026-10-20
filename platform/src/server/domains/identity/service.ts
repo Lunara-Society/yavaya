@@ -29,15 +29,17 @@ import { allocateYayId, attachYayIdOwner } from './yay-id';
  * monitoring window.
  */
 
+export const passwordSchema = z
+  .string()
+  .min(10, 'error.password.too_short')
+  .max(200)
+  // Length is the dominant factor; a long passphrase is not rejected for
+  // lacking a symbol. Breached-password screening is a configuration point.
+  .refine((value) => value.trim().length >= 10, 'error.password.too_short');
+
 export const registrationSchema = z.object({
   email: z.string().trim().min(3).max(254).email(),
-  password: z
-    .string()
-    .min(10, 'error.password.too_short')
-    .max(200)
-    // Length is the dominant factor; a long passphrase is not rejected for
-    // lacking a symbol. Breached-password screening is a configuration point.
-    .refine((value) => value.trim().length >= 10, 'error.password.too_short'),
+  password: passwordSchema,
   displayName: z.string().trim().min(2).max(60),
   locale: z.enum(['es', 'en']).default('es'),
   locationId: z.string().uuid().optional(),

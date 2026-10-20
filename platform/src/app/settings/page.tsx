@@ -7,6 +7,11 @@ import { SegmentedControl } from '@/ui/components/segmented-control';
 import { CapabilityBadge } from '@/ui/components/capability-badge';
 import { shellContext } from '@/ui/shell-context';
 import type { MessageKey } from '@/i18n';
+import { db } from '@/server/db/client';
+import { currentSession } from '@/server/auth/context';
+import { activeSessions, describeDevice } from '@/server/auth/session';
+import { twoStepAvailable, twoStepStatus } from '@/server/domains/identity/two-step';
+import { ChangePasswordForm, SignOutOthersForm } from './security-forms';
 import {
   readLocationPrecision,
   readNotificationPreferences,
@@ -28,11 +33,17 @@ export const dynamic = 'force-dynamic';
  * sign-in rather than pretending to save.
  */
 export default async function SettingsPage() {
-  const { t, language, theme, member, userId } = await shellContext();
+  const { t, locale, language, theme, member, userId } = await shellContext();
 
   const [notificationPrefs, locationPrecision] = userId
     ? await Promise.all([readNotificationPreferences(userId), readLocationPrecision(userId)])
     : [[], LOCATION_PRIVACY.defaultLevel];
+
+  const session = userId ? await currentSession() : null;
+  const [twoStep, devices] = session
+    ? await Promise.all([twoStepStatus(db(), session.user.userId), activeSessions(db(), session.user.userId)])
+    : [null, []];
+  const when = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
 
   const preferenceFor = (category: string, channel: string): boolean =>
     notificationPrefs.find((row) => row.category === category && row.channel === channel)?.enabled ??
@@ -160,6 +171,52 @@ export default async function SettingsPage() {
         ) : (
           <SignInPrompt t={t} />
         )}
+        {member && twoStep && (twoStep.enabled || twoStepAvailable()) ? (
+          <div id="two-step" className="surface-card mt-3 p-4">
+            <h3 className="font-semibold">{t('two_step.title')}</h3>
+            {twoStep.enabled ? (
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                {t('two_step.settings.on', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(twoStep.enabledAt) })}{' '}
+                {t('two_step.settings.recovery_left', { count: twoStep.recoveryLeft })}
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{t('two_step.settings.off_lead')}</p>
+            )}
+            <Link
+              href="/settings/dos-pasos"
+              className="mt-3 flex min-h-touch items-center justify-center rounded-xl px-4 text-sm font-medium"
+              style={twoStep.enabled ? { border: '1px solid var(--line)' } : { backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}
+            >
+              {twoStep.enabled ? t('two_step.settings.manage') : t('two_step.settings.turn_on')}
+            </Link>
+          </div>
+        ) : null}
+        {member ? (
+          <div className="surface-card mt-3 p-4">
+            <h3 className="mb-3 font-semibold">{t('settings.password.title')}</h3>
+            <ChangePasswordForm labels={{ current: t('settings.password.current'), next: t('settings.password.new'), submit: t('settings.password.submit') }} />
+            <p className="mt-3 text-xs text-[var(--text-secondary)]">{t('settings.password.google_hint')}</p>
+          </div>
+        ) : null}
+        {member && session ? (
+          <div className="surface-card mt-3 p-4">
+            <h3 className="font-semibold">{t('settings.sessions.title')}</h3>
+            <ul className="mt-3 space-y-2">
+              {devices.map((device) => {
+                const named = describeDevice(device.userAgent);
+                const name = [named.browser, named.system].filter(Boolean).join(' · ') || t('settings.sessions.unknown_device');
+                return (
+                  <li key={device.id} className="rounded-lg border px-3 py-2 text-sm">
+                    <span className="font-medium">{name}</span>
+                    {device.id === session.sessionId ? <span className="ml-2 text-xs text-[var(--accent)]">{t('settings.sessions.this_device')}</span> : null}
+                    <span className="block text-xs text-[var(--text-secondary)]">{t('settings.sessions.last_active', { when: when.format(device.lastUsedAt) })}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            {devices.length > 1 ? <SignOutOthersForm label={t('settings.sessions.sign_out_others')} /> : null}
+          </div>
+        ) : null}
       </Section>
 
       <p className="mt-8 text-sm text-[var(--text-secondary)]">

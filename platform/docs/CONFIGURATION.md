@@ -81,6 +81,12 @@ back a valid registration — but the caller must never report success on a
 
 ## SMS delivery — `SMS_PROVIDER`
 
+> **Deferred — owner's decision, 20 October 2026.** No SMS provider for now:
+> it costs money per message. Free methods come first — email verification,
+> Continuar con Google, password reset by email and two-step sign-in with an
+> authenticator app. The flow below is built and stays ready; the account
+> page shows no phone shortcut until a provider is configured.
+
 **Needed for:** phone verification, which is the heaviest single anti-duplication
 signal and earns the `phone_verified` reputation rule.
 
@@ -1029,6 +1035,43 @@ A member is signed out after **two hours without activity**
 (`SESSION_RULES.idleTimeoutMinutes`); using the site keeps the session open.
 The bar at the top then says the session closed and offers the quickest way
 back in — with Google, a single tap to the same account.
+
+## Account sanctions — what is built and what is undecided
+
+**Built** (`/admin/members`, `sanctions.ts`): find a member by YAY ID or exact
+email; suspend (moderators and admins), ban (admins), reinstate (admins), sign
+out on every device, and turn off two-step for a member who lost their phone
+(admins, after checking who they are outside Yavaya). Every action needs a
+written note, goes into the member's enforcement record and the audit log in
+one transaction, and ends the member's sessions where it should. Staff can be
+sanctioned only by an admin; nobody can sanction themselves.
+
+**Not decided, so not invented:**
+- **How long a suspension lasts.** None is set: it lasts until an admin
+  reinstates. If timed suspensions are wanted, `enforcement_records.expires_at`
+  is ready for them; the lengths per reason are the decision.
+- **Whether the member is told, and how.** Today a suspended member sees the
+  same "wrong email or password" as anyone, by design of the login page.
+  A notice email (and its wording, and whether it names the reason) is a
+  decision.
+- **Appeals.** No appeal flow exists.
+
+## Two-step sign-in — `TWO_STEP_KEY`
+
+**Set:** 32 or more random characters on the web service. It seals each
+member's authenticator secret. Without it two-step sign-in is not offered.
+
+**Never rotate it casually.** Secrets sealed under the old key cannot be
+opened with a new one: every member with two-step on would have to sign in
+with a backup code and set it up again. Rotating needs a re-seal script.
+
+Free to run: nothing is sent. Members find it in Settings → Cuenta y
+seguridad.
+
+## Password reset
+
+Needs only email delivery. The link points at `APP_URL/login/nueva-clave`,
+so `APP_URL` must be the public address.
 
 ## The guide in video — `GUIDE_UPLOAD_TOKEN`
 

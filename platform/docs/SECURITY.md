@@ -76,6 +76,58 @@ by itself — the account is `pending_verification` — but it is what lets the
 verification page know whose code is being entered. The alternative, asking for
 the address again, would let anyone request a code for a stranger's account.
 
+### Two-step sign-in
+
+Members can turn on a second step: after the password or Google, the six
+digits from an authenticator app (TOTP, RFC 6238, SHA-1, 30-second windows,
+one window of drift either side). Nothing is sent, so it costs nothing and
+cannot be intercepted in transit.
+
+- The secret is sealed at rest with AES-256-GCM under `TWO_STEP_KEY`
+  (`sealed-text.ts`, its own purpose string). A database copy alone cannot
+  mint codes. Without the key the feature is not offered; members who already
+  have it are still asked for a code — a missing key locks the door, it never
+  takes the second lock off — and their backup codes still work.
+- A code is accepted once: the window of the last accepted code is stored and
+  a code must be from a later one, checked and written in one statement.
+- Ten backup codes (50 random bits each) are shown once; only SHA-256 hashes
+  are kept. Using one is audited and the member is told how many remain.
+- Six attempts per account per 15 minutes, counted inside the transaction and
+  never rolled back by a wrong code.
+- Between the first factor and the code there is no session, only a sealed
+  five-minute cookie naming the account. Both the password path and Google
+  (button and prompt) go through `beginSignIn`, so neither can skip it.
+- Turning it off or making new backup codes requires a code first. The owner
+  of the account is emailed when it is turned on or off.
+- A member who lost both phone and backup codes is helped by an operator, who
+  turns two-step off after checking who they are outside Yavaya; the action
+  requires a reason and is audited (see the member tool in operations).
+
+### Account sanctions
+
+Operators act on accounts from `/admin/members`: suspend (`users.suspend`),
+ban (`users.ban`), reinstate (`users.restore`), sign out everywhere, and turn
+off two-step for a member who lost their phone (`users.verify_identity`).
+Suspended and banned accounts lose every session at once — `validateSession`
+refuses them on the next request — and cannot sign in. A staff member can be
+sanctioned only by an admin; nobody can act on themselves. A note is required
+and kept in the enforcement record; the audit event is written in the same
+transaction.
+
+### Forgotten and changed passwords
+
+`/login/olvide` emails a single-use link valid for 30 minutes
+(`VERIFICATION_RULES.passwordResetTtlMinutes`). The page says the same thing
+whether or not the address has an account; requests are capped per network
+and per address. Only the token's hash is stored, a new request voids the
+old link, and the link is spent in the statement that checks it. Setting the
+new password signs out every device and emails a notice. A reset does **not**
+get past two-step sign-in: proving the mailbox is not proving the phone.
+
+Signed-in members change their password from Settings with the current one;
+other devices are signed out, this one stays. Settings also lists where the
+account is signed in, with "sign out on other devices".
+
 ## Email verification
 
 Codes are six digits, stored only as a SHA-256, and expire. Each challenge
@@ -296,6 +348,9 @@ Stated plainly rather than left for someone to discover.
   work.
 - **File upload validation is unimplemented** because storage is unconfigured.
   The requirements are in `CONFIGURATION.md`; uploads are rejected until then.
+- **Phone verification is deferred** (owner's decision, 20 October 2026): SMS
+  costs money per message. Email, Google and two-step sign-in cover sign-in
+  security meanwhile; the phone flow is built and waits for `SMS_PROVIDER`.
 - **No breached-password screening.** Length is enforced (10 minimum); a
   k-anonymity check against a breach corpus is a configuration point.
 - **No automated audit-chain verification schedule.** The function exists; the

@@ -20,7 +20,12 @@ export default async function OpsPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
   if (!(await canSeeOps(db(), userId))) notFound();
-  const [queues, canManage, admin] = await Promise.all([queuesFor(db(), userId), hasPermission(db(), userId, 'roles.manage'), isAdmin(db(), userId)]);
+  const [queues, canManage, admin, canReadMembers] = await Promise.all([
+    queuesFor(db(), userId),
+    hasPermission(db(), userId, 'roles.manage'),
+    isAdmin(db(), userId),
+    hasPermission(db(), userId, 'users.read'),
+  ]);
   const health = admin ? await jobHealth(db()) : null;
   const tick = health?.latest.find((j) => j.job === 'tick') ?? null;
   const fmt = (d: Date) => new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' }).format(d);
@@ -76,11 +81,18 @@ export default async function OpsPage() {
             )}
           </section>
         ) : null}
-        {canManage ? (
+        {canManage || canReadMembers ? (
           <p className="btn-row" style={{ marginTop: 18 }}>
-            <Link className="btn btn-gold" href="/admin/team">
-              {t('staff.title')}
-            </Link>
+            {canManage ? (
+              <Link className="btn btn-gold" href="/admin/team">
+                {t('staff.title')}
+              </Link>
+            ) : null}
+            {canReadMembers ? (
+              <Link className="btn btn-line" href="/admin/members">
+                {t('sanctions.title')}
+              </Link>
+            ) : null}
           </p>
         ) : null}
       </div>

@@ -76,6 +76,24 @@ export const CAPABILITIES: readonly Capability[] = [
       'Implemented and tested end to end against the database. Blocked on email delivery: set EMAIL_PROVIDER with its credentials (smtp: SMTP_URL; resend: RESEND_API_KEY) and EMAIL_FROM and this becomes REAL with no code change.',
   },
   {
+    key: 'password_reset',
+    nameKey: 'capability.password_reset.name',
+    detailKey: 'capability.password_reset.detail',
+    // Measured from email delivery, like email verification: the link has to arrive.
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'Implemented; needs email delivery (EMAIL_PROVIDER with credentials) for the link to arrive.',
+  },
+  {
+    key: 'two_step',
+    nameKey: 'capability.two_step.name',
+    detailKey: 'capability.two_step.detail',
+    // Measured: offered only when TWO_STEP_KEY is set to seal the secrets.
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'TWO_STEP_KEY is not set (32+ random characters). Without it two-step sign-in is not offered.',
+  },
+  {
     key: 'authorization',
     nameKey: 'capability.authorization.name',
     detailKey: 'capability.authorization.detail',
@@ -186,10 +204,11 @@ export const CAPABILITIES: readonly Capability[] = [
     key: 'moderation',
     nameKey: 'capability.moderation.name',
     detailKey: 'capability.moderation.detail',
-    state: 'REQUIRES_CONFIGURATION',
+    // Reports and shared tickets in every district that takes them, removal of
+    // content, and account sanctions (suspend, ban, reinstate) in /admin/members,
+    // each with its reason in the enforcement record and the audit log.
+    state: 'REAL',
     group: 'trust',
-    blockedBy:
-      'Reports, shared tickets and removal of content work in the districts (see each district\'s own entry). Not built: account-level sanctions — there is no operator tool to suspend or ban a member.',
   },
   {
     key: 'live_activity',
