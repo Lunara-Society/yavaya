@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { previewMetadata } from '@/ui/site/share-meta';
 import { JsonLd } from '@/ui/site/json-ld';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!UUID.test(id)) return {};
   const { locale } = await siteContext();
   const church = await getChurch(db(), { churchId: id, viewerId: null, locale });
-  return church ? { title: church.name, description: church.description.slice(0, 160) } : { robots: { index: false } };
+  return church ? previewMetadata({ title: church.name, description: church.description }) : { robots: { index: false } };
 }
 
 export default async function ChurchPage({ params, searchParams }: Params) {

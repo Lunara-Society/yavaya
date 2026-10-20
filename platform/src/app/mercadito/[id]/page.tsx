@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { previewMetadata } from '@/ui/site/share-meta';
 import { randomUUID } from 'node:crypto';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -45,7 +46,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { locale, userId } = await siteContext();
   const listing = await visibleListing(id, locale, userId);
   if (!listing) return {};
-  return { title: listing.title, description: listing.description.slice(0, 160) };
+  return previewMetadata({
+    title: `${listing.title} · ${formatPrice(listing.priceMinor, listing.currencyCode, locale)}`,
+    description: [listing.placeTrail[0], listing.description].filter(Boolean).join(' — '),
+    imageId: listing.photos[0]?.mediaId,
+    alt: listing.title,
+  });
 }
 
 export default async function ListingPage({ params, searchParams }: Params) {

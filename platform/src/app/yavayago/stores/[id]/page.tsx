@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { previewMetadata } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   if (!UUID.test(id)) return {};
   const store = await getStore(db(), id);
-  return store ? { title: `${store.name} · YavayaGo`, description: store.about.slice(0, 160) } : {};
+  return store ? previewMetadata({ title: `${store.name} · YavayaGo`, description: store.about, imageId: store.photoMediaId, alt: store.name }) : {};
 }
 
 /** A store and its menu. Ordering takes an account; looking does not. */

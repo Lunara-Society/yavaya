@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { previewMetadata } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -24,7 +25,9 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!UUID.test(id)) return {};
   const { t, locale } = await siteContext();
   const found = await getAnimal(db(), { listingId: id, viewerId: null, viewerIsReviewer: false, locale });
-  return found ? { title: `${found.animal.name} · ${t('animals.detail.looking_for_home')}`, description: found.animal.description.slice(0, 160) } : { robots: { index: false } };
+  return found
+    ? previewMetadata({ title: `${found.animal.name} · ${t('animals.detail.looking_for_home')}`, description: found.animal.description, imageId: found.photos[0], alt: found.animal.name })
+    : { robots: { index: false } };
 }
 
 function Answers({ app, t }: { app: ApplicationView; t: (key: MessageKey, params?: Record<string, string | number>) => string }) {
