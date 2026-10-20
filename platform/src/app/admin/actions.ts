@@ -6,13 +6,17 @@ import { db } from '@/server/db/client';
 import { currentSession } from '@/server/auth/context';
 import { isDomainError } from '@/server/errors';
 import { appoint, removeAppointment } from '@/server/domains/access/staff';
+import { SANCTION_RULES } from '@/config/business-rules';
 import {
   banMember,
+  decideAppeal,
+  deliverSanctionNotices,
   reinstateMember,
   resetMemberTwoStep,
   SANCTION_REASONS,
   signOutMemberEverywhere,
   suspendMember,
+  type SanctionNotice,
   type SanctionReason,
 } from '@/server/domains/access/sanctions';
 
@@ -60,19 +64,48 @@ export async function memberAction(formData: FormData): Promise<void> {
   const note = String(formData.get('note') ?? '');
   const reasonValue = String(formData.get('reason') ?? 'other');
   const reason: SanctionReason = (SANCTION_REASONS as readonly string[]).includes(reasonValue) ? (reasonValue as SanctionReason) : 'other';
+  // "review" (or anything unrecognised) means until an admin reviews; the
+  // domain function rejects a number that is not one of the allowed lengths.
+  const daysValue = Number(formData.get('days'));
+  const days = Number.isInteger(daysValue) && daysValue > 0 ? daysValue : null;
   const actor = { userId: session.user.userId, status: session.user.status };
+  let notice: SanctionNotice | null = null;
   try {
-    await db().transaction(async (tx) => {
-      if (what === 'suspend') await suspendMember(tx, { actor, userId, reason, note });
-      else if (what === 'ban') await banMember(tx, { actor, userId, reason, note });
-      else if (what === 'reinstate') await reinstateMember(tx, { actor, userId, note });
-      else if (what === 'two_step') await resetMemberTwoStep(tx, { actor, userId, note });
+    notice = await db().transaction(async (tx) => {
+      if (what === 'suspend') return suspendMember(tx, { actor, userId, reason, note, days });
+      if (what === 'ban') return banMember(tx, { actor, userId, reason, note });
+      if (what === 'reinstate') return reinstateMember(tx, { actor, userId, note });
+      if (what === 'two_step') await resetMemberTwoStep(tx, { actor, userId, note });
       else if (what === 'sign_out') await signOutMemberEverywhere(tx, { actor, userId, note });
+      return null;
     });
   } catch (error) {
     if (isDomainError(error) && error.expose) redirect(`${back}&error=${encodeURIComponent(error.messageKey)}`);
     throw error;
   }
+  if (notice) await deliverSanctionNotices([notice]);
   revalidatePath('/admin/members');
   redirect(`${back}&done=${encodeURIComponent(what)}`);
+}
+
+/** An admin answers an appeal: keep the sanction, or lift it. The member is emailed either way. */
+export async function appealDecisionAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/login');
+  const appealId = String(formData.get('appealId') ?? '');
+  if (!UUID.test(appealId)) redirect('/admin/appeals');
+  const outcome = formData.get('outcome') === 'lifted' ? 'lifted' : 'upheld';
+  const response = String(formData.get('response') ?? '').slice(0, SANCTION_RULES.responseMaxLength + 1);
+  let notice: SanctionNotice;
+  try {
+    notice = await db().transaction((tx) =>
+      decideAppeal(tx, { actor: { userId: session.user.userId, status: session.user.status }, appealId, outcome, response }),
+    );
+  } catch (error) {
+    if (isDomainError(error) && error.expose) redirect(`/admin/appeals?error=${encodeURIComponent(error.messageKey)}`);
+    throw error;
+  }
+  await deliverSanctionNotices([notice]);
+  revalidatePath('/admin/appeals');
+  redirect(`/admin/appeals?done=${outcome}`);
 }

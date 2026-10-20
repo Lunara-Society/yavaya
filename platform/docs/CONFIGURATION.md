@@ -1045,25 +1045,48 @@ A member is signed out after **two hours without activity**
 The bar at the top then says the session closed and offers the quickest way
 back in — with Google, a single tap to the same account.
 
-## Account sanctions — what is built and what is undecided
+## Account sanctions
 
-**Built** (`/admin/members`, `sanctions.ts`): find a member by YAY ID or exact
-email; suspend (moderators and admins), ban (admins), reinstate (admins), sign
-out on every device, and turn off two-step for a member who lost their phone
-(admins, after checking who they are outside Yavaya). Every action needs a
-written note, goes into the member's enforcement record and the audit log in
-one transaction, and ends the member's sessions where it should. Staff can be
-sanctioned only by an admin; nobody can sanction themselves.
+**Built** (`/admin/members`, `/admin/appeals`, `sanctions.ts`): find a member
+by YAY ID or exact email; suspend (moderators and admins), ban (admins),
+reinstate (admins), sign out on every device, and turn off two-step for a
+member who lost their phone (admins, after checking who they are outside
+Yavaya). Every action needs a written note, goes into the member's
+enforcement record and the audit log in one transaction, and ends the
+member's sessions where it should. Staff can be sanctioned only by an admin;
+nobody can sanction themselves.
 
-**Not decided, so not invented:**
-- **How long a suspension lasts.** None is set: it lasts until an admin
-  reinstates. If timed suspensions are wanted, `enforcement_records.expires_at`
-  is ready for them; the lengths per reason are the decision.
-- **Whether the member is told, and how.** Today a suspended member sees the
-  same "wrong email or password" as anyone, by design of the login page.
-  A notice email (and its wording, and whether it names the reason) is a
-  decision.
-- **Appeals.** No appeal flow exists.
+**The policy** — decided by Claude on the owner's delegation, 20 October 2026
+("I'll let you make the best idea about suspension"). The numbers are
+`SANCTION_RULES`; the owner can change any of it.
+
+- **Length.** A suspension is 1, 7 or 30 days, or "until an admin reviews"
+  for suspected fraud still being checked. The moderator chooses; 7 days is
+  the default in the form. Nothing ties a length to a reason: the same reason
+  ranges from a first spam post to an organised campaign, and a table would
+  pretend otherwise. A ban is permanent and admin-only.
+- **It ends on time.** The scheduler's `lift-suspensions` job lifts every
+  timed suspension that has run out (within 15 minutes), records it as a
+  system action, and emails the member.
+- **The member is told, every time.** Suspended, banned, reinstated, or an
+  appeal answered: an email in their language with the reason *category*
+  (never the internal note), when it ends in their own time zone, and how to
+  appeal. Signing in with the right password now says the account cannot be
+  used and points to that email; a wrong password still reads the same as an
+  unknown address, so nothing is learned about who is registered.
+- **One appeal per sanction**, within 14 days, from a sealed link in the
+  email (the member cannot sign in to prove who they are, so the link does).
+  Between 20 and 1,500 characters; capped per network. Appeals wait in
+  `/admin/appeals` and in the operations inbox (`users.restore`, i.e.
+  admins). The admin keeps or lifts the sanction and writes the member an
+  answer, which is emailed. An appeal on a sanction that ends meanwhile is
+  closed as `ended` and leaves the queue.
+- **A ban replaces a running suspension**, so there is one sanction in force
+  and one appeal, and the clock can never undo a ban.
+
+**Still open:** no sanction notice goes out while email is unconfigured (the
+action still happens and is audited). Warnings and feature restrictions
+(`enforcement_records.type` has both) have no tool yet.
 
 ## Two-step sign-in — `TWO_STEP_KEY`
 

@@ -50,6 +50,7 @@ describe('scheduled jobs', () => {
       'expire-work-posts',
       'go-upkeep',
       'graduate-monitored',
+      'lift-suspensions',
       'ops-email',
       'purge-activity',
       'purge-rate-limits',

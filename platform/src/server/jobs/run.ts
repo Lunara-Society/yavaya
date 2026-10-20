@@ -13,6 +13,7 @@ import { expireLostFound } from '@/server/domains/animals/lost-found';
 import { purgeJobRuns, recordJobRun, sendOpsEmails } from '@/server/domains/ops/alerts';
 import { purgeSafeSpace } from '@/server/domains/safe-space/service';
 import { purgeOldActivity } from '@/server/domains/notifications/activity';
+import { deliverSanctionNotices, liftExpiredSuspensions } from '@/server/domains/access/sanctions';
 import { expireWorkPosts } from '@/server/domains/work/service';
 import { reconcilePendingPayments } from '@/server/domains/payments/service';
 import { grantDueStarterTokens } from '@/server/domains/tokens/service';
@@ -133,6 +134,13 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     return { summary: `deleted ${result.room} room and ${result.thread} private message(s), ${result.threads} empty conversation(s), ${result.reports} decided report(s)` };
   },
 
+  /** Timed suspensions end on time, and the member is told (SANCTION_RULES). */
+  'lift-suspensions': async () => {
+    const notices = await liftExpiredSuspensions(db());
+    await deliverSanctionNotices(notices);
+    return { summary: `lifted ${notices.length} suspension(s) that had run their time` };
+  },
+
   /** Activity is kept for a week, then deleted (LIVE_FEED_RULES.keepDays). */
   'purge-activity': async () => {
     const removed = await purgeOldActivity(db());
@@ -183,7 +191,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'purge-activity', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

@@ -45,6 +45,8 @@ export const RATE_LIMITS = {
    */
   phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
+  /** Appeals from a sanction notice, per network: one appeal each, a few tries for typos. */
+  appeal: { bucket: 'appeal', limit: 5, windowSeconds: 60 * 60 },
   /** Publishing during the 72-hour monitoring window. */
   publishMonitored: { bucket: 'publish_monitored', limit: 10, windowSeconds: 60 * 60 },
   publishStandard: { bucket: 'publish_standard', limit: 60, windowSeconds: 60 * 60 },

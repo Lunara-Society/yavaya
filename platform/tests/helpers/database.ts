@@ -30,6 +30,7 @@ export async function resetTransactionalData(): Promise<void> {
       two_step_factors,
       two_step_recovery_codes,
       password_resets,
+      sanction_appeals,
       user_roles,
       user_profiles,
       yay_id_registry,

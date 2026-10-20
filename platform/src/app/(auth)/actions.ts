@@ -140,9 +140,12 @@ export async function loginAction(
     const result = await authenticate(db(), { email, password }, context);
 
     if (!result.ok) {
-      // Both failure modes return the same message: which addresses are
-      // registered is not something an unauthenticated caller may learn.
-      return localizedError('error.unauthenticated');
+      // A wrong address and a wrong password read the same: which addresses
+      // are registered is not something an unauthenticated caller may learn.
+      // 'account_unavailable' comes only after the right password, so saying
+      // so tells the account's holder nothing a stranger could not already
+      // see — and spares a suspended member a loop of "wrong password".
+      return localizedError(result.reason === 'account_unavailable' ? 'auth.login.unavailable' : 'error.unauthenticated');
     }
 
     // A session, or the two-step code page first (sign-in.ts).

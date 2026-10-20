@@ -1,4 +1,5 @@
 import {
+  type AnyPgColumn,
   boolean,
   index,
   jsonb,
@@ -93,6 +94,33 @@ export const moderationActions = pgTable(
  * addresses or other personal information. `internalNote` and every evidence
  * reference stay behind the moderator boundary.
  */
+/**
+ * A member's appeal against a suspension or ban: one per sanction, written
+ * from the link in the notice email (no sign-in — a sanctioned account cannot
+ * sign in). Decided by an admin, who may write back.
+ */
+export const sanctionAppeals = pgTable(
+  'sanction_appeals',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    enforcementRecordId: uuid('enforcement_record_id')
+      .notNull()
+      .references((): AnyPgColumn => enforcementRecords.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    body: text('body').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    decidedBy: uuid('decided_by').references(() => users.id, { onDelete: 'set null' }),
+    /** 'upheld' or 'lifted' by an admin, or 'ended' when the sanction ran out or was lifted before anyone decided. */
+    outcome: text('outcome'),
+    /** Written to the member; never the internal note. */
+    response: text('response'),
+  },
+  (table) => [uniqueIndex('sanction_appeals_record_key').on(table.enforcementRecordId), index('sanction_appeals_open_idx').on(table.decidedAt)],
+);
+
 export const enforcementRecords = pgTable(
   'enforcement_records',
   {

@@ -23,6 +23,9 @@ export const OVERVIEW_ACTIONS = [
   'identity.member_suspended',
   'identity.member_banned',
   'identity.member_reinstated',
+  'identity.suspension_expired',
+  'identity.sanction_appealed',
+  'identity.sanction_appeal_decided',
   'identity.member_signed_out',
   'identity.two_step_disabled',
 ] as const;

@@ -1,6 +1,7 @@
 import 'server-only';
 import { serverEnv } from '@/config/env';
-import { createTranslator, type Locale } from '@/i18n';
+import { SANCTION_RULES } from '@/config/business-rules';
+import { createTranslator, type Locale, type MessageKey } from '@/i18n';
 import {
   EmailUnconfiguredError,
   type EmailAvailability,
@@ -179,4 +180,46 @@ export async function sendSecurityNotice(params: { to: string; locale: Locale; k
     },
     'security notice',
   );
+}
+
+/**
+ * Tells a member about a sanction on their account: what, why, until when,
+ * and how to appeal — or that it is over, or what an admin answered. The
+ * internal note never appears here; only the reason category does.
+ */
+export async function sendSanctionNotice(params: {
+  to: string;
+  locale: Locale;
+  kind: 'suspended' | 'banned' | 'reinstated' | 'appeal_upheld';
+  reason?: string;
+  until: Date | null;
+  timeZone: string | null;
+  appealLink: string | null;
+  response: string | null;
+}): Promise<boolean> {
+  const t = createTranslator(params.locale);
+  const lines = [t('email.verify.greeting'), '', t(`email.sanction.${params.kind}.body`)];
+  if (params.reason) lines.push('', t('email.sanction.reason', { reason: t(`sanctions.reason.${params.reason}` as MessageKey) }));
+  if (params.kind === 'suspended') {
+    lines.push(
+      '',
+      params.until
+        ? t('email.sanction.until', {
+            date: new Intl.DateTimeFormat(params.locale === 'en' ? 'en-US' : 'es-419', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZone: params.timeZone ?? 'UTC',
+              timeZoneName: 'short',
+            }).format(params.until),
+          })
+        : t('email.sanction.until_review'),
+    );
+  }
+  if (params.response) lines.push('', t('email.sanction.response'), params.response);
+  if (params.appealLink) lines.push('', t('email.sanction.appeal', { days: SANCTION_RULES.appealWindowDays }), params.appealLink);
+  lines.push('', t('brand.name'));
+  return sendAccountEmail({ to: params.to, subject: t(`email.sanction.${params.kind}.subject`), text: lines.join('\n') }, 'sanction notice');
 }

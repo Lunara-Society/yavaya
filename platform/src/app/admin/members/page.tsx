@@ -7,6 +7,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
+import { SANCTION_RULES } from '@/config/business-rules';
 import { lookUpMember, SANCTION_REASONS } from '@/server/domains/access/sanctions';
 import { formatDate } from '@/ui/mercadito/format';
 import { memberAction } from '../actions';
@@ -56,6 +57,19 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
                     {t(`sanctions.reason.${reason}`)}
                   </option>
                 ))}
+              </select>
+            </label>
+          ) : null}
+          {what === 'suspend' ? (
+            <label>
+              {t('sanctions.duration')}
+              <select name="days" defaultValue={String(SANCTION_RULES.suspensionDays[1])}>
+                {SANCTION_RULES.suspensionDays.map((days) => (
+                  <option key={days} value={days}>
+                    {days === 1 ? t('sanctions.duration.day_one') : t('sanctions.duration.days', { count: days })}
+                  </option>
+                ))}
+                <option value="review">{t('sanctions.duration.review')}</option>
               </select>
             </label>
           ) : null}
@@ -128,6 +142,9 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
                 <li key={index}>
                   <span className="muted">{formatDate(entry.issuedAt, locale)}</span> · {t(`sanctions.type.${entry.type}` as MessageKey)} ·{' '}
                   {t(`sanctions.reason.${entry.reason}` as MessageKey)}
+                  {entry.type === 'suspension' && !entry.revokedAt ? (
+                    <span> · {entry.expiresAt ? t('sanctions.until', { date: formatDate(entry.expiresAt, locale) }) : t('sanctions.duration.review')}</span>
+                  ) : null}
                   {entry.revokedAt ? <span className="muted"> ({t('sanctions.revoked')})</span> : null}
                   {entry.note ? <span className="muted"> — {entry.note}</span> : null}
                 </li>

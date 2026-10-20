@@ -58,7 +58,7 @@ describe('The owner panel', () => {
     await db().update(users).set({ status: 'active' }).where(eq(users.id, tania));
     await db().transaction((tx) => appoint(tx, { actor: asOwner, userId: tania, role: 'community_manager' }));
     await db().transaction((tx) => createSession(tx, { userId: tania, ipHash: null, userAgent: 'x' }));
-    await db().transaction((tx) => suspendMember(tx, { actor: asOwner, userId: target, reason: 'spam', note: 'Repeated spam in Comunidad.' }));
+    await db().transaction((tx) => suspendMember(tx, { actor: asOwner, userId: target, reason: 'spam', note: 'Repeated spam in Comunidad.', days: 7 }));
     // A demo account never counts.
     const demoUser = await member('Demo');
     await db().insert(demoContent).values({ subjectType: 'user', subjectId: demoUser, expiresAt: new Date(Date.now() + DAY) });

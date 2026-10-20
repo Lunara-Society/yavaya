@@ -26,7 +26,8 @@ export type QueueKey =
   | 'community_reports'
   | 'safe_space_reports'
   | 'go_stores'
-  | 'go_drivers';
+  | 'go_drivers'
+  | 'sanction_appeals';
 
 export type QueueStatus = { key: QueueKey; href: string; permission: PermissionKey; count: number; oldestAt: Date | null };
 
@@ -52,6 +53,15 @@ QUEUES.push(
   { key: 'go_stores', href: '/admin/yavayago#stores', permission: 'stores.review', query: pending('go_stores', 'pending') },
   { key: 'go_drivers', href: '/admin/yavayago#drivers', permission: 'drivers.review', query: pending('go_drivers', 'pending') },
   { key: 'safe_space_reports', href: '/admin/violeta', permission: 'safe_space.review', query: pending('safe_space_reports', 'open', 'status', 'created_at') },
+  // Appeals on a sanction still in force; one whose sanction ended is closed by `lift`.
+  {
+    key: 'sanction_appeals',
+    href: '/admin/appeals',
+    permission: 'users.restore',
+    query: sql`select count(*)::int as n, min(a.created_at) as oldest from sanction_appeals a
+      join enforcement_records e on e.id = a.enforcement_record_id
+      where a.decided_at is null and e.revoked_at is null`,
+  },
 );
 
 async function measure(executor: Executor, q: (typeof QUEUES)[number]): Promise<QueueStatus> {

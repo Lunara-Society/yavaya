@@ -114,6 +114,18 @@ sanctioned only by an admin; nobody can act on themselves. A note is required
 and kept in the enforcement record; the audit event is written in the same
 transaction.
 
+Suspensions are timed (`SANCTION_RULES.suspensionDays`) or last until review;
+the scheduler lifts expired ones under a row lock, so an admin's reinstatement
+or a ban in the same moment is not overwritten. Members are emailed the
+reason category, never the internal note. The appeal link is signed
+(`seal('sanction-appeal', …)`: HMAC-SHA256 under `SESSION_SECRET`, 14 days)
+and names one enforcement record and its member, so it cannot be pointed at
+another account (rotating `SESSION_SECRET` voids open appeal links); one
+appeal per record is a unique index, and submissions are rate-limited per
+network. The appeal page sends no referrer, is never indexed, and does not
+load Google's script. A correct password on a sanctioned account says so —
+safe because only the password's holder can reach that answer.
+
 ### Forgotten and changed passwords
 
 `/login/olvide` emails a single-use link valid for 30 minutes

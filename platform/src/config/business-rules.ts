@@ -193,6 +193,27 @@ export const SESSION_RULES = {
 } as const;
 
 /**
+ * Account sanctions — decided by Claude on the owner's delegation (20 October
+ * 2026: "I'll let you make the best idea about suspension").
+ *
+ * A short ladder an operator picks from, so the same behaviour gets the same
+ * answer: a day to cool off (a heated argument, a burst of spam), a week for a
+ * repeat, a month for something serious short of a ban. "Until review"
+ * (null) is for suspected fraud being checked: the account is frozen until an
+ * admin decides. A ban is permanent and admin-only. Timed suspensions lift
+ * themselves; the member is told at every step and may appeal once.
+ */
+export const SANCTION_RULES = {
+  suspensionDays: [1, 7, 30] as const,
+  /** One appeal per sanction, within this many days of the notice. */
+  appealWindowDays: 14,
+  appealMinLength: 20,
+  appealMaxLength: 1500,
+  /** What an admin may write back to the member on an appeal. */
+  responseMaxLength: 1000,
+} as const;
+
+/**
  * Two-step sign-in with an authenticator app (TOTP, RFC 6238). Free to run —
  * nothing is sent to anyone — which is why it came before SMS (the owner's
  * decision, 20 October 2026: phone verification waits; free, strong methods

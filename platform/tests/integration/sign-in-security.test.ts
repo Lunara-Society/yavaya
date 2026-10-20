@@ -199,8 +199,8 @@ describe('Account sanctions', () => {
     const asAdmin = { userId: admin.userId, status: 'active' };
     const there = await db().transaction((tx) => createSession(tx, { userId: target.userId, ipHash: null, userAgent: 'x' }));
 
-    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'scam', note: '' }))).rejects.toMatchObject({ messageKey: 'sanctions.error.note' });
-    await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'scam', note: 'Sold a phone that never existed; three reports.' }));
+    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'scam', note: '', days: null }))).rejects.toMatchObject({ messageKey: 'sanctions.error.note' });
+    await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'scam', note: 'Sold a phone that never existed; three reports.', days: null }));
     expect(await validateSession(db(), there.token)).toBeNull();
     expect((await authenticate(db(), { email: target.email, password: 'a-sufficiently-long-passphrase' }, context)).ok).toBe(false);
     const found = await lookUpMember(db(), asMod, target.email);
@@ -210,8 +210,8 @@ describe('Account sanctions', () => {
     // A moderator cannot lift it, nor ban, nor act on a colleague or on themselves.
     await expect(db().transaction((tx) => reinstateMember(tx, { actor: asMod, userId: target.userId, note: 'my mistake' }))).rejects.toMatchObject({ code: 'forbidden' });
     await expect(db().transaction((tx) => banMember(tx, { actor: asMod, userId: target.userId, reason: 'scam', note: 'repeat offender' }))).rejects.toMatchObject({ code: 'forbidden' });
-    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: admin.userId, reason: 'other', note: 'testing a colleague' }))).rejects.toMatchObject({ code: 'forbidden' });
-    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: mod.userId, reason: 'other', note: 'testing myself' }))).rejects.toMatchObject({ messageKey: 'sanctions.error.self' });
+    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: admin.userId, reason: 'other', note: 'testing a colleague', days: 7 }))).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: mod.userId, reason: 'other', note: 'testing myself', days: 7 }))).rejects.toMatchObject({ messageKey: 'sanctions.error.self' });
 
     await db().transaction((tx) => reinstateMember(tx, { actor: asAdmin, userId: target.userId, note: 'Buyer confirmed the phone arrived.' }));
     const [after] = await db().select({ status: users.status }).from(users).where(eq(users.id, target.userId));
@@ -220,5 +220,139 @@ describe('Account sanctions', () => {
     expect(records.every((record) => record.revokedAt !== null)).toBe(true);
     const actions = (await db().select({ action: auditEvents.action }).from(auditEvents).where(eq(auditEvents.subjectId, target.userId))).map((row) => row.action);
     expect(actions).toEqual(expect.arrayContaining(['identity.member_suspended', 'identity.member_reinstated']));
+  });
+});
+
+describe('Suspension policy (SANCTION_RULES)', () => {
+  async function staff() {
+    const { grantRole } = await import('@/server/domains/access/authorize');
+    const mod = await member();
+    const admin = await member();
+    await db().transaction(async (tx) => {
+      await grantRole(tx, { userId: mod.userId, roleKey: 'moderator', grantedBy: null });
+      await grantRole(tx, { userId: admin.userId, roleKey: 'admin', grantedBy: null });
+    });
+    return { asMod: { userId: mod.userId, status: 'active' }, asAdmin: { userId: admin.userId, status: 'active' } };
+  }
+  const day = 24 * 60 * 60 * 1000;
+
+  it('takes only the allowed lengths, and the clock lifts a timed suspension when it runs out', async () => {
+    const { suspendMember, liftExpiredSuspensions } = await import('@/server/domains/access/sanctions');
+    const { enforcementRecords, users } = await import('@/server/db/schema');
+    const { asMod } = await staff();
+    const target = await member();
+    const now = new Date();
+
+    await expect(db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'spam', note: 'Posted the same ad forty times.', days: 3 }))).rejects.toMatchObject({
+      messageKey: 'sanctions.error.duration',
+    });
+    const notice = await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'spam', note: 'Posted the same ad forty times.', days: 7, now }));
+    expect(notice).toMatchObject({ kind: 'suspended', reason: 'spam', email: target.email });
+    expect(notice.until?.getTime()).toBe(now.getTime() + 7 * day);
+    expect(notice.appealToken).toBeTruthy();
+
+    // Not yet: six days in, nothing moves.
+    expect(await liftExpiredSuspensions(db(), new Date(now.getTime() + 6 * day))).toEqual([]);
+    const lifted = await liftExpiredSuspensions(db(), new Date(now.getTime() + 7 * day + 1000));
+    expect(lifted).toEqual([{ email: target.email, locale: 'es', kind: 'reinstated' }]);
+    const [after] = await db().select({ status: users.status }).from(users).where(eq(users.id, target.userId));
+    expect(after?.status).toBe('pending_verification');
+    const [record] = await db().select().from(enforcementRecords).where(eq(enforcementRecords.userId, target.userId));
+    expect(record?.revokedAt).not.toBeNull();
+    const [expired] = await db().select().from(auditEvents).where(and(eq(auditEvents.subjectId, target.userId), eq(auditEvents.action, 'identity.suspension_expired')));
+    expect(expired?.actorType).toBe('system');
+    // And only once.
+    expect(await liftExpiredSuspensions(db(), new Date(now.getTime() + 8 * day))).toEqual([]);
+  });
+
+  it('never lets the clock undo a ban, and never lifts "until review"', async () => {
+    const { suspendMember, banMember, liftExpiredSuspensions } = await import('@/server/domains/access/sanctions');
+    const { users } = await import('@/server/db/schema');
+    const { asMod, asAdmin } = await staff();
+    const banned = await member();
+    const held = await member();
+    const now = new Date();
+    await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: banned.userId, reason: 'scam', note: 'Took a deposit, sent nothing.', days: 1, now }));
+    await db().transaction((tx) => banMember(tx, { actor: asAdmin, userId: banned.userId, reason: 'scam', note: 'Four more victims came forward.' }));
+    await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: held.userId, reason: 'fraud', note: 'Checking the bank transfer claims.', days: null, now }));
+
+    expect(await liftExpiredSuspensions(db(), new Date(now.getTime() + 365 * day))).toEqual([]);
+    const statuses = await db().select({ id: users.id, status: users.status }).from(users);
+    expect(statuses.find((row) => row.id === banned.userId)?.status).toBe('banned');
+    expect(statuses.find((row) => row.id === held.userId)?.status).toBe('suspended');
+  });
+
+  it('takes one appeal from the emailed link, and an admin keeps the sanction with an answer', async () => {
+    const { suspendMember, readAppealLink, submitAppeal, openAppeals, decideAppeal } = await import('@/server/domains/access/sanctions');
+    const { users } = await import('@/server/db/schema');
+    const { asMod, asAdmin } = await staff();
+    const target = await member();
+    const network = `appeal-${crypto.randomUUID()}`;
+    const { appealToken } = await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'harassment', note: 'Insults in three threads.', days: 30 }));
+    const token = appealToken!;
+
+    const link = await readAppealLink(db(), token);
+    expect(link).toMatchObject({ userId: target.userId, type: 'suspension', reason: 'harassment', lifted: false, appealedAt: null });
+    // A link re-pointed at someone else's sanction, or forged outright, is nothing.
+    const [, signature] = token.split('.');
+    const repointed = Buffer.from(JSON.stringify({ r: link!.recordId, u: asMod.userId, exp: Math.floor(Date.now() / 1000) + 3600 }), 'utf8').toString('base64url');
+    expect(await readAppealLink(db(), `${repointed}.${signature}`)).toBeNull();
+    await expect(db().transaction((tx) => submitAppeal(tx, { token: 'forged.value', body: 'x'.repeat(40), networkHash: network }))).rejects.toMatchObject({ messageKey: 'appeal.error.link' });
+    await expect(db().transaction((tx) => submitAppeal(tx, { token, body: 'too short', networkHash: network }))).rejects.toMatchObject({ messageKey: 'appeal.error.length' });
+
+    const body = 'Those messages were from my brother on my phone. I have changed my password.';
+    expect(await db().transaction((tx) => submitAppeal(tx, { token, body, networkHash: network }))).toBe('sent');
+    expect(await db().transaction((tx) => submitAppeal(tx, { token, body: `${body} Again.`, networkHash: network }))).toBe('already');
+
+    // Admins decide appeals; a moderator does not.
+    await expect(openAppeals(db(), asMod)).rejects.toMatchObject({ code: 'forbidden' });
+    const [open] = await openAppeals(db(), asAdmin);
+    expect(open).toMatchObject({ userId: target.userId, body, note: 'Insults in three threads.' });
+    await expect(db().transaction((tx) => decideAppeal(tx, { actor: asAdmin, appealId: open!.id, outcome: 'upheld', response: '' }))).rejects.toMatchObject({
+      messageKey: 'appeal.error.response',
+    });
+    const notice = await db().transaction((tx) => decideAppeal(tx, { actor: asAdmin, appealId: open!.id, outcome: 'upheld', response: 'The account is yours to keep safe; the suspension stays.' }));
+    expect(notice).toMatchObject({ kind: 'appeal_upheld', email: target.email, response: 'The account is yours to keep safe; the suspension stays.' });
+    await expect(db().transaction((tx) => decideAppeal(tx, { actor: asAdmin, appealId: open!.id, outcome: 'lifted', response: 'Changed my mind.' }))).rejects.toMatchObject({
+      messageKey: 'appeal.error.decided',
+    });
+    expect(await openAppeals(db(), asAdmin)).toEqual([]);
+    const [after] = await db().select({ status: users.status }).from(users).where(eq(users.id, target.userId));
+    expect(after?.status).toBe('suspended');
+  });
+
+  it('lifts a ban on appeal, and closes an appeal whose sanction ended first', async () => {
+    const { suspendMember, banMember, submitAppeal, openAppeals, decideAppeal, liftExpiredSuspensions, readAppealLink } = await import('@/server/domains/access/sanctions');
+    const { sanctionAppeals, users } = await import('@/server/db/schema');
+    const { asMod, asAdmin } = await staff();
+    const banned = await member();
+    const timed = await member();
+    const network = `appeal-${crypto.randomUUID()}`;
+    const now = new Date();
+
+    const ban = await db().transaction((tx) => banMember(tx, { actor: asAdmin, userId: banned.userId, reason: 'multi_account_abuse', note: 'Matched a banned device.' }));
+    expect(await db().transaction((tx) => submitAppeal(tx, { token: ban.appealToken!, body: 'That phone was sold to me second-hand last month.', networkHash: network }))).toBe('sent');
+    const [appeal] = await openAppeals(db(), asAdmin);
+    const lifted = await db().transaction((tx) => decideAppeal(tx, { actor: asAdmin, appealId: appeal!.id, outcome: 'lifted', response: 'We checked the device history. Welcome back.' }));
+    expect(lifted).toMatchObject({ kind: 'reinstated', response: 'We checked the device history. Welcome back.' });
+    const [back] = await db().select({ status: users.status }).from(users).where(eq(users.id, banned.userId));
+    expect(back?.status).toBe('pending_verification');
+
+    const suspension = await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: timed.userId, reason: 'spam', note: 'Link spam in Comunidad.', days: 1, now }));
+    expect(await db().transaction((tx) => submitAppeal(tx, { token: suspension.appealToken!, body: 'I did not know links were not allowed there.', networkHash: network }))).toBe('sent');
+    await liftExpiredSuspensions(db(), new Date(now.getTime() + 2 * day));
+    expect(await openAppeals(db(), asAdmin)).toEqual([]);
+    const [closed] = await db().select().from(sanctionAppeals).where(eq(sanctionAppeals.userId, timed.userId));
+    expect(closed).toMatchObject({ outcome: 'ended', decidedBy: null });
+    expect((await readAppealLink(db(), suspension.appealToken!))?.lifted).toBe(true);
+  });
+
+  it('tells the right password on a sanctioned account apart from a wrong one', async () => {
+    const { suspendMember } = await import('@/server/domains/access/sanctions');
+    const { asMod } = await staff();
+    const target = await member();
+    await db().transaction((tx) => suspendMember(tx, { actor: asMod, userId: target.userId, reason: 'spam', note: 'Posted the same ad forty times.', days: 1 }));
+    expect(await authenticate(db(), { email: target.email, password: 'a-sufficiently-long-passphrase' }, context)).toEqual({ ok: false, reason: 'account_unavailable' });
+    expect(await authenticate(db(), { email: target.email, password: 'not-the-passphrase-at-all' }, context)).toEqual({ ok: false, reason: 'invalid_credentials' });
   });
 });
