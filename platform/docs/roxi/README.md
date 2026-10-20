@@ -75,7 +75,7 @@ nothing is typed twice:
 
 | Document | ID | Use |
 | --- | --- | --- |
-| `knowledge/sitio.md` — every public page | `c4LFppSF0Q4eSPYqpvaX` | retrieval |
+| `knowledge/sitio.md` — every public page | `VIcOURXPhuLyRIoovNwT` | retrieval |
 | `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `ribhV4Np15BC615BScC8` | retrieval |
 | `knowledge/reglas.md` — member-facing business rules | `SKLpYnPf1hJZmddBMqXg` | always in the prompt |
 | `knowledge/guia-narrada.md` — the video guide's narration | `L9cayZOfF2vdeYW1szOv` | retrieval |
