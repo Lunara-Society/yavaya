@@ -55,6 +55,7 @@ export default async function StatusPage() {
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="status">
       <StatusBody
         c={c}
+        noteLabel={t('status.note_label')}
         groups={groups
           .map((g) => ({ title: t(g.titleKey), rows: rows(g.key) }))
           .filter((g) => g.rows.length > 0)}

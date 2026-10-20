@@ -17,6 +17,7 @@ import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { ListingCard } from '@/ui/mercadito/listing-card';
 import { OPEN_STATUSES, PUBLIC_STATUSES, whatsappLink } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation';
+import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { closeListingAction, featureListingAction, reportListingAction, reserveListingAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -158,6 +159,9 @@ export default async function ListingPage({ params, searchParams }: Params) {
               ) : (
                 <p className="muted">{t('mercadito.listing.no_phone')}</p>
               )}
+              {(OPEN_STATUSES as readonly string[]).includes(listing.status) ? (
+                <ShareOnWhatsApp className="wa-share-wide" label={own ? t('share.own_listing') : t('share.whatsapp')} text={t('share.listing', { title: listing.title, url: listingUrl })} />
+              ) : null}
             </div>
 
             {shield ? <TrustShieldCard shield={shield} t={t} /> : null}

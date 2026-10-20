@@ -885,9 +885,12 @@ export function StatusBody({
   c,
   groups,
   legend,
+  noteLabel,
 }: {
   c: SiteContent;
   groups: { title: string; rows: StatusRow[] }[];
+  /** The notes are operator text kept in English; this says so in the reader's language. */
+  noteLabel: string;
   legend: { state: SiteState; label: string; explain: string }[];
 }) {
   const p = c.pages.status;
@@ -906,9 +909,10 @@ export function StatusBody({
                       <h3>{row.name}</h3>
                       <p>{row.detail}</p>
                       {row.note ? (
-                        <p className="muted" style={{ fontSize: '0.82rem', marginTop: 6 }}>
-                          {row.note}
-                        </p>
+                        <details className="reg-note">
+                          <summary>{noteLabel}</summary>
+                          <p lang="en">{row.note}</p>
+                        </details>
                       ) : null}
                     </div>
                     <span className={`badge badge-${row.state}`}>{row.label}</span>

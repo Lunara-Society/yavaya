@@ -11,6 +11,8 @@ import { money, waLink } from '@/ui/go/format';
 import { getStore, storeMenu } from '@/server/domains/go/service';
 import { GO_RULES } from '@/config/business-rules';
 import { placeOrderAction } from '../../actions';
+import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
+import { serverEnv } from '@/config/env';
 import { mapLabels } from '../../labels';
 
 export const dynamic = 'force-dynamic';
@@ -49,6 +51,7 @@ export default async function StorePage({ params, searchParams }: { params: Prom
             </p>
             <h1>{store.name}</h1>
             <p className="lead">{store.about}</p>
+            <ShareOnWhatsApp label={t('share.whatsapp')} text={t('share.store', { name: store.name, url: `${serverEnv().APP_URL.replace(/\/$/, '')}/yavayago/stores/${store.id}` })} />
             <p className="go-meta">
               <span className={`go-badge ${store.isOpen ? 'open' : 'shut'}`}>{store.isOpen ? t('go.store.open') : t('go.store.closed')}</span> {store.hours}
             </p>

@@ -12,6 +12,8 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { getPost, getProfile, WORK_REPORT_CATEGORIES, workPricingRules } from '@/server/domains/work/service';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { FeatureOffer } from '@/ui/promotion/feature-offer';
+import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
+import { serverEnv } from '@/config/env';
 import { applicationStepAction, applyAction, closePostAction, featurePostAction, reportWorkAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
@@ -64,6 +66,9 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
           </p>
           <h1 className="h-md">{post.title}</h1>
           <p className="wk-pay big">{post.payText}</p>
+          {post.status === 'open' ? (
+            <ShareOnWhatsApp label={t('share.whatsapp')} text={t('share.job', { title: post.title, pay: post.payText, url: `${serverEnv().APP_URL.replace(/\/$/, '')}/work/posts/${post.id}` })} />
+          ) : null}
           <p className="sv-meta">
             {post.companyName ? `${post.companyName} · ` : ''}
             {post.employerVerified ? <span className="wk-verified">✓ {t(`work.employer.verified_${post.employerVerified}` as MessageKey)} · </span> : null}

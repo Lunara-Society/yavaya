@@ -704,13 +704,13 @@ export const siteEn: SiteContent = {
         },
         {
           title: 'Phase 1 · Core Yavaya',
-          state: 'dev',
+          state: 'live',
           text: 'Mercadito, Services, Community, Sanctuary, Animals and Espacio Violeta are open, with reports, moderation and notifications.',
           items: ['Mercadito', 'Services', 'Community', 'Sanctuary', 'Animals', 'Espacio Violeta', 'Tokens', 'Notifications', 'Visible Trust Shield'],
         },
         {
           title: 'Phase 2 · Work and movement',
-          state: 'dev',
+          state: 'live',
           text: 'Work and YavayaGo are open. No driver or store works before a person approves them.',
           items: ['Work', 'YavayaGo', 'Driver network', 'Restaurants'],
         },
@@ -765,8 +765,8 @@ export const siteEn: SiteContent = {
           ['Trust across districts', '**No**'],
         ],
       },
-      countriesHead: { eyebrow: 'Our home', title: 'Seven launch countries' },
-      countries: ['Guatemala', 'Belize', 'El Salvador', 'Honduras', 'Nicaragua', 'Costa Rica', 'Panama'],
+      countriesHead: { eyebrow: 'Our home', title: 'Central America and Mexico' },
+      countries: ['Guatemala', 'Belize', 'El Salvador', 'Honduras', 'Nicaragua', 'Costa Rica', 'Panama', 'Mexico'],
       visionHead: { eyebrow: 'The vision', title: 'A habit, not an app' },
       vision: [
         '"I need to buy something." → **Yavaya.**',

@@ -118,7 +118,7 @@ export function integrationCapabilities(): Capability[] {
   for (const provider of listProviderAvailability()) {
     integrations.push({
       key: `payments_${provider.key}`,
-      nameKey: 'capability.payments.name',
+      nameKey: `capability.payments.${provider.key}.name`,
       detailKey: 'capability.payments.detail',
       // Test keys make a working checkout with no real money: DEMO, not REAL.
       state: provider.available ? (provider.testMode ? 'DEMO' : 'REAL') : 'REQUIRES_CONFIGURATION',

@@ -452,6 +452,9 @@ td strong { color: var(--text); }
 @media (min-width: 720px) { .reg-row { grid-template-columns: 1fr auto; align-items: center; } }
 .reg-row h3 { font-size: 1.02rem; margin-bottom: 2px; }
 .reg-row p { margin: 0; color: var(--text-2); font-size: 0.95rem; }
+.reg-note { margin-top: 6px; font-size: 0.82rem; color: var(--text-3); }
+.reg-note summary { cursor: pointer; width: max-content; max-width: 100%; }
+.reg-note p { margin-top: 4px; font-size: 0.82rem; }
 .reg-group { margin-top: 36px; margin-bottom: 12px; font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); font-weight: 800; }
 .reg-group:first-child { margin-top: 0; }
 
@@ -578,6 +581,9 @@ td strong { color: var(--text); }
 .mk-banner { padding: 12px 16px; border-radius: 12px; border: 1px solid var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); font-weight: 700; }
 .mk-wa { background: #1f9d55; color: #fff; }
 .mk-wa:hover { filter: brightness(1.08); }
+.wa-share { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; }
+.wa-share svg { color: #25a35a; flex: none; }
+.wa-share-wide { width: 100%; justify-content: center; }
 .mk-form { display: grid; gap: 18px; max-width: 760px; }
 .mk-form label { display: grid; gap: 6px; font-weight: 700; }
 .mk-form .hint { font-weight: 400; font-size: 0.86rem; color: var(--text-3); }
@@ -926,16 +932,15 @@ td strong { color: var(--text); }
 /* ── Rising into view (classes set by Alive) ── */
 .section .grid:has(> .rv), .section .gates:has(> .rv), .section .split:has(> .rv), .section .steps:has(> .rv), .section .wrap:has(> .rv),
 .mk-grid:has(> .rv), .go-stores:has(> .rv), .an-grid:has(> .rv) { perspective: 1400px; }
-.alive .rv { opacity: 0; translate: 0 70px; rotate: x 24deg; scale: 0.94; transform-origin: 50% 100%; }
-.pointer-fine .rv { filter: blur(8px); }
+/* Calm on purpose: a short rise and a fade. The earlier blur and tilt made
+   text wait on the effect, and on an older phone that read as slowness. */
+.alive .rv { opacity: 0; translate: 0 22px; scale: 0.99; transform-origin: 50% 100%; }
 .alive .rv.in {
-  opacity: 1; translate: none; rotate: none; scale: none; filter: none;
+  opacity: 1; translate: none; scale: none;
   transition:
-    opacity 1s cubic-bezier(.2,.7,.2,1) var(--rv-delay, 0ms),
-    translate 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
-    rotate 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
-    scale 1.35s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
-    filter 1s ease var(--rv-delay, 0ms);
+    opacity 0.6s cubic-bezier(.2,.7,.2,1) var(--rv-delay, 0ms),
+    translate 0.75s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms),
+    scale 0.75s cubic-bezier(.16,1,.3,1) var(--rv-delay, 0ms);
 }
 /* The eyebrow's rule draws itself in after the heading lands. */
 .alive .rv .eyebrow::before { transform: scaleX(0); transform-origin: 0 50%; }

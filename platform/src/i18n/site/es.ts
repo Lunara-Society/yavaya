@@ -716,13 +716,13 @@ export const siteEs = {
         },
         {
           title: 'Fase 1 · El núcleo de Yavaya',
-          state: 'dev',
+          state: 'live',
           text: 'Mercadito, Servicios, Comunidad, Santuario, Animales y el Espacio Violeta ya están abiertos, con reportes, moderación y avisos.',
           items: ['Mercadito', 'Servicios', 'Comunidad', 'Santuario', 'Animales', 'Espacio Violeta', 'Tokens', 'Notificaciones', 'Escudo de Confianza visible'],
         },
         {
           title: 'Fase 2 · Trabajo y movimiento',
-          state: 'dev',
+          state: 'live',
           text: 'Trabajo y YavayaGo ya están abiertos. Ningún repartidor ni negocio trabaja antes de que una persona lo apruebe.',
           items: ['Trabajo', 'YavayaGo', 'Red de repartidores', 'Restaurantes'],
         },
@@ -777,8 +777,8 @@ export const siteEs = {
           ['Confianza entre distritos', '**No**'],
         ],
       },
-      countriesHead: { eyebrow: 'Nuestra casa', title: 'Siete países de lanzamiento' },
-      countries: ['Guatemala', 'Belice', 'El Salvador', 'Honduras', 'Nicaragua', 'Costa Rica', 'Panamá'],
+      countriesHead: { eyebrow: 'Nuestra casa', title: 'Centroamérica y México' },
+      countries: ['Guatemala', 'Belice', 'El Salvador', 'Honduras', 'Nicaragua', 'Costa Rica', 'Panamá', 'México'],
       visionHead: { eyebrow: 'La visión', title: 'Un hábito, no una app' },
       vision: [
         '"Necesito comprar algo." → **Yavaya.**',

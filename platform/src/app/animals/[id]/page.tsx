@@ -10,6 +10,8 @@ import { facts } from '@/ui/animals/parts';
 import { whatsappLink } from '@/server/domains/mercadito/rules';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { ANIMALS_REPORT_CATEGORIES, getAnimal, type ApplicationView } from '@/server/domains/animals/service';
+import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
+import { serverEnv } from '@/config/env';
 import { applicationStepAction, reportAnimalAction, withdrawAnimalAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -85,6 +87,9 @@ export default async function AnimalPage({ params, searchParams }: Params) {
             {animal.status !== 'available' ? <p className="an-status-line">{t(`animals.status.${animal.status}` as MessageKey)}</p> : null}
             <h1 className="h-md">{animal.name}</h1>
             <p className="an-facts">{facts(t, animal)}</p>
+            {animal.status === 'available' ? (
+              <ShareOnWhatsApp label={t('share.whatsapp')} text={t('share.animal', { name: animal.name, url: `${serverEnv().APP_URL.replace(/\/$/, '')}/animals/${animal.id}` })} />
+            ) : null}
             <ul className="an-health-list">
               <li className={animal.sterilised ? 'yes' : 'no'}>{animal.sterilised ? t('animals.health.sterilised') : t('animals.health.not_sterilised')}</li>
               <li className={animal.vaccinated ? 'yes' : 'no'}>{animal.vaccinated ? t('animals.health.vaccinated') : t('animals.health.not_vaccinated')}</li>

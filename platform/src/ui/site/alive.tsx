@@ -133,10 +133,10 @@ export function Alive() {
         arriving.forEach((element, index) => {
           revealer.unobserve(element);
           // Things arriving together come in one after another, like a cast taking the stage.
-          const delay = Math.min(index, 6) * 90;
+          const delay = Math.min(index, 6) * 60;
           element.style.setProperty('--rv-delay', `${delay}ms`);
           element.classList.add('in');
-          timers.push(window.setTimeout(() => settled(element), 1500 + delay));
+          timers.push(window.setTimeout(() => settled(element), 900 + delay));
         });
       },
       { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },

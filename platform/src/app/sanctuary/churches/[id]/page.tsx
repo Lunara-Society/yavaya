@@ -12,6 +12,7 @@ import { WordCard, whenText } from '@/ui/sanctuary/parts';
 import { whatsappLink } from '@/server/domains/mercadito/rules';
 import { getChurch, listDevotionals } from '@/server/domains/sanctuary/service';
 import { ReportForm } from '@/ui/sanctuary/report-form';
+import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { followAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
@@ -68,6 +69,7 @@ export default async function ChurchPage({ params, searchParams }: Params) {
           <h1>{church.name}</h1>
           <p className="lead">{church.placeName}</p>
           {church.status === 'approved' ? <p className="sc-verified">✓ {t('sanctuary.verified')}</p> : null}
+          {church.status === 'approved' ? <ShareOnWhatsApp label={t('share.whatsapp')} text={t('share.church', { name: church.name, url: pageUrl })} /> : null}
         </div>
       </section>
 
