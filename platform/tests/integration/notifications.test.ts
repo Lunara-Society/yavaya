@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNotNull } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
 import { demoContent, locations, notificationPreferences, userProfiles, users } from '@/server/db/schema';
 import { consumeVerificationCode, register } from '@/server/domains/identity/service';
@@ -47,10 +47,24 @@ const post = (overrides: Record<string, unknown> = {}) =>
   });
 
 beforeAll(async () => {
-  const [place] = await db().select({ id: locations.id }).from(locations).where(eq(locations.level, 'city')).limit(1);
+  const [place] = await db()
+    .select({ id: locations.id, code: locations.code, path: locations.path })
+    .from(locations)
+    .where(eq(locations.level, 'city'))
+    .orderBy(asc(locations.code))
+    .limit(1);
   placeId = place!.id;
-  const zones = await db().select({ tz: locations.timezone }).from(locations).where(eq(locations.level, 'country'));
-  timezone = zones.find((z) => z.tz)?.tz ?? 'UTC';
+  // The zone the product uses for a church there: the nearest place in its
+  // path that has one. Any other zone would do most of the day — and fail for
+  // the hour when, say, Panama (UTC−5) and Guatemala (UTC−6) are on
+  // different dates.
+  const [zone] = await db()
+    .select({ tz: locations.timezone })
+    .from(locations)
+    .where(and(inArray(locations.code, [...place!.path, place!.code]), isNotNull(locations.timezone)))
+    .orderBy(desc(locations.depth))
+    .limit(1);
+  timezone = zone?.tz ?? 'UTC';
 });
 beforeEach(async () => {
   await resetTransactionalData();
