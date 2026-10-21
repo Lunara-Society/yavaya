@@ -1,8 +1,8 @@
 # Design system
 
-One foundation, eight worlds.
+One foundation, seven worlds.
 
-Yavaya must feel like one product and eight distinct places at the same time.
+Yavaya must feel like one product and seven distinct places at the same time.
 The foundation — type, spacing, motion, focus, navigation, identity components,
 Trust Shield — is shared and does not vary. What varies is a district's colour
 world, its layout archetype, and its information hierarchy.
@@ -37,28 +37,32 @@ the bottom within thumb reach.
 ## District worlds
 
 Each district sets its own accent family and, more importantly, its own layout
-archetype. The registry records both, and a test asserts that all eight
-archetypes are distinct — recolouring one card grid eight times is explicitly
+archetype. The registry records both, and a test asserts that all seven
+archetypes are distinct — recolouring one card grid seven times is explicitly
 not the plan.
 
-| District | Accent | Archetype | The feeling |
-| --- | --- | --- | --- |
-| Services | Teal | `request-board` | Someone needs help; someone can help |
-| Mercadito | Emerald | `discovery-density` | Commerce, browsing, density |
-| YavayaGo | Orange | `motion-map` | Movement, maps, speed |
-| Works | Deep blue | `professional-directory` | Precise, professional, credible |
-| Community | Purple | `calm-column` | Calm, human, unhurried |
-| Impact | Ruby | `campaign-progress` | Urgency held with hope |
-| Animals | Forest | `organic-profile` | Organic, compassionate |
-| Tavern | Gold | `playful-tiles` | Reward, discovery, play |
+| District | Accent | Archetype | The feeling | What the page does with it |
+| --- | --- | --- | --- | --- |
+| Mercadito | Emerald | `discovery-density` | Commerce, browsing, density | A market stall: awning, one big search, categories to swipe, goods in a tight grid |
+| Services | Teal | `request-board` | Someone needs help; someone can help | A help desk: the question and "Lo necesito hoy" beside a photograph, every kind of help as tiles |
+| Works | Deep blue | `professional-directory` | Precise, professional, credible | A job board: the search inside the banner, offers in one list, the board's rules pinned beside it |
+| YavayaGo | Orange | `motion-map` | Movement, maps, speed | A delivery app: where you are first, what you can ask for, kinds of shop as round icons |
+| Community | Purple | `calm-column` | Calm, human, unhurried | A town square: the photograph edge to edge, then kinds of post, one calm column, the doors to Santuario and Espacio Violeta |
+| Sanctuary | Ivory | `sacred-nave` | Quiet, reverent, warm | Candlelight: a tall centred title, the day's light set alone like an epigraph, then the churches |
+| Animals | Forest | `organic-profile` | Organic, compassionate | A gallery: a framed print first, adoption as a path of steps, large frames for the animals |
 
 The archetype is the substance. Mercadito is dense because browsing many items
-quickly is the task. Community is a single calm column because someone asking
-for help should not be presented as inventory. Impact leads with progress
-because a campaign's state is the point. YavayaGo is map-first because location
-is the question being answered.
+quickly is the task. Community keeps the conversation in a single calm column
+because someone asking for help should not be presented as inventory.
+YavayaGo asks where you are before anything else because location is the
+question being answered.
 
-**Community and Impact carry an additional rule:** they must never present a
+Each district's guide film comes **after** its own content, never as the first
+thing on the page: the district should be recognisable before anyone is asked
+to press play. Photographs are shown in full colour, with a shade only where
+words sit on them.
+
+**Community carries an additional rule:** it must never present a
 vulnerable person's situation as entertainment. No engagement ornamentation, no
 urgency animations, no "trending" framing on human need.
 
