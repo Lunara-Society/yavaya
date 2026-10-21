@@ -2660,7 +2660,7 @@ a.live-text:hover { text-decoration: underline; }
   .member-chip { display: inline-block; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 42px; }
 }
 @media (min-width: 1000px) and (max-width: 1399px) {
-  .top:has(.member-chip) .nav a:nth-child(n + 4) { display: none; }
+  .top:has(.member-chip) .nav a:nth-child(n + 3) { display: none; }
 }
 @media (min-width: 1000px) and (max-width: 1199px) {
   .top:has(.member-chip) .nav { display: none; }
@@ -2681,3 +2681,97 @@ a.live-text:hover { text-decoration: underline; }
 .mk-photo-advice span::before { content: "!"; flex: none; display: inline-grid; place-items: center; width: 15px; height: 15px; margin-top: 1px; border-radius: 50%;
   background: #e0a93b; color: #1a1300; font-size: 0.66rem; font-weight: 900; }
 :root[data-theme="light"] .mk-photo-advice span::before { background: #8a5e00; color: #fff; }
+
+/* ── One header (wide screens) ───────────────────────────────────────────
+ * From 900px the sign-in row and the stage ribbon fold into the header: one
+ * confident bar instead of three thin strips. The ribbon becomes a badge
+ * beside the mark, linking to what works today; signed out, Google, Entrar
+ * and Crear cuenta sit at the bar's end. Phones keep the compact row and the
+ * slim ribbon (no room in a 390px bar), and a session that ended still says
+ * so in its own line.
+ */
+.top-stage, .top-auth { display: none; }
+@media (min-width: 900px) {
+  .ribbon { display: none; }
+  .authbar { display: none; }
+  .authbar.authbar-ended { display: block; }
+  .authbar-ended .authbar-actions { display: none; }
+  .authbar-ended .authbar-in { min-height: 0; padding-top: 8px; padding-bottom: 8px; justify-content: center; }
+
+  .top-stage {
+    display: inline-flex; align-items: center; gap: 7px; flex: none; padding: 5px 11px 5px 9px; border-radius: 999px; text-decoration: none;
+    border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent);
+    color: var(--accent); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+  }
+  .top-stage:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .top-stage-dot { width: 7px; height: 7px; border-radius: 50%; background: #3fbf7f; box-shadow: 0 0 0 0 rgba(63, 191, 127, 0.55); animation: stage-ping 2.4s ease-out infinite; }
+  .top-auth { display: inline-flex; align-items: center; gap: 8px; margin-left: 6px; }
+  .top-auth-btn { min-height: 40px; padding: 0 16px; font-size: 0.9rem; white-space: nowrap; }
+  .btn-google-icon { width: 40px; min-height: 40px; padding: 0; border-radius: 12px; }
+  .btn-google-icon .btn-google-label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@keyframes stage-ping { 0% { box-shadow: 0 0 0 0 rgba(63, 191, 127, 0.55); } 70%, 100% { box-shadow: 0 0 0 7px rgba(63, 191, 127, 0); } }
+@media (prefers-reduced-motion: reduce) { .top-stage-dot { animation: none; } }
+/* The header spans wider than the page's text, as a frame does. */
+.top > .wrap { max-width: 1440px; }
+/* Room on a laptop: the links step into the menu (where all of them already are) before anything wraps. */
+@media (min-width: 900px) and (max-width: 1279px) { .top:has(.top-auth) .nav { display: none; } }
+@media (min-width: 1280px) and (max-width: 1439px) { .top:has(.top-auth) .nav a:nth-child(n + 3) { display: none; } }
+@media (min-width: 900px) and (max-width: 1099px) { .top:has(.top-auth) .locbar-name { display: none; } }
+/* The sign-in pages have no buttons at the bar's end, but a laptop still has no room for all four links. */
+@media (min-width: 1000px) and (max-width: 1279px) { .top:not(:has(.member-chip, .top-auth)) .nav a:nth-child(n + 3) { display: none; } }
+@media (min-width: 900px) {
+  .top .locbar-chip { max-width: 190px; }
+  /* The badge already leads to what works today; the "Estado" link would say it twice. */
+  .top .nav a[href="/status"] { display: none; }
+  /* Settings as its icon: the panel it opens is titled. */
+  .top .tools > details.group > summary > span:not(:last-child) { display: none; }
+}
+
+/* ── The way in: the form beside a photograph (auth-card.tsx) ─────────────
+ * On a phone the form comes first and the photograph follows as a card with
+ * the three trust points, so nobody scrolls past a picture to reach the
+ * fields. From 900px the two become one wide panel: the form on the left,
+ * the photograph filling the right in full colour, darkened only at the
+ * bottom where the words sit on it.
+ */
+.auth-split { display: grid; gap: 18px; }
+.auth-art { position: relative; width: 100%; max-width: 440px; margin: 0 auto; overflow: hidden; border-radius: 24px; isolation: isolate;
+  background: #0b1424; color: #fff; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22); }
+.auth-art-photo { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+.auth-art-photo::after { content: ""; position: absolute; inset: auto 0 0; height: 40%; background: linear-gradient(180deg, transparent, #0b1424); }
+.auth-art-photo .art-note { top: 12px; right: 12px; bottom: auto; }
+.auth-art-copy { position: relative; padding: 4px 22px 24px; }
+.auth-art-title { margin: 0 0 6px; font-family: "Fraunces", Georgia, serif; font-size: 1.45rem; font-weight: 600; line-height: 1.12; letter-spacing: -0.01em; }
+.auth-art-lead { margin: 0 0 18px; color: rgba(255, 255, 255, 0.82); font-size: 0.98rem; line-height: 1.45; }
+.auth-art-points { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.auth-art-points li { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 12px; align-items: start; color: rgba(255, 255, 255, 0.8); font-size: 0.93rem; line-height: 1.42; }
+.auth-art-points b { color: #fff; font-weight: 700; }
+.auth-art-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: #f3d77a;
+  background: rgba(212, 175, 55, 0.14); border: 1px solid rgba(243, 215, 122, 0.32); }
+.auth-art-icon svg { width: 20px; height: 20px; }
+
+@media (min-width: 900px) {
+  /* Wider than the account pages' column, centred on it: a panel this size is the page. */
+  .auth-split {
+    --auth-w: min(1180px, calc(100vw - 48px));
+    width: var(--auth-w); margin-inline: calc((100% - var(--auth-w)) / 2);
+    grid-template-columns: minmax(400px, 500px) minmax(0, 1fr); gap: 0; align-items: stretch;
+    min-height: min(740px, calc(100vh - 150px)); overflow: hidden; border-radius: 30px;
+    background: radial-gradient(520px 380px at 0% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%), var(--surface);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); box-shadow: 0 40px 120px rgba(0, 0, 0, 0.3);
+  }
+  .auth-split .auth-card { align-self: center; max-width: none; margin: 0; padding: 48px 52px 40px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+  .auth-split .auth-head h1 { font-size: 2.1rem; }
+  .auth-art { display: flex; flex-direction: column; justify-content: flex-end; max-width: none; margin: 0; border-radius: 0; box-shadow: none; }
+  .auth-art-photo { position: absolute; inset: 0; z-index: -1; aspect-ratio: auto; }
+  .auth-art-photo::after { inset: 0; height: auto; background: linear-gradient(180deg, transparent 34%, rgba(5, 11, 22, 0.5) 58%, rgba(5, 11, 22, 0.9) 100%); }
+  .auth-art-photo .art-note { top: 18px; right: 18px; }
+  .auth-art-copy { max-width: 600px; padding: 40px 48px 46px; }
+  .auth-art-title { margin-bottom: 10px; font-size: clamp(2rem, 2.6vw, 2.6rem); text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35); }
+  .auth-art-lead { margin-bottom: 26px; font-size: 1.08rem; }
+  .auth-art-points { gap: 16px; }
+  .auth-art-points li { font-size: 0.98rem; }
+}
+:root[data-theme="light"] .auth-split { box-shadow: 0 30px 90px rgba(8, 17, 32, 0.14); }
+:root[data-theme="light"] .auth-art { box-shadow: 0 18px 50px rgba(8, 17, 32, 0.16); }

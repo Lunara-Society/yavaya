@@ -19,6 +19,7 @@ import { LIVE_FEED_RULES, PLACE_RULES } from '@/config/business-rules';
 import { readSessionCookie } from '@/server/auth/cookies';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { AuthBar } from './auth-bar';
+import { GoogleButton } from '@/ui/components/google-button';
 import { GooglePrompt } from '@/ui/components/google-prompt';
 import { SiteMetrics } from '@/ui/components/site-metrics';
 
@@ -108,6 +109,11 @@ export async function SiteShell({
             <Mark />
             <span>YAVAYA</span>
           </Link>
+          {/* The ribbon below, as a badge, on wide screens: what is open, one click from the whole answer. */}
+          <Link className="top-stage" href={PAGE_PATHS.status} aria-label={`${c.ui.ribbon.label}. ${c.ui.ribbon.text.replace(/\*/g, '')} ${c.ui.ribbon.link}`}>
+            <span className="top-stage-dot" aria-hidden="true" />
+            {c.ui.ribbon.label}
+          </Link>
           <nav className="nav" aria-label={c.ui.navLabel}>
             {primary.map((id) => (
               <Link key={id} href={PAGE_PATHS[id]} aria-current={cur(id)}>
@@ -161,7 +167,7 @@ export async function SiteShell({
                   {member.displayName || member.yayId}
                 </Link>
               </>
-            ) : null /* signed out, the way in is the bar above the header */}
+            ) : null /* signed out: the row above the header on a phone, the header's own buttons on a wide screen */}
             <QuickControls t={t} language={language} theme={theme} member={member} />
             <details className="menu">
               <summary className="chip" aria-label={c.ui.menuOpen}>
@@ -181,6 +187,18 @@ export async function SiteShell({
                 ))}
               </div>
             </details>
+            {/* Signed out on a wide screen, the way in sits in the header itself; phones keep the row above it. */}
+            {!member && authBar ? (
+              <span className="top-auth">
+                {googleSignIn().available ? <GoogleButton href="/auth/google" label={t('auth.google.continue')} className="btn-google-icon" /> : null}
+                <Link className="btn btn-line top-auth-btn" href="/login">
+                  {t('auth.submit_login')}
+                </Link>
+                <Link className="btn btn-gold top-auth-btn" href="/register">
+                  {t('auth.bar.register')}
+                </Link>
+              </span>
+            ) : null}
           </div>
         </div>
       </header>
