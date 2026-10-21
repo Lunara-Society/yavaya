@@ -27,7 +27,7 @@ const LIMITS: Record<string, Record<string, number>> = {
 };
 
 /** A plain form: asking works without JavaScript, on any phone, at 3 a.m. */
-export default async function NewRequestPage({ searchParams }: { searchParams: Promise<{ error?: string; cat?: string }> }) {
+export default async function NewRequestPage({ searchParams }: { searchParams: Promise<{ error?: string; cat?: string; urgent?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login');
@@ -60,7 +60,7 @@ export default async function NewRequestPage({ searchParams }: { searchParams: P
           </label>
           <label className="sv-urgent-check">
             <span>
-              <input type="checkbox" name="urgent" /> <strong>{t('services.form.urgent')}</strong>
+              <input type="checkbox" name="urgent" defaultChecked={params.urgent === '1'} /> <strong>{t('services.form.urgent')}</strong>
             </span>
             <span className="hint">{t('services.form.urgent_hint')}</span>
           </label>

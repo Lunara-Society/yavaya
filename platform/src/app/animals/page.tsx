@@ -48,22 +48,33 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="animals" tone="animals">
-      <section className="cm-head">
-        <div className="cm-head-art" aria-hidden="true">
-          <DistrictScene id="animals" priority />
-        </div>
-        <div className="wrap">
-          <p className="eyebrow">{c.districts.animals.name}</p>
-          <h1>{t('animals.home.title')}</h1>
-          <p className="lead">{t('animals.home.lead')}</p>
+      {/* Animales' own shape: a gallery. The photograph is the first thing,
+          framed like a print, because here a face is what finds a home; the
+          way to adopt reads as a path, one step after the other; and the
+          animals themselves fill the page in large frames. */}
+      <section className="an-hero">
+        <div className="wrap an-hero-in">
+          <figure className="an-hero-photo">
+            <DistrictScene id="animals" priority sizes="(min-width: 900px) 46vw, 100vw" />
+          </figure>
+          <div className="an-hero-text">
+            <p className="eyebrow">{c.districts.animals.name}</p>
+            <h1>{t('animals.home.title')}</h1>
+            <p className="lead">{t('animals.home.lead')}</p>
+            <div className="btn-row">
+              <a className="btn btn-gold" href="#adopt">
+                {t('animals.home.looking')}
+              </a>
+              <Link className="btn btn-line" href="/animals/lost">
+                {t('animals.lost.title')}
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
-      <div className="wrap">
-        <GuideVideo guideKey="animales" title={t('guide.watch_title', { name: c.nav.animals })} t={t} locale={locale} />
-      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
-        <div className="an-doors">
+        <div className="an-doors an-path">
           <Link className="an-door" href="/animals/learn">
             <span className="an-door-icon" aria-hidden="true">
               <Icon name="book" />
@@ -133,14 +144,17 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
             </button>
           </form>
           {animals.items.length === 0 ? (
-            <div className="sc-empty">
+            <div className="sc-empty an-empty">
+              <span className="an-empty-icon" aria-hidden="true">
+                <Icon name="heart" />
+              </span>
               <p>{t('animals.home.empty')}</p>
               <Link className="btn btn-line" href={member ? '/animals/rescuer' : '/login'}>
                 {t('animals.home.rescue')}
               </Link>
             </div>
           ) : (
-            <div className="an-grid">
+            <div className="an-grid an-gallery">
               {animals.items.map((animal) => (
                 <AnimalCard key={animal.id} animal={animal} t={t} />
               ))}
@@ -166,6 +180,9 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
           <h2 className="sc-h-sm">{t('animals.abuse.title')}</h2>
           <p className="mb0">{t('animals.abuse.text')}</p>
         </section>
+        <div className="gv-end">
+          <GuideVideo guideKey="animales" title={t('guide.watch_title', { name: c.nav.animals })} t={t} locale={locale} />
+        </div>
         <p className="center mt">
           <Link href="/animals/about">{t('animals.home.how')}</Link>
         </p>

@@ -28,9 +28,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
   const category = (SERVICE_CATEGORY_KEYS as readonly string[]).includes(params.cat ?? '') ? (params.cat as ServiceCategoryKey) : undefined;
   const urgentOnly = params.urgent === '1';
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
-  const [board, provider] = userId
-    ? await Promise.all([listBoard(db(), { viewerId: userId, category, urgentOnly, page, locale }), getProviderProfile(db(), userId)])
-    : [null, null];
+  const [board, provider] = userId ? await Promise.all([listBoard(db(), { viewerId: userId, category, urgentOnly, page, locale }), getProviderProfile(db(), userId)]) : [null, null];
   const availableToday = provider?.availableUntil ? provider.availableUntil > new Date() : false;
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
   const href = (next: { cat?: string; urgent?: boolean; page?: number }) => {
@@ -44,32 +42,41 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="services" tone="services">
-      <section className="cm-head">
-        <div className="cm-head-art" aria-hidden="true">
-          <DistrictScene id="services" priority />
-        </div>
-        <div className="wrap">
-          <p className="eyebrow">{c.districts.services.name}</p>
-          <h1>{t('services.board.title')}</h1>
-          <p className="lead">{t('services.board.lead')}</p>
-          <div className="btn-row">
-            <Link className="btn btn-gold" href={member ? '/services/new' : '/login'}>
-              {t('services.board.ask')}
+      {/* Servicios' own shape: a help desk. The question and "I need it today"
+          on the left, someone at work on the right, and every kind of help
+          laid out below as tiles. The guide film waits at the end. */}
+      <section className="sv-hero">
+        <div className="wrap sv-hero-in">
+          <div className="sv-hero-text">
+            <p className="eyebrow">{c.districts.services.name}</p>
+            <h1>{t('services.board.title')}</h1>
+            <p className="lead">{t('services.board.lead')}</p>
+            <Link className="sv-today" href={member ? '/services/new?urgent=1' : '/login'}>
+              <span className="sv-today-dot" aria-hidden="true" />
+              <strong>{t('services.urgent.badge')}</strong>
+              <span className="sv-today-go" aria-hidden="true">
+                →
+              </span>
             </Link>
-            <Link className="btn btn-line" href={member ? '/services/provider' : '/login'}>
-              {provider ? t('services.board.my_profile') : t('services.board.offer')}
-            </Link>
-            {member ? (
-              <Link className="btn btn-line" href="/services/mine">
-                {t('services.board.mine')}
+            <div className="btn-row">
+              <Link className="btn btn-gold" href={member ? '/services/new' : '/login'}>
+                {t('services.board.ask')}
               </Link>
-            ) : null}
+              <Link className="btn btn-line" href={member ? '/services/provider' : '/login'}>
+                {provider ? t('services.board.my_profile') : t('services.board.offer')}
+              </Link>
+              {member ? (
+                <Link className="btn btn-line" href="/services/mine">
+                  {t('services.board.mine')}
+                </Link>
+              ) : null}
+            </div>
+          </div>
+          <div className="sv-hero-photo">
+            <DistrictScene id="services" priority sizes="(min-width: 900px) 44vw, 100vw" />
           </div>
         </div>
       </section>
-      <div className="wrap">
-        <GuideVideo guideKey="servicios" title={t('guide.watch_title', { name: c.nav.services })} t={t} locale={locale} />
-      </div>
 
       <div className="wrap" style={{ paddingBottom: 56 }}>
         {error ? <p className="mk-error">{t(error as MessageKey)}</p> : null}
@@ -90,7 +97,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
 
         {!board ? (
           <>
-            <div className="sv-cats">
+            <div className="sv-cats sv-tiles">
               {SERVICE_CATEGORIES.map((cat) => (
                 <Link key={cat.key} className="sv-cat" href="/login">
                   <span className="sv-icon" aria-hidden="true">
@@ -160,6 +167,9 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
             ) : null}
           </>
         )}
+        <div className="gv-end">
+          <GuideVideo guideKey="servicios" title={t('guide.watch_title', { name: c.nav.services })} t={t} locale={locale} />
+        </div>
         <p className="center mt">
           <Link href="/services/about">{t('services.board.how')}</Link>
         </p>

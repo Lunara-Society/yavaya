@@ -43,11 +43,14 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="work" tone="work">
-      <section className="cm-head">
-        <div className="cm-head-art" aria-hidden="true">
-          <DistrictScene id="work" priority />
+      {/* Trabajo's own shape: a job board. A banner with the search right in
+          it, as people look for work by searching first; then the offers in
+          one long list, with the board's rules pinned beside them. */}
+      <section className="wk-hero">
+        <div className="wk-hero-art" aria-hidden="true">
+          <DistrictScene id="work" priority sizes="(min-width: 900px) 60vw, 100vw" />
         </div>
-        <div className="wrap">
+        <div className="wrap wk-hero-in">
           <p className="eyebrow">{c.districts.work.name}</p>
           <h1>{t('work.board.title')}</h1>
           <p className="lead">{t('work.board.lead')}</p>
@@ -64,83 +67,86 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
               </Link>
             ) : null}
           </div>
+          <form className="sc-filter wk-search" action="/work" role="search">
+            <label>
+              <span className="sr-only">{t('work.form.field')}</span>
+              <select name="field" defaultValue={field ?? ''}>
+                <option value="">{t('work.filter.any_field')}</option>
+                {WORK_FIELDS.map((value) => (
+                  <option key={value} value={value}>
+                    {t(`work.field.${value}` as MessageKey)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span className="sr-only">{t('work.form.kind')}</span>
+              <select name="kind" defaultValue={kind ?? ''}>
+                <option value="">{t('work.filter.any_kind')}</option>
+                <option value="job">{t('work.kind.job')}</option>
+                <option value="project">{t('work.kind.project')}</option>
+              </select>
+            </label>
+            <label>
+              <span className="sr-only">{t('work.form.location')}</span>
+              <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
+            </label>
+            <label className="wk-check">
+              <input type="checkbox" name="remote" value="1" defaultChecked={remote} /> {t('work.filter.remote')}
+            </label>
+            <button className="btn btn-gold" type="submit">
+              {t('sanctuary.churches.filter')}
+            </button>
+          </form>
         </div>
       </section>
-      <div className="wrap">
-        <GuideVideo guideKey="trabajo" title={t('guide.watch_title', { name: c.nav.work })} t={t} locale={locale} />
+
+      <div className="wrap wk-layout">
+        <div className="wk-list">
+          {posts.items.length === 0 ? (
+            <div className="sc-empty">
+              <p>{t('work.board.empty')}</p>
+            </div>
+          ) : (
+            <div className="sv-list">
+              {posts.items.map((post) => (
+                <PostCard key={post.id} post={post} t={t} locale={locale} />
+              ))}
+            </div>
+          )}
+          {posts.page > 1 || posts.hasMore ? (
+            <nav className="mk-pager">
+              {posts.page > 1 ? (
+                <Link className="btn btn-line" href={href(posts.page - 1)}>
+                  {t('mercadito.browse.previous')}
+                </Link>
+              ) : null}
+              {posts.hasMore ? (
+                <Link className="btn btn-line" href={href(posts.page + 1)}>
+                  {t('mercadito.browse.next')}
+                </Link>
+              ) : null}
+            </nav>
+          ) : null}
+        </div>
+        <aside className="wk-side">
+          <div className="wk-principles wk-rules">
+            <p>
+              <strong>{t('work.principle.pay_title')}</strong> {t('work.principle.pay_text')}
+            </p>
+            <p>
+              <strong>{t('work.principle.fee_title')}</strong> {t('work.principle.fee_text')}
+            </p>
+            <p>
+              <strong>{t('work.principle.verified_title')}</strong> {t('work.principle.verified_text')}
+            </p>
+            <p className="muted mb0">{t('work.principle.free_now')}</p>
+          </div>
+        </aside>
       </div>
 
-      <div className="wrap" style={{ paddingBottom: 56 }}>
-        <div className="wk-principles">
-          <p>
-            <strong>{t('work.principle.pay_title')}</strong> {t('work.principle.pay_text')}
-          </p>
-          <p>
-            <strong>{t('work.principle.fee_title')}</strong> {t('work.principle.fee_text')}
-          </p>
-          <p>
-            <strong>{t('work.principle.verified_title')}</strong> {t('work.principle.verified_text')}
-          </p>
-          <p className="muted mb0">{t('work.principle.free_now')}</p>
-        </div>
-
-        <form className="sc-filter" action="/work">
-          <label>
-            <span className="sr-only">{t('work.form.field')}</span>
-            <select name="field" defaultValue={field ?? ''}>
-              <option value="">{t('work.filter.any_field')}</option>
-              {WORK_FIELDS.map((value) => (
-                <option key={value} value={value}>
-                  {t(`work.field.${value}` as MessageKey)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span className="sr-only">{t('work.form.kind')}</span>
-            <select name="kind" defaultValue={kind ?? ''}>
-              <option value="">{t('work.filter.any_kind')}</option>
-              <option value="job">{t('work.kind.job')}</option>
-              <option value="project">{t('work.kind.project')}</option>
-            </select>
-          </label>
-          <label>
-            <span className="sr-only">{t('work.form.location')}</span>
-            <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
-          </label>
-          <label className="wk-check">
-            <input type="checkbox" name="remote" value="1" defaultChecked={remote} /> {t('work.filter.remote')}
-          </label>
-          <button className="btn btn-line" type="submit">
-            {t('sanctuary.churches.filter')}
-          </button>
-        </form>
-
-        {posts.items.length === 0 ? (
-          <div className="sc-empty">
-            <p>{t('work.board.empty')}</p>
-          </div>
-        ) : (
-          <div className="sv-list">
-            {posts.items.map((post) => (
-              <PostCard key={post.id} post={post} t={t} locale={locale} />
-            ))}
-          </div>
-        )}
-        {posts.page > 1 || posts.hasMore ? (
-          <nav className="mk-pager">
-            {posts.page > 1 ? (
-              <Link className="btn btn-line" href={href(posts.page - 1)}>
-                {t('mercadito.browse.previous')}
-              </Link>
-            ) : null}
-            {posts.hasMore ? (
-              <Link className="btn btn-line" href={href(posts.page + 1)}>
-                {t('mercadito.browse.next')}
-              </Link>
-            ) : null}
-          </nav>
-        ) : null}
+      <div className="wrap gv-end" style={{ paddingBottom: 56 }}>
+        <GuideVideo guideKey="trabajo" title={t('guide.watch_title', { name: c.nav.work })} t={t} locale={locale} />
         <p className="center mt">
           <Link href="/work/about">{t('work.board.how')}</Link>
         </p>

@@ -7,10 +7,13 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
+import { Icon, type IconName } from '@/ui/site/icons';
 import { PostCard } from '@/ui/community/post-card';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
 
 export const dynamic = 'force-dynamic';
+
+const KIND_ICON: Partial<Record<PostKind, IconName>> = { help_request: 'hands', help_offer: 'heart', family_support: 'house' };
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
@@ -19,7 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * The town square — "stories, people, less transactional" (Master Bible).
- * One calm column, not a grid. Members only: what is posted here is often
+ * One calm column for the conversation, with the kinds of post beside it
+ * rather than above it. Members only: what is posted here is often
  * someone's hardest week.
  */
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ kind?: string; page?: string }> }) {
@@ -40,88 +44,124 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
-      <section className="cm-head">
-        <div className="cm-head-art" aria-hidden="true">
-          <DistrictScene id="community" priority />
+      {/* Comunidad's own shape: a town square. The photograph runs edge to
+          edge with the title in the middle of it, and below, three columns as
+          on a square: what people come here for, the conversation itself,
+          and the doors to the Sanctuary and Espacio Violeta. */}
+      <section className="sq-hero">
+        <div className="sq-hero-photo" aria-hidden="true">
+          <DistrictScene id="community" priority sizes="100vw" />
         </div>
-        <div className="wrap cm-column">
+        <div className="wrap sq-hero-in">
           <p className="eyebrow">{c.districts.community.name}</p>
           <h1>{t('community.square.title')}</h1>
           <p className="lead">{t('community.square.lead')}</p>
-          <div className="btn-row">
-            {member ? (
+          {member ? (
+            <div className="btn-row">
               <Link className="btn btn-gold" href="/community/new">
                 {t('community.square.new')}
               </Link>
-            ) : null}
-            <Link className="btn btn-line" href="/sanctuary">
-              ✝ {t('nav.sanctuary')}
-            </Link>
-            <Link className="btn btn-line" href="/violeta">
-              {t('nav.violeta')}
-            </Link>
-          </div>
+            </div>
+          ) : null}
         </div>
       </section>
-      <div className="wrap">
-        <GuideVideo guideKey="comunidad" title={t('guide.watch_title', { name: c.nav.community })} t={t} locale={locale} />
-      </div>
 
-      <div className="wrap cm-column" style={{ paddingBottom: 56 }}>
-        {!feed ? (
-          <div className="cm-gate card">
-            <p>{t('community.square.members_only')}</p>
-            <div className="btn-row">
-              <Link className="btn btn-gold" href="/login">
-                {t('community.square.sign_in')}
-              </Link>
-              <Link className="btn btn-line" href="/register">
-                {t('auth.submit_register')}
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <>
-            <nav className="cm-tabs" aria-label={t('community.form.kind')}>
+      <div className="wrap sq-layout">
+        <aside className="sq-rail">
+          <p className="sq-rail-title">{t('community.side.kinds')}</p>
+          {feed ? (
+            <nav className="sq-kinds" aria-label={t('community.form.kind')}>
               <Link href={href({})} aria-current={kind ? undefined : 'true'}>
+                <Icon name="community" />
                 {t('community.square.all')}
               </Link>
               {NEIGHBOUR_KINDS.map((option) => (
                 <Link key={option} href={href({ kind: option })} aria-current={kind === option ? 'true' : undefined}>
+                  <Icon name={KIND_ICON[option] ?? 'community'} />
                   {t(`community.kind.${option}` as MessageKey)}
                 </Link>
               ))}
             </nav>
-            {feed.items.length === 0 ? (
-              <div className="mk-empty">
-                <p>{t('community.square.empty')}</p>
-                <Link className="btn btn-gold" href="/community/new">
-                  {t('community.square.new')}
+          ) : (
+            <ul className="sq-kinds">
+              {NEIGHBOUR_KINDS.map((option) => (
+                <li key={option}>
+                  <Icon name={KIND_ICON[option] ?? 'community'} />
+                  {t(`community.kind.${option}` as MessageKey)}
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
+
+        <div className="sq-feed">
+          {!feed ? (
+            <div className="cm-gate card sq-gate">
+              <p>{t('community.square.members_only')}</p>
+              <div className="btn-row">
+                <Link className="btn btn-gold" href="/login">
+                  {t('community.square.sign_in')}
+                </Link>
+                <Link className="btn btn-line" href="/register">
+                  {t('auth.submit_register')}
                 </Link>
               </div>
-            ) : (
-              <div className="cm-feed">
-                {feed.items.map((post) => (
-                  <PostCard key={post.id} post={post} t={t} locale={locale} />
-                ))}
-              </div>
-            )}
-            {feed.page > 1 || feed.hasMore ? (
-              <nav className="mk-pager">
-                {feed.page > 1 ? (
-                  <Link className="btn btn-line" href={href({ kind, page: feed.page - 1 })}>
-                    {t('mercadito.browse.previous')}
+            </div>
+          ) : (
+            <>
+              {feed.items.length === 0 ? (
+                <div className="mk-empty sq-empty">
+                  <p>{t('community.square.empty')}</p>
+                  <Link className="btn btn-gold" href="/community/new">
+                    {t('community.square.new')}
                   </Link>
-                ) : null}
-                {feed.hasMore ? (
-                  <Link className="btn btn-line" href={href({ kind, page: feed.page + 1 })}>
-                    {t('mercadito.browse.next')}
-                  </Link>
-                ) : null}
-              </nav>
-            ) : null}
-          </>
-        )}
+                </div>
+              ) : (
+                <div className="cm-feed">
+                  {feed.items.map((post) => (
+                    <PostCard key={post.id} post={post} t={t} locale={locale} />
+                  ))}
+                </div>
+              )}
+              {feed.page > 1 || feed.hasMore ? (
+                <nav className="mk-pager">
+                  {feed.page > 1 ? (
+                    <Link className="btn btn-line" href={href({ kind, page: feed.page - 1 })}>
+                      {t('mercadito.browse.previous')}
+                    </Link>
+                  ) : null}
+                  {feed.hasMore ? (
+                    <Link className="btn btn-line" href={href({ kind, page: feed.page + 1 })}>
+                      {t('mercadito.browse.next')}
+                    </Link>
+                  ) : null}
+                </nav>
+              ) : null}
+            </>
+          )}
+        </div>
+
+        <aside className="sq-side">
+          <p className="sq-rail-title">{t('community.side.title')}</p>
+          <Link className="sq-door sq-door-sanctuary" href="/sanctuary">
+            <Icon name="sanctuary" />
+            <span>
+              <strong>{t('nav.sanctuary')}</strong>
+              <span>{c.districts.sanctuary.tagline}</span>
+            </span>
+          </Link>
+          <Link className="sq-door sq-door-violeta" href="/violeta">
+            <Icon name="shield" />
+            <span>
+              <strong>{t('nav.violeta')}</strong>
+              <span>{t('community.side.violeta')}</span>
+            </span>
+          </Link>
+        </aside>
+      </div>
+
+      <div className="wrap gv-end" style={{ paddingBottom: 56 }}>
+        <GuideVideo guideKey="comunidad" title={t('guide.watch_title', { name: c.nav.community })} t={t} locale={locale} />
         <p className="center mt">
           <Link href="/community/about">{t('community.square.how')}</Link>
         </p>

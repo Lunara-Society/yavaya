@@ -4,7 +4,7 @@ import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { GuideVideo } from '@/ui/site/guide-video';
-import { PageHero } from '@/ui/site/blocks';
+import { PageScene } from '@/ui/site/art';
 import { ChurchRow, WordCard } from '@/ui/sanctuary/parts';
 import { followedChurches, listChurches, listDevotionals } from '@/server/domains/sanctuary/service';
 import { PlacePicker } from '@/ui/components/place-picker';
@@ -54,44 +54,55 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
-      <PageHero eyebrow={t('sanctuary.eyebrow')} title={t('sanctuary.title')} lead={t('sanctuary.lead')} photo="sanctuary" />
-      <div className="wrap">
-        <GuideVideo guideKey="santuario" title={t('guide.watch_title', { name: c.nav.sanctuary })} t={t} locale={locale} />
+      {/* The Sanctuary's own shape: candlelight and a page of a book. A tall,
+          quiet photograph with the title in its centre; then the day's light
+          set like an epigraph, alone on the page; then the churches' words
+          and their doors, in two columns. */}
+      <section className="sc-hero">
+        <PageScene name="sanctuary" className="sc-hero-photo" />
+        <div className="sc-hero-glow" aria-hidden="true" />
+        <div className="wrap sc-hero-in">
+          <p className="eyebrow">{t('sanctuary.eyebrow')}</p>
+          <h1>{t('sanctuary.title')}</h1>
+          <p className="lead">{t('sanctuary.lead')}</p>
+        </div>
+      </section>
+
+      <div className="wrap sc-light-wrap">
+        <section id="daily" className="sc-daily sc-light" aria-labelledby="daily-title">
+          <h2 id="daily-title" className="sc-light-title">
+            {t('sanctuary.daily.title')}
+          </h2>
+          <p className="sc-sub">{t(KIND_LABEL[light.kind])}</p>
+          <blockquote className="sc-daily-text">{light.text}</blockquote>
+          <p className="muted sc-hint">{t('sanctuary.daily.note')}</p>
+          {query.saved === 'daily' ? <p className="sc-daily-saved">{t('sanctuary.daily.saved')}</p> : null}
+          <details className="sc-daily-pick" open={query.saved === 'daily'}>
+            <summary>{t('sanctuary.daily.choose')}</summary>
+            {member ? (
+              <form action={setDailyKindsAction} className="sc-daily-form">
+                {DAILY_KINDS.map((kind) => (
+                  <label key={kind} className="sc-daily-box">
+                    <input type="checkbox" name="kind" value={kind} defaultChecked={kinds.includes(kind)} />
+                    <span>{t(KIND_LABEL[kind])}</span>
+                  </label>
+                ))}
+                <button className="btn btn-line" type="submit">
+                  {t('sanctuary.daily.save')}
+                </button>
+                <p className="muted sc-hint">{t('sanctuary.daily.choose_hint')}</p>
+              </form>
+            ) : (
+              <p className="muted">
+                <Link href="/login">{t('sanctuary.daily.sign_in')}</Link>
+              </p>
+            )}
+          </details>
+        </section>
       </div>
 
       <div className="wrap sc-page">
         <div className="sc-main">
-          <section id="daily" className="card sc-daily" aria-labelledby="daily-title">
-            <h2 id="daily-title" className="sc-h-sm">
-              {t('sanctuary.daily.title')}
-            </h2>
-            <p className="sc-sub">{t(KIND_LABEL[light.kind])}</p>
-            <blockquote className="sc-daily-text">{light.text}</blockquote>
-            <p className="muted sc-hint">{t('sanctuary.daily.note')}</p>
-            {query.saved === 'daily' ? <p className="sc-daily-saved">{t('sanctuary.daily.saved')}</p> : null}
-            <details className="sc-daily-pick" open={query.saved === 'daily'}>
-              <summary>{t('sanctuary.daily.choose')}</summary>
-              {member ? (
-                <form action={setDailyKindsAction} className="sc-daily-form">
-                  {DAILY_KINDS.map((kind) => (
-                    <label key={kind} className="sc-daily-box">
-                      <input type="checkbox" name="kind" value={kind} defaultChecked={kinds.includes(kind)} />
-                      <span>{t(KIND_LABEL[kind])}</span>
-                    </label>
-                  ))}
-                  <button className="btn btn-line" type="submit">
-                    {t('sanctuary.daily.save')}
-                  </button>
-                  <p className="muted sc-hint">{t('sanctuary.daily.choose_hint')}</p>
-                </form>
-              ) : (
-                <p className="muted">
-                  <Link href="/login">{t('sanctuary.daily.sign_in')}</Link>
-                </p>
-              )}
-            </details>
-          </section>
-
           <section aria-labelledby="today">
             <h2 id="today" className="sc-h">
               {t('sanctuary.today.title')}
@@ -192,6 +203,9 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
             <p className="muted sc-hint">{t('sanctuary.form.intro')}</p>
           </section>
         </aside>
+      </div>
+      <div className="wrap gv-end" style={{ paddingBottom: 64 }}>
+        <GuideVideo guideKey="santuario" title={t('guide.watch_title', { name: c.nav.sanctuary })} t={t} locale={locale} />
       </div>
     </SiteShell>
   );
