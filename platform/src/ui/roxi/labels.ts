@@ -9,7 +9,14 @@ const KEYS = [
   'open',
   'name',
   'role',
-  'intro',
+  'hello',
+  'hello_sub',
+  'suggest.sell',
+  'suggest.find',
+  'suggest.account',
+  'suggest.how',
+  'sell_caption',
+  'thinking',
   'talk',
   'type_placeholder',
   'send',
@@ -47,7 +54,7 @@ export function roxiLabels(t: Translator): RoxiLabels {
   const labels = {} as RoxiLabels;
   for (const key of KEYS) {
     // The greeting keeps its placeholder; the panel puts the member's name in.
-    labels[key] = key === 'intro' ? t('roxi.ui.intro', { name: '{name}' }) : t(`roxi.ui.${key}`);
+    labels[key] = key === 'hello' ? t('roxi.ui.hello', { name: '{name}' }) : t(`roxi.ui.${key}`);
   }
   return labels;
 }

@@ -1937,7 +1937,14 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.ui.open`: Habla con Roxi
 - `roxi.ui.name`: Roxi
 - `roxi.ui.role`: Tu asistente de Yavaya
-- `roxi.ui.intro`: Hola {name}, soy Roxi. Te ayudo con todo en Yavaya: publicar, buscar, preguntar. Háblame o escríbeme. Si quieres vender algo, mándame una foto.
+- `roxi.ui.hello`: Hola, {name}
+- `roxi.ui.hello_sub`: Soy Roxi. Preparo tus publicaciones, busco por ti y te explico todo lo de Yavaya. Háblame, escríbeme o mándame la foto de algo que quieras vender.
+- `roxi.ui.suggest.sell`: Vender con una foto
+- `roxi.ui.suggest.find`: Busca algo cerca de mí
+- `roxi.ui.suggest.account`: ¿Cuántos tokens tengo?
+- `roxi.ui.suggest.how`: ¿Cómo funciona Yavaya?
+- `roxi.ui.sell_caption`: Quiero vender esto.
+- `roxi.ui.thinking`: Roxi está pensando…
 - `roxi.ui.talk`: Hablar con Roxi
 - `roxi.ui.type_placeholder`: Escríbele a Roxi…
 - `roxi.ui.send`: Enviar

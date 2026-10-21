@@ -198,6 +198,7 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
       if (!path) return reply({ ok: false, error: 'unknown_page', pages: Object.keys(ROXI_PAGES) });
       ctx.navigate(path);
       ctx.note(ctx.labels.opened);
+      ctx.stepAside();
       return reply({ ok: true, opened: path });
     },
 

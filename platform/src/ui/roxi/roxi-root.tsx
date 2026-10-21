@@ -58,10 +58,13 @@ export function RoxiRoot() {
         <RoxiPanel member={session.member} locale={session.locale} labels={session.labels} onClose={() => setOpen(false)} />
       ) : (
         <button type="button" className="roxi-launch" onClick={() => setOpen(true)} aria-label={session.labels.open}>
-          <span className="roxi-face" aria-hidden="true">
-            R
+          <span className="roxi-launch-orb" aria-hidden="true">
+            <span className="roxi-sphere" />
           </span>
-          <span className="roxi-launch-name">{session.labels.name}</span>
+          <span className="roxi-launch-text" aria-hidden="true">
+            <strong>{session.labels.name}</strong>
+            <small>{session.labels.role}</small>
+          </span>
         </button>
       )}
     </div>
