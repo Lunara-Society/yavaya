@@ -34,6 +34,24 @@ member's browser ──(voice/text, photos)──► ElevenLabs agent (speech, m
   (`src/server/domains/roxi/status.ts`) passed as `platform_status`, so Roxi
   never offers what `/status` says is not working.
 
+## The interface
+
+`src/ui/roxi/` — the launcher (`roxi-root.tsx`), the conversation (`roxi-panel.tsx`)
+and the orb (`orb.tsx`); styles in the "Roxi" block of `src/app/site.css`.
+
+- **Wide screens:** a full-height column on the right. From 1280px the page
+  moves over to make room (`html[data-roxi="open"]`), so a form Roxi opens
+  stays in full view beside her.
+- **Phones:** a sheet from the bottom. When Roxi opens a page or a form she
+  shrinks to an island above the dock, showing what she is saying, and the
+  member brings her back with a tap.
+- **The orb** is a WebGL shader of liquid gold driven by the live voice level
+  and Roxi's state (idle, listening, speaking, thinking). It caps its
+  resolution on modest phones, stops when the tab is hidden, draws a still
+  frame with reduced motion, and falls back to a CSS sphere without WebGL.
+- Obsidian glass and gold in both themes, on purpose: she looks the same
+  wherever she appears.
+
 ## The agent
 
 | | |
@@ -76,7 +94,7 @@ nothing is typed twice:
 | Document | ID | Use |
 | --- | --- | --- |
 | `knowledge/sitio.md` — every public page | `VIcOURXPhuLyRIoovNwT` | retrieval |
-| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `ribhV4Np15BC615BScC8` | retrieval |
+| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `ElgscCl6VWcyMjTuJXq8` | retrieval |
 | `knowledge/reglas.md` — member-facing business rules | `SKLpYnPf1hJZmddBMqXg` | always in the prompt |
 | `knowledge/guia-narrada.md` — the video guide's narration | `L9cayZOfF2vdeYW1szOv` | retrieval |
 
