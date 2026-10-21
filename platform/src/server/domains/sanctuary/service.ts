@@ -111,12 +111,27 @@ export type DevotionalInput = z.output<typeof devotionalInputSchema>;
 
 // --- Time --------------------------------------------------------------------
 
-/** The church's own timezone: the nearest place in its path that has one. */
+/**
+ * The church's own timezone: the nearest place in its path that has one.
+ *
+ * The outer columns are written out with their table name. Interpolated, they
+ * render unqualified in a single-table select ("path", "code"), and inside
+ * this subquery those names mean l2's own columns: the condition became
+ * `l2.code = any(l2.path || array[l2.code])`, true for every place, so a
+ * church in Belize City could be given America/Panama — an hour ahead, enough
+ * to announce a word a day early around midnight.
+ */
 const churchTimezone = sql<string | null>`(
   select l2.timezone from locations l2
-  where l2.code = any(${locations.path} || array[${locations.code}]) and l2.timezone is not null
+  where l2.code = any("locations"."path" || array["locations"."code"]) and l2.timezone is not null
   order by l2.depth desc limit 1
 )`;
+
+/** The timezone a church at this place keeps (churchTimezone), or null if no place in its path has one. */
+export async function placeTimezone(executor: Executor, locationId: string): Promise<string | null> {
+  const [place] = await executor.select({ timezone: churchTimezone }).from(locations).where(eq(locations.id, locationId)).limit(1);
+  return place?.timezone ?? null;
+}
 
 /** Today's date (YYYY-MM-DD) where the church is. */
 export function localDate(timezone: string | null, now = new Date()): string {
@@ -420,8 +435,7 @@ export async function publishDevotional(
   const church = await ownedChurch(tx, params.churchId, params.actorUserId);
   if (church.status !== 'approved') throw errors.conflict('sanctuary.error.not_approved');
 
-  const [place] = await tx.select({ timezone: churchTimezone }).from(locations).where(eq(locations.id, church.locationId)).limit(1);
-  const today = localDate(place?.timezone ?? null, params.now);
+  const today = localDate(await placeTimezone(tx, church.locationId), params.now);
   const { forDate } = params.input;
   if (forDate < addDays(today, -R.devotionalDaysBack) || forDate > addDays(today, R.devotionalDaysAhead)) {
     throw errors.validation('sanctuary.error.date_range', { back: R.devotionalDaysBack, ahead: R.devotionalDaysAhead });

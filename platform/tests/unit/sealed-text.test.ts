@@ -19,7 +19,10 @@ describe('sealed text', () => {
     const sealed = seal(secret, 'message', 'hola');
     expect(() => unseal(secret, 'report', sealed)).toThrow();
     expect(() => unseal(`${secret}x`, 'message', sealed)).toThrow();
-    const flipped = sealed.slice(0, -2) + (sealed.endsWith('A') ? 'B' : 'A') + sealed.slice(-1);
+    // Change the second-to-last character, which carries six whole bits of the ciphertext. (It used to
+    // test the last character to choose the replacement, so one run in 64 "changed" an A into an A.)
+    const at = sealed.length - 2;
+    const flipped = sealed.slice(0, at) + (sealed[at] === 'A' ? 'B' : 'A') + sealed.slice(at + 1);
     expect(() => unseal(secret, 'message', flipped)).toThrow();
   });
 });
