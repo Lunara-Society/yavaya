@@ -62,6 +62,8 @@ export async function resetTransactionalData(): Promise<void> {
       safe_space_room_messages,
       safe_space_members,
       job_runs,
+      page_views_daily,
+      web_vitals_daily,
       work_applications,
       work_employers,
       work_posts,

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
-import { packageSavingPercent, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
+import { packageSavingPercent, SITE_STATS_RULES, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { TokenPack } from '@/ui/tokens/pack';
 import { DistrictScene, Guilloche, HeroScene, OrnamentRule } from './art';
 import { HeroCinema } from './cinema';
@@ -35,6 +35,17 @@ import { Md, Paras } from './md';
 
 type Cta = { href: string; label: string };
 
+/**
+ * How wide each home-page door is shown (site.css, "Phones: the first screen"):
+ * two to a row on a phone, the last one wide; the first opens wide on a
+ * desktop. Matches the grid so a phone takes the 400 or 640px file.
+ */
+function homeGateSizes(index: number, count: number): string {
+  if (index === count - 1) return '(min-width: 1000px) 34vw, 100vw';
+  if (index === 0) return '(min-width: 1000px) 66vw, 50vw';
+  return '(min-width: 1000px) 34vw, 50vw';
+}
+
 export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primaryCta: Cta; afterHero?: ReactNode }) {
   const p = c.pages.home;
   return (
@@ -54,7 +65,7 @@ export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primary
               <span className="seal-3d">
                 <span className="seal-tilt">
                   <span className="seal-edge" aria-hidden="true" />
-                  <Mark size={240} priority />
+                  <Mark size={240} priority sizes="(max-width: 640px) 148px, 240px" />
                   <span className="seal-glare" aria-hidden="true" />
                 </span>
               </span>
@@ -90,14 +101,14 @@ export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primary
         <div className="wrap">
           <OrnamentRule className="ornament" />
           <SectionHead eyebrow={p.gatesEyebrow} title={p.gatesTitle} />
-          <div className="gates">
-            {DISTRICT_IDS.map((id) => (
-              <Gate key={id} c={c} id={id} />
+          <div className="gates gates-home">
+            {DISTRICT_IDS.map((id, i) => (
+              <Gate key={id} c={c} id={id} sizes={homeGateSizes(i, DISTRICT_IDS.length)} />
             ))}
           </div>
         </div>
       </section>
-      <section className="section alt">
+      <section className="section alt home-trust">
         <div className="wrap">
           <div className="split">
             <div>
@@ -1104,6 +1115,10 @@ export function TermsBody({ c }: { c: SiteContent }) {
   );
 }
 
+/** Numbers the privacy text quotes from the rules, so the page and the scheduler can never disagree. */
+const PRIVACY_NUMBERS: Record<string, number> = { keepDays: SITE_STATS_RULES.keepDays };
+const withNumbers = (text: string) => text.replace(/\{(\w+)\}/g, (match, name: string) => (name in PRIVACY_NUMBERS ? String(PRIVACY_NUMBERS[name]) : match));
+
 export function PrivacyBody({ c }: { c: SiteContent }) {
   const p = c.pages.privacy;
   return (
@@ -1115,12 +1130,12 @@ export function PrivacyBody({ c }: { c: SiteContent }) {
             {p.sections.map((s) => (
               <div key={s.title} id={'id' in s ? s.id : undefined}>
                 <h2>{s.title}</h2>
-                <Paras text={s.text} />
+                <Paras text={withNumbers(s.text)} />
                 {'list' in s && s.list ? (
                   <ul>
                     {s.list.map((i) => (
                       <li key={i}>
-                        <Md text={i} />
+                        <Md text={withNumbers(i)} />
                       </li>
                     ))}
                   </ul>

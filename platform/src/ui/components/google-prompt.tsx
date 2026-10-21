@@ -22,11 +22,17 @@ declare global {
  *
  * Google decides when not to show it (dismissed recently, no Google session in
  * the browser); the page never insists. Without JavaScript the buttons remain.
+ *
+ * It waits until the page has loaded and the browser is idle: Google's script
+ * is 87 KB, and on a phone's data it was competing with the page's own first
+ * picture. The prompt still arrives within a few seconds of landing.
  */
 export function GooglePrompt({ locale, afterSignOut }: { locale: string; afterSignOut: boolean }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      await pageSettled();
+      if (cancelled) return;
       const setup = (await fetch('/auth/google/onetap', { cache: 'no-store' }).then((r) => r.json()).catch(() => null)) as
         | { available: boolean; clientId?: string; nonce?: string }
         | null;
@@ -61,6 +67,18 @@ export function GooglePrompt({ locale, afterSignOut }: { locale: string; afterSi
     };
   }, [locale, afterSignOut]);
   return null;
+}
+
+/** Resolves once the page has loaded and the browser has a moment to spare (or after a few seconds regardless). */
+function pageSettled(): Promise<void> {
+  return new Promise((resolve) => {
+    const idle = () => {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(() => resolve(), { timeout: 4000 });
+      else setTimeout(resolve, 2500);
+    };
+    if (document.readyState === 'complete') idle();
+    else window.addEventListener('load', idle, { once: true });
+  });
 }
 
 function loadScript(src: string): Promise<void> {

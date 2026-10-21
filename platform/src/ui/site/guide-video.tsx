@@ -49,7 +49,7 @@ export function GuideVideo({ guideKey, title, t, locale, note }: { guideKey: Gui
 export function GuidePlayer({ guideKey, t, locale, id }: { guideKey: GuideKey; t: Translator; locale: Locale; id?: string }) {
   const files = guideFiles(guideKey);
   return (
-    <video id={id} className="gv-video" controls preload="none" playsInline poster={files.poster}>
+    <video id={id} className="gv-video" controls preload="none" playsInline poster={files.posterWebp}>
       <source src={files.sd} type="video/mp4" media="(pointer: coarse)" />
       <source src={files.hd} type="video/mp4" />
       <track kind="captions" srcLang="es" label={t('guide.captions')} src={files.captions} />

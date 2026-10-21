@@ -1000,6 +1000,17 @@ export const siteEn: SiteContent = {
           ],
         },
         {
+          id: 'visitas',
+          title: 'Visit statistics',
+          text: 'To know whether Yavaya is reaching people and loads fast on their phones, we count visits with our own system, with no third party. **It uses no cookies and stores no IP address or identifier of any kind**, and it cannot tell one person from another.',
+          list: [
+            'When you open a page, your browser tells us which one it is (with each post\'s number removed: "a Mercadito listing", not which), whether it is a phone, a tablet or a computer, and the name of the site you came from (for example, Google), never the exact address.',
+            'Your browser also tells us how fast the page loaded for you. That tells us which pages need to be lighter.',
+            'We keep only daily counts: "this page was viewed so many times today from phones". They are deleted after {keepDays} days.',
+            'Espacio Violeta is not counted. If your browser asks not to be tracked ("Do Not Track" or "Global Privacy Control"), nothing of yours is counted.',
+          ],
+        },
+        {
           title: 'To protect everyone',
           text: 'To enforce one person, one account, we keep security signals as encrypted digests, never in the clear. Important actions go into an audit log that cannot be rewritten; it stores digests, not your IP address.',
         },

@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm run build:scripts",
+    "build": "next build && node scripts/check-budget.mjs && npm run build:scripts",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

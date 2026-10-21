@@ -211,12 +211,21 @@ export function HeroCinema() {
       };
     };
 
-    // After first paint, so the photograph and the words are never waiting on this.
+    // After the page has loaded and the browser is idle, so the photograph and
+    // the words are never waiting on this — on slow data the shader used to be
+    // compiled while the hero photograph was still arriving.
     const idle = 'requestIdleCallback' in window;
-    const handle = idle ? window.requestIdleCallback(start, { timeout: 1200 }) : window.setTimeout(start, 400);
+    let handle = 0;
+    const schedule = () => {
+      if (disposed) return;
+      handle = idle ? window.requestIdleCallback(start, { timeout: 2000 }) : window.setTimeout(start, 400);
+    };
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once: true });
 
     return () => {
       disposed = true;
+      window.removeEventListener('load', schedule);
       if (idle) window.cancelIdleCallback(handle);
       else window.clearTimeout(handle);
       cleanup();

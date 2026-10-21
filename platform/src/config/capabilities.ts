@@ -122,6 +122,16 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'platform',
   },
   {
+    // Yavaya's own counts: pages seen, where visits came from, and speed on
+    // real phones, per day. First-party, no cookies or identifiers; the
+    // owner reads them in the panel (/admin/visitas).
+    key: 'site_stats',
+    nameKey: 'capability.site_stats.name',
+    detailKey: 'capability.site_stats.detail',
+    state: 'REAL',
+    group: 'platform',
+  },
+  {
     key: 'notifications',
     nameKey: 'capability.notifications.name',
     detailKey: 'capability.notifications.detail',

@@ -60,7 +60,7 @@ export default async function GuidePage() {
           {DISTRICT_PAGES.map((d) => (
             <li key={d.key}>
               <Link href={d.href} className="gv-card">
-                <img src={guideFiles(d.key).poster} alt="" loading="lazy" width={640} height={360} />
+                <img src={guideFiles(d.key).posterWebp} srcSet={guideFiles(d.key).posterSet} sizes="(min-width: 761px) 30vw, 50vw" alt="" loading="lazy" decoding="async" width={640} height={360} />
                 <span className="gv-card-t">{t(`guide.chapter.${d.key}` as MessageKey)}</span>
                 <span className="muted">{t('guide.minutes', { minutes: Math.ceil(GUIDE_SECONDS[d.key] / 60) })}</span>
               </Link>

@@ -245,18 +245,21 @@ export function Gate({
   top,
   bottom,
   text,
+  sizes,
 }: {
   c: SiteContent;
   id: DistrictId;
   top?: string;
   bottom?: string;
   text?: string;
+  /** How wide the photograph is shown, when the grid is not the usual one. */
+  sizes?: string;
 }) {
   const d = c.districts[id];
   return (
     <Link className={`gate tone-${id}`} href={PAGE_PATHS[id]} data-tilt="">
       <span className="gate-scene">
-        <DistrictScene id={id} />
+        <DistrictScene id={id} sizes={sizes} />
       </span>
       <span className="gate-body">
         <span className="gate-art">

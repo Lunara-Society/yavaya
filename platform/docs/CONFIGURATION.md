@@ -325,8 +325,25 @@ rating, price or listing, so nothing can be taken for a real member, seller or
 review — and the footer says the photographs are illustrative. The hero,
 roadmap, status, transparency and street scenes are places and stay so.
 
-Replacing any of them with licensed or commissioned photography is a file
-swap: keep the name and widths (`<name>-<width>.webp`).
+Since 21 October 2026 each photograph with people in it also says
+"Ilustración" in a corner where it is shown (`ArtNote` in
+`src/ui/site/art.tsx`): the district photographs, and the districts, trust,
+reputation, tokens and sanctuary page photographs. The footer's sentence was
+true but far from the picture.
+
+**Inspected 21 October 2026**, every photograph at full size: no malformed
+hands, faces or garbled lettering; the landscapes, dress and architecture
+read as Central American. One thing to know: the banknotes in the Mercadito
+and YavayaGo scenes look like US dollars — right for El Salvador, Panamá and
+much of Nicaragua's trade, not for every market.
+
+**Real photography is the next step** (owner's to arrange: a photographer in
+Managua, signed releases from everyone pictured). Replacing any image is a
+file swap: keep the name and run `node scripts/derive-images.mjs`, which makes
+every smaller width from the largest file (`<name>-<width>.webp`; a test
+checks that each width a page offers exists). Remove the name from
+`PEOPLE_PHOTOS` once a photograph shows real, consenting people rather than an
+illustration — and only then.
 
 The guilloché seal and ornamental rules are drawn in code
 (`src/ui/site/art.tsx`).
@@ -1192,3 +1209,31 @@ Whether animals may be sold on Mercadito at all is **undecided**; the
 publish form does not refuse it. When the owner decides a list, it belongs in
 `MERCADITO_RULES` (so the form enforces it) and Roxi's knowledge picks it up
 on the next regeneration.
+
+---
+
+## Visit statistics — nothing to configure
+
+Yavaya counts its own visits (`src/server/domains/stats`, the owner reads them
+at `/admin/visitas`): pages viewed per day, where visits arrive from, the kind
+of screen, real-phone speed (the five Web Vitals), and a funnel from visit to
+new account to first real action. It needs no key and no third party, and it
+is `REAL` in the register (`site_stats`).
+
+What it stores is in docs/SECURITY.md, "Visit statistics": daily counts only,
+no cookie, address or identifier. Espacio Violeta, the panels and browsers
+that send Do Not Track or Global Privacy Control are never counted, nor is
+the owner's own browsing.
+
+| Setting | Value | Status |
+| --- | --- | --- |
+| How long daily counts are kept | 395 days (13 months) | **Default, not the owner's decision.** Long enough to compare a month with the same month a year before. `SITE_STATS_RULES.keepDays`, mirrored as `stats.keep_days`; the privacy page quotes it. |
+| Clock a "day" is counted on | `America/Managua` | Follows the launch city. Change `SITE_STATS_RULES.dayTimeZone` if the main market moves. |
+| Events one network may send per minute | 120 | Abuse guard, held in memory only. |
+| New page addresses accepted per day | 300 | Past this, unknown routes count as `(other)` — a guard against filling the table with invented paths. |
+
+What the funnel's last step counts as "did something" is a list of audit
+actions (`FIRST_ACTIONS` in the stats service): publishing in a district,
+replying in Community, asking for or answering a service, applying for work
+or an adoption, reporting a lost animal, ordering or asking for a trip,
+registering a church. Change it there.

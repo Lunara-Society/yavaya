@@ -19,6 +19,7 @@ import { reconcilePendingPayments } from '@/server/domains/payments/service';
 import { grantDueStarterTokens } from '@/server/domains/tokens/service';
 import { goUpkeep } from '@/server/domains/go/service';
 import { tripsUpkeep } from '@/server/domains/go/trips';
+import { purgeSiteStats } from '@/server/domains/stats/service';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -69,6 +70,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
   'purge-sessions': async () => {
     const removed = await purgeExpiredSessions(db());
     return { summary: `purged ${removed} expired session(s)` };
+  },
+
+  /** Visit statistics older than SITE_STATS_RULES.keepDays are deleted. */
+  'purge-site-stats': async () => {
+    const removed = await purgeSiteStats(db());
+    return { summary: `deleted ${removed.views} page-count and ${removed.vitals} speed row(s) past their time` };
   },
 
   /** Drops rate-limit counters whose window has closed. */
@@ -191,7 +198,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'purge-site-stats', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

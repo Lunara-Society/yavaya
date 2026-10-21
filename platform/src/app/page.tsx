@@ -45,7 +45,7 @@ export default async function HomePage() {
           <section className="section">
             <div className="wrap gv-band">
               <Link href="/guia" aria-label={t('guide.home_cta')}>
-                <img src={guideFiles('guia').poster} alt="" width={1280} height={720} loading="lazy" />
+                <img src={guideFiles('guia').posterWebp} srcSet={guideFiles('guia').posterSet} sizes="(min-width: 761px) 50vw, 100vw" alt="" width={1280} height={720} loading="lazy" decoding="async" />
               </Link>
               <div>
                 <p className="eyebrow">{t('guide.home_eyebrow')}</p>

@@ -15,6 +15,7 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 import { MERCADITO_RULES } from '@/config/business-rules';
+import { FabWhenAway } from '@/ui/components/fab-when-away';
 
 export const dynamic = 'force-dynamic';
 
@@ -219,10 +220,10 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
         </p>
       </div>
 
-      {/* On a phone the way to sell is always one thumb away. */}
-      <Link className="mc-fab" href="/mercadito/publish">
+      {/* On a phone the way to sell is always one thumb away — once the header's own button has scrolled off. */}
+      <FabWhenAway className="mc-fab" href="/mercadito/publish" watch=".mc-head-actions">
         <span aria-hidden="true">+</span> {t('mercadito.browse.publish_free')}
-      </Link>
+      </FabWhenAway>
     </SiteShell>
   );
 }

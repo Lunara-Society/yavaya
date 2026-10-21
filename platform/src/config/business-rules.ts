@@ -686,6 +686,32 @@ export const PLACE_RULES = {
   choiceCookieSeconds: 180 * 24 * 60 * 60,
 } as const;
 
+/**
+ * Yavaya's own visit statistics (src/server/domains/stats): how many people
+ * arrive, from where, on what kind of screen, and how fast the pages are for
+ * them. Counts per day only — no cookies, no addresses, no identifiers.
+ */
+export const SITE_STATS_RULES = {
+  /**
+   * Days the daily counts are kept before the scheduler deletes them. Thirteen
+   * months, so a month can be compared with the same month a year before.
+   * NOT the owner's decision yet — see docs/CONFIGURATION.md, "Visit statistics".
+   */
+  keepDays: 395,
+  /** Events one network may send per minute: a busy reader is a few; a script is hundreds. */
+  eventsPerMinute: 120,
+  /** New page addresses accepted per day; past this, unknown ones are counted together as "(other)". */
+  newPathsPerDay: 300,
+  /** Speed samples a page needs before the panel calls it slow or fast. */
+  minSamplesForPage: 20,
+  /**
+   * The clock a "day" is counted on: the launch city's (Managua, chosen by the
+   * owner in October 2026), so an evening visit lands on its own day rather
+   * than the next one in UTC.
+   */
+  dayTimeZone: 'America/Managua',
+} as const;
+
 export const LIVE_FEED_RULES = {
   /** Events older than this are no longer "new". */
   windowHours: 24,

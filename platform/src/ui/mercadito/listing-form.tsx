@@ -28,6 +28,9 @@ export type ListingFormLabels = Record<
   | 'location'
   | 'photos'
   | 'photosHint'
+  | 'photoDark'
+  | 'photoBlurry'
+  | 'photoSmall'
   | 'remove'
   | 'choose'
   | 'submit'
@@ -38,8 +41,69 @@ export type ListingFormLabels = Record<
 >;
 
 type Photo = { key: string; kind: 'existing'; mediaId: string } | { key: string; kind: 'new'; file: File; url: string };
+type Advice = 'dark' | 'blurry' | 'small';
 
 const RESIZE_EDGE = 2000;
+
+/**
+ * The photo coach: a look at each new photo, in the browser, for the three
+ * things that most often make a listing hard to buy from. It only ever
+ * advises — a photo is never refused or changed because of it.
+ *
+ * Measured on a copy at most COACH_EDGE pixels wide. The thresholds were set
+ * on Yavaya's own photographs: sharp ones measured 300–2 200 on the blur
+ * scale (the variance of the image's Laplacian), the same photos blurred
+ * until details were gone 2–90; average brightness under 55 of 255 is a
+ * photo taken in the dark. A night scene would be called dark too — which,
+ * for something on sale, is the right advice.
+ */
+const COACH_EDGE = 400;
+const COACH = { darkBelow: 55, blurryBelow: 40, smallShortEdge: 500 };
+
+async function advise(file: File): Promise<Advice[]> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const advice: Advice[] = [];
+    if (Math.min(bitmap.width, bitmap.height) < COACH.smallShortEdge) advice.push('small');
+    const scale = Math.min(1, COACH_EDGE / Math.max(bitmap.width, bitmap.height));
+    const width = Math.max(3, Math.round(bitmap.width * scale));
+    const height = Math.max(3, Math.round(bitmap.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) return advice;
+    context.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+    const { data } = context.getImageData(0, 0, width, height);
+    const light = new Float32Array(width * height);
+    let sum = 0;
+    for (let i = 0; i < light.length; i += 1) {
+      const value = 0.2126 * data[i * 4]! + 0.7152 * data[i * 4 + 1]! + 0.0722 * data[i * 4 + 2]!;
+      light[i] = value;
+      sum += value;
+    }
+    if (sum / light.length < COACH.darkBelow) advice.push('dark');
+    let n = 0;
+    let mean = 0;
+    let m2 = 0;
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const i = y * width + x;
+        const lap = 4 * light[i]! - light[i - 1]! - light[i + 1]! - light[i - width]! - light[i + width]!;
+        n += 1;
+        const delta = lap - mean;
+        mean += delta / n;
+        m2 += delta * (lap - mean);
+      }
+    }
+    if (n && m2 / n < COACH.blurryBelow) advice.push('blurry');
+    return advice;
+  } catch {
+    // A format the browser cannot read: no advice rather than a wrong one.
+    return [];
+  }
+}
 
 async function shrink(file: File): Promise<Blob> {
   try {
@@ -98,6 +162,7 @@ export function ListingForm({
   const [error, setError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const errorBox = useRef<HTMLDivElement>(null);
+  const [advice, setAdvice] = useState<Record<string, Advice[]>>({});
 
   const currencies = useMemo(() => {
     // While a saved place is still being looked up, keep the saved currency rather than resetting it.
@@ -134,6 +199,11 @@ export function ListingForm({
     }));
     setPhotos((current) => [...current, ...added]);
     if (fileInput.current) fileInput.current.value = '';
+    for (const photo of added) {
+      void advise(photo.file).then((found) => {
+        if (found.length) setAdvice((current) => ({ ...current, [photo.key]: found }));
+      });
+    }
   }
 
   function removePhoto(key: string) {
@@ -198,6 +268,13 @@ export function ListingForm({
                 <button type="button" onClick={() => removePhoto(photo.key)} disabled={busy}>
                   {labels.remove}
                 </button>
+                {advice[photo.key]?.length ? (
+                  <figcaption className="mk-photo-advice" role="status">
+                    {advice[photo.key]!.map((kind) => (
+                      <span key={kind}>{kind === 'dark' ? labels.photoDark : kind === 'blurry' ? labels.photoBlurry : labels.photoSmall}</span>
+                    ))}
+                  </figcaption>
+                ) : null}
               </figure>
             ))}
           </div>

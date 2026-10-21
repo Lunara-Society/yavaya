@@ -25,7 +25,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES } from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES, SITE_STATS_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { operationalEnv } from '@/config/env';
 import { PERMISSIONS, SYSTEM_ROLES } from '@/server/domains/access/permissions';
@@ -392,6 +392,7 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'tokens.starter_days', value: TOKEN_RULES.starterGrantDays, description: 'Number of days the starter allocation runs' },
     { key: 'tokens.starter_maximum', value: TOKEN_RULES.starterGrantMaximum, description: 'Total starter allocation cap' },
     { key: 'demo.lifetime_days', value: DEMO_CONTENT_RULES.defaultLifetimeDays, description: 'Days before demo content expires' },
+    { key: 'stats.keep_days', value: SITE_STATS_RULES.keepDays, description: 'Days visit statistics are kept before deletion' },
     { key: 'mercadito.new_seller_window_days', value: MERCADITO_RULES.newSellerWindowDays, description: 'Account age, in days, under which the new-seller listing limit applies' },
     { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
     { key: 'mercadito.free_open_listings', value: MERCADITO_RULES.freeOpenListings, description: 'Open listings a member may have at once without paying' },

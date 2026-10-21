@@ -56,6 +56,7 @@ describe('scheduled jobs', () => {
       'purge-rate-limits',
       'purge-safe-space',
       'purge-sessions',
+      'purge-site-stats',
       'reconcile-payments',
       'send-digests',
       'starter-tokens',

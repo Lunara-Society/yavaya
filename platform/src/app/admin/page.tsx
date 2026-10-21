@@ -106,6 +106,11 @@ export default async function OpsPage() {
                 <span className="ops-label">{t('ops.overview.waiting')}</span>
               </div>
             </div>
+            <p className="ops-visits-link">
+              <Link className="btn btn-line" href="/admin/visitas">
+                {t('ops.overview.visits_link')}
+              </Link>
+            </p>
 
             <section className="card ops-section">
               <h2>{t('ops.overview.latest')}</h2>

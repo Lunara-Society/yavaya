@@ -38,6 +38,7 @@ domain service, never by reaching into another domain's tables.
 | `notifications` | preferences, notifications, live activity | emit an event for demo content |
 | `payments` | transactions, provider adapters, webhooks | trust a browser |
 | `platform` | settings, flags, districts, demo register | hide what is or isn't built |
+| `stats` | daily visit and speed counts, the visit-to-first-action funnel | store anything that tells one visitor from another |
 
 ## The invariants
 

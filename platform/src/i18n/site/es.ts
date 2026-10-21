@@ -1012,6 +1012,17 @@ export const siteEs = {
           ],
         },
         {
+          id: 'visitas',
+          title: 'Estadísticas de visitas',
+          text: 'Para saber si Yavaya llega a la gente y si carga rápido en sus teléfonos, contamos visitas con un sistema propio, sin terceros. **No usa cookies, no guarda tu dirección IP ni ningún identificador**, y no puede distinguir a una persona de otra.',
+          list: [
+            'Cuando abres una página, tu navegador nos dice cuál es (con el número de cada publicación quitado: «una publicación de Mercadito», no cuál), si es un teléfono, una tableta o una computadora, y el nombre del sitio desde el que llegaste (por ejemplo, Google), nunca la dirección exacta.',
+            'Tu navegador también nos dice qué tan rápido cargó la página para ti. Eso nos dice qué páginas hay que hacer más livianas.',
+            'Guardamos solo conteos por día: «esta página se vio tantas veces hoy desde teléfonos». Se borran a los {keepDays} días.',
+            'No contamos el Espacio Violeta. Si tu navegador pide no ser rastreado («No rastrear» o «Global Privacy Control»), no contamos nada tuyo.',
+          ],
+        },
+        {
           title: 'Para proteger a todos',
           text: 'Para cumplir la regla de una persona, una cuenta, guardamos señales de seguridad en forma de resúmenes cifrados, nunca en claro. Las acciones importantes quedan en un registro de auditoría que no se puede reescribir; ese registro guarda resúmenes, no tu dirección IP.',
         },

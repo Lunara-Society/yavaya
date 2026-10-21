@@ -84,13 +84,18 @@ export function Icon({ name, className }: { name: IconName; className?: string }
  * display size), cut out of the owner's artwork with a transparent
  * background. The favicon, app icons and share card are made from the same file.
  */
-export function Mark({ size = 34, priority }: { size?: number; priority?: boolean }) {
+/** The widths the seal is published at (public/brand). A test holds the files to this list. */
+export const SEAL_WIDTHS = [96, 192, 384, 512, 768];
+const SEAL_SRCSET = SEAL_WIDTHS.map((w) => `/brand/seal-${w}.webp ${w}w`).join(', ');
+
+/** `sizes` overrides the fixed size where the seal changes size with the screen (the home hero). */
+export function Mark({ size = 34, priority, sizes }: { size?: number; priority?: boolean; sizes?: string }) {
   return (
     <img
       className="brand-mark"
       src="/brand/seal-192.webp"
-      srcSet="/brand/seal-96.webp 96w, /brand/seal-192.webp 192w, /brand/seal-384.webp 384w, /brand/seal-768.webp 768w"
-      sizes={`${size}px`}
+      srcSet={SEAL_SRCSET}
+      sizes={sizes ?? `${size}px`}
       width={size}
       height={size}
       alt=""

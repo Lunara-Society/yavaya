@@ -1,15 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createTranslator, DEFAULT_LOCALE, type Locale } from '@/i18n';
+import { ERROR_TEXTS_ID, errorTexts, type ErrorTexts } from '@/i18n/error-texts';
+
+/** The words the layout wrote for this page, or null if they are not there. */
+function writtenTexts(): ErrorTexts | null {
+  const text = document.getElementById(ERROR_TEXTS_ID)?.textContent;
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as ErrorTexts;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Error boundary.
  *
  * A boundary must be a client component, so it cannot await the server
- * translator. It imports the pure one instead and reads the locale off the
- * `lang` attribute the server already set on `<html>` — which keeps every
- * string in the dictionaries, where the rule says they live.
+ * translator. The root layout writes the few words it needs into every page
+ * (src/i18n/error-texts.ts) and the boundary reads them from there — which
+ * keeps every string in the dictionaries without sending the dictionaries to
+ * every visitor for a page almost nobody sees.
  *
  * The shell is not rendered here. Something in the tree already threw, and
  * wrapping the failure in components that may themselves be the cause is how a
@@ -27,19 +39,33 @@ export default function ErrorBoundary({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const [texts, setTexts] = useState<ErrorTexts | null>(null);
 
   useEffect(() => {
-    const lang = document.documentElement.lang;
-    if (lang === 'en' || lang === 'es') setLocale(lang);
+    const written = writtenTexts();
+    if (written) {
+      setTexts(written);
+      return;
+    }
+    // Not expected — the layout always writes them. Only then are the dictionaries fetched.
+    let cancelled = false;
+    import('@/i18n')
+      .then(({ createTranslator, DEFAULT_LOCALE }) => {
+        const lang = document.documentElement.lang;
+        if (!cancelled) setTexts(errorTexts(createTranslator(lang === 'en' || lang === 'es' ? lang : DEFAULT_LOCALE)));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const t = createTranslator(locale);
+  if (!texts) return <main className="mx-auto min-h-dvh w-full max-w-md" aria-busy="true" />;
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-4 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">{t('error.boundary.title')}</h1>
-      <p className="mt-2 text-[var(--text-secondary)]">{t('error.boundary.body')}</p>
+      <h1 className="text-2xl font-semibold tracking-tight">{texts.title}</h1>
+      <p className="mt-2 text-[var(--text-secondary)]">{texts.body}</p>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <button
@@ -48,19 +74,19 @@ export default function ErrorBoundary({
           className="inline-flex min-h-touch items-center rounded-xl px-5 font-medium"
           style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}
         >
-          {t('error.boundary.retry')}
+          {texts.retry}
         </button>
         <a
           href="/"
           className="inline-flex min-h-touch items-center rounded-xl border px-5 font-medium"
         >
-          {t('nav.home')}
+          {texts.home}
         </a>
       </div>
 
       {error.digest ? (
         <p className="mt-8 text-xs text-[var(--text-muted)]">
-          {t('error.boundary.reference', { digest: error.digest })}
+          {texts.reference.replace('{digest}', error.digest)}
         </p>
       ) : null}
     </main>

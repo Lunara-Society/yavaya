@@ -73,7 +73,11 @@ export function guideFiles(key: GuideKey) {
     hd: `/video/${name}.mp4`,
     /** 720p, for touch screens: lighter on a phone's data plan. */
     sd: `/video/${name}-720.mp4`,
+    /** The full-size JPEG: for search engines and link previews. Pages show the WebP sizes below. */
     poster: `/guide/${name}.jpg`,
+    /** What the player shows before play: a 960px WebP, a quarter of the JPEG's weight (scripts/derive-images.mjs). */
+    posterWebp: `/guide/${name}-960.webp`,
+    posterSet: `/guide/${name}-640.webp 640w, /guide/${name}-960.webp 960w, /guide/${name}-1280.webp 1280w`,
     captions: `/guide/${name}.vtt`,
     /** English subtitles on the same cue timings as the Spanish captions. */
     subtitlesEn: `/guide/${name}.en.vtt`,

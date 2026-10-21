@@ -20,6 +20,7 @@ import { readSessionCookie } from '@/server/auth/cookies';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { AuthBar } from './auth-bar';
 import { GooglePrompt } from '@/ui/components/google-prompt';
+import { SiteMetrics } from '@/ui/components/site-metrics';
 
 /**
  * `unread` is the count of unread notifications, shown on the bell;
@@ -92,6 +93,8 @@ export async function SiteShell({
   return (
     <div className="site" data-district={district}>
       <Alive />
+      {/* Visit counts and real speed, first-party and without identifiers. The owner's own browsing is left out. */}
+      {member?.owner ? null : <SiteMetrics />}
       {/* The soft light that follows a mouse across the dark; moved by Alive, styled in site.css. */}
       <div className="cine-spot" aria-hidden="true" />
       <a className="skip" href="#main">

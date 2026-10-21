@@ -26,3 +26,4 @@ export * from './safe-space';
 export * from './ops';
 export * from './go';
 export * from './referrals';
+export * from './stats';

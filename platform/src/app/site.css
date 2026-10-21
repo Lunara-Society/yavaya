@@ -161,7 +161,7 @@ ul, ol { margin: 0; padding: 0; }
 .ribbon strong { color: var(--accent); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.75rem; }
 .ribbon a { font-weight: 700; color: var(--text); }
 /* On a phone the ribbon keeps its label and link; the sentence would take three lines above the page. */
-@media (max-width: 640px) { .ribbon span { display: none; } .ribbon .wrap { justify-content: space-between; padding-top: 7px; padding-bottom: 7px; } }
+@media (max-width: 640px) { .ribbon { font-size: 0.82rem; } .ribbon span { display: none; } .ribbon .wrap { justify-content: space-between; padding-top: 5px; padding-bottom: 5px; } .ribbon strong { font-size: 0.68rem; } }
 
 /* ── Type helpers ───────────────────────────────────────────────────── */
 .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 0.76rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
@@ -2166,16 +2166,24 @@ a.live-text:hover { text-decoration: underline; }
 .authbar-text { margin: 0; font-size: 1rem; color: var(--text); }
 .authbar-actions { display: flex; align-items: center; gap: 10px; flex: none; }
 .authbar .btn { min-height: 46px; padding: 0 20px; white-space: nowrap; }
-/* Phones: the message on its own line, the three ways in beneath it — Google
-   across the full width, the other two side by side. */
+/* Phones: one row, so the page itself starts within the first screen. Google
+   keeps its four-colour mark on a light square (the icon-only button its
+   guidelines allow); the label stays for screen readers. The sentence is left
+   out — the buttons say it — unless the session ended, which a returning
+   member should be told. */
 @media (max-width: 760px) {
-  .authbar-in { flex-direction: column; align-items: stretch; gap: 10px; min-height: 0; }
-  .authbar-text { font-size: 0.95rem; text-align: center; }
-  .authbar-actions { flex-wrap: wrap; gap: 8px; }
+  .authbar-in { flex-direction: column; align-items: stretch; gap: 8px; min-height: 0; padding-top: 8px; padding-bottom: 8px; }
+  .authbar-text { display: none; font-size: 0.88rem; text-align: center; }
+  .authbar-ended .authbar-text { display: block; }
+  .authbar-actions { gap: 8px; }
   .authbar-actions > * { flex: 1 1 0; min-width: 0; }
-  .authbar-actions > .btn-google { flex-basis: 100%; }
-  .authbar .btn, .authbar .btn-google { min-height: 48px; padding: 0 12px; }
+  .authbar .btn, .authbar .btn-google { min-height: 44px; padding: 0 10px; font-size: 0.92rem; }
+  .authbar .btn-google { flex: none; width: 44px; padding: 0; border-radius: 12px; }
+  .authbar .btn-google-label { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  /* "Crear cuenta gratis" is the longer label and the main invitation: it gets the room. */
+  .authbar .btn-gold { flex-grow: 1.7; }
 }
+@media (max-width: 379px) { .authbar .btn { font-size: 0.86rem; padding: 0 8px; } }
 
 /* "Continuar con Google": Google's mark on a light button, as their guidelines ask. */
 .btn-google { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 46px; padding: 0 20px; border-radius: 14px;
@@ -2513,3 +2521,163 @@ a.live-text:hover { text-decoration: underline; }
   .site { transition: none; }
 }
 
+/* ── Phones: the first screen belongs to the page ───────────────────────
+ * Sign-in row, header, ribbon and dock together had taken 40% of a 390×844
+ * screen before any content. These rules give it back: the hero fits above
+ * the dock with its buttons in sight, and the home page's seven doors and four
+ * trust points take a third of the scrolling they did, with nothing removed.
+ */
+@media (max-width: 640px) {
+  .hero { min-height: 0; padding: 30px 0 44px; }
+  .hero-emblem { width: 148px; height: 148px; margin-bottom: 8px; }
+  .hero-seal { width: min(340px, 86vw); }
+  .hero .h-xl { font-size: 2.5rem; margin-bottom: 4px; }
+  .hero-sub { font-size: 1.28rem; margin-bottom: 12px; }
+  .hero-verbs { gap: 4px 14px; margin-bottom: 12px; font-size: 0.95rem; }
+  .hero-verbs li::after { margin-left: 14px; }
+  .hero-one { margin-bottom: 20px; font-size: 0.74rem; }
+  /* A thumb is already waiting: the buttons arrive with the title, not after the whole opening. */
+  .hero .hero-sub { animation-delay: 0.5s; } .hero .hero-verbs { animation-delay: 0.6s; } .hero .hero-one { animation-delay: 0.7s; } .hero .btn-row { animation-delay: 0.8s; }
+
+  /* The doors two by two, the last one wide. */
+  .gates-home { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .gates-home > :nth-child(7):nth-last-child(1) { grid-column: span 2; }
+  .gates-home > :nth-child(7):nth-last-child(1) .gate-scene { aspect-ratio: 21 / 9; }
+  .gates-home .gate { border-radius: 16px; }
+  .gates-home .gate-scene { aspect-ratio: 4 / 3; border-radius: 15px 15px 0 0; }
+  .gates-home .gate-scene::before { inset: 5px; border-radius: 10px; }
+  .gates-home .gate-body { gap: 3px; padding: 16px 12px 14px; }
+  .gates-home .gate-art { right: 10px; top: -21px; width: 40px; height: 40px; padding: 9px; box-shadow: 0 0 0 3px #070f1d, 0 6px 14px rgba(0, 0, 0, 0.5); }
+  .gates-home .gate-name { font-size: 1.22rem; }
+  .gates-home .gate-tag { font-size: 0.82rem; line-height: 1.35; }
+  .gates-home .gate-foot { margin-top: 4px; font-size: 0.62rem; letter-spacing: 0.06em; }
+
+  /* The four trust points as a compact list: icon beside the words. */
+  .home-trust .card { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 14px; padding: 16px; }
+  .home-trust .card .ico { grid-row: span 2; width: 40px; height: 40px; margin: 0; }
+  .home-trust .card .ico svg { width: 19px; height: 19px; }
+  .home-trust .card h3 { font-size: 1.02rem; margin-bottom: 4px; }
+  .home-trust .card p { font-size: 0.9rem; }
+  .home-trust .grid { gap: 10px; }
+}
+
+/* Mercadito's floating "Publicar gratis" waits until the one in the header has
+   scrolled away: two of the same button on one screen read as a mistake, and
+   the floating one covered the heading beneath. (FabWhenAway toggles it.) */
+.mc-fab { transition: opacity 0.25s ease, translate 0.25s ease; }
+.mc-fab[data-away="no"] { opacity: 0; translate: 0 14px; pointer-events: none; visibility: hidden; }
+@media (max-width: 999px) {
+  .site:has(.mc-fab[data-away="no"]) .live { bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .site:has(.mc-fab[data-away="no"]) ~ .roxi { --rx-bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) { .mc-fab { transition: none; } }
+
+/* ── Visits and speed (/admin/visitas) ───────────────────────────────────
+ * Numbers first; the few charts are thin marks in the accent gold, and speed
+ * uses the reserved status colours — always with ✓ ! ✕ and a percentage
+ * beside them, never colour alone. Every chart has a table or numbers next
+ * to it.
+ */
+:root { --st-good: #0ca30c; --st-mid: #fab219; --st-bad: #d03b3b; }
+.vs { display: grid; gap: 20px; padding-top: 22px; }
+.vs-periods { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vs-periods a { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line-strong); text-decoration: none; font-weight: 700; font-size: 0.9rem; color: var(--text-2); }
+.vs-periods a[aria-current="page"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.vs-range { margin-left: auto; font-size: 0.88rem; }
+.vs-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 760px) { .vs-kpis { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+.vs-kpi { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.vs-kpi-label { font-size: 0.9rem; color: var(--text-2); }
+.vs-kpi-value { font-family: var(--sans); font-weight: 650; font-size: 2rem; line-height: 1.1; color: var(--text); }
+.vs-kpi-hero { grid-column: 1 / -1; }
+@media (min-width: 760px) { .vs-kpi-hero { grid-column: auto; } }
+.vs-kpi-hero .vs-kpi-value { font-size: 3.1rem; }
+.vs-card h2 { font-size: 1.2rem; margin: 0 0 6px; }
+.vs-sub { font-size: 1rem; margin: 22px 0 8px; }
+.vs-fine { font-size: 0.85rem; }
+
+/* Visits per day: columns no wider than 24px, rounded at the top, square at the baseline. */
+.vs-cols-wrap { position: relative; margin-top: 14px; padding-top: 18px; }
+.vs-axis-top { position: absolute; top: 0; left: 0; font-size: 0.75rem; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.vs-cols { list-style: none; margin: 0; padding: 0; height: 160px; display: grid; grid-template-columns: repeat(var(--count), minmax(0, 1fr)); gap: 2px; align-items: end; border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); }
+.vs-cols { position: relative; }
+.vs-cols li { height: 100%; display: flex; align-items: flex-end; justify-content: center; outline: none; cursor: default; }
+.vs-col { display: block; width: 100%; max-width: 24px; min-height: 0; border-radius: 4px 4px 0 0; background: var(--accent); }
+.vs-cols li:hover .vs-col, .vs-cols li:focus-visible .vs-col { filter: brightness(1.18); }
+.vs-cols li:focus-visible { box-shadow: inset 0 0 0 2px var(--accent); border-radius: 4px; }
+/* The readout: the hovered or focused day's numbers, always in the chart's top right corner so it
+   never runs off a phone's edge; absent from the layout until it is shown. */
+.vs-cols li::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 4px); right: 0; z-index: 2; display: none; width: max-content; max-width: min(260px, 100%);
+  padding: 6px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line-strong); color: var(--text); font-size: 0.8rem; font-weight: 600;
+  box-shadow: var(--shadow); pointer-events: none; }
+.vs-cols li:hover::after, .vs-cols li:focus-visible::after { display: block; }
+.vs-axis-x { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.75rem; color: var(--text-3); }
+.vs-table-view { margin-top: 12px; }
+.vs-table-view summary { cursor: pointer; color: var(--text-2); font-weight: 600; font-size: 0.9rem; }
+
+/* Horizontal bars: label, track, value at the tip. */
+.vs-bars { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.vs-bars li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+@media (min-width: 760px) { .vs-bars li { grid-template-columns: minmax(150px, 1.1fr) 2fr minmax(120px, auto); align-items: center; gap: 14px; } }
+.vs-bars-compact li { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) { .vs-bars-compact li { grid-template-columns: minmax(110px, 1fr) 1.4fr minmax(90px, auto); } }
+.vs-bar-label { color: var(--text); font-weight: 600; font-size: 0.94rem; overflow-wrap: anywhere; }
+.vs-bar-track { display: block; height: 14px; }
+.vs-bar { display: block; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--accent); }
+.vs-bar-value { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--text); font-size: 0.94rem; }
+
+/* Speed: one stacked bar per measure, the three bands separated by a 2px gap in the surface colour. */
+.vs-legend { list-style: none; margin: 8px 0 14px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.88rem; color: var(--text-2); }
+.vs-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.vs-sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.vs-good { background: var(--st-good); }
+.vs-mid { background: var(--st-mid); }
+.vs-bad { background: var(--st-bad); }
+.vs-speed { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.vs-speed-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 8px; }
+.vs-speed-head .muted { font-size: 0.88rem; }
+.vs-stack { display: flex; gap: 2px; height: 14px; border-radius: 4px; overflow: hidden; background: var(--surface); }
+.vs-stack > span { display: block; min-width: 2px; }
+.vs-speed-numbers { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-variant-numeric: tabular-nums; font-size: 0.9rem; color: var(--text); }
+.vs-speed-phone { font-size: 0.86rem; margin-top: 4px; }
+
+.vs-split { display: grid; gap: 20px; }
+@media (min-width: 900px) { .vs-split { grid-template-columns: 1fr 1fr; } }
+.vs-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-top: 8px; }
+.vs-table th { text-align: left; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); font-weight: 800; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); }
+.vs-table td { padding: 9px 10px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; font-variant-numeric: tabular-nums; }
+.vs-table td:first-child { width: 60%; overflow-wrap: anywhere; }
+.vs-table code { font-size: 0.86rem; color: var(--text); }
+.vs-inline-bar { display: block; height: 3px; margin-top: 6px; border-radius: 0 2px 2px 0; background: var(--accent); opacity: 0.75; }
+.ops-visits-link { margin: 14px 0 0; }
+@media (forced-colors: active) { .vs-col, .vs-bar, .vs-inline-bar, .vs-stack > span, .vs-sw { forced-color-adjust: none; } }
+
+/* Signed in, the header carries the panel, tokens, bell and name as well as the
+   links: between a small laptop and a wide screen that ran off the right edge
+   (1280px, the owner's header: 38px too wide). The last two links step back
+   into the menu, where all of them already are, and a long name is shortened. */
+@media (min-width: 480px) {
+  .member-chip { display: inline-block; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 42px; }
+}
+@media (min-width: 1000px) and (max-width: 1399px) {
+  .top:has(.member-chip) .nav a:nth-child(n + 4) { display: none; }
+}
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .top:has(.member-chip) .nav { display: none; }
+}
+
+/* "Ilustración" in a corner of each photograph with people in it (ArtNote).
+   Quiet on purpose: it informs without competing with the picture. The word
+   comes from the dictionary through --art-note, set on <html>. */
+.art-note { position: absolute; right: 12px; bottom: 12px; z-index: 2; pointer-events: none; line-height: 1; }
+.art-note::after { content: var(--art-note, ""); display: inline-block; padding: 4px 8px; border-radius: 999px; background: rgba(5, 11, 22, 0.55);
+  color: rgba(255, 255, 255, 0.88); font: 700 0.62rem/1 var(--sans); letter-spacing: 0.08em; text-transform: uppercase; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+/* Inside a district door the note sits in the frame's top corner, clear of the icon below. */
+.gate-scene .art-note { top: 14px; left: 14px; right: auto; bottom: auto; }
+.page-hero-art { position: relative; }
+/* The photo coach's advice under a photo (listing-form.tsx): small, kind, never a blocker. */
+.mk-photo-advice { display: grid; gap: 4px; margin-top: 6px; font-size: 0.76rem; line-height: 1.3; color: var(--text-2); }
+.mk-photo-advice span { display: flex; gap: 5px; }
+.mk-photo-advice span::before { content: "!"; flex: none; display: inline-grid; place-items: center; width: 15px; height: 15px; margin-top: 1px; border-radius: 50%;
+  background: #e0a93b; color: #1a1300; font-size: 0.66rem; font-weight: 900; }
+:root[data-theme="light"] .mk-photo-advice span::before { background: #8a5e00; color: #fff; }

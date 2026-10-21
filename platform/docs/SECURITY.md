@@ -383,6 +383,37 @@ above:
   verification, reset and appeal pages; opening Espacio Violeta ends the
   conversation, and nothing from it is ever sent.
 
+## Visit statistics
+
+`POST /api/metrics` takes page views and speed measurements from Yavaya's own
+pages (`src/ui/components/site-metrics.tsx`) and adds them to daily counts
+(`page_views_daily`, `web_vitals_daily`). It is open to anyone, so:
+
+- **Nothing identifying exists to leak.** No cookie or storage is used. The
+  browser sends a route with its ids already replaced by their names
+  (`/mercadito/[id]`), a kind of screen, the referring site's host name only
+  (never the address, which can carry a search or a token) and its own speed
+  readings. The server keeps per-day sums. No IP address, network hash,
+  account, user agent or session is stored, and no row describes one visit.
+- **Every field is closed.** Paths must match a strict pattern (letters,
+  digits, dashes, brackets; at most eight segments), screens and measures
+  come from fixed lists the database also enforces, values have plausible
+  maxima, and sources are reduced to a known site name or a bare host.
+- **Flooding is bounded.** 120 events per network per minute, counted
+  against a keyed hash held in memory for a minute and never written; at most
+  300 new routes per day per process, the rest folded into `(other)`;
+  requests from other sites (`Sec-Fetch-Site`) and scripted browsers are
+  ignored. The answer is always an empty 204, so a caller learns nothing.
+- **Some places are never counted.** Espacio Violeta, the panels and the API
+  are refused by both the page and the server. Browsers sending Do Not Track
+  or Global Privacy Control send nothing.
+- **Reading is owner-only.** `/admin/visitas` and `siteStats` require
+  `roles.manage`. Counts are deleted after `SITE_STATS_RULES.keepDays`.
+
+Someone determined can still inflate counts by hand within the limits. That
+distorts a statistic and nothing else: no decision, payment or reputation
+reads these tables.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a
