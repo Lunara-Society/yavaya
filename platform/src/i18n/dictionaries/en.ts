@@ -551,6 +551,8 @@ export const en: Dictionary = {
   'mercadito.opening.step3': 'Share it on WhatsApp',
   'mercadito.opening.step3_text': 'Your listing has its own link: send it to your groups and contacts.',
   'mercadito.opening.free': 'Posting is free: up to {count} active listings at a time.',
+  'mercadito.opening.doors_title': 'What would you like to sell?',
+  'mercadito.opening.door': 'Be the first to list →',
   'mercadito.browse.mine': 'My listings',
   'mercadito.browse.how': 'How Mercadito works',
   'mercadito.browse.none': 'No listings match your search.',

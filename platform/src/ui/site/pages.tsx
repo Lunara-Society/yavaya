@@ -572,12 +572,12 @@ export function AnimalsBody({ c }: { c: SiteContent }) {
   );
 }
 
-export function TrustBody({ c, afterHero }: { c: SiteContent; afterHero?: ReactNode }) {
+/** `film` is the guide video, shown after the page has said what it has to say. */
+export function TrustBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
   const p = c.pages.trust;
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="trust" />
-      {afterHero}
       <section className="section">
         <div className="wrap">
           <p className="quote">
@@ -650,6 +650,7 @@ export function TrustBody({ c, afterHero }: { c: SiteContent; afterHero?: ReactN
           <Table head={p.formulaTable.head} rows={p.formulaTable.rows} />
         </div>
       </section>
+      {film ? <div className="wrap gv-end section-film">{film}</div> : null}
     </>
   );
 }
@@ -726,14 +727,14 @@ export function ReputationBody({ c }: { c: SiteContent }) {
   );
 }
 
-export function TokensBody({ c, afterHero }: { c: SiteContent; afterHero?: ReactNode }) {
+/** `film` is the guide video, shown after the page has said what it has to say. */
+export function TokensBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
   const p = c.pages.tokens;
   const offered = TOKEN_PACKAGES.filter((pk) => pk.enabled && pk.tokens <= TOKEN_RULES.maxTokensPerPurchase);
   const best = [...offered].sort((a, b) => a.priceMinor / a.tokens - b.priceMinor / b.tokens)[0];
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
-      {afterHero}
       <section className="section">
         <div className="wrap">
           <Cards items={p.pillars} />
@@ -795,6 +796,7 @@ export function TokensBody({ c, afterHero }: { c: SiteContent; afterHero?: React
           </p>
         </div>
       </section>
+      {film ? <div className="wrap gv-end section-film">{film}</div> : null}
     </>
   );
 }

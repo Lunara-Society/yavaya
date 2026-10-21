@@ -552,10 +552,6 @@ td strong { color: var(--text); }
 .mk-card .tr-status { color: var(--text-2); }
 .mk-card .tr-check { margin-left: auto; color: #3fbf7f; border: 1px solid rgba(63,191,127,0.5); border-radius: 999px; padding: 1px 6px; }
 .mk-card .st { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tone); }
-.mk-kinds { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px 12px; max-width: 640px; margin: 22px auto 26px; padding: 0; font-size: 0.86rem; font-weight: 700; color: var(--text-2); }
-.mk-kinds li { display: grid; justify-items: center; gap: 8px; }
-.mk-kind-ico { width: 58px; height: 58px; padding: 16px; border-radius: 50%; color: var(--tone); background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--tone) 22%, var(--surface)), var(--surface)); border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tone) 8%, transparent); }
-.mk-kind-ico svg { width: 100%; height: 100%; }
 .mk-pager { display: flex; gap: 10px; justify-content: center; margin: 28px 0 8px; }
 .mk-empty { margin-top: 28px; padding: 28px; border: 1px dashed var(--line-strong); border-radius: 14px; text-align: center; color: var(--text-2); }
 .mk-detail { display: grid; gap: 28px; grid-template-columns: 1fr; padding: 24px 0 56px; }
@@ -2791,6 +2787,7 @@ a.live-text:hover { text-decoration: underline; }
 }
 .gv-end { margin-top: clamp(36px, 5vw, 64px); }
 .gv-end .gv { margin-top: 0; }
+.section-film { padding-bottom: clamp(40px, 6vw, 72px); }
 
 /* Servicios: the question and "I need it today" beside someone at work. */
 .sv-hero { position: relative; padding: clamp(24px, 4vw, 64px) 0 clamp(28px, 4vw, 56px); border-bottom: 1px solid var(--line);
@@ -2972,3 +2969,47 @@ a.live-text:hover { text-decoration: underline; }
   border: 1px solid color-mix(in srgb, var(--yavayago) 40%, var(--line)); background: linear-gradient(135deg, color-mix(in srgb, var(--yavayago) 14%, var(--surface)), var(--surface)); }
 .go-partner svg { width: 30px; height: 30px; flex: none; color: var(--yavayago); }
 .go-partner::after { content: "\2192"; margin-left: auto; font-weight: 800; color: var(--yavayago); }
+
+/* ── Brighter, bolder, wider ─────────────────────────────────────────────
+ * Photographs behind page headers were faded to a third of their colour;
+ * they now show most of it, with the fade kept only where text sits. Section
+ * titles step up a size, and on a large screen the page breathes out to
+ * 1280px instead of sitting in a narrow column with wide empty margins.
+ */
+@media (min-width: 1440px) { :root { --max: 1280px; } }
+.h-lg { font-size: clamp(2.2rem, 5.8vw, 3.8rem); letter-spacing: -0.025em; }
+.h-md { font-size: clamp(1.6rem, 3.8vw, 2.4rem); }
+.lead { font-size: clamp(1.1rem, 2.2vw, 1.34rem); }
+h3 { font-size: 1.18rem; }
+.page-hero h1 { font-size: clamp(2.5rem, 7vw, 4.8rem); }
+.mk-head h1 { font-size: clamp(2rem, 4.6vw, 3rem); }
+.mc-head h1, .cm-head h1 { font-size: clamp(2.3rem, 5.6vw, 3.4rem); }
+.cm-head-art, .mc-top-art { opacity: 0.78; -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%); mask-image: linear-gradient(90deg, transparent, #000 40%); }
+.mk-head-art { opacity: 0.72; }
+.sc-church-hero-photo img { opacity: 0.55; }
+.gate-scene img { filter: none; }
+.page-hero.with-photo::after {
+  background: linear-gradient(90deg, rgba(5, 11, 22, 0.8) 0%, rgba(5, 11, 22, 0.42) 40%, rgba(5, 11, 22, 0) 72%), linear-gradient(180deg, rgba(5, 11, 22, 0) 60%, var(--bg) 100%);
+}
+
+/* ── Empty, honestly, and inviting ───────────────────────────────────────
+ * A district with nothing in it yet says so plainly, and then shows the way
+ * to be first: in an empty Mercadito, one door per kind of goods, each
+ * opening the form with its category already chosen. No placeholder goods,
+ * no invented counts.
+ */
+.mc-doors-title { margin: 30px 0 14px; font-family: var(--serif); font-size: clamp(1.25rem, 2.6vw, 1.6rem); font-weight: 600; }
+.mc-doors { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 auto; padding: 0; text-align: left; }
+@media (min-width: 720px) { .mc-doors { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; } }
+.mc-door { position: relative; display: grid; gap: 6px; height: 100%; padding: 18px 16px 16px; border-radius: 18px; text-decoration: none; color: var(--text); overflow: hidden;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--mercadito) 16%, var(--surface)), var(--surface) 70%); border: 1px solid color-mix(in srgb, var(--mercadito) 32%, var(--line));
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+.mc-door:hover { transform: translateY(-3px); border-color: var(--mercadito); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22); }
+.mc-door-ico { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 6px; border-radius: 16px; color: var(--mercadito); background: color-mix(in srgb, var(--mercadito) 18%, transparent); }
+.mc-door-ico svg { width: 26px; height: 26px; }
+.mc-door strong { font-size: 1.05rem; }
+.mc-door-go { font-size: 0.84rem; font-weight: 700; color: var(--mercadito); }
+:root[data-theme="light"] .mc-door-go, :root[data-theme="light"] .mc-door-ico { color: #157a52; }
+/* Every other empty list: a calm panel with room to breathe, not a dashed afterthought. */
+.sc-empty, .mk-empty, .go-empty { padding: clamp(28px, 5vw, 44px); border: 1px solid color-mix(in srgb, var(--tone, var(--accent)) 30%, var(--line)); border-radius: 22px;
+  background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--tone, var(--accent)) 9%, transparent), transparent 70%); font-size: 1.04rem; }

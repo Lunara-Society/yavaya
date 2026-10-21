@@ -11,6 +11,7 @@ import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { getWhatsapp, openListingCount, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
+import { LISTING_CATEGORIES } from '@/server/domains/mercadito/rules';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * and said plainly, so the form only appears when submitting it can work.
  * The server checks all of it again; this page is courtesy, not security.
  */
-export default async function PublishPage({ searchParams }: { searchParams: Promise<{ wa?: string }> }) {
+export default async function PublishPage({ searchParams }: { searchParams: Promise<{ wa?: string; cat?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
 
@@ -115,7 +116,13 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
           </noscript>
           {/* A fresh id per visit names this listing before it exists, so a
               retried submission cannot publish (or charge) twice. */}
-          <ListingForm mode="create" listingId={randomUUID()} {...form} prefillNotice={t('roxi.prefill.notice')} />
+          <ListingForm
+            mode="create"
+            listingId={randomUUID()}
+            {...form}
+            prefillNotice={t('roxi.prefill.notice')}
+            presetCategory={(LISTING_CATEGORIES as readonly string[]).includes(query.cat ?? '') ? query.cat : undefined}
+          />
         </>
       )}
     </>,

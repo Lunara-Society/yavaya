@@ -84,10 +84,6 @@ export default async function TripsPage({ searchParams }: { searchParams: Promis
           </div>
         </div>
       </section>
-      <div className="wrap">
-        <GuideVideo guideKey="yavayago" title={t('guide.watch_title', { name: c.nav.yavayago })} t={t} locale={locale} />
-      </div>
-
       <div className="wrap go-page cm-column" style={{ paddingBottom: 56 }}>
         <ol className="go-how">
           <li>
@@ -147,6 +143,9 @@ export default async function TripsPage({ searchParams }: { searchParams: Promis
             </Link>
           </p>
         </section>
+      </div>
+      <div className="wrap gv-end" style={{ paddingBottom: 56 }}>
+        <GuideVideo guideKey="yavayago" title={t('guide.watch_title', { name: c.nav.yavayago })} t={t} locale={locale} />
       </div>
     </SiteShell>
   );

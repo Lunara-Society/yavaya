@@ -106,6 +106,9 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           {posts.items.length === 0 ? (
             <div className="sc-empty">
               <p>{t('work.board.empty')}</p>
+              <Link className="btn btn-gold" href={member ? '/work/posts/new' : '/login'}>
+                {t('work.board.post')}
+              </Link>
             </div>
           ) : (
             <div className="sv-list">

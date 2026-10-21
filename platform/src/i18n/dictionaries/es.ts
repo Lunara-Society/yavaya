@@ -575,6 +575,8 @@ export const es = {
   'mercadito.opening.step3': 'Compártelo por WhatsApp',
   'mercadito.opening.step3_text': 'Tu publicación tiene su enlace: mándalo a tus grupos y contactos.',
   'mercadito.opening.free': 'Publicar es gratis: hasta {count} publicaciones activas a la vez.',
+  'mercadito.opening.doors_title': '¿Qué quieres vender?',
+  'mercadito.opening.door': 'Publica el primero →',
   'mercadito.browse.mine': 'Mis publicaciones',
   'mercadito.browse.how': 'Cómo funciona Mercadito',
   'mercadito.browse.none': 'No hay publicaciones que coincidan con tu búsqueda.',

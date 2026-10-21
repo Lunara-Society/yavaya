@@ -13,14 +13,7 @@ export default async function Page() {
   const { c, t, locale, language, theme, member } = await siteContext();
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="trust">
-      <TrustBody
-        c={c}
-        afterHero={
-          <div className="wrap">
-            <GuideVideo guideKey="confianza" title={t('guide.watch_title_trust')} t={t} locale={locale} />
-          </div>
-        }
-      />
+      <TrustBody c={c} film={<GuideVideo guideKey="confianza" title={t('guide.watch_title_trust')} t={t} locale={locale} />} />
     </SiteShell>
   );
 }

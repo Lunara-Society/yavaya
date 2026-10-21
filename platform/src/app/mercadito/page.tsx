@@ -184,13 +184,18 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
               {t('mercadito.browse.publish_free')}
             </Link>
             <p className="muted mc-opening-fine">{t('mercadito.opening.free', { count: MERCADITO_RULES.freeOpenListings })}</p>
-            <ul className="mk-kinds">
+            {/* One door per kind of goods, each opening the form with its category chosen. */}
+            <h3 className="mc-doors-title">{t('mercadito.opening.doors_title')}</h3>
+            <ul className="mc-doors">
               {LISTING_CATEGORIES.map((key) => (
                 <li key={key}>
-                  <span className="mk-kind-ico">
-                    <Icon name={CATEGORY_ICON[key]} />
-                  </span>
-                  {t(`mercadito.category.${key}` as MessageKey)}
+                  <Link className="mc-door" href={`/mercadito/publish?cat=${key}`}>
+                    <span className="mc-door-ico" aria-hidden="true">
+                      <Icon name={CATEGORY_ICON[key]} />
+                    </span>
+                    <strong>{t(`mercadito.category.${key}` as MessageKey)}</strong>
+                    <span className="mc-door-go">{t('mercadito.opening.door')}</span>
+                  </Link>
                 </li>
               ))}
             </ul>

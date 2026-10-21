@@ -131,6 +131,7 @@ export function ListingForm({
   initial,
   maxPhotos,
   prefillNotice,
+  presetCategory,
 }: {
   mode: 'create' | 'edit';
   listingId: string;
@@ -151,6 +152,8 @@ export function ListingForm({
   maxPhotos: number;
   /** When set, a draft Roxi prepared fills a new listing; the member still publishes it. */
   prefillNotice?: string;
+  /** A new listing's category chosen before the form opened (a category door in an empty Mercadito). */
+  presetCategory?: string;
 }) {
   const [photos, setPhotos] = useState<Photo[]>(
     () => initial?.photoIds.map((mediaId) => ({ key: mediaId, kind: 'existing' as const, mediaId })) ?? [],
@@ -301,7 +304,7 @@ export function ListingForm({
       <div className="row">
         <label>
           {labels.category}
-          <select name="category" required defaultValue={initial?.category ?? ''} disabled={busy}>
+          <select name="category" required defaultValue={initial?.category ?? presetCategory ?? ''} disabled={busy}>
             <option value="" disabled>
               {labels.choose}
             </option>
