@@ -60,27 +60,28 @@
  * Components reference the token, never a raw colour, so a district or a theme
  * can be swapped without touching component code.
  *
- * Yavaya is navy, gold and ivory (Master Bible, ch. 1 and 5). Navy is the
- * default: a member who has not chosen a theme gets the brand, not their
+ * Yavaya is midnight teal, antique gold and ivory — the owner's October 2026
+ * direction, which replaced the Master Bible's navy (ch. 1 and 5). Dark is
+ * the default: a member who has not chosen a theme gets the brand, not their
  * device's setting. Light (ivory) applies only when chosen explicitly.
  */
 :root {
-  --surface-base: #081120;
-  --surface-raised: #0e1a2e;
-  --surface-sunken: #050b16;
-  --surface-border: rgba(248, 246, 241, 0.1);
-  --surface-border-strong: rgba(248, 246, 241, 0.2);
+  --surface-base: #071b22;
+  --surface-raised: #0c2328;
+  --surface-sunken: #050f13;
+  --surface-border: rgba(244, 235, 216, 0.1);
+  --surface-border-strong: rgba(244, 235, 216, 0.2);
 
-  --text-primary: #f8f6f1;
-  --text-secondary: rgba(248, 246, 241, 0.76);
-  --text-muted: rgba(248, 246, 241, 0.58);
-  --text-on-accent: #081120;
+  --text-primary: #f4ebd8;
+  --text-secondary: #b8c0bc;
+  --text-muted: #8f9b96;
+  --text-on-accent: #071b22;
 
   /* District accent. Overridden per district; this is the platform default. */
-  --accent: #d4af37;
-  --accent-soft: rgba(212, 175, 55, 0.12);
-  --accent-strong: #e9c95c;
-  --accent-contrast-text: #081120;
+  --accent: #c99b35;
+  --accent-soft: rgba(201, 155, 53, 0.12);
+  --accent-strong: #f3d77b;
+  --accent-contrast-text: #071b22;
 
   color-scheme: dark;
 }

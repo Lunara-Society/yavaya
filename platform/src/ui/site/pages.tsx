@@ -1,10 +1,8 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import type { CSSProperties } from 'react';
 import { packageSavingPercent, SITE_STATS_RULES, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { TokenPack } from '@/ui/tokens/pack';
-import { DistrictScene, Guilloche, HeroScene, OrnamentRule } from './art';
-import { HeroCinema } from './cinema';
+import { DistrictScene } from './art';
 import type { SiteContent } from '@/i18n/site';
 import {
   Badge,
@@ -24,7 +22,7 @@ import {
   Table,
   type SiteState,
 } from './blocks';
-import { Icon, Mark, type IconName } from './icons';
+import { Icon, type IconName } from './icons';
 import { Md, Paras } from './md';
 
 /**
@@ -34,115 +32,6 @@ import { Md, Paras } from './md';
  */
 
 type Cta = { href: string; label: string };
-
-/**
- * How wide each home-page door is shown (site.css, "Phones: the first screen"):
- * two to a row on a phone, the last one wide; the first opens wide on a
- * desktop. Matches the grid so a phone takes the 400 or 640px file.
- */
-function homeGateSizes(index: number, count: number): string {
-  if (index === count - 1) return '(min-width: 1000px) 34vw, 100vw';
-  if (index === 0) return '(min-width: 1000px) 66vw, 50vw';
-  return '(min-width: 1000px) 34vw, 50vw';
-}
-
-export function HomeBody({ c, primaryCta, afterHero }: { c: SiteContent; primaryCta: Cta; afterHero?: ReactNode }) {
-  const p = c.pages.home;
-  return (
-    <>
-      <section className="hero">
-        <HeroScene className="hero-art" />
-        <HeroCinema />
-        {/* The opening shot: letterbox bars that part, then light falling from the seal and a lens flare. */}
-        <span className="hero-bars" aria-hidden="true" />
-        <div className="wrap">
-          <div className="hero-mark">
-            <Guilloche className="hero-seal" variant="hero" />
-            <span className="hero-emblem">
-              <span className="hero-rays" aria-hidden="true" />
-              <span className="hero-flare" aria-hidden="true" />
-              {/* A coin in three dimensions: it tilts towards the pointer and catches the light. */}
-              <span className="seal-3d">
-                <span className="seal-tilt">
-                  <span className="seal-edge" aria-hidden="true" />
-                  <Mark size={240} priority sizes="(max-width: 640px) 148px, 240px" />
-                  <span className="seal-glare" aria-hidden="true" />
-                </span>
-              </span>
-            </span>
-            {/* Each letter rises on its own; the label makes the word read once, whole, and keeps the text a single word. */}
-            <h1 className="h-xl hero-title" aria-label="YAVAYA">
-              {Array.from('YAVAYA', (letter, i) => (
-                <span key={i} className="hero-letter" aria-hidden="true" style={{ '--i': i } as CSSProperties}>
-                  {letter}
-                </span>
-              ))}
-            </h1>
-          </div>
-          <p className="hero-sub">{p.sub}</p>
-          <ul className="hero-verbs">
-            {p.verbs.map((v) => (
-              <li key={v}>{v}</li>
-            ))}
-          </ul>
-          <p className="hero-one">{p.one}</p>
-          <div className="btn-row">
-            <a className="btn btn-gold" href="#distritos">
-              {p.ctaPrimary}
-            </a>
-            <Link className="btn btn-line" href={primaryCta.href}>
-              {primaryCta.label}
-            </Link>
-          </div>
-        </div>
-      </section>
-      {afterHero}
-      <section className="section" id="distritos" style={{ paddingTop: 0 }}>
-        <div className="wrap">
-          <OrnamentRule className="ornament" />
-          <SectionHead eyebrow={p.gatesEyebrow} title={p.gatesTitle} />
-          <div className="gates gates-home">
-            {DISTRICT_IDS.map((id, i) => (
-              <Gate key={id} c={c} id={id} sizes={homeGateSizes(i, DISTRICT_IDS.length)} />
-            ))}
-          </div>
-        </div>
-      </section>
-      <section className="section alt home-trust">
-        <div className="wrap">
-          <div className="split">
-            <div>
-              <SectionHead eyebrow={p.trustEyebrow} title={p.trustTitle} lead={p.trustLead} />
-              <Link className="btn btn-gold" href={PAGE_PATHS.trust}>
-                {p.trustCta}
-              </Link>
-            </div>
-            <Cards items={p.trustPoints} cols="g2" />
-          </div>
-        </div>
-      </section>
-      <section className="section seal-section">
-        <Guilloche className="seal-bg" variant="band" />
-        <div className="wrap">
-          <p className="quote">
-            <Md text={p.quote} />
-          </p>
-          <div className="btn-row mt">
-            <Link className="btn btn-line" href={PAGE_PATHS.about}>
-              {c.nav.about}
-            </Link>
-            <Link className="btn btn-line" href={PAGE_PATHS.roadmap}>
-              {c.nav.roadmap}
-            </Link>
-            <Link className="btn btn-line" href={PAGE_PATHS.status}>
-              {p.ctaSecondary}
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
 
 export function DistrictsBody({ c }: { c: SiteContent }) {
   const p = c.pages.districts;

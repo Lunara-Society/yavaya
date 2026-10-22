@@ -517,6 +517,8 @@ export type AnimalCard = {
   placeName: string;
   photoId: string | null;
   rescuerName: string;
+  /** When the rescuer published it: the home page's recent list sorts by it. */
+  createdAt: Date;
 };
 
 const cardColumns = {
@@ -532,10 +534,11 @@ const cardColumns = {
   placeName: locations.name,
   placeNames: locations.names,
   rescuerName: animalsRescuers.name,
+  createdAt: animalsListings.createdAt,
   photoId: sql<string | null>`(select p.media_id from animals_listing_photos p join media m on m.id = p.media_id and m.status = 'active' where p.listing_id = ${animalsListings.id} order by p.position limit 1)`,
 };
 
-type CardRow = { id: string; species: string; name: string; sex: string; size: string; ageMonths: number | null; sterilised: boolean; vaccinated: boolean; status: string; placeName: string; placeNames: unknown; rescuerName: string; photoId: string | null };
+type CardRow = { id: string; species: string; name: string; sex: string; size: string; ageMonths: number | null; sterilised: boolean; vaccinated: boolean; status: string; placeName: string; placeNames: unknown; rescuerName: string; photoId: string | null; createdAt: Date };
 
 function toCard(row: CardRow, locale: string): AnimalCard {
   return { ...row, placeName: localized(row.placeName, row.placeNames, locale) };

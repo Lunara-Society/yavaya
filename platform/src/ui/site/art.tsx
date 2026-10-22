@@ -138,22 +138,44 @@ function srcSet(name: string, widths: number[]): string {
   return widths.map((width) => `/art/${name}-${width}.webp ${width}w`).join(', ');
 }
 
-/** The home page's night landscape: volcano, lake, a lit town, the moon. */
-export function HeroScene({ className }: { className?: string }) {
+/** The phone crop of the home page's market (4:5, centred on the street and the church). */
+export const MARKET_TALL_WIDTHS = [640, 800];
+
+/**
+ * The home page's first picture: a market street in a colonial town at
+ * sunset, the church and the volcano at the end of it. Phones get their own
+ * upright crop instead of the middle of a wide photograph. People are in it,
+ * so it carries the "Ilustración" note.
+ */
+export function MarketScene({ className }: { className?: string }) {
+  return (
+    <div className={className} aria-hidden="true">
+      <picture>
+        <source media="(max-width: 699px)" srcSet={srcSet('market-tall', MARKET_TALL_WIDTHS)} sizes="100vw" />
+        {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+        <img
+          className="hm-photo"
+          src="/art/market-1600.webp"
+          srcSet={srcSet('market', HERO_WIDTHS)}
+          sizes="100vw"
+          width={1600}
+          height={896}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+        />
+      </picture>
+      <ArtNote />
+    </div>
+  );
+}
+
+/** The night landscape — volcano, lake, a lit town, the moon — behind the footer. Never the first thing loaded. */
+export function NightScene({ className }: { className?: string }) {
   return (
     <div className={className} aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
-      <img
-        className="hero-photo"
-        src="/art/hero-1600.webp"
-        srcSet={srcSet('hero', HERO_WIDTHS)}
-        sizes="100vw"
-        width={1600}
-        height={900}
-        alt=""
-        fetchPriority="high"
-        decoding="async"
-      />
+      <img src="/art/hero-960.webp" srcSet={srcSet('hero', HERO_WIDTHS)} sizes="100vw" width={1600} height={900} alt="" loading="lazy" decoding="async" />
     </div>
   );
 }

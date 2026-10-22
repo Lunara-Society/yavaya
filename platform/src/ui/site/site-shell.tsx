@@ -6,6 +6,7 @@ import type { LanguagePreference, ThemePreference } from '@/server/preferences';
 import { QuickControls } from '@/ui/components/quick-controls';
 import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
+import { NightScene } from './art';
 import { Icon, Mark, TokenCoin } from './icons';
 import { Md } from './md';
 import { LocationBar } from './location-bar';
@@ -217,6 +218,8 @@ export async function SiteShell({
       </main>
 
       <footer className="foot">
+        {/* The lake and the volcano at night, behind the footer: loaded lazily, after everything that matters. */}
+        <NightScene className="foot-scene" />
         <div className="wrap">
           <div className="foot-grid">
             <div className="foot-brand">

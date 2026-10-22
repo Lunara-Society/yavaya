@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Compra, vende, trabaja, pide ayuda y pertenece — con una sola cuenta y una sola reputación.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#081120',
-    theme_color: '#081120',
+    background_color: '#071b22',
+    theme_color: '#071b22',
     lang: 'es',
     icons: [
       { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },

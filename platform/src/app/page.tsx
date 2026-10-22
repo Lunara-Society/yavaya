@@ -1,26 +1,25 @@
-import Link from 'next/link';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
-import { guideFiles } from '@/config/guide';
-import { HomeBody } from '@/ui/site/pages';
+import { HomeBody } from '@/ui/site/home';
 import { JsonLd } from '@/ui/site/json-ld';
+import { db } from '@/server/db/client';
+import { recentOpportunities } from '@/server/domains/discovery/recent';
 import { servedCountryNames, siteUrl } from '@/server/seo';
+
+/** How many recent things the home page shows: two rows of four on a wide screen. */
+const RECENT_LIMIT = 8;
 
 /**
  * Yavaya home.
  *
- * Deliberately honest: districts are shown with their real status, and nothing
- * here claims activity, membership numbers or transactions that do not exist.
- * The second call to action is real: creating an account works.
+ * Deliberately honest: districts are shown with their real status, the recent
+ * list is read from what has actually been published, and nothing here claims
+ * activity, membership numbers or transactions that do not exist.
  */
 export default async function HomePage() {
-  const { c, t, language, theme, member } = await siteContext();
-  const primaryCta = member
-    ? { href: '/account', label: t('nav.member_area') }
-    : { href: '/register', label: t('auth.submit_register') };
-
+  const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const countries = await servedCountryNames();
+  const [countries, opportunities] = await Promise.all([servedCountryNames(), recentOpportunities(db(), { locale, limit: RECENT_LIMIT })]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home">
       <JsonLd
@@ -35,32 +34,18 @@ export default async function HomePage() {
             ...(countries.length ? { areaServed: countries } : {}),
             contactPoint: [{ '@type': 'ContactPoint', telephone: '+505-5836-5522', contactType: 'customer support', availableLanguage: ['Spanish', 'English'] }],
           },
-          { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Yavaya', url: base, inLanguage: 'es' },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Yavaya',
+            url: base,
+            inLanguage: 'es',
+            // The hero's search is Mercadito's: say so to search engines as well.
+            potentialAction: { '@type': 'SearchAction', target: `${base}/mercadito?q={search_term_string}`, 'query-input': 'required name=search_term_string' },
+          },
         ]}
       />
-      <HomeBody
-        c={c}
-        primaryCta={primaryCta}
-        afterHero={
-          <section className="section">
-            <div className="wrap gv-band">
-              <Link href="/guia" aria-label={t('guide.home_cta')}>
-                <img src={guideFiles('guia').posterWebp} srcSet={guideFiles('guia').posterSet} sizes="(min-width: 761px) 50vw, 100vw" alt="" width={1280} height={720} loading="lazy" decoding="async" />
-              </Link>
-              <div>
-                <p className="eyebrow">{t('guide.home_eyebrow')}</p>
-                <h2 className="h-md">{t('guide.home_title')}</h2>
-                <p className="lead">{t('guide.home_text')}</p>
-                <p className="btn-row">
-                  <Link className="btn btn-gold" href="/guia">
-                    ▶ {t('guide.home_cta')}
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </section>
-        }
-      />
+      <HomeBody c={c} t={t} locale={locale} signedIn={Boolean(member)} opportunities={opportunities} />
     </SiteShell>
   );
 }

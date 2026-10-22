@@ -19,6 +19,15 @@ inexpensive screens in daylight.
 dark redefines only the tokens, under both `prefers-color-scheme` and an
 explicit `[data-theme]`, so the toggle wins in both directions.
 
+**The palette.** Dark is layered, not flat: a midnight-teal page (`--bg`,
+#071B22), forest-teal and evergreen bands (`--forest`, `--evergreen`), a warm
+obsidian closing band (`--obsidian`), antique gold for actions (`--accent`,
+#C99B35) with champagne highlights (#F3D77B), and ivory text (`--text`,
+#F4EBD8). This is the owner's October 2026 direction and replaces the Master
+Bible's navy. Text set over a photograph is the one place fixed values are
+right: it stays light on its scrim in both themes, so it must not follow tokens
+that flip.
+
 **Colour never carries meaning alone.** Every status is also a word or a mark.
 A red dot is invisible to many people and meaningless in bright sunlight. The
 `CapabilityBadge` and Trust Shield check rows are built this way deliberately.

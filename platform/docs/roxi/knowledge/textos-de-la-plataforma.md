@@ -2204,6 +2204,54 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `guide.watch_title_trust`: Así funcionan la confianza y los tokens
 - `guide.violeta_privacy`: Si alguien puede escucharte, usa audífonos o activa los subtítulos.
 
+## home
+- `home.hero.eyebrow`: El hogar digital de Centroamérica
+- `home.hero.title_1`: Lo que buscas.
+- `home.hero.title_2`: Cerca de ti.
+- `home.hero.lead`: Compra, vende y encuentra ayuda en tu comunidad.
+- `home.search.label`: Buscar en Mercadito
+- `home.search.placeholder`: ¿Qué necesitas hoy?
+- `home.search.scope`: Mercadito
+- `home.search.submit`: Buscar
+- `home.shortcuts.label`: Ir a un distrito
+- `home.shortcut.buy`: Comprar
+- `home.mk.badge`: Empieza aquí
+- `home.mk.text`: Compra y vende en tu mercado local: ropa, electrónica, hogar, vehículos y mucho más. Cada vendedor muestra su reputación antes de que le escribas.
+- `home.mk.explore`: Explorar mercado
+- `home.mk.publish`: Publicar anuncio
+- `home.guide.eyebrow`: Guía en video · {minutes} min
+- `home.guide.title`: Conoce Yavaya
+- `home.guide.text`: Descubre qué puedes hacer y cómo empezar.
+- `home.guide.cta`: Ver la guía
+- `home.districts.eyebrow`: Los siete distritos
+- `home.districts.title_1`: Todo lo que necesitas.
+- `home.districts.title_2`: En un solo lugar.
+- `home.districts.all`: Explora todos los distritos
+- `home.recent.title`: Oportunidades recientes
+- `home.recent.lead`: Lo más nuevo que cualquiera puede ver en Mercadito, Trabajo, Animales y YavayaGo.
+- `home.recent.kind.listing`: Venta
+- `home.recent.kind.job`: Trabajo
+- `home.recent.kind.animal`: Adopción
+- `home.recent.kind.store`: Negocio
+- `home.recent.see_all`: Ver Mercadito
+- `home.recent.empty_title`: Todavía no hay publicaciones.
+- `home.recent.empty_text`: Yavaya acaba de abrir. Lo que se publique en Mercadito, Trabajo, Animales y YavayaGo aparecerá aquí, tal cual: sin relleno ni ejemplos inventados.
+- `home.recent.publish_listing`: Publica gratis en Mercadito
+- `home.recent.publish_job`: Publica una oferta de trabajo
+- `home.recent.offer_services`: Ofrece tus servicios
+- `home.recent.ago_now`: ahora
+- `home.recent.ago_minutes`: hace {count} min
+- `home.recent.ago_hours`: hace {count} h
+- `home.recent.ago_days`: hace {count} d
+- `home.trust.title_1`: Tu confianza
+- `home.trust.title_2`: es nuestra prioridad.
+- `home.trust.text`: Una persona, una cuenta. Reputación que se gana con lo que haces, protección contra el fraude y moderación que se ve.
+- `home.trust.one`: Cuenta única
+- `home.trust.reputation`: Reputación
+- `home.trust.fraud`: Antifraude
+- `home.trust.moderation`: Moderación
+- `home.trust.cta`: Cómo funciona la confianza
+
 ## welcome
 - `welcome.meta`: Bienvenida al equipo
 - `welcome.eyebrow`: ✨ Un día especial ✨
