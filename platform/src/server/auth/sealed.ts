@@ -13,8 +13,15 @@ import { safeEqual } from '@/server/security/crypto';
  * Each use has its own purpose string, so a value sealed for one step is
  * worthless at another.
  */
-function mac(purpose: string, body: string): string {
-  return createHmac('sha256', serverEnv().SESSION_SECRET).update(`${purpose}.${body}`, 'utf8').digest('base64url');
+function mac(purpose: string, body: string, secret = serverEnv().SESSION_SECRET): string {
+  return createHmac('sha256', secret).update(`${purpose}.${body}`, 'utf8').digest('base64url');
+}
+
+/** Signed with the current secret or, during a rotation, the one it replaced. */
+function signedByUs(purpose: string, body: string, signature: string): boolean {
+  if (safeEqual(signature, mac(purpose, body))) return true;
+  const previous = serverEnv().SESSION_SECRET_PREVIOUS;
+  return previous !== undefined && safeEqual(signature, mac(purpose, body, previous));
 }
 
 export function seal(purpose: string, payload: Record<string, unknown>, ttlSeconds: number, now = Date.now()): string {
@@ -27,7 +34,7 @@ export function unseal<T extends Record<string, unknown>>(purpose: string, value
   const dot = value.lastIndexOf('.');
   if (dot <= 0) return null;
   const body = value.slice(0, dot);
-  if (!safeEqual(value.slice(dot + 1), mac(purpose, body))) return null;
+  if (!signedByUs(purpose, body, value.slice(dot + 1))) return null;
   try {
     const payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as T & { exp?: number };
     if (typeof payload.exp !== 'number' || payload.exp * 1000 <= now) return null;

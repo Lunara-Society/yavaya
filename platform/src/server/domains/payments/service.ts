@@ -6,7 +6,6 @@ import { errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { creditPurchasedTokens } from '@/server/domains/tokens/service';
 import type { PaymentProvider } from './provider';
-import { PayPalProvider } from './providers/paypal';
 import { DLocalGoProvider } from './providers/dlocalgo';
 import { StripeProvider } from './providers/stripe';
 
@@ -25,7 +24,6 @@ import { StripeProvider } from './providers/stripe';
 const providers = new Map<string, PaymentProvider>([
   ['dlocalgo', new DLocalGoProvider()],
   ['stripe', new StripeProvider()],
-  ['paypal', new PayPalProvider()],
 ]);
 
 /** The provider a new checkout uses: the first one that is configured. */

@@ -583,7 +583,7 @@ export const siteEs = {
       packagesHead: { eyebrow: 'Paquetes', title: 'Simples. Y seguirán siendo simples.' },
       tokensWord: 'tokens',
       packageNames: { tokens_2: 'Para probar', tokens_10: 'Básico', tokens_25: 'Plus', tokens_50: 'Pro', tokens_100: 'Negocio', tokens_500: 'Empresa' } as Record<string, string>,
-      packagesNote: 'Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta u otro medio, en la página segura de dLocal Go, Stripe o PayPal según tu país. Los tokens llegan cuando el pago se confirma.',
+      packagesNote: 'Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta, en la página segura de Stripe (o de dLocal Go, si Stripe no estuviera disponible). Los tokens llegan cuando el pago se confirma.',
       perToken: '{price} por token',
       saving: 'Ahorras {percent}%',
       bestValue: 'Mejor precio por token',
@@ -856,7 +856,7 @@ export const siteEs = {
           text: 'Puedes comprar paquetes de tokens. Al comprar aceptas que:',
           list: [
             'El **precio** de cada paquete se muestra en dólares estadounidenses antes de pagar, y es el total que cobra Yavaya. Si pagas en otra moneda, la conversión la hace el procesador de pagos al momento del pago, y tu banco puede cobrar sus propias comisiones.',
-            'El pago lo procesa **dLocal Go**, **Stripe** o **PayPal**, según tu país, en su propia página segura. **Yavaya nunca ve ni guarda los datos de tu tarjeta.**',
+            'El pago lo procesa **Stripe** (o **dLocal Go**, si Stripe no estuviera disponible) en su propia página segura. **Yavaya nunca ve ni guarda los datos de tu tarjeta.**',
             'Los tokens se acreditan **cuando el procesador confirma el pago**, normalmente en segundos; con efectivo o transferencia puede tardar más. Cada compra aparece en tu cuenta con su estado y su referencia.',
             'Los tokens comprados **no vencen** y no se transfieren a otra cuenta. No se cambian por dinero, salvo en los casos de devolución de abajo.',
             '**Devoluciones:** te devolvemos el dinero si te cobramos y los tokens no llegaron, si te cobramos dos veces lo mismo, o si compraste por error y escribes dentro de los 14 días siguientes sin haber usado ninguno de esos tokens. Escríbenos con la referencia de la compra.',
@@ -1030,7 +1030,7 @@ export const siteEs = {
           title: 'Con quién se comparte',
           text: 'No vendemos datos. No hay publicidad ni analítica de terceros. Usamos estos proveedores para operar:',
           list: [
-            '**dLocal Go**, **Stripe** y **PayPal** procesan los pagos cuando compras tokens, según tu país: reciben el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
+            '**Stripe** y, si Stripe no estuviera disponible, **dLocal Go** procesan los pagos cuando compras tokens: reciben el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
             '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
             '**ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',

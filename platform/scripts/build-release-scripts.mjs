@@ -53,6 +53,18 @@ await build({
   external: ['sharp'],
 });
 
+/*
+ * Resealing under a rotated key (security/reseal.ts). Part of the release
+ * step; it uses domain code guarded by `server-only`, so the guard is
+ * replaced here exactly as for the scheduler.
+ */
+await build({
+  ...shared,
+  entryPoints: ['src/server/security/reseal-run.ts'],
+  outfile: 'dist/scripts/reseal.cjs',
+  alias: { 'server-only': './scripts/server-only-empty.cjs' },
+});
+
 // eslint-disable-next-line no-console
 console.log('release scripts bundled to dist/scripts');
 

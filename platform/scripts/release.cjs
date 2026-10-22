@@ -1,5 +1,7 @@
 /**
- * The release step: migrate, then seed. Run once per deploy, before new
+ * The release step: migrate, seed, then reseal anything still sealed under a
+ * retired key (a no-op unless a `…_PREVIOUS` key is set; see
+ * CONFIGURATION.md § Rotating keys). Run once per deploy, before new
  * instances take traffic (Railway's pre-deploy command).
  *
  * One entry point, on purpose. The platform used to be configured with
@@ -11,7 +13,7 @@
 const { execFileSync } = require('node:child_process');
 const { join } = require('node:path');
 
-for (const step of ['migrate.cjs', 'seed.cjs']) {
+for (const step of ['migrate.cjs', 'seed.cjs', 'reseal.cjs']) {
   // Inherit stdio so each step's own output reaches the deploy log; a
   // non-zero exit throws, which fails the release and keeps the old version.
   execFileSync(process.execPath, [join(__dirname, step)], { stdio: 'inherit' });

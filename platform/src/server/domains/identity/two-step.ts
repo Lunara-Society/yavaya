@@ -5,7 +5,7 @@ import type { Executor } from '@/server/db/client';
 import { twoStepFactors, twoStepRecoveryCodes } from '@/server/db/schema';
 import { TWO_STEP_RULES } from '@/config/business-rules';
 import { serverEnv } from '@/config/env';
-import { seal, unseal } from '@/server/security/sealed-text';
+import { seal, unsealAny, usableKey } from '@/server/security/sealed-text';
 import { safeEqual, sha256 } from '@/server/security/crypto';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { recordAudit } from '@/server/domains/audit/service';
@@ -28,11 +28,19 @@ import { DomainError, errors } from '@/server/errors';
 const PURPOSE = 'two-step.secret';
 const BASE32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
-/** At least 32 characters, and not a template expression the host left unrendered. */
+/** The key that seals new secrets (see usableKey for what counts as one). */
 function key(): string | null {
   try {
-    const value = serverEnv().TWO_STEP_KEY?.trim();
-    return value && value.length >= 32 && !value.includes('${{') ? value : null;
+    return usableKey(serverEnv().TWO_STEP_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** The key being rotated away from: still opens old secrets until they are resealed. */
+function previousKey(): string | null {
+  try {
+    return usableKey(serverEnv().TWO_STEP_KEY_PREVIOUS);
   } catch {
     return null;
   }
@@ -245,11 +253,11 @@ export async function verifySecondStep(
 
   let secret: string;
   try {
-    secret = unseal(requireKey(), PURPOSE, factor.secretSealed);
+    secret = unsealAny([requireKey(), previousKey()], PURPOSE, factor.secretSealed);
   } catch (error) {
     // A changed or missing key: no code can match. Said loudly, because every
     // member with two-step is now locked out until the key is restored.
-    console.error('two-step secret could not be opened — was TWO_STEP_KEY changed?', error);
+    console.error('two-step secret could not be opened — was TWO_STEP_KEY changed without TWO_STEP_KEY_PREVIOUS?', error);
     return { ok: false, reason: 'mismatch' };
   }
 

@@ -88,6 +88,10 @@ cannot be intercepted in transit.
   mint codes. Without the key the feature is not offered; members who already
   have it are still asked for a code — a missing key locks the door, it never
   takes the second lock off — and their backup codes still work.
+- The key can be rotated without locking anyone out: the old value goes in
+  `TWO_STEP_KEY_PREVIOUS`, secrets still open with it, and the release step
+  reseals them under the new key (`security/reseal.ts`). Espacio Violeta's
+  `SAFE_SPACE_KEY` works the same way. See CONFIGURATION.md § Rotating keys.
 - A code is accepted once: the window of the last accepted code is stored and
   a code must be from a later one, checked and written in one statement.
 - Ten backup codes (50 random bits each) are shown once; only SHA-256 hashes

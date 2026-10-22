@@ -33,8 +33,7 @@ an auditable case record. Neither is instant, by design.
 
 ## Phase 2 — Work and movement
 
-Works · YavayaGo · driver network · restaurant onboarding · delivery operations
-· PayPal integration.
+Works · YavayaGo · driver network · restaurant onboarding · delivery operations.
 
 Driver applications need the full document set and a state machine
 (Applied → Documents Submitted → Under Review → Approved/Rejected →

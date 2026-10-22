@@ -110,6 +110,14 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `auth.register.subtitle`: Una persona, una cuenta. Tu YAY ID es permanente.
 - `auth.login.title`: Entrar a Yavaya
 - `auth.login.subtitle`: Con tu cuenta de Google o con tu correo.
+- `auth.side.title`: El hogar digital de Centroamérica
+- `auth.side.lead`: Una cuenta para comprar, vender, trabajar, pedir ayuda y pertenecer.
+- `auth.side.one.title`: Una persona, una cuenta.
+- `auth.side.one.text`: Tu reputación se gana con lo que haces y te acompaña en todos los distritos.
+- `auth.side.free.title`: Empezar es gratis.
+- `auth.side.free.text`: Crear tu cuenta no cuesta nada, y tus primeras publicaciones en Mercadito tampoco.
+- `auth.side.data.title`: Tus datos no se venden.
+- `auth.side.data.text`: Sin publicidad ni analítica de terceros.
 - `auth.login.subtitle_email`: Con tu correo y tu contraseña.
 - `auth.email`: Correo electrónico
 - `auth.password`: Contraseña
@@ -480,6 +488,8 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `mercadito.opening.step3`: Compártelo por WhatsApp
 - `mercadito.opening.step3_text`: Tu publicación tiene su enlace: mándalo a tus grupos y contactos.
 - `mercadito.opening.free`: Publicar es gratis: hasta {count} publicaciones activas a la vez.
+- `mercadito.opening.doors_title`: ¿Qué quieres vender?
+- `mercadito.opening.door`: Publica el primero →
 - `mercadito.browse.mine`: Mis publicaciones
 - `mercadito.browse.how`: Cómo funciona Mercadito
 - `mercadito.browse.none`: No hay publicaciones que coincidan con tu búsqueda.
@@ -563,6 +573,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `mercadito.form.location`: Ciudad
 - `mercadito.form.photos`: Fotos
 - `mercadito.form.photos_hint`: Entre {min} y {max} fotos. Antes de guardarlas quitamos sus datos de ubicación y de cámara.
+- `mercadito.form.photo_dark`: Se ve oscura. Si puedes, tómala con más luz, cerca de una ventana.
+- `mercadito.form.photo_blurry`: Se ve borrosa. Mantén el teléfono quieto y toca la pantalla para enfocar.
+- `mercadito.form.photo_small`: Es pequeña: quien compra no podrá ver los detalles.
 - `mercadito.form.photo_remove`: Quitar
 - `mercadito.form.choose`: Elige…
 - `mercadito.form.submit_create`: Publicar por {cost} token
@@ -900,6 +913,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `work.principle.verified_title`: Empleadores verificados
 - `work.principle.verified_text`: Una persona de Yavaya revisa a cada empleador antes de su primera oferta, y una empresa publica siempre con su nombre verificado.
 
+## art
+- `art.note`: Ilustración
+
 ## profile
 - `profile.eyebrow`: Perfil de miembro
 - `profile.since`: Miembro desde {date}
@@ -922,6 +938,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `community.square.all`: Todo
 - `community.square.empty`: La plaza está tranquila. La primera publicación puede ser la tuya.
 - `community.square.how`: Cómo funciona Comunidad
+- `community.side.kinds`: En la plaza
+- `community.side.title`: También en Comunidad
+- `community.side.violeta`: Un lugar protegido solo para mujeres, con un nombre que no es el tuyo y profesionales con licencia verificada.
 - `community.kind.help_request`: Necesito ayuda
 - `community.kind.help_offer`: Ofrezco ayuda
 - `community.kind.prayer`: Muro de oración
@@ -1933,6 +1952,79 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `violeta.practice.after`: Al escribirle fuera, verá tu número. Yavaya no participa en ese acuerdo ni en el pago.
 - `violeta.error.not_professional`: Esta opción es solo para profesionales.
 
+## stats
+- `stats.back`: ← Panel
+- `stats.title`: Visitas y velocidad
+- `stats.lead`: Cuántas personas llegan a Yavaya, de dónde vienen, cuántas abren una cuenta y qué tan rápido carga cada página en sus teléfonos. Sin cookies ni datos de nadie: solo conteos por día.
+- `stats.period_label`: Periodo
+- `stats.period_days`: {days} días
+- `stats.counting_since`: Las visitas se cuentan desde el {date}. Antes de esa fecha no hay datos de visitas; las cuentas sí se cuentan en todo el periodo.
+- `stats.counting_none`: Todavía no se ha contado ninguna visita. El conteo empieza con la primera persona que abra una página.
+- `stats.kpi.visits`: Visitas
+- `stats.kpi.views`: Páginas vistas
+- `stats.kpi.per_visit`: Páginas por visita
+- `stats.kpi.phones`: Desde teléfonos
+- `stats.daily.title`: Visitas por día
+- `stats.daily.tip`: {day}: {visits} visitas, {views} páginas vistas
+- `stats.empty`: Todavía no hay datos en este periodo.
+- `stats.as_table`: Ver como tabla
+- `stats.col.day`: Día
+- `stats.col.visits`: Visitas
+- `stats.col.views`: Páginas vistas
+- `stats.col.entries`: Visitas que empezaron aquí
+- `stats.col.page`: Página
+- `stats.col.slow_share`: Lentas
+- `stats.col.average`: Promedio
+- `stats.col.samples`: Mediciones
+- `stats.funnel.title`: De la visita a la primera publicación
+- `stats.funnel.note`: Las visitas vienen del conteo de páginas; las cuentas, de las cuentas reales creadas en el periodo (sin contenido de demostración). Una persona puede hacer varias visitas.
+- `stats.funnel.visits`: Visitas
+- `stats.funnel.accounts`: Cuentas nuevas
+- `stats.funnel.verified`: Con correo verificado
+- `stats.funnel.acted`: Hicieron algo (publicar, pedir, postular, ordenar)
+- `stats.funnel.of_previous`: {share} del paso anterior
+- `stats.speed.title`: Velocidad para las personas reales
+- `stats.speed.lead`: Medida por los navegadores de quienes visitan Yavaya, no en un laboratorio. Las bandas son las de la guía Web Vitals que usa todo el mundo.
+- `stats.speed.good`: Buena
+- `stats.speed.mid`: Mejorable
+- `stats.speed.bad`: Lenta
+- `stats.speed.slow_pages`: Páginas donde lo principal tarda más
+- `stats.speed.no_samples`: Sin mediciones todavía.
+- `stats.speed.aria`: Buena {good}, mejorable {mid}, lenta {bad}
+- `stats.speed.average`: promedio {value}
+- `stats.speed.samples`: {count} mediciones
+- `stats.speed.on_phones`: En teléfonos: {good} buena, promedio {value}
+- `stats.metric.LCP`: Lo principal aparece
+- `stats.metric.LCP.what`: Cuándo se ve la imagen o el texto más grande. Buena: {good} o menos.
+- `stats.metric.INP`: Respuesta al tocar
+- `stats.metric.INP.what`: Cuánto tarda la página en reaccionar a un toque o un clic. Buena: {good} o menos.
+- `stats.metric.CLS`: Estabilidad
+- `stats.metric.CLS.what`: Cuánto se mueve el contenido mientras carga. Buena: {good} o menos.
+- `stats.metric.FCP`: Primera señal
+- `stats.metric.FCP.what`: Cuándo aparece algo en la pantalla. Buena: {good} o menos.
+- `stats.metric.TTFB`: Respuesta del servidor
+- `stats.metric.TTFB.what`: Cuánto tarda en llegar el primer dato de la página. Buena: {good} o menos.
+- `stats.sources.title`: De dónde llegan
+- `stats.source.direct`: Directo (sin referencia)
+- `stats.source.google`: Google
+- `stats.source.facebook`: Facebook
+- `stats.source.instagram`: Instagram
+- `stats.source.whatsapp`: WhatsApp
+- `stats.source.tiktok`: TikTok
+- `stats.source.youtube`: YouTube
+- `stats.source.x`: X
+- `stats.source.bing`: Bing
+- `stats.source.duckduckgo`: DuckDuckGo
+- `stats.source.yahoo`: Yahoo
+- `stats.source.linkedin`: LinkedIn
+- `stats.source.chatgpt`: ChatGPT
+- `stats.devices.title`: En qué pantalla
+- `stats.device.phone`: Teléfono
+- `stats.device.tablet`: Tableta
+- `stats.device.desktop`: Computadora
+- `stats.pages.title`: Páginas más vistas
+- `stats.privacy_note`: Qué se cuenta: la página (con los números de cada publicación quitados), el tipo de pantalla, el sitio desde el que llegó la visita y la velocidad que midió el navegador. No se guarda ninguna dirección IP, cookie ni identificador, y no se cuenta el Espacio Violeta ni este panel. Quien activa «No rastrear» en su navegador no se cuenta.
+
 ## roxi
 - `roxi.ui.open`: Habla con Roxi
 - `roxi.ui.name`: Roxi
@@ -2150,9 +2242,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `payments.test_mode`: Modo de prueba: dLocal Go está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.
 - `payments.saving`: Ahorras {percent}%
 - `payments.how.dlocalgo`: En tu país pagas con dLocal Go, en su página segura: tarjeta, efectivo o transferencia según el país. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan cuando dLocal Go confirma el pago, normalmente en segundos.
-- `payments.how.paypal`: En tu país pagas con PayPal: con tu cuenta PayPal o con tarjeta, sin necesidad de cuenta. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan en cuanto PayPal confirma el pago.
 - `payments.method.dlocalgo`: dLocal Go · tarjeta y medios locales
-- `payments.method.paypal`: PayPal · tarjeta o cuenta PayPal
 - `payments.country_pending`: En tu país se paga con {method}, que estamos terminando de conectar. Muy pronto podrás comprar tokens desde aquí.
 - `payments.countries_title`: Cómo se paga en cada país
 - `payments.countries_lead`: Cada país paga con el sistema que funciona allí. Yavaya elige el tuyo según el país de tu perfil; los precios son los mismos en todas partes.
@@ -2181,6 +2271,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.home.none_title`: Todavía no hay negocios aquí.
 - `go.home.none_text`: YavayaGo acaba de abrir. Los primeros negocios se están revisando; si tienes uno, puedes ser de los primeros.
 - `go.home.how`: Cómo funciona YavayaGo
+- `go.home.stores_title`: Tiendas que llevan a domicilio
 - `go.promise.driver_title`: Repartidores revisados.
 - `go.promise.driver_text`: Identidad, foto, vehículo y teléfono, comprobados por una persona antes de su primera entrega.
 - `go.promise.live_title`: En vivo en el mapa.

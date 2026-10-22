@@ -11,14 +11,14 @@
  * member's country is the one offered.
  */
 export const PAYMENT_ROUTING: ReadonlyArray<{ provider: string; countries: readonly string[] | 'any' }> = [
-  // The owner's choice (October 2026): Stripe for every country. The others
-  // stay as fallbacks, used only if Stripe is not configured.
+  // The owner's choice (October 2026): Stripe for every country, with dLocal
+  // Go as the fallback used only if Stripe is not configured. PayPal was
+  // removed at the owner's request: nothing on Yavaya pays through it.
   { provider: 'stripe', countries: 'any' },
   {
     provider: 'dlocalgo',
     countries: ['AR', 'BO', 'BR', 'CL', 'CO', 'CR', 'EC', 'GT', 'ID', 'KE', 'MX', 'MY', 'NG', 'PA', 'PE', 'PY', 'UY'],
   },
-  { provider: 'paypal', countries: 'any' },
 ];
 
 export function coversCountry(entry: (typeof PAYMENT_ROUTING)[number], countryIso: string | null): boolean {

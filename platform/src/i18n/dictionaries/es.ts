@@ -456,7 +456,6 @@ export const es = {
   'capability.payments.detail': 'Compra de tokens y suscripciones.',
   'capability.payments.dlocalgo.name': 'Pagos · dLocal Go',
   'capability.payments.stripe.name': 'Pagos · Stripe',
-  'capability.payments.paypal.name': 'Pagos · PayPal',
   'status.note_label': 'Qué falta (nota técnica, en inglés)',
 
   // --- Platform status ------------------------------------------------------
@@ -2196,9 +2195,7 @@ export const es = {
   'payments.test_mode': 'Modo de prueba: dLocal Go está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.',
   'payments.saving': 'Ahorras {percent}%',
   'payments.how.dlocalgo': 'En tu país pagas con dLocal Go, en su página segura: tarjeta, efectivo o transferencia según el país. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan cuando dLocal Go confirma el pago, normalmente en segundos.',
-  'payments.how.paypal': 'En tu país pagas con PayPal: con tu cuenta PayPal o con tarjeta, sin necesidad de cuenta. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan en cuanto PayPal confirma el pago.',
   'payments.method.dlocalgo': 'dLocal Go · tarjeta y medios locales',
-  'payments.method.paypal': 'PayPal · tarjeta o cuenta PayPal',
   'payments.country_pending': 'En tu país se paga con {method}, que estamos terminando de conectar. Muy pronto podrás comprar tokens desde aquí.',
   'payments.countries_title': 'Cómo se paga en cada país',
   'payments.countries_lead': 'Cada país paga con el sistema que funciona allí. Yavaya elige el tuyo según el país de tu perfil; los precios son los mismos en todas partes.',

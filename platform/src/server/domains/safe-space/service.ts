@@ -27,7 +27,7 @@ import {
 import { DomainError, errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { requirePermission, type AuthContext } from '@/server/domains/access/authorize';
-import { seal, unseal } from '@/server/security/sealed-text';
+import { seal, unsealAny, usableKey } from '@/server/security/sealed-text';
 
 /**
  * Espacio Violeta — see the schema for the promises this keeps.
@@ -49,11 +49,19 @@ export type Member = typeof safeSpaceMembers.$inferSelect;
 
 // --- Availability and sealing ------------------------------------------------
 
-/** At least 32 characters, and not a template expression the host left unrendered. */
+/** The key that seals new text (see usableKey for what counts as one). */
 function key(): string | null {
   try {
-    const value = serverEnv().SAFE_SPACE_KEY?.trim();
-    return value && value.length >= 32 && !value.includes('${{') ? value : null;
+    return usableKey(serverEnv().SAFE_SPACE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** The key being rotated away from: still opens old text until it is resealed. */
+function previousKey(): string | null {
+  try {
+    return usableKey(serverEnv().SAFE_SPACE_KEY_PREVIOUS);
   } catch {
     return null;
   }
@@ -74,10 +82,10 @@ const sealText = (purpose: string, plain: string) => seal(requireKey(), purpose,
 
 function openText(purpose: string, sealed: string): string | null {
   try {
-    return unseal(requireKey(), purpose, sealed);
+    return unsealAny([requireKey(), previousKey()], purpose, sealed);
   } catch (error) {
     if (error instanceof DomainError) throw error;
-    // Sealed with a key that has since been rotated: shown as unreadable,
+    // Sealed with a key that is neither the current nor the previous one: shown as unreadable,
     // never as an error page in the middle of someone's conversation.
     return null;
   }

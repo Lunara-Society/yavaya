@@ -60,15 +60,25 @@ const serverSchema = z.object({
     .transform((value) => value === 'true')
     .optional(),
 
-  /** 32+ byte random string. Rotating it invalidates every session. */
+  /**
+   * 32+ byte random string. Signs values the browser carries but must not
+   * alter (the Google round trip, two-step setup, appeal links, digest
+   * unsubscribe links). Sessions themselves do not depend on it.
+   */
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
+  /**
+   * During a rotation, the secret SESSION_SECRET replaced: what it signed
+   * (an appeal link still inside its window, an unsubscribe link in an old
+   * email) keeps working. Remove it once those have run out.
+   */
+  SESSION_SECRET_PREVIOUS: z.string().min(32).optional(),
   /** Used to keyed-hash IP addresses and device fingerprints before storage. */
   SIGNAL_PEPPER: z.string().min(32, 'SIGNAL_PEPPER must be at least 32 characters'),
   /**
    * Encrypts every message in Espacio Violeta at rest. Without it the space
    * stays closed: it never stores those conversations in plain text.
-   * Rotating it makes existing messages unreadable — they are short-lived by
-   * design, but rotate only on purpose.
+   * Rotate it with SAFE_SPACE_KEY_PREVIOUS (CONFIGURATION.md § Rotating
+   * keys); replaced without that, existing messages become unreadable.
    */
   // Checked where it is used, not here: a bad value must close the space,
   // never stop the whole site from starting.
@@ -76,6 +86,11 @@ const serverSchema = z.object({
   // Seals authenticator secrets at rest. Like SAFE_SPACE_KEY: without it,
   // two-step sign-in is simply not offered.
   TWO_STEP_KEY: z.string().optional(),
+  // The keys being rotated away from. While set, what they sealed still opens,
+  // and the release step reseals it under the current key (security/reseal.ts).
+  // See CONFIGURATION.md § Rotating keys.
+  SAFE_SPACE_KEY_PREVIOUS: z.string().optional(),
+  TWO_STEP_KEY_PREVIOUS: z.string().optional(),
 
   APP_URL: z.string().url().default('http://localhost:3000'),
   APP_ENV: z.enum(['local', 'staging', 'production']).default('local'),
@@ -164,10 +179,6 @@ const serverSchema = z.object({
   /** Overridable only so the integration test can answer as Twilio does. */
   TWILIO_VERIFY_API_URL: z.string().url().default('https://verify.twilio.com'),
 
-  PAYPAL_ENV: z.enum(['sandbox', 'live']).optional(),
-  PAYPAL_CLIENT_ID: z.string().optional(),
-  PAYPAL_CLIENT_SECRET: z.string().optional(),
-  PAYPAL_WEBHOOK_ID: z.string().optional(),
 
   /**
    * Stripe restricted key (rk_live_… / rk_test_…). Needs only: Checkout

@@ -14,11 +14,51 @@ It never falls back to a simulated success, a fake send, or a pretend payment.
 | Variable | What it is | Notes |
 | --- | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string | 16+ |
-| `SESSION_SECRET` | ≥32 chars | Rotating it invalidates every session |
+| `SESSION_SECRET` | ≥32 chars | Signs short-lived values, appeal links and unsubscribe links; sessions do not depend on it. Rotate with `SESSION_SECRET_PREVIOUS` (§ Rotating keys) |
 | `SIGNAL_PEPPER` | ≥32 chars | Keys the hashes of email, phone, device and network signals. **Rotating it orphans every stored signal** and resets duplicate detection — treat as permanent |
 
 Generate:
 `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`
+
+## Rotating keys
+
+Do this when a secret may have been exposed — as on 21 October 2026, when
+Railway reported that customers' environment variables may have been read —
+or when someone who held it leaves. Set each value on **both** `yavaya-web`
+and `yavaya-scheduler`, then redeploy both. Nothing below needs downtime.
+
+**1. The database password.** Railway → Postgres → Database → Config →
+**Regenerate**. It changes the password and the `DATABASE_URL` reference in
+one step; the services pick it up on their next deploy. If the database has
+public networking switched on and nothing outside Railway needs it, switch
+it off.
+
+**2. Yavaya's own secrets** (generated with the command above, nobody else
+issues them):
+
+| Variable | How to rotate | What it costs |
+| --- | --- | --- |
+| `TWO_STEP_KEY` | Move the old value to `TWO_STEP_KEY_PREVIOUS`, set a new one, deploy | Nothing. The release step reseals every authenticator secret under the new key and logs `reseal …`; once a release says everything is under the current keys, delete `TWO_STEP_KEY_PREVIOUS` |
+| `SAFE_SPACE_KEY` | The same, with `SAFE_SPACE_KEY_PREVIOUS` | Nothing; Espacio Violeta messages stay readable throughout |
+| `SESSION_SECRET` | Move the old value to `SESSION_SECRET_PREVIOUS`, set a new one | Nothing while the previous value is kept. Delete it after 14 days (the appeal window, `SANCTION_RULES.appealWindowDays`); after that, older unsubscribe links in past emails stop working and the member uses Settings instead |
+| `PREVIEW_ACCESS_KEY`, `GUIDE_UPLOAD_TOKEN` | Replace (the upload token should be blank except during an upload) | Nothing |
+| `SIGNAL_PEPPER` | Replace — there is no previous-value form | Stored signals can no longer be matched: duplicate-account and rate-limit history starts again. Accounts and sign-in are unaffected. Worth it only if the database itself may have been read |
+
+If a `…_PREVIOUS` key is set without its current key, the release fails on
+purpose rather than leave data sealed under nothing.
+
+**3. Keys issued by providers** — create a new one at the provider, paste it
+into Railway, deploy, then revoke the old one at the provider:
+`STRIPE_SECRET_KEY` (Stripe → Developers → API keys → roll the restricted
+key), `DLOCALGO_API_KEY` and `DLOCALGO_SECRET_KEY`, `RESEND_API_KEY`,
+`GOOGLE_CLIENT_SECRET` (Google Cloud → Credentials → the OAuth client → add a
+secret, then disable the old one), `TWILIO_AUTH_TOKEN`, `ELEVENLABS_API_KEY`.
+The bucket's `MEDIA_S3_*` credentials are reset by Railway itself and reach
+the services through reference variables on the next deploy.
+
+**4. Check.** Both services' deploy logs show the release completing and no
+`password authentication failed`; `/status` shows the same states as before;
+sign in, open `/account/tokens`, and play a guide film.
 
 ---
 
@@ -192,8 +232,8 @@ notification is recorded without changing balances.
 ## Payments — Stripe (every country)
 
 Routing (`config/payments.ts`): **Stripe for every country** (the owner's
-choice, October 2026). dLocal Go, then PayPal, are used only if Stripe is not
-configured. Stripe takes cards from buyers in any country on its
+choice, October 2026). dLocal Go is used only if Stripe is not configured, and
+only in the countries it is licensed in. Stripe takes cards from buyers in any country on its
 hosted Checkout page. Set on both services: `STRIPE_SECRET_KEY` — a
 **restricted** key (`rk_live_…`) with only Checkout Sessions: Write,
 PaymentIntents: Read, Refunds: Write. A `rk_test_…` key is test mode (only
@@ -201,34 +241,12 @@ administrators can buy). Tokens are credited only when the session reads
 `complete` and `paid` for exactly the price asked; `reconcile-payments`
 settles buyers who closed the tab. No webhook secret is needed.
 
-## Payments — PayPal (countries dLocal Go does not reach)
+## PayPal — removed
 
-**Why:** dLocal Go only takes payers from countries it is licensed in. Of
-Yavaya's countries, Nicaragua, Honduras, El Salvador and Belize are not among
-them. `config/payments.ts` routes each member by the country in their
-profile: dLocal Go where it works, PayPal everywhere else. The tokens page
-shows the table, country by country.
-
-**How a PayPal purchase works:** Yavaya creates an order (Orders v2), the
-member approves it on PayPal, PayPal returns them to
-`/api/payments/paypal/return`, and Yavaya captures the order server to
-server. Only the capture's answer — completed, for exactly the price asked —
-credits tokens. A member who closes the tab after approving is captured by
-`reconcile-payments`. No webhooks are needed.
-
-**Owner setup (about two minutes):**
-
-1. Go to developer.paypal.com, log in with the PayPal **Business** account,
-   open **Apps & Credentials**, switch to **Live**, and **Create App**
-   (type: Merchant).
-2. Copy the **Client ID** and **Secret**.
-3. In Railway, on both `yavaya-web` and `yavaya-scheduler`, set
-   `PAYPAL_ENV=live`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`.
-   (`PAYPAL_ENV=sandbox` with sandbox credentials is test mode: only
-   administrators can buy.)
-
-The PayPal connector used in conversations with the assistant is not these
-credentials: it acts for the owner, not for the website.
+PayPal was removed in October 2026 at the owner's request: Stripe takes cards
+from every country, so nothing on Yavaya pays through PayPal. There is no
+PayPal code, route or setting left; `PAYPAL_*` variables, if any remain on a
+Railway service, do nothing and can be deleted.
 
 **Phase 1 YavayaGo payment model is deliberately not automated.** The customer
 pays the restaurant directly; the restaurant receives its own money directly;
@@ -457,9 +475,8 @@ delete, report; a guardian queue at `/admin/violeta`; settings (new name,
 presence, leave and erase); quick exit; live refresh without sockets.
 
 **Requires `SAFE_SPACE_KEY`** (32+ random characters) on the web service.
-Without it the space is closed and `/status` says why. Rotating it makes
-existing messages unreadable; since everything expires within 90 days, a
-rotation costs at most that.
+Without it the space is closed and `/status` says why. Rotate it with
+`SAFE_SPACE_KEY_PREVIOUS` (§ Rotating keys) and nothing becomes unreadable.
 
 Decided under the owner's delegation (retune freely):
 
@@ -1117,9 +1134,11 @@ action still happens and is audited). Warnings and feature restrictions
 **Set:** 32 or more random characters on the web service. It seals each
 member's authenticator secret. Without it two-step sign-in is not offered.
 
-**Never rotate it casually.** Secrets sealed under the old key cannot be
-opened with a new one: every member with two-step on would have to sign in
-with a backup code and set it up again. Rotating needs a re-seal script.
+**Rotate it only with `TWO_STEP_KEY_PREVIOUS`** (§ Rotating keys). Replaced
+on its own, secrets sealed under the old key cannot be opened and every
+member with two-step on would have to sign in with a backup code and set it
+up again; with the previous value kept, the release step reseals them and
+nobody notices.
 
 Free to run: nothing is sent. Members find it in Settings → Cuenta y
 seguridad.

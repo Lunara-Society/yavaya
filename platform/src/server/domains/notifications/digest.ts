@@ -32,12 +32,15 @@ export const DIGEST_CATEGORY = 'digest';
 const NOT_SUMMARISED = 'daily';
 
 /** Signs "this member may switch the summary off" without a session. */
-export function unsubscribeSignature(userId: string): string {
-  return createHmac('sha256', serverEnv().SESSION_SECRET).update(`digest-unsubscribe:${userId}`, 'utf8').digest('hex').slice(0, 32);
+export function unsubscribeSignature(userId: string, secret = serverEnv().SESSION_SECRET): string {
+  return createHmac('sha256', secret).update(`digest-unsubscribe:${userId}`, 'utf8').digest('hex').slice(0, 32);
 }
 
+/** Links in emails sent before a rotation keep working while SESSION_SECRET_PREVIOUS is set. */
 export function verifyUnsubscribe(userId: string, signature: string): boolean {
-  return /^[0-9a-f-]{36}$/i.test(userId) && /^[0-9a-f]{32}$/.test(signature) && safeEqual(unsubscribeSignature(userId), signature);
+  if (!/^[0-9a-f-]{36}$/i.test(userId) || !/^[0-9a-f]{32}$/.test(signature)) return false;
+  const previous = serverEnv().SESSION_SECRET_PREVIOUS;
+  return safeEqual(unsubscribeSignature(userId), signature) || (previous !== undefined && safeEqual(unsubscribeSignature(userId, previous), signature));
 }
 
 export async function setDigestEnabled(executor: Executor, userId: string, enabled: boolean): Promise<void> {

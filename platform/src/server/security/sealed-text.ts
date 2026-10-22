@@ -36,3 +36,32 @@ export function unseal(secret: string, purpose: string, sealed: string): string 
   decipher.setAuthTag(tag);
   return Buffer.concat([decipher.update(raw.subarray(IV_BYTES + TAG_BYTES)), decipher.final()]).toString('utf8');
 }
+
+/**
+ * A key as the host gives it: at least 32 characters, and not a template
+ * expression the host left unrendered. Anything else counts as no key.
+ */
+export function usableKey(value: string | undefined | null): string | null {
+  const key = value?.trim();
+  return key && key.length >= 32 && !key.includes('${{') ? key : null;
+}
+
+/**
+ * Opens text with the first key that fits, in the order given: the current
+ * key, then the one it replaced. During a rotation the previous key stays set
+ * until the release step has resealed everything under the new one
+ * (security/reseal.ts), so nobody is locked out in between. Throws when no
+ * key fits.
+ */
+export function unsealAny(secrets: ReadonlyArray<string | null>, purpose: string, sealed: string): string {
+  let failure: unknown = new Error('no key to open sealed text');
+  for (const secret of secrets) {
+    if (!secret) continue;
+    try {
+      return unseal(secret, purpose, sealed);
+    } catch (error) {
+      failure = error;
+    }
+  }
+  throw failure;
+}

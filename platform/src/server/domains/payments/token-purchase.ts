@@ -17,8 +17,8 @@ export async function startTokenPurchase(
   database: Database,
   params: { userId: string; packageKey: string; attemptId: string; appUrl: string; description: string },
 ): Promise<{ redirectUrl: string; reference: string }> {
-  // The member's country picks the provider: dLocal Go where it is
-  // licensed, PayPal elsewhere (config/payments.ts).
+  // Stripe for every country; dLocal Go only where it is licensed and only
+  // if Stripe is not configured (config/payments.ts).
   const country = await memberCountry(database, params.userId);
   const route = routeFor(country);
   if (route.status !== 'ready') throw new DomainError('integration_unconfigured', 'payments.error.country');
@@ -45,9 +45,9 @@ export async function startTokenPurchase(
     intent: { packageKey: pkg.key, tokens: pkg.tokens },
     idempotencyKey: `tokens:${params.userId}:${params.attemptId}`,
     description: params.description,
-    // Coming back proves nothing. PayPal returns through its own route, which
+    // Coming back proves nothing. Stripe returns through its own route, which
     // settles server to server; dLocal Go reports by notification.
-    returnUrl: provider.key === 'paypal' || provider.key === 'stripe' ? `${base}/api/payments/${provider.key}/return` : `${base}/account/tokens?purchase=returned`,
+    returnUrl: provider.key === 'stripe' ? `${base}/api/payments/${provider.key}/return` : `${base}/account/tokens?purchase=returned`,
     country,
     cancelUrl: `${base}/account/tokens?purchase=cancelled`,
   });
