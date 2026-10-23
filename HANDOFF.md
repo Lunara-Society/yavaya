@@ -54,7 +54,7 @@ Read this first in a new chat. No secrets here; they live in Railway variables.
 | Bocados del Mar | +505 7640 6673 | Auto-reply. Pitch, card, video and close sent. The number was listed as "Marea Alta" but belongs to Bocados del Mar. |
 | Los Ranchos Managua | +505 8866 3246 | Owner to say "Hola" from the app. |
 | Rostipollos Nicaragua | +505 8817 3485 | Owner to say "Hola" from the app. |
-| Pechugón | +505 5883 7042 | Got the invitation on Oct 16 from the old personal number. Don't repeat it. |
+| Pechugón | +505 5883 7042; commercial: Ishtar Navarro +505 8812 6986 | Got the invitation on Oct 16 from the old personal number. On Oct 23 Ishtar (área comercial) asked about commission, payments, how orders arrive, and driver coverage and support. Answered the same day: 0% commission, founding year, Plan Negocio; cash only; store panel; Managua, drivers checked by a person, coverage reviewed together; offered a call. Awaiting reply. |
 
 - **Pitch (only what is real):** 0% commission; they set their own prices and delivery fee; drivers checked by a person; live map tracking; cash on delivery. Register at yavaya.lat/yavayago.
 - **Calls:** offer a call with the team. The owner makes it from the app.
