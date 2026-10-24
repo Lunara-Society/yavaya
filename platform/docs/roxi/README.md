@@ -93,8 +93,8 @@ nothing is typed twice:
 
 | Document | ID | Use |
 | --- | --- | --- |
-| `knowledge/sitio.md` — every public page | `i1XLuWxKrI63mZYezPE3` | retrieval |
-| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `myKpRI9xr0EpwClPi7IR` | retrieval |
+| `knowledge/sitio.md` — every public page | `ZwVWes6v2RdA5G3MO8E6` | retrieval |
+| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `npIKOVGVrFaXvdYQLDut` | retrieval |
 | `knowledge/reglas.md` — member-facing business rules | `SKLpYnPf1hJZmddBMqXg` | always in the prompt |
 | `knowledge/guia-narrada.md` — the video guide's narration | `L9cayZOfF2vdeYW1szOv` | retrieval |
 
