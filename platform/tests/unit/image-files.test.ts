@@ -2,8 +2,9 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { GUIDE_KEYS, guideFiles } from '@/config/guide';
-import { DISTRICT_WIDTHS, HERO_WIDTHS, MARKET_TALL_WIDTHS, PAGE_PHOTOS } from '@/ui/site/art';
+import { DISTRICT_WIDTHS, HERO_WIDTHS, MARKET_TALL_WIDTHS, PAGE_PHOTOS, SELLER_WIDTHS } from '@/ui/site/art';
 import { DISTRICT_IDS } from '@/ui/site/blocks';
+import { HERO_FILM } from '@/ui/site/hero-film';
 import { SEAL_WIDTHS } from '@/ui/site/icons';
 
 /**
@@ -23,8 +24,12 @@ describe('published image sizes', () => {
     expect(missing(['hero', 'market', ...PAGE_PHOTOS].flatMap((name) => HERO_WIDTHS.map((w) => `art/${name}-${w}.webp`)))).toEqual([]);
   });
 
-  it('has the phone crop of the home page market at every width', () => {
-    expect(missing(MARKET_TALL_WIDTHS.map((w) => `art/market-tall-${w}.webp`))).toEqual([]);
+  it('has the phone crop of the home page market at every width, and its film', () => {
+    expect(missing([...MARKET_TALL_WIDTHS.map((w) => `art/market-tall-${w}.webp`), HERO_FILM.replace(/^\//, '')])).toEqual([]);
+  });
+
+  it('has every width of the home page seller photograph', () => {
+    expect(missing(SELLER_WIDTHS.map((w) => `art/mercadito-seller-${w}.webp`))).toEqual([]);
   });
 
   it('has every width of the seal', () => {

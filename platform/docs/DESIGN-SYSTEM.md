@@ -81,6 +81,33 @@ thing on the page: the district should be recognisable before anyone is asked
 to press play. Photographs are shown in full colour, with a shade only where
 words sit on them.
 
+**Crowns** (`worlds.css`, October 2026). Every page of a district wears its
+mark along the top, the way Mercadito has its awning: Mercadito a narrow
+awning (its own page has the full one), Servicios a signal running along a
+dashed line, Trabajo a draftsman's rule, YavayaGo a road with someone on it,
+Comunidad papel picado, Santuario candlelight, Animales a trail of paws. A
+pseudo-element in the world's own colours, so a screen reader never meets it;
+reduced motion stops the three that move.
+
+**The home page's districts are seven windows.** Each card in the gallery
+wears its district's world: its colours and pattern, light rising from one
+corner, the name in its heading tint, the photograph fading into the colour
+beneath it. Mercadito is the large window because it is the way in;
+Santuario and Animales close the gallery as a wide pair. The Mercadito
+feature above it has a picture of its own, so no photograph appears twice on
+the page.
+
+**Opening day.** Yavaya has just opened and most lists are still empty. An
+empty list is drawn as an open door in the world's colours, an invitation to
+be first — never filler, never invented content.
+
+**The living hero.** On a phone, the home page's market moves once, for seven
+seconds, after the page has loaded: the film starts exactly on the still
+picture and comes to rest (`hero-film.tsx`; `tools/hero-film/` at the
+repository root has how it was made). A moment, not a loop — a picture that
+keeps moving under the title stops being calm — and only where the visit can
+afford it: no data saver, no slow connection, no reduced motion.
+
 **Community carries an additional rule:** it must never present a
 vulnerable person's situation as entertainment. No engagement ornamentation, no
 urgency animations, no "trending" framing on human need.

@@ -57,29 +57,6 @@
     var(--bg);
 }
 
-/* Home page bands: each its own light instead of three flat slabs. */
-:root:not([data-theme="light"]) .hm-band-forest {
-  background:
-    radial-gradient(900px 420px at 12% 0%, rgba(31, 157, 107, 0.22), transparent 70%),
-    radial-gradient(700px 380px at 95% 100%, rgba(226, 181, 78, 0.12), transparent 70%),
-    linear-gradient(180deg, #0a2a2b 0%, #0d2621 100%);
-}
-:root:not([data-theme="light"]) .hm-band-districts {
-  background:
-    radial-gradient(520px 320px at 8% 18%, rgba(31, 157, 107, 0.16), transparent 70%),
-    radial-gradient(520px 320px at 42% 6%, rgba(240, 122, 31, 0.12), transparent 70%),
-    radial-gradient(560px 340px at 82% 22%, rgba(60, 109, 240, 0.14), transparent 70%),
-    radial-gradient(560px 360px at 20% 92%, rgba(147, 102, 224, 0.14), transparent 70%),
-    radial-gradient(600px 360px at 88% 90%, rgba(200, 161, 101, 0.12), transparent 70%),
-    var(--bg);
-}
-:root:not([data-theme="light"]) .hm-band-obsidian {
-  background:
-    radial-gradient(800px 380px at 10% 100%, rgba(226, 181, 78, 0.14), transparent 70%),
-    radial-gradient(700px 360px at 92% 0%, rgba(147, 102, 224, 0.1), transparent 70%),
-    #121615;
-}
-
 /* ── A world ───────────────────────────────────────────────────────────
  * Background: the world's pattern, three lights, its own deep colour.
  * Overscroll shows the body, so the body takes the same colour.
@@ -123,7 +100,8 @@
 .site[data-tone] ::selection { background: color-mix(in srgb, var(--accent) 40%, transparent); }
 
 /* ── Mercadito: an evening market — emerald awnings under warm lamps ─── */
-.site[data-tone="mercadito"] {
+.site[data-tone="mercadito"],
+.hm-d-card.tone-mercadito {
   --bg: #03201a; --bg-deep: #021712; --surface: #082c23; --surface-2: #0d392d;
   --line: rgba(159, 242, 204, 0.1); --line-strong: rgba(159, 242, 204, 0.22);
   --text: #f4f1e2; --text-2: #c9e2d3; --text-3: #9cc4af;
@@ -132,7 +110,8 @@
   --glow-a: rgba(245, 170, 60, 0.18); --glow-b: rgba(31, 157, 107, 0.3); --glow-c: rgba(31, 157, 107, 0.18);
   --world-pattern: radial-gradient(circle at 2px 2px, rgba(159, 242, 204, 0.08) 1.4px, transparent 2px) 0 0 / 26px 26px;
 }
-:root[data-theme="light"] .site[data-tone="mercadito"] {
+:root[data-theme="light"] .site[data-tone="mercadito"],
+:root[data-theme="light"] .hm-d-card.tone-mercadito {
   --bg: #ecf6ef; --bg-deep: #ddefe3; --surface: #fbfefc; --surface-2: #ddefe3;
   --line: rgba(10, 34, 25, 0.1); --line-strong: rgba(10, 34, 25, 0.2);
   --text: #0a2219; --text-2: #2f4f42; --text-3: #4a6a5c;
@@ -143,7 +122,8 @@
 }
 
 /* ── Servicios: clear water — someone is on the way ──────────────────── */
-.site[data-tone="services"] {
+.site[data-tone="services"],
+.hm-d-card.tone-services {
   --bg: #03202a; --bg-deep: #02161d; --surface: #082b36; --surface-2: #0c3743;
   --line: rgba(162, 243, 241, 0.1); --line-strong: rgba(162, 243, 241, 0.22);
   --text: #eef6f3; --text-2: #c2e0e0; --text-3: #93c3c4;
@@ -152,7 +132,8 @@
   --glow-a: rgba(79, 216, 214, 0.2); --glow-b: rgba(26, 163, 163, 0.26); --glow-c: rgba(240, 190, 90, 0.1);
   --world-pattern: repeating-linear-gradient(135deg, rgba(162, 243, 241, 0.04) 0 1px, transparent 1px 28px);
 }
-:root[data-theme="light"] .site[data-tone="services"] {
+:root[data-theme="light"] .site[data-tone="services"],
+:root[data-theme="light"] .hm-d-card.tone-services {
   --bg: #e9f5f5; --bg-deep: #d9eeee; --surface: #fbfefe; --surface-2: #d9eeee;
   --line: rgba(8, 32, 31, 0.1); --line-strong: rgba(8, 32, 31, 0.2);
   --text: #08201f; --text-2: #2d4c4c; --text-3: #4a6868;
@@ -163,7 +144,8 @@
 }
 
 /* ── Trabajo: ink and blueprint — precise, credible ──────────────────── */
-.site[data-tone="work"] {
+.site[data-tone="work"],
+.hm-d-card.tone-work {
   --bg: #08122b; --bg-deep: #050c1f; --surface: #0e1a3a; --surface-2: #142449;
   --line: rgba(143, 176, 255, 0.12); --line-strong: rgba(143, 176, 255, 0.24);
   --text: #eef1fa; --text-2: #c6d0ea; --text-3: #9aa9d1;
@@ -172,7 +154,8 @@
   --glow-a: rgba(91, 132, 242, 0.26); --glow-b: rgba(60, 109, 240, 0.2); --glow-c: rgba(201, 155, 53, 0.1);
   --world-pattern: linear-gradient(rgba(143, 176, 255, 0.055) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(90deg, rgba(143, 176, 255, 0.055) 1px, transparent 1px) 0 0 / 40px 40px;
 }
-:root[data-theme="light"] .site[data-tone="work"] {
+:root[data-theme="light"] .site[data-tone="work"],
+:root[data-theme="light"] .hm-d-card.tone-work {
   --bg: #edf1fa; --bg-deep: #dfe6f6; --surface: #fcfdff; --surface-2: #dfe6f6;
   --line: rgba(11, 20, 48, 0.1); --line-strong: rgba(11, 20, 48, 0.2);
   --text: #0b1430; --text-2: #33405f; --text-3: #505d7c;
@@ -183,7 +166,8 @@
 }
 
 /* ── YavayaGo: sunset on the road — movement and warmth ──────────────── */
-.site[data-tone="yavayago"] {
+.site[data-tone="yavayago"],
+.hm-d-card.tone-yavayago {
   --bg: #1d1007; --bg-deep: #140b04; --surface: #29170b; --surface-2: #34200f;
   --line: rgba(255, 201, 149, 0.12); --line-strong: rgba(255, 201, 149, 0.24);
   --text: #fbf0e3; --text-2: #ecd2b8; --text-3: #c9a585;
@@ -192,7 +176,8 @@
   --glow-a: rgba(255, 120, 40, 0.26); --glow-b: rgba(220, 70, 50, 0.16); --glow-c: rgba(255, 166, 90, 0.14);
   --world-pattern: repeating-linear-gradient(115deg, rgba(255, 166, 90, 0.05) 0 2px, transparent 2px 64px);
 }
-:root[data-theme="light"] .site[data-tone="yavayago"] {
+:root[data-theme="light"] .site[data-tone="yavayago"],
+:root[data-theme="light"] .hm-d-card.tone-yavayago {
   --bg: #fbf0e6; --bg-deep: #f6e1cf; --surface: #fffbf7; --surface-2: #f6e1cf;
   --line: rgba(36, 19, 10, 0.1); --line-strong: rgba(36, 19, 10, 0.2);
   --text: #24130a; --text-2: #57402f; --text-3: #77604d;
@@ -203,27 +188,32 @@
 }
 
 /* ── Comunidad: plum dusk in the plaza — calm and human ──────────────── */
-.site[data-tone="community"] {
+.site[data-tone="community"],
+.hm-d-card.tone-community {
   --bg: #160d24; --bg-deep: #0f081a; --surface: #201532; --surface-2: #2a1c40;
   --line: rgba(220, 198, 255, 0.12); --line-strong: rgba(220, 198, 255, 0.24);
   --text: #f5effb; --text-2: #dacde9; --text-3: #b4a3cb;
   --accent: #c8a6ff; --accent-ink: #1b0d2e; --accent-soft: rgba(200, 166, 255, 0.14); --focus: #e3d0ff; --head: #dcc6ff;
   --btn-hi: #e3d0ff; --btn-mid: #b892f5; --btn-lo: #9366e0; --btn-ink: #1b0d2e; --btn-glow: rgba(147, 102, 224, 0.4);
   --glow-a: rgba(240, 150, 190, 0.16); --glow-b: rgba(147, 102, 224, 0.28); --glow-c: rgba(147, 102, 224, 0.16);
-  --world-pattern: radial-gradient(circle, transparent 58px, rgba(220, 198, 255, 0.055) 59px 60px, transparent 61px) 0 0 / 140px 140px;
+  --flag-1: #c8a6ff; --flag-2: #f0a3c4; --flag-3: #ecc77f; --flag-4: #7fd6c9;
+  --world-pattern: radial-gradient(circle, transparent 58px, rgba(220, 198, 255, 0.032) 59px 60px, transparent 61px) 0 0 / 140px 140px;
 }
-:root[data-theme="light"] .site[data-tone="community"] {
+:root[data-theme="light"] .site[data-tone="community"],
+:root[data-theme="light"] .hm-d-card.tone-community {
   --bg: #f4effb; --bg-deep: #e9e0f6; --surface: #fdfbff; --surface-2: #e9e0f6;
   --line: rgba(26, 16, 40, 0.1); --line-strong: rgba(26, 16, 40, 0.2);
   --text: #1a1028; --text-2: #4a3d5e; --text-3: #685a7d;
   --accent: #6a3fc4; --accent-ink: #ffffff; --accent-soft: rgba(106, 63, 196, 0.1); --focus: #54309e; --head: #54309e;
   --btn-hi: #7a50d4; --btn-mid: #6a42c4; --btn-lo: #5733a8; --btn-ink: #ffffff; --btn-glow: rgba(106, 66, 196, 0.28);
   --glow-a: rgba(240, 150, 190, 0.16); --glow-b: rgba(165, 124, 240, 0.16); --glow-c: rgba(165, 124, 240, 0.1);
-  --world-pattern: radial-gradient(circle, transparent 58px, rgba(106, 63, 196, 0.06) 59px 60px, transparent 61px) 0 0 / 140px 140px;
+  --flag-1: #7a50d4; --flag-2: #c2507e; --flag-3: #b8892a; --flag-4: #2f8f80;
+  --world-pattern: radial-gradient(circle, transparent 58px, rgba(106, 63, 196, 0.04) 59px 60px, transparent 61px) 0 0 / 140px 140px;
 }
 
 /* ── Santuario: candlelight — quiet, reverent, warm ──────────────────── */
-.site[data-tone="sanctuary"] {
+.site[data-tone="sanctuary"],
+.hm-d-card.tone-sanctuary {
   --bg: #17110a; --bg-deep: #100b06; --surface: #221a10; --surface-2: #2c2216;
   --line: rgba(244, 220, 164, 0.12); --line-strong: rgba(244, 220, 164, 0.24);
   --text: #fbf3e2; --text-2: #e5d6ba; --text-3: #bfae8e;
@@ -233,7 +223,8 @@
   /* Light falling from a high window. */
   --world-pattern: conic-gradient(from 180deg at 50% -6%, transparent 0deg 158deg, rgba(255, 226, 160, 0.06) 166deg, transparent 172deg, rgba(255, 226, 160, 0.05) 180deg, transparent 188deg, rgba(255, 226, 160, 0.06) 194deg, transparent 202deg 360deg) 0 0 / 100% 1200px no-repeat;
 }
-:root[data-theme="light"] .site[data-tone="sanctuary"] {
+:root[data-theme="light"] .site[data-tone="sanctuary"],
+:root[data-theme="light"] .hm-d-card.tone-sanctuary {
   --bg: #f8f3e8; --bg-deep: #efe6d3; --surface: #fffdf8; --surface-2: #efe6d3;
   --line: rgba(31, 23, 11, 0.1); --line-strong: rgba(31, 23, 11, 0.2);
   --text: #1f170b; --text-2: #53462f; --text-3: #716349;
@@ -244,7 +235,8 @@
 }
 
 /* ── Animales: moss and morning sun — organic and gentle ─────────────── */
-.site[data-tone="animals"] {
+.site[data-tone="animals"],
+.hm-d-card.tone-animals {
   --bg: #0a1b0e; --bg-deep: #061209; --surface: #112616; --surface-2: #17311d;
   --line: rgba(198, 239, 176, 0.11); --line-strong: rgba(198, 239, 176, 0.23);
   --text: #f1f5ea; --text-2: #d0e0c6; --text-3: #a6bd99;
@@ -253,7 +245,8 @@
   --glow-a: rgba(250, 200, 100, 0.16); --glow-b: rgba(63, 143, 74, 0.28); --glow-c: rgba(63, 143, 74, 0.16);
   --world-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 160 160' fill='none' stroke='%23c8f0a6' stroke-opacity='0.07' stroke-width='1.2'%3E%3Cpath d='M20 140C40 90 80 70 130 60C110 100 80 125 20 140Z'/%3E%3Cpath d='M20 140C60 110 95 85 130 60'/%3E%3Cpath d='M70 20c10 25 30 40 60 45c-25 12-50 6-60-45Z'/%3E%3C/svg%3E") 0 0 / 180px 180px;
 }
-:root[data-theme="light"] .site[data-tone="animals"] {
+:root[data-theme="light"] .site[data-tone="animals"],
+:root[data-theme="light"] .hm-d-card.tone-animals {
   --bg: #eef5e9; --bg-deep: #e0ecd8; --surface: #fbfdf9; --surface-2: #e0ecd8;
   --line: rgba(15, 32, 16, 0.1); --line-strong: rgba(15, 32, 16, 0.2);
   --text: #0f2010; --text-2: #3a4d36; --text-3: #566a51;
@@ -279,3 +272,162 @@ body:has(.site[data-tone="animals"]) { background: #0a1b0e; }
 :root[data-theme="light"] body:has(.site[data-tone="sanctuary"]) { background: #f8f3e8; }
 :root[data-theme="light"] body:has(.site[data-tone="animals"]) { background: #eef5e9; }
 }
+
+/*
+ * Outside the layer, on purpose. The home page, the empty lists and the
+ * "how it works" links are styled in the part of site.css that sits outside
+ * `@layer components`, and an unlayered rule beats any layered one whatever
+ * its specificity — so refinements of those rules must be unlayered too, or
+ * they silently lose. They target the site's own classes only, never
+ * Tailwind utilities.
+ */
+
+/* Home page bands: each its own light instead of three flat slabs. */
+:root:not([data-theme="light"]) .hm-band-forest {
+  background:
+    radial-gradient(900px 420px at 12% 0%, rgba(31, 157, 107, 0.22), transparent 70%),
+    radial-gradient(700px 380px at 95% 100%, rgba(226, 181, 78, 0.12), transparent 70%),
+    linear-gradient(180deg, #0a2a2b 0%, #0d2621 100%);
+}
+:root:not([data-theme="light"]) .hm-band-districts {
+  background:
+    radial-gradient(520px 320px at 8% 18%, rgba(31, 157, 107, 0.16), transparent 70%),
+    radial-gradient(520px 320px at 42% 6%, rgba(240, 122, 31, 0.12), transparent 70%),
+    radial-gradient(560px 340px at 82% 22%, rgba(60, 109, 240, 0.14), transparent 70%),
+    radial-gradient(560px 360px at 20% 92%, rgba(147, 102, 224, 0.14), transparent 70%),
+    radial-gradient(600px 360px at 88% 90%, rgba(200, 161, 101, 0.12), transparent 70%),
+    var(--bg);
+}
+:root:not([data-theme="light"]) .hm-band-obsidian {
+  background:
+    radial-gradient(800px 380px at 10% 100%, rgba(226, 181, 78, 0.14), transparent 70%),
+    radial-gradient(700px 360px at 92% 0%, rgba(147, 102, 224, 0.1), transparent 70%),
+    #121615;
+}
+
+/* ── Home: seven windows ─────────────────────────────────────────────
+ * Each district card on the home page carries its world (the tokens above
+ * also apply to `.hm-d-card.tone-*`): its own deep colour and faint
+ * pattern, light rising from one corner, the name in its heading tint, and
+ * the way in drawn in its button colour. The photograph fades into the
+ * world beneath it, so the card reads as a window, not a tile.
+ */
+.hm-d-card[class*="tone-"] {
+  background:
+    var(--world-pattern, linear-gradient(transparent, transparent)),
+    radial-gradient(120% 80% at 100% 100%, var(--glow-b, transparent), transparent 62%),
+    var(--surface);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.hm-d-card[class*="tone-"]:hover {
+  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.32), 0 0 44px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.hm-d-card[class*="tone-"] .hm-d-name { color: var(--head); }
+.hm-d-card[class*="tone-"] .hm-icon-ring { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: var(--accent-soft); }
+.hm-d-card[class*="tone-"] .hm-d-photo::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 42%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--surface) 92%, transparent));
+}
+.hm-d-card[class*="tone-"] .hm-d-go {
+  color: var(--btn-ink); background: linear-gradient(180deg, var(--btn-hi) 0%, var(--btn-mid) 50%, var(--btn-lo) 100%);
+  box-shadow: 0 6px 18px var(--btn-glow);
+}
+
+/* ── Signature crowns ────────────────────────────────────────────────
+ * Each district's own mark along the top of its pages, the way Mercadito
+ * has its awning: Servicios a signal running toward you, Trabajo a
+ * draftsman's rule, YavayaGo a road with someone on it, Comunidad papel
+ * picado over the plaza, Santuario candlelight, Animales a trail of paws.
+ * Decoration only: a pseudo-element, so a screen reader never meets it.
+ * Drawn in the world's colours; the site's reduced-motion rule stops every
+ * animation inside `.site`, these included.
+ */
+.site:is([data-tone="mercadito"], [data-tone="services"], [data-tone="work"], [data-tone="yavayago"], [data-tone="community"], [data-tone="sanctuary"], [data-tone="animals"]) main#main::before {
+  content: ""; display: block; height: 16px; pointer-events: none;
+}
+/* Mercadito's own page already wears the full awning; its other pages get a narrow one. */
+.site[data-tone="mercadito"] main#main:has(.mc-awning)::before { content: none; }
+.site[data-tone="mercadito"] main#main::before {
+  height: 18px;
+  background:
+    radial-gradient(circle at 12px 0, var(--btn-mid) 11px, transparent 12px) 0 8px / 48px 10px repeat-x,
+    radial-gradient(circle at 36px 0, #efe4c8 11px, transparent 12px) 0 8px / 48px 10px repeat-x,
+    repeating-linear-gradient(90deg, var(--btn-mid) 0 24px, #efe4c8 24px 48px) 0 0 / 100% 8px no-repeat;
+}
+.site[data-tone="services"] main#main::before {
+  background:
+    linear-gradient(90deg, transparent, var(--focus) 50%, transparent) 0 50% / 26% 3px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent) 0 22px, transparent 22px 32px) 0 50% / 100% 3px no-repeat;
+  animation: crown-signal 4.8s linear infinite;
+}
+@keyframes crown-signal { from { background-position: -35% 50%, 0 50%; } to { background-position: 135% 50%, 0 50%; } }
+.site[data-tone="work"] main#main::before {
+  height: 14px;
+  background:
+    linear-gradient(color-mix(in srgb, var(--accent) 60%, transparent), color-mix(in srgb, var(--accent) 60%, transparent)) 0 0 / 100% 1px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent) 0 1px, transparent 1px 10px) 0 0 / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 85%, transparent) 0 1px, transparent 1px 50px) 0 0 / 100% 11px no-repeat;
+}
+.site[data-tone="yavayago"] main#main::before {
+  background:
+    radial-gradient(circle, #fff6e8 0 2.5px, var(--accent) 3.5px 5px, color-mix(in srgb, var(--accent) 35%, transparent) 6px, transparent 9px) 0 50% / 18px 16px no-repeat,
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 65%, transparent) 0 16px, transparent 16px 30px) 0 50% / 100% 2px no-repeat;
+  animation: crown-ride 10s ease-in-out infinite alternate;
+}
+@keyframes crown-ride { from { background-position: 0% 50%, 0 50%; } to { background-position: 100% 50%, 0 50%; } }
+.site[data-tone="community"] main#main::before {
+  height: 20px; opacity: 0.85;
+  background:
+    linear-gradient(color-mix(in srgb, var(--text) 30%, transparent), color-mix(in srgb, var(--text) 30%, transparent)) 0 3px / 100% 1px no-repeat,
+    conic-gradient(from -30deg at 14px 100%, var(--flag-1) 0 60deg, transparent 60deg) 0 4px / 112px 14px repeat-x,
+    conic-gradient(from -30deg at 42px 100%, var(--flag-2) 0 60deg, transparent 60deg) 0 4px / 112px 14px repeat-x,
+    conic-gradient(from -30deg at 70px 100%, var(--flag-3) 0 60deg, transparent 60deg) 0 4px / 112px 14px repeat-x,
+    conic-gradient(from -30deg at 98px 100%, var(--flag-4) 0 60deg, transparent 60deg) 0 4px / 112px 14px repeat-x;
+}
+.site[data-tone="sanctuary"] main#main::before {
+  height: 18px;
+  background:
+    radial-gradient(50% 100% at 50% 50%, color-mix(in srgb, var(--accent) 75%, transparent), transparent 72%) 50% 50% / min(720px, 80%) 18px no-repeat,
+    radial-gradient(circle, var(--focus) 0 1.5px, transparent 2.5px) 50% 50% / 64px 18px repeat-x,
+    linear-gradient(90deg, transparent, var(--accent) 50%, transparent) 0 50% / 100% 1px no-repeat;
+  animation: crown-candle 5.5s ease-in-out infinite;
+}
+@keyframes crown-candle { 0%, 100% { opacity: 0.7; } 40% { opacity: 1; } 55% { opacity: 0.82; } 70% { opacity: 0.95; } }
+.site[data-tone="animals"] main#main::before {
+  height: 18px;
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='18'%3E%3Cg transform='translate(8 6)'%3E%3Cellipse rx='3' ry='3.4'/%3E%3Ccircle cx='3.7' cy='-3.3' r='1.3'/%3E%3Ccircle cx='4.8' cy='-1' r='1.3'/%3E%3Ccircle cx='4.8' cy='1.4' r='1.3'/%3E%3Ccircle cx='3.7' cy='3.6' r='1.3'/%3E%3C/g%3E%3Cg transform='translate(34 12)'%3E%3Cellipse rx='3' ry='3.4'/%3E%3Ccircle cx='3.7' cy='-3.3' r='1.3'/%3E%3Ccircle cx='4.8' cy='-1' r='1.3'/%3E%3Ccircle cx='4.8' cy='1.4' r='1.3'/%3E%3Ccircle cx='3.7' cy='3.6' r='1.3'/%3E%3C/g%3E%3C/svg%3E") 0 50% / 52px 18px repeat-x;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='18'%3E%3Cg transform='translate(8 6)'%3E%3Cellipse rx='3' ry='3.4'/%3E%3Ccircle cx='3.7' cy='-3.3' r='1.3'/%3E%3Ccircle cx='4.8' cy='-1' r='1.3'/%3E%3Ccircle cx='4.8' cy='1.4' r='1.3'/%3E%3Ccircle cx='3.7' cy='3.6' r='1.3'/%3E%3C/g%3E%3Cg transform='translate(34 12)'%3E%3Cellipse rx='3' ry='3.4'/%3E%3Ccircle cx='3.7' cy='-3.3' r='1.3'/%3E%3Ccircle cx='4.8' cy='-1' r='1.3'/%3E%3Ccircle cx='4.8' cy='1.4' r='1.3'/%3E%3Ccircle cx='3.7' cy='3.6' r='1.3'/%3E%3C/g%3E%3C/svg%3E") 0 50% / 52px 18px repeat-x;
+}
+
+/* ── Opening day ─────────────────────────────────────────────────────
+ * Yavaya has just opened, so most lists are still empty. Here an empty
+ * list is a door left open in the world's colours: an invitation to be
+ * first. Never filler, never invented content (CLAUDE.md).
+ */
+.site[data-tone] :is(.sc-empty, .mk-empty, .go-empty):not(.an-empty) {
+  position: relative;
+  padding-top: calc(clamp(28px, 5vw, 44px) + 50px);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background:
+    radial-gradient(90% 120% at 50% 0%, var(--accent-soft), transparent 70%),
+    color-mix(in srgb, var(--surface) 55%, transparent);
+}
+.site[data-tone] :is(.sc-empty, .mk-empty, .go-empty):not(.an-empty)::before {
+  content: ""; position: absolute; left: 50%; top: clamp(22px, 4vw, 34px); translate: -50% 0; width: 42px; height: 42px; pointer-events: none;
+  background: var(--accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 21h19'/%3E%3Cpath d='M5 21V4.2C5 3.5 5.5 3 6.2 3h11.6c.7 0 1.2.5 1.2 1.2V21'/%3E%3Cpath d='M5 21V6l7.5 1.8V21'/%3E%3Ccircle cx='10.6' cy='13.4' r='.7' fill='black'/%3E%3Cpath d='M15 9.5l2.4-1.2M15.6 13h2.6M15 16.5l2.4 1.2'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 21h19'/%3E%3Cpath d='M5 21V4.2C5 3.5 5.5 3 6.2 3h11.6c.7 0 1.2.5 1.2 1.2V21'/%3E%3Cpath d='M5 21V6l7.5 1.8V21'/%3E%3Ccircle cx='10.6' cy='13.4' r='.7' fill='black'/%3E%3Cpath d='M15 9.5l2.4-1.2M15.6 13h2.6M15 16.5l2.4 1.2'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* "How it works": a way onward, not a stray line of text at the foot of the page. */
+.site[data-tone] main p.center.mt > a[href$="/about"] {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 20px; border-radius: 999px;
+  text-decoration: none; font-weight: 700; color: var(--text);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line)); background: var(--accent-soft);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.site[data-tone] main p.center.mt > a[href$="/about"]::after { content: "→"; color: var(--accent); transition: translate 0.3s; }
+.site[data-tone] main p.center.mt > a[href$="/about"]:hover { border-color: var(--accent); box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 22%, transparent); }
+.site[data-tone] main p.center.mt > a[href$="/about"]:hover::after { translate: 4px 0; }

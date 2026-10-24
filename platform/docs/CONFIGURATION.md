@@ -336,6 +336,26 @@ read as Central American. One thing to know: the banknotes in the Mercadito
 and YavayaGo scenes look like US dollars — right for El Salvador, Panamá and
 much of Nicaragua's trade, not for every market.
 
+**The home page's market moves on phones** (since 24 October 2026):
+`public/art/market-film-720.mp4`, seven seconds made from the market
+illustration with a video model through the owner's Higgsfield account, then
+re-cut to the phone still's exact rectangle so it starts on that picture
+(`tools/hero-film/` at the repository root has the brief, the script and why
+it plays once instead of looping). It is an illustration like the still: the
+"Ilustración" note stays over it. It plays only where the visit can afford
+it — phone width, a 4G connection or one that does not say, no data saver,
+no reduced motion — and only after the page has loaded (`hero-film.tsx`);
+everyone else sees the still. Inspected frame by frame on 24 October: no
+malformed people, warped stalls or lettering.
+
+**The home page's Mercadito feature has its own picture** (since 24 October
+2026): someone photographing a woven bag to sell it
+(`mercadito-seller-*.webp`, made through the owner's ElevenLabs account at
+1280×720, the second of four takes). Until then the feature and the districts
+gallery below it showed the same handshake. Inspected at full size: hands,
+face and bag well formed, no lettering, and the phone shows its back, never a
+screen.
+
 **Real photography is the next step** (owner's to arrange: a photographer in
 Managua, signed releases from everyone pictured). Replacing any image is a
 file swap: keep the name and run `node scripts/derive-images.mjs`, which makes

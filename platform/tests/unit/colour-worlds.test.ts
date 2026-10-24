@@ -11,11 +11,12 @@ import { DISTRICT_IDS } from '@/ui/site/blocks';
  */
 const CSS = readFileSync(join(__dirname, '..', '..', 'src', 'app', 'worlds.css'), 'utf8');
 
+/** The declarations of the rule whose selector list starts, on its own line, with `selector`. */
 function block(selector: string): Record<string, string> {
-  const start = CSS.indexOf(`${selector} {`);
-  if (start < 0) throw new Error(`no rule for ${selector}`);
-  const body = CSS.slice(start + selector.length + 2, CSS.indexOf('}', start));
-  return Object.fromEntries([...body.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)].map((m) => [m[1]!, m[2]!.trim()]));
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = new RegExp(`(?:^|\\n)${escaped}(?:,[^{]*)?\\s*\\{([^}]*)\\}`).exec(CSS);
+  if (!match) throw new Error(`no rule for ${selector}`);
+  return Object.fromEntries([...match[1]!.matchAll(/--([a-z0-9-]+):\s*([^;]+);/g)].map((m) => [m[1]!, m[2]!.trim()]));
 }
 
 function luminance(hex: string): number {

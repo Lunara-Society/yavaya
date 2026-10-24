@@ -18,6 +18,7 @@
  */
 
 import type { DistrictId } from './blocks';
+import { HeroFilm } from './hero-film';
 
 // --- Deterministic helpers -----------------------------------------------------
 
@@ -138,14 +139,21 @@ function srcSet(name: string, widths: number[]): string {
   return widths.map((width) => `/art/${name}-${width}.webp ${width}w`).join(', ');
 }
 
-/** The phone crop of the home page's market (4:5, centred on the street and the church). */
+/**
+ * The phone crop of the home page's market: 3:4, the street and the church,
+ * cut from market-2560 at x 1063–2128, y 8–1428. The film (hero-film.tsx) is
+ * cut to exactly the same rectangle, so its first frame lands on this picture;
+ * re-cut one and the other has to follow, or the picture jumps as the film
+ * fades in.
+ */
 export const MARKET_TALL_WIDTHS = [640, 800];
 
 /**
  * The home page's first picture: a market street in a colonial town at
  * sunset, the church and the volcano at the end of it. Phones get their own
- * upright crop instead of the middle of a wide photograph. People are in it,
- * so it carries the "Ilustración" note.
+ * upright crop instead of the middle of a wide photograph, and there the
+ * scene comes alive when the visit can afford it (hero-film.tsx). People are
+ * in it, so it carries the "Ilustración" note.
  */
 export function MarketScene({ className }: { className?: string }) {
   return (
@@ -165,6 +173,7 @@ export function MarketScene({ className }: { className?: string }) {
           decoding="async"
         />
       </picture>
+      <HeroFilm />
       <ArtNote />
     </div>
   );
@@ -216,6 +225,35 @@ export function DistrictScene({ id, className, priority, sizes = DISTRICT_SIZES 
         height={675}
         alt=""
         loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+      <ArtNote />
+    </>
+  );
+}
+
+/** The widths of the seller photograph: it was made at 1280 and is never shown wider than about 1200 device pixels. */
+export const SELLER_WIDTHS = [640, 960, 1280];
+
+/**
+ * The home page's Mercadito feature: someone photographing what they made, to
+ * sell it — the other half of the district's own photograph (a sale in the
+ * street), which the districts gallery further down the same page shows. The
+ * same picture twice on one page reads as having nothing else to show.
+ */
+export function SellerScene({ sizes }: { sizes: string }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img
+        className="district-photo"
+        src="/art/mercadito-seller-960.webp"
+        srcSet={srcSet('mercadito-seller', SELLER_WIDTHS)}
+        sizes={sizes}
+        width={1280}
+        height={720}
+        alt=""
+        loading="lazy"
         decoding="async"
       />
       <ArtNote />

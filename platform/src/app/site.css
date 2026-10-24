@@ -114,6 +114,9 @@ p { margin: 0 0 1em; }
 h1, h2, h3, h4 { margin: 0; line-height: 1.12; font-weight: 600; }
 h1, h2 { font-family: var(--serif); letter-spacing: -0.02em; }
 h3 { font-size: 1.12rem; letter-spacing: -0.01em; }
+/* Headlines break into balanced lines; paragraphs avoid a lonely last word. Browsers without it just wrap as before. */
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
 ul, ol { margin: 0; padding: 0; }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
 
@@ -674,6 +677,7 @@ td strong { color: var(--text); }
 .mc-head { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: end; }
 .mc-head h1 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0 0 6px; }
 .mc-head .lead { font-size: 1rem; max-width: 560px; }
+@media (max-width: 899px) { .mc-head { flex-direction: column; align-items: flex-start; } }
 .mc-search { margin-top: 18px; max-width: 760px; }
 .mc-search-row { display: flex; gap: 8px; }
 .mc-search-row input { flex: 1 1 auto; min-width: 0; min-height: 52px; font-size: 1.05rem; padding: 0 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--mercadito) 50%, var(--line)); background: var(--surface); }
@@ -2147,6 +2151,13 @@ a.live-text:hover { text-decoration: underline; }
 .roxi-launch-text { display: grid; line-height: 1.15; }
 .roxi-launch-text strong { font-family: var(--serif); font-size: 1.12rem; font-weight: 600; letter-spacing: 0.02em; color: var(--rx-gold-hi); }
 .roxi-launch-text small { font-size: 0.74rem; color: var(--rx-ink-3); letter-spacing: 0.03em; }
+/* Below the wide layout the label introduces Roxi, then folds into the orb, so the launcher stops covering what is under it. */
+@media (max-width: 999px) {
+  .roxi-launch { animation: roxi-pop 0.7s var(--rx-ease) backwards, roxi-tuck-pad 0.6s var(--rx-ease) 6s forwards; }
+  .roxi-launch-text { overflow: hidden; white-space: nowrap; max-width: 220px; animation: roxi-tuck 0.6s var(--rx-ease) 6s forwards; }
+}
+@keyframes roxi-tuck { to { max-width: 0; opacity: 0; margin-left: -12px; } }
+@keyframes roxi-tuck-pad { to { padding-right: 7px; } }
 @media (max-width: 520px) {
   .roxi-launch { padding: 6px; }
   .roxi-launch-orb { width: 50px; height: 50px; }
@@ -2868,6 +2879,9 @@ h3 { font-size: 1.18rem; }
 .hm-hero-art::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(180deg, rgba(5, 15, 19, 0.62) 0%, rgba(5, 15, 19, 0.2) 34%, rgba(5, 15, 19, 0.35) 58%, rgba(5, 15, 19, 0.92) 100%); }
 .hm-hero-art .art-note { top: 12px; right: 12px; bottom: auto; }
+/* The living hero (hero-film.tsx): the film sits exactly over the still and fades in once it plays. */
+.hm-hero-art .hm-film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; opacity: 0; transition: opacity 1.4s ease; }
+.hm-hero-art .hm-film.is-playing { opacity: 1; }
 .hm-hero-in { position: relative; z-index: 1; width: 100%; padding-top: 40px; padding-bottom: clamp(24px, 4vw, 52px); }
 .hm-hero .eyebrow { color: #f3d77b; margin-bottom: 12px; }
 .hm-title { margin: 0 0 14px; font-family: var(--serif); font-size: clamp(2.7rem, 9vw, 5.2rem); font-weight: 600; line-height: 0.98; letter-spacing: -0.025em;
@@ -2923,7 +2937,8 @@ h3 { font-size: 1.18rem; }
 .hm-feature { display: grid; gap: 18px; }
 .hm-mk { display: grid; overflow: hidden; border-radius: 24px; background: var(--surface); border: 1px solid var(--line-gold); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25); }
 .hm-mk-photo { position: relative; display: block; min-height: 220px; overflow: hidden; }
-.hm-mk-photo .district-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* The seller photograph (SellerScene): a little left of centre keeps both the bag and the seller's face in the near-square frame of wide screens. */
+.hm-mk-photo .district-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 40% 50%; }
 .hm-mk-badge { position: absolute; top: 14px; left: 14px; z-index: 2; padding: 6px 12px; border-radius: 999px; background: rgba(7, 27, 34, 0.82); color: #f3d77b;
   font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .hm-mk-photo .art-note { top: 14px; right: 14px; left: auto; bottom: auto; }
@@ -2958,36 +2973,50 @@ h3 { font-size: 1.18rem; }
 .hm-sub { margin: 0; color: var(--text-2); font-size: 0.98rem; }
 .hm-head-link { min-height: 44px; padding: 0 18px; font-size: 0.92rem; }
 
-/* The seven districts: four, then three; two to a row on a phone. */
+/* The seven districts. Mercadito, the way in, leads as the flagship: full
+   width on a phone, a tall half beside four others on a wide screen; the
+   last two share the closing row. Each card wears its own colour world
+   (worlds.css, "Home: seven windows"). */
 .hm-districts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
-.hm-d:last-child { grid-column: 1 / -1; }
-.hm-d-card { display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 18px; text-decoration: none; color: var(--text); background: var(--surface);
-  border: 1px solid var(--line-gold); transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
-.hm-d-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28); }
+.hm-d-mercadito { grid-column: 1 / -1; }
+.hm-d-card { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 20px; text-decoration: none; color: var(--text); background: var(--surface);
+  border: 1px solid var(--line-gold); transition: transform 0.35s cubic-bezier(.2,.7,.2,1), border-color 0.35s, box-shadow 0.35s; }
+.hm-d-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28); }
 .hm-d-photo { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; }
+.hm-d-mercadito .hm-d-photo { aspect-ratio: 16 / 9; }
 .hm-d-photo .district-photo { width: 100%; height: 100%; object-fit: cover; transition: scale 0.9s cubic-bezier(.2,.7,.2,1); }
-.hm-d-card:hover .district-photo { scale: 1.05; }
+.hm-d-card:hover .district-photo { scale: 1.06; }
 .hm-d-photo .art-note { top: 8px; right: 8px; bottom: auto; }
-.hm-d-body { display: grid; gap: 6px; padding: 12px 14px 14px; }
+.hm-d-body { position: relative; display: grid; gap: 6px; padding: 12px 14px 16px; flex: 1; align-content: start; }
 .hm-d-name { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.15rem; font-weight: 600; }
+.hm-d-mercadito .hm-d-name { font-size: 1.5rem; }
 .hm-d-name .hm-icon-ring { width: 34px; height: 34px; }
 .hm-d-name .hm-icon-ring svg { width: 17px; height: 17px; }
-.hm-d-tag { color: var(--text-2); font-size: 0.86rem; line-height: 1.35; }
+.hm-d-tag { color: var(--text-2); font-size: 0.86rem; line-height: 1.35; padding-right: 30px; }
 .hm-d-state { display: inline-flex; align-items: center; gap: 7px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
 .hm-d-state::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #7fa6c9; }
-.hm-d-state.is-live::before { background: #3fbf7f; }
+.hm-d-state.is-live::before { background: #3fbf7f; box-shadow: 0 0 0 3px rgba(63, 191, 127, 0.18); }
 .hm-d-state.is-dev::before { background: #f0a33a; }
+/* The way in: a round arrow in the world's button colour, nudging forward on hover. */
+.hm-d-go { position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-weight: 800; font-size: 1rem;
+  color: var(--accent-ink); background: var(--accent); transition: translate 0.35s cubic-bezier(.2,.7,.2,1); }
+.hm-d-card:hover .hm-d-go, .hm-d-card:focus-visible .hm-d-go { translate: 4px 0; }
 @media (max-width: 639px) {
   .hm-d-tag { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .hm-d:last-child .hm-d-photo { aspect-ratio: 21 / 9; }
 }
 @media (min-width: 1000px) {
   .hm-districts { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
-  .hm-d-top { grid-column: span 3; }
-  .hm-d-wide, .hm-d:last-child { grid-column: span 4; }
-  .hm-d-wide .hm-d-photo { aspect-ratio: 16 / 8; }
+  .hm-d { grid-column: span 3; }
+  .hm-d-mercadito { grid-column: span 6; grid-row: span 2; }
+  .hm-d-mercadito .hm-d-photo { aspect-ratio: auto; flex: 1; min-height: 300px; }
+  .hm-d-mercadito .hm-d-body { flex: none; padding: 18px 22px 22px; }
+  .hm-d-mercadito .hm-d-name { font-size: 2rem; }
+  .hm-d-mercadito .hm-d-tag { font-size: 1.02rem; }
+  .hm-d-sanctuary, .hm-d-animals { grid-column: span 6; }
+  .hm-d-sanctuary .hm-d-photo, .hm-d-animals .hm-d-photo { aspect-ratio: 16 / 7; }
   .hm-d-body { padding: 14px 18px 18px; }
   .hm-d-name { font-size: 1.3rem; }
+  .hm-d-go { right: 16px; bottom: 16px; width: 40px; height: 40px; }
 }
 
 /* Recent opportunities and trust */
@@ -3005,7 +3034,7 @@ h3 { font-size: 1.18rem; }
 .hm-opp-body strong { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.92rem; line-height: 1.3; }
 .hm-opp-meta { color: var(--text-3); font-size: 0.78rem; }
 .hm-opp-price { margin-top: 2px; color: var(--accent); font-weight: 800; font-size: 0.92rem; }
-.hm-empty { padding: clamp(18px, 3vw, 28px); border-radius: 18px; border: 1px dashed var(--line-gold); background: radial-gradient(120% 90% at 50% 0%, rgba(201, 155, 53, 0.07), transparent 70%); }
+.hm-empty { padding: 6px 0 0; }
 .hm-empty-title { margin: 0 0 6px; font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
 .hm-empty > p { color: var(--text-2); }
 .hm-empty .btn { min-height: 46px; }

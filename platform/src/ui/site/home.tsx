@@ -5,7 +5,7 @@ import { GUIDE_SECONDS, guideFiles } from '@/config/guide';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import type { Opportunity } from '@/server/domains/discovery/recent';
 import { formatPrice } from '@/ui/mercadito/format';
-import { DistrictScene, MarketScene } from './art';
+import { DistrictScene, MarketScene, SellerScene } from './art';
 import { DISTRICT_IDS, PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon, type IconName } from './icons';
 
@@ -41,14 +41,20 @@ const SHORTCUTS: ReadonlyArray<{ id: DistrictId; buy?: true }> = [
 ];
 
 /**
- * How wide each district photograph is shown: four to a row on a wide
- * screen, then three; below that two to a row, with the last one alone and
- * full width. Saying 50vw where it is half the screen keeps a phone from
- * fetching photographs twice the size it shows.
+ * The gallery's shape (site.css, "The seven districts"): Mercadito, the way
+ * in, is the flagship — full width on a phone, a tall half on a wide screen.
+ * The other six go two to a row on a phone; on a wide screen four of them
+ * stand beside Mercadito and the last two share the closing row. Seven
+ * districts make that one flagship and an even six, so no card is left
+ * alone at the bottom.
  */
-function districtSizes(index: number): string {
-  if (index === DISTRICT_IDS.length - 1) return '(min-width: 1000px) 34vw, 100vw';
-  return index < 4 ? '(min-width: 1000px) 25vw, 50vw' : '(min-width: 1000px) 34vw, 50vw';
+const FLAGSHIP: DistrictId = 'mercadito';
+const CLOSING_ROW: readonly DistrictId[] = ['sanctuary', 'animals'];
+
+/** How wide each photograph is shown, so a phone never fetches one twice the size it displays. */
+function districtSizes(id: DistrictId): string {
+  if (id === FLAGSHIP) return '(min-width: 1000px) 50vw, 100vw';
+  return CLOSING_ROW.includes(id) ? '50vw' : '(min-width: 1000px) 25vw, 50vw';
 }
 
 const TOPIC_KEY: Record<Opportunity['kind'], string> = {
@@ -111,7 +117,7 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date
         <div className="wrap hm-feature">
           <article className="hm-mk tone-mercadito">
             <Link className="hm-mk-photo" href={PAGE_PATHS.mercadito} tabIndex={-1} aria-hidden="true">
-              <DistrictScene id="mercadito" sizes="(min-width: 1000px) 34vw, 100vw" />
+              <SellerScene sizes="(min-width: 1000px) 34vw, 100vw" />
               <span className="hm-mk-badge">{t('home.mk.badge')}</span>
             </Link>
             <div className="hm-mk-text">
@@ -167,13 +173,14 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date
             </Link>
           </div>
           <ul className="hm-districts">
-            {DISTRICT_IDS.map((id, i) => {
+            {DISTRICT_IDS.map((id) => {
               const state = districtState(id);
               return (
-                <li key={id} className={i < 4 ? 'hm-d hm-d-top' : 'hm-d hm-d-wide'}>
+                // The card wears its district's colour world (worlds.css): a window into the place it opens.
+                <li key={id} className={`hm-d hm-d-${id}`}>
                   <Link className={`hm-d-card tone-${id}`} href={PAGE_PATHS[id]}>
                     <span className="hm-d-photo">
-                      <DistrictScene id={id} sizes={districtSizes(i)} />
+                      <DistrictScene id={id} sizes={districtSizes(id)} />
                     </span>
                     <span className="hm-d-body">
                       <span className="hm-d-name">
@@ -185,6 +192,9 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date
                       <span className="hm-d-tag">{c.districts[id].tagline}</span>
                       <span className={`hm-d-state is-${state}`}>
                         {c.ui.states[state]} · {c.districts[id].phase}
+                      </span>
+                      <span className="hm-d-go" aria-hidden="true">
+                        →
                       </span>
                     </span>
                   </Link>
