@@ -13,8 +13,8 @@ import {
 /**
  * Stripe adapter (Checkout Sessions, https://docs.stripe.com/api/checkout/sessions).
  *
- * Serves the countries dLocal Go does not reach (config/payments.ts). The
- * member pays on Stripe's hosted page; card details never reach Yavaya.
+ * Serves every country (config/payments.ts). The member pays on Stripe's
+ * hosted page; card details never reach Yavaya.
  *
  * 1. `createCheckout` creates a session in payment mode for exactly one
  *    package at its price, and sends the member to `session.url`.

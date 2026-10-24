@@ -582,7 +582,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 - tokens_50: Pro
 - tokens_100: Negocio
 - tokens_500: Empresa
-- packagesNote: Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta, en la página segura de Stripe (o de dLocal Go, si Stripe no estuviera disponible). Los tokens llegan cuando el pago se confirma.
+- packagesNote: Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta, en la página segura de Stripe. Los tokens llegan cuando el pago se confirma.
 - perToken: {price} por token
 - saving: Ahorras {percent}%
 - bestValue: Mejor precio por token
@@ -877,7 +877,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 #### 6. Comprar tokens
 - Puedes comprar paquetes de tokens. Al comprar aceptas que:
 - El **precio** de cada paquete se muestra en dólares estadounidenses antes de pagar, y es el total que cobra Yavaya. Si pagas en otra moneda, la conversión la hace el procesador de pagos al momento del pago, y tu banco puede cobrar sus propias comisiones.
-- El pago lo procesa **Stripe** (o **dLocal Go**, si Stripe no estuviera disponible) en su propia página segura. **Yavaya nunca ve ni guarda los datos de tu tarjeta.**
+- El pago lo procesa **Stripe** en su propia página segura. **Yavaya nunca ve ni guarda los datos de tu tarjeta.**
 - Los tokens se acreditan **cuando el procesador confirma el pago**, normalmente en segundos; con efectivo o transferencia puede tardar más. Cada compra aparece en tu cuenta con su estado y su referencia.
 - Los tokens comprados **no vencen** y no se transfieren a otra cuenta. No se cambian por dinero, salvo en los casos de devolución de abajo.
 - **Devoluciones:** te devolvemos el dinero si te cobramos y los tokens no llegaron, si te cobramos dos veces lo mismo, o si compraste por error y escribes dentro de los 14 días siguientes sin haber usado ninguno de esos tokens. Escríbenos con la referencia de la compra.
@@ -1002,7 +1002,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 
 #### Con quién se comparte
 - No vendemos datos. No hay publicidad ni analítica de terceros. Usamos estos proveedores para operar:
-- **Stripe** y, si Stripe no estuviera disponible, **dLocal Go** procesan los pagos cuando compras tokens: reciben el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.
+- **Stripe** procesa los pagos cuando compras tokens: recibe el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.
 - **Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).
 - **Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.
 - **ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).

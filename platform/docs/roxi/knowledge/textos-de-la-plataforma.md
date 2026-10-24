@@ -2269,7 +2269,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 
 ## payments
 - `payments.buy`: Comprar
-- `payments.returned`: Volviste del pago. Tus tokens aparecen en cuanto dLocal Go confirma el pago; si pagaste en efectivo o por transferencia, puede tardar más. Abajo ves el estado de cada compra.
+- `payments.returned`: Volviste del pago. Tus tokens aparecen en cuanto Stripe confirma el pago, normalmente en segundos. Abajo ves el estado de cada compra.
 - `payments.cancelled`: No se hizo ningún cobro. Puedes intentarlo de nuevo cuando quieras.
 - `payments.purchases`: Tus compras
 - `payments.purchase_line`: {tokens} tokens · {price}
@@ -2286,10 +2286,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `payments.error.package`: Ese paquete ya no está disponible.
 - `payments.error.account`: Tu cuenta tiene que estar activa para comprar tokens.
 - `payments.error.rate_limited`: Demasiados intentos de pago seguidos. Espera un momento.
-- `payments.error.provider`: No pudimos abrir el pago con dLocal Go. No se hizo ningún cobro; inténtalo en unos minutos.
-- `payments.test_mode`: Modo de prueba: dLocal Go está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.
+- `payments.error.provider`: No pudimos abrir el pago con Stripe. No se hizo ningún cobro; inténtalo en unos minutos.
+- `payments.test_mode`: Modo de prueba: Stripe está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.
 - `payments.saving`: Ahorras {percent}%
-- `payments.how.dlocalgo`: En tu país pagas con dLocal Go, en su página segura: tarjeta, efectivo o transferencia según el país. Yavaya nunca ve los datos de tu tarjeta. Los tokens llegan cuando dLocal Go confirma el pago, normalmente en segundos.
 - `payments.method.dlocalgo`: dLocal Go · tarjeta y medios locales
 - `payments.country_pending`: En tu país se paga con {method}, que estamos terminando de conectar. Muy pronto podrás comprar tokens desde aquí.
 - `payments.countries_title`: Cómo se paga en cada país

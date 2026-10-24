@@ -98,8 +98,7 @@ export type TokenPackage = {
  * here is disabled by the seed, never deleted: past purchases refer to it.
  */
 export const TOKEN_PACKAGES: readonly TokenPackage[] = [
-  // dLocal Go refused $0.99 as below its minimum (error 5016); Stripe, which
-  // now serves every country, accepts anything from $0.50.
+  // Stripe, which serves every country, accepts anything from $0.50.
   { key: 'tokens_2', tokens: 2, priceMinor: 99, currency: 'USD', enabled: true, sortOrder: 1 },
   { key: 'tokens_10', tokens: 10, priceMinor: 449, currency: 'USD', enabled: true, sortOrder: 2 },
   { key: 'tokens_25', tokens: 25, priceMinor: 999, currency: 'USD', enabled: true, sortOrder: 3 },

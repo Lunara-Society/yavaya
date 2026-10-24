@@ -50,7 +50,7 @@ purpose rather than leave data sealed under nothing.
 **3. Keys issued by providers** — create a new one at the provider, paste it
 into Railway, deploy, then revoke the old one at the provider:
 `STRIPE_SECRET_KEY` (Stripe → Developers → API keys → roll the restricted
-key), `DLOCALGO_API_KEY` and `DLOCALGO_SECRET_KEY`, `RESEND_API_KEY`,
+key), `RESEND_API_KEY`,
 `GOOGLE_CLIENT_SECRET` (Google Cloud → Credentials → the OAuth client → add a
 secret, then disable the old one), `TWILIO_AUTH_TOKEN`, `ELEVENLABS_API_KEY`.
 The bucket's `MEDIA_S3_*` credentials are reset by Railway itself and reach
@@ -177,69 +177,50 @@ nothing is sent, and the capability reads `MOCK`.
 
 ---
 
-## Payments — dLocal Go
+## Payments — Stripe (every country)
 
 **Needed for:** buying tokens (`/account/tokens`). Later: Trabajo
 subscriptions and other paid flows, through the same adapter.
 
-**Current state:** implemented and tested against a stand-in that behaves as
-dLocal Go documents (`providers/dlocalgo.ts`, `tests/integration/payments.test.ts`).
-Not yet run against dLocal Go itself — that is the sandbox step below. Until
-the keys are set, `/status` says "requires configuration" and the tokens page
-shows packages with no buy button.
+Routing (`config/payments.ts`): **Stripe for every country** (the owner's
+choice, October 2026); it is the only provider. Until its key is set,
+`/status` says "requires configuration" and the tokens page shows packages
+with no buy button.
 
 **How a purchase works:**
 
-1. The member picks a package. Yavaya records the payment and asks dLocal Go
-   for a checkout (`POST /v1/payments`); the member pays on dLocal Go's page.
-   Card details never reach Yavaya.
-2. dLocal Go calls `https://yavaya.lat/api/payments/dlocalgo/notify` on every
-   status change. Yavaya checks the HMAC-SHA256 signature, then asks dLocal Go
-   for the payment's status (`GET /v1/payments/:id`).
-3. Only `PAID`, for **exactly** the price and currency asked, credits the
-   tokens — once, however many times dLocal Go retries. A different amount is
-   held as a discrepancy (audited, never credited) for a person to look at.
-4. Coming back to Yavaya from the checkout proves nothing and credits nothing.
-   The page shows each purchase as dLocal Go confirmed it.
-5. If a notification is lost, the scheduler re-reads waiting payments every
-   15 minutes (`reconcile-payments`).
+1. The member picks a package. Yavaya records the payment and asks Stripe for
+   a Checkout Session for exactly that package; the member pays on Stripe's
+   hosted page. Card details never reach Yavaya.
+2. Stripe sends the member back to `/api/payments/stripe/return`. Coming back
+   proves nothing and credits nothing: it only prompts Yavaya to read the
+   session from Stripe, server to server.
+3. Only a session that reads `complete` and `paid`, for **exactly** the price
+   and currency asked, credits the tokens — once, however often it is read. A
+   different amount is held as a discrepancy (audited, never credited) for a
+   person to look at; an expired session is marked failed.
+4. A member who pays and closes the tab is settled by the scheduler, which
+   re-reads waiting payments every 15 minutes (`reconcile-payments`). No
+   webhook secret is needed, and payment notifications are refused.
 
-**Owner setup:**
-
-1. Create the dLocal Go account and, in the **sandbox** dashboard
-   (`dashboard-sbx.dlocalgo.com` → Integrations → API Integration), copy the
-   sandbox API key and secret key.
-2. In Railway, set on **both** `yavaya-web` and `yavaya-scheduler` (as
-   variables, never in chat or in the repository):
-   `DLOCALGO_ENV=sandbox`, `DLOCALGO_API_KEY`, `DLOCALGO_SECRET_KEY`.
-3. In sandbox mode only administrators see the buy buttons, and `/status`
-   shows payments as DEMO: test cards are not money, so nothing bought with
-   them may reach ordinary members. Buy a package as the admin with test card
-   `4111 1111 1111 1111` (any future date, any CVV) and check that the tokens
-   arrive. `5555 5555 5555 4444` should be rejected and credit nothing.
-4. Activate the live account, configure its payment methods (settings do not
-   carry over from sandbox), and replace the three variables with the live
-   keys and `DLOCALGO_ENV=live`. Then make one small real purchase.
-5. Before step 4: the lawyer has reviewed the Terms of Use for purchases, and
-   the prices in `TOKEN_PACKAGES` (USD) are the ones you want.
-
-**Notes:** the checkout pages are on `checkout.dlocalgo.com` /
-`checkout-sbx.dlocalgo.com`; the Content-Security-Policy allows form
-redirects there and nowhere else. Refunds are not automated: `refund()`
-exists in the adapter, but no screen calls it yet, and a refund
-notification is recorded without changing balances.
-
-## Payments — Stripe (every country)
-
-Routing (`config/payments.ts`): **Stripe for every country** (the owner's
-choice, October 2026). dLocal Go is used only if Stripe is not configured, and
-only in the countries it is licensed in. Stripe takes cards from buyers in any country on its
-hosted Checkout page. Set on both services: `STRIPE_SECRET_KEY` — a
+**Owner setup:** set on **both** `yavaya-web` and `yavaya-scheduler` (as a
+variable, never in chat or in the repository) `STRIPE_SECRET_KEY` — a
 **restricted** key (`rk_live_…`) with only Checkout Sessions: Write,
-PaymentIntents: Read, Refunds: Write. A `rk_test_…` key is test mode (only
-administrators can buy). Tokens are credited only when the session reads
-`complete` and `paid` for exactly the price asked; `reconcile-payments`
-settles buyers who closed the tab. No webhook secret is needed.
+PaymentIntents: Read, Refunds: Write. A `rk_test_…` key is test mode: only
+administrators see the buy buttons and `/status` says so, because test cards
+are not money.
+
+**Notes:** the Content-Security-Policy allows form redirects to
+`checkout.stripe.com` and nowhere else. Refunds are not automated: `refund()`
+exists in the adapter, but no screen calls it yet.
+
+## dLocal Go — removed
+
+dLocal Go was removed in October 2026 at the owner's request: Yavaya uses
+Stripe only. There is no dLocal Go code, route or setting left; its old
+addresses answer "not found", and past purchases made through it keep their
+label on the tokens page. `DLOCALGO_*` variables, if any remain on a Railway
+service, do nothing and can be deleted.
 
 ## PayPal — removed
 
@@ -787,7 +768,7 @@ a public directory of professionals first, which does not exist yet.
 **Mexico** was opened as a launch market by owner decision (October 2026),
 alongside the seven countries of Central America. It stays filed under North
 America, where it belongs, and uses the same rules, prices and districts.
-dLocal Go already lists Mexico, and prices may be in MXN or USD. Two things
+Stripe takes cards from Mexico as from everywhere else. Two things
 are still undecided and flagged here, not guessed:
 - whether Mexico needs its own legal text (terms, privacy under the LFPDPPP);
 - whether the brand tagline ("…de Centroamérica") should change.

@@ -484,7 +484,7 @@ Photos live in the media bucket and are not part of these backups.
 
 **What a restore loses:** everything since the backup used — including token
 ledger entries and payments. After a restore with payments live, reconcile
-against the dLocal Go dashboard before reopening purchases.
+against the Stripe dashboard before reopening purchases.
 
 ## Other platforms
 

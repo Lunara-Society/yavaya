@@ -6,7 +6,6 @@ import { errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { creditPurchasedTokens } from '@/server/domains/tokens/service';
 import type { PaymentProvider } from './provider';
-import { DLocalGoProvider } from './providers/dlocalgo';
 import { StripeProvider } from './providers/stripe';
 
 /**
@@ -21,10 +20,7 @@ import { StripeProvider } from './providers/stripe';
  * server-side capture. There is no code path from a browser to `succeeded`.
  */
 
-const providers = new Map<string, PaymentProvider>([
-  ['dlocalgo', new DLocalGoProvider()],
-  ['stripe', new StripeProvider()],
-]);
+const providers = new Map<string, PaymentProvider>([['stripe', new StripeProvider()]]);
 
 /** The provider a new checkout uses: the first one that is configured. */
 export function activeProvider(): PaymentProvider | null {
@@ -279,8 +275,8 @@ export async function applyProviderOutcome(
 
 /**
  * Reads a payment's state from the provider, server to server, and applies
- * it. This is the only way a dLocal Go payment succeeds: its notification
- * carries no status, and a browser returning from checkout proves nothing.
+ * it. This is the only way a payment succeeds: a notification carries no
+ * status worth trusting, and a browser returning from checkout proves nothing.
  *
  * The amount and currency the provider reports must be exactly what was
  * asked for. Anything else is held as a discrepancy for a person to look at

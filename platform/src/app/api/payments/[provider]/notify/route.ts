@@ -10,8 +10,13 @@ import { getProvider, markWebhookProcessed, recordWebhook, settleFromProvider } 
  * signed "something changed"; the money moves on what the provider's API
  * says when asked directly.
  *
- * Any non-200 answer makes the provider retry (dLocal Go: every 10 minutes
- * for 30 days), so a failure while settling answers 500 on purpose.
+ * Any non-200 answer makes the provider retry, so a failure while settling
+ * answers 500 on purpose.
+ *
+ * No provider sends notifications today: Stripe settles by Yavaya reading the
+ * checkout session (see providers/stripe.ts), so its notifications are refused
+ * and an unknown provider is not found. The route stays for a provider that
+ * signs its notifications.
  */
 export const dynamic = 'force-dynamic';
 
