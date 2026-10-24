@@ -89,7 +89,8 @@ only thing preventing a well-meaning "simplification".
 
 1. Register it in `src/config/districts.ts` with a distinct layout archetype.
 2. Add its name and tagline keys to both dictionaries.
-3. Add its accent tokens to `globals.css`.
+3. Add its accent tokens to `globals.css`, and its colour world, dark and
+   light, to `worlds.css` (the contrast test will check it).
 4. Declare any billable actions in the seed — publishing costs are explicit,
    and free things stay free (community support, causes, animal welfare).
 5. Build the district's own layout. Do not clone another district's grid.

@@ -65,7 +65,7 @@ export async function SiteShell({
   current?: PageId;
   /** Applies the platform's district colour world to what is inside. */
   district?: string;
-  /** A website district page's colour (tone-*), applied to the body only. */
+  /** A website district page's colour: its tone (tone-*) on the page, and its whole colour world (worlds.css) on the shell. */
   tone?: string;
   /** The sign-in bar for signed-out visitors; off on the sign-in pages themselves. */
   authBar?: boolean;
@@ -93,7 +93,8 @@ export async function SiteShell({
   ];
 
   return (
-    <div className="site" data-district={district}>
+    // data-tone puts the header, footer and dock in the district's colour world too (worlds.css), not only the page between them.
+    <div className="site" data-district={district} data-tone={tone}>
       <Alive />
       {/* Visit counts and real speed, first-party and without identifiers. The owner's own browsing is left out. */}
       {member?.owner ? null : <SiteMetrics />}

@@ -1,0 +1,281 @@
+/*
+ * Colour worlds — the shared night, and one world per district.
+ *
+ * The layouts already differ district by district (see DESIGN-SYSTEM.md);
+ * this is the colour that goes with them. Each district page gets its own
+ * background, surfaces, button, heading tint and body-text tint, set on the
+ * `.site` wrapper (data-tone) so the header, the footer and the dock live in
+ * the same world as the page between them.
+ *
+ * What does not change between worlds: the YAVAYA wordmark and seal, the
+ * tokens coin, and the gold frame of paid placements. Gold there means
+ * Yavaya itself or money, wherever you are.
+ *
+ * Every text colour here passes WCAG AA on every surface of its world, and the
+ * ink on every stop of each button gradient does too:
+ * tests/unit/colour-worlds.test.ts reads this file and checks it, so a colour
+ * changed here without checking fails the build. Keep values as six-digit hex
+ * for that reason; rgba is fine for glows, lines and patterns, which carry no
+ * text.
+ */
+
+@layer components {
+/* ── The shared night ─────────────────────────────────────────────────
+ * Warmer text, and the background lit from three sides instead of one
+ * near-invisible glow: lamp gold, water teal, dusk violet.
+ */
+:root:not([data-theme="light"]) {
+  --bg: #061a20;
+  --bg-deep: #04121a;
+  --surface: #0b252b;
+  --surface-2: #10313a;
+  --text: #f7efdd;
+  --text-2: #d6ccb6;
+  --text-3: #aba08a;
+}
+:root:not([data-theme="light"]) body {
+  background:
+    radial-gradient(1100px 650px at 88% -8%, rgba(226, 181, 78, 0.2), transparent 62%),
+    radial-gradient(900px 700px at -12% 28%, rgba(26, 163, 163, 0.16), transparent 64%),
+    radial-gradient(1000px 800px at 50% 112%, rgba(147, 102, 224, 0.14), transparent 62%),
+    var(--bg);
+  background-attachment: fixed;
+}
+:root[data-theme="light"] {
+  --bg: #f7f3ea;
+  --surface: #fffdf8;
+  --surface-2: #efe8d9;
+  --text: #14130f;
+  --text-2: #4a4434;
+  --text-3: #6b6450;
+  --accent: #7a5c0c;
+}
+:root[data-theme="light"] body {
+  background:
+    radial-gradient(1000px 600px at 90% -10%, rgba(226, 181, 78, 0.18), transparent 62%),
+    radial-gradient(900px 700px at -10% 30%, rgba(26, 163, 163, 0.08), transparent 64%),
+    var(--bg);
+}
+
+/* Home page bands: each its own light instead of three flat slabs. */
+:root:not([data-theme="light"]) .hm-band-forest {
+  background:
+    radial-gradient(900px 420px at 12% 0%, rgba(31, 157, 107, 0.22), transparent 70%),
+    radial-gradient(700px 380px at 95% 100%, rgba(226, 181, 78, 0.12), transparent 70%),
+    linear-gradient(180deg, #0a2a2b 0%, #0d2621 100%);
+}
+:root:not([data-theme="light"]) .hm-band-districts {
+  background:
+    radial-gradient(520px 320px at 8% 18%, rgba(31, 157, 107, 0.16), transparent 70%),
+    radial-gradient(520px 320px at 42% 6%, rgba(240, 122, 31, 0.12), transparent 70%),
+    radial-gradient(560px 340px at 82% 22%, rgba(60, 109, 240, 0.14), transparent 70%),
+    radial-gradient(560px 360px at 20% 92%, rgba(147, 102, 224, 0.14), transparent 70%),
+    radial-gradient(600px 360px at 88% 90%, rgba(200, 161, 101, 0.12), transparent 70%),
+    var(--bg);
+}
+:root:not([data-theme="light"]) .hm-band-obsidian {
+  background:
+    radial-gradient(800px 380px at 10% 100%, rgba(226, 181, 78, 0.14), transparent 70%),
+    radial-gradient(700px 360px at 92% 0%, rgba(147, 102, 224, 0.1), transparent 70%),
+    #121615;
+}
+
+/* ── A world ───────────────────────────────────────────────────────────
+ * Background: the world's pattern, three lights, its own deep colour.
+ * Overscroll shows the body, so the body takes the same colour.
+ */
+.site[data-tone] {
+  background:
+    var(--world-pattern, linear-gradient(transparent, transparent)),
+    radial-gradient(1100px 620px at 88% -4%, var(--glow-a, transparent), transparent 62%),
+    radial-gradient(900px 640px at -10% 24%, var(--glow-b, transparent), transparent 64%),
+    radial-gradient(1000px 700px at 50% 104%, var(--glow-c, transparent), transparent 62%),
+    var(--bg);
+}
+
+/* Buttons take the world's colour; ink and light come with it. */
+.site[data-tone] .btn-gold {
+  background-image: linear-gradient(180deg, var(--btn-hi, #f6dc7c) 0%, var(--btn-mid, #d9b443) 45%, var(--btn-lo, #b8912a) 100%);
+  color: var(--btn-ink, #1a1204);
+  text-shadow: none;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 -2px 0 rgba(0, 0, 0, 0.15) inset, 0 10px 28px var(--btn-glow, rgba(212, 175, 55, 0.32));
+}
+.site[data-tone] .btn-gold:hover {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 14px 40px var(--btn-glow, rgba(212, 175, 55, 0.32)), 0 0 0 4px color-mix(in srgb, var(--btn-mid, #d9b443) 22%, transparent);
+}
+
+/* Headings: struck in the world's light on the dark, its deep colour by day.
+   :where keeps this weaker than any heading that sets its own colour, such as text over a photograph. */
+:root:not([data-theme="light"]) .site[data-tone] :is(.section-head h2, .page-hero:not(.with-photo) h1) {
+  background: linear-gradient(180deg, #ffffff 0%, var(--text) 50%, var(--head) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+:where(.site[data-tone] main) :is(h2, h3) { color: var(--head); }
+:root[data-theme="light"] :where(.site[data-tone] main) :is(h1, h2) { color: var(--head); }
+
+/* Glass in the world's colour. Paid placements keep their gold frame. */
+:root:not([data-theme="light"]) .site[data-tone] :is(.card, .steps li, .table-wrap, .mk-card, .go-store-card):not(.is-featured) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01)) padding-box,
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 50%, transparent), rgba(255, 255, 255, 0.06) 35%, rgba(255, 255, 255, 0.03) 65%, color-mix(in srgb, var(--accent) 22%, transparent)) border-box;
+}
+.site[data-tone] ::selection { background: color-mix(in srgb, var(--accent) 40%, transparent); }
+
+/* ── Mercadito: an evening market — emerald awnings under warm lamps ─── */
+.site[data-tone="mercadito"] {
+  --bg: #03201a; --bg-deep: #021712; --surface: #082c23; --surface-2: #0d392d;
+  --line: rgba(159, 242, 204, 0.1); --line-strong: rgba(159, 242, 204, 0.22);
+  --text: #f4f1e2; --text-2: #c9e2d3; --text-3: #9cc4af;
+  --accent: #5fe0a6; --accent-ink: #02231a; --accent-soft: rgba(95, 224, 166, 0.14); --focus: #9ff2cc; --head: #a8f0cf;
+  --btn-hi: #9ff2cc; --btn-mid: #3fcf92; --btn-lo: #1f9d6b; --btn-ink: #02231a; --btn-glow: rgba(63, 207, 146, 0.35);
+  --glow-a: rgba(245, 170, 60, 0.18); --glow-b: rgba(31, 157, 107, 0.3); --glow-c: rgba(31, 157, 107, 0.18);
+  --world-pattern: radial-gradient(circle at 2px 2px, rgba(159, 242, 204, 0.08) 1.4px, transparent 2px) 0 0 / 26px 26px;
+}
+:root[data-theme="light"] .site[data-tone="mercadito"] {
+  --bg: #ecf6ef; --bg-deep: #ddefe3; --surface: #fbfefc; --surface-2: #ddefe3;
+  --line: rgba(10, 34, 25, 0.1); --line-strong: rgba(10, 34, 25, 0.2);
+  --text: #0a2219; --text-2: #2f4f42; --text-3: #4a6a5c;
+  --accent: #13744c; --accent-ink: #ffffff; --accent-soft: rgba(19, 116, 76, 0.1); --focus: #0f5a3b; --head: #0f5a3b;
+  --btn-hi: #13825a; --btn-mid: #117a51; --btn-lo: #0c6443; --btn-ink: #ffffff; --btn-glow: rgba(17, 122, 81, 0.28);
+  --glow-a: rgba(245, 170, 60, 0.16); --glow-b: rgba(63, 207, 146, 0.18); --glow-c: rgba(63, 207, 146, 0.1);
+  --world-pattern: radial-gradient(circle at 2px 2px, rgba(19, 116, 76, 0.07) 1.4px, transparent 2px) 0 0 / 26px 26px;
+}
+
+/* ── Servicios: clear water — someone is on the way ──────────────────── */
+.site[data-tone="services"] {
+  --bg: #03202a; --bg-deep: #02161d; --surface: #082b36; --surface-2: #0c3743;
+  --line: rgba(162, 243, 241, 0.1); --line-strong: rgba(162, 243, 241, 0.22);
+  --text: #eef6f3; --text-2: #c2e0e0; --text-3: #93c3c4;
+  --accent: #4fd8d6; --accent-ink: #022429; --accent-soft: rgba(79, 216, 214, 0.14); --focus: #a2f3f1; --head: #a6f1f0;
+  --btn-hi: #a2f3f1; --btn-mid: #3cc9c8; --btn-lo: #1aa3a3; --btn-ink: #022429; --btn-glow: rgba(60, 201, 200, 0.35);
+  --glow-a: rgba(79, 216, 214, 0.2); --glow-b: rgba(26, 163, 163, 0.26); --glow-c: rgba(240, 190, 90, 0.1);
+  --world-pattern: repeating-linear-gradient(135deg, rgba(162, 243, 241, 0.04) 0 1px, transparent 1px 28px);
+}
+:root[data-theme="light"] .site[data-tone="services"] {
+  --bg: #e9f5f5; --bg-deep: #d9eeee; --surface: #fbfefe; --surface-2: #d9eeee;
+  --line: rgba(8, 32, 31, 0.1); --line-strong: rgba(8, 32, 31, 0.2);
+  --text: #08201f; --text-2: #2d4c4c; --text-3: #4a6868;
+  --accent: #0f6f70; --accent-ink: #ffffff; --accent-soft: rgba(15, 111, 112, 0.1); --focus: #0b5859; --head: #0b5859;
+  --btn-hi: #127f80; --btn-mid: #0f7576; --btn-lo: #0b5f60; --btn-ink: #ffffff; --btn-glow: rgba(15, 117, 118, 0.28);
+  --glow-a: rgba(60, 201, 200, 0.2); --glow-b: rgba(60, 201, 200, 0.12); --glow-c: rgba(240, 190, 90, 0.1);
+  --world-pattern: repeating-linear-gradient(135deg, rgba(15, 111, 112, 0.05) 0 1px, transparent 1px 28px);
+}
+
+/* ── Trabajo: ink and blueprint — precise, credible ──────────────────── */
+.site[data-tone="work"] {
+  --bg: #08122b; --bg-deep: #050c1f; --surface: #0e1a3a; --surface-2: #142449;
+  --line: rgba(143, 176, 255, 0.12); --line-strong: rgba(143, 176, 255, 0.24);
+  --text: #eef1fa; --text-2: #c6d0ea; --text-3: #9aa9d1;
+  --accent: #8fb0ff; --accent-ink: #071233; --accent-soft: rgba(143, 176, 255, 0.14); --focus: #c3d3ff; --head: #bccdff;
+  --btn-hi: #c3d3ff; --btn-mid: #86a6fb; --btn-lo: #5b84f2; --btn-ink: #071233; --btn-glow: rgba(91, 132, 242, 0.38);
+  --glow-a: rgba(91, 132, 242, 0.26); --glow-b: rgba(60, 109, 240, 0.2); --glow-c: rgba(201, 155, 53, 0.1);
+  --world-pattern: linear-gradient(rgba(143, 176, 255, 0.055) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(90deg, rgba(143, 176, 255, 0.055) 1px, transparent 1px) 0 0 / 40px 40px;
+}
+:root[data-theme="light"] .site[data-tone="work"] {
+  --bg: #edf1fa; --bg-deep: #dfe6f6; --surface: #fcfdff; --surface-2: #dfe6f6;
+  --line: rgba(11, 20, 48, 0.1); --line-strong: rgba(11, 20, 48, 0.2);
+  --text: #0b1430; --text-2: #33405f; --text-3: #505d7c;
+  --accent: #2a52c9; --accent-ink: #ffffff; --accent-soft: rgba(42, 82, 201, 0.1); --focus: #1e3d9e; --head: #1e3d9e;
+  --btn-hi: #3d66de; --btn-mid: #2c55d0; --btn-lo: #2347b3; --btn-ink: #ffffff; --btn-glow: rgba(44, 85, 208, 0.28);
+  --glow-a: rgba(91, 132, 242, 0.18); --glow-b: rgba(91, 132, 242, 0.1); --glow-c: rgba(201, 155, 53, 0.08);
+  --world-pattern: linear-gradient(rgba(42, 82, 201, 0.06) 1px, transparent 1px) 0 0 / 40px 40px, linear-gradient(90deg, rgba(42, 82, 201, 0.06) 1px, transparent 1px) 0 0 / 40px 40px;
+}
+
+/* ── YavayaGo: sunset on the road — movement and warmth ──────────────── */
+.site[data-tone="yavayago"] {
+  --bg: #1d1007; --bg-deep: #140b04; --surface: #29170b; --surface-2: #34200f;
+  --line: rgba(255, 201, 149, 0.12); --line-strong: rgba(255, 201, 149, 0.24);
+  --text: #fbf0e3; --text-2: #ecd2b8; --text-3: #c9a585;
+  --accent: #ffa65a; --accent-ink: #2a1203; --accent-soft: rgba(255, 166, 90, 0.14); --focus: #ffd2a6; --head: #ffc995;
+  --btn-hi: #ffd2a6; --btn-mid: #ff9a45; --btn-lo: #f07a1f; --btn-ink: #2a1203; --btn-glow: rgba(240, 122, 31, 0.4);
+  --glow-a: rgba(255, 120, 40, 0.26); --glow-b: rgba(220, 70, 50, 0.16); --glow-c: rgba(255, 166, 90, 0.14);
+  --world-pattern: repeating-linear-gradient(115deg, rgba(255, 166, 90, 0.05) 0 2px, transparent 2px 64px);
+}
+:root[data-theme="light"] .site[data-tone="yavayago"] {
+  --bg: #fbf0e6; --bg-deep: #f6e1cf; --surface: #fffbf7; --surface-2: #f6e1cf;
+  --line: rgba(36, 19, 10, 0.1); --line-strong: rgba(36, 19, 10, 0.2);
+  --text: #24130a; --text-2: #57402f; --text-3: #77604d;
+  --accent: #9c4508; --accent-ink: #ffffff; --accent-soft: rgba(156, 69, 8, 0.1); --focus: #8f3f05; --head: #8f3f05;
+  --btn-hi: #ffbe85; --btn-mid: #ff9a45; --btn-lo: #f07a1f; --btn-ink: #2a1203; --btn-glow: rgba(240, 122, 31, 0.3);
+  --glow-a: rgba(255, 150, 70, 0.24); --glow-b: rgba(240, 100, 60, 0.1); --glow-c: rgba(255, 166, 90, 0.12);
+  --world-pattern: repeating-linear-gradient(115deg, rgba(156, 69, 8, 0.05) 0 2px, transparent 2px 64px);
+}
+
+/* ── Comunidad: plum dusk in the plaza — calm and human ──────────────── */
+.site[data-tone="community"] {
+  --bg: #160d24; --bg-deep: #0f081a; --surface: #201532; --surface-2: #2a1c40;
+  --line: rgba(220, 198, 255, 0.12); --line-strong: rgba(220, 198, 255, 0.24);
+  --text: #f5effb; --text-2: #dacde9; --text-3: #b4a3cb;
+  --accent: #c8a6ff; --accent-ink: #1b0d2e; --accent-soft: rgba(200, 166, 255, 0.14); --focus: #e3d0ff; --head: #dcc6ff;
+  --btn-hi: #e3d0ff; --btn-mid: #b892f5; --btn-lo: #9366e0; --btn-ink: #1b0d2e; --btn-glow: rgba(147, 102, 224, 0.4);
+  --glow-a: rgba(240, 150, 190, 0.16); --glow-b: rgba(147, 102, 224, 0.28); --glow-c: rgba(147, 102, 224, 0.16);
+  --world-pattern: radial-gradient(circle, transparent 58px, rgba(220, 198, 255, 0.055) 59px 60px, transparent 61px) 0 0 / 140px 140px;
+}
+:root[data-theme="light"] .site[data-tone="community"] {
+  --bg: #f4effb; --bg-deep: #e9e0f6; --surface: #fdfbff; --surface-2: #e9e0f6;
+  --line: rgba(26, 16, 40, 0.1); --line-strong: rgba(26, 16, 40, 0.2);
+  --text: #1a1028; --text-2: #4a3d5e; --text-3: #685a7d;
+  --accent: #6a3fc4; --accent-ink: #ffffff; --accent-soft: rgba(106, 63, 196, 0.1); --focus: #54309e; --head: #54309e;
+  --btn-hi: #7a50d4; --btn-mid: #6a42c4; --btn-lo: #5733a8; --btn-ink: #ffffff; --btn-glow: rgba(106, 66, 196, 0.28);
+  --glow-a: rgba(240, 150, 190, 0.16); --glow-b: rgba(165, 124, 240, 0.16); --glow-c: rgba(165, 124, 240, 0.1);
+  --world-pattern: radial-gradient(circle, transparent 58px, rgba(106, 63, 196, 0.06) 59px 60px, transparent 61px) 0 0 / 140px 140px;
+}
+
+/* ── Santuario: candlelight — quiet, reverent, warm ──────────────────── */
+.site[data-tone="sanctuary"] {
+  --bg: #17110a; --bg-deep: #100b06; --surface: #221a10; --surface-2: #2c2216;
+  --line: rgba(244, 220, 164, 0.12); --line-strong: rgba(244, 220, 164, 0.24);
+  --text: #fbf3e2; --text-2: #e5d6ba; --text-3: #bfae8e;
+  --accent: #ecc77f; --accent-ink: #1d1405; --accent-soft: rgba(236, 199, 127, 0.14); --focus: #fbe7a8; --head: #f4dca4;
+  --btn-hi: #fbe7a8; --btn-mid: #e7c67c; --btn-lo: #c8a165; --btn-ink: #1d1405; --btn-glow: rgba(231, 198, 124, 0.35);
+  --glow-a: rgba(255, 214, 140, 0.16); --glow-b: rgba(200, 161, 101, 0.14); --glow-c: rgba(160, 90, 40, 0.12);
+  /* Light falling from a high window. */
+  --world-pattern: conic-gradient(from 180deg at 50% -6%, transparent 0deg 158deg, rgba(255, 226, 160, 0.06) 166deg, transparent 172deg, rgba(255, 226, 160, 0.05) 180deg, transparent 188deg, rgba(255, 226, 160, 0.06) 194deg, transparent 202deg 360deg) 0 0 / 100% 1200px no-repeat;
+}
+:root[data-theme="light"] .site[data-tone="sanctuary"] {
+  --bg: #f8f3e8; --bg-deep: #efe6d3; --surface: #fffdf8; --surface-2: #efe6d3;
+  --line: rgba(31, 23, 11, 0.1); --line-strong: rgba(31, 23, 11, 0.2);
+  --text: #1f170b; --text-2: #53462f; --text-3: #716349;
+  --accent: #86601a; --accent-ink: #ffffff; --accent-soft: rgba(134, 96, 26, 0.1); --focus: #6c4c12; --head: #6c4c12;
+  --btn-hi: #f3d996; --btn-mid: #e2c27a; --btn-lo: #c8a165; --btn-ink: #1d1405; --btn-glow: rgba(200, 161, 101, 0.3);
+  --glow-a: rgba(255, 214, 140, 0.3); --glow-b: rgba(200, 161, 101, 0.12); --glow-c: rgba(200, 161, 101, 0.1);
+  --world-pattern: conic-gradient(from 180deg at 50% -6%, transparent 0deg 158deg, rgba(200, 150, 60, 0.07) 166deg, transparent 172deg, rgba(200, 150, 60, 0.06) 180deg, transparent 188deg, rgba(200, 150, 60, 0.07) 194deg, transparent 202deg 360deg) 0 0 / 100% 1200px no-repeat;
+}
+
+/* ── Animales: moss and morning sun — organic and gentle ─────────────── */
+.site[data-tone="animals"] {
+  --bg: #0a1b0e; --bg-deep: #061209; --surface: #112616; --surface-2: #17311d;
+  --line: rgba(198, 239, 176, 0.11); --line-strong: rgba(198, 239, 176, 0.23);
+  --text: #f1f5ea; --text-2: #d0e0c6; --text-3: #a6bd99;
+  --accent: #8fd47e; --accent-ink: #0b1f0c; --accent-soft: rgba(143, 212, 126, 0.14); --focus: #c8f0a6; --head: #c6efb0;
+  --btn-hi: #c8f0a6; --btn-mid: #7ccc6e; --btn-lo: #4fa55a; --btn-ink: #0b1f0c; --btn-glow: rgba(124, 204, 110, 0.35);
+  --glow-a: rgba(250, 200, 100, 0.16); --glow-b: rgba(63, 143, 74, 0.28); --glow-c: rgba(63, 143, 74, 0.16);
+  --world-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 160 160' fill='none' stroke='%23c8f0a6' stroke-opacity='0.07' stroke-width='1.2'%3E%3Cpath d='M20 140C40 90 80 70 130 60C110 100 80 125 20 140Z'/%3E%3Cpath d='M20 140C60 110 95 85 130 60'/%3E%3Cpath d='M70 20c10 25 30 40 60 45c-25 12-50 6-60-45Z'/%3E%3C/svg%3E") 0 0 / 180px 180px;
+}
+:root[data-theme="light"] .site[data-tone="animals"] {
+  --bg: #eef5e9; --bg-deep: #e0ecd8; --surface: #fbfdf9; --surface-2: #e0ecd8;
+  --line: rgba(15, 32, 16, 0.1); --line-strong: rgba(15, 32, 16, 0.2);
+  --text: #0f2010; --text-2: #3a4d36; --text-3: #566a51;
+  --accent: #286b32; --accent-ink: #ffffff; --accent-soft: rgba(40, 107, 50, 0.1); --focus: #245f2c; --head: #245f2c;
+  --btn-hi: #2b8238; --btn-mid: #287a34; --btn-lo: #1f652a; --btn-ink: #ffffff; --btn-glow: rgba(40, 122, 52, 0.28);
+  --glow-a: rgba(250, 200, 100, 0.2); --glow-b: rgba(95, 183, 102, 0.14); --glow-c: rgba(95, 183, 102, 0.1);
+  --world-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 160 160' fill='none' stroke='%23286b32' stroke-opacity='0.08' stroke-width='1.2'%3E%3Cpath d='M20 140C40 90 80 70 130 60C110 100 80 125 20 140Z'/%3E%3Cpath d='M20 140C60 110 95 85 130 60'/%3E%3Cpath d='M70 20c10 25 30 40 60 45c-25 12-50 6-60-45Z'/%3E%3C/svg%3E") 0 0 / 180px 180px;
+}
+
+/* Overscroll and the strip under the dock show the body: same colour as the world. */
+body:has(.site[data-tone="mercadito"]) { background: #03201a; }
+body:has(.site[data-tone="services"]) { background: #03202a; }
+body:has(.site[data-tone="work"]) { background: #08122b; }
+body:has(.site[data-tone="yavayago"]) { background: #1d1007; }
+body:has(.site[data-tone="community"]) { background: #160d24; }
+body:has(.site[data-tone="sanctuary"]) { background: #17110a; }
+body:has(.site[data-tone="animals"]) { background: #0a1b0e; }
+:root[data-theme="light"] body:has(.site[data-tone="mercadito"]) { background: #ecf6ef; }
+:root[data-theme="light"] body:has(.site[data-tone="services"]) { background: #e9f5f5; }
+:root[data-theme="light"] body:has(.site[data-tone="work"]) { background: #edf1fa; }
+:root[data-theme="light"] body:has(.site[data-tone="yavayago"]) { background: #fbf0e6; }
+:root[data-theme="light"] body:has(.site[data-tone="community"]) { background: #f4effb; }
+:root[data-theme="light"] body:has(.site[data-tone="sanctuary"]) { background: #f8f3e8; }
+:root[data-theme="light"] body:has(.site[data-tone="animals"]) { background: #eef5e9; }
+}

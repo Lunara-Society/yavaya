@@ -28,6 +28,16 @@ Bible's navy. Text set over a photograph is the one place fixed values are
 right: it stays light on its scrim in both themes, so it must not follow tokens
 that flip.
 
+**Colour worlds** (`src/app/worlds.css`, October 2026). The shared night is
+lit from three sides: lamp gold, water teal, dusk violet. Text is warm
+(ivory and parchment), not grey. Each district page puts its whole shell,
+header and footer included, into its own world: background, surfaces,
+buttons, heading tint and body-text tint, in both themes (table below). Gold
+stays only where it means Yavaya itself or money: the wordmark and seal, the
+tokens coin, and paid placements. `tests/unit/colour-worlds.test.ts` checks
+every world's text and buttons against WCAG AA, so a world cannot quietly
+become unreadable.
+
 **Colour never carries meaning alone.** Every status is also a word or a mark.
 A red dot is invisible to many people and meaningless in bright sunlight. The
 `CapabilityBadge` and Trust Shield check rows are built this way deliberately.
@@ -50,15 +60,15 @@ archetype. The registry records both, and a test asserts that all seven
 archetypes are distinct — recolouring one card grid seven times is explicitly
 not the plan.
 
-| District | Accent | Archetype | The feeling | What the page does with it |
-| --- | --- | --- | --- | --- |
-| Mercadito | Emerald | `discovery-density` | Commerce, browsing, density | A market stall: awning, one big search, categories to swipe, goods in a tight grid |
-| Services | Teal | `request-board` | Someone needs help; someone can help | A help desk: the question and "Lo necesito hoy" beside a photograph, every kind of help as tiles |
-| Works | Deep blue | `professional-directory` | Precise, professional, credible | A job board: the search inside the banner, offers in one list, the board's rules pinned beside it |
-| YavayaGo | Orange | `motion-map` | Movement, maps, speed | A delivery app: where you are first, what you can ask for, kinds of shop as round icons |
-| Community | Purple | `calm-column` | Calm, human, unhurried | A town square: the photograph edge to edge, then kinds of post, one calm column, the doors to Santuario and Espacio Violeta |
-| Sanctuary | Ivory | `sacred-nave` | Quiet, reverent, warm | Candlelight: a tall centred title, the day's light set alone like an epigraph, then the churches |
-| Animals | Forest | `organic-profile` | Organic, compassionate | A gallery: a framed print first, adoption as a path of steps, large frames for the animals |
+| District | Accent | Colour world | Archetype | The feeling | What the page does with it |
+| --- | --- | --- | --- | --- | --- |
+| Mercadito | Emerald | Evening market: deep emerald under warm lamps, a fine dot lattice | `discovery-density` | Commerce, browsing, density | A market stall: awning, one big search, categories to swipe, goods in a tight grid |
+| Services | Teal | Clear water: deep aqua, fine diagonal lines | `request-board` | Someone needs help; someone can help | A help desk: the question and "Lo necesito hoy" beside a photograph, every kind of help as tiles |
+| Works | Deep blue | Ink and blueprint: navy with a drafting grid | `professional-directory` | Precise, professional, credible | A job board: the search inside the banner, offers in one list, the board's rules pinned beside it |
+| YavayaGo | Orange | Sunset on the road: ember brown, speed streaks | `motion-map` | Movement, maps, speed | A delivery app: where you are first, what you can ask for, kinds of shop as round icons |
+| Community | Purple | Plum dusk in the plaza: faint rings, like people gathered | `calm-column` | Calm, human, unhurried | A town square: the photograph edge to edge, then kinds of post, one calm column, the doors to Santuario and Espacio Violeta |
+| Sanctuary | Ivory | Candlelight: warm umber, light falling from a high window | `sacred-nave` | Quiet, reverent, warm | Candlelight: a tall centred title, the day's light set alone like an epigraph, then the churches |
+| Animals | Forest | Moss and morning sun: a trace of leaves | `organic-profile` | Organic, compassionate | A gallery: a framed print first, adoption as a path of steps, large frames for the animals |
 
 The archetype is the substance. Mercadito is dense because browsing many items
 quickly is the task. Community keeps the conversation in a single calm column
