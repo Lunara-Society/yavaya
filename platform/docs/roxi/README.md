@@ -123,6 +123,13 @@ Nine behaviour tests are attached to the agent and run from its Tests tab:
 
 Run them after every change to the prompt, the model or the knowledge.
 
+Since 24 October 2026 the injection test ends "failed" with *Unknown error
+occurred whilst attempting to evaluate*, no agent reply and no model usage:
+the prompt-injection guardrail now stops that message before the model runs,
+so the evaluator has nothing to grade. That is the guardrail working, not a
+regression — check `agent_responses` is empty before treating it as one, and
+do not switch the guardrail off to make the test green.
+
 ## Keeping Roxi current
 
 ### Changing what she says or does
