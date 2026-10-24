@@ -12,6 +12,12 @@
  * change and say why in the commit.
  *
  * October 2026, when this was written: pages 103–117 KB, styles 48 KB.
+ *
+ * Styles are measured per page too, since 24 October 2026: each district now
+ * loads a small stylesheet of its own (app/<district>/barrio.css, through its
+ * layout), and adding up seven files that no page ever loads together
+ * measured nothing anyone downloads. A page counts the root layout's styles,
+ * every layout above it, and its own.
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -20,7 +26,7 @@ import { gzipSync } from 'node:zlib';
 const BUDGET = {
   /** Compressed JavaScript any one page loads on arrival. */
   pageJsKb: 135,
-  /** Compressed CSS, all stylesheets together. */
+  /** Compressed CSS any one page loads on arrival. */
   cssKb: 60,
 };
 
@@ -43,11 +49,22 @@ for (const [route, files] of Object.entries(pages)) {
   if (total > BUDGET.pageJsKb) failures.push(`${route}: ${total.toFixed(1)} KB of JavaScript (budget ${BUDGET.pageJsKb} KB)`);
 }
 
-const css = [...new Set(Object.values(pages).flat())].filter((f) => f.endsWith('.css')).reduce((sum, f) => sum + kb(f), 0);
-if (css > BUDGET.cssKb) failures.push(`stylesheets: ${css.toFixed(1)} KB (budget ${BUDGET.cssKb} KB)`);
+/** `/a/b/page` → its own entry and the layouts above it: `/layout`, `/a/layout`, `/a/b/layout`. */
+const cssOf = (route) => {
+  const segments = route.split('/').slice(1, -1);
+  const entries = ['/layout', ...segments.map((_, i) => `/${segments.slice(0, i + 1).join('/')}/layout`), route];
+  return [...new Set(entries.flatMap((entry) => pages[entry] ?? []))].filter((f) => f.endsWith('.css'));
+};
+let css = { route: '', kb: 0 };
+for (const route of Object.keys(pages)) {
+  if (!route.endsWith('/page')) continue;
+  const total = cssOf(route).reduce((sum, f) => sum + kb(f), 0);
+  if (total > css.kb) css = { route, kb: total };
+  if (total > BUDGET.cssKb) failures.push(`${route}: ${total.toFixed(1)} KB of styles (budget ${BUDGET.cssKb} KB)`);
+}
 
 if (failures.length) {
   console.error(`Size budget exceeded:\n  ${failures.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`Size budget: heaviest page ${heaviest.route} ${heaviest.kb.toFixed(1)}/${BUDGET.pageJsKb} KB JS; styles ${css.toFixed(1)}/${BUDGET.cssKb} KB.`);
+console.log(`Size budget: heaviest page ${heaviest.route} ${heaviest.kb.toFixed(1)}/${BUDGET.pageJsKb} KB JS; styles ${css.route} ${css.kb.toFixed(1)}/${BUDGET.cssKb} KB.`);

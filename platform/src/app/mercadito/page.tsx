@@ -16,6 +16,7 @@ import { placePickerLabels } from '@/ui/components/place-labels';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { FabWhenAway } from '@/ui/components/fab-when-away';
+import { Rotulo } from '@/ui/site/rotulo';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,6 +73,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
       {/* Mercadito's own shape: a market stall. The awning on top, one big
           search, categories you swipe through, and the goods in a tight grid. */}
       <section className="mc-top">
+        <Rotulo id="mercadito" className="barrio-sign" />
         <div className="mc-awning" aria-hidden="true" />
         <div className="mc-top-art" aria-hidden="true">
           <DistrictScene id="mercadito" priority />

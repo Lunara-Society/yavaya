@@ -1,0 +1,40 @@
+/*
+ * Servicios' own stylesheet — clear-water cyan and black (colours in
+ * worlds.css; DESIGN-SYSTEM.md, "Barrios"). Only Servicios' pages load it,
+ * and every rule is scoped to its world (see mercadito/barrio.css for why).
+ *
+ * - Its object: a service ticket, torn from the pad — a perforated edge on
+ *   every request and every kind of help.
+ * - Its gesture: "Lo necesito hoy" sends out a ping, the way a call goes out.
+ * - Its motion: things ripple into view.
+ * - Its sign: hammer and wrench, crossed (ui/site/rotulo.tsx).
+ */
+
+/* On a phone the sign hangs beside the question, so the question makes room. */
+@media (max-width: 899px) {
+  .site[data-tone="services"] .sv-hero h1 { padding-right: clamp(96px, 26vw, 170px); }
+}
+
+/* ── The ticket: notches down the left edge, as if torn from a pad ── */
+.site[data-tone="services"] :is(.sv-request, .sv-cat) {
+  -webkit-mask: radial-gradient(circle 5px at 0 50%, #0000 96%, #000) 0 0 / 100% 16px repeat-y;
+  mask: radial-gradient(circle 5px at 0 50%, #0000 96%, #000) 0 0 / 100% 16px repeat-y;
+  padding-left: 22px;
+}
+.site[data-tone="services"] .sv-request { border-color: color-mix(in srgb, var(--accent) 26%, var(--line)); }
+.site[data-tone="services"] .sv-request:hover { border-color: var(--accent); }
+.site[data-tone="services"] .sv-cat .sv-icon { color: var(--accent); }
+
+/* ── The ping: two rings going out from "I need it today" ── */
+@keyframes sv-sonar {
+  0% { box-shadow: 0 0 0 0 rgba(240, 163, 58, 0.6), 0 0 0 0 rgba(240, 163, 58, 0.35); }
+  70% { box-shadow: 0 0 0 10px rgba(240, 163, 58, 0), 0 0 0 22px rgba(240, 163, 58, 0); }
+  100% { box-shadow: 0 0 0 10px rgba(240, 163, 58, 0), 0 0 0 22px rgba(240, 163, 58, 0); }
+}
+.site[data-tone="services"] .sv-today-dot { animation: sv-sonar 2.2s cubic-bezier(.2, .6, .3, 1) infinite; }
+
+/* ── Rippling into view, where the browser can tie it to scrolling ── */
+@keyframes sv-ripple { from { opacity: 0; scale: 0.94; } to { opacity: 1; scale: none; } }
+@supports (animation-timeline: view()) {
+  .site[data-tone="services"] :is(.sv-request, .sv-cat) { animation: sv-ripple linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+}

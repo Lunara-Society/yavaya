@@ -1,0 +1,48 @@
+/*
+ * Santuario's own stylesheet — a white chapel by candlelight, ivory and soft
+ * gold (colours in worlds.css; always rendered in the light theme, see
+ * config/preferences.ts). Only Santuario's pages load it, and every rule is
+ * scoped to its world (see mercadito/barrio.css).
+ *
+ * - Its object: the arch of a chapel window. The day's light, the words the
+ *   churches write and the churches themselves sit under arches.
+ * - Its gesture: a prayer lights a candle (worlds.css, shared with the plaza).
+ * - Its motion: things come into view the way candlelight does — slowly,
+ *   warming as they brighten.
+ * - Its sign: a gilded arch with a candle that burns (ui/site/rotulo.tsx).
+ */
+
+/* ── The hero, in candlelight rather than at night ──
+   The church is seen through warm light and the words are in ink. The veil is
+   heaviest where the words sit, so they read on any part of the photograph. */
+.site[data-tone="sanctuary"] .sc-hero { background: #fbf6ea; color: var(--text); }
+.site[data-tone="sanctuary"] .sc-hero-photo::after {
+  background:
+    radial-gradient(62% 50% at 50% 52%, rgba(255, 251, 240, 0.9), rgba(255, 251, 240, 0.62) 62%, rgba(255, 251, 240, 0.3) 100%),
+    linear-gradient(180deg, rgba(251, 246, 234, 0.25) 0%, rgba(251, 246, 234, 0) 30%, rgba(251, 246, 234, 0.5) 74%, #fbf6ea 100%);
+}
+.site[data-tone="sanctuary"] .sc-hero-glow { background: radial-gradient(36% 44% at 50% 56%, rgba(255, 200, 120, 0.42), transparent 70%); }
+.site[data-tone="sanctuary"] .sc-hero h1 { color: #3a2a10; text-shadow: 0 0 38px rgba(255, 210, 130, 0.95), 0 0 2px rgba(255, 251, 240, 0.9); }
+.site[data-tone="sanctuary"] .sc-hero .eyebrow { color: #7a5410; }
+.site[data-tone="sanctuary"] .sc-hero .lead { color: #3f3019; text-shadow: 0 0 18px rgba(255, 251, 240, 0.9); }
+.site[data-tone="sanctuary"] .sc-hero-photo .art-note { left: 14px; right: auto; }
+
+/* ── Under arches ── */
+.site[data-tone="sanctuary"] .sc-light {
+  border-radius: 400px 400px 28px 28px / 150px 150px 28px 28px; padding-top: clamp(58px, 9vw, 92px);
+  background: radial-gradient(70% 60% at 50% 0%, rgba(255, 214, 140, 0.28), transparent 70%), #fffdf7;
+  box-shadow: 0 0 0 1px rgba(201, 161, 78, 0.35), 0 30px 80px rgba(120, 84, 20, 0.16), 0 0 90px rgba(255, 210, 130, 0.22);
+}
+.site[data-tone="sanctuary"] .sc-word { border-radius: 220px 220px 20px 20px / 64px 64px 20px 20px; padding-top: 44px; background: #fffdf7; box-shadow: 0 18px 40px rgba(120, 84, 20, 0.1); }
+.site[data-tone="sanctuary"] .sc-word::before { left: 50%; top: 14px; bottom: auto; width: 46px; height: 3px; margin-left: -23px; }
+.site[data-tone="sanctuary"] .sc-church-seal { border-radius: 22px 22px 8px 8px / 22px 22px 8px 8px; }
+.site[data-tone="sanctuary"] :is(.sc-church, .sc-card) { background: #fffdf7; box-shadow: 0 12px 30px rgba(120, 84, 20, 0.08); }
+
+/* The prayer wall: each request under its own small arch. */
+.site[data-tone="sanctuary"] .cm-post { border-left-width: 1px; border-radius: 120px 120px 18px 18px / 36px 36px 18px 18px; padding-top: 34px; background: #fffdf7; }
+
+/* ── Kindling into view ── */
+@keyframes sc-kindle { from { opacity: 0; filter: brightness(1.18) sepia(0.4); translate: 0 10px; } to { opacity: 1; filter: none; translate: none; } }
+@supports (animation-timeline: view()) {
+  .site[data-tone="sanctuary"] :is(.sc-word, .sc-church, .cm-feed > *) { animation: sc-kindle linear both; animation-timeline: view(); animation-range: entry 0% entry 75%; }
+}

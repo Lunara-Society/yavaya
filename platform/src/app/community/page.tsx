@@ -9,6 +9,7 @@ import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { Icon, type IconName } from '@/ui/site/icons';
 import { PostCard } from '@/ui/community/post-card';
+import { Rotulo } from '@/ui/site/rotulo';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
 
 export const dynamic = 'force-dynamic';
@@ -49,6 +50,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
           on a square: what people come here for, the conversation itself,
           and the doors to the Sanctuary and Espacio Violeta. */}
       <section className="sq-hero">
+        <Rotulo id="community" className="barrio-sign" />
         <div className="sq-hero-photo" aria-hidden="true">
           <DistrictScene id="community" priority sizes="100vw" />
         </div>

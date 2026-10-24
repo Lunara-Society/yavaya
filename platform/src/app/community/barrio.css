@@ -1,0 +1,43 @@
+/*
+ * Comunidad's own stylesheet — violet and black, the plaza after dark
+ * (colours in worlds.css; DESIGN-SYSTEM.md, "Barrios"). Only Comunidad's
+ * pages load it, and every rule is scoped to its world (see
+ * mercadito/barrio.css).
+ *
+ * - Its object: a note pinned to the plaza's board — each post a sheet with a
+ *   pin in the papel picado's colours, hung a little crooked, as notes are.
+ * - Its motion: posts rise gently, unhurried.
+ * - Its sign: the ceiba, with two people under it (ui/site/rotulo.tsx).
+ * Calm on purpose (DESIGN-SYSTEM.md): nothing here hurries or decorates a
+ * person's need.
+ */
+
+/* The sign hangs in the photograph's sky; the "Ilustración" note moves to the other corner. */
+.site[data-tone="community"] .sq-hero-photo .art-note { left: 14px; right: auto; }
+
+/* ── Pinned notes ── */
+.site[data-tone="community"] .cm-post {
+  border-left-width: 1px; border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+  border-radius: 6px 6px 18px 18px; padding-top: 34px;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.38);
+}
+.site[data-tone="community"] .cm-post::before {
+  content: ""; position: absolute; top: 12px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0 14%, var(--pin, var(--flag-1)) 34%, color-mix(in srgb, var(--pin, var(--flag-1)) 70%, #000) 100%);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+.site[data-tone="community"] .cm-feed > :nth-child(4n + 2) { --pin: var(--flag-2); }
+.site[data-tone="community"] .cm-feed > :nth-child(4n + 3) { --pin: var(--flag-3); }
+.site[data-tone="community"] .cm-feed > :nth-child(4n + 4) { --pin: var(--flag-4); }
+.site[data-tone="community"] .cm-feed > :nth-child(odd) { rotate: -0.45deg; }
+.site[data-tone="community"] .cm-feed > :nth-child(even) { rotate: 0.4deg; }
+
+/* ── Rising gently into view ── */
+@keyframes cm-rise { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: none; } }
+@supports (animation-timeline: view()) {
+  .site[data-tone="community"] .cm-feed > * { animation: cm-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+}
+
+/* The papel picado over the plaza stirs, as paper does in a breeze. */
+@keyframes cm-breeze { 0%, 100% { transform: skewX(0deg); } 50% { transform: skewX(-1.6deg); } }
+.site[data-tone="community"] main#main::before { transform-origin: 50% 0; animation: cm-breeze 6s ease-in-out infinite; }

@@ -12,6 +12,7 @@ import { money } from '@/ui/go/format';
 import { browseStores, myDriver, myStore } from '@/server/domains/go/service';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 import { subtreeIds } from '@/server/domains/geography/service';
 
@@ -64,6 +65,7 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
           kinds of shop as big round icons, the shops themselves, and at the
           end the invitations to sell or to deliver. */}
       <section className="go-hero">
+        <Rotulo id="yavayago" className="barrio-sign" />
         <div className="go-hero-art" aria-hidden="true">
           <DistrictScene id="yavayago" priority sizes="100vw" />
         </div>

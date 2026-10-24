@@ -1,0 +1,46 @@
+/*
+ * Animales' own stylesheet — leaf green and black, the garden in the morning
+ * (colours in worlds.css; DESIGN-SYSTEM.md, "Barrios"). Only Animales' pages
+ * load it, and every rule is scoped to its world (see mercadito/barrio.css).
+ *
+ * - Its object: a polaroid — every animal waiting for a home has its
+ *   photograph taped up, a little crooked, white border and handwritten-sized
+ *   name, the way a shelter's wall looks.
+ * - Its motion: a small hop.
+ * - Its sign: a paw (ui/site/rotulo.tsx).
+ */
+
+/* The sign hangs over the framed print; the "Ilustración" note moves to the other corner. */
+.site[data-tone="animals"] .an-hero { position: relative; }
+.site[data-tone="animals"] .an-hero-photo .art-note { left: 22px; right: auto; }
+
+/* ── Polaroids ──
+   The frame is paper whatever the theme, so the words on it are ink: the
+   card sets its own text colours. */
+.site[data-tone="animals"] .an-card {
+  --text: #1a1e14; --text-2: #3b4430; --text-3: #566049;
+  position: relative; overflow: visible; padding: 10px 10px 0; border: 0; border-radius: 3px;
+  background: #f7f4ec; color: var(--text); box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+  rotate: -1deg; transition: rotate 0.35s cubic-bezier(.2, .7, .2, 1), translate 0.35s cubic-bezier(.2, .7, .2, 1);
+}
+.site[data-tone="animals"] .an-grid > :nth-child(even) { rotate: 1.2deg; }
+.site[data-tone="animals"] .an-grid > :nth-child(3n) { rotate: -0.4deg; }
+.site[data-tone="animals"] .an-card:hover { rotate: 0deg; translate: 0 -5px; }
+/* Tape. */
+.site[data-tone="animals"] .an-card::before {
+  content: ""; position: absolute; z-index: 1; top: -9px; left: 50%; width: 76px; height: 20px; margin-left: -38px;
+  background: rgba(214, 240, 170, 0.6); rotate: -3deg; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.site[data-tone="animals"] .an-photo { border-radius: 1px; overflow: hidden; }
+.site[data-tone="animals"] .an-card-body { padding: 12px 6px 16px; }
+.site[data-tone="animals"] .an-card .an-name { font-family: var(--serif); font-size: 1.3rem; color: #14180e; }
+.site[data-tone="animals"] .an-card .an-health { color: #2c6510; }
+
+/* ── A small hop (Alive marks the animals as they come into view) ── */
+@keyframes an-hop {
+  0% { opacity: 0; translate: 0 26px; }
+  58% { opacity: 1; translate: 0 -7px; }
+  80% { translate: 0 2px; }
+  100% { opacity: 1; translate: none; }
+}
+.alive .site[data-tone="animals"] .an-grid > .rv.in { animation: an-hop 0.66s cubic-bezier(.3, .7, .4, 1) var(--rv-delay, 0ms) both; }

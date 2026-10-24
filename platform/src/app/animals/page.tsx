@@ -12,6 +12,7 @@ import { AnimalCard } from '@/ui/animals/parts';
 import { getCertificate, getRescuer, listAnimals } from '@/server/domains/animals/service';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
@@ -53,6 +54,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
           way to adopt reads as a path, one step after the other; and the
           animals themselves fill the page in large frames. */}
       <section className="an-hero">
+        <Rotulo id="animals" className="barrio-sign" />
         <div className="wrap an-hero-in">
           <figure className="an-hero-photo">
             <DistrictScene id="animals" priority sizes="(min-width: 900px) 46vw, 100vw" />

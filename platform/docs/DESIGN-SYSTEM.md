@@ -31,12 +31,18 @@ that flip.
 **Colour worlds** (`src/app/worlds.css`, October 2026). The shared night is
 lit from three sides: lamp gold, water teal, dusk violet. Text is warm
 (ivory and parchment), not grey. Each district page puts its whole shell,
-header and footer included, into its own world: background, surfaces,
-buttons, heading tint and body-text tint, in both themes (table below). Gold
-stays only where it means Yavaya itself or money: the wordmark and seal, the
-tokens coin, and paid placements. `tests/unit/colour-worlds.test.ts` checks
-every world's text and buttons against WCAG AA, so a world cannot quietly
-become unreadable.
+header and footer included, into its own world, in both themes (table
+below). Since 24 October 2026 six of them are **their colour and black**
+(owner's direction): by night a black street lit by the barrio's colour,
+buttons struck in that colour with black ink; by day white paper, black ink,
+and black buttons that write in the colour. **Santuario is the exception** —
+a white chapel by candlelight, ivory and soft gold, in both themes; its pages
+always render in the light theme (`isCandlelit` in `config/preferences.ts`),
+so every light-theme rule applies there. Gold otherwise stays only where it
+means Yavaya itself or money: the wordmark and seal, the tokens coin, and
+paid placements. `tests/unit/colour-worlds.test.ts` checks every world's
+text and buttons against WCAG AA, so a world cannot quietly become
+unreadable.
 
 **Colour never carries meaning alone.** Every status is also a word or a mark.
 A red dot is invisible to many people and meaningless in bright sunlight. The
@@ -62,13 +68,13 @@ not the plan.
 
 | District | Accent | Colour world | Archetype | The feeling | What the page does with it |
 | --- | --- | --- | --- | --- | --- |
-| Mercadito | Emerald | Evening market: deep emerald under warm lamps, a fine dot lattice | `discovery-density` | Commerce, browsing, density | A market stall: awning, one big search, categories to swipe, goods in a tight grid |
-| Services | Teal | Clear water: deep aqua, fine diagonal lines | `request-board` | Someone needs help; someone can help | A help desk: the question and "Lo necesito hoy" beside a photograph, every kind of help as tiles |
-| Works | Deep blue | Ink and blueprint: navy with a drafting grid | `professional-directory` | Precise, professional, credible | A job board: the search inside the banner, offers in one list, the board's rules pinned beside it |
-| YavayaGo | Orange | Sunset on the road: ember brown, speed streaks | `motion-map` | Movement, maps, speed | A delivery app: where you are first, what you can ask for, kinds of shop as round icons |
-| Community | Purple | Plum dusk in the plaza: faint rings, like people gathered | `calm-column` | Calm, human, unhurried | A town square: the photograph edge to edge, then kinds of post, one calm column, the doors to Santuario and Espacio Violeta |
-| Sanctuary | Ivory | Candlelight: warm umber, light falling from a high window | `sacred-nave` | Quiet, reverent, warm | Candlelight: a tall centred title, the day's light set alone like an epigraph, then the churches |
-| Animals | Forest | Moss and morning sun: a trace of leaves | `organic-profile` | Organic, compassionate | A gallery: a framed print first, adoption as a path of steps, large frames for the animals |
+| Mercadito | Emerald | Emerald and black, the market at first light; woven cloth | `discovery-density` | Commerce, browsing, density | A market stall: awning, one big search, categories to swipe, goods in a tight grid |
+| Services | Cyan | Clear-water cyan and black; ripples spreading from a call | `request-board` | Someone needs help; someone can help | A help desk: the question and "Lo necesito hoy" beside a photograph, every kind of help as tiles |
+| Works | Electric blue | Blue and black, ink and blueprint; a drafting grid | `professional-directory` | Precise, professional, credible | A job board: the search inside the banner, offers in one list, the board's rules pinned beside it |
+| YavayaGo | Orange | Sunset orange and black, the road at dusk; light streaking past | `motion-map` | Movement, maps, speed | A delivery app: where you are first, what you can ask for, kinds of shop as round icons |
+| Community | Violet | Violet and black, the plaza after dark; rings, like people gathered | `calm-column` | Calm, human, unhurried | A town square: the photograph edge to edge, then kinds of post, one calm column, the doors to Santuario and Espacio Violeta |
+| Sanctuary | Soft gold | A white chapel by candlelight, ivory and soft gold; light from a high window | `sacred-nave` | Quiet, reverent, warm | Candlelight: a tall centred title, the day's light set alone like an epigraph, then the churches |
+| Animals | Leaf green | Leaf green and black, the garden in the morning; a trace of leaves | `organic-profile` | Organic, compassionate | A gallery: a framed print first, adoption as a path of steps, large frames for the animals |
 
 The archetype is the substance. Mercadito is dense because browsing many items
 quickly is the task. Community keeps the conversation in a single calm column
@@ -88,6 +94,37 @@ dashed line, Trabajo a draftsman's rule, YavayaGo a road with someone on it,
 Comunidad papel picado, Santuario candlelight, Animales a trail of paws. A
 pseudo-element in the world's own colours, so a screen reader never meets it;
 reduced motion stops the three that move.
+
+## Barrios
+
+Since 24 October 2026 each district is a barrio of one colonial town, and a
+barrio is more than its colours. It has a **sign** — a wrought-iron rótulo
+over the door, a silhouette of the trade rather than a word, its emblem lit
+from behind in the barrio's colour (`ui/site/rotulo.tsx`) — an **object**,
+the shape its things take; a **motion**, the way they arrive; and a
+**gesture** of its own. The sign swings once as you arrive, as if someone
+had just walked past, then hangs in the breeze; with reduced motion it hangs
+still.
+
+| Barrio | Sign | Object | Motion | Gesture |
+| --- | --- | --- | --- | --- |
+| Mercadito | A basket of fruit, round | Price tags with a punched hole; every category a stall under its own awning | Goods set down on the table | The awning |
+| Servicios | Hammer and wrench, a guild shield | A ticket torn from the pad, notched down its edge | Rippling into view | "Lo necesito hoy" pings like a call going out |
+| Trabajo | A compass on a rule, a cut plate | The ficha: ruled, corner turned down, the pay stamped in mono | The top rule draws itself across | The pay, always the first thing read |
+| YavayaGo | A scooter with its box, a pennant pointing the way | A route ticket, perforated and notched, fee and time printed like a departure board | Arriving from the right, like traffic | The road with someone on it |
+| Comunidad | The ceiba with two people under it, an oval | A note pinned to the plaza's board, a little crooked, pins in papel picado colours | Rising gently | The papel picado stirs |
+| Santuario | A gilded chapel arch with a candle that burns | The arch of a chapel window: the day's light, the words, the churches | Kindling into view, slowly | A prayer lights a candle |
+| Animales | A paw, a scalloped round | A polaroid, taped up | A small hop | The trail of paws |
+
+The prayer candle is the one gesture that crosses barrios: wherever a
+prayer request appears, its "I'm praying with you" button carries a candle,
+alight once you have pressed it — the real words and the real count, given a
+shape (`worlds.css`).
+
+Each barrio's own rules live in `app/<district>/barrio.css`, loaded by that
+district's layout, so a page only downloads its own barrio. Every rule is
+scoped to `.site[data-tone="<district>"]` as well: a stylesheet one route
+loaded stays in the page when the visit moves on.
 
 **The home page's districts are seven windows.** Each card in the gallery
 wears its district's world: its colours and pattern, light rising from one

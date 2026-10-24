@@ -1,0 +1,34 @@
+/*
+ * YavayaGo's own stylesheet — sunset orange and black, the road at dusk
+ * (colours in worlds.css; DESIGN-SYSTEM.md, "Barrios"). Only YavayaGo's pages
+ * load it, and every rule is scoped to its world (see mercadito/barrio.css).
+ *
+ * - Its object: a route ticket. A shop is where the trip starts, so its card
+ *   is a ticket: perforated between the picture and the details, notched at
+ *   both edges, the fee and the time printed like a departure board.
+ * - Its motion: things arrive from the right, the way traffic does.
+ * - Its sign: a scooter with its delivery box (ui/site/rotulo.tsx).
+ */
+
+/* The sign hangs in the photograph's sky; the "Ilustración" note moves to the other corner. */
+.site[data-tone="yavayago"] .go-hero-art .art-note { left: 14px; right: auto; }
+
+/* ── The ticket ── */
+.site[data-tone="yavayago"] .go-store-card { border-radius: 18px; }
+.site[data-tone="yavayago"] .go-store-text { position: relative; border-top: 2px dashed color-mix(in srgb, var(--accent) 45%, transparent); }
+.site[data-tone="yavayago"] .go-store-text::before,
+.site[data-tone="yavayago"] .go-store-text::after {
+  content: ""; position: absolute; top: -10px; width: 18px; height: 18px; border-radius: 50%; background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.site[data-tone="yavayago"] .go-store-text::before { left: -10px; }
+.site[data-tone="yavayago"] .go-store-text::after { right: -10px; }
+.site[data-tone="yavayago"] .go-meta { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: var(--accent); font-weight: 700; }
+
+/* ── Arriving from the right (Alive marks the shops as they come into view) ── */
+@keyframes go-arrive {
+  0% { opacity: 0; translate: 56px 0; transform: skewX(-7deg); }
+  65% { opacity: 1; translate: -4px 0; transform: skewX(1deg); }
+  100% { opacity: 1; translate: none; transform: none; }
+}
+.alive .site[data-tone="yavayago"] .go-stores > .rv.in { animation: go-arrive 0.62s cubic-bezier(.2, .8, .3, 1) var(--rv-delay, 0ms) both; }

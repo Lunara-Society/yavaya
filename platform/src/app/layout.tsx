@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
 import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
+import { themeAttributeAt } from '@/config/preferences';
+import { ThemeKeeper } from '@/ui/site/theme-keeper';
 import { RoxiRoot } from '@/ui/roxi/roxi-root';
 import { createTranslator } from '@/i18n';
 import { ERROR_TEXTS_ID, errorTexts } from '@/i18n/error-texts';
@@ -69,7 +71,8 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [locale, theme] = await Promise.all([resolveLocale(), resolveThemeAttribute()]);
+  const [locale, theme, requestHeaders] = await Promise.all([resolveLocale(), resolveThemeAttribute(), headers()]);
+  const themeHere = themeAttributeAt(requestHeaders.get('x-pathname'), theme);
 
   /*
    * The theme is resolved on the server before the first byte, so the correct
@@ -85,10 +88,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // The word in the corner of illustrative photographs (ArtNote in src/ui/site/art.tsx), read by site.css.
   const artNote = { ['--art-note' as string]: JSON.stringify(t('art.note')) } as React.CSSProperties;
   return (
-    <html lang={locale} data-theme={theme ?? undefined} style={artNote}>
+    <html lang={locale} data-theme={themeHere ?? undefined} style={artNote}>
       <body>
         {/* The error page's words, so the boundary needs no dictionary (src/i18n/error-texts.ts). Data, never run. */}
         <script id={ERROR_TEXTS_ID} type="application/json" dangerouslySetInnerHTML={{ __html: errorJson }} />
+        {/* Santuario is candlelit whatever the member chose (config/preferences.ts); this keeps that true across navigation. */}
+        <ThemeKeeper chosen={theme} />
         {children}
         {/* Roxi, the assistant: here rather than in a page so a conversation survives navigation. */}
         <RoxiRoot />

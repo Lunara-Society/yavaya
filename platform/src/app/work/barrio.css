@@ -1,0 +1,49 @@
+/*
+ * Trabajo's own stylesheet — electric blue and black, ink and blueprint
+ * (colours in worlds.css; DESIGN-SYSTEM.md, "Barrios"). Only Trabajo's pages
+ * load it, and every rule is scoped to its world (see mercadito/barrio.css).
+ *
+ * - Its object: the ficha — an index card, ruled, its corner turned down,
+ *   with the pay stamped on it. Every offer here must say what it pays (the
+ *   board's rule), so the stamp is the first thing read.
+ * - Its motion: the card's top rule draws itself across, like a line on a
+ *   drawing board.
+ * - Its sign: a drafting compass standing on a rule (ui/site/rotulo.tsx).
+ */
+
+/* The photograph behind the title, seen through blueprint. */
+.site[data-tone="work"] .wk-hero-art::after {
+  background:
+    linear-gradient(rgba(91, 140, 255, 0.1) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(90deg, rgba(91, 140, 255, 0.1) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(180deg, rgba(4, 6, 13, 0.6) 0%, rgba(4, 6, 13, 0.88) 50%, rgba(4, 6, 13, 0.97) 100%);
+}
+
+/* ── The ficha ── */
+.site[data-tone="work"] .wk-post {
+  position: relative; overflow: hidden; padding-top: 22px; box-shadow: none; border-radius: 10px;
+  background:
+    linear-gradient(var(--accent), var(--accent)) 0 0 / 100% 3px no-repeat,
+    repeating-linear-gradient(180deg, transparent 0 27px, color-mix(in srgb, var(--accent) 10%, transparent) 27px 28px) 0 56px / 100% calc(100% - 56px) no-repeat,
+    var(--surface);
+}
+/* The corner, turned down. */
+.site[data-tone="work"] .wk-post::after {
+  content: ""; position: absolute; top: 0; right: 0; width: 26px; height: 26px;
+  background: linear-gradient(225deg, var(--bg) 50%, color-mix(in srgb, var(--accent) 24%, var(--surface-2)) 50%);
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.25);
+}
+.site[data-tone="work"] .wk-post.is-featured::after { display: none; }
+/* The pay, stamped. */
+.site[data-tone="work"] .wk-pay {
+  display: inline-block; margin: 2px 0 10px; padding: 3px 10px; border: 2px solid currentColor; border-radius: 6px;
+  color: var(--accent); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1rem; letter-spacing: 0.01em;
+  rotate: -1.2deg; transform-origin: 0 50%;
+}
+.site[data-tone="work"] .wk-pay.big { font-size: 1.35rem; }
+
+/* ── The rule draws itself across as the card comes into view ── */
+@keyframes wk-rule { from { background-size: 0 3px, 100% calc(100% - 56px), auto; opacity: 0.4; } to { opacity: 1; } }
+@supports (animation-timeline: view()) {
+  .site[data-tone="work"] .wk-post { animation: wk-rule linear both; animation-timeline: view(); animation-range: entry 10% entry 70%; }
+}

@@ -11,6 +11,7 @@ import { PostCard } from '@/ui/work/parts';
 import { getProfile, listPosts } from '@/server/domains/work/service';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 
 export const dynamic = 'force-dynamic';
@@ -47,6 +48,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           it, as people look for work by searching first; then the offers in
           one long list, with the board's rules pinned beside them. */}
       <section className="wk-hero">
+        <Rotulo id="work" className="barrio-sign" />
         <div className="wk-hero-art" aria-hidden="true">
           <DistrictScene id="work" priority sizes="(min-width: 900px) 60vw, 100vw" />
         </div>

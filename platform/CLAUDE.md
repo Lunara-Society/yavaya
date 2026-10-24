@@ -94,5 +94,9 @@ only thing preventing a well-meaning "simplification".
 4. Declare any billable actions in the seed — publishing costs are explicit,
    and free things stay free (community support, causes, animal welfare).
 5. Build the district's own layout. Do not clone another district's grid.
+   Give it a barrio of its own (DESIGN-SYSTEM.md, "Barrios"): an emblem and
+   plaque in `ui/site/rotulo.tsx`, hung in its hero, and an
+   `app/<district>/barrio.css` loaded by its `layout.tsx` for its object,
+   motion and gesture — every rule scoped to its `data-tone`.
 6. Flip `status` to `available` **only when it actually works**, and enable it
    in the `districts` table.

@@ -8,6 +8,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { GuideVideo } from '@/ui/site/guide-video';
 import { DistrictScene } from '@/ui/site/art';
 import { CategoryIcon, RequestCard, categoryName } from '@/ui/services/parts';
+import { Rotulo } from '@/ui/site/rotulo';
 import { getProviderProfile, listBoard } from '@/server/domains/services/service';
 import { availabilityAction } from './actions';
 
@@ -46,6 +47,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
           on the left, someone at work on the right, and every kind of help
           laid out below as tiles. The guide film waits at the end. */}
       <section className="sv-hero">
+        <Rotulo id="services" className="barrio-sign" />
         <div className="wrap sv-hero-in">
           <div className="sv-hero-text">
             <p className="eyebrow">{c.districts.services.name}</p>

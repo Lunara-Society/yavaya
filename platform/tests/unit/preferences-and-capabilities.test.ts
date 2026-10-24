@@ -5,7 +5,9 @@ import {
   LANGUAGE_PREFERENCES,
   THEME_PREFERENCES,
   isLanguagePreference,
+  isCandlelit,
   isThemePreference,
+  themeAttributeAt,
   themeAttributeFor,
 } from '@/config/preferences';
 import { negotiateLocale } from '@/i18n/config';
@@ -36,6 +38,24 @@ describe('display preferences', () => {
     expect(themeAttributeFor('system')).toBeNull();
     expect(themeAttributeFor('light')).toBe('light');
     expect(themeAttributeFor('dark')).toBe('dark');
+  });
+});
+
+describe('the candlelit sanctuary', () => {
+  it('renders Santuario and its review page in the light theme whatever the member chose', () => {
+    for (const path of ['/sanctuary', '/sanctuary/prayer', '/sanctuary/churches/abc', '/admin/sanctuary']) {
+      expect(isCandlelit(path)).toBe(true);
+      expect(themeAttributeAt(path, 'dark')).toBe('light');
+      expect(themeAttributeAt(path, null)).toBe('light');
+    }
+  });
+
+  it('leaves every other page to the member, including look-alike paths', () => {
+    for (const path of ['/', '/community', '/sanctuarys', '/admin', '/members/sanctuary', null]) {
+      expect(isCandlelit(path)).toBe(false);
+      expect(themeAttributeAt(path, 'dark')).toBe('dark');
+      expect(themeAttributeAt(path, null)).toBe(null);
+    }
   });
 });
 

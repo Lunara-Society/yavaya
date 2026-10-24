@@ -9,6 +9,7 @@ import { ChurchRow, WordCard } from '@/ui/sanctuary/parts';
 import { followedChurches, listChurches, listDevotionals } from '@/server/domains/sanctuary/service';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 import { DAILY_KINDS, dailyLight, type DailyKind } from '@/i18n/daily';
 import type { MessageKey } from '@/i18n/dictionaries/es';
@@ -59,6 +60,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
           set like an epigraph, alone on the page; then the churches' words
           and their doors, in two columns. */}
       <section className="sc-hero">
+        <Rotulo id="sanctuary" className="barrio-sign" />
         <PageScene name="sanctuary" className="sc-hero-photo" />
         <div className="sc-hero-glow" aria-hidden="true" />
         <div className="wrap sc-hero-in">
