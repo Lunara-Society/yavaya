@@ -6,7 +6,9 @@ import { NEIGHBOUR_KINDS as SERVER_NEIGHBOUR_KINDS } from '@/server/domains/comm
 import { SERVICE_CATEGORY_KEYS } from '@/config/services';
 import { SPECIES as SERVER_SPECIES } from '@/config/animals';
 import { ROXI_SCOPES } from '@/server/domains/roxi/service';
-import { LISTING_CATEGORIES, NEIGHBOUR_KINDS, ROXI_PAGES, SERVICE_CATEGORIES, SPECIES, roxiTools } from '@/ui/roxi/tools';
+import { EMPLOYMENT_TYPES as SERVER_EMPLOYMENT_TYPES, WORK_FIELDS as SERVER_WORK_FIELDS } from '@/config/work';
+import { WORK_RULES } from '@/config/business-rules';
+import { EMPLOYMENT_TYPES, LISTING_CATEGORIES, MAX_PROFILE_FIELDS, NEIGHBOUR_KINDS, ROXI_PAGES, SERVICE_CATEGORIES, SPECIES, WORK_FIELDS, roxiTools } from '@/ui/roxi/tools';
 
 /**
  * Roxi's tools exist three times: in the browser (src/ui/roxi/tools.ts), at
@@ -49,6 +51,9 @@ describe('Roxi tools', () => {
     expect(NEIGHBOUR_KINDS).toEqual([...SERVER_NEIGHBOUR_KINDS]);
     expect(SERVICE_CATEGORIES).toEqual([...SERVICE_CATEGORY_KEYS]);
     expect(SPECIES).toEqual([...SERVER_SPECIES]);
+    expect(WORK_FIELDS).toEqual([...SERVER_WORK_FIELDS]);
+    expect(EMPLOYMENT_TYPES).toEqual([...SERVER_EMPLOYMENT_TYPES]);
+    expect(MAX_PROFILE_FIELDS).toBe(WORK_RULES.maxFieldsPerProfile);
   });
 
   it('tells the agent the same values the browser accepts', () => {
@@ -56,6 +61,8 @@ describe('Roxi tools', () => {
     expect(definition('prepare_post').kind?.enum).toEqual(NEIGHBOUR_KINDS);
     expect(definition('prepare_post').category?.enum).toEqual(SERVICE_CATEGORIES);
     expect(definition('prepare_post').species?.enum).toEqual(SPECIES);
+    expect(definition('prepare_work').field?.enum).toEqual(WORK_FIELDS);
+    expect(definition('prepare_work').employment?.enum).toEqual(EMPLOYMENT_TYPES);
     expect(definition('search_yavaya').scope?.enum).toEqual([...ROXI_SCOPES]);
     expect(definition('open_page').page?.enum).toEqual(Object.keys(ROXI_PAGES));
   });

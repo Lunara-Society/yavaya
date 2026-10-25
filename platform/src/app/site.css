@@ -2070,6 +2070,110 @@ a.live-text:hover { text-decoration: underline; }
 @keyframes roxi-bounce { 0%, 70%, 100% { opacity: 0.35; transform: translateY(0); } 35% { opacity: 1; transform: translateY(-4px); } }
 @keyframes roxi-ping { 0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.6); } 70%, 100% { box-shadow: 0 0 0 8px rgba(212, 175, 55, 0); } }
 @keyframes roxi-blink { 50% { opacity: 0.3; } }
+
+/* Small actions under each of Roxi's answers: copy, read aloud, helpful or not. */
+.roxi-msg-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; margin: 4px 0 0 -6px; opacity: 0.8; transition: opacity 0.25s ease; }
+.roxi-msg.is-roxi:hover .roxi-msg-actions, .roxi-msg-actions:focus-within { opacity: 1; }
+@media (hover: none) { .roxi-msg-actions { opacity: 1; } }
+.roxi-msg-actions button { display: inline-grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: none; color: var(--rx-ink-2); cursor: pointer; }
+.roxi-msg-actions button:hover, .roxi-msg-actions button[aria-pressed="true"] { color: var(--rx-gold-hi); background: rgba(248, 246, 241, 0.06); }
+.roxi-msg-actions button:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 1px; }
+.roxi-msg-actions small { margin-left: 4px; color: var(--rx-ink-3); font-size: 0.74rem; }
+/* Its own line: run into the disclosure it read as part of the sentence. */
+.roxi-clear { display: block; margin: 0 auto 6px; padding: 0; border: 0; background: none; color: var(--rx-ink-2); font: inherit; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+/* The welcome voice note, the check-in and the simulated call share one card shape above the launcher. */
+.roxi-note, .roxi-checkin, .roxi-call {
+  position: fixed; right: 16px; bottom: calc(var(--rx-bottom) + 72px); z-index: 3;
+  width: min(360px, calc(100vw - 32px)); padding: 16px 16px 12px;
+  border: 1px solid transparent; border-radius: 22px; color: var(--rx-ink);
+  background: var(--rx-glass) padding-box, var(--rx-edge) border-box;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), 0 0 60px rgba(212, 175, 55, 0.1);
+  backdrop-filter: blur(20px) saturate(150%); -webkit-backdrop-filter: blur(20px) saturate(150%);
+  animation: roxi-pop 0.55s var(--rx-ease) both;
+}
+.roxi-note-head { display: flex; align-items: center; gap: 10px; }
+.roxi-note-head strong { flex: 1; font-family: var(--serif); font-size: 1.08rem; font-weight: 600; color: var(--rx-gold-hi); line-height: 1.2; }
+.roxi-note-orb { position: relative; width: 34px; height: 34px; flex: none; }
+.roxi-note-orb .roxi-sphere { inset: 0; }
+.roxi-note-player { display: flex; align-items: center; gap: 12px; margin: 12px 0 6px; }
+.roxi-note-play {
+  display: grid; place-items: center; width: 46px; height: 46px; flex: none; border: 0; border-radius: 50%; cursor: pointer;
+  color: #1a1408; background: radial-gradient(circle at 35% 30%, #fff2c2, #d4af37 60%, #9c7a1f);
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.35);
+}
+.roxi-note-play:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 3px; }
+.roxi-note-wave { flex: 1; display: flex; align-items: center; gap: 3px; height: 34px; }
+.roxi-note-wave i { flex: 1; height: 30%; border-radius: 2px; background: rgba(248, 246, 241, 0.22); }
+.roxi-note-wave i:nth-child(3n) { height: 70%; }
+.roxi-note-wave i:nth-child(4n+1) { height: 50%; }
+.roxi-note-wave i:nth-child(5n+2) { height: 90%; }
+.roxi-note-wave i:nth-child(7n) { height: 40%; }
+.roxi-note-wave i[data-done] { background: var(--rx-gold); }
+.roxi-note[data-playing] .roxi-note-wave i { animation: roxi-bounce 1.2s ease-in-out infinite; }
+.roxi-note[data-playing] .roxi-note-wave i:nth-child(2n) { animation-delay: 0.2s; }
+.roxi-note-hint, .roxi-note-text { margin: 6px 0; color: var(--rx-ink-2); font-size: 0.86rem; line-height: 1.55; }
+.roxi-note-text { padding: 10px 12px; border-radius: 12px; background: rgba(248, 246, 241, 0.05); color: var(--rx-ink); }
+.roxi-note-actions, .roxi-checkin-actions { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; }
+.roxi-note-link { padding: 6px 0; border: 0; background: none; color: var(--rx-ink-2); font: inherit; font-size: 0.9rem; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(248, 246, 241, 0.25); text-underline-offset: 3px; }
+.roxi-note-link.is-strong { color: var(--rx-gold-hi); font-weight: 600; text-decoration-color: rgba(243, 220, 138, 0.5); }
+.roxi-note-link:focus-visible, .roxi-why:focus-visible, .roxi-call-btn:focus-visible, .roxi-clear:focus-visible, .roxi-forget:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 2px; border-radius: 6px; }
+
+.roxi-checkin { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; }
+.roxi-checkin > p { margin: 0; line-height: 1.45; }
+.roxi-checkin-actions, .roxi-checkin .roxi-why { grid-column: 1 / -1; }
+.roxi-why { padding: 0; border: 0; background: none; color: var(--rx-ink-3); font: inherit; font-size: 0.74rem; line-height: 1.4; text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
+.roxi-call { display: grid; grid-template-columns: auto 1fr; gap: 12px 14px; align-items: center; padding: 18px; bottom: calc(var(--rx-bottom) + 72px); }
+.roxi-call-orb { position: relative; width: 58px; height: 58px; }
+.roxi-call-orb .roxi-sphere { inset: 0; }
+.roxi-call-orb::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(212, 175, 55, 0.6); animation: roxi-ring 1.6s ease-out infinite; }
+.roxi-call-text { display: grid; gap: 3px; }
+.roxi-call-text strong { font-family: var(--serif); font-size: 1.2rem; color: var(--rx-gold-hi); }
+.roxi-call-text small { color: var(--rx-ink-3); font-size: 0.78rem; line-height: 1.4; }
+.roxi-call-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.roxi-call-btn { min-height: 48px; border: 0; border-radius: 999px; font: inherit; font-weight: 600; cursor: pointer; }
+.roxi-call-btn.is-decline { background: rgba(248, 246, 241, 0.08); color: var(--rx-ink); border: 1px solid var(--rx-hair); }
+.roxi-call-btn.is-answer { background: linear-gradient(180deg, #3fbf7f, #23915a); color: #fff; box-shadow: 0 8px 22px rgba(35, 145, 90, 0.4); }
+.roxi-call-why { grid-column: 1 / -1; margin: 0; color: var(--rx-ink-3); font-size: 0.74rem; line-height: 1.45; }
+@keyframes roxi-ring { from { transform: scale(0.9); opacity: 0.9; } to { transform: scale(1.35); opacity: 0; } }
+
+/* Roxi's settings: a sheet over everything, readable on a phone. */
+.roxi-sheet-wrap { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; padding: 16px; }
+.roxi-scrim.is-sheet { display: block; position: fixed; inset: 0; background: rgba(3, 6, 12, 0.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+.roxi-sheet {
+  position: relative; width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow: auto; padding: 22px 20px 18px;
+  border: 1px solid transparent; border-radius: 24px; color: var(--rx-ink);
+  background: var(--rx-glass) padding-box, var(--rx-edge) border-box; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+  animation: roxi-pop 0.45s var(--rx-ease) both;
+}
+.roxi-sheet h2 { margin: 0 0 14px; font-family: var(--serif); font-size: 1.45rem; font-weight: 500; color: #fcf3d6; }
+.roxi-sheet fieldset { margin: 0 0 14px; padding: 0; border: 0; }
+.roxi-sheet legend { margin-bottom: 8px; color: var(--rx-ink-2); font-size: 0.82rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.roxi-choice { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--rx-hair); border-radius: 14px; cursor: pointer; }
+.roxi-choice:has(input:checked) { border-color: rgba(212, 175, 55, 0.6); background: rgba(212, 175, 55, 0.08); }
+.roxi-choice input { margin-top: 4px; accent-color: var(--rx-gold); }
+.roxi-choice span { display: grid; gap: 2px; }
+.roxi-choice small { color: var(--rx-ink-3); line-height: 1.45; }
+.roxi-inline { display: flex; flex-wrap: wrap; gap: 8px; }
+.roxi-inline legend { width: 100%; }
+.roxi-pill { position: relative; cursor: pointer; }
+.roxi-pill input { position: absolute; opacity: 0; inset: 0; }
+.roxi-pill span { display: inline-block; padding: 8px 14px; border: 1px solid var(--rx-hair); border-radius: 999px; color: var(--rx-ink-2); }
+.roxi-pill input:checked + span { border-color: rgba(212, 175, 55, 0.7); background: rgba(212, 175, 55, 0.12); color: var(--rx-gold-hi); }
+.roxi-pill input:focus-visible + span { outline: 2px solid var(--rx-gold-hi); outline-offset: 2px; }
+.roxi-select { display: grid; gap: 4px; color: var(--rx-ink-3); font-size: 0.8rem; }
+.roxi-select select { min-height: 40px; padding: 0 10px; border: 1px solid var(--rx-hair); border-radius: 10px; background: rgba(248, 246, 241, 0.06); color: var(--rx-ink); font: inherit; }
+.roxi-check { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 12px; line-height: 1.45; cursor: pointer; }
+.roxi-check input { margin-top: 4px; accent-color: var(--rx-gold); }
+.roxi-sheet-note { margin: 0 0 12px; color: var(--rx-ink-3); font-size: 0.8rem; line-height: 1.5; }
+.roxi-sheet-done { margin: 0 0 10px; color: var(--rx-gold-hi); }
+.roxi-sheet-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.roxi-forget { margin-top: 14px; padding: 0; border: 0; background: none; color: #f2a7a7; font: inherit; font-size: 0.86rem; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+
+@media (max-width: 640px) {
+  .roxi-note, .roxi-checkin, .roxi-call { right: 16px; left: 16px; width: auto; }
+}
 @media (prefers-reduced-motion: reduce) {
   .roxi *, .roxi *::before, .roxi *::after { animation: none !important; transition: none !important; }
   .roxi-mini { transform: none; }

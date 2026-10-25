@@ -63,6 +63,8 @@ export async function resetTransactionalData(): Promise<void> {
       safe_space_members,
       job_runs,
       page_views_daily,
+      roxi_welcome_plays,
+      roxi_help_daily,
       web_vitals_daily,
       work_applications,
       work_employers,

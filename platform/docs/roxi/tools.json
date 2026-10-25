@@ -187,6 +187,88 @@
   },
   {
     "type": "client",
+    "name": "prepare_work",
+    "description": "Prepares a Trabajo form and opens it on the member's screen, filled in. Nothing is published or saved: the member reviews, completes what only they can say, and taps the button. Forms: job_post (an offer of a job or a project, for a member who is a verified employer; the form itself tells them if they are not yet) and work_profile (the member's own Trabajo profile, which works as their CV when they apply). Write from what the member told you; never invent experience, qualifications, employers, pay or results.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "required": [
+        "form"
+      ],
+      "properties": {
+        "form": {
+          "type": "string",
+          "description": "Which form. job_post = /work/posts/new; work_profile = /work/profile.",
+          "enum": [
+            "job_post",
+            "work_profile"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "description": "job_post: the post title, 5 to 100 characters, the role and one key detail ('Cocinero de línea, turno de noche'). work_profile: the headline, 5 to 100 characters, what the member does ('Electricista residencial con 8 años de experiencia')."
+        },
+        "body": {
+          "type": "string",
+          "description": "job_post: the description, 40 to 4000 characters: the work, schedule, place in general terms. work_profile: 'about', 30 to 2000 characters, in first person, from what the member told you: what they do, how long, what they are good at. Plain text, short lines, no exaggeration."
+        },
+        "field": {
+          "type": "string",
+          "description": "job_post only: the field of work. technology, design, marketing, writing, finance, administration, sales, construction, creative, education, health, hospitality (hotels, restaurants, tourism), agriculture, transport, other.",
+          "enum": [
+            "technology",
+            "design",
+            "marketing",
+            "writing",
+            "finance",
+            "administration",
+            "sales",
+            "construction",
+            "creative",
+            "education",
+            "health",
+            "hospitality",
+            "agriculture",
+            "transport",
+            "other"
+          ]
+        },
+        "employment": {
+          "type": "string",
+          "description": "job_post only: full_time, part_time, temporary, or freelance (a project paid by the job).",
+          "enum": [
+            "full_time",
+            "part_time",
+            "temporary",
+            "freelance"
+          ]
+        },
+        "pay": {
+          "type": "string",
+          "description": "job_post only, and ONLY if the member said it: the pay in their words ('C$ 9,000 al mes', '$15 la hora', 'a convenir' only if they said so). The form requires it, so if they did not say it, leave it out and tell them to fill it in. Never suggest an amount."
+        },
+        "requirements": {
+          "type": "string",
+          "description": "job_post only, optional: requirements the member stated, up to 2000 characters. Never add requirements they did not ask for."
+        },
+        "skills": {
+          "type": "string",
+          "description": "work_profile only, optional: skills the member said they have, comma-separated, up to 500 characters."
+        },
+        "experience_years": {
+          "type": "number",
+          "description": "work_profile only, optional: whole years of experience, only if the member said it (0 to 60)."
+        },
+        "fields": {
+          "type": "string",
+          "description": "work_profile only, optional: up to 3 fields from the job_post field list, comma-separated (for example 'construction,transport')."
+        }
+      }
+    }
+  },
+  {
+    "type": "client",
     "name": "open_page",
     "description": "Opens a Yavaya page on the member's screen, by name. The conversation stays open. Use it when the member wants to go somewhere or when showing is easier than explaining. Opening 'violeta' (Espacio Violeta) ends this conversation, because Roxi is not present there: say so first.",
     "expects_response": true,

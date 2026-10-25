@@ -49,3 +49,19 @@ export const webVitalsDaily = pgTable(
   },
   (table) => [primaryKey({ columns: [table.day, table.path, table.device, table.metric] })],
 );
+
+/**
+ * What Roxi's own initiatives led to, per day: check-ins shown and opened,
+ * simulated calls rung, answered, declined or missed, and — the number that
+ * matters — conversations begun from one of them that ended with a draft
+ * prepared or a result opened. Counts only; no member, no session.
+ */
+export const roxiHelpDaily = pgTable(
+  'roxi_help_daily',
+  {
+    day: date('day').notNull(),
+    event: text('event').notNull(),
+    count: integer('count').notNull().default(0),
+  },
+  (table) => [primaryKey({ columns: [table.day, table.event] })],
+);

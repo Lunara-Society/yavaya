@@ -232,6 +232,13 @@
       "when": 1792559271966,
       "tag": "0032_site_stats",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1792952207947,
+      "tag": "0033_roxi_welcome_and_help",
+      "breakpoints": true
     }
   ]
 }

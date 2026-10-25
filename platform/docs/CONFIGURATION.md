@@ -1220,6 +1220,54 @@ page (`/privacy#roxi`) in the same change.
 **Voice.** A premade multilingual voice is in use until a Latin American
 voice from the library is added to the workspace (see the README).
 
+**Signed links are not on yet.** Production has no `ELEVENLABS_API_KEY`, so
+conversations open with the agent id and rely on the allowlist. Adding the
+key (Agents permission only) and then enabling authentication on the agent
+is the owner's step; until then `/status` is right to call Roxi `REAL`, and
+`docs/SECURITY.md` names the gap.
+
+**Welcome voice notes — who and how often.** The owner asked for a voice
+note from Roxi to the community manager, Tania Ponce, and to the
+administrator, on their next two logins, ten seconds after signing in.
+`src/server/domains/roxi/welcome.ts` decides from the account: an active
+`community_manager` role **and** a display name whose first word is Tania;
+or the `admin` role **and** the address in `PRIMARY_ADMIN_EMAIL`. So, in
+production:
+
+- Tania's account must hold the community manager role and her display name
+  must start with "Tania". Neither can be checked from outside production.
+- The counts are per login, not per day; reloading does not use one up.
+
+| Setting | Default | `system_settings` key |
+| --- | --- | --- |
+| Logins that hear a note | 2 | `roxi.welcome_plays` |
+| Seconds after signing in | 10 | `roxi.welcome_delay_seconds` |
+| Minutes a login counts as fresh | 15 | `roxi.welcome_login_window_minutes` |
+
+The fifteen-minute window is a technical default (so a tab left open since
+yesterday does not suddenly speak), not part of the request.
+
+**Check-in and simulated call.** Both are page elements governed by the
+member's own settings, never by Yavaya: Silenciosa shows neither, Disponible
+(the default) only the check-in, Proactiva also the call. The numbers below
+are technical defaults chosen to be unintrusive; the 15–20 minutes and 20
+seconds came from the request. They live in `ROXI_RULES` and are not yet
+mirrored into `system_settings`, because they are read in the browser.
+
+| Rule | Default |
+| --- | --- |
+| Check-in after visible browsing | 6 minutes, at most once a day, visible 20 s |
+| Call after visible browsing | random 15–20 minutes, Proactiva only |
+| Call rings for | 20 seconds |
+| Rest after a declined or missed call | 24 hours |
+| Quiet hours (member can change) | 21:00–07:00 |
+
+**Open item — terms text.** The terms still say a purchase "con efectivo o
+transferencia puede tardar más", left from when dLocal Go was planned. Tokens
+are bought by card through Stripe only; the sentence is the owner's legal
+text and has not been changed. Roxi's knowledge carries it, but her prompt
+says Stripe card is the only way to buy tokens, and a test holds her to it.
+
 **Open decision — what may not be sold.** Mercadito has no written list of
 prohibited items (see "Mercadito — rules and open decisions"), so Roxi quotes
 none. She declines on her own to prepare listings for weapons, drugs,

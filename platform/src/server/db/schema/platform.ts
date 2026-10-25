@@ -8,6 +8,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 
@@ -77,4 +78,26 @@ export const demoContent = pgTable(
     uniqueIndex('demo_content_subject_key').on(table.subjectType, table.subjectId),
     index('demo_content_expiry_idx').on(table.expiresAt, table.removedAt),
   ],
+);
+
+/**
+ * Welcome voice notes Roxi has played, one row per login. The session is the
+ * idempotency key: a note heard twice on the same login (a reload, a replay)
+ * is one play, and the count of rows is how many logins have been welcomed.
+ *
+ * `session_id` deliberately has no foreign key: expired sessions are purged,
+ * and a cascade would erase the count with them — the note would then play
+ * again on every later login.
+ */
+export const roxiWelcomePlays = pgTable(
+  'roxi_welcome_plays',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    sessionId: uuid('session_id').notNull(),
+    welcomeKey: text('welcome_key').notNull(),
+    playedAt: timestamp('played_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.sessionId] }), index('roxi_welcome_plays_user_idx').on(table.userId, table.welcomeKey)],
 );

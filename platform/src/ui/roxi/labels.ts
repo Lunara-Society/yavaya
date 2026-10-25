@@ -46,6 +46,21 @@ const KEYS = [
   'privacy',
   'voice_switch',
   'new',
+  'copy',
+  'copied',
+  'read_aloud',
+  'stop_reading',
+  'helpful',
+  'not_helpful',
+  'feedback_thanks',
+  'clear',
+  'restored',
+  'camera',
+  'photo_dark',
+  'photo_blurry',
+  'photo_small',
+  'photo_duplicate',
+  'settings',
 ] as const;
 
 export type RoxiLabels = Record<(typeof KEYS)[number], string>;
@@ -56,5 +71,64 @@ export function roxiLabels(t: Translator): RoxiLabels {
     // The greeting keeps its placeholder; the panel puts the member's name in.
     labels[key] = key === 'hello' ? t('roxi.ui.hello', { name: '{name}' }) : t(`roxi.ui.${key}`);
   }
+  return labels;
+}
+
+/** Text for what lives outside the panel: the settings sheet, the check-in and the simulated call. */
+const PRESENCE_KEYS = [
+  'settings.title',
+  'settings.mode',
+  'settings.mode.quiet',
+  'settings.mode.quiet_hint',
+  'settings.mode.available',
+  'settings.mode.available_hint',
+  'settings.mode.proactive',
+  'settings.mode.proactive_hint',
+  'settings.length',
+  'settings.length.short',
+  'settings.length.normal',
+  'settings.length.detailed',
+  'settings.speed',
+  'settings.speed.slow',
+  'settings.speed.normal',
+  'settings.speed.fast',
+  'settings.quiet_hours',
+  'settings.quiet_from',
+  'settings.quiet_to',
+  'settings.keep',
+  'settings.stored',
+  'settings.forget',
+  'settings.forgotten',
+  'settings.save',
+  'settings.saved',
+  'settings.close',
+  'checkin.text',
+  'checkin.form',
+  'checkin.open',
+  'checkin.later',
+  'checkin.never',
+  'checkin.why',
+  'call.title',
+  'call.sub',
+  'call.answer',
+  'call.decline',
+  'call.why',
+  'call.off',
+] as const;
+
+export type RoxiPresenceLabels = Record<(typeof PRESENCE_KEYS)[number], string>;
+
+export function roxiPresenceLabels(t: Translator): RoxiPresenceLabels {
+  const labels = {} as RoxiPresenceLabels;
+  for (const key of PRESENCE_KEYS) labels[key] = t(`roxi.${key}`);
+  return labels;
+}
+
+const WELCOME_LABEL_KEYS = ['title', 'play', 'pause', 'again', 'read', 'close', 'tap', 'talk'] as const;
+export type RoxiWelcomeLabels = Record<(typeof WELCOME_LABEL_KEYS)[number], string>;
+
+export function roxiWelcomeLabels(t: Translator): RoxiWelcomeLabels {
+  const labels = {} as RoxiWelcomeLabels;
+  for (const key of WELCOME_LABEL_KEYS) labels[key] = t(`roxi.welcome.${key}`);
   return labels;
 }

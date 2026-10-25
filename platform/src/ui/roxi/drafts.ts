@@ -8,7 +8,7 @@
  * member, and the server checks it like any other.
  */
 
-export const ROXI_FORMS = ['mercadito_listing', 'community_post', 'prayer_request', 'service_request', 'lost_pet', 'found_pet'] as const;
+export const ROXI_FORMS = ['mercadito_listing', 'community_post', 'prayer_request', 'service_request', 'lost_pet', 'found_pet', 'job_post', 'work_profile'] as const;
 export type RoxiForm = (typeof ROXI_FORMS)[number];
 
 export type RoxiDraft = { form: RoxiForm; fields: Record<string, string | boolean>; files: File[] };

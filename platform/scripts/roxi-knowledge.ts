@@ -20,6 +20,7 @@ import { es } from '../src/i18n/dictionaries/es';
 import * as rules from '../src/config/business-rules';
 import { BILLABLE_ACTIONS } from '../src/config/billable-actions';
 import { fillTokenRow, type TokenFacts } from '../src/ui/tokens/facts';
+import { PAYMENT_ROUTING } from '../src/config/payments';
 
 const OUT = join(__dirname, '..', 'docs', 'roxi', 'knowledge');
 
@@ -54,6 +55,26 @@ const COST_WORDS = { one: siteEs.pages.tokens.costOne, many: siteEs.pages.tokens
  * conversation, instead of as a snapshot that would go stale).
  */
 const SKIPPED_AREAS = new Set(['ops', 'staff', 'admin', 'email', 'digest', 'capability']);
+
+/**
+ * The welcome voice notes are addressed to two named people
+ * (src/server/domains/roxi/welcome.ts). Their words are theirs: Roxi must
+ * not be able to recite them to anyone who asks.
+ */
+const PERSONAL_KEY = /^roxi\.welcome\.text\./;
+
+/**
+ * A payment method's label stays in the dictionary after the method is
+ * retired, because old purchases in a member's history still name it. Roxi
+ * must not read it as a way to pay, so only the providers in the routing
+ * table reach her.
+ */
+const PAYMENT_METHOD_KEY = /^payments\.method\.(.+)$/;
+const ACTIVE_PROVIDERS = new Set(PAYMENT_ROUTING.map((entry) => entry.provider));
+function retiredPaymentMethod(key: string): boolean {
+  const provider = PAYMENT_METHOD_KEY.exec(key)?.[1];
+  return provider !== undefined && !ACTIVE_PROVIDERS.has(provider);
+}
 
 /**
  * The rules a member can run into, by name. Anything else stays out: the
@@ -174,7 +195,7 @@ function dictionaryDocument(): string {
   const groups = new Map<string, string[]>();
   for (const [key, value] of Object.entries(es)) {
     const area = key.split('.')[0]!;
-    if (SKIPPED_AREAS.has(area)) continue;
+    if (SKIPPED_AREAS.has(area) || retiredPaymentMethod(key) || PERSONAL_KEY.test(key)) continue;
     const lines = groups.get(area) ?? [];
     lines.push(`- \`${key}\`: ${String(value).replace(/\n/g, ' ')}`);
     groups.set(area, lines);

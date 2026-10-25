@@ -1012,6 +1012,7 @@ export const siteEs = {
             'Cuando Roxi busca en los distritos o mira tu cuenta (tokens, reputación, tus publicaciones, tus notificaciones), lo hace con tu propia sesión: ve solo lo que tú podrías abrir, y eso pasa a la conversación.',
             'Roxi no publica, no paga y no envía nada a otras personas. Prepara un borrador en el mismo formulario de siempre y tú decides si lo envías. En Mercadito, el registro de auditoría anota que Roxi ayudó a escribir la publicación.',
             'Roxi no está en el Espacio Violeta ni en las páginas para entrar o registrarse, y nada del Espacio Violeta le llega. Hay un límite diario de conversaciones por persona.',
+            'En tu dispositivo, Roxi guarda sus ajustes y, si lo permites, la conversación de esa pestaña, que se borra al cerrarla; nada de eso se guarda en Yavaya, y puedes borrarlo todo desde sus ajustes. De sus saludos y llamadas simuladas, Yavaya solo cuenta por día cuántas hubo y qué pasó con ellas, sin saber de quién.',
           ],
         },
         {

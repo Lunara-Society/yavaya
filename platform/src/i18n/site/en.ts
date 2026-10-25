@@ -999,6 +999,7 @@ export const siteEn: SiteContent = {
             'When Roxi searches the districts or looks at your account (tokens, reputation, your listings, your notifications), she does it with your own session: she sees only what you could open yourself, and that goes into the conversation.',
             'Roxi does not publish, pay or send anything to other people. She prepares a draft in the usual form and you decide whether to send it. On Mercadito, the audit record notes that Roxi helped write the listing.',
             'Roxi is not available in Espacio Violeta or on the sign-in and sign-up pages, and nothing from Espacio Violeta reaches her. There is a daily limit of conversations per person.',
+            'On your device, Roxi keeps her settings and, if you allow it, the conversation in that tab, which is erased when you close it; none of it is stored at Yavaya, and you can erase it all from her settings. Of her greetings and simulated calls, Yavaya only counts per day how many there were and what happened, without knowing whose.',
           ],
         },
         {

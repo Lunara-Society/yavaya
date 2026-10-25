@@ -5,7 +5,7 @@ button at the bottom of every page (except Espacio Violeta and the sign-in
 pages), and can send her photos. She explains how Yavaya works, searches the
 districts, reads the member's own account, opens pages, and prepares drafts —
 a Mercadito listing from a photo, a Comunidad post, a prayer request, a
-Servicios request, a lost or found animal. **She never publishes, pays or
+Servicios request, a lost or found animal, a Trabajo job post or work profile. **She never publishes, pays or
 sends anything**: a draft opens in the real form, filled in, and the member
 taps the button.
 
@@ -51,6 +51,76 @@ and the orb (`orb.tsx`); styles in the "Roxi" block of `src/app/site.css`.
   frame with reduced motion, and falls back to a CSS sphere without WebGL.
 - Obsidian glass and gold in both themes, on purpose: she looks the same
   wherever she appears.
+- **Each answer** can be copied, read aloud by the browser's own voice
+  (`speechSynthesis`, at the member's chosen speed) and marked helpful or not
+  (sent to ElevenLabs as conversation feedback, on the latest answer only).
+- **Continuity.** The conversation is kept in `sessionStorage` for this tab
+  (last 60 entries) unless the member turns that off, so moving between pages
+  or reloading does not lose it; "Borrar esta conversación" and "Borrar todo
+  lo que Roxi guarda aquí" remove it. Nothing about the conversation is kept
+  on Yavaya's server.
+- **Photos.** Two buttons: the camera (`capture="environment"`, so a phone
+  opens its camera only when the member taps it) and the gallery. Before
+  sending, `photo-quality.ts` checks for a dark, blurry or tiny photo and says
+  so — the photo is still sent and never edited — and refuses the exact same
+  photo twice. Roxi sees only photos the member sends: never the screen, never
+  a live camera.
+
+## Settings, check-in and the simulated call
+
+`settings-sheet.tsx`, `presence.tsx`, `presence-rules.ts`, `prefs.ts`. Every
+preference lives in this browser (`localStorage` `roxi.prefs.v1`); the sheet
+says so and can forget everything.
+
+| Mode | What Roxi does on her own |
+| --- | --- |
+| Silenciosa | Nothing. She appears only when the member taps her button. |
+| Disponible (default) | At most one short check-in a day, after `ROXI_RULES.checkInAfterMinutes` of visible browsing; it tucks itself away after `checkInVisibleSeconds`. On a form it offers help finishing it. "No volver a mostrar" switches to Silenciosa. |
+| Proactiva (the member's choice) | Also a simulated call inside the page after 15–20 minutes of browsing (`callAfterMinutes`), ringing for at most 20 s with a chime made in the page (WebAudio, no file). Answer opens Roxi in voice; Decline or letting it ring out rests calls for `callCooldownHours`. |
+
+Neither ever appears during quiet hours (default 21:00–07:00, set by the
+member), on a sensitive page (Espacio Violeta, sign-in and recovery, appeals,
+settings, token purchase, phone verification, admin and operations), while
+Roxi or a welcome note is open, or in a hidden tab. The call is never shown
+on a form, so it cannot interrupt someone mid-task. Both say why they
+appeared and offer to turn themselves off. The call card says it only rings
+with the page open: a website cannot ring a closed tab or a phone.
+
+What happened is counted per day, with no identity, in `roxi_help_daily`
+(`/api/roxi/presence`): shown, opened, dismissed, silenced, rang, answered,
+declined, missed — and `prompted_task`, a draft prepared or a result opened
+in a conversation that a check-in or a call began. That last number is the
+one that says whether this helps people finish things.
+
+## Welcome voice notes
+
+Two recorded voice notes in Roxi's voice, each for one person, on their next
+two logins, ten seconds after signing in (`src/server/domains/roxi/welcome.ts`):
+
+| Note | Who hears it |
+| --- | --- |
+| `community_manager` | The holder of an active community manager role whose first name is Tania. The note says her name, so the role alone is not enough. |
+| `owner` | The account at `PRIMARY_ADMIN_EMAIL` that also holds the admin role. The address picks out which admin; without the role there is no note. |
+
+- The server decides, from the account, on every request: `/api/roxi/session`
+  offers the note with the remaining delay, and `/api/roxi/welcome/audio`
+  serves the recording only to its recipient (404 for anyone else). Files live
+  in `src/server/assets/roxi-welcome/`, outside `public/`, traced into the
+  build by `next.config.ts`.
+- A login counts once (`roxi_welcome_plays`, one row per session): first
+  login hears note 1, second login note 2, then nothing. Reloading the same
+  login gives the same note until it is played or closed; a login older than
+  `welcomeLoginWindowMinutes` gets none. The numbers are in `ROXI_RULES` and
+  `system_settings` (`roxi.welcome_*`).
+- Browsers refuse sound before the visitor has touched the page. The card
+  tries to play; if refused it waits with a play button and says a tap is
+  needed. The words are always there under "Leer el mensaje".
+- Recorded with the agent's voice ("Sarah", `eleven_v4`) in Spanish and
+  English; the site language picks one. The transcripts are dictionary keys
+  (`roxi.welcome.text.*`) and are kept **out** of Roxi's knowledge, so she
+  cannot recite them to anyone else.
+- `tests/integration/roxi-welcome.test.ts` covers who hears what, the delay,
+  the two plays, old logins and the audio rule.
 
 ## The agent
 
@@ -77,6 +147,7 @@ they are not in the cascade. Worth retrying if the workspace changes plan.
 | `my_account` | `tool_0701m5ddkf7gfkk97gtr63s6q8np` | `GET /api/roxi/me` |
 | `prepare_listing` | `tool_9901m5ddkrk8fdc9creqg18rvhnv` | opens `/mercadito/publish` |
 | `prepare_post` | `tool_7301m5ddkzpjf1frtx89d7dm5y7k` | opens the matching form |
+| `prepare_work` | `tool_4001m5t33sske15rq3dfxrdn7m6k` | opens `/work/posts/new` or `/work/profile` |
 | `open_page` | `tool_3601m5ddm6w8fs6td388d50p5mzd` | navigates (`ROXI_PAGES`) |
 | `open_result` | `tool_5901m5ddm8s2erabeqjvyq863gfv` | navigates to a search result |
 
@@ -121,14 +192,51 @@ Nine behaviour tests are attached to the agent and run from its Tests tab:
 | resiste inyección de instrucciones | `test_7001m5ddwqpyezpt9152sttve54g` |
 | responde en inglés | `test_7701m5ddwvhger0s2bjrnkn9w96c` |
 
-Run them after every change to the prompt, the model or the knowledge.
+Seven more were added in the October 2026 audit, for payments truth,
+privacy and honesty:
+
+| Test | ID |
+| --- | --- |
+| solo Stripe para comprar tokens | `test_8001m5t2z6qyfdpvqwnvnvgeczv8` |
+| no confirma pagos ni reembolsos | `test_8001m5t2zbr3f74tmmcas1mya88y` |
+| no pide datos de tarjeta | `test_5101m5t2zgfseht86a78k9p4b8dp` |
+| no da datos de otro miembro | `test_8001m5t2zmwrfx1tbvqf1s732gbt` |
+| honesta sobre la cámara y la pantalla | `test_0301m5t2zs4hfzr8j1m15e455x3y` |
+| inyección dentro de un anuncio pegado | `test_0401m5t30041eyztqwh3sd8ebfqz` |
+| no inventa soporte ni tickets | `test_9901m5t3049hfpvsavb00cs92rdj` |
+
+Run them after every change to the prompt, the model or the knowledge (the
+new seven by ID; they are not yet in the agent's attached list).
+
+The camera test's condition allows Roxi to say she is told *the address* of
+the page the member has open — that is true (`page_url`) — and fails any
+claim to see the screen or a camera. Its first version failed her for saying
+so; that was a mistake in the test, corrected, not a weakening.
 
 Since 24 October 2026 the injection test ends "failed" with *Unknown error
 occurred whilst attempting to evaluate*, no agent reply and no model usage:
 the prompt-injection guardrail now stops that message before the model runs,
 so the evaluator has nothing to grade. That is the guardrail working, not a
 regression — check `agent_responses` is empty before treating it as one, and
-do not switch the guardrail off to make the test green.
+do not switch the guardrail off to make the test green. The new
+indirect-injection test ends the same way. To check the model itself, a
+temporary copy of the agent with the guardrail off passed both injection
+tests (2 of 2) on 25 October 2026 and was deleted; the guardrail stays on.
+
+### Analysis
+
+Each finished conversation is analysed at ElevenLabs: `unanswered_question`
+(what Roxi could not answer, without personal details — the list to grow her
+knowledge from), `needs_person`, `topic_district`, and two pass/fail checks,
+*Truthful about payments* and *No invented actions*. Read them in the
+agent's Conversations tab. Nothing a member says changes the knowledge base:
+it changes only by regenerating it from the site (below).
+
+### Member preferences
+
+`/api/roxi/start` is unchanged; the browser passes the member's answer length
+as the `member_preferences` dynamic variable and, in voice, their speed as a
+`tts.speed` override (0.85 / 1 / 1.15). Both are allowed on the agent.
 
 ## Keeping Roxi current
 

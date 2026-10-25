@@ -65,6 +65,9 @@ const nextConfig: NextConfig = {
    * serverless platform, without a second configuration to maintain.
    */
   ...(process.env.VERCEL ? {} : { output: 'standalone' as const }),
+  // Roxi's welcome voice notes are read from disk by their one route, which
+  // serves them only to their recipient; they are not in public/ on purpose.
+  outputFileTracingIncludes: { '/api/roxi/welcome/audio': ['./src/server/assets/roxi-welcome/*.mp3'] },
   experimental: {
     // Server Actions are the primary mutation surface; keep the body limit tight
     // so upload paths must go through the dedicated, validated media pipeline.

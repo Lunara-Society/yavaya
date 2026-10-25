@@ -9,6 +9,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { currentSession } from '@/server/auth/context';
 import { intlLocale } from '@/ui/mercadito/format';
 import { siteStats, type VitalSummary } from '@/server/domains/stats/service';
+import { ROXI_HELP_EVENTS, roxiHelpTotals } from '@/server/domains/roxi/help-stats';
 import { METRIC_BANDS, type Metric } from '@/server/domains/stats/rules';
 import { signInPath } from '@/server/auth/sign-in-path';
 
@@ -37,6 +38,8 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
   const asked = Number((await searchParams).dias);
   const days = (PERIODS as readonly number[]).includes(asked) ? asked : 28;
   const stats = await siteStats(db(), { userId, status: session.user.status }, { days });
+  const roxi = await roxiHelpTotals(db(), { userId, status: session.user.status }, { days });
+  const roxiAny = ROXI_HELP_EVENTS.some((event) => roxi[event] > 0);
 
   const intl = intlLocale(locale);
   const n = (value: number) => new Intl.NumberFormat(intl).format(value);
@@ -185,6 +188,31 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
               );
             })}
           </ol>
+        </section>
+
+        <section className="card vs-card" aria-labelledby="vs-roxi">
+          <h2 id="vs-roxi">{t('stats.roxi.title')}</h2>
+          <p className="muted">{t('stats.roxi.note')}</p>
+          {!roxiAny ? (
+            <p className="muted mb0">{t('stats.empty')}</p>
+          ) : (
+            <table className="vs-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t('stats.roxi.col_event')}</th>
+                  <th scope="col">{t('stats.roxi.col_count')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ROXI_HELP_EVENTS.map((event) => (
+                  <tr key={event}>
+                    <td>{t(`stats.roxi.event.${event}` as MessageKey)}</td>
+                    <td>{n(roxi[event])}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </section>
 
         <section className="card vs-card" aria-labelledby="vs-speed">

@@ -15,6 +15,7 @@ import { saveProfileAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { RoxiPrefill } from '@/ui/roxi/prefill';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -53,6 +54,7 @@ export default async function WorkProfilePage({ searchParams }: { searchParams: 
           </p>
         ) : null}
         <form action={saveProfileAction} className="mk-form" style={{ marginTop: 18 }}>
+          <RoxiPrefill form="work_profile" notice={t('roxi.prefill.notice')} />
           {next ? <input type="hidden" name="next" value={next} /> : null}
           <label>
             {t('work.profile.headline')}

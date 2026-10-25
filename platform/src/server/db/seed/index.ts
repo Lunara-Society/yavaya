@@ -25,7 +25,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
-  SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES, SITE_STATS_RULES } from '@/config/business-rules';
+  SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES, SITE_STATS_RULES, ROXI_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { BILLABLE_ACTIONS } from '@/config/billable-actions';
 import { operationalEnv } from '@/config/env';
@@ -390,6 +390,9 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'go.store_answer_minutes', value: GO_RULES.storeAnswerMinutes, description: 'YavayaGo: minutes a store has to accept an order before it is cancelled' },
     { key: 'go.max_open_orders_per_customer', value: GO_RULES.maxOpenOrdersPerCustomer, description: 'YavayaGo: open cash orders one customer may have at once' },
     { key: 'go.max_delivery_km', value: GO_RULES.maxDeliveryKm, description: 'YavayaGo: straight-line delivery limit from the store' },
+    { key: 'roxi.welcome_plays', value: ROXI_RULES.welcomePlays, description: "Roxi: logins on which a welcome voice note plays for its recipient" },
+    { key: 'roxi.welcome_delay_seconds', value: ROXI_RULES.welcomeDelaySeconds, description: 'Roxi: seconds after signing in before the welcome voice note plays' },
+    { key: 'roxi.welcome_login_window_minutes', value: ROXI_RULES.welcomeLoginWindowMinutes, description: 'Roxi: minutes after signing in during which a session still counts as a fresh login' },
   ];
 
   for (const setting of settings) {

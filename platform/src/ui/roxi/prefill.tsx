@@ -37,6 +37,16 @@ export function RoxiPrefill({ form, notice }: { form: RoxiForm; notice: string }
 
       for (const [name, value] of Object.entries(draft.fields)) {
         const field = target.elements.namedItem(name);
+        // A group of checkboxes sharing a name (a profile's fields) takes a comma-separated list.
+        if (field instanceof RadioNodeList) {
+          const chosen = new Set(String(value).split(','));
+          for (const box of field) {
+            if (!(box instanceof HTMLInputElement) || box.type !== 'checkbox') continue;
+            box.checked = chosen.has(box.value);
+            box.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          continue;
+        }
         if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) continue;
         if (field instanceof HTMLInputElement && (field.type === 'file' || field.type === 'hidden')) continue;
         if (field instanceof HTMLInputElement && field.type === 'checkbox') field.checked = value === true || value === 'true';

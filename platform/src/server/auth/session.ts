@@ -28,6 +28,8 @@ export type SessionUser = {
 
 export type ValidatedSession = {
   sessionId: string;
+  /** When the member signed in. Rotation keeps it: it is the login, not the token. */
+  createdAt: Date;
   /** When the session last saw activity; the idle window runs from here. */
   lastUsedAt: Date;
   user: SessionUser;
@@ -113,6 +115,7 @@ export async function validateSession(
 
   return {
     sessionId: row.sessionId,
+    createdAt: row.createdAt,
     lastUsedAt: row.lastUsedAt,
     shouldRotate: now >= rotateAfter,
     user: {

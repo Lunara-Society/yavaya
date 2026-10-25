@@ -6,6 +6,9 @@ import { Conversation } from '@elevenlabs/client';
 import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
 import { roxiTools, type RoxiResultCard } from './tools';
+import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE } from './prefs';
+import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
+import { reportPresence } from './presence';
 
 /**
  * The conversation with Roxi. Loaded only when a member opens it: the
@@ -28,6 +31,9 @@ import { roxiTools, type RoxiResultCard } from './tools';
 
 export type RoxiMember = { firstName: string; yayId: string; placeName: string | null; emailVerified: boolean };
 
+/** How the panel was opened: by the member, from Roxi's check-in, or by answering her simulated call. */
+export type RoxiOpening = 'none' | 'checkin' | 'call';
+
 type Entry =
   | { id: number; kind: 'roxi' | 'you'; text: string }
   | { id: number; kind: 'note'; text: string }
@@ -43,6 +49,63 @@ type Mode = 'voice' | 'text';
 const PHOTO_EDGE = 1600;
 /** If an answer never comes (a dropped tool call, a stalled model), the dots stop rather than spin forever. */
 const WAIT_GIVE_UP_MS = 45_000;
+
+/** Entries this tab keeps (sessionStorage) so closing the panel or reloading does not lose the thread. Photos stay out: they are files, not text. */
+type KeptEntry = Exclude<Entry, { kind: 'photo' }>;
+const KEPT_ENTRIES = 60;
+
+function readLog(): KeptEntry[] {
+  try {
+    const value = JSON.parse(window.sessionStorage.getItem(LOG_KEY) ?? '[]') as unknown;
+    if (!Array.isArray(value)) return [];
+    return value.filter(
+      (entry): entry is KeptEntry =>
+        !!entry &&
+        typeof entry === 'object' &&
+        typeof (entry as KeptEntry).id === 'number' &&
+        (((['roxi', 'you', 'note'] as const).includes((entry as { kind: 'roxi' }).kind) && typeof (entry as { text?: unknown }).text === 'string') ||
+          ((entry as { kind: string }).kind === 'results' && Array.isArray((entry as { cards?: unknown }).cards))),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function writeLog(entries: Entry[]): void {
+  try {
+    const kept = entries.filter((entry): entry is KeptEntry => entry.kind !== 'photo').slice(-KEPT_ENTRIES);
+    if (kept.length) window.sessionStorage.setItem(LOG_KEY, JSON.stringify(kept));
+    else window.sessionStorage.removeItem(LOG_KEY);
+  } catch {
+    // Storage blocked: the conversation lasts as long as the panel.
+  }
+}
+
+/** A small grey sample of a photo for the quality checks and the repeat check. */
+async function inspect(file: File): Promise<{ hints: PhotoHint[]; hash: string } | null> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const longEdge = Math.max(bitmap.width, bitmap.height);
+    const scale = 160 / longEdge;
+    const width = Math.max(3, Math.round(bitmap.width * scale));
+    const height = Math.max(3, Math.round(bitmap.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) return null;
+    context.drawImage(bitmap, 0, 0, width, height);
+    const grey = luminance(context.getImageData(0, 0, width, height).data);
+    canvas.width = 9;
+    canvas.height = 8;
+    context.drawImage(bitmap, 0, 0, 9, 8);
+    const hash = differenceHash(luminance(context.getImageData(0, 0, 9, 8).data));
+    bitmap.close();
+    return { hints: photoHints({ grey, width, height }, longEdge), hash };
+  } catch {
+    return null;
+  }
+}
 
 /** A phone photo shrunk before it travels: Roxi needs to see it, not print it. */
 async function shrink(file: File): Promise<File> {
@@ -64,9 +127,51 @@ async function shrink(file: File): Promise<File> {
 
 const icon = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true } as const;
 
-function Icon({ name, size = 20 }: { name: 'mic' | 'mic-off' | 'end' | 'camera' | 'send' | 'minimize' | 'close' | 'search' | 'coin' | 'spark' | 'arrow'; size?: number }) {
+type IconName = 'mic' | 'mic-off' | 'end' | 'camera' | 'image' | 'send' | 'minimize' | 'close' | 'search' | 'coin' | 'spark' | 'arrow' | 'copy' | 'speaker' | 'up' | 'down' | 'gear';
+
+function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const props = { ...icon, width: size, height: size };
   switch (name) {
+    case 'image':
+      return (
+        <svg {...props}>
+          <rect x="4" y="5" width="16" height="14" rx="2" />
+          <circle cx="9" cy="10" r="1.6" />
+          <path d="M20 16l-5-5-8 8" />
+        </svg>
+      );
+    case 'copy':
+      return (
+        <svg {...props}>
+          <rect x="9" y="9" width="11" height="11" rx="2" />
+          <path d="M5 15V6a2 2 0 0 1 2-2h8" />
+        </svg>
+      );
+    case 'speaker':
+      return (
+        <svg {...props}>
+          <path d="M5 10v4h3l4 4V6L8 10zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" />
+        </svg>
+      );
+    case 'up':
+      return (
+        <svg {...props}>
+          <path d="M7 11v9H4v-9zM7 11l4-7a2 2 0 0 1 3 2l-1 4h5.5a2 2 0 0 1 2 2.4l-1.3 6A2 2 0 0 1 17.2 20H7" />
+        </svg>
+      );
+    case 'down':
+      return (
+        <svg {...props}>
+          <path d="M7 13V4H4v9zM7 13l4 7a2 2 0 0 0 3-2l-1-4h5.5a2 2 0 0 0 2-2.4l-1.3-6A2 2 0 0 0 17.2 4H7" />
+        </svg>
+      );
+    case 'gear':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" />
+        </svg>
+      );
     case 'mic':
       return (
         <svg {...props}>
@@ -144,11 +249,15 @@ export default function RoxiPanel({
   member,
   locale,
   labels,
+  openedBy = 'none',
+  onSettings,
   onClose,
 }: {
   member: RoxiMember;
   locale: string;
   labels: RoxiLabels;
+  openedBy?: RoxiOpening;
+  onSettings: () => void;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -163,6 +272,15 @@ export default function RoxiPanel({
   const [entries, setEntries] = useState<Entry[]>([]);
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
+  const restored = useRef(false);
+  const [canFeedback, setCanFeedback] = useState(false);
+  const [feedbackFor, setFeedbackFor] = useState(0);
+  const [copied, setCopied] = useState(0);
+  const [reading, setReading] = useState(0);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const photoHashes = useRef<string[]>([]);
+  // A conversation a check-in or call began counts once when it leads to a draft or an opened result.
+  const prompted = useRef(openedBy !== 'none');
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const conversation = useRef<Conversation | null>(null);
@@ -182,6 +300,42 @@ export default function RoxiPanel({
   const add = useCallback((entry: NewEntry) => {
     setEntries((current) => [...current, { ...entry, id: nextId.current++ } as Entry]);
   }, []);
+
+  // This tab's conversation comes back when the panel reopens, unless the member turned that off.
+  useEffect(() => {
+    if (!readPrefs().keep) return;
+    const kept = readLog();
+    if (kept.length === 0) return;
+    nextId.current = Math.max(...kept.map((entry) => entry.id)) + 1;
+    restored.current = true;
+    setEntries([...kept, { id: nextId.current++, kind: 'note', text: labels.restored }]);
+  }, [labels.restored]);
+
+  useEffect(() => {
+    if (readPrefs().keep) writeLog(entries);
+    else writeLog([]);
+  }, [entries]);
+
+  useEffect(() => {
+    const forget = () => setEntries([]);
+    window.addEventListener('roxi:forget', forget);
+    return () => window.removeEventListener('roxi:forget', forget);
+  }, []);
+
+  const countPrompted = useCallback(() => {
+    if (!prompted.current) return;
+    prompted.current = false;
+    reportPresence('prompted_task');
+  }, []);
+
+  // Answering Roxi's simulated call is the tap that starts a voice conversation.
+  const answered = useRef(false);
+  useEffect(() => {
+    if (openedBy !== 'call' || answered.current) return;
+    answered.current = true;
+    void start('voice');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, on the answer that opened the panel
+  }, [openedBy]);
 
   useEffect(() => {
     // The greeting is read from the top; only a conversation follows its latest line.
@@ -240,6 +394,7 @@ export default function RoxiPanel({
 
   useEffect(
     () => () => {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       void conversation.current?.endSession();
       for (const entry of entriesRef.current) if (entry.kind === 'photo') URL.revokeObjectURL(entry.url);
     },
@@ -260,12 +415,13 @@ export default function RoxiPanel({
           if (cards.length > 0) add({ kind: 'results', cards, more });
         },
         note: (text) => add({ kind: 'note', text }),
+        task: countPrompted,
         stepAside: () => {
           if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
         },
         labels: { draft_opened: labels.draft_opened, opened: labels.opened, no_results: labels.no_results },
       }),
-    [add, labels, router],
+    [add, labels, router, countPrompted],
   );
 
   /** What was said before, when switching from writing to voice: a new conversation that remembers. */
@@ -306,6 +462,7 @@ export default function RoxiPanel({
         }
       }
       const previous = recap();
+      const prefs = readPrefs();
       const live = await Conversation.startSession({
         ...(body.signedUrl ? { signedUrl: body.signedUrl } : { agentId: body.agentId! }),
         connectionType: 'websocket',
@@ -317,6 +474,8 @@ export default function RoxiPanel({
             // Opened by writing or with a photo: Roxi answers that, instead of greeting first.
             ...(opening || previous ? { firstMessage: '' } : {}),
           },
+          // Only a speed the member chose travels; the agent allows this one override.
+          ...(modeNow === 'voice' && prefs.speed !== 'normal' ? { tts: { speed: SPEED_VALUE[prefs.speed] } } : {}),
         },
         dynamicVariables: {
           member_name: member.firstName || member.yayId,
@@ -327,6 +486,7 @@ export default function RoxiPanel({
           current_page: pathRef.current,
           previous_conversation: previous,
           platform_status: body.status ?? '',
+          member_preferences: preferencesForRoxi(prefs),
         },
         clientTools: tools(),
         workletPaths: {
@@ -349,8 +509,10 @@ export default function RoxiPanel({
           add({ kind: source === 'user' ? 'you' : 'roxi', text: said });
         },
         onModeChange: ({ mode: now }) => setSpeaking(now === 'speaking'),
+        onCanSendFeedbackChange: ({ canSendFeedback }) => setCanFeedback(canSendFeedback),
         onDisconnect: () => {
           conversation.current = null;
+          setCanFeedback(false);
           setPhase('ended');
           setSpeaking(false);
           setWaiting(false);
@@ -396,9 +558,17 @@ export default function RoxiPanel({
     if (!file || busy) return;
     setBusy(true);
     try {
+      const look = await inspect(file);
+      // The same photo twice adds nothing to a listing; everything else goes, with advice when it would help.
+      if (look && photoHashes.current.includes(look.hash)) {
+        add({ kind: 'note', text: labels.photo_duplicate });
+        return;
+      }
+      if (look) photoHashes.current.push(look.hash);
       const small = await shrink(file);
       photos.current.push({ file: small, taken: false });
       add({ kind: 'photo', url: URL.createObjectURL(small) });
+      for (const hint of look?.hints ?? []) add({ kind: 'note', text: labels[`photo_${hint}`] });
       setWaiting(true);
       const deliver = async (session: Conversation) => {
         try {
@@ -417,12 +587,55 @@ export default function RoxiPanel({
     } finally {
       setBusy(false);
       if (fileInput.current) fileInput.current.value = '';
+      if (cameraInput.current) cameraInput.current.value = '';
     }
   }
 
-  function pickPhoto(selling: boolean) {
+  function pickPhoto(selling: boolean, camera = false) {
     sellingPhoto.current = selling;
-    fileInput.current?.click();
+    (camera ? cameraInput : fileInput).current?.click();
+  }
+
+  async function copy(entry: { id: number; text: string }) {
+    try {
+      await navigator.clipboard.writeText(entry.text);
+      setCopied(entry.id);
+      window.setTimeout(() => setCopied((current) => (current === entry.id ? 0 : current)), 1800);
+    } catch {
+      // No clipboard permission: the text is still there to select.
+    }
+  }
+
+  /** The browser's own speech, for an answer the member would rather hear: nothing leaves the device. */
+  function readAloud(entry: { id: number; text: string }) {
+    const speech = window.speechSynthesis;
+    speech.cancel();
+    if (reading === entry.id) {
+      setReading(0);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(entry.text);
+    utterance.lang = locale === 'en' ? 'en-US' : 'es-419';
+    utterance.rate = SPEED_VALUE[readPrefs().speed];
+    utterance.onend = () => setReading((current) => (current === entry.id ? 0 : current));
+    utterance.onerror = utterance.onend;
+    setReading(entry.id);
+    speech.speak(utterance);
+  }
+
+  function feedback(entry: { id: number }, like: boolean) {
+    conversation.current?.sendFeedback(like);
+    setFeedbackFor(entry.id);
+  }
+
+  async function clearConversation() {
+    await end();
+    window.speechSynthesis?.cancel();
+    for (const entry of entriesRef.current) if (entry.kind === 'photo') URL.revokeObjectURL(entry.url);
+    photos.current = [];
+    photoHashes.current = [];
+    setEntries([]);
+    setPhase('idle');
   }
 
   async function switchToVoice() {
@@ -478,8 +691,13 @@ export default function RoxiPanel({
   ] as const;
 
   const photoInput = (
-    <input ref={fileInput} type="file" accept="image/*" hidden onChange={(event) => void sendPhoto(event.currentTarget.files?.[0])} />
+    <>
+      <input ref={fileInput} type="file" accept="image/*" hidden onChange={(event) => void sendPhoto(event.currentTarget.files?.[0])} />
+      {/* The camera opens only from this tap, through the phone's own camera app: the page itself never touches it. */}
+      <input ref={cameraInput} type="file" accept="image/*" capture="environment" hidden onChange={(event) => void sendPhoto(event.currentTarget.files?.[0])} />
+    </>
   );
+  const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
   if (aside) {
     return (
@@ -522,6 +740,9 @@ export default function RoxiPanel({
             </span>
           </div>
           <div className="roxi-actions">
+            <button type="button" className="roxi-icon" onClick={onSettings} aria-label={labels.settings}>
+              <Icon name="gear" />
+            </button>
             <button type="button" className="roxi-icon" onClick={() => setAside(true)} aria-label={labels.minimize}>
               <Icon name="minimize" />
             </button>
@@ -590,6 +811,7 @@ export default function RoxiPanel({
                           href={card.url}
                           onClick={(event) => {
                             event.preventDefault();
+                            countPrompted();
                             router.push(card.url);
                             if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
                           }}
@@ -608,9 +830,39 @@ export default function RoxiPanel({
             }
             // In a voice conversation her latest words are the caption under the orb; not twice.
             if (voice && entry.id === lastSaidId) return null;
+            if (entry.kind !== 'roxi') {
+              return (
+                <li key={entry.id} className={`roxi-msg is-${entry.kind}`}>
+                  {entry.text}
+                </li>
+              );
+            }
+            const latest = entry.id === lastSaidId;
             return (
-              <li key={entry.id} className={`roxi-msg is-${entry.kind}`}>
+              <li key={entry.id} className="roxi-msg is-roxi">
                 {entry.text}
+                <span className="roxi-msg-actions">
+                  <button type="button" onClick={() => void copy(entry)} aria-label={copied === entry.id ? labels.copied : labels.copy} title={copied === entry.id ? labels.copied : labels.copy}>
+                    <Icon name="copy" size={15} />
+                  </button>
+                  {canSpeak && !voice ? (
+                    <button type="button" onClick={() => readAloud(entry)} aria-pressed={reading === entry.id} aria-label={reading === entry.id ? labels.stop_reading : labels.read_aloud} title={reading === entry.id ? labels.stop_reading : labels.read_aloud}>
+                      <Icon name="speaker" size={15} />
+                    </button>
+                  ) : null}
+                  {latest && canFeedback && phase === 'live' && feedbackFor !== entry.id ? (
+                    <>
+                      <button type="button" onClick={() => feedback(entry, true)} aria-label={labels.helpful} title={labels.helpful}>
+                        <Icon name="up" size={15} />
+                      </button>
+                      <button type="button" onClick={() => feedback(entry, false)} aria-label={labels.not_helpful} title={labels.not_helpful}>
+                        <Icon name="down" size={15} />
+                      </button>
+                    </>
+                  ) : null}
+                  {feedbackFor === entry.id ? <small role="status">{labels.feedback_thanks}</small> : null}
+                  {copied === entry.id ? <small role="status">{labels.copied}</small> : null}
+                </span>
               </li>
             );
           })}
@@ -648,8 +900,11 @@ export default function RoxiPanel({
             void sendText(draft, true);
           }}
         >
-          <button type="button" className="roxi-icon is-gold" onClick={() => pickPhoto(false)} aria-label={labels.photo} disabled={busy || phase === 'connecting'}>
+          <button type="button" className="roxi-icon is-gold" onClick={() => pickPhoto(false, true)} aria-label={labels.camera} title={labels.camera} disabled={busy || phase === 'connecting'}>
             <Icon name="camera" />
+          </button>
+          <button type="button" className="roxi-icon" onClick={() => pickPhoto(false)} aria-label={labels.photo} title={labels.photo} disabled={busy || phase === 'connecting'}>
+            <Icon name="image" />
           </button>
           {photoInput}
           <input
@@ -670,6 +925,13 @@ export default function RoxiPanel({
         </form>
 
         <p className="roxi-disclosure">
+          {entries.length > 0 ? (
+            <>
+              <button type="button" className="roxi-clear" onClick={() => void clearConversation()}>
+                {labels.clear}
+              </button>
+            </>
+          ) : null}
           {labels.disclosure}{' '}
           <a href="/privacy#roxi" target="_blank" rel="noopener">
             {labels.privacy}

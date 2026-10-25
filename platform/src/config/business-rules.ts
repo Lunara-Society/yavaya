@@ -736,3 +736,39 @@ export const LIVE_FEED_RULES = {
   /** "Pausar" holds messages for this long; the "En vivo" pill turns them back on at any time. */
   snoozeMinutes: 45,
 } as const;
+
+/**
+ * Roxi, the assistant: the welcome voice notes and the proactive help a
+ * member can opt into (src/ui/roxi/presence.ts reads the second group in the
+ * browser, so those values travel with the page, not from the database).
+ */
+export const ROXI_RULES = {
+  /** Logins on which a welcome voice note plays for its one recipient (the owner's request, October 2026). */
+  welcomePlays: 2,
+  /** Seconds after signing in before Roxi speaks (the owner's request, October 2026). */
+  welcomeDelaySeconds: 10,
+  /**
+   * Minutes after signing in during which a session still counts as "a
+   * login". A session that began earlier — one that was already open when this
+   * shipped, or yesterday's — never plays the note.
+   */
+  welcomeLoginWindowMinutes: 15,
+  /** Available mode: minutes of browsing without opening Roxi before one small check-in appears. */
+  checkInAfterMinutes: 6,
+  /** Seconds the check-in stays before tucking itself away. */
+  checkInVisibleSeconds: 20,
+  /** Check-ins at most per day, whatever happens. */
+  checkInsPerDay: 1,
+  /**
+   * Proactive mode only, which the member turns on themselves: the simulated
+   * call comes after a random wait inside this range of browsing minutes —
+   * 15 to 20 to begin with, as the owner asked, so it can be tested.
+   */
+  callAfterMinutes: { min: 15, max: 20 },
+  /** Seconds the ringtone plays before the call counts as missed. */
+  callRingSeconds: 20,
+  /** Hours after a declined or missed call before Roxi rings again. */
+  callCooldownHours: 24,
+  /** Default quiet hours (local time, 24 h clock): no check-in and no call. The member can change them. */
+  quietHours: { from: 21, to: 7 },
+} as const;

@@ -1987,6 +1987,20 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `stats.funnel.verified`: Con correo verificado
 - `stats.funnel.acted`: Hicieron algo (publicar, pedir, postular, ordenar)
 - `stats.funnel.of_previous`: {share} del paso anterior
+- `stats.roxi.title`: Roxi por iniciativa propia
+- `stats.roxi.note`: Saludos y llamadas simuladas que Roxi hizo dentro de lo que cada miembro permitió en sus ajustes, y lo que pasó después. Se cuentan por día, sin saber de quién.
+- `stats.roxi.col_event`: Qué pasó
+- `stats.roxi.col_count`: Veces
+- `stats.roxi.event.checkin_shown`: Saludos mostrados
+- `stats.roxi.event.checkin_opened`: Saludos que abrieron a Roxi
+- `stats.roxi.event.checkin_dismissed`: Saludos cerrados o que se fueron solos
+- `stats.roxi.event.checkin_silenced`: Pidieron no volver a ver saludos
+- `stats.roxi.event.call_rang`: Llamadas simuladas
+- `stats.roxi.event.call_answered`: Llamadas contestadas
+- `stats.roxi.event.call_declined`: Llamadas rechazadas o desactivadas
+- `stats.roxi.event.call_missed`: Llamadas sin contestar
+- `stats.roxi.event.prompted_task`: Borradores preparados o resultados abiertos después de un saludo o una llamada
+- `stats.roxi.event.welcome_played`: Mensajes de bienvenida escuchados
 - `stats.speed.title`: Velocidad para las personas reales
 - `stats.speed.lead`: Medida por los navegadores de quienes visitan Yavaya, no en un laboratorio. Las bandas son las de la guía Web Vitals que usa todo el mundo.
 - `stats.speed.good`: Buena
@@ -2077,6 +2091,67 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.result.closed`: Cerrado ahora
 - `roxi.result.urgent`: Urgente
 - `roxi.prefill.notice`: Roxi llenó este formulario contigo. Revísalo antes de enviarlo.
+- `roxi.welcome.title`: Roxi te dejó un mensaje de voz
+- `roxi.welcome.play`: Escuchar
+- `roxi.welcome.pause`: Pausar
+- `roxi.welcome.again`: Escuchar otra vez
+- `roxi.welcome.read`: Leer el mensaje
+- `roxi.welcome.close`: Cerrar
+- `roxi.welcome.tap`: Tu navegador necesita un toque para reproducir sonido.
+- `roxi.welcome.talk`: Hablar con Roxi
+- `roxi.ui.copy`: Copiar
+- `roxi.ui.copied`: Copiado
+- `roxi.ui.read_aloud`: Leer en voz alta
+- `roxi.ui.stop_reading`: Dejar de leer
+- `roxi.ui.helpful`: Me sirvió
+- `roxi.ui.not_helpful`: No me sirvió
+- `roxi.ui.feedback_thanks`: Gracias por decírmelo.
+- `roxi.ui.clear`: Borrar esta conversación
+- `roxi.ui.restored`: Seguimos donde lo dejaste.
+- `roxi.ui.camera`: Tomar una foto
+- `roxi.ui.photo_dark`: La foto se ve oscura: con más luz se ven mejor los detalles. La envío igual.
+- `roxi.ui.photo_blurry`: La foto se ve un poco borrosa: si puedes, toma otra con el teléfono firme. La envío igual.
+- `roxi.ui.photo_small`: La foto es muy pequeña y se pueden perder detalles. La envío igual.
+- `roxi.ui.photo_duplicate`: Esa misma foto ya está en la conversación.
+- `roxi.ui.settings`: Ajustes de Roxi
+- `roxi.settings.title`: Cómo quieres que esté Roxi
+- `roxi.settings.mode`: Presencia
+- `roxi.settings.mode.quiet`: Silenciosa
+- `roxi.settings.mode.quiet_hint`: Solo aparece cuando tocas su botón.
+- `roxi.settings.mode.available`: Disponible
+- `roxi.settings.mode.available_hint`: Como mucho una vez al día, un saludo breve que se va solo.
+- `roxi.settings.mode.proactive`: Proactiva
+- `roxi.settings.mode.proactive_hint`: Además, una llamada simulada dentro de Yavaya después de un rato navegando. Solo suena con esta página abierta: nunca llama a tu teléfono.
+- `roxi.settings.length`: Largo de las respuestas
+- `roxi.settings.length.short`: Cortas
+- `roxi.settings.length.normal`: Normales
+- `roxi.settings.length.detailed`: Detalladas
+- `roxi.settings.speed`: Velocidad de su voz
+- `roxi.settings.speed.slow`: Más lenta
+- `roxi.settings.speed.normal`: Normal
+- `roxi.settings.speed.fast`: Más rápida
+- `roxi.settings.quiet_hours`: Horas de silencio (sin saludos ni llamadas)
+- `roxi.settings.quiet_from`: Desde
+- `roxi.settings.quiet_to`: Hasta
+- `roxi.settings.keep`: Guardar la conversación en esta pestaña hasta que la cierres
+- `roxi.settings.stored`: Lo que Roxi guarda en este dispositivo: estos ajustes y, si lo permites, la conversación de esta pestaña. Se guarda solo en este navegador; Roxi recibe tus ajustes al empezar cada conversación.
+- `roxi.settings.forget`: Borrar todo lo que Roxi guarda aquí
+- `roxi.settings.forgotten`: Listo: no queda nada guardado.
+- `roxi.settings.save`: Guardar
+- `roxi.settings.saved`: Guardado.
+- `roxi.settings.close`: Cerrar
+- `roxi.checkin.text`: ¿Te ayudo con algo? Aquí estoy si me necesitas.
+- `roxi.checkin.form`: ¿Te ayudo a terminar este formulario?
+- `roxi.checkin.open`: Hablar con Roxi
+- `roxi.checkin.later`: Ahora no
+- `roxi.checkin.never`: No volver a mostrar
+- `roxi.checkin.why`: Te saludo porque Roxi está en modo Disponible. Puedes cambiarlo en sus ajustes.
+- `roxi.call.title`: Roxi te está llamando
+- `roxi.call.sub`: Llamada dentro de Yavaya: solo suena con esta página abierta.
+- `roxi.call.answer`: Contestar
+- `roxi.call.decline`: Rechazar
+- `roxi.call.why`: Suena porque activaste el modo Proactiva en los ajustes de Roxi.
+- `roxi.call.off`: Desactivar llamadas
 
 ## sanctions
 - `sanctions.title`: Miembros
@@ -2301,7 +2376,6 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `payments.error.provider`: No pudimos abrir el pago con Stripe. No se hizo ningún cobro; inténtalo en unos minutos.
 - `payments.test_mode`: Modo de prueba: Stripe está conectado a su entorno de pruebas. Solo administradores ven estos botones; usa tarjetas de prueba, no se cobra dinero real.
 - `payments.saving`: Ahorras {percent}%
-- `payments.method.dlocalgo`: dLocal Go · tarjeta y medios locales
 - `payments.country_pending`: En tu país se paga con {method}, que estamos terminando de conectar. Muy pronto podrás comprar tokens desde aquí.
 - `payments.countries_title`: Cómo se paga en cada país
 - `payments.countries_lead`: Cada país paga con el sistema que funciona allí. Yavaya elige el tuyo según el país de tu perfil; los precios son los mismos en todas partes.

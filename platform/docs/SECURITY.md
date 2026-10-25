@@ -376,8 +376,30 @@ above:
 - **Prompt injection.** Listings, notifications and search results reach the
   model as data. The prompt tells Roxi to treat them as content, the agent's
   prompt-injection guardrail is on, and — the real control — no tool can do
-  anything the member could not already do. A test checks that Roxi refuses
-  to reveal its instructions or grant tokens.
+  anything the member could not already do. Tests check that Roxi refuses
+  to reveal its instructions or grant tokens, and obeys no instruction hidden
+  in a listing the member pastes. Both are stopped by the guardrail before
+  the model runs; with the guardrail off (on a temporary copy, since deleted)
+  the model refused both on its own.
+- **Her knowledge is not writable from a conversation.** The knowledge base
+  is generated from the site's own code and pinned to a commit; nothing a
+  member says reaches it. Conversation analysis records unanswered questions
+  without personal details, for a person to read.
+- **The welcome voice notes.** For two named people. The server decides who
+  hears one from the account (role, plus first name or primary address) on
+  every request; `/api/roxi/welcome/audio` answers 404 to anyone else and is
+  `private, no-store`; the recordings are outside `public/`; their words are
+  kept out of Roxi's knowledge. `POST /api/roxi/welcome` is same-origin and
+  changes nothing for anyone but the recipient.
+- **Counts without identity.** `/api/roxi/presence` takes one of a fixed list
+  of event names from a signed-in member, within the look-up allowance, and
+  adds one to a daily total. It stores no user, session or page.
+- **What stays in the browser.** Roxi's settings (`localStorage`) and, unless
+  the member turns it off, the conversation for that tab (`sessionStorage`,
+  gone when the tab closes). The settings sheet says so and erases both.
+  Roxi asks for neither the camera nor the microphone on her own: the camera
+  opens only from the member's tap on its button, the microphone only when
+  they start a voice conversation.
 - **Who can open a conversation.** `/api/roxi/start` requires a session,
   same-origin POST, and the member's daily allowance (20). The agent accepts
   only `yavaya.lat` and `www.yavaya.lat` with the origin header required.

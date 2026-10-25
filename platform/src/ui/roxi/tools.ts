@@ -25,6 +25,8 @@ export type ToolContext = {
   note: (text: string) => void;
   /** On a phone, gets the panel out of the way of the page it just opened. */
   stepAside: () => void;
+  /** A draft prepared or a result opened: something the member came to do. */
+  task?: () => void;
   labels: { draft_opened: string; opened: string; no_results: string };
 };
 
@@ -49,6 +51,26 @@ export const SERVICE_CATEGORIES = [
   'events',
 ];
 export const SPECIES = ['dog', 'cat', 'other'];
+export const WORK_FIELDS = [
+  'technology',
+  'design',
+  'marketing',
+  'writing',
+  'finance',
+  'administration',
+  'sales',
+  'construction',
+  'creative',
+  'education',
+  'health',
+  'hospitality',
+  'agriculture',
+  'transport',
+  'other',
+];
+export const EMPLOYMENT_TYPES = ['full_time', 'part_time', 'temporary', 'freelance'];
+/** A Trabajo profile lists at most this many fields (WORK_RULES.maxFieldsPerProfile). */
+export const MAX_PROFILE_FIELDS = 3;
 
 /** Places Roxi may open by name. A name, not a path, so the model cannot invent an address. */
 export const ROXI_PAGES: Record<string, string> = {
@@ -122,9 +144,15 @@ async function getJson(url: string): Promise<{ ok: boolean; status: number; body
   }
 }
 
+/** Leaves out what Roxi did not write, so a draft never blanks a field the member had already filled. */
+function written(fields: Record<string, string | boolean>): Record<string, string | boolean> {
+  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== ''));
+}
+
 function prepare(ctx: ToolContext, form: RoxiForm, path: string, fields: Record<string, string | boolean>, withPhotos: boolean) {
   const files = withPhotos ? ctx.takePhotos() : [];
   putDraft({ form, fields, files });
+  ctx.task?.();
   const [target] = path.split('?');
   if (ctx.pathname() !== target || path.includes('?')) ctx.navigate(path);
   ctx.note(ctx.labels.draft_opened);
@@ -193,6 +221,46 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
       }
     },
 
+    async prepare_work(parameters) {
+      const form = text(parameters.form, 30);
+      const field = oneOf(WORK_FIELDS, parameters.field);
+      switch (form) {
+        case 'job_post': {
+          const employment = oneOf(EMPLOYMENT_TYPES, parameters.employment);
+          // The form has two tabs: a freelance engagement is a project, anything else a job.
+          const kind = employment === 'freelance' ? 'project' : 'job';
+          const fields = written({
+            title: text(parameters.title, 100),
+            field,
+            employment,
+            // The pay is the employer's own words and a required field: only what the member said.
+            payText: text(parameters.pay, 80),
+            description: text(parameters.body, 4000),
+            requirements: text(parameters.requirements, 2000),
+          });
+          return prepare(ctx, 'job_post', `/work/posts/new?kind=${kind}`, fields, false);
+        }
+        case 'work_profile': {
+          const years = typeof parameters.experience_years === 'number' ? parameters.experience_years : Number.parseInt(text(parameters.experience_years, 3), 10);
+          const fields = written({
+            headline: text(parameters.title, 100),
+            about: text(parameters.body, 2000),
+            skills: text(parameters.skills, 500),
+            experienceYears: Number.isInteger(years) && years >= 0 && years <= 60 ? String(years) : '',
+            fields: text(parameters.fields, 200)
+              .split(',')
+              .map((value) => value.trim())
+              .filter((value) => WORK_FIELDS.includes(value))
+              .slice(0, MAX_PROFILE_FIELDS)
+              .join(','),
+          });
+          return prepare(ctx, 'work_profile', '/work/profile', fields, false);
+        }
+        default:
+          return reply({ ok: false, error: 'unknown_form' });
+      }
+    },
+
     async open_page(parameters) {
       const path = ROXI_PAGES[text(parameters.page, 40)];
       if (!path) return reply({ ok: false, error: 'unknown_page', pages: Object.keys(ROXI_PAGES) });
@@ -205,6 +273,7 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
     async open_result(parameters) {
       const url = text(parameters.url, 120);
       if (!RESULT_PATH.test(url)) return reply({ ok: false, error: 'not_a_result_link' });
+      ctx.task?.();
       ctx.navigate(url);
       ctx.stepAside();
       return reply({ ok: true, opened: url });
