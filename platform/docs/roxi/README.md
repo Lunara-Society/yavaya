@@ -164,8 +164,8 @@ nothing is typed twice:
 
 | Document | ID | Use |
 | --- | --- | --- |
-| `knowledge/sitio.md` — every public page | `ZwVWes6v2RdA5G3MO8E6` | retrieval |
-| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `npIKOVGVrFaXvdYQLDut` | retrieval |
+| `knowledge/sitio.md` — every public page | `0bEsOyaPEVdz0RNQKnYh` | retrieval |
+| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `fqdIaQ23FTBuUdlMlYAM` | retrieval |
 | `knowledge/reglas.md` — member-facing business rules | `SKLpYnPf1hJZmddBMqXg` | always in the prompt |
 | `knowledge/guia-narrada.md` — the video guide's narration | `L9cayZOfF2vdeYW1szOv` | retrieval |
 
@@ -173,8 +173,11 @@ Retrieval uses the multilingual embedding model. The rules document leaves
 out anti-abuse thresholds and plumbing on purpose (`INTERNAL_FIELD` in the
 script).
 
-The IDs above are the current documents; a replacement gets a new ID (see
-"Changing the knowledge"), so check the agent before trusting this table.
+The IDs above are the current documents (the first two pinned to commit
+`5c4ed0d`, 25 October 2026); a replacement gets a new ID (see "Changing the
+knowledge"), so check the agent before trusting this table. The documents
+they replaced cannot be deleted while older agent versions still name them;
+they are in no live configuration.
 
 ### Tests
 
