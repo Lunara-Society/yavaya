@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/ui/components/app-shell';
 import { shellContext } from '@/ui/shell-context';
@@ -6,7 +7,10 @@ import { readSignup } from '@/server/auth/google-cookies';
 import { Mark } from '@/ui/site/icons';
 import { GoogleSignupForm } from './google-signup-form';
 
-export const metadata: Metadata = { title: 'Create account', robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: { absolute: t('auth.register.title') }, robots: { index: false } };
+}
 
 /** The one step between Google confirming an address and a new account: a name and the rules. */
 export default async function GoogleSignupPage() {

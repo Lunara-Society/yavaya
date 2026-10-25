@@ -59,9 +59,19 @@ A red dot is invisible to many people and meaningless in bright sunlight. The
 interactive element. Removing focus styling is never acceptable — keyboard and
 switch users depend on it.
 
-**Motion is short and removable.** 120/200/320ms with a soft ease.
-`prefers-reduced-motion` collapses everything to near-zero. Motion is
-decoration; content is not.
+**Motion with a reason** (since 25 October 2026). The site moves to show
+something arriving, a state changing or a place being reached, and for
+nothing else. What moves: sections rising into view once; a district's
+sign settling as you arrive; the home page's film, once; the live
+position of a driver on a map; Roxi while she connects, listens or thinks.
+What does not: nothing loops for decoration — no auroras, no light sweeping
+across a photograph, no drifting pictures, no spinning or twinkling coins,
+no pulsing dots, no light following the mouse, no cards tilting toward it,
+no particles of any kind. A still dot says "live" as well as a pulsing one.
+Durations stay short (120/200/320ms with a soft ease), and
+`prefers-reduced-motion` stills everything that remains. Motion is never
+the content, and nothing waits on it: a section that has already passed
+the bottom of the screen is shown even if no frame saw it arrive.
 
 **Touch targets are at least 44px** (`--spacing-touch`), and navigation sits at
 the bottom within thumb reach.
@@ -100,7 +110,7 @@ awning (its own page has the full one), Servicios a signal running along a
 dashed line, Trabajo a draftsman's rule, YavayaGo a road with someone on it,
 Comunidad papel picado, Santuario candlelight, Animales a trail of paws. A
 pseudo-element in the world's own colours, so a screen reader never meets it;
-reduced motion stops the three that move.
+all of them still, since crowns are marks, not events.
 
 ## Barrios
 
@@ -110,16 +120,15 @@ over the door, a silhouette of the trade rather than a word, its emblem lit
 from behind in the barrio's colour (`ui/site/rotulo.tsx`) — an **object**,
 the shape its things take; a **motion**, the way they arrive; and a
 **gesture** of its own. The sign swings once as you arrive, as if someone
-had just walked past, then hangs in the breeze; with reduced motion it hangs
-still.
+had just walked past, then hangs still; with reduced motion it never moves.
 
 | Barrio | Sign | Object | Motion | Gesture |
 | --- | --- | --- | --- | --- |
 | Mercadito | A basket of fruit, round | Price tags with a punched hole; every category a stall under its own awning | Goods set down on the table | The awning |
-| Servicios | Hammer and wrench, a guild shield | A ticket torn from the pad, notched down its edge | Rippling into view | "Lo necesito hoy" pings like a call going out |
+| Servicios | Hammer and wrench, a guild shield | A ticket torn from the pad, notched down its edge | Rippling into view | "Lo necesito hoy" carries its lit dot, a call waiting to be answered |
 | Trabajo | A compass on a rule, a cut plate | The ficha: ruled, corner turned down, the pay stamped in mono | The top rule draws itself across | The pay, always the first thing read |
 | YavayaGo | A scooter with its box, a pennant pointing the way | A route ticket, perforated and notched, fee and time printed like a departure board | Arriving from the right, like traffic | The road with someone on it |
-| Comunidad | The ceiba with two people under it, an oval | A note pinned to the plaza's board, a little crooked, pins in papel picado colours | Rising gently | The papel picado stirs |
+| Comunidad | The ceiba with two people under it, an oval | A note pinned to the plaza's board, a little crooked, pins in papel picado colours | Rising gently | The papel picado over the plaza |
 | Santuario | A gilded chapel arch with a candle that burns | The arch of a chapel window: the day's light, the words, the churches | Kindling into view, slowly | A prayer lights a candle |
 | Animales | A paw, a scalloped round | A polaroid, taped up | A small hop | The trail of paws |
 

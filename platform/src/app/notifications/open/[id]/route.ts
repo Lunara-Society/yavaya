@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db/client';
 import { currentSession } from '@/server/auth/context';
 import { openNotification } from '@/server/domains/notifications/service';
+import { loginHref } from '@/server/auth/return-path';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,7 +22,8 @@ function go(path: string) {
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await currentSession();
-  if (!session) return go('/login');
+  // Opened from an email while signed out: sign in, then open it.
+  if (!session) return go(loginHref(UUID.test(id) ? `/notifications/open/${id}` : '/notifications'));
   if (!UUID.test(id)) return go('/notifications');
   const href = await openNotification(db(), { userId: session.user.userId, id });
   const safe = href && href.startsWith('/') && !href.startsWith('//') && !href.includes('\\') ? href : '/notifications';

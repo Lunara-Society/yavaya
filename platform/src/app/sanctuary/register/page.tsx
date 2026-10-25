@@ -8,6 +8,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { ChurchForm } from '@/ui/sanctuary/parts';
 import { registerChurchAction } from '../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RegisterChurchPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (

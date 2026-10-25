@@ -5,8 +5,11 @@ import { useActionState } from 'react';
 import { loginAction, type ActionState } from '../actions';
 
 export function LoginForm({
+  next,
   labels,
 }: {
+  /** Where to go once signed in; the server checks it again. */
+  next: string;
   labels: { email: string; password: string; submit: string; forgot: string };
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(loginAction, {
@@ -15,6 +18,7 @@ export function LoginForm({
 
   return (
     <form action={formAction} className="mt-6 space-y-4" noValidate>
+      {next !== '/' ? <input type="hidden" name="next" value={next} /> : null}
       <label className="block">
         <span className="text-sm font-medium">{labels.email}</span>
         <input

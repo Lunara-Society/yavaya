@@ -8,6 +8,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { Icon } from '@/ui/site/icons';
 import { listNotifications } from '@/server/domains/notifications/service';
 import { markAllReadAction } from './actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +25,7 @@ function when(date: Date, locale: string): string {
 
 export default async function NotificationsPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const items = await listNotifications(db(), userId);
   const unread = items.filter((item) => !item.read).length;
 

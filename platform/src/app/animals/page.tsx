@@ -14,6 +14,7 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,7 +92,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
             <strong>2 · {t('animals.home.adopt')}</strong>
             <span>{t('animals.home.adopt_text')}</span>
           </a>
-          <Link className="an-door" href={member ? '/animals/rescuer' : '/login'}>
+          <Link className="an-door" href={member ? '/animals/rescuer' : loginHref('/animals/rescuer')}>
             <span className="an-door-icon" aria-hidden="true">
               <Icon name="hands" />
             </span>
@@ -151,7 +152,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
                 <Icon name="heart" />
               </span>
               <p>{t('animals.home.empty')}</p>
-              <Link className="btn btn-line" href={member ? '/animals/rescuer' : '/login'}>
+              <Link className="btn btn-line" href={member ? '/animals/rescuer' : loginHref('/animals/rescuer')}>
                 {t('animals.home.rescue')}
               </Link>
             </div>

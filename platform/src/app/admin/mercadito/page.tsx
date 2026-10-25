@@ -12,6 +12,7 @@ import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { listingQueue, MODERATION_DECISIONS } from '@/server/domains/mercadito/moderation';
 import { resolveTicketAction } from './actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -20,7 +21,7 @@ const PENALTY_RULE = { warn: 'warning_issued', fraud: 'confirmed_fraudulent_list
 
 export default async function MercaditoModerationPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   // Someone without the permission learns nothing about the page existing.
   if (!(await hasPermission(db(), userId, 'listings.moderate'))) notFound();
 

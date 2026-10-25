@@ -9,6 +9,7 @@ import { isDomainError } from '@/server/errors';
 import { closeListing, deleteSavedSearch, featureListing, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
 import { LISTING_CATEGORIES, normalizeWhatsapp, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES, reportListing, type ListingReportCategory } from '@/server/domains/mercadito/moderation';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Mercadito's small mutations: plain forms that work without JavaScript.
@@ -25,7 +26,7 @@ async function auditContext() {
 
 export async function saveWhatsappAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const back = String(formData.get('back') ?? '/mercadito/publish');
   const safeBack = back.startsWith('/mercadito') ? back : '/mercadito/publish';
@@ -41,7 +42,7 @@ export async function saveWhatsappAction(formData: FormData): Promise<void> {
 
 export async function closeListingAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const listingId = String(formData.get('listingId') ?? '');
   const outcome = formData.get('outcome') === 'sold' ? 'sold' : 'withdrawn';
@@ -61,7 +62,7 @@ export async function closeListingAction(formData: FormData): Promise<void> {
 
 export async function reportListingAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const listingId = String(formData.get('listingId') ?? '');
   if (!UUID.test(listingId)) redirect('/mercadito');
@@ -93,7 +94,7 @@ export async function reportListingAction(formData: FormData): Promise<void> {
 
 export async function reserveListingAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const listingId = String(formData.get('listingId') ?? '');
   if (!UUID.test(listingId)) redirect('/mercadito/mine');
   const reserved = formData.get('reserved') === '1';
@@ -111,7 +112,7 @@ export async function reserveListingAction(formData: FormData): Promise<void> {
 /** "Destacar": pays tokens to sort this listing first for a week. */
 export async function featureListingAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const listingId = String(formData.get('listingId') ?? '');
   const purchaseId = String(formData.get('purchaseId') ?? '');
   if (!UUID.test(listingId) || !UUID.test(purchaseId)) redirect('/mercadito/mine');
@@ -130,7 +131,7 @@ export async function featureListingAction(formData: FormData): Promise<void> {
 
 export async function saveSearchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const category = String(formData.get('cat') ?? '');
   const filters = {
     query: String(formData.get('q') ?? '') || null,
@@ -149,7 +150,7 @@ export async function saveSearchAction(formData: FormData): Promise<void> {
 
 export async function deleteSavedSearchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const id = String(formData.get('id') ?? '');
   if (UUID.test(id)) await db().transaction((tx) => deleteSavedSearch(tx, { userId: session.user.userId, id }));
   revalidatePath('/mercadito/mine');

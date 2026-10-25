@@ -10,6 +10,7 @@ import { ProviderLine, categoryName } from '@/ui/services/parts';
 import { parseYayId } from '@/server/domains/identity/yay-id';
 import { providerPage, SERVICES_REPORT_CATEGORIES } from '@/server/domains/services/service';
 import { reportServicesAction } from '../../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function ProviderPublicPage({ params, searchParams }: { params: Promise<{ yayId: string }>; searchParams: Promise<{ error?: string; reported?: string }> }) {
   const [{ yayId }, query] = await Promise.all([params, searchParams]);
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const digits = parseYayId(decodeURIComponent(yayId));
   if (!digits) notFound();
   const found = await providerPage(db(), { yayDigits: digits, locale });

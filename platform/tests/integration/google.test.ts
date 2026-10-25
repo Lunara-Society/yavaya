@@ -9,7 +9,7 @@ import { vi } from 'vitest';
 import { getBalance } from '@/server/domains/tokens/service';
 import { createSession, validateSession } from '@/server/auth/session';
 import { seal, unseal } from '@/server/auth/sealed';
-import { safeNext } from '@/server/auth/google-cookies';
+import { safeNext } from '@/server/auth/return-path';
 import { SESSION_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
 

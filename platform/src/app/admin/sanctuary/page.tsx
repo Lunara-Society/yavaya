@@ -10,6 +10,7 @@ import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { reviewQueue } from '@/server/domains/sanctuary/service';
 import { reviewChurchAction, resolveSanctuaryReportAction } from '@/app/sanctuary/actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function SanctuaryReviewPage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await hasPermission(db(), userId, 'sanctuary.review'))) notFound();
   const session = await currentSession();
   const queue = await reviewQueue(db(), session ? { userId, status: session.user.status } : null, locale);

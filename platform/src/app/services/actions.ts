@@ -28,6 +28,7 @@ import {
   type ServicesReportCategory,
   type ServicesTicketDecision,
 } from '@/server/domains/services/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Servicios' mutations: plain forms that work on any phone, without
@@ -51,7 +52,7 @@ const field = (formData: FormData, name: string) => String(formData.get(name) ??
 
 async function signedIn() {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   return session;
 }
 

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
@@ -8,9 +9,14 @@ import { VERIFICATION_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
 import { shellContext } from '@/ui/shell-context';
 import { maskEmail } from '@/server/domains/identity/normalize';
+import { safeNext } from '@/server/auth/return-path';
+import { signInPath } from '@/server/auth/sign-in-path';
 import { VerifyForm } from './verify-form';
 
-export const metadata: Metadata = { title: 'Verify your email' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: t('auth.verify.title') };
+}
 export const dynamic = 'force-dynamic';
 
 /**
@@ -24,9 +30,10 @@ export const dynamic = 'force-dynamic';
  * member's full address off the screen, and the member only needs enough of it
  * to recognise which inbox to open.
  */
-export default async function VerifyPage() {
+export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { t, language, theme, member, userId } = await shellContext();
-  if (!userId || !member) redirect('/login');
+  if (!userId || !member) redirect(await signInPath());
+  const next = safeNext((await searchParams).next);
 
   const [account] = await db()
     .select({ email: users.email, emailVerifiedAt: users.emailVerifiedAt })
@@ -34,7 +41,7 @@ export default async function VerifyPage() {
     .where(eq(users.id, userId))
     .limit(1);
 
-  if (!account) redirect('/login');
+  if (!account) redirect(await signInPath());
 
   if (account.emailVerifiedAt) {
     return (
@@ -68,6 +75,7 @@ export default async function VerifyPage() {
         </p>
 
         <VerifyForm
+          next={next}
           labels={{
             code: t('auth.verify.code'),
             codeHint: t('auth.verify.code_hint', {

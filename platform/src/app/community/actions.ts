@@ -17,6 +17,7 @@ import {
   toggleSupport,
   type CommunityReportCategory,
 } from '@/server/domains/community/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Community's mutations: plain forms, no JavaScript needed. A refusal
@@ -37,7 +38,7 @@ function errorKey(error: unknown): string {
 
 export async function createPostAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const parsed = postInputSchema.safeParse({
     kind: String(formData.get('kind') ?? ''),
@@ -72,7 +73,7 @@ export async function createPostAction(formData: FormData): Promise<void> {
 
 export async function replyAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const postId = String(formData.get('postId') ?? '');
   if (!UUID.test(postId)) redirect('/community');
 
@@ -94,7 +95,7 @@ export async function replyAction(formData: FormData): Promise<void> {
 
 export async function supportAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const postId = String(formData.get('postId') ?? '');
   const back = formData.get('back') === 'square' ? '/community' : `/community/${postId}`;
   if (!UUID.test(postId)) redirect('/community');
@@ -109,7 +110,7 @@ export async function supportAction(formData: FormData): Promise<void> {
 
 export async function closePostAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const postId = String(formData.get('postId') ?? '');
   const outcome = formData.get('outcome') === 'resolved' ? 'resolved' : 'withdrawn';
   if (!UUID.test(postId)) redirect('/community');
@@ -125,7 +126,7 @@ export async function closePostAction(formData: FormData): Promise<void> {
 
 export async function reportPostAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const postId = String(formData.get('postId') ?? '');
   if (!UUID.test(postId)) redirect('/community');
   const replyIdValue = String(formData.get('replyId') ?? '');

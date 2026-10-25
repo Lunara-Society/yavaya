@@ -16,6 +16,7 @@ import { ownerOverview, type OverviewEvent } from '@/server/domains/ops/overview
 import { recentActivity, type FeedItem } from '@/server/domains/notifications/activity';
 import { isTwoStepEnabled, twoStepAvailable } from '@/server/domains/identity/two-step';
 import { LIVE_FEED_RULES } from '@/config/business-rules';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -23,7 +24,7 @@ export const metadata: Metadata = { robots: { index: false } };
 /** Everything waiting for a person, for whoever may act on it. */
 export default async function OpsPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await canSeeOps(db(), userId))) notFound();
   const [queues, canManage, admin, canReadMembers] = await Promise.all([
     queuesFor(db(), userId),

@@ -6,6 +6,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { PageScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/community/post-card';
 import { listPosts } from '@/server/domains/community/service';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -55,10 +56,10 @@ export default async function PrayerWallPage({ searchParams }: { searchParams: P
           <div className="cm-gate card">
             <p>{t('sanctuary.prayer.members_only')}</p>
             <div className="btn-row">
-              <Link className="btn btn-gold" href="/login">
+              <Link className="btn btn-gold" href={loginHref('/sanctuary/prayer')}>
                 {t('auth.sign_in_to_continue')}
               </Link>
-              <Link className="btn btn-line" href="/register">
+              <Link className="btn btn-line" href={loginHref('/sanctuary/prayer', '/register')}>
                 {t('auth.submit_register')}
               </Link>
             </div>

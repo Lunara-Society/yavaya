@@ -3,6 +3,8 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { GuideVideo } from '@/ui/site/guide-video';
 import { TokensBody } from '@/ui/site/pages';
+import { db } from '@/server/db/client';
+import { tokenFacts } from '@/server/domains/tokens/uses';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
@@ -10,10 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  const { c, t, locale, language, theme, member } = await siteContext();
+  const [{ c, t, locale, language, theme, member }, facts] = await Promise.all([siteContext(), tokenFacts(db())]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="tokens">
-      <TokensBody c={c} film={<GuideVideo guideKey="confianza" title={t('guide.watch_title_trust')} t={t} locale={locale} />} />
+      <TokensBody c={c} facts={facts} film={<GuideVideo guideKey="confianza" title={t('guide.watch_title_trust')} t={t} locale={locale} />} />
     </SiteShell>
   );
 }

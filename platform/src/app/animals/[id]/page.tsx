@@ -14,6 +14,7 @@ import { ANIMALS_REPORT_CATEGORIES, getAnimal, type ApplicationView } from '@/se
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { serverEnv } from '@/config/env';
 import { applicationStepAction, reportAnimalAction, withdrawAnimalAction } from '../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -140,7 +141,7 @@ export default async function AnimalPage({ params, searchParams }: Params) {
                 ) : animal.status === 'available' ? (
                   <>
                     <p>{t('animals.detail.how_to_adopt')}</p>
-                    <Link className="btn btn-gold" href={member ? `/animals/${animal.id}/apply` : '/login'}>
+                    <Link className="btn btn-gold" href={member ? `/animals/${animal.id}/apply` : loginHref(`/animals/${animal.id}/apply`)}>
                       {t('animals.detail.apply', { name: animal.name })}
                     </Link>
                   </>

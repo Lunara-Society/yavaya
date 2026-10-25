@@ -12,6 +12,7 @@ import { createRequestAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +31,7 @@ const LIMITS: Record<string, Record<string, number>> = {
 export default async function NewRequestPage({ searchParams }: { searchParams: Promise<{ error?: string; cat?: string; urgent?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
   const initial = (SERVICE_CATEGORY_KEYS as readonly string[]).includes(params.cat ?? '') ? params.cat : '';
 

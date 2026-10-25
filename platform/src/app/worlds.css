@@ -306,23 +306,20 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
 .rotulo .rt-emblem .rt-cut { stroke: var(--rt-iron); }
 .rotulo .rt-emblem .rt-cut-fill { fill: var(--rt-iron); }
 .rotulo .rt-over > :not(.rt-cut-fill) { stroke: var(--rt-iron); stroke-width: 3.5; paint-order: stroke; }
-/* It was just passed: one swing that settles, then the breeze. */
-.rotulo .rt-swing { transform-box: view-box; transform-origin: 100px 26px; animation: rt-settle 4.6s cubic-bezier(.3,.7,.4,1) both, rt-sway 7s ease-in-out 4.6s infinite alternate; }
+/* It was just passed: one swing that settles, then it hangs still. */
+.rotulo .rt-swing { transform-box: view-box; transform-origin: 100px 26px; animation: rt-settle 4.6s cubic-bezier(.3,.7,.4,1) both; }
 @keyframes rt-settle { 0% { rotate: 7deg; } 18% { rotate: -5deg; } 36% { rotate: 3.2deg; } 54% { rotate: -2deg; } 74% { rotate: 1.1deg; } 100% { rotate: -1.4deg; } }
-@keyframes rt-sway { from { rotate: -1.4deg; } to { rotate: 1.4deg; } }
 /* Santuario: gilded, bronze bracket, and the candle burns. */
 .rotulo.rt-sanctuary { --rt-iron: #6e5426; --rt-edge: rgba(255, 248, 225, 0.7); --rt-lit: #fffaf0; filter: drop-shadow(0 8px 14px rgba(110, 76, 18, 0.28)); }
 .rt-sanctuary .rt-plaque { fill: url(#rt-gilt); }
 .rt-sanctuary .rt-rim { stroke: rgba(122, 88, 28, 0.55); }
 .rt-sanctuary .rt-emblem { filter: none; }
-.rt-sanctuary .rt-halo { fill: url(#rt-glow); animation: rt-halo 3.2s ease-in-out infinite; transform-box: view-box; transform-origin: 100px 82px; }
-.rt-sanctuary .rt-flame { fill: #ffb547; transform-box: view-box; transform-origin: 100px 92px; animation: rt-flicker 2.6s ease-in-out infinite; }
-.rt-sanctuary .rt-flame-core { fill: #fff6d8; transform-box: view-box; transform-origin: 100px 92px; animation: rt-flicker 2.6s ease-in-out infinite reverse; }
+.rt-sanctuary .rt-halo { fill: url(#rt-glow); }
+.rt-sanctuary .rt-flame { fill: #ffb547; }
+.rt-sanctuary .rt-flame-core { fill: #fff6d8; }
 .rt-sanctuary .rt-wick { stroke: #3a2a14; }
 .rt-sanctuary .rt-candle, .rt-sanctuary .rt-candle-drip { fill: #fffaf0; stroke: #a07a2c; stroke-width: 1.4; }
 .rt-sanctuary .rt-dish { fill: #7a5c22; }
-@keyframes rt-flicker { 0%, 100% { transform: none; } 22% { transform: scale(0.93, 1.07) skewX(2.5deg); } 48% { transform: scale(1.05, 0.95) skewX(-2deg); } 74% { transform: scale(0.97, 1.04) skewX(1deg); } }
-@keyframes rt-halo { 0%, 100% { opacity: 0.85; scale: 1; } 50% { opacity: 1; scale: 1.08; } }
 /* Where a barrio hangs its sign: the top right of its hero, clear of the title (each barrio's stylesheet adjusts its own). */
 .barrio-sign { position: absolute; z-index: 3; top: 4px; right: clamp(8px, 3vw, 44px); width: clamp(98px, 25vw, 164px); height: auto; }
 
@@ -336,8 +333,7 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
 .cm-prayer .cm-support::before { content: ""; position: absolute; left: 12px; bottom: 7px; width: 7px; height: 13px; border-radius: 2px 2px 1px 1px;
   background: linear-gradient(180deg, #fffaf0, #e8d6ad); box-shadow: 0 0 0 1px rgba(160, 122, 44, 0.65); }
 .cm-prayer .cm-support.on::after { content: ""; position: absolute; left: 12.5px; bottom: 21px; width: 6px; height: 10px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-  background: radial-gradient(circle at 50% 70%, #fff6d8 0 28%, #ffb547 60%, #f07a1f); box-shadow: 0 0 10px 2px rgba(255, 190, 90, 0.7); transform-origin: 50% 100%; animation: cm-flame 2.4s ease-in-out infinite; }
-@keyframes cm-flame { 0%, 100% { transform: none; } 30% { transform: scale(0.9, 1.08) skewX(3deg); } 60% { transform: scale(1.06, 0.94) skewX(-2deg); } }
+  background: radial-gradient(circle at 50% 70%, #fff6d8 0 28%, #ffb547 60%, #f07a1f); box-shadow: 0 0 10px 2px rgba(255, 190, 90, 0.7); transform-origin: 50% 100%; }
 }
 
 /*
@@ -426,9 +422,7 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
   background:
     linear-gradient(90deg, transparent, var(--focus) 50%, transparent) 0 50% / 26% 3px no-repeat,
     repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent) 0 22px, transparent 22px 32px) 0 50% / 100% 3px no-repeat;
-  animation: crown-signal 4.8s linear infinite;
 }
-@keyframes crown-signal { from { background-position: -35% 50%, 0 50%; } to { background-position: 135% 50%, 0 50%; } }
 .site[data-tone="work"] main#main::before {
   height: 14px;
   background:
@@ -440,9 +434,7 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
   background:
     radial-gradient(circle, #fff6e8 0 2.5px, var(--accent) 3.5px 5px, color-mix(in srgb, var(--accent) 35%, transparent) 6px, transparent 9px) 0 50% / 18px 16px no-repeat,
     repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 65%, transparent) 0 16px, transparent 16px 30px) 0 50% / 100% 2px no-repeat;
-  animation: crown-ride 10s ease-in-out infinite alternate;
 }
-@keyframes crown-ride { from { background-position: 0% 50%, 0 50%; } to { background-position: 100% 50%, 0 50%; } }
 .site[data-tone="community"] main#main::before {
   height: 20px; opacity: 0.85;
   background:
@@ -458,9 +450,7 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
     radial-gradient(50% 100% at 50% 50%, color-mix(in srgb, var(--accent) 75%, transparent), transparent 72%) 50% 50% / min(720px, 80%) 18px no-repeat,
     radial-gradient(circle, var(--focus) 0 1.5px, transparent 2.5px) 50% 50% / 64px 18px repeat-x,
     linear-gradient(90deg, transparent, var(--accent) 50%, transparent) 0 50% / 100% 1px no-repeat;
-  animation: crown-candle 5.5s ease-in-out infinite;
 }
-@keyframes crown-candle { 0%, 100% { opacity: 0.7; } 40% { opacity: 1; } 55% { opacity: 0.82; } 70% { opacity: 0.95; } }
 .site[data-tone="animals"] main#main::before {
   height: 18px;
   background: color-mix(in srgb, var(--accent) 55%, transparent);

@@ -98,8 +98,6 @@ export async function SiteShell({
       <Alive />
       {/* Visit counts and real speed, first-party and without identifiers. The owner's own browsing is left out. */}
       {member?.owner ? null : <SiteMetrics />}
-      {/* The soft light that follows a mouse across the dark; moved by Alive, styled in site.css. */}
-      <div className="cine-spot" aria-hidden="true" />
       <a className="skip" href="#main">
         {c.ui.skip}
       </a>

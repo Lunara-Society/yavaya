@@ -2,12 +2,12 @@ import Link from 'next/link';
 import type { MessageKey, Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
 import { GUIDE_SECONDS, guideFiles } from '@/config/guide';
-import { MERCADITO_RULES } from '@/config/business-rules';
 import type { Opportunity } from '@/server/domains/discovery/recent';
 import { formatPrice } from '@/ui/mercadito/format';
 import { DistrictScene, MarketScene, SellerScene } from './art';
 import { DISTRICT_IDS, PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon, type IconName } from './icons';
+import { loginHref } from '@/server/auth/return-path';
 
 /**
  * The home page: a market street at sunset with one search in it, Mercadito
@@ -20,12 +20,29 @@ import { Icon, type IconName } from './icons';
  * examples.
  */
 
+/**
+ * What starting out costs, read from the same settings and prices the
+ * services charge by (tokens/uses.ts, startingFacts), so "free" is never
+ * said of something an operator has since put a price on.
+ */
+export type HomeStarts = {
+  /** Mercadito listings that may be open at once without a token. */
+  mercaditoFree: number;
+  /** Trabajo posts that may be open at once without a token. */
+  workFree: number;
+  /** Asking for a service costs nothing. */
+  askFree: boolean;
+  /** Answering a service request costs nothing. */
+  answerFree: boolean;
+};
+
 type HomeProps = {
   c: SiteContent;
   t: Translator;
   locale: string;
   signedIn: boolean;
   opportunities: Opportunity[];
+  starts: HomeStarts;
   now?: Date;
 };
 
@@ -75,9 +92,23 @@ function ago(t: Translator, at: Date, now: Date): string {
   return t('home.recent.ago_days', { count: Math.floor(hours / 24) });
 }
 
-export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date() }: HomeProps) {
+export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = new Date() }: HomeProps) {
   const guide = guideFiles('guia');
   const guideMinutes = Math.ceil(GUIDE_SECONDS.guia / 60);
+  // A signed-out visitor is asked to sign in first and then lands on the form itself (return-path.ts).
+  const member = (path: string) => (signedIn ? path : loginHref(path));
+  /*
+   * "Empieza hoy": the four first steps anyone can take on opening day, each
+   * with what it really costs. Publishing in Mercadito handles a signed-out
+   * visitor itself, explaining what publishing involves before asking them
+   * to sign in.
+   */
+  const firstSteps: ReadonlyArray<{ key: string; tone: DistrictId; icon: IconName; href: string; title: string; note: string }> = [
+    { key: 'sell', tone: 'mercadito', icon: 'tag', href: '/mercadito/publish', title: t('home.start.sell'), note: t('home.start.sell_note', { count: starts.mercaditoFree }) },
+    { key: 'hire', tone: 'work', icon: 'work', href: member('/work/posts/new'), title: t('home.start.hire'), note: t('home.start.hire_note', { count: starts.workFree }) },
+    { key: 'ask', tone: 'services', icon: 'hands', href: member('/services/new'), title: t('home.start.ask'), note: t(starts.askFree ? 'home.start.ask_note_free' : 'home.start.ask_note') },
+    { key: 'offer', tone: 'services', icon: 'wrench', href: member('/services/provider'), title: t('home.start.offer'), note: t(starts.answerFree ? 'home.start.offer_note_free' : 'home.start.offer_note') },
+  ];
   return (
     <>
       <section className="hm-hero">
@@ -136,7 +167,7 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date
                   {t('home.mk.publish')}
                 </Link>
               </div>
-              <p className="hm-fine">{t('mercadito.opening.free', { count: MERCADITO_RULES.freeOpenListings })}</p>
+              <p className="hm-fine">{t('mercadito.opening.free', { count: starts.mercaditoFree })}</p>
             </div>
           </article>
           <Link className="hm-guide" href="/guia">
@@ -252,17 +283,27 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, now = new Date
               <div className="hm-empty">
                 <p className="hm-empty-title">{t('home.recent.empty_title')}</p>
                 <p>{t('home.recent.empty_text')}</p>
-                <div className="btn-row">
-                  <Link className="btn btn-gold" href="/mercadito/publish">
-                    {t('home.recent.publish_listing')}
-                  </Link>
-                  <Link className="btn btn-line" href={signedIn ? '/work/posts/new' : '/login'}>
-                    {t('home.recent.publish_job')}
-                  </Link>
-                  <Link className="btn btn-line" href={signedIn ? '/services/provider' : '/login'}>
-                    {t('home.recent.offer_services')}
-                  </Link>
-                </div>
+                <h3 className="hm-start-title" id="hm-start-title">
+                  {t('home.start.title')}
+                </h3>
+                <ul className="hm-start" aria-labelledby="hm-start-title">
+                  {firstSteps.map((step) => (
+                    <li key={step.key}>
+                      <Link className={`hm-start-item tone-${step.tone}`} href={step.href}>
+                        <span className="hm-icon-ring" aria-hidden="true">
+                          <Icon name={step.icon} />
+                        </span>
+                        <span className="hm-start-text">
+                          <strong>{step.title}</strong>
+                          <span>{step.note}</span>
+                        </span>
+                        <span className="hm-start-go" aria-hidden="true">
+                          →
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

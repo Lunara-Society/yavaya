@@ -9,6 +9,7 @@ import {
   resolveListingTicket,
   type ModerationDecision,
 } from '@/server/domains/mercadito/moderation';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -19,7 +20,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  */
 export async function resolveTicketAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const ticketId = String(formData.get('ticketId') ?? '');
   const decision = String(formData.get('decision') ?? '');

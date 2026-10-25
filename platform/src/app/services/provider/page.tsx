@@ -15,6 +15,7 @@ import { eq } from 'drizzle-orm';
 import { availabilityAction, saveProviderAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,7 @@ const LIMITS: Record<string, Record<string, number>> = {
 export default async function ProviderPage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [profile, [me]] = await Promise.all([
     getProviderProfile(db(), userId),
     db().select({ yayId: users.yayId }).from(users).where(eq(users.id, userId)).limit(1),

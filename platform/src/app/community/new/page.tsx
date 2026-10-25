@@ -11,6 +11,7 @@ import { createPostAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +29,7 @@ const LIMITS: Record<string, { min: number; max: number }> = {
 export default async function NewPostPage({ searchParams }: { searchParams: Promise<{ error?: string; kind?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const error = params.error && /^[a-z_.]+$/.test(params.error) ? params.error : null;
   // A prayer request is written here too, but presented as the Sanctuary's.
   const prayer = params.kind === 'prayer';

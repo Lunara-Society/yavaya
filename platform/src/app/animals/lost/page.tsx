@@ -10,6 +10,7 @@ import { listLostFound, myLostFound } from '@/server/domains/animals/lost-found'
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,10 +50,10 @@ export default async function LostFoundPage({ searchParams }: { searchParams: Pr
         <h1 className="h-md">{t('animals.lost.title')}</h1>
         <p className="lead">{t('animals.lost.lead')}</p>
         <div className="btn-row">
-          <Link className="btn btn-gold" href={member ? '/animals/lost/new?kind=lost' : '/login'}>
+          <Link className="btn btn-gold" href={member ? '/animals/lost/new?kind=lost' : loginHref('/animals/lost/new?kind=lost')}>
             {t('animals.lost.post_lost')}
           </Link>
-          <Link className="btn btn-line" href={member ? '/animals/lost/new?kind=found' : '/login'}>
+          <Link className="btn btn-line" href={member ? '/animals/lost/new?kind=found' : loginHref('/animals/lost/new?kind=found')}>
             {t('animals.lost.post_found')}
           </Link>
         </div>

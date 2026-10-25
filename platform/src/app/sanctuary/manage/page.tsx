@@ -6,6 +6,7 @@ import type { MessageKey } from '@/i18n';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { ownedChurches } from '@/server/domains/sanctuary/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MyChurchesPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const churches = await ownedChurches(db(), { userId, locale });
 
   return (

@@ -12,6 +12,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { ANIMALS_REPORT_CATEGORIES } from '@/server/domains/animals/service';
 import { getLostFound } from '@/server/domains/animals/lost-found';
 import { closeLostFoundAction, reportLostFoundAction } from '../../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,7 +101,7 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
               ) : post.status === 'open' ? (
                 <>
                   <p>{t('animals.lost.sign_in_to_contact')}</p>
-                  <Link className="btn btn-gold" href="/login">
+                  <Link className="btn btn-gold" href={loginHref(`/animals/lost/${post.id}`)}>
                     {t('auth.sign_in_to_continue')}
                   </Link>
                 </>

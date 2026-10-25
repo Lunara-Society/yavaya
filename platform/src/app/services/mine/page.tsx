@@ -7,6 +7,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { RequestCard } from '@/ui/services/parts';
 import { myRequests, myResponses } from '@/server/domains/services/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MinePage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [requests, responses] = await Promise.all([myRequests(db(), { userId, locale }), myResponses(db(), { userId, locale })]);
 
   return (

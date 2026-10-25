@@ -11,6 +11,7 @@ import { SANCTION_RULES } from '@/config/business-rules';
 import { lookUpMember, SANCTION_REASONS } from '@/server/domains/access/sanctions';
 import { formatDate } from '@/ui/mercadito/format';
 import { memberAction } from '../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -23,7 +24,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string; error?: string; done?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await hasPermission(db(), userId, 'users.read'))) notFound();
   const session = await currentSession();
   const actor = session ? { userId, status: session.user.status } : null;

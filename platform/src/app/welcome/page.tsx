@@ -8,6 +8,7 @@ import { Icon } from '@/ui/site/icons';
 import type { MessageKey } from '@/i18n/dictionaries/es';
 import { markWelcomeSeen, welcomeFor } from '@/server/domains/access/welcome';
 import { PUBLIC_TEAM_ROLES } from '@/server/domains/access/staff';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,16 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const { t } = await siteContext();
   return { title: t('welcome.meta') };
 }
-
-// Fixed positions and timings: the confetti is decoration, so it is the same
-// on every render and never depends on anything the member sent.
-const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
-  left: (i * 37) % 100,
-  delay: ((i * 13) % 40) / 10,
-  duration: 5 + ((i * 7) % 5),
-  hue: ['rose', 'gold', 'lilac', 'mint', 'sky'][i % 5]!,
-  shape: i % 3 === 0 ? 'heart' : i % 3 === 1 ? 'dot' : 'star',
-}));
 
 /**
  * The welcome for someone just named to the team: their name, their badge,
@@ -34,7 +25,7 @@ const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
  */
 export default async function WelcomePage() {
   const { c, t, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const welcome = await welcomeFor(db(), userId);
   if (!welcome) redirect('/');
   await markWelcomeSeen(db(), userId);
@@ -47,16 +38,6 @@ export default async function WelcomePage() {
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member}>
       <div className="wl-page">
-        <div className="wl-confetti" aria-hidden="true">
-          {CONFETTI.map((piece, i) => (
-            <span
-              key={i}
-              className={`wl-bit wl-${piece.shape} wl-${piece.hue}`}
-              style={{ left: `${piece.left}%`, animationDelay: `${piece.delay}s`, animationDuration: `${piece.duration}s` }}
-            />
-          ))}
-        </div>
-
         <section className="wl-card">
           <p className="wl-eyebrow">{t('welcome.eyebrow')}</p>
 

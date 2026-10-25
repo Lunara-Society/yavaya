@@ -9,6 +9,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { formatDate } from '@/ui/mercadito/format';
 import { getCertificate } from '@/server/domains/animals/service';
 import { quizAction } from '../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,7 +98,7 @@ export default async function LearnPage({ searchParams }: { searchParams: Promis
           {!member ? (
             <div className="cm-gate card">
               <p>{t('animals.quiz.sign_in')}</p>
-              <Link className="btn btn-gold" href="/login">
+              <Link className="btn btn-gold" href={loginHref('/animals/learn')}>
                 {t('auth.sign_in_to_continue')}
               </Link>
             </div>

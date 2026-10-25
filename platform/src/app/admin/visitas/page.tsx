@@ -10,6 +10,7 @@ import { currentSession } from '@/server/auth/context';
 import { intlLocale } from '@/ui/mercadito/format';
 import { siteStats, type VitalSummary } from '@/server/domains/stats/service';
 import { METRIC_BANDS, type Metric } from '@/server/domains/stats/rules';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -30,7 +31,7 @@ const NAMED_SOURCES = ['direct', 'google', 'facebook', 'instagram', 'whatsapp', 
  */
 export default async function VisitsPage({ searchParams }: { searchParams: Promise<{ dias?: string }> }) {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const session = await currentSession();
   if (!session || !(await hasPermission(db(), userId, 'roles.manage'))) notFound();
   const asked = Number((await searchParams).dias);

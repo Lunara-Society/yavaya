@@ -12,6 +12,7 @@ import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { getWhatsapp, openListingCount, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 import { LISTING_CATEGORIES } from '@/server/domains/mercadito/rules';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,14 +44,20 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
   );
 
   if (!userId) {
+    // What publishing costs comes before the request to sign in: it is the
+    // first thing someone about to sell wants to know.
+    const pricing = await pricingRules(db());
     return shell(
       <div className="card">
+        <p>
+          <strong>{t('mercadito.opening.free', { count: pricing.freeOpenListings })}</strong>
+        </p>
         <p>{t('mercadito.publish.sign_in')}</p>
         <div className="btn-row">
-          <Link className="btn btn-gold" href="/login">
+          <Link className="btn btn-gold" href={loginHref('/mercadito/publish')}>
             {t('nav.sign_in')}
           </Link>
-          <Link className="btn btn-line" href="/register">
+          <Link className="btn btn-line" href={loginHref('/mercadito/publish', '/register')}>
             {t('auth.submit_register')}
           </Link>
         </div>

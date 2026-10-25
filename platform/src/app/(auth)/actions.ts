@@ -20,6 +20,7 @@ import { setSessionCookie } from '@/server/auth/cookies';
 import { currentSession, requestContext } from '@/server/auth/context';
 import { beginSignIn } from '@/server/auth/sign-in';
 import { formatYayId } from '@/server/domains/identity/yay-id';
+import { safeNext } from '@/server/auth/return-path';
 
 /**
  * Authentication server actions.
@@ -129,6 +130,9 @@ export async function loginAction(
 ): Promise<ActionState> {
   const email = String(formData.get('email') ?? '');
   const password = String(formData.get('password') ?? '');
+  // The page the visitor was sent here from (return-path.ts); checked again here,
+  // since a form field is whatever the browser sends.
+  const next = safeNext(String(formData.get('next') ?? ''));
 
   if (!email || !password) {
     return localizedError('error.validation_failed');
@@ -148,8 +152,8 @@ export async function loginAction(
       return localizedError(result.reason === 'account_unavailable' ? 'auth.login.unavailable' : 'error.unauthenticated');
     }
 
-    // A session, or the two-step code page first (sign-in.ts).
-    to = await beginSignIn(result.userId, '/');
+    // A session, or the two-step code page first (sign-in.ts), which keeps `next`.
+    to = await beginSignIn(result.userId, next);
   } catch (error) {
     const clientError = toClientError(error);
     return localizedError(clientError.messageKey, clientError.details);
@@ -175,6 +179,7 @@ export async function verifyEmailAction(
 ): Promise<VerifyState> {
   const { t } = await getTranslator();
   const code = String(formData.get('code') ?? '').replace(/\D/g, '');
+  const next = safeNext(String(formData.get('next') ?? ''));
 
   const session = await currentSession();
   if (!session) return { status: 'error', message: t('error.unauthenticated') };
@@ -220,7 +225,8 @@ export async function verifyEmailAction(
     return { status: 'error', message: t(messageKey) };
   }
 
-  redirect('/account');
+  // Someone who registered on the way to a form goes on to that form.
+  redirect(next === '/' ? '/account' : next);
 }
 
 /** Sends a new code to the address on the account. */

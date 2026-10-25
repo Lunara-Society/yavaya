@@ -21,6 +21,7 @@ import {
   setThemeAction,
   signOutAction,
 } from './actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const metadata: Metadata = { title: 'Settings' };
 export const dynamic = 'force-dynamic';
@@ -259,7 +260,7 @@ function SignInPrompt({ t }: { t: Awaited<ReturnType<typeof shellContext>>['t'] 
       <p className="text-sm text-[var(--text-secondary)]">{t('settings.sign_in_required')}</p>
       <div className="mt-3 flex gap-2">
         <Link
-          href="/login"
+          href={loginHref('/settings')}
           className="flex min-h-touch flex-1 items-center justify-center rounded-xl px-4 text-sm font-medium"
           style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}
         >

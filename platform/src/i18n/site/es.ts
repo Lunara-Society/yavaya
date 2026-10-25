@@ -574,7 +574,7 @@ export const siteEs = {
       eyebrow: 'Tokens Yavaya',
       title: 'Créditos para participar. Nada más.',
       description: 'Los Tokens Yavaya son créditos de participación en la plataforma. No son criptomoneda ni inversión. Paquetes, usos y límites.',
-      lead: 'Publicar es gratis. Los tokens son para quien quiere vender más rápido: destacar una publicación o tener más de 5 activas a la vez. No son criptomoneda, no son una inversión y no se intercambian.',
+      lead: 'Publicar es gratis. Los tokens son para quien quiere vender más rápido: destacar una publicación o tener más de {mercadito_free} activas a la vez. No son criptomoneda, no son una inversión y no se intercambian.',
       pillars: [
         { icon: 'coin', title: 'No son criptomoneda', text: 'Sin lenguaje de inversión, sin especulación, sin mercados de tokens.' },
         { icon: 'cash', title: 'Siempre opcionales', text: 'El efectivo es la opción por defecto. Nadie está obligado a usar tokens.' },
@@ -582,6 +582,8 @@ export const siteEs = {
       ],
       packagesHead: { eyebrow: 'Paquetes', title: 'Simples. Y seguirán siendo simples.' },
       tokensWord: 'tokens',
+      costOne: '{n} token',
+      costMany: '{n} tokens',
       packageNames: { tokens_2: 'Para probar', tokens_10: 'Básico', tokens_25: 'Plus', tokens_50: 'Pro', tokens_100: 'Negocio', tokens_500: 'Empresa' } as Record<string, string>,
       packagesNote: 'Precios en dólares estadounidenses. Se compran desde **Tu cuenta → Tokens**, con tarjeta, en la página segura de Stripe. Los tokens llegan cuando el pago se confirma.',
       perToken: '{price} por token',
@@ -592,13 +594,14 @@ export const siteEs = {
       useTable: {
         head: ['Acción', 'Costo'],
         rows: [
-          ['Publicar en Mercadito (hasta 5 publicaciones activas)', 'Gratis'],
-          ['Cada publicación activa a partir de la sexta', '1 token'],
-          ['Destacar una publicación durante 7 días', '3 tokens'],
-          ['Trabajo: publicar hasta 2 ofertas abiertas a la vez', 'Gratis'],
-          ['Trabajo: cada oferta abierta a partir de la tercera', '3 tokens'],
-          ['Trabajo: destacar una oferta durante 7 días', '3 tokens'],
-          ['YavayaGo: destacar tu negocio durante 7 días', '5 tokens'],
+          // {…} are filled from the live prices and settings (server/domains/tokens/uses.ts), never typed here.
+          ['Publicar en Mercadito (hasta {mercadito_free} publicaciones activas)', 'Gratis'],
+          ['Cada publicación activa más allá de las primeras {mercadito_free}', '{listing_cost}'],
+          ['Destacar una publicación durante {listing_days} días', '{feature_listing_cost}'],
+          ['Trabajo: publicar hasta {work_free} ofertas abiertas a la vez', 'Gratis'],
+          ['Trabajo: cada oferta abierta más allá de las primeras {work_free}', '{post_cost}'],
+          ['Trabajo: destacar una oferta durante {post_days} días', '{feature_post_cost}'],
+          ['YavayaGo: destacar tu negocio durante {store_days} días', '{feature_store_cost}'],
           ['Postular a un trabajo, pedir y recibir pedidos en YavayaGo (sin comisión)', 'Gratis'],
           ['Pedir ayuda, Comunidad, Animales, Santuario y Espacio Violeta', 'Gratis'],
         ],
@@ -607,8 +610,8 @@ export const siteEs = {
       earnTable: {
         head: ['Fuente', 'Límite'],
         rows: [
-          ['Bienvenida', '2 tokens al día durante tu primera semana, desde que verificas tu correo'],
-          ['Invitar amigos', '3 tokens por cada amigo que verifique su correo (y 2 para tu amigo), hasta 10 al mes'],
+          ['Bienvenida', '{starter_per_day} tokens al día durante tus primeros {starter_days} días, desde que verificas tu correo'],
+          ['Invitar amigos', '{inviter_reward} tokens por cada amigo que verifique su correo (y {invitee_reward} para tu amigo), hasta {invite_month_cap} al mes'],
         ],
       },
       payHead: { eyebrow: 'Pagos', title: 'El efectivo manda' },

@@ -38,6 +38,3 @@
   .site[data-tone="community"] .cm-feed > * { animation: cm-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
 }
 
-/* The papel picado over the plaza stirs, as paper does in a breeze. */
-@keyframes cm-breeze { 0%, 100% { transform: skewX(0deg); } 50% { transform: skewX(-1.6deg); } }
-.site[data-tone="community"] main#main::before { transform-origin: 50% 0; animation: cm-breeze 6s ease-in-out infinite; }

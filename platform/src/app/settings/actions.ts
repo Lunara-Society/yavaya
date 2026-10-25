@@ -18,6 +18,7 @@ import { currentSession } from '@/server/auth/context';
 import { clearSessionCookie } from '@/server/auth/cookies';
 import { revokeSession } from '@/server/auth/session';
 import { recordAudit } from '@/server/domains/audit/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Settings actions.
@@ -67,7 +68,7 @@ export async function setThemeAction(formData: FormData): Promise<void> {
  */
 export async function setNotificationPreferenceAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const category = String(formData.get('category') ?? '');
   const channel = String(formData.get('channel') ?? '');
@@ -108,7 +109,7 @@ export async function setNotificationPreferenceAction(formData: FormData): Promi
  */
 export async function setLocationPrecisionAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const value = String(formData.get('precision') ?? '');
   if (!(LOCATION_PRIVACY.levels as readonly string[]).includes(value)) return;

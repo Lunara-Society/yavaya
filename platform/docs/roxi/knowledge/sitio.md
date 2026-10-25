@@ -592,10 +592,10 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 | Acción | Costo |
 | --- | --- |
 | Publicar en Mercadito (hasta 5 publicaciones activas) | Gratis |
-| Cada publicación activa a partir de la sexta | 1 token |
+| Cada publicación activa más allá de las primeras 5 | 1 token |
 | Destacar una publicación durante 7 días | 3 tokens |
 | Trabajo: publicar hasta 2 ofertas abiertas a la vez | Gratis |
-| Trabajo: cada oferta abierta a partir de la tercera | 3 tokens |
+| Trabajo: cada oferta abierta más allá de las primeras 2 | 3 tokens |
 | Trabajo: destacar una oferta durante 7 días | 3 tokens |
 | YavayaGo: destacar tu negocio durante 7 días | 5 tokens |
 | Postular a un trabajo, pedir y recibir pedidos en YavayaGo (sin comisión) | Gratis |
@@ -605,7 +605,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 
 | Fuente | Límite |
 | --- | --- |
-| Bienvenida | 2 tokens al día durante tu primera semana, desde que verificas tu correo |
+| Bienvenida | 2 tokens al día durante tus primeros 7 días, desde que verificas tu correo |
 | Invitar amigos | 3 tokens por cada amigo que verifique su correo (y 2 para tu amigo), hasta 10 al mes |
 
 #### El efectivo manda

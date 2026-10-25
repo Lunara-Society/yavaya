@@ -29,6 +29,7 @@ import {
 import { SERVICE_ROWS } from '@/ui/sanctuary/config';
 import { setDailyKinds } from '@/server/domains/sanctuary/daily';
 import { isDailyKind } from '@/i18n/daily';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Sanctuary's mutations: plain forms, no JavaScript needed. A refusal
@@ -76,7 +77,7 @@ function readChurch(formData: FormData) {
 
 export async function registerChurchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   if (formData.get('leader') !== 'on') redirect(back('/sanctuary/register', 'sanctuary.error.leader'));
   const { church, services, serviceError } = readChurch(formData);
   if (!church.success) redirect(back('/sanctuary/register', church.error.issues[0]?.message ?? 'error.validation_failed'));
@@ -97,7 +98,7 @@ export async function registerChurchAction(formData: FormData): Promise<void> {
 
 export async function updateChurchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   if (!UUID.test(churchId)) redirect('/sanctuary/manage');
   const editPath = `/sanctuary/manage/${churchId}/edit`;
@@ -118,7 +119,7 @@ export async function updateChurchAction(formData: FormData): Promise<void> {
 
 export async function publishDevotionalAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   if (!UUID.test(churchId)) redirect('/sanctuary/manage');
   const managePath = `/sanctuary/manage/${churchId}`;
@@ -144,7 +145,7 @@ export async function publishDevotionalAction(formData: FormData): Promise<void>
 
 export async function withdrawDevotionalAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   const devotionalId = String(formData.get('devotionalId') ?? '');
   if (!UUID.test(churchId) || !UUID.test(devotionalId)) redirect('/sanctuary/manage');
@@ -159,7 +160,7 @@ export async function withdrawDevotionalAction(formData: FormData): Promise<void
 
 export async function followAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   if (!UUID.test(churchId)) redirect('/sanctuary');
   try {
@@ -173,7 +174,7 @@ export async function followAction(formData: FormData): Promise<void> {
 
 export async function reportChurchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   const devotionalId = String(formData.get('devotionalId') ?? '');
   const category = String(formData.get('category') ?? '');
@@ -202,7 +203,7 @@ export async function reportChurchAction(formData: FormData): Promise<void> {
 
 export async function reviewChurchAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const churchId = String(formData.get('churchId') ?? '');
   const decision = String(formData.get('decision') ?? '');
   if (!UUID.test(churchId) || !(REVIEW_DECISIONS as readonly string[]).includes(decision)) redirect('/admin/sanctuary');
@@ -218,7 +219,7 @@ export async function reviewChurchAction(formData: FormData): Promise<void> {
 
 export async function resolveSanctuaryReportAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const ticketId = String(formData.get('ticketId') ?? '');
   const decision = String(formData.get('decision') ?? '');
   if (!UUID.test(ticketId) || !(REPORT_DECISIONS as readonly string[]).includes(decision)) redirect('/admin/sanctuary');
@@ -239,7 +240,7 @@ export async function resolveSanctuaryReportAction(formData: FormData): Promise<
  */
 export async function setDailyKindsAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const kinds = formData.getAll('kind').map(String).filter(isDailyKind);
   await setDailyKinds(db(), session.user.userId, kinds);
   revalidatePath('/sanctuary');

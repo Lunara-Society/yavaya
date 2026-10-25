@@ -14,6 +14,7 @@ import { getProfile } from '@/server/domains/work/service';
 import { saveProfileAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -29,7 +30,7 @@ const LIMITS: Record<string, Record<string, number>> = {
 export default async function WorkProfilePage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string; next?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [profile, [me]] = await Promise.all([getProfile(db(), userId), db().select({ yayId: users.yayId }).from(users).where(eq(users.id, userId)).limit(1)]);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const next = query.next && /^[0-9a-f-]{36}$/i.test(query.next) ? query.next : null;

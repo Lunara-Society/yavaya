@@ -11,6 +11,7 @@ import { Icon, type IconName } from '@/ui/site/icons';
 import { PostCard } from '@/ui/community/post-card';
 import { Rotulo } from '@/ui/site/rotulo';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,10 +102,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             <div className="cm-gate card sq-gate">
               <p>{t('community.square.members_only')}</p>
               <div className="btn-row">
-                <Link className="btn btn-gold" href="/login">
+                <Link className="btn btn-gold" href={loginHref('/community')}>
                   {t('community.square.sign_in')}
                 </Link>
-                <Link className="btn btn-line" href="/register">
+                <Link className="btn btn-line" href={loginHref('/community', '/register')}>
                   {t('auth.submit_register')}
                 </Link>
               </div>

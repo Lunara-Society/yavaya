@@ -10,6 +10,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { employerReviewQueue, workReviewQueue } from '@/server/domains/work/service';
 import { resolveWorkReportAction, reviewEmployerAction } from '@/app/work/actions';
 import { formatDate } from '@/ui/mercadito/format';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function WorkModerationPage({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [canModerate, canReview] = await Promise.all([hasPermission(db(), userId, 'work.moderate'), hasPermission(db(), userId, 'work.review')]);
   if (!canModerate && !canReview) notFound();
   const session = await currentSession();

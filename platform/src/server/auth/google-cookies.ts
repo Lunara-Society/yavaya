@@ -59,8 +59,3 @@ export async function googleHint(): Promise<string | null> {
 export async function forgetGoogle(): Promise<void> {
   (await cookies()).delete(HINT);
 }
-
-/** A path on this site to return to; anything else (another host, `//x`) becomes home. */
-export function safeNext(value: string | null | undefined): string {
-  return value && /^\/(?!\/)[\w\-./?=&%#]*$/.test(value) ? value.slice(0, 200) : '/';
-}

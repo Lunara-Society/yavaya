@@ -13,10 +13,13 @@ import { registerAction, type ActionState } from '../actions';
 export function RegisterForm({
   locale,
   inviter,
+  next = '/',
   labels,
 }: {
   locale: string;
   inviter?: string | null;
+  /** Where to go once the address is confirmed. */
+  next?: string;
   labels: {
     email: string;
     password: string;
@@ -61,7 +64,7 @@ export function RegisterForm({
           the local development panel above — can finish here.
         */}
         <Link
-          href="/verify"
+          href={next === '/' ? '/verify' : `/verify?next=${encodeURIComponent(next)}`}
           className="mt-5 inline-flex min-h-touch items-center rounded-xl px-5 font-medium"
           style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}
         >

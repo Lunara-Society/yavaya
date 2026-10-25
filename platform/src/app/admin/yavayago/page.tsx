@@ -11,6 +11,7 @@ import { driverReviewQueue, storeReviewQueue } from '@/server/domains/go/service
 import { reviewDriverAction, reviewStoreAction } from '@/app/yavayago/actions';
 import { formatDate } from '@/ui/mercadito/format';
 import { money } from '@/ui/go/format';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -23,7 +24,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function GoReviewPage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [canStores, canDrivers] = await Promise.all([hasPermission(db(), userId, 'stores.review'), hasPermission(db(), userId, 'drivers.review')]);
   if (!canStores && !canDrivers) notFound();
   const session = await currentSession();

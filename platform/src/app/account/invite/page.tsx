@@ -7,6 +7,7 @@ import { AppShell } from '@/ui/components/app-shell';
 import { CopyButton } from '@/ui/components/copy-button';
 import { shellContext } from '@/ui/shell-context';
 import { invitationSummary } from '@/server/domains/referrals/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const metadata: Metadata = { title: 'Invita' };
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function InvitePage() {
   const { t, language, theme, member, userId } = await shellContext();
-  if (!userId || !member) redirect('/login');
+  if (!userId || !member) redirect(await signInPath());
 
   const summary = await invitationSummary(db(), userId);
   if (!summary.code) redirect('/account');

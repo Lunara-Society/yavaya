@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { generateToken } from '@/server/security/crypto';
 import { authorizationUrl, googleSignIn, pkcePair } from '@/server/domains/identity/google';
-import { forgetGoogle, googleHint, safeNext, startFlow } from '@/server/auth/google-cookies';
+import { forgetGoogle, googleHint, startFlow } from '@/server/auth/google-cookies';
+import { safeNext } from '@/server/auth/return-path';
 import { siteUrl } from '@/server/seo';
 
 export const dynamic = 'force-dynamic';

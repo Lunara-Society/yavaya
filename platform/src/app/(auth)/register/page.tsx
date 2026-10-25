@@ -1,21 +1,30 @@
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import { NEW_USER_RULES } from '@/config/business-rules';
 import { AppShell } from '@/ui/components/app-shell';
 import { AuthCard } from '@/ui/components/auth-card';
 import { googleHint } from '@/server/auth/google-cookies';
+import { safeNext } from '@/server/auth/return-path';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { shellContext } from '@/ui/shell-context';
 import { RegisterForm } from './register-form';
 import { db } from '@/server/db/client';
 import { referralRules } from '@/server/domains/referrals/service';
 
-export const metadata: Metadata = { title: 'Create account' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: { absolute: t('auth.register.title') } };
+}
 
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ invita?: string }> }) {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ invita?: string; next?: string }> }) {
   const { locale, t, language, theme, member } = await shellContext();
+  const query = await searchParams;
   // An invitation link carries the inviter's YAY ID; the server checks it.
-  const invita = (await searchParams).invita?.trim().slice(0, 20) || null;
+  const invita = query.invita?.trim().slice(0, 20) || null;
   const rules = invita ? await referralRules(db()) : null;
+  // Where the visitor was going; they go on there once the address is confirmed.
+  const next = safeNext(query.next);
+  const googleQuery = new URLSearchParams({ ...(invita ? { invita } : {}), ...(next !== '/' ? { next } : {}) }).toString();
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member} authBar={false}>
@@ -26,8 +35,9 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         subtitle={t('auth.register.subtitle')}
         notice={null}
         google={googleSignIn().available}
-        googleHref={invita ? `/auth/google?invita=${encodeURIComponent(invita)}` : '/auth/google'}
+        googleHref={googleQuery ? `/auth/google?${googleQuery}` : '/auth/google'}
         remembered={Boolean(await googleHint())}
+        next={next}
       >
         {invita && rules ? (
           <p className="surface-card mt-4 p-3 text-sm" role="status">
@@ -38,6 +48,7 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
         <RegisterForm
           locale={locale}
           inviter={invita}
+          next={next}
           labels={{
             email: t('auth.email'),
             password: t('auth.password'),

@@ -14,6 +14,7 @@ import {
   sendPhoneCodeAction,
   useVerifiedForWhatsappAction,
 } from "./actions";
+import { signInPath } from "@/server/auth/sign-in-path";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,7 @@ export default async function PhonePage({
 }) {
   const query = await searchParams;
   const { c, t, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect("/login");
+  if (!userId) redirect(await signInPath());
 
   const [state, whatsapp] = await Promise.all([
     phoneState(db(), userId),

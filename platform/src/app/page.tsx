@@ -4,6 +4,7 @@ import { HomeBody } from '@/ui/site/home';
 import { JsonLd } from '@/ui/site/json-ld';
 import { db } from '@/server/db/client';
 import { recentOpportunities } from '@/server/domains/discovery/recent';
+import { startingFacts } from '@/server/domains/tokens/uses';
 import { servedCountryNames, siteUrl } from '@/server/seo';
 
 /** How many recent things the home page shows: two rows of four on a wide screen. */
@@ -19,7 +20,11 @@ const RECENT_LIMIT = 8;
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, opportunities] = await Promise.all([servedCountryNames(), recentOpportunities(db(), { locale, limit: RECENT_LIMIT })]);
+  const [countries, opportunities, starts] = await Promise.all([
+    servedCountryNames(),
+    recentOpportunities(db(), { locale, limit: RECENT_LIMIT }),
+    startingFacts(db()),
+  ]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home">
       <JsonLd
@@ -45,7 +50,7 @@ export default async function HomePage() {
           },
         ]}
       />
-      <HomeBody c={c} t={t} locale={locale} signedIn={Boolean(member)} opportunities={opportunities} />
+      <HomeBody c={c} t={t} locale={locale} signedIn={Boolean(member)} opportunities={opportunities} starts={starts} />
     </SiteShell>
   );
 }

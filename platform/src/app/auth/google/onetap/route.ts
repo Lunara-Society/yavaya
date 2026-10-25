@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { generateToken } from '@/server/security/crypto';
 import { googleSignIn, verifyBrowserIdToken } from '@/server/domains/identity/google';
 import { finishGoogleSignIn } from '@/server/auth/google-finish';
-import { safeNext } from '@/server/auth/google-cookies';
+import { safeNext } from '@/server/auth/return-path';
 import { seal, unseal } from '@/server/auth/sealed';
 import { serverEnv } from '@/config/env';
 import { siteUrl } from '@/server/seo';

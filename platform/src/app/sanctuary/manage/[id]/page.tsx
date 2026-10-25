@@ -9,6 +9,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { dateText } from '@/ui/sanctuary/parts';
 import { churchDevotionalsForOwner, getChurch, localDate } from '@/server/domains/sanctuary/service';
 import { publishDevotionalAction, withdrawDevotionalAction } from '../../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -28,7 +29,7 @@ export default async function ManageChurchPage({ params, searchParams }: Params)
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!UUID.test(id)) notFound();
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const church = await getChurch(db(), { churchId: id, viewerId: userId, locale });
   if (!church || church.ownerUserId !== userId) notFound();
   const words = await churchDevotionalsForOwner(db(), { churchId: church.id, ownerUserId: userId });

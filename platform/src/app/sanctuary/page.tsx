@@ -15,6 +15,7 @@ import { DAILY_KINDS, dailyLight, type DailyKind } from '@/i18n/daily';
 import type { MessageKey } from '@/i18n/dictionaries/es';
 import { currentLightDate, memberTimezone, readDailyKinds } from '@/server/domains/sanctuary/daily';
 import { setDailyKindsAction } from './actions';
+import { loginHref } from '@/server/auth/return-path';
 
 const KIND_LABEL: Record<DailyKind, MessageKey> = {
   prayer: 'sanctuary.daily.kind.prayer',
@@ -96,7 +97,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
               </form>
             ) : (
               <p className="muted">
-                <Link href="/login">{t('sanctuary.daily.sign_in')}</Link>
+                <Link href={loginHref('/sanctuary')}>{t('sanctuary.daily.sign_in')}</Link>
               </p>
             )}
           </details>
@@ -154,7 +155,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
             {churches.length === 0 ? (
               <div className="sc-empty">
                 <p>{t('sanctuary.churches.empty')}</p>
-                <Link className="btn btn-gold" href={member ? '/sanctuary/register' : '/login'}>
+                <Link className="btn btn-gold" href={member ? '/sanctuary/register' : loginHref('/sanctuary/register')}>
                   {t('sanctuary.register.cta')}
                 </Link>
               </div>
@@ -193,7 +194,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
 
           <section className="card sc-card">
             <div className="btn-row" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-              <Link className="btn btn-gold" href={member ? '/sanctuary/register' : '/login'}>
+              <Link className="btn btn-gold" href={member ? '/sanctuary/register' : loginHref('/sanctuary/register')}>
                 {t('sanctuary.register.cta')}
               </Link>
               {member ? (

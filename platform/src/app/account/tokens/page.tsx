@@ -16,6 +16,7 @@ import { TokenPack } from '@/ui/tokens/pack';
 import { TokenCoin } from '@/ui/site/icons';
 import { packageSavingPercent, TOKEN_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const metadata: Metadata = { title: 'Tokens' };
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function TokensPage({ searchParams }: { searchParams: Promise<{ purchase?: string; error?: string }> }) {
   const { t, locale, language, theme, member, userId } = await shellContext();
-  if (!userId || !member) redirect('/login');
+  if (!userId || !member) redirect(await signInPath());
   const query = await searchParams;
 
   const [balance, entries, packages, purchases, country, countries] = await Promise.all([
@@ -64,9 +65,8 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
 
   return (
     <AppShell t={t} language={language} theme={theme} member={member}>
-      {/* The balance, as the reward it is. */}
+      {/* The balance, plainly: a number of credits, not a prize. */}
       <section className="tk-hero">
-        <div className="tk-hero-glow" aria-hidden="true" />
         <TokenCoin className="tk-hero-coin" />
         <div className="tk-hero-text">
           <h1 className="tk-hero-label">{t('tokens.balance')}</h1>
@@ -93,13 +93,12 @@ export default async function TokensPage({ searchParams }: { searchParams: Promi
         </div>
 
         <ul className="tk-packs">
-          {offered.map((pkg, index) => {
+          {offered.map((pkg) => {
             const saving = packageSavingPercent(pkg, offered);
             return (
               <TokenPack
                 key={pkg.key}
                 pack={pkg}
-                index={index}
                 name={t(`tokens.pack.${pkg.key}` as MessageKey)}
                 tokensWord={t('tokens.word')}
                 perToken={t('tokens.per_token', { price: formatPrice(Math.round(pkg.priceMinor / pkg.tokens), pkg.currency) })}

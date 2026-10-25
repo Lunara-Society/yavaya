@@ -4,6 +4,7 @@ import type { Translator } from '@/i18n';
 import { SESSION_RULES } from '@/config/business-rules';
 import { Icon, Mark } from '@/ui/site/icons';
 import { PageScene } from '@/ui/site/art';
+import { loginHref } from '@/server/auth/return-path';
 import { GoogleButton } from './google-button';
 
 export type AuthNotice = 'signed_out' | 'password_reset' | 'ended' | 'cancelled' | 'failed' | 'unavailable' | 'busy' | null;
@@ -28,6 +29,7 @@ export function AuthCard({
   google,
   googleHref,
   remembered,
+  next = '/',
   children,
 }: {
   t: Translator;
@@ -39,6 +41,8 @@ export function AuthCard({
   googleHref: string;
   /** A Google account signed in here before: the button goes straight back to it, so offer to switch. */
   remembered: boolean;
+  /** Where the visitor was going; switching between the two pages keeps it. */
+  next?: string;
   children: ReactNode;
 }) {
   const noticeText =
@@ -80,7 +84,7 @@ export function AuthCard({
         {children}
         <p className="auth-switch">
           {mode === 'login' ? t('auth.no_account') : t('auth.have_account')}{' '}
-          <Link href={mode === 'login' ? '/register' : '/login'}>{mode === 'login' ? t('auth.bar.register') : t('auth.submit_login')}</Link>
+          <Link href={loginHref(next, mode === 'login' ? '/register' : '/login')}>{mode === 'login' ? t('auth.bar.register') : t('auth.submit_login')}</Link>
         </p>
       </section>
       <aside className="auth-art">

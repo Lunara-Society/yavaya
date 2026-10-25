@@ -24,16 +24,17 @@ export async function generateMetadata(): Promise<Metadata> {
    * sort orders (`?category=…`) count as the page they filter. Rendered as a
    * tag, not a header: the host's edge merges duplicate Link headers.
    */
-  const pathname = (await headers()).get('x-pathname') ?? '/';
+  const [pathname, locale] = await Promise.all([(async () => (await headers()).get('x-pathname') ?? '/')(), resolveLocale()]);
   const canonical = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
+  // The default title and description speak the visitor's language, like the page under them.
+  const t = createTranslator(locale);
   return {
     metadataBase: new URL(process.env.APP_URL ?? 'https://yavaya.lat'),
     title: {
-      default: 'Yavaya — El hogar digital de Centroamérica',
+      default: t('meta.title'),
       template: '%s · Yavaya',
     },
-    description:
-      'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
+    description: t('meta.description'),
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: '48x48' },
@@ -48,9 +49,9 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       siteName: 'Yavaya',
-      locale: 'es_LA',
-      alternateLocale: ['en_US'],
-      images: [{ url: '/og.jpg', width: 1200, height: 630, alt: 'Yavaya — El hogar digital de Centroamérica' }],
+      locale: locale === 'en' ? 'en_US' : 'es_LA',
+      alternateLocale: [locale === 'en' ? 'es_LA' : 'en_US'],
+      images: [{ url: '/og.jpg', width: 1200, height: 630, alt: t('meta.title') }],
     },
     twitter: { card: 'summary_large_image', images: ['/og.jpg'] },
     ...(verification ? { verification: { google: verification } } : {}),

@@ -31,6 +31,15 @@ HTTP. It lives until the absolute expiry: the browser cannot see activity, so a
 cookie that expired by itself after two hours would sign out someone still using
 the site. The server is what enforces the idle window.
 
+**Coming back after signing in** (since 25 October 2026). A page or form that
+needs a session sends a visitor without one to `/login?next=<the page>`, and
+signing in, registering, confirming the address, the two-step code and Google
+all finish there. `next` arrives in an address anyone can write, so it is
+checked again wherever it is used (`server/auth/return-path.ts`): only a path
+on this site passes — `//host`, `/\host` and anything with a scheme become the
+home page — and never the sign-in pages themselves. A sign-in page that
+forwarded to another host would be a phishing kit with Yavaya's name on it.
+
 ### Continuar con Google
 
 OpenID Connect authorization-code flow with PKCE, a `state` value and a nonce,

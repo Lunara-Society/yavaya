@@ -10,6 +10,7 @@ import { isDomainError } from '@/server/errors';
 import { isPlausibleE164 } from '@/server/domains/identity/normalize';
 import { confirmPhoneVerification, startPhoneVerification } from '@/server/domains/identity/phone/service';
 import { setWhatsapp } from '@/server/domains/mercadito/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /**
  * Phone verification: plain forms that work without JavaScript. Every result
@@ -24,7 +25,7 @@ function normalizeInput(raw: string): string | null {
 
 export async function sendPhoneCodeAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const phone = normalizeInput(String(formData.get('phone') ?? ''));
   if (!phone) redirect('/account/phone?error=invalid_number');
@@ -48,7 +49,7 @@ export async function sendPhoneCodeAction(formData: FormData): Promise<void> {
 
 export async function confirmPhoneCodeAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const code = String(formData.get('code') ?? '').replace(/\D/g, '');
   if (code.length !== 6) redirect('/account/phone?sent=1&error=format');
@@ -73,7 +74,7 @@ export async function confirmPhoneCodeAction(formData: FormData): Promise<void> 
 /** Makes the verified number the one Mercadito buyers reach on WhatsApp. */
 export async function useVerifiedForWhatsappAction(): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
 
   const [account] = await db()
     .select({ phone: users.phoneE164, verifiedAt: users.phoneVerifiedAt })

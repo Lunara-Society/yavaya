@@ -20,6 +20,7 @@ import { OPEN_STATUSES, PUBLIC_STATUSES, whatsappLink } from '@/server/domains/m
 import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation';
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { closeListingAction, featureListingAction, reportListingAction, reserveListingAction } from '../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -135,7 +136,7 @@ export default async function ListingPage({ params, searchParams }: Params) {
               {own ? (
                 <SellerControls listing={listing} t={t} locale={locale} feature={feature} />
               ) : !(OPEN_STATUSES as readonly string[]).includes(listing.status) ? null : !member ? (
-                <Link className="btn btn-gold" href="/login" style={{ width: '100%' }}>
+                <Link className="btn btn-gold" href={loginHref(`/mercadito/${listing.id}`)} style={{ width: '100%' }}>
                   {t('mercadito.listing.sign_in_to_contact')}
                 </Link>
               ) : listing.seller.whatsappE164 ? (

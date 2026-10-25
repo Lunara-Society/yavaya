@@ -8,6 +8,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { parseYayId } from '@/server/domains/identity/yay-id';
 import { profilePage, WORK_REPORT_CATEGORIES } from '@/server/domains/work/service';
 import { reportWorkAction } from '../../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -16,7 +17,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function ProProfilePage({ params, searchParams }: { params: Promise<{ yayId: string }>; searchParams: Promise<{ reported?: string; error?: string }> }) {
   const [{ yayId }, query] = await Promise.all([params, searchParams]);
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const digits = parseYayId(decodeURIComponent(yayId));
   if (!digits) notFound();
   const profile = await profilePage(db(), { yayDigits: digits, locale });

@@ -8,6 +8,7 @@ import { listingFormProps } from '@/ui/mercadito/form-props';
 import { priceInputValue } from '@/ui/mercadito/format';
 import { getListing } from '@/server/domains/mercadito/service';
 import { OPEN_STATUSES } from '@/server/domains/mercadito/rules';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!UUID.test(id)) notFound();
 
   const listing = await getListing(db(), id, locale);

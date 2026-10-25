@@ -10,6 +10,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { APPOINTABLE_ROLES, recentTeamChanges, searchMembers, staffList } from '@/server/domains/access/staff';
 import { formatDate, intlLocale } from '@/ui/mercadito/format';
 import { appointAction, removeAppointmentAction } from '../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function TeamPage({ searchParams }: { searchParams: Promise<{ q?: string; error?: string; done?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await hasPermission(db(), userId, 'roles.manage'))) notFound();
   const session = await currentSession();
   const actor = session ? { userId, status: session.user.status } : null;

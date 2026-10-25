@@ -7,6 +7,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { AnimalCard } from '@/ui/animals/parts';
 import { getCertificate, myApplications } from '@/server/domains/animals/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MyApplicationsPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const [applications, certificate] = await Promise.all([myApplications(db(), { userId, locale }), getCertificate(db(), userId)]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="animals" tone="animals">

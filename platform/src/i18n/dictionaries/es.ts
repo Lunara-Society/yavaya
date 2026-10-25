@@ -11,6 +11,10 @@ export const es = {
   'brand.tagline': 'La infraestructura digital de Centroamérica',
   'brand.description':
     'Una identidad. Una reputación. Múltiples distritos. Yavaya conecta el comercio diario, los servicios, el trabajo profesional, las entregas y el apoyo comunitario en una sola plataforma.',
+  // The site's default title and description (app/layout.tsx); pages set their own.
+  'meta.title': 'Yavaya — El hogar digital de Centroamérica',
+  'meta.description':
+    'Yavaya: el hogar digital de Centroamérica. Compra, vende, trabaja, pide, ayuda y pertenece — con una sola cuenta y una sola reputación.',
 
   // --- Navigation ----------------------------------------------------------
   'nav.primary': 'Navegación principal',
@@ -2109,7 +2113,7 @@ export const es = {
   'home.hero.title_2': 'Cerca de ti.',
   'home.hero.lead': 'Compra, vende y encuentra ayuda en tu comunidad.',
   'home.search.label': 'Buscar en Mercadito',
-  'home.search.placeholder': '¿Qué necesitas hoy?',
+  'home.search.placeholder': '¿Qué buscas?',
   'home.search.scope': 'Mercadito',
   'home.search.submit': 'Buscar',
   'home.shortcuts.label': 'Ir a un distrito',
@@ -2135,9 +2139,17 @@ export const es = {
   'home.recent.see_all': 'Ver Mercadito',
   'home.recent.empty_title': 'Todavía no hay publicaciones.',
   'home.recent.empty_text': 'Yavaya acaba de abrir. Lo que se publique en Mercadito, Trabajo, Animales y YavayaGo aparecerá aquí, tal cual: sin relleno ni ejemplos inventados.',
-  'home.recent.publish_listing': 'Publica gratis en Mercadito',
-  'home.recent.publish_job': 'Publica una oferta de trabajo',
-  'home.recent.offer_services': 'Ofrece tus servicios',
+  'home.start.title': 'Empieza hoy',
+  'home.start.sell': 'Vende algo',
+  'home.start.sell_note': 'Gratis hasta {count} publicaciones activas a la vez.',
+  'home.start.hire': 'Publica un empleo',
+  'home.start.hire_note': 'Gratis hasta {count} ofertas abiertas a la vez.',
+  'home.start.ask': 'Pide un servicio',
+  'home.start.ask_note_free': 'Pedir un servicio es gratis.',
+  'home.start.ask_note': 'Di qué necesitas y dónde.',
+  'home.start.offer': 'Ofrece tus servicios',
+  'home.start.offer_note_free': 'Tu perfil y tus respuestas no cuestan nada.',
+  'home.start.offer_note': 'Crear tu perfil no cuesta nada.',
   'home.recent.ago_now': 'ahora',
   'home.recent.ago_minutes': 'hace {count} min',
   'home.recent.ago_hours': 'hace {count} h',

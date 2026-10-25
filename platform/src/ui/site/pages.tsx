@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { packageSavingPercent, SITE_STATS_RULES, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { TokenPack } from '@/ui/tokens/pack';
+import { fillTokenRow, type TokenFacts } from '@/ui/tokens/facts';
 import { DistrictScene } from './art';
 import type { SiteContent } from '@/i18n/site';
 import {
@@ -617,13 +618,18 @@ export function ReputationBody({ c }: { c: SiteContent }) {
 }
 
 /** `film` is the guide video, shown after the page has said what it has to say. */
-export function TokensBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
+export function TokensBody({ c, film, facts }: { c: SiteContent; film?: ReactNode; facts: TokenFacts }) {
   const p = c.pages.tokens;
+  const cost = { one: p.costOne, many: p.costMany };
+  // Rows are filled from live prices and settings; a row whose price is unavailable is left out.
+  const fill = (rows: ReadonlyArray<readonly string[]>) => rows.map((row) => fillTokenRow(row, facts, cost)).filter((row): row is string[] => row !== null);
+  // The lead names the free allowance too, so it reads the same setting as the tables below it.
+  const lead = fillTokenRow([p.lead], facts, cost)?.[0] ?? '';
   const offered = TOKEN_PACKAGES.filter((pk) => pk.enabled && pk.tokens <= TOKEN_RULES.maxTokensPerPurchase);
   const best = [...offered].sort((a, b) => a.priceMinor / a.tokens - b.priceMinor / b.tokens)[0];
   return (
     <>
-      <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="tokens" />
+      <PageHero eyebrow={p.eyebrow} title={p.title} lead={lead} photo="tokens" />
       <section className="section">
         <div className="wrap">
           <Cards items={p.pillars} />
@@ -634,13 +640,12 @@ export function TokensBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
           <SectionHead {...p.packagesHead} />
           {/* Prices come from the catalogue, never from copy: one source of truth. */}
           <ul className="tk-packs">
-            {offered.map((pk, index) => {
+            {offered.map((pk) => {
               const saving = packageSavingPercent(pk, offered);
               return (
                 <TokenPack
                   key={pk.key}
                   pack={pk}
-                  index={index}
                   name={p.packageNames[pk.key] ?? pk.key}
                   tokensWord={p.tokensWord}
                   perToken={p.perToken.replace('{price}', usd(Math.round(pk.priceMinor / pk.tokens)))}
@@ -648,7 +653,7 @@ export function TokensBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
                   bestLabel={p.bestValue}
                   best={pk === best}
                 >
-                  <Link className="tk-buy" href="/account/tokens#paquetes" style={{ display: 'grid', placeItems: 'center', textDecoration: 'none' }}>
+                  <Link className="tk-buy" href="/account/tokens#paquetes">
                     <span>{p.buyCta}</span>
                   </Link>
                 </TokenPack>
@@ -665,11 +670,11 @@ export function TokensBody({ c, film }: { c: SiteContent; film?: ReactNode }) {
           <div className="split">
             <div>
               <SectionHead {...p.useHead} />
-              <Table head={p.useTable.head} rows={p.useTable.rows} />
+              <Table head={p.useTable.head} rows={fill(p.useTable.rows)} />
             </div>
             <div>
               <SectionHead {...p.earnHead} />
-              <Table head={p.earnTable.head} rows={p.earnTable.rows} />
+              <Table head={p.earnTable.head} rows={fill(p.earnTable.rows)} />
             </div>
           </div>
         </div>

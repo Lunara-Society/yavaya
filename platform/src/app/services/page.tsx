@@ -11,6 +11,7 @@ import { CategoryIcon, RequestCard, categoryName } from '@/ui/services/parts';
 import { Rotulo } from '@/ui/site/rotulo';
 import { getProviderProfile, listBoard } from '@/server/domains/services/service';
 import { availabilityAction } from './actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,7 +54,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
             <p className="eyebrow">{c.districts.services.name}</p>
             <h1>{t('services.board.title')}</h1>
             <p className="lead">{t('services.board.lead')}</p>
-            <Link className="sv-today" href={member ? '/services/new?urgent=1' : '/login'}>
+            <Link className="sv-today" href={member ? '/services/new?urgent=1' : loginHref('/services/new?urgent=1')}>
               <span className="sv-today-dot" aria-hidden="true" />
               <strong>{t('services.urgent.badge')}</strong>
               <span className="sv-today-go" aria-hidden="true">
@@ -61,10 +62,10 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
               </span>
             </Link>
             <div className="btn-row">
-              <Link className="btn btn-gold" href={member ? '/services/new' : '/login'}>
+              <Link className="btn btn-gold" href={member ? '/services/new' : loginHref('/services/new')}>
                 {t('services.board.ask')}
               </Link>
-              <Link className="btn btn-line" href={member ? '/services/provider' : '/login'}>
+              <Link className="btn btn-line" href={member ? '/services/provider' : loginHref('/services/provider')}>
                 {provider ? t('services.board.my_profile') : t('services.board.offer')}
               </Link>
               {member ? (
@@ -101,7 +102,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
           <>
             <div className="sv-cats sv-tiles">
               {SERVICE_CATEGORIES.map((cat) => (
-                <Link key={cat.key} className="sv-cat" href="/login">
+                <Link key={cat.key} className="sv-cat" href={loginHref(`/services?cat=${cat.key}`)}>
                   <span className="sv-icon" aria-hidden="true">
                     <CategoryIcon category={cat.key} />
                   </span>
@@ -115,10 +116,10 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
             <div className="cm-gate card" style={{ marginTop: 24 }}>
               <p>{t('services.board.members_only')}</p>
               <div className="btn-row">
-                <Link className="btn btn-gold" href="/login">
+                <Link className="btn btn-gold" href={loginHref('/services')}>
                   {t('auth.sign_in_to_continue')}
                 </Link>
-                <Link className="btn btn-line" href="/register">
+                <Link className="btn btn-line" href={loginHref('/services', '/register')}>
                   {t('auth.submit_register')}
                 </Link>
               </div>

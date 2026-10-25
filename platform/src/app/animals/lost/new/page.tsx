@@ -10,6 +10,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -17,7 +18,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function NewLostFoundPage({ searchParams }: { searchParams: Promise<{ kind?: string; error?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const kind = query.kind === 'found' ? 'found' : 'lost';
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const today = new Date().toISOString().slice(0, 10);

@@ -11,6 +11,7 @@ import { readSetup } from '@/server/auth/two-step-cookies';
 import { enrolmentUri, twoStepAvailable, twoStepStatus } from '@/server/domains/identity/two-step';
 import { startTwoStepAction } from '../security-actions';
 import { ConfirmTwoStepForm, TwoStepCodeForm } from '../security-forms';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslator();
@@ -25,7 +26,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function TwoStepPage({ searchParams }: { searchParams: Promise<{ respaldo?: string }> }) {
   const { t, locale, language, theme, member, userId } = await shellContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const status = await twoStepStatus(db(), userId);
   const usedRecovery = Boolean((await searchParams).respaldo);
   const recoveryLabels = { title: t('two_step.recovery.title'), lead: t('two_step.recovery.lead'), done: t('two_step.recovery.done') };

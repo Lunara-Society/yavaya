@@ -7,6 +7,7 @@ import { reviewQueue, safeSpaceAvailable } from '@/server/domains/safe-space/ser
 import { ErrorNote, VioletaShell, when } from '@/ui/violeta/parts';
 import { VIOLETA_METADATA } from '@/app/violeta/meta';
 import { resolveReportAction } from '@/app/violeta/actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -19,7 +20,7 @@ export const metadata = VIOLETA_METADATA;
 export default async function VioletaGuardian({ searchParams }: { searchParams: Promise<{ error?: string; done?: string }> }) {
   const query = await searchParams;
   const { t, locale, userId } = await shellContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await hasPermission(db(), userId, 'safe_space.review'))) redirect('/account');
   const reports = safeSpaceAvailable() ? await reviewQueue(db(), { userId, status: 'active' }) : [];
   return (

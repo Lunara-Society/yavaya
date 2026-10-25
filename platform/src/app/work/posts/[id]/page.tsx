@@ -16,6 +16,7 @@ import { FeatureOffer } from '@/ui/promotion/feature-offer';
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { serverEnv } from '@/config/env';
 import { applicationStepAction, applyAction, closePostAction, featurePostAction, reportWorkAction } from '../../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -210,7 +211,7 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
             ) : !member ? (
               <div className="cm-gate card">
                 <p>{t('work.post.sign_in_to_apply')}</p>
-                <Link className="btn btn-gold" href="/login">
+                <Link className="btn btn-gold" href={loginHref(`/work/posts/${post.id}`)}>
                   {t('auth.sign_in_to_continue')}
                 </Link>
               </div>

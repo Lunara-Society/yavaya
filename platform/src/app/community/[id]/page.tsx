@@ -11,6 +11,7 @@ import { formatDate } from '@/ui/mercadito/format';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { COMMUNITY_REPORT_CATEGORIES, getPost } from '@/server/domains/community/service';
 import { closePostAction, replyAction, reportPostAction } from '../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -22,7 +23,7 @@ type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ error?:
 export default async function CommunityPostPage({ params, searchParams }: Params) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!UUID.test(id)) notFound();
   const moderator = await hasPermission(db(), userId, 'moderation.queue.read');
   const found = await getPost(db(), { postId: id, viewerId: userId, viewerIsModerator: moderator, locale });

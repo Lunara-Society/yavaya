@@ -15,6 +15,7 @@ import {
 import type { MessageKey } from '@/i18n';
 import { deleteSavedSearchAction } from '../actions';
 import { placeByCode } from '@/server/domains/geography/places';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function MyListingsPage({ searchParams }: { searchParams: Promise<{ wa?: string; saved?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
 
   const [listings, whatsapp, saved] = await Promise.all([
     sellerListings(db(), userId, locale),

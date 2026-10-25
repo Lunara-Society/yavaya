@@ -10,6 +10,7 @@ import { EMPLOYER_KINDS, getEmployer } from '@/server/domains/work/service';
 import { saveEmployerAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -18,7 +19,7 @@ export const metadata: Metadata = { robots: { index: false } };
 export default async function EmployerPage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string; kind?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const employer = await getEmployer(db(), userId);
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const kind = query.kind === 'business' || query.kind === 'person' ? query.kind : (employer?.kind ?? 'business');

@@ -10,6 +10,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { facts } from '@/ui/animals/parts';
 import { getAnimal, getCertificate } from '@/server/domains/animals/service';
 import { applyAction } from '../../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -25,7 +26,7 @@ export default async function ApplyPage({ params, searchParams }: { params: Prom
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!UUID.test(id)) notFound();
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const certificate = await getCertificate(db(), userId);
   if (!certificate) redirect(`/animals/learn?next=${id}`);
   const found = await getAnimal(db(), { listingId: id, viewerId: userId, viewerIsReviewer: false, locale });

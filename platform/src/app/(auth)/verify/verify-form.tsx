@@ -15,8 +15,11 @@ import { resendVerificationAction, verifyEmailAction, type VerifyState } from '.
  * Both forms are ordinary forms. With JavaScript unavailable they still post.
  */
 export function VerifyForm({
+  next,
   labels,
 }: {
+  /** Where to go once confirmed; the server checks it again. */
+  next: string;
   labels: {
     code: string;
     codeHint: string;
@@ -36,6 +39,7 @@ export function VerifyForm({
   return (
     <>
       <form action={formAction} className="mt-6 space-y-4" noValidate>
+        {next !== '/' ? <input type="hidden" name="next" value={next} /> : null}
         <label className="block">
           <span className="text-sm font-medium">{labels.code}</span>
           <input

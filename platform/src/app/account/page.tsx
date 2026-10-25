@@ -14,6 +14,7 @@ import { recentActivity } from '@/server/domains/notifications/activity';
 import { LIVE_FEED_RULES, NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const metadata: Metadata = { title: 'Member area' };
 export const dynamic = 'force-dynamic';
@@ -29,7 +30,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function AccountPage() {
   const { t, locale, language, theme, member, userId } = await shellContext();
-  if (!userId || !member) redirect('/login');
+  if (!userId || !member) redirect(await signInPath());
   const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
   const ago = (at: Date) => {
     const minutes = Math.round((at.getTime() - Date.now()) / 60_000);
@@ -73,7 +74,7 @@ export default async function AccountPage() {
   if (guardian) shortcuts.push({ href: '/admin/violeta', labelKey: 'nav.admin_violeta' as MessageKey, glyph: '⚑' });
   if (animalsReviewer) shortcuts.push({ href: '/admin/animals', labelKey: 'nav.admin_animals' as MessageKey, glyph: '⚑' });
 
-  if (!shield) redirect('/login');
+  if (!shield) redirect(await signInPath());
 
   const underMonitoring = shield.statusKey === 'trust.status.new_member';
 

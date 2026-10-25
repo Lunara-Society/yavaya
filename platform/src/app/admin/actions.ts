@@ -19,12 +19,13 @@ import {
   type SanctionNotice,
   type SanctionReason,
 } from '@/server/domains/access/sanctions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 async function staffChange(formData: FormData, change: typeof appoint) {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const userId = String(formData.get('userId') ?? '');
   const role = String(formData.get('role') ?? '');
   const q = String(formData.get('q') ?? '').slice(0, 100);
@@ -55,7 +56,7 @@ export async function removeAppointmentAction(formData: FormData): Promise<void>
  */
 export async function memberAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const userId = String(formData.get('userId') ?? '');
   const q = String(formData.get('q') ?? '').slice(0, 100);
   const back = `/admin/members?q=${encodeURIComponent(q)}`;
@@ -91,7 +92,7 @@ export async function memberAction(formData: FormData): Promise<void> {
 /** An admin answers an appeal: keep the sanction, or lift it. The member is emailed either way. */
 export async function appealDecisionAction(formData: FormData): Promise<void> {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   const appealId = String(formData.get('appealId') ?? '');
   if (!UUID.test(appealId)) redirect('/admin/appeals');
   const outcome = formData.get('outcome') === 'lifted' ? 'lifted' : 'upheld';

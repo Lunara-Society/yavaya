@@ -13,6 +13,7 @@ import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { publishPostAction } from '../../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -27,7 +28,7 @@ const LIMITS = {
 export default async function NewPostPage({ searchParams }: { searchParams: Promise<{ kind?: string; error?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const kind = query.kind === 'project' ? 'project' : 'job';
   const [employer, open, pricing, cost, balance] = await Promise.all([
     getEmployer(db(), userId),

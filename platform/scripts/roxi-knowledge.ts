@@ -18,8 +18,35 @@ import { join } from 'node:path';
 import { siteEs } from '../src/i18n/site/es';
 import { es } from '../src/i18n/dictionaries/es';
 import * as rules from '../src/config/business-rules';
+import { BILLABLE_ACTIONS } from '../src/config/billable-actions';
+import { fillTokenRow, type TokenFacts } from '../src/ui/tokens/facts';
 
 const OUT = join(__dirname, '..', 'docs', 'roxi', 'knowledge');
+
+/**
+ * The tokens tables quote live prices and settings ({listing_cost}, {work_free}…).
+ * Here they are filled with the defaults the seed writes, so Roxi never reads a
+ * placeholder; for a member's own situation she asks the my_account tool.
+ */
+const seededCost = (key: string): number | null => BILLABLE_ACTIONS.find((action) => action.key === key)?.cost ?? null;
+const TOKEN_DEFAULTS: TokenFacts = {
+  mercadito_free: rules.MERCADITO_RULES.freeOpenListings,
+  listing_cost: seededCost('mercadito.publish_listing'),
+  feature_listing_cost: seededCost('mercadito.feature_listing'),
+  listing_days: rules.MERCADITO_RULES.featureDays,
+  work_free: rules.WORK_RULES.freeOpenPosts,
+  post_cost: seededCost('work.publish_post'),
+  feature_post_cost: seededCost('work.feature_post'),
+  post_days: rules.WORK_RULES.featureDays,
+  feature_store_cost: seededCost('go.feature_store'),
+  store_days: rules.GO_RULES.featureDays,
+  starter_per_day: rules.TOKEN_RULES.starterGrantPerDay,
+  starter_days: rules.TOKEN_RULES.starterGrantDays,
+  inviter_reward: rules.REFERRAL_RULES.inviterReward,
+  invitee_reward: rules.REFERRAL_RULES.inviteeReward,
+  invite_month_cap: rules.REFERRAL_RULES.maxRewardedPerMonth,
+};
+const COST_WORDS = { one: siteEs.pages.tokens.costOne, many: siteEs.pages.tokens.costMany };
 
 /**
  * Dictionary areas left out: staff and operations screens, email bodies and
@@ -69,7 +96,8 @@ function memberFacing(value: unknown): unknown {
 }
 
 /** Keys in the site content that hold styling or wiring, not words. */
-const SKIPPED_KEYS = new Set(['icon', 'color', 'href', 'whatsappHref', 'image', 'images', 'art', 'slug']);
+// costOne/costMany are the words a token price is written with, not text to read.
+const SKIPPED_KEYS = new Set(['icon', 'color', 'href', 'whatsappHref', 'image', 'images', 'art', 'slug', 'costOne', 'costMany']);
 /** Button and section labels: noise once the page is read as text. */
 const LABEL_KEY = /^(eyebrow|cta|.*Cta|.*Eyebrow|.*Label)$/;
 
@@ -87,7 +115,9 @@ function cell(text: string): string {
 function walk(node: Node, depth: number, out: string[], label?: string): void {
   if (node === null || node === undefined || typeof node === 'boolean' || typeof node === 'number') return;
   if (typeof node === 'string') {
-    if (node.trim()) out.push(label ? `- ${label}: ${node}` : `- ${node}`);
+    // Prose can quote a token figure too ({mercadito_free}); other placeholders are left as they are.
+    const text = fillTokenRow([node], TOKEN_DEFAULTS, COST_WORDS)?.[0] ?? node;
+    if (text.trim()) out.push(label ? `- ${label}: ${text}` : `- ${text}`);
     return;
   }
   if (Array.isArray(node)) {
@@ -96,7 +126,10 @@ function walk(node: Node, depth: number, out: string[], label?: string): void {
   }
   if (isTable(node)) {
     out.push('', `| ${node.head.map(cell).join(' | ')} |`, `| ${node.head.map(() => '---').join(' | ')} |`);
-    for (const row of node.rows) out.push(`| ${row.map(cell).join(' | ')} |`);
+    for (const raw of node.rows) {
+      const row = fillTokenRow(raw, TOKEN_DEFAULTS, COST_WORDS);
+      if (row) out.push(`| ${row.map(cell).join(' | ')} |`);
+    }
     out.push('');
     return;
   }

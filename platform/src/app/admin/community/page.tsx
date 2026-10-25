@@ -12,13 +12,14 @@ import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { communityQueue, COMMUNITY_DECISIONS } from '@/server/domains/community/service';
 import { resolveCommunityTicketAction } from './actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
 
 export default async function CommunityModerationPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   if (!(await hasPermission(db(), userId, 'moderation.queue.read'))) notFound();
   const session = await currentSession();
   const queue = await communityQueue(db(), session ? { userId, status: session.user.status } : null);

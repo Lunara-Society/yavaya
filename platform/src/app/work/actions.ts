@@ -31,6 +31,7 @@ import {
   type WorkReportCategory,
   type WorkTicketDecision,
 } from '@/server/domains/work/service';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 /** Trabajo's mutations: plain forms that work on any phone, without JavaScript. */
 
@@ -51,7 +52,7 @@ const field = (formData: FormData, name: string) => String(formData.get(name) ??
 
 async function signedIn() {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   return session;
 }
 

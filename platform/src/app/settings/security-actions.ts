@@ -17,12 +17,13 @@ import { passwordSchema } from '@/server/domains/identity/service';
 import { recordAudit } from '@/server/domains/audit/service';
 import { sendSecurityNotice, type SecurityNotice } from '@/server/domains/notifications/email/service';
 import { toClientError } from '@/server/errors';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export type SecurityState = { status: 'idle' } | { status: 'error'; message: string } | { status: 'done'; message: string } | { status: 'codes'; codes: string[] };
 
 async function signedIn() {
   const session = await currentSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(await signInPath());
   return session;
 }
 

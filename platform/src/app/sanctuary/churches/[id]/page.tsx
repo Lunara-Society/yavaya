@@ -15,6 +15,7 @@ import { getChurch, listDevotionals } from '@/server/domains/sanctuary/service';
 import { ReportForm } from '@/ui/sanctuary/report-form';
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { followAction } from '../../actions';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -160,7 +161,7 @@ export default async function ChurchPage({ params, searchParams }: Params) {
                 {t('sanctuary.church.manage')}
               </Link>
             ) : church.status !== 'approved' ? null : !member ? (
-              <Link className="btn btn-line" href="/login">
+              <Link className="btn btn-line" href={loginHref(`/sanctuary/churches/${church.id}`)}>
                 {t('sanctuary.church.sign_in')}
               </Link>
             ) : (

@@ -5,7 +5,8 @@
  *
  * - Its object: a service ticket, torn from the pad — a perforated edge on
  *   every request and every kind of help.
- * - Its gesture: "Lo necesito hoy" sends out a ping, the way a call goes out.
+ * - Its gesture: "Lo necesito hoy" carries a lit dot, a call waiting to be
+ *   answered (still: DESIGN-SYSTEM.md, "Motion with a reason").
  * - Its motion: things ripple into view.
  * - Its sign: hammer and wrench, crossed (ui/site/rotulo.tsx).
  */
@@ -24,14 +25,6 @@
 .site[data-tone="services"] .sv-request { border-color: color-mix(in srgb, var(--accent) 26%, var(--line)); }
 .site[data-tone="services"] .sv-request:hover { border-color: var(--accent); }
 .site[data-tone="services"] .sv-cat .sv-icon { color: var(--accent); }
-
-/* ── The ping: two rings going out from "I need it today" ── */
-@keyframes sv-sonar {
-  0% { box-shadow: 0 0 0 0 rgba(240, 163, 58, 0.6), 0 0 0 0 rgba(240, 163, 58, 0.35); }
-  70% { box-shadow: 0 0 0 10px rgba(240, 163, 58, 0), 0 0 0 22px rgba(240, 163, 58, 0); }
-  100% { box-shadow: 0 0 0 10px rgba(240, 163, 58, 0), 0 0 0 22px rgba(240, 163, 58, 0); }
-}
-.site[data-tone="services"] .sv-today-dot { animation: sv-sonar 2.2s cubic-bezier(.2, .6, .3, 1) infinite; }
 
 /* ── Rippling into view, where the browser can tie it to scrolling ── */
 @keyframes sv-ripple { from { opacity: 0; scale: 0.94; } to { opacity: 1; scale: none; } }

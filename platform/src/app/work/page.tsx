@@ -13,6 +13,7 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,10 +58,10 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           <h1>{t('work.board.title')}</h1>
           <p className="lead">{t('work.board.lead')}</p>
           <div className="btn-row">
-            <Link className="btn btn-gold" href={member ? '/work/profile' : '/login'}>
+            <Link className="btn btn-gold" href={member ? '/work/profile' : loginHref('/work/profile')}>
               {profile ? t('work.board.my_profile') : t('work.board.create_profile')}
             </Link>
-            <Link className="btn btn-line" href={member ? '/work/posts/new' : '/login'}>
+            <Link className="btn btn-line" href={member ? '/work/posts/new' : loginHref('/work/posts/new')}>
               {t('work.board.post')}
             </Link>
             {member ? (
@@ -108,7 +109,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
           {posts.items.length === 0 ? (
             <div className="sc-empty">
               <p>{t('work.board.empty')}</p>
-              <Link className="btn btn-gold" href={member ? '/work/posts/new' : '/login'}>
+              <Link className="btn btn-gold" href={member ? '/work/posts/new' : loginHref('/work/posts/new')}>
                 {t('work.board.post')}
               </Link>
             </div>

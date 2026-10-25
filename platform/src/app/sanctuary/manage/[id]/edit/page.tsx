@@ -11,6 +11,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { ChurchForm } from '@/ui/sanctuary/parts';
 import { getChurch } from '@/server/domains/sanctuary/service';
 import { updateChurchAction } from '../../../actions';
+import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -21,7 +22,7 @@ export default async function EditChurchPage({ params, searchParams }: { params:
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!UUID.test(id)) notFound();
   const { c, t, locale, language, theme, member, userId } = await siteContext();
-  if (!userId) redirect('/login');
+  if (!userId) redirect(await signInPath());
   const church = await getChurch(db(), { churchId: id, viewerId: userId, locale });
   if (!church || church.ownerUserId !== userId) notFound();
   const [row] = await db().select({ locationId: sanctuaryChurches.locationId }).from(sanctuaryChurches).where(eq(sanctuaryChurches.id, church.id));
