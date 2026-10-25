@@ -1,4 +1,4 @@
-import { and, isNull, lte } from 'drizzle-orm';
+import { and, eq, isNull, lte } from 'drizzle-orm';
 import type { Database, Executor } from '@/server/db/client';
 import { demoContent } from '@/server/db/schema';
 import { DEMO_CONTENT_RULES } from '@/config/business-rules';
@@ -35,6 +35,16 @@ export async function demoLifetimeDays(executor: Executor): Promise<number> {
     DEMO_CONTENT_RULES.maximumLifetimeDays,
     Math.max(DEMO_CONTENT_RULES.minimumLifetimeDays, configured),
   );
+}
+
+/** Whether a row is registered demo content that has not been removed. */
+export async function isDemoSubject(executor: Executor, subjectId: string): Promise<boolean> {
+  const [row] = await executor
+    .select({ id: demoContent.id })
+    .from(demoContent)
+    .where(and(eq(demoContent.subjectId, subjectId), isNull(demoContent.removedAt)))
+    .limit(1);
+  return Boolean(row);
 }
 
 /** Registers a row as demo content. Called wherever demo data is created. */

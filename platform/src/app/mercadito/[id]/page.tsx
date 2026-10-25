@@ -21,6 +21,10 @@ import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { closeListingAction, featureListingAction, reportListingAction, reserveListingAction } from '../actions';
 import { loginHref } from '@/server/auth/return-path';
+import { JsonLd } from '@/ui/site/json-ld';
+import { listingData } from '@/ui/site/structured-data';
+import { isDemoSubject } from '@/server/domains/platform/demo';
+import { siteUrl } from '@/server/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,9 +65,10 @@ export default async function ListingPage({ params, searchParams }: Params) {
   const listing = await visibleListing(id, locale, userId);
   if (!listing) notFound();
 
-  const [shield, similar] = await Promise.all([
+  const [shield, similar, demo] = await Promise.all([
     buildTrustShield(db(), listing.seller.userId),
     similarListings(db(), { listingId: listing.id, category: listing.category, locale }),
+    isDemoSubject(db(), listing.id),
   ]);
   const own = userId === listing.seller.userId;
   // What featuring costs, and whether the seller can pay: only the seller sees it.
@@ -73,9 +78,11 @@ export default async function ListingPage({ params, searchParams }: Params) {
       )
     : null;
   const listingUrl = `${serverEnv().APP_URL.replace(/\/$/, '')}/mercadito/${listing.id}`;
+  const structured = listingData(listing, { url: listingUrl, base: siteUrl(), category: t(`mercadito.category.${listing.category}` as MessageKey), demo });
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="mercadito" tone="mercadito">
+      {structured ? <JsonLd data={structured} /> : null}
       <div className="wrap">
         <p style={{ marginTop: 18 }}>
           <Link href="/mercadito">← {t('mercadito.listing.back')}</Link>

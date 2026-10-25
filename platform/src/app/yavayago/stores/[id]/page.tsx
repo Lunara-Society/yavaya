@@ -15,6 +15,11 @@ import { placeOrderAction } from '../../actions';
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { serverEnv } from '@/config/env';
 import { mapLabels } from '../../labels';
+import { JsonLd } from '@/ui/site/json-ld';
+import { storeData } from '@/ui/site/structured-data';
+import { countryOf } from '@/server/domains/geography/service';
+import { isDemoSubject } from '@/server/domains/platform/demo';
+import { siteUrl } from '@/server/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,12 +39,14 @@ export default async function StorePage({ params, searchParams }: { params: Prom
   const { c, t, language, theme, member, userId } = await siteContext();
   const store = await getStore(db(), id, userId);
   if (!store) notFound();
-  const items = await storeMenu(db(), store.id);
+  const [items, country, demo] = await Promise.all([storeMenu(db(), store.id), countryOf(db(), store.locationId), isDemoSubject(db(), store.id)]);
+  const structured = storeData(store, { url: `${siteUrl()}/yavayago/stores/${store.id}`, base: siteUrl(), country, demo });
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const own = store.ownerUserId === userId;
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
+      {structured ? <JsonLd data={structured} /> : null}
       <div className="wrap go-page">
         <p>
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>

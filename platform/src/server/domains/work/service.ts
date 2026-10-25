@@ -766,7 +766,7 @@ export type ApplicationView = {
 
 export async function getPost(executor: Executor, params: { postId: string; viewerId: string | null; viewerIsModerator: boolean; locale: string }) {
   const [row] = await executor
-    .select({ ...cardColumns, employerUserId: workPosts.employerUserId, requirements: workPosts.requirements, whatsappE164: workPosts.whatsappE164, employerYay: users.yayId })
+    .select({ ...cardColumns, employerUserId: workPosts.employerUserId, requirements: workPosts.requirements, whatsappE164: workPosts.whatsappE164, employerYay: users.yayId, locationId: workPosts.locationId })
     .from(workPosts)
     .innerJoin(locations, eq(locations.id, workPosts.locationId))
     .innerJoin(users, eq(users.id, workPosts.employerUserId))
@@ -803,7 +803,7 @@ export async function getPost(executor: Executor, params: { postId: string; view
         .limit(1)
     : [];
   return {
-    post: { ...toCard(row as CardRow, params.locale), requirements: row.requirements, employerYayId: formatYayId(row.employerYay) },
+    post: { ...toCard(row as CardRow, params.locale), requirements: row.requirements, employerYayId: formatYayId(row.employerYay), locationId: row.locationId },
     employerReputation: await getScore(executor, row.employerUserId),
     isEmployer,
     applications,

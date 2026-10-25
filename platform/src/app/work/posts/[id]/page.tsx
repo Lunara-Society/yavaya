@@ -17,6 +17,11 @@ import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
 import { serverEnv } from '@/config/env';
 import { applicationStepAction, applyAction, closePostAction, featurePostAction, reportWorkAction } from '../../actions';
 import { loginHref } from '@/server/auth/return-path';
+import { JsonLd } from '@/ui/site/json-ld';
+import { jobPostingData } from '@/ui/site/structured-data';
+import { countryOf } from '@/server/domains/geography/service';
+import { isDemoSubject } from '@/server/domains/platform/demo';
+import { siteUrl } from '@/server/seo';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,9 +54,12 @@ export default async function WorkPostPage({ params, searchParams }: Params) {
         )
       : null;
   const limits = { min: WORK_RULES.messageMinLength, max: WORK_RULES.messageMaxLength, limit: WORK_RULES.maxOpenApplicationsPerCandidate };
+  const [country, demo] = await Promise.all([countryOf(db(), post.locationId), isDemoSubject(db(), post.id)]);
+  const structured = jobPostingData(post, { url: `${siteUrl()}${page}`, country, demo });
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="work" tone="work">
+      {structured ? <JsonLd data={structured} /> : null}
       <div className="wrap cm-column" style={{ padding: '28px var(--gutter) 56px' }}>
         <p>
           <Link href={isEmployer ? '/work/mine' : '/work'}>← {t('work.back')}</Link>

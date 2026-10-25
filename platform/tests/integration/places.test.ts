@@ -1,5 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
 import { activityEvents, locations, users } from '@/server/db/schema';
 import { foldText, nearestPlace, placeByCode, placeCountries, searchPlaces, sizeTier } from '@/server/domains/geography/places';
@@ -131,5 +131,25 @@ describe('live activity from Community', () => {
     const feed = await recentActivity(db(), { locationCode: place!.code });
     expect(feed).toHaveLength(1);
     expect(feed[0]!.params.place).toBeTruthy();
+  });
+});
+
+describe('the country a place is in', () => {
+  it('is read from the tree, for every kind of place', async () => {
+    const { countryOf } = await import('@/server/domains/geography/service');
+    // Places of every level below country, spread across countries, against the country found by walking up the parents.
+    const sample = (await db().execute(sql`
+      select l.id, (
+        with recursive up as (
+          select p.id, p.parent_id, p.level, p.iso_code from locations p where p.id = l.id
+          union all
+          select p.id, p.parent_id, p.level, p.iso_code from locations p join up on p.id = up.parent_id
+        ) select iso_code from up where level = 'country' limit 1
+      ) as expected
+      from locations l where l.level not in ('region', 'country')
+      order by md5(l.code) limit 60`)) as unknown as Array<{ id: string; expected: string | null }>;
+    expect(sample.length).toBeGreaterThan(10);
+    expect(new Set(sample.map((row) => row.expected)).size).toBeGreaterThan(1);
+    for (const row of sample) expect(await countryOf(db(), row.id)).toBe(row.expected);
   });
 });

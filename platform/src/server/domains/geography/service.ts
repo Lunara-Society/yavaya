@@ -80,6 +80,26 @@ export async function getById(
   return row ? toLocalized(row, options.locale ?? 'es') : null;
 }
 
+/**
+ * The country (ISO 3166-1 alpha-2) a place lies in, read from the tree — the
+ * place itself or the country among its ancestors — never from a name. Null
+ * for a place above country level or a country without a code.
+ */
+export async function countryOf(executor: Executor, locationId: string): Promise<string | null> {
+  // Raw SQL with both sides aliased. Written as a subquery with column
+  // helpers in a query without a join, Drizzle leaves the place's columns
+  // unqualified ("code", "path"), so inside the subquery they named the
+  // country row's own columns and every place matched whichever country was
+  // read first.
+  const rows = (await executor.execute(sql`
+    select c.iso_code from locations l
+    join locations c on c.level = 'country' and (c.code = l.code or c.code = any(l.path))
+    where l.id = ${locationId}
+    limit 1`)) as unknown as Array<{ iso_code: string | null }>;
+  const iso = rows[0]?.iso_code;
+  return iso && /^[A-Z]{2}$/.test(iso) ? iso : null;
+}
+
 /** Root-to-node breadcrumb, e.g. Central America → Guatemala → Guatemala City. */
 export async function ancestorsOf(
   executor: Executor,
