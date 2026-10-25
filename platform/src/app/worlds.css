@@ -488,6 +488,39 @@ body:has(.site[data-tone="animals"]) { background: #050904; }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 21h19'/%3E%3Cpath d='M5 21V4.2C5 3.5 5.5 3 6.2 3h11.6c.7 0 1.2.5 1.2 1.2V21'/%3E%3Cpath d='M5 21V6l7.5 1.8V21'/%3E%3Ccircle cx='10.6' cy='13.4' r='.7' fill='black'/%3E%3Cpath d='M15 9.5l2.4-1.2M15.6 13h2.6M15 16.5l2.4 1.2'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/* ── Painted, not only lit ───────────────────────────────────────────
+ * Colour and black only read as a pair when the colour holds ground of its
+ * own: a black page with a few words lit in green reads as one more dark
+ * theme. So each barrio's colour is painted where it means something. The
+ * ribbon under the header is its fascia board, and every door that asks
+ * you to do something (a members-only gate, an empty list with its first
+ * step) is painted the way its buttons are. The button tokens swap between
+ * themes, so this is the colour with black ink by night and black with the
+ * colour by day, with no rule per theme, and the ink is the buttons' own,
+ * which the contrast test already checks against every stop.
+ *
+ * Only doors with a button are painted: an operator's empty queue painted
+ * bright would shout "nothing here". A browser without :has() drops these
+ * rules together and keeps the plain door, never ink on an unpainted panel.
+ */
+.site[data-tone] :is(.ribbon, :is(.cm-gate, .sc-empty, .mk-empty, .go-empty):has(.btn)) {
+  /* On the paint the ink is the accent, so a focus ring (globals.css draws
+     it in the accent) is ink on the colour, never the colour on itself. */
+  --accent: var(--btn-ink); --focus: var(--btn-ink);
+  border: 0; color: var(--btn-ink);
+  background: linear-gradient(180deg, var(--btn-hi), var(--btn-mid) 50%, var(--btn-lo));
+}
+/* The fascia is painted, not gilded: the site's gold current stops here. */
+.site[data-tone] .ribbon { animation: none; }
+.site[data-tone] .ribbon :is(strong, span, a) { color: var(--btn-ink); }
+.site[data-tone] .ribbon a { text-decoration: underline; text-underline-offset: 3px; }
+.site[data-tone] :is(.cm-gate, .sc-empty, .mk-empty, .go-empty):has(.btn) { box-shadow: 0 18px 44px var(--btn-glow); }
+.site[data-tone] :is(.cm-gate, .sc-empty, .mk-empty, .go-empty):has(.btn) :is(p, h2, h3, strong, span, a):not(.btn, .btn *) { color: var(--btn-ink); }
+.site[data-tone] :is(.sc-empty, .mk-empty, .go-empty):has(.btn)::before { background: var(--btn-ink); }
+/* Its buttons turn over: black on the colour by night, the colour on black by day. */
+.site[data-tone] :is(.cm-gate, .sc-empty, .mk-empty, .go-empty):has(.btn) .btn { background: var(--btn-ink); color: var(--btn-mid); border: 2px solid var(--btn-ink); box-shadow: none; text-shadow: none; }
+.site[data-tone] :is(.cm-gate, .sc-empty, .mk-empty, .go-empty):has(.btn) .btn-line { background: none; color: var(--btn-ink); }
+
 /* "How it works": a way onward, not a stray line of text at the foot of the page. */
 .site[data-tone] main p.center.mt > a[href$="/about"] {
   display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 20px; border-radius: 999px;

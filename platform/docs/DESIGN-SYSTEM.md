@@ -35,7 +35,14 @@ header and footer included, into its own world, in both themes (table
 below). Since 24 October 2026 six of them are **their colour and black**
 (owner's direction): by night a black street lit by the barrio's colour,
 buttons struck in that colour with black ink; by day white paper, black ink,
-and black buttons that write in the colour. **Santuario is the exception** —
+and black buttons that write in the colour. The colour is painted, not only
+lit, because a black page with a few words lit in green reads as one more
+dark theme: the ribbon under the header is the barrio's fascia board, and
+every door that asks you to do something (a members-only gate, an empty list
+with its first step) is painted the way its buttons are, so the colour with
+black ink by night and black lettered in the colour by day. A door with
+nothing to do, such as an operator's empty queue, stays plain (worlds.css,
+"Painted, not only lit"). **Santuario is the exception** —
 a white chapel by candlelight, ivory and soft gold, in both themes; its pages
 always render in the light theme (`isCandlelit` in `config/preferences.ts`),
 so every light-theme rule applies there. Gold otherwise stays only where it
@@ -124,7 +131,10 @@ shape (`worlds.css`).
 Each barrio's own rules live in `app/<district>/barrio.css`, loaded by that
 district's layout, so a page only downloads its own barrio. Every rule is
 scoped to `.site[data-tone="<district>"]` as well: a stylesheet one route
-loaded stays in the page when the visit moves on.
+loaded stays in the page when the visit moves on. A district page's own
+classes can move there too, out of the stylesheet every page downloads, as
+Mercadito's market stall has; they keep the cascade layer they were written
+in, so nothing else about them changes.
 
 **The home page's districts are seven windows.** Each card in the gallery
 wears its district's world: its colours and pattern, light rising from one
