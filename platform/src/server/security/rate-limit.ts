@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { rateLimitCounters } from '@/server/db/schema';
-import { SAFE_SPACE_RULES } from '@/config/business-rules';
+import { MEDIA_RULES, SAFE_SPACE_RULES } from '@/config/business-rules';
 
 /**
  * Server-side rate limiting.
@@ -45,6 +45,8 @@ export const RATE_LIMITS = {
    */
   phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
+  /** Photos brought in from a link, per member: each is a download the server makes for them. */
+  imageLink: { bucket: 'image_link', limit: MEDIA_RULES.linksPerHour, windowSeconds: 60 * 60 },
   /**
    * Conversations with Roxi a member may start in a day. Each one costs real
    * money (voice and the model, billed by ElevenLabs), so this is a cost

@@ -266,6 +266,14 @@ export const MEDIA_RULES = {
   maxDimension: 1600,
   webpQuality: 80,
   uploadsPerHour: 60,
+  /**
+   * A photo brought in from a link: how long the other site has to answer,
+   * how many redirects are followed, and how many links a member may bring
+   * in an hour (each one is a download the server makes on their behalf).
+   */
+  linkTimeoutSeconds: 10,
+  linkMaxRedirects: 3,
+  linksPerHour: 30,
 } as const;
 
 /**

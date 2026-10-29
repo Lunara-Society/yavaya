@@ -219,6 +219,38 @@ Cloudflare-in-front-of-a-platform-edge chain is covered by tests rather than
 left to inspection. Neither setting protects an origin that remains reachable
 without passing through the proxy.
 
+### Photos from a link
+
+The photo fields (Mercadito, lost and found animals, adoption listings, a
+YavayaGo store and its menu) accept a pasted link as well as a file. The
+server downloads it (`POST /api/media/link`), because the page may not: the
+Content-Security-Policy allows no other origin. That makes it a request any
+member can aim, so it is fenced as one (`security/outbound.ts`,
+`domains/media/link.ts`):
+
+- **Only public addresses.** Every address a name resolves to must be public
+  unicast — no loopback, private ranges, carrier NAT, link-local (where cloud
+  metadata lives), Railway's private IPv6 network, multicast, reserved or
+  documentation ranges, and no IPv4 hidden inside IPv6 (mapped, NAT64, 6to4,
+  Teredo). The check runs inside the connection's own DNS lookup, so a name
+  that resolves differently on the second ask gains nothing; a literal IP is
+  checked before connecting, after the URL parser has normalised forms like
+  `0x7f.1` or `2130706433`.
+- **Only http and https, on their own ports,** with no credentials in the link.
+- **At most `MEDIA_RULES.linkMaxRedirects` redirects,** each checked like the
+  first link, on a fresh connection, all within `linkTimeoutSeconds`.
+- **At most `maxUploadBytes`,** refused on the declared size or cut off while
+  streaming.
+- **Images only:** the first bytes must be JPEG, PNG or WebP and the decoder
+  must read it within the pixel limit. The bytes go back with `nosniff`, a
+  sandboxing CSP and `no-store`, and the member's form then uploads them
+  through the ordinary pipeline, which re-encodes everything.
+- **Signed-in, active members only,** same-origin only, and
+  `RATE_LIMITS.imageLink` per member. Which rule refused a link is not said.
+  The link is neither stored nor logged.
+
+Driver photos and documents do not take links: those must be the driver's own.
+
 ## Abuse resistance
 
 Rate limits are server-side counters keyed by an opaque subject, so a client

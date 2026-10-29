@@ -19,6 +19,8 @@ import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, st
 import { mapLabels } from '../labels';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
+import { ImageLink } from '@/ui/components/image-link';
+import { imageLinkLabels } from '@/ui/components/image-link-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -185,6 +187,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
         <input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" />
         <small className="hint muted">{t('go.form.photo_hint', { maxMegabytes: MEDIA_RULES.maxUploadBytes / 1024 / 1024 })}</small>
       </label>
+      <ImageLink labels={imageLinkLabels(t)} />
       <button className="btn btn-gold" type="submit">
         {store ? t('go.form.save') : t('go.form.apply')}
       </button>
@@ -368,6 +371,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
                   <span>{t('go.menu.photo')}</span>
                   <input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" />
                 </label>
+                <ImageLink labels={imageLinkLabels(t)} />
                 <button className="btn btn-gold" type="submit">
                   {t('go.menu.add')}
                 </button>

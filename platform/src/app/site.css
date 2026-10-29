@@ -564,6 +564,13 @@ td strong { color: var(--text); }
 .mk-photos figure { position: relative; margin: 0; }
 .mk-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; }
 .mk-photos button { position: absolute; top: 6px; right: 6px; font-size: 0.75rem; padding: 4px 8px; border-radius: 8px; background: rgba(0,0,0,.7); color: #fff; border: 0; }
+/* A photo from a link (ui/components/image-link.tsx): one line, the field taking the room. */
+.image-link { display: grid; gap: 6px; }
+.image-link > label { font-weight: 700; }
+.image-link .hint { font-weight: 400; font-size: 0.86rem; color: var(--text-3); margin: 0; }
+.image-link-row { display: flex; gap: 8px; }
+.image-link-row input { flex: 1; min-width: 0; }
+.image-link-row .btn { flex: none; }
 .mk-error { padding: 12px 16px; border-radius: 12px; border: 1px solid #d64545; background: color-mix(in srgb, #d64545 14%, transparent); }
 .mk-queue { display: grid; gap: 16px; margin-top: 22px; }
 .mk-case { display: grid; grid-template-columns: 120px 1fr; gap: 16px; }

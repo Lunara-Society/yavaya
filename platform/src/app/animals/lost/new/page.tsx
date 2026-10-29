@@ -12,6 +12,8 @@ import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
 import { KeepTyped } from '@/ui/components/keep-typed';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { ImageLink } from '@/ui/components/image-link';
+import { imageLinkLabels } from '@/ui/components/image-link-labels';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -82,6 +84,7 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
             {t('animals.form.photos', { min: ANIMALS_RULES.lostMinPhotos, max: ANIMALS_RULES.lostMaxPhotos })}
             <input name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple required />
           </label>
+          <ImageLink labels={imageLinkLabels(t)} max={ANIMALS_RULES.lostMaxPhotos} />
           <p className="an-warning">{t('animals.lost.ransom_warning')}</p>
           <button className="btn btn-gold" type="submit">
             {t('animals.lost.submit')}

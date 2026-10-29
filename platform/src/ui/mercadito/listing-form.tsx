@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PlacePicker, type PlacePickerLabels } from '@/ui/components/place-picker';
+import { ImageLink, type ImageLinkLabels } from '@/ui/components/image-link';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
 
@@ -128,6 +129,7 @@ export function ListingForm({
   categories,
   conditions,
   placeLabels,
+  linkLabels,
   initial,
   maxPhotos,
   prefillNotice,
@@ -139,6 +141,7 @@ export function ListingForm({
   categories: Array<{ value: string; label: string }>;
   conditions: Array<{ value: string; label: string }>;
   placeLabels: PlacePickerLabels;
+  linkLabels: ImageLinkLabels;
   initial?: {
     title: string;
     description: string;
@@ -283,15 +286,18 @@ export function ListingForm({
           </div>
         ) : null}
         {photos.length < maxPhotos ? (
-          <input
-            ref={fileInput}
-            type="file"
-            name="photos"
-            accept="image/*"
-            multiple
-            disabled={busy}
-            onChange={(event) => addFiles(event.currentTarget.files)}
-          />
+          <>
+            <input
+              ref={fileInput}
+              type="file"
+              name="photos"
+              accept="image/*"
+              multiple
+              disabled={busy}
+              onChange={(event) => addFiles(event.currentTarget.files)}
+            />
+            {busy ? null : <ImageLink labels={linkLabels} />}
+          </>
         ) : null}
       </fieldset>
 

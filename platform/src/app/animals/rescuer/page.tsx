@@ -13,6 +13,8 @@ import { rescuerAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { ImageLink } from '@/ui/components/image-link';
+import { imageLinkLabels } from '@/ui/components/image-link-labels';
 
 export const dynamic = 'force-dynamic';
 
@@ -159,6 +161,7 @@ export default async function RescuerPage({ searchParams }: { searchParams: Prom
                   {t('animals.form.photos', { min: ANIMALS_RULES.minPhotos, max: ANIMALS_RULES.maxPhotos })}
                   <input name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple required />
                 </label>
+                <ImageLink labels={imageLinkLabels(t)} max={ANIMALS_RULES.maxPhotos} />
                 <button className="btn btn-gold" type="submit">
                   {t('animals.rescuer.publish_submit')}
                 </button>

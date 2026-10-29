@@ -921,6 +921,7 @@ export const siteEs = {
             'Los **códigos de verificación**, solo como resumen, y solo hasta que vencen.',
             'Tu saldo de **tokens** y tu **reputación**, con el historial de cada movimiento.',
             'En tu dispositivo, no en Yavaya: al enviar una solicitud, una publicación o un aviso, tu navegador guarda en esa pestaña una copia de lo que escribiste, para devolvértelo si el formulario vuelve con un error. Se borra la próxima vez que abres el formulario o al cerrar la pestaña, y esa copia nunca sale de tu dispositivo.',
+            'Si agregas una foto con un enlace, el servidor de Yavaya la descarga de esa dirección por ti: el sitio de origen ve que la pidió Yavaya, no tú. El enlace no se guarda.',
           ],
         },
         {
