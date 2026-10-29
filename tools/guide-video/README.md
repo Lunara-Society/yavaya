@@ -43,11 +43,20 @@ first word. Served at `/video/<key>-v1-916.mp4` (see `SOCIAL_KEYS`).
 | `captions_v.py` | Burned-in captions (social video plays muted): short phrases, the spoken word in gold, from the narration's word timings. |
 | `render_v.py`, `teaser_audio.py`, `assemble_v.py`, `pipeline_v.sh` | Picture, teaser sound, final cuts. |
 
-## Version 2 — planned for late October 2026
+## Version 2 — planned, filming on hold
 
 The owner's decision on 18 October: re-make the guide with **Higgsfield and
 Seedance 2.5**, a real filmed-looking production of the same script (probably
-with more added), instead of stills with camera moves. When it ships:
+with more added), instead of stills with camera moves. On 29 October filming
+was put on hold until the Higgsfield account is topped up; everything that
+costs nothing is ready in `v2/`:
+
+| File | What it is |
+| --- | --- |
+| `v2/PLAN.md` | Decisions, the v1 narration checked against the site, what must change (all screens, Roxi), the new intro and Roxi chapter, the credit estimate, and the steps for the day credits arrive. |
+| `v2/pilot_shots.json` | Seedance motion briefs: the pilot (intro and Mercadito, animating the v1 stills) and the Roxi chapter. |
+
+When it ships:
 
 - Raise `GUIDE_VERSION` in `platform/src/config/guide.ts`; every file name
   changes, so cached v1 files are never shown in place of v2.

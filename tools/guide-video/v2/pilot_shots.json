@@ -1,0 +1,109 @@
+{
+  "about": "Motion briefs for guide v2 (see PLAN.md). 'pilot' animates the v1 stills of the intro and Mercadito: each first frame is the chosen take of that shot id in shots.json, sent with 'suffix'. 'roxi' has no v1 stills, so those are text-to-video, sent with 'suffix_text_to_video'; their 9:16 crops are computed with crops.py on a frame of the finished clip. The Roxi panel itself is shown with real screen recordings, never generated.",
+  "settings": {
+    "model": "Seedance 2.5",
+    "mode": "image-to-video (pilot), text-to-video (roxi)",
+    "aspect_ratio": "16:9",
+    "duration_seconds": 5,
+    "generate_audio": false,
+    "resolution": "720p; 1080p once the test shot gives its price"
+  },
+  "suffix": "Keep the people, faces, clothes and composition exactly as in the first frame; the main subject stays in the centre third; natural, subtle motion; photorealistic. No text, no captions, no logos; any phone or laptop screen stays a soft unreadable glow.",
+  "suffix_text_to_video": "Photorealistic cinematic film, anamorphic 35mm lens, warm natural light, vibrant yet tasteful Central American colours, authentic Latin American people with natural expressions and realistic hands; the main subject stays in the centre third; natural, subtle motion. No text, no captions, no logos; any phone screen stays a soft unreadable glow.",
+  "pilot": [
+    {
+      "id": "i1",
+      "brief": "Slow, steady drone push forward over the rooftops towards the volcano at dawn; the mist drifts, a few birds cross the golden sky, the sun rises a little."
+    },
+    {
+      "id": "i2",
+      "brief": "Locked-off close-up: steam curls up from the clay cup, the hand beside it barely moves; a very slow rack focus from the cup to the street behind."
+    },
+    {
+      "id": "i3",
+      "brief": "Locked-off wide shot: the vendor sets one more mango on the pile, the woman lifts the shop shutter, a motorcycle passes slowly in the background, two neighbours wave."
+    },
+    {
+      "id": "i4",
+      "brief": "Slow push-in: she laughs at her phone, then looks up towards the rooftops; her hair moves in the light breeze, the plants sway."
+    },
+    {
+      "id": "i5",
+      "brief": "Slow tilt up following the seven paths of light as they rise and meet in the sky; the glowing particles drift; the city lights twinkle."
+    },
+    {
+      "id": "i6",
+      "brief": "Slow lateral dolly along the street: the children run after the happy dog, the grandmother waves from her doorway, the couple walks on with their groceries, the paper flags flutter."
+    },
+    {
+      "id": "i7",
+      "brief": "Slow push-in on the circle: the hands settle together and hold, the sunset light flares softly between the fingers, the plaza behind stays out of focus."
+    },
+    {
+      "id": "m1",
+      "brief": "Slow arc around him: he crouches lower, steadies the phone and takes the photo of the blue bicycle, then smiles at the screen."
+    },
+    {
+      "id": "m2",
+      "brief": "Slow eye-level dolly forward through the market: sellers arrange their goods and chat with buyers, the awnings stir, light shafts shimmer in the haze."
+    },
+    {
+      "id": "m3",
+      "brief": "Locked-off top-down shot, with only the slightest slow drift: warm light moves across the table as a cloud passes; the items stay exactly where they are."
+    },
+    {
+      "id": "m4",
+      "brief": "Locked-off medium shot: he passes the bicycle's handlebars to her, they shake hands and both smile; passers-by walk slowly behind them."
+    },
+    {
+      "id": "m5",
+      "brief": "Slow push-in: she finishes typing her message, sends it and smiles; the morning light shifts softly on the counter."
+    },
+    {
+      "id": "m6",
+      "brief": "Slow lateral move: the owner places the keys in the young man's hand, the couple laughs, the palm fronds sway."
+    },
+    {
+      "id": "m7",
+      "brief": "Locked-off: she steps back half a pace, frames the dress and takes the photo; the curtain moves in the breeze, the dress turns slightly on its hanger."
+    },
+    {
+      "id": "m8",
+      "brief": "Slow crane down from the mango tree's leaves to the tiled entrance of the house; leaves move gently, sunlight dapples the garden."
+    },
+    {
+      "id": "m9",
+      "brief": "Locked-off, shallow focus: the buyer types on the laptop, nods and smiles at the seller; steam rises from the coffee cups."
+    },
+    {
+      "id": "m10",
+      "brief": "Locked-off: the phone's soft glow lights her delighted face, she curls up on the sofa, the cat beside her stretches lazily; the lamp light stays warm."
+    }
+  ],
+  "roxi": [
+    {
+      "id": "r1",
+      "brief": "A young Latino man in his twenties sits on his bed in a colourful room and photographs an old acoustic guitar lying on the blanket with his phone, then looks at the screen, pleased. Slow push-in, warm afternoon light."
+    },
+    {
+      "id": "r2",
+      "brief": "A smiling Latina grandmother in her seventies sits in a plant-filled doorway and speaks to her phone held in front of her, nodding as she listens; locked-off medium shot, soft morning light."
+    },
+    {
+      "id": "r3",
+      "brief": "A street fruit vendor in her forties pauses between customers at her colourful stall and dictates into her phone held near her mouth, then smiles; locked-off, shallow focus, busy market behind her."
+    },
+    {
+      "id": "r4",
+      "brief": "Close-up of hands typing on a phone on a wooden table beside a cup of coffee; the thumbs tap, pause, tap again; very slow push-in, warm light."
+    },
+    {
+      "id": "r5",
+      "brief": "At night in a cosy kitchen, a woman in her thirties leans relaxed against the counter, reads her phone and smiles calmly; a pot simmers on the stove; locked-off, warm lamp light."
+    },
+    {
+      "id": "r6",
+      "brief": "A young man waits at a colourful bus stop at golden hour, glances at his phone, nods to himself and puts it in his pocket as the bus arrives; slow lateral move."
+    }
+  ]
+}
