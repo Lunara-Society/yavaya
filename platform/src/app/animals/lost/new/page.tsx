@@ -10,6 +10,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { KeepTyped } from '@/ui/components/keep-typed';
 import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
@@ -38,6 +39,7 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
         ) : null}
         <form action="/api/animals/lost" method="post" encType="multipart/form-data" className="mk-form" style={{ marginTop: 18 }}>
           <RoxiPrefill form={kind === 'lost' ? 'lost_pet' : 'found_pet'} notice={t('roxi.prefill.notice')} />
+          <KeepTyped form={kind === 'lost' ? 'lost_pet' : 'found_pet'} />
           <input type="hidden" name="kind" value={kind} />
           <label>
             {t('animals.form.species')}

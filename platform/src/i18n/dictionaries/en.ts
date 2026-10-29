@@ -305,6 +305,7 @@ export const en: Dictionary = {
   'place.picker.required': 'Choose a place from the list.',
   'place.picker.clear': 'Remove place',
   'place.picker.suggested': 'Main cities',
+  'place.picker.searching': 'Searching…',
   'place.picker.any': 'Central America and Mexico',
   'place.kind.city_big': 'Large city',
   'place.kind.city_medium': 'Medium city',

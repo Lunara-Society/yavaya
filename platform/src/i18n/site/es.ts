@@ -920,6 +920,7 @@ export const siteEs = {
             'Tus **sesiones**: cuándo entraste, el tipo de navegador y un resumen cifrado de la red. La cookie de sesión identifica tu sesión y nada más.',
             'Los **códigos de verificación**, solo como resumen, y solo hasta que vencen.',
             'Tu saldo de **tokens** y tu **reputación**, con el historial de cada movimiento.',
+            'En tu dispositivo, no en Yavaya: al enviar una solicitud, una publicación o un aviso, tu navegador guarda en esa pestaña una copia de lo que escribiste, para devolvértelo si el formulario vuelve con un error. Se borra la próxima vez que abres el formulario o al cerrar la pestaña, y esa copia nunca sale de tu dispositivo.',
           ],
         },
         {

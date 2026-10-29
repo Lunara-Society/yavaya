@@ -9,6 +9,7 @@ export function placePickerLabels(t: Translator, options: { any?: boolean } = {}
     required: t('place.picker.required'),
     clear: t('place.picker.clear'),
     suggested: t('place.picker.suggested'),
+    searching: t('place.picker.searching'),
     ...(options.any ? { any: t('place.picker.any') } : {}),
   };
 }

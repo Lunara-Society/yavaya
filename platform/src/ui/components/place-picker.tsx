@@ -32,9 +32,23 @@ export type PlacePickerLabels = {
   required: string;
   clear: string;
   suggested: string;
+  searching: string;
   /** Filters only: the choice that means "anywhere". */
   any?: string;
 };
+
+const RESTORE_EVENT = 'yavaya:place-restore';
+const pendingRestore = new WeakMap<HTMLInputElement, string>();
+
+/**
+ * Puts a saved place back into a picker by its hidden input (a form sent back
+ * with an error). Works whether or not the picker has hydrated yet: one that
+ * has hears the event, one that hasn't finds the value when it does.
+ */
+export function restorePlace(field: HTMLInputElement, saved: string) {
+  pendingRestore.set(field, saved);
+  field.dispatchEvent(new Event(RESTORE_EVENT));
+}
 
 export function PlacePicker({
   name,
@@ -70,15 +84,36 @@ export function PlacePicker({
   const [picked, setPicked] = useState<PickedPlace | null>(null);
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
-  const [results, setResults] = useState<PickedPlace[] | null>(null);
-  const [active, setActive] = useState(0);
+  // Search results with the query they answer: a reply to an earlier query is never offered for a later one.
+  const [found, setFound] = useState<{ query: string; places: PickedPlace[] } | null>(null);
+  const [active, setActive] = useState(-1);
+  // Enter pressed before the results for what was typed arrived: the best match is chosen when they do.
+  const enterWhenFound = useRef<string | null>(null);
   const settlements = value === 'id';
+
+  // What the form posts. It lives in state and is rendered as the hidden
+  // input's value, never written into the DOM by hand: React 19 re-applies a
+  // hidden input's defaultValue on every render, so a value set directly was
+  // wiped by the very re-render that showed the choice — the field read
+  // "Nandaime" and the form posted no place at all.
+  const [posted, setPosted] = useState(initial ?? '');
+  // A saved value from outside (the page, or a form sent back with an error) still to be shown by name.
+  const [lookup, setLookup] = useState(initial ?? '');
+  const [seenInitial, setSeenInitial] = useState(initial);
+  if (seenInitial !== initial) {
+    // The page brought a different saved value (a filter applied); it replaces whatever was here.
+    setSeenInitial(initial);
+    setPosted(initial ?? '');
+    setLookup(initial ?? '');
+    setPicked(null);
+    setText('');
+  }
 
   // Show the saved place by name.
   useEffect(() => {
-    if (!initial) return;
+    if (!lookup) return;
     const controller = new AbortController();
-    fetch(`/api/places?${value}=${encodeURIComponent(initial)}`, { signal: controller.signal })
+    fetch(`/api/places?${value}=${encodeURIComponent(lookup)}`, { signal: controller.signal })
       .then((response) => response.json())
       .then((data: { places: PickedPlace[] }) => {
         const place = data.places[0] ?? null;
@@ -92,12 +127,46 @@ export function PlacePicker({
     return () => controller.abort();
     // Only a new saved value warrants a new lookup, not a new callback identity.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initial, value]);
+  }, [lookup, value]);
+
+  // A place put back after the form came back with an error.
+  useEffect(() => {
+    const node = hidden.current;
+    if (!node) return;
+    const take = () => {
+      const saved = pendingRestore.get(node);
+      if (!saved) return;
+      pendingRestore.delete(node);
+      setPosted(saved);
+      setLookup(saved);
+      setPicked(null);
+      setText('');
+    };
+    take();
+    node.addEventListener(RESTORE_EVENT, take);
+    return () => node.removeEventListener(RESTORE_EVENT, take);
+  }, []);
+
+  const query = picked && text === picked.name ? '' : text.trim();
+  const results = found && found.query === query ? found.places : null;
+
+  const choose = (place: PickedPlace | null) => {
+    enterWhenFound.current = null;
+    setPicked(place);
+    setText(place?.name ?? '');
+    setOpen(false);
+    setLookup('');
+    setPosted(place ? place[value] : anyValue);
+    onChange?.(place);
+    if (autoSubmit) {
+      // After React has written the hidden value.
+      window.setTimeout(() => hidden.current?.form?.requestSubmit(), 0);
+    }
+  };
 
   // Search as the person types, a beat after they pause.
   useEffect(() => {
     if (!open) return;
-    const query = picked && text === picked.name ? '' : text.trim();
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       const params = new URLSearchParams({ q: query });
@@ -106,8 +175,11 @@ export function PlacePicker({
         .then((response) => response.json())
         .then((data: { places: PickedPlace[] }) => {
           // With nothing typed the suggestions are the big cities; forms take only towns and cities anyway.
-          setResults(data.places);
-          setActive(0);
+          setFound({ query, places: data.places });
+          // What was typed has its best match ready for Enter. Bare suggestions wait for an arrow key,
+          // so Enter in a field that already holds a choice never swaps it for the first big city.
+          setActive(query ? 0 : -1);
+          if (query && enterWhenFound.current === query && data.places[0]) choose(data.places[0]);
         })
         .catch(() => {});
     }, query ? 140 : 0);
@@ -115,31 +187,22 @@ export function PlacePicker({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [text, open, picked, settlements]);
+    // `choose` only sets state and calls the latest props; its new identity each render is no reason to search again.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, open, settlements]);
 
   // The field explains itself when a required place is missing.
   useEffect(() => {
     input.current?.setCustomValidity(required && !picked ? labels.required : '');
   }, [picked, required, labels.required]);
 
-  const choose = (place: PickedPlace | null) => {
-    setPicked(place);
-    setText(place?.name ?? '');
-    setOpen(false);
-    onChange?.(place);
-    if (hidden.current) hidden.current.value = place ? place[value] : anyValue;
-    if (autoSubmit) {
-      // After React has written the hidden value.
-      window.setTimeout(() => hidden.current?.form?.requestSubmit(), 0);
-    }
-  };
-
   const options: Array<PickedPlace | null> = [...(labels.any && !text.trim() ? [null] : []), ...(results ?? [])];
-  const showEmpty = open && results !== null && results.length === 0 && text.trim().length >= 2;
+  const searching = open && results === null;
+  const showEmpty = open && results !== null && results.length === 0 && query.length >= 2;
 
   return (
     <div className={`place-picker${open ? ' is-open' : ''}`}>
-      <input type="hidden" name={name} ref={hidden} defaultValue={initial ?? ''} />
+      <input type="hidden" name={name} ref={hidden} value={posted} />
       <div className="pp-field">
         <svg className="pp-pin" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="none" stroke="currentColor" strokeWidth="1.8" />
@@ -152,21 +215,24 @@ export function PlacePicker({
           aria-expanded={open}
           aria-controls={listId}
           aria-autocomplete="list"
+          aria-busy={searching}
           autoComplete="off"
           spellCheck={false}
           placeholder={picked ? picked.name : labels.any ?? labels.placeholder}
           value={text}
           disabled={disabled}
           onFocus={() => setOpen(true)}
+          // A field that already has focus opens again when clicked, to change the place.
+          onClick={() => setOpen(true)}
           onBlur={() => window.setTimeout(() => setOpen(false), 150)}
           onChange={(event) => {
             setText(event.currentTarget.value);
             setOpen(true);
-            if (picked) {
-              // Typing over a choice starts a new search; the old choice is gone until another is made.
-              setPicked(null);
-              if (hidden.current) hidden.current.value = '';
-            }
+            enterWhenFound.current = null;
+            // What is typed is not a choice: the old one is gone until another is made.
+            setLookup('');
+            setPosted('');
+            if (picked) setPicked(null);
           }}
           onKeyDown={(event) => {
             if (event.key === 'ArrowDown') {
@@ -176,9 +242,17 @@ export function PlacePicker({
             } else if (event.key === 'ArrowUp') {
               event.preventDefault();
               setActive((index) => Math.max(index - 1, 0));
-            } else if (event.key === 'Enter' && open && options.length > 0) {
-              event.preventDefault();
-              choose(options[active] ?? null);
+            } else if (event.key === 'Enter' && open) {
+              if (active >= 0 && active < options.length) {
+                event.preventDefault();
+                choose(options[active] ?? null);
+              } else if (query && searching) {
+                // Not a half-typed place sent with the form: the best match is chosen once it arrives.
+                event.preventDefault();
+                enterWhenFound.current = query;
+              } else {
+                setOpen(false);
+              }
             } else if (event.key === 'Escape') {
               setOpen(false);
             }
@@ -193,7 +267,7 @@ export function PlacePicker({
       </div>
       {open ? (
         <ul className="pp-list" id={listId} role="listbox">
-          {!text.trim() && results && results.length > 0 ? (
+          {!query && results && results.length > 0 ? (
             <li className="pp-head" role="presentation">
               {labels.suggested}
             </li>
@@ -204,7 +278,13 @@ export function PlacePicker({
               role="option"
               aria-selected={index === active}
               className={index === active ? 'is-active' : undefined}
-              onMouseDown={(event) => {
+              // The field keeps focus, and the list stays where it is, until the click lands.
+              // Choosing on mousedown removed the list from under the pointer, so the click went
+              // to whatever was there next: inside the <label> every form wraps a picker in, that
+              // focused the field again and reopened the list.
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={(event) => {
+                // Nor may the click itself reach that label, which would do the same.
                 event.preventDefault();
                 choose(place);
               }}
@@ -223,6 +303,7 @@ export function PlacePicker({
               )}
             </li>
           ))}
+          {searching ? <li className="pp-empty">{labels.searching}</li> : null}
           {showEmpty ? <li className="pp-empty">{labels.empty}</li> : null}
         </ul>
       ) : null}

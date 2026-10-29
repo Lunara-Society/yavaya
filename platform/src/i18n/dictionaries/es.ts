@@ -322,6 +322,7 @@ export const es = {
   'place.picker.required': 'Elige un lugar de la lista.',
   'place.picker.clear': 'Quitar lugar',
   'place.picker.suggested': 'Ciudades principales',
+  'place.picker.searching': 'Buscando…',
   'place.picker.any': 'Centroamérica y México',
   'place.kind.city_big': 'Ciudad grande',
   'place.kind.city_medium': 'Ciudad mediana',

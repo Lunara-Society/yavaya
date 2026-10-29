@@ -907,6 +907,7 @@ export const siteEn: SiteContent = {
             'Your **sessions**: when you signed in, the kind of browser, and an encrypted network digest. The session cookie identifies your session and nothing else.',
             '**Verification codes**, only as digests, and only until they expire.',
             'Your **token** balance and **reputation**, with the history of every change.',
+            'On your device, not at Yavaya: when you send a request, a post or a notice, your browser keeps a copy of what you wrote in that tab, to give it back if the form returns with an error. It is erased the next time you open the form or when you close the tab, and that copy never leaves your device.',
           ],
         },
         {

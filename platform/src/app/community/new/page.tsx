@@ -11,6 +11,7 @@ import { createPostAction } from '../actions';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { KeepTyped } from '@/ui/components/keep-typed';
 import { signInPath } from '@/server/auth/sign-in-path';
 
 export const dynamic = 'force-dynamic';
@@ -47,6 +48,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
         {error ? <p className="mk-error">{t(error as MessageKey, LIMITS[error] ?? {})}</p> : null}
         <form action={createPostAction} className="mk-form" style={{ marginTop: 18 }}>
           <RoxiPrefill form={prayer ? 'prayer_request' : 'community_post'} notice={t('roxi.prefill.notice')} />
+          <KeepTyped form={prayer ? 'prayer_request' : 'community_post'} />
           {prayer ? (
             <input type="hidden" name="kind" value="prayer" />
           ) : (
@@ -74,8 +76,8 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
             <textarea name="body" required minLength={COMMUNITY_RULES.bodyMinLength} maxLength={COMMUNITY_RULES.bodyMaxLength} />
           </label>
           <label>
-            {t('community.form.location_optional')}
-            <PlacePicker name="locationId" labels={placePickerLabels(t)} />
+            {prayer ? t('community.form.location_optional') : t('community.form.location')}
+            <PlacePicker name="locationId" labels={placePickerLabels(t)} required={!prayer} />
           </label>
           <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontWeight: 600 }}>
             <input type="checkbox" name="anonymous" style={{ width: 'auto', marginTop: 4 }} />

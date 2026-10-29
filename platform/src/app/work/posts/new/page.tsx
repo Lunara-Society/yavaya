@@ -15,6 +15,7 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { KeepTyped } from '@/ui/components/keep-typed';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -98,6 +99,7 @@ export default async function NewPostPage({ searchParams }: { searchParams: Prom
         {error ? <p className="mk-error">{t(error as MessageKey, LIMITS)}</p> : null}
         <form action={publishPostAction} className="mk-form" style={{ marginTop: 18 }}>
           <RoxiPrefill form="job_post" notice={t('roxi.prefill.notice')} />
+          <KeepTyped form="job_post" />
           <input type="hidden" name="kind" value={kind} />
           {/* Names the post before it exists: a retried submission is one post, one charge. */}
           <input type="hidden" name="postId" value={randomUUID()} />
