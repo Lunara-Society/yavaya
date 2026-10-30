@@ -3,7 +3,7 @@ import { getTranslator } from '@/i18n/server';
 import { roxiAvailability, roxiMember } from '@/server/domains/roxi/service';
 import type { MessageKey } from '@/i18n';
 import { pendingWelcome } from '@/server/domains/roxi/welcome';
-import { roxiLabels, roxiPresenceLabels, roxiWelcomeLabels } from '@/ui/roxi/labels';
+import { roxiLabels, roxiPresenceLabels, roxiRefusals, roxiWelcomeLabels } from '@/ui/roxi/labels';
 import { json, member } from '../shared';
 
 export const dynamic = 'force-dynamic';
@@ -33,5 +33,5 @@ export async function GET() {
         labels: roxiWelcomeLabels(t),
       }
     : null;
-  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), presence: roxiPresenceLabels(t), welcome });
+  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), refusals: roxiRefusals(), presence: roxiPresenceLabels(t), welcome });
 }

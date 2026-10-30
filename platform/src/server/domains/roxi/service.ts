@@ -13,7 +13,7 @@ import { getScore } from '@/server/domains/reputation/service';
 import { listNotifications, unreadCount } from '@/server/domains/notifications/service';
 import { searchPlaces, placeById } from '@/server/domains/geography/places';
 import { subtreeIds } from '@/server/domains/geography/service';
-import { browseListings, getWhatsapp, openListingCount, pricingRules, sellerListings } from '@/server/domains/mercadito/service';
+import { browseListings, getWhatsapp, openListingCount, pricingRules, sellerListings, sellerStanding } from '@/server/domains/mercadito/service';
 import { LISTING_CATEGORIES, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { browseStores } from '@/server/domains/go/service';
 import { listPosts } from '@/server/domains/work/service';
@@ -220,7 +220,7 @@ export async function roxiSearch(
 /** The member's own standing, in a few lines Roxi can read out. */
 export async function roxiAccount(executor: Executor, params: { userId: string; locale: string; t: Translator }) {
   const { userId, locale, t } = params;
-  const [member, tokens, score, twoStep, unread, recent, open, pricing, listings, whatsapp] = await Promise.all([
+  const [member, tokens, score, twoStep, unread, recent, open, pricing, listings, whatsapp, standing] = await Promise.all([
     roxiMember(executor, userId, locale),
     getBalance(executor, userId),
     getScore(executor, userId),
@@ -231,7 +231,12 @@ export async function roxiAccount(executor: Executor, params: { userId: string; 
     pricingRules(executor),
     sellerListings(executor, userId, locale, { publicOnly: true }),
     getWhatsapp(executor, userId),
+    sellerStanding(executor, userId),
   ]);
+  // The new-account limit counts every listing the account ever created, whatever its state, so it can
+  // bind long before the free allowance does. Roxi is told the number the publish form will enforce.
+  const newSeller = standing.newSeller;
+  const newSellerLeft = newSeller.limited ? Math.max(0, newSeller.max - newSeller.used) : null;
   return {
     name: member?.firstName ?? '',
     yayId: member?.yayId ?? '',
@@ -245,6 +250,10 @@ export async function roxiAccount(executor: Executor, params: { userId: string; 
       openListings: open,
       freeLeft: Math.max(0, pricing.freeOpenListings - open),
       freeAllowance: pricing.freeOpenListings,
+      canPublishNow: standing.allowed,
+      // While the account is new this is the most it can still create, free or not; null once that window has passed.
+      newAccountListingsLeft: newSellerLeft,
+      newAccountLimit: newSeller.limited ? { max: newSeller.max, createdSoFar: newSeller.used, windowDays: newSeller.windowDays } : null,
       latest: listings.slice(0, 5).map((listing) => ({
         title: listing.title,
         price: formatPrice(listing.priceMinor, listing.currencyCode, locale),

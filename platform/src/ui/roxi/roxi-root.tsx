@@ -13,7 +13,7 @@ const RoxiPanel = dynamic(() => import('./roxi-panel'), { ssr: false });
 
 type Session =
   | { enabled: false }
-  | { enabled: true; locale: string; member: RoxiMember; labels: RoxiLabels; presence: RoxiPresenceLabels; welcome: RoxiWelcome | null };
+  | { enabled: true; locale: string; member: RoxiMember; labels: RoxiLabels; refusals: Record<string, string>; presence: RoxiPresenceLabels; welcome: RoxiWelcome | null };
 
 /**
  * Pages where Roxi is not offered, and where an open conversation ends:
@@ -79,6 +79,7 @@ export function RoxiRoot() {
           member={session.member}
           locale={session.locale}
           labels={session.labels}
+          refusals={session.refusals}
           openedBy={opening}
           onSettings={() => setSettings(true)}
           onClose={() => {

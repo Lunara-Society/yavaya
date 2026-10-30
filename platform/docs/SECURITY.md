@@ -150,7 +150,9 @@ new password signs out every device and emails a notice. A reset does **not**
 get past two-step sign-in: proving the mailbox is not proving the phone.
 
 Signed-in members change their password from Settings with the current one;
-other devices are signed out, this one stays. Settings also lists where the
+other devices are signed out, this one stays. Guesses at the current
+password are capped per account (`RATE_LIMITS.passwordChange`, 6 per 15
+minutes), so a stolen session cannot be used to test passwords. Settings also lists where the
 account is signed in, with "sign out on other devices".
 
 ## Email verification

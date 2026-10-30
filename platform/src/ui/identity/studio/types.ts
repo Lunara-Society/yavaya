@@ -4,6 +4,7 @@ import type { IdentityAsset } from '@/config/identity-asset-types';
 import type { ThemeAppearance } from '@/config/identity-themes';
 import type { CanvasAsset, CanvasLabels } from '../profile-canvas';
 import type { StudioLabels } from './labels';
+import type { ImageLinkLabels } from '@/ui/components/image-link';
 
 /** A design as the gallery shows it: the canvas's fields, its filters, and its words. */
 export type CatalogItem = CanvasAsset &
@@ -40,6 +41,8 @@ export type StudioProps = {
   canUpload: boolean;
   canPublish: boolean;
   labels: StudioLabels;
+  /** The photo-from-a-link field, as on Mercadito. */
+  linkLabels: ImageLinkLabels;
   limits: {
     headline: number;
     about: number;

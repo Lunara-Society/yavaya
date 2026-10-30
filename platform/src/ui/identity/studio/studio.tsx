@@ -14,6 +14,25 @@ type Notice = { kind: 'ok' | 'error' | 'conflict'; text: string } | null;
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
+/**
+ * The same profile, whatever order its keys were written in. A copy kept on
+ * this device was serialized by the browser and the server's by the server;
+ * comparing them as text found a "difference" in every profile, so the
+ * recovery prompt showed even with nothing to recover.
+ */
+function canonical(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value as Record<string, unknown>)
+        .sort()
+        .map((key) => [key, canonical((value as Record<string, unknown>)[key])]),
+    );
+  }
+  return value;
+}
+const sameProfile = (a: unknown, b: unknown) => same(canonical(a), canonical(b));
+
 /** A copy kept on this device must at least have the shape of a profile before it is offered back. */
 function looksLikeConfig(value: unknown): value is IdentityConfig {
   const v = value as IdentityConfig | null;
@@ -77,11 +96,17 @@ export function IdentityStudio(props: StudioProps) {
   useEffect(() => {
     try {
       const stored = JSON.parse(window.localStorage.getItem(props.storageKey) ?? 'null') as { config?: unknown } | null;
-      if (stored && looksLikeConfig(stored.config) && !same(stored.config, props.initial.draft)) setRecovery(stored.config);
+      if (!stored) return;
+      // Offered back only when it differs from what the server already holds, draft or published.
+      if (looksLikeConfig(stored.config) && !sameProfile(stored.config, props.initial.draft) && !sameProfile(stored.config, props.initial.published)) {
+        setRecovery(stored.config);
+      } else {
+        window.localStorage.removeItem(props.storageKey);
+      }
     } catch {
       // A private window or a full storage: there is simply nothing to recover.
     }
-  }, [props.storageKey, props.initial.draft]);
+  }, [props.storageKey, props.initial.draft, props.initial.published]);
 
   useEffect(() => {
     if (recovery) return;
@@ -100,8 +125,35 @@ export function IdentityStudio(props: StudioProps) {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => event.preventDefault();
     window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [dirty]);
+    // Links inside the site change page without unloading it, so the browser's own warning never comes:
+    // a member who tapped the menu lost their edits without a word. Ask first.
+    const leave = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = (event.target as Element | null)?.closest?.('a[href]');
+      if (!(link instanceof HTMLAnchorElement) || link.target === '_blank' || link.hasAttribute('download')) return;
+      const to = new URL(link.href, window.location.href);
+      if (to.origin !== window.location.origin || (to.pathname === window.location.pathname && to.search === window.location.search)) return;
+      if (!window.confirm(L.leaveWarning)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+    document.addEventListener('click', leave, true);
+    return () => {
+      window.removeEventListener('beforeunload', warn);
+      document.removeEventListener('click', leave, true);
+    };
+  }, [dirty, L.leaveWarning]);
+
+  /** Saved or published: what this device kept is no longer needed, and neither is the offer to restore it. */
+  const settled = () => {
+    setRecovery(null);
+    try {
+      window.localStorage.removeItem(props.storageKey);
+    } catch {
+      // nothing kept
+    }
+  };
 
   // --- Changing the draft ---------------------------------------------------------------------
   const set = (next: IdentityConfig) => {
@@ -127,6 +179,7 @@ export function IdentityStudio(props: StudioProps) {
       const result = await saveDraftAction(draft, saved.revision);
       if (result.ok) {
         setSaved({ config: draft, revision: result.revision, onServer: true });
+        settled();
         setNotice({ kind: 'ok', text: L.saved });
       } else failed(result);
     } catch {
@@ -144,6 +197,7 @@ export function IdentityStudio(props: StudioProps) {
       if (result.ok) {
         setSaved({ config: draft, revision: result.revision, onServer: false });
         setPublished({ config: draft, ever: true });
+        settled();
         setNotice({ kind: 'ok', text: L.published });
       } else failed(result);
     } catch {
@@ -167,6 +221,7 @@ export function IdentityStudio(props: StudioProps) {
           revision: result.revision,
           onServer: false,
         });
+        settled();
         setNotice({ kind: 'ok', text: L.discarded });
       } else failed(result);
     } catch {
@@ -367,7 +422,8 @@ export function IdentityStudio(props: StudioProps) {
           <button type="button" className="btn btn-line" onClick={save} disabled={!dirty || busy !== null} aria-busy={busy === 'save'}>
             {busy === 'save' ? L.saving : L.save}
           </button>
-          <button type="button" className="btn btn-gold" onClick={() => open('publish')} disabled={busy !== null || changes.length === 0}>
+          {/* The same action as the Publish panel's button: this one used to open the panel, and read as publishing. */}
+          <button type="button" className="btn btn-gold" onClick={publish} disabled={busy !== null || changes.length === 0 || !props.canPublish} aria-busy={busy === 'publish'}>
             {busy === 'publish' ? L.publishing : L.publish}
           </button>
           <details className="ids-menu">

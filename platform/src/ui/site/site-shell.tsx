@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SOCIAL } from '@/config/social';
 import type { ReactNode } from 'react';
 import type { Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
@@ -230,6 +231,11 @@ export async function SiteShell({
               <p>
                 <a href={c.ui.footer.whatsappHref} rel="noopener">
                   {c.ui.footer.contact} · {c.ui.footer.whatsappLabel}
+                </a>
+              </p>
+              <p>
+                <a href={SOCIAL.instagram.url} target="_blank" rel="noopener">
+                  {c.ui.footer.instagram} · @{SOCIAL.instagram.handle}
                 </a>
               </p>
             </div>

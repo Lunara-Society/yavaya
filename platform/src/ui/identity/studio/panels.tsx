@@ -32,6 +32,7 @@ import {
   type ProfileModuleId,
   type Visibility,
 } from '@/config/identity-studio';
+import { ImageLink } from '@/ui/components/image-link';
 import { Choice, fmt, Range, Section, Select, Swatches } from './controls';
 import type { GalleryTab } from './gallery';
 import type { CatalogItem, StudioPreset, StudioProps, StudioTheme } from './types';
@@ -79,8 +80,9 @@ function PhotoField({ ctx, slot, has, onRemove }: { ctx: PanelContext; slot: Pho
   const id = useId();
   if (!ctx.props.canUpload) return <p className="ids-note">{ctx.props.canPublish ? L.photoUnavailable : L.verifyFirst}</p>;
   const busy = ctx.uploading === slot;
+  // A form of its own so the photo-from-a-link field finds this photo input (and its Enter never submits anything).
   return (
-    <div className="ids-photo">
+    <form className="ids-photo" onSubmit={(event) => event.preventDefault()}>
       <input
         ref={input}
         id={id}
@@ -104,7 +106,8 @@ function PhotoField({ ctx, slot, has, onRemove }: { ctx: PanelContext; slot: Pho
         ) : null}
       </div>
       <p className="ids-note">{fmt(L.photoHint, { max: ctx.props.limits.uploadMb })}</p>
-    </div>
+      {busy ? null : <ImageLink labels={ctx.props.linkLabels} />}
+    </form>
   );
 }
 
@@ -648,7 +651,7 @@ export function PublishPanel({ ctx }: { ctx: PanelContext }) {
         {!props.canPublish ? <p className="ids-note">{L.verifyFirst}</p> : null}
         <div className="ids-row">
           <button type="button" className="btn btn-gold" disabled={ctx.busy || changes.length === 0 || !props.canPublish} onClick={ctx.onPublish}>
-            {L.publishNow}
+            {L.publish}
           </button>
           {ctx.canDiscard ? (
             <button type="button" className="ids-link" disabled={ctx.busy} onClick={ctx.onDiscard}>

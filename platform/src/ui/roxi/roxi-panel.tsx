@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Conversation } from '@elevenlabs/client';
 import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
+import { languageOf } from './language';
 import { roxiTools, type RoxiResultCard } from './tools';
 import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
@@ -249,6 +250,7 @@ export default function RoxiPanel({
   member,
   locale,
   labels,
+  refusals,
   openedBy = 'none',
   onSettings,
   onClose,
@@ -256,6 +258,7 @@ export default function RoxiPanel({
   member: RoxiMember;
   locale: string;
   labels: RoxiLabels;
+  refusals: Record<string, string>;
   openedBy?: RoxiOpening;
   onSettings: () => void;
   onClose: () => void;
@@ -267,6 +270,8 @@ export default function RoxiPanel({
   const [mode, setMode] = useState<Mode>('text');
   const [speaking, setSpeaking] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const waitingRef = useRef(false);
+  waitingRef.current = waiting;
   const [muted, setMuted] = useState(false);
   const [aside, setAside] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -414,15 +419,35 @@ export default function RoxiPanel({
         showResults: (cards, more) => {
           if (cards.length > 0) add({ kind: 'results', cards, more });
         },
-        note: (text) => add({ kind: 'note', text }),
         task: countPrompted,
         stepAside: () => {
           if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
         },
-        labels: { draft_opened: labels.draft_opened, opened: labels.opened, no_results: labels.no_results },
       }),
-    [add, labels, router, countPrompted],
+    [add, router, countPrompted],
   );
+
+  /*
+   * A lookup can take ten seconds or more, and Roxi's first words ("Déjame
+   * ver…") end the wait the panel shows. So a running tool shows the wait
+   * again, and it stays until her answer arrives (or WAIT_GIVE_UP_MS).
+   */
+  const busyTools = useCallback(() => {
+    const plain = tools();
+    return Object.fromEntries(
+      Object.entries(plain).map(([name, run]) => [
+        name,
+        async (parameters: Record<string, unknown>) => {
+          setWaiting(true);
+          try {
+            return await run(parameters);
+          } finally {
+            setWaiting(true);
+          }
+        },
+      ]),
+    );
+  }, [tools]);
 
   /** What was said before, when switching from writing to voice: a new conversation that remembers. */
   const recap = () =>
@@ -488,7 +513,7 @@ export default function RoxiPanel({
           platform_status: body.status ?? '',
           member_preferences: preferencesForRoxi(prefs),
         },
-        clientTools: tools(),
+        clientTools: busyTools(),
         workletPaths: {
           rawAudioProcessor: '/vendor/elevenlabs/rawAudioProcessor.js',
           audioConcatProcessor: '/vendor/elevenlabs/audioConcatProcessor.js',
@@ -510,7 +535,13 @@ export default function RoxiPanel({
         },
         onModeChange: ({ mode: now }) => setSpeaking(now === 'speaking'),
         onCanSendFeedbackChange: ({ canSendFeedback }) => setCanFeedback(canSendFeedback),
-        onDisconnect: () => {
+        onDisconnect: (details) => {
+          // The prompt-injection guardrail ends the conversation before Roxi answers. The member's message
+          // must not sit there unanswered: say she cannot help with it, and the next message carries on.
+          const last = entriesRef.current[entriesRef.current.length - 1];
+          if (details.reason !== 'user' && waitingRef.current && last?.kind === 'you') {
+            add({ kind: 'note', text: refusals[languageOf(last.text, locale)] ?? refusals[locale] ?? '' });
+          }
           conversation.current = null;
           setCanFeedback(false);
           setPhase('ended');

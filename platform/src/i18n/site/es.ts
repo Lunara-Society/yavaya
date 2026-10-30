@@ -51,6 +51,7 @@ export const siteEs = {
       contact: 'Escríbenos por WhatsApp',
       whatsappHref: 'https://wa.me/50558365522',
       whatsappLabel: '+505 5836 5522',
+      instagram: 'Síguenos en Instagram',
     },
     notFound: {
       title: 'Esta página no existe',

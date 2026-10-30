@@ -22,6 +22,7 @@ import { formatDate } from '@/ui/mercadito/format';
 import { canvasAsset, canvasLabels } from '@/ui/identity/labels';
 import { ListingsSlot, ServicesSlot, StoreSlot, TrustSlot, WorkSlot } from '@/ui/identity/module-slots';
 import { studioLabels } from '@/ui/identity/studio/labels';
+import { imageLinkLabels } from '@/ui/components/image-link-labels';
 import { IdentityStudio } from '@/ui/identity/studio/studio';
 import type { CatalogItem } from '@/ui/identity/studio/types';
 
@@ -148,6 +149,7 @@ export default async function IdentityStudioPage() {
         canUpload={active && mediaStorageAvailability().available}
         canPublish={active}
         labels={studioLabels(t)}
+        linkLabels={imageLinkLabels(t)}
         limits={{
           headline: PROFILE_STUDIO_RULES.headlineMaxLength,
           about: PROFILE_STUDIO_RULES.aboutMaxLength,

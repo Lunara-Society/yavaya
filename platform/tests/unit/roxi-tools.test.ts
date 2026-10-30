@@ -38,9 +38,7 @@ describe('Roxi tools', () => {
         pathname: () => '/',
         takePhotos: () => [],
         showResults: () => undefined,
-        note: () => undefined,
         stepAside: () => undefined,
-        labels: { draft_opened: '', opened: '', no_results: '' },
       }),
     ).sort();
     expect(browser).toEqual(definitions.map((tool) => tool.name).sort());

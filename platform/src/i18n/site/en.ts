@@ -39,6 +39,7 @@ export const siteEn: SiteContent = {
       contact: 'Message us on WhatsApp',
       whatsappHref: 'https://wa.me/50558365522',
       whatsappLabel: '+505 5836 5522',
+      instagram: 'Follow us on Instagram',
     },
     notFound: {
       title: 'This page does not exist',

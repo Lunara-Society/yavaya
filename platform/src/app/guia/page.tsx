@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SOCIAL } from '@/config/social';
 import type { MessageKey } from '@/i18n';
 import { GUIDE_CHAPTERS, GUIDE_SECONDS, guideFiles, type GuideKey } from '@/config/guide';
 import { siteContext } from '@/ui/site/context';
@@ -53,6 +54,12 @@ export default async function GuidePage() {
           </aside>
         </div>
         <p className="muted gv-note">{t('guide.spoken')}</p>
+        <p className="muted gv-note">
+          {t('guide.instagram')}{' '}
+          <a href={SOCIAL.instagram.url} target="_blank" rel="noopener">
+            @{SOCIAL.instagram.handle}
+          </a>
+        </p>
 
         <h2 className="gv-section-h">{t('guide.per_district')}</h2>
         <p className="muted">{t('guide.per_district_lead')}</p>

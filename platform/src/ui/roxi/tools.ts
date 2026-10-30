@@ -22,13 +22,18 @@ export type ToolContext = {
   /** Photos the member sent in this conversation and no form has taken yet. */
   takePhotos: () => File[];
   showResults: (cards: RoxiResultCard[], more: boolean) => void;
-  note: (text: string) => void;
   /** On a phone, gets the panel out of the way of the page it just opened. */
   stepAside: () => void;
   /** A draft prepared or a result opened: something the member came to do. */
   task?: () => void;
-  labels: { draft_opened: string; opened: string; no_results: string };
 };
+
+/*
+ * No tool writes words into the chat itself. Roxi says what she did, in the
+ * language of the conversation; a fixed line from the site's own language
+ * read as Roxi switching languages mid-answer (an English "I opened the page"
+ * above a Spanish reply).
+ */
 
 /*
  * The value lists below repeat the server's, because this file runs in the
@@ -128,6 +133,15 @@ export const ROXI_PAGES: Record<string, string> = {
   terms: '/terms',
 };
 
+/** Pages that are forms, and the tool that opens each one already filled in. */
+const FORM_PAGES: Record<string, string> = {
+  '/mercadito/publish': 'If you suggested a title, description, price or category, call prepare_listing with them now so they appear in the form.',
+  '/services/new': 'If you suggested any wording, call prepare_post with form service_request so it appears in the form.',
+  '/community/new': 'If you suggested any wording, call prepare_post with form community_post so it appears in the form.',
+  '/work/posts/new': 'If you suggested any wording, call prepare_work with form job_post so it appears in the form.',
+  '/work/profile': 'If you suggested any wording, call prepare_work with form work_profile so it appears in the form.',
+};
+
 /** Item pages Roxi may open from a search result: the ones /api/roxi/search returns. */
 const RESULT_PATH = /^\/(mercadito|yavayago\/stores|work\/posts|animals|sanctuary\/churches|services\/requests)\/[0-9a-f-]{36}$/;
 
@@ -155,7 +169,6 @@ function prepare(ctx: ToolContext, form: RoxiForm, path: string, fields: Record<
   ctx.task?.();
   const [target] = path.split('?');
   if (ctx.pathname() !== target || path.includes('?')) ctx.navigate(path);
-  ctx.note(ctx.labels.draft_opened);
   ctx.stepAside();
   return reply({ ok: true, opened: target, photos_attached: files.length, member_must: 'review the form, add what is missing, and tap the publish button themselves' });
 }
@@ -173,7 +186,6 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
       if (!ok) return reply({ ok: false, error: status === 429 ? 'too_many_lookups' : status === 401 ? 'signed_out' : 'failed' });
       const result = body as { items: RoxiResultCard[]; more: boolean; place: string | null };
       ctx.showResults(result.items, result.more);
-      if (result.items.length === 0) ctx.note(ctx.labels.no_results);
       return reply({ ok: true, place: result.place, results: result.items, more: result.more });
     },
 
@@ -265,9 +277,10 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
       const path = ROXI_PAGES[text(parameters.page, 40)];
       if (!path) return reply({ ok: false, error: 'unknown_page', pages: Object.keys(ROXI_PAGES) });
       ctx.navigate(path);
-      ctx.note(ctx.labels.opened);
       ctx.stepAside();
-      return reply({ ok: true, opened: path });
+      // An empty form left the member with Roxi's suggested text stranded in the chat. The prepare tools fill it.
+      const fill = FORM_PAGES[path];
+      return reply(fill ? { ok: true, opened: path, form_is_empty: true, to_fill_it: fill } : { ok: true, opened: path });
     },
 
     async open_result(parameters) {

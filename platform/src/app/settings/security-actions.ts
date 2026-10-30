@@ -17,6 +17,7 @@ import { passwordSchema } from '@/server/domains/identity/service';
 import { recordAudit } from '@/server/domains/audit/service';
 import { sendSecurityNotice, type SecurityNotice } from '@/server/domains/notifications/email/service';
 import { toClientError } from '@/server/errors';
+import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { signInPath } from '@/server/auth/sign-in-path';
 
 export type SecurityState = { status: 'idle' } | { status: 'error'; message: string } | { status: 'done'; message: string } | { status: 'codes'; codes: string[] };
@@ -100,6 +101,8 @@ export async function disableTwoStepAction(_previous: SecurityState, formData: F
 export async function changePasswordAction(_previous: SecurityState, formData: FormData): Promise<SecurityState> {
   const session = await signedIn();
   const { t } = await getTranslator();
+  const limit = await consumeRateLimit(db(), RATE_LIMITS.passwordChange, `user:${session.user.userId}`);
+  if (!limit.allowed) return { status: 'error', message: t('error.rate_limited', { retryAfterSeconds: limit.retryAfterSeconds }) };
   const parsed = passwordSchema.safeParse(String(formData.get('next') ?? ''));
   if (!parsed.success) {
     const key = parsed.error.issues[0]?.message;

@@ -36,6 +36,8 @@ export const RATE_LIMITS = {
   passwordResetAddress: { bucket: 'password_reset_address', limit: 3, windowSeconds: 60 * 60 },
   /** Authenticator codes, per account: six digits fall to guessing without a cap. */
   twoStep: { bucket: 'two_step', limit: 6, windowSeconds: 15 * 60 },
+  /** Guesses at the current password from a signed-in session: a stolen session must not become a password oracle. */
+  passwordChange: { bucket: 'password_change', limit: 6, windowSeconds: 15 * 60 },
   resendCode: { bucket: 'resend_code', limit: 5, windowSeconds: 60 * 60 },
   /** Asking for an SMS code, per member. Each one costs money to send. */
   phoneStart: { bucket: 'phone_start', limit: 5, windowSeconds: 60 * 60 },

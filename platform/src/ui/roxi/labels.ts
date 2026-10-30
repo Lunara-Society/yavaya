@@ -1,4 +1,5 @@
-import type { Translator } from '@/i18n';
+import { createTranslator, type Translator } from '@/i18n';
+import { LOCALES, type Locale } from '@/i18n/config';
 
 /**
  * Roxi's interface text, translated on the server and handed to the client
@@ -38,10 +39,7 @@ const KEYS = [
   'photo_sending',
   'photo_text',
   'photo_error',
-  'draft_opened',
-  'opened',
   'results',
-  'no_results',
   'disclosure',
   'privacy',
   'voice_switch',
@@ -131,4 +129,13 @@ export function roxiWelcomeLabels(t: Translator): RoxiWelcomeLabels {
   const labels = {} as RoxiWelcomeLabels;
   for (const key of WELCOME_LABEL_KEYS) labels[key] = t(`roxi.welcome.${key}`);
   return labels;
+}
+
+/**
+ * What the panel says when a message is stopped before Roxi can answer it (the
+ * agent's prompt-injection guardrail ends the conversation). It is said in the
+ * language the member was writing in, not the site's, so it is sent in both.
+ */
+export function roxiRefusals(): Record<Locale, string> {
+  return Object.fromEntries(LOCALES.map((locale) => [locale, createTranslator(locale)('roxi.ui.refusal')])) as Record<Locale, string>;
 }

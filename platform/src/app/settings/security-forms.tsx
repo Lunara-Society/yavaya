@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import {
   changePasswordAction,
   confirmTwoStepAction,
@@ -16,9 +16,30 @@ const gold = { backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-t
 const idle: SecurityState = { status: 'idle' };
 
 function Outcome({ state }: { state: SecurityState }) {
+  const box = useRef<HTMLParagraphElement>(null);
+  // The form clears itself after sending, so a quiet line could pass for nothing having happened:
+  // the answer is brought into view and given focus, so it is seen (and read out) every time.
+  useEffect(() => {
+    if (state.status === 'error' || state.status === 'done') {
+      box.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      box.current?.focus({ preventScroll: true });
+    }
+  }, [state]);
   if (state.status !== 'error' && state.status !== 'done') return null;
+  const error = state.status === 'error';
   return (
-    <p role={state.status === 'error' ? 'alert' : 'status'} className="rounded-lg border px-3 py-2 text-sm" style={state.status === 'error' ? { borderColor: 'var(--color-critical)' } : undefined}>
+    <p
+      ref={box}
+      tabIndex={-1}
+      role={error ? 'alert' : 'status'}
+      className="rounded-lg border px-3 py-2.5 text-sm font-medium outline-none"
+      style={
+        error
+          ? { borderColor: 'var(--color-critical)', background: 'color-mix(in srgb, var(--color-critical) 14%, transparent)' }
+          : { borderColor: 'var(--accent)', background: 'var(--accent-soft)' }
+      }
+    >
+      <span aria-hidden="true">{error ? '✕ ' : '✓ '}</span>
       {state.message}
     </p>
   );

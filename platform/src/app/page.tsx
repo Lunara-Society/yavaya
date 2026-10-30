@@ -1,5 +1,6 @@
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
+import { SOCIAL } from '@/config/social';
 import { HomeBody } from '@/ui/site/home';
 import { JsonLd } from '@/ui/site/json-ld';
 import { db } from '@/server/db/client';
@@ -35,6 +36,7 @@ export default async function HomePage() {
             name: 'Yavaya',
             url: base,
             logo: `${base}/icon-512.png`,
+            sameAs: [SOCIAL.instagram.url],
             description: 'El hogar digital de Centroamérica: mercado, servicios, trabajo, comunidad, fe y animales, con una sola cuenta y una sola reputación.',
             ...(countries.length ? { areaServed: countries } : {}),
             contactPoint: [{ '@type': 'ContactPoint', telephone: '+505-5836-5522', contactType: 'customer support', availableLanguage: ['Spanish', 'English'] }],
