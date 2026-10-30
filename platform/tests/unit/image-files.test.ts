@@ -2,7 +2,16 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { GUIDE_KEYS, guideFiles } from '@/config/guide';
-import { DISTRICT_WIDTHS, HERO_WIDTHS, MARKET_TALL_WIDTHS, PAGE_PHOTOS, SELLER_WIDTHS } from '@/ui/site/art';
+import {
+  DISTRICT_WIDTHS,
+  HERO_WIDTHS,
+  HOME_DISTRICT_WIDTHS,
+  HOME_GUIDE_WIDTHS,
+  HOME_HERO_WIDTHS,
+  HOME_MERCADITO_WIDTHS,
+  MARKET_TALL_WIDTHS,
+  PAGE_PHOTOS,
+} from '@/ui/site/art';
 import { DISTRICT_IDS } from '@/ui/site/blocks';
 import { HERO_FILM } from '@/ui/site/hero-film';
 import { SEAL_WIDTHS } from '@/ui/site/icons';
@@ -28,8 +37,14 @@ describe('published image sizes', () => {
     expect(missing([...MARKET_TALL_WIDTHS.map((w) => `art/market-tall-${w}.webp`), HERO_FILM.replace(/^\//, '')])).toEqual([]);
   });
 
-  it('has every width of the home page seller photograph', () => {
-    expect(missing(SELLER_WIDTHS.map((w) => `art/mercadito-seller-${w}.webp`))).toEqual([]);
+  it('has every width of the home page photographs: the street, the artisan, the guide and each district window', () => {
+    const files = [
+      ...HOME_HERO_WIDTHS.map((w) => `art/home-hero-${w}.webp`),
+      ...HOME_MERCADITO_WIDTHS.map((w) => `art/home-mercadito-${w}.webp`),
+      ...HOME_GUIDE_WIDTHS.map((w) => `art/home-guide-${w}.webp`),
+      ...DISTRICT_IDS.flatMap((id) => HOME_DISTRICT_WIDTHS.map((w) => `art/home-d-${id}-${w}.webp`)),
+    ];
+    expect(missing(files)).toEqual([]);
   });
 
   it('has every width of the seal', () => {

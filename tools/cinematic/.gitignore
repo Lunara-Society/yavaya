@@ -1,0 +1,7 @@
+# Model weights (see README for where they come from) and the Python environment.
+models/
+venv/
+# 4x masters and masks: reproducible from source/ with extract.py.
+masters/
+# Python bytecode from running the scripts.
+__pycache__/

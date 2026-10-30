@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import type { MessageKey, Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
-import { GUIDE_SECONDS, guideFiles } from '@/config/guide';
+import { GUIDE_SECONDS } from '@/config/guide';
 import type { Opportunity } from '@/server/domains/discovery/recent';
 import { formatPrice } from '@/ui/mercadito/format';
-import { DistrictScene, MarketScene, SellerScene } from './art';
+import { ArtisanScene, GuideScene, HomeDistrictScene, MarketScene } from './art';
 import { DISTRICT_IDS, PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon, type IconName } from './icons';
 import { loginHref } from '@/server/auth/return-path';
@@ -58,20 +58,23 @@ const SHORTCUTS: ReadonlyArray<{ id: DistrictId; buy?: true }> = [
 ];
 
 /**
- * The gallery's shape (site.css, "The seven districts"): Mercadito, the way
- * in, is the flagship — full width on a phone, a tall half on a wide screen.
- * The other six go two to a row on a phone; on a wide screen four of them
- * stand beside Mercadito and the last two share the closing row. Seven
- * districts make that one flagship and an even six, so no card is left
- * alone at the bottom.
+ * The gallery's shape (site.css, "The seven districts"): on a wide screen,
+ * four in the first row and three in the second, the way the owner's design
+ * lays them out. On a phone Mercadito, the way in, goes full width and the
+ * other six two to a row, so no card is left alone at the bottom.
  */
 const FLAGSHIP: DistrictId = 'mercadito';
-const CLOSING_ROW: readonly DistrictId[] = ['sanctuary', 'animals'];
+const SECOND_ROW: readonly DistrictId[] = ['community', 'sanctuary', 'animals'];
 
 /** How wide each photograph is shown, so a phone never fetches one twice the size it displays. */
 function districtSizes(id: DistrictId): string {
-  if (id === FLAGSHIP) return '(min-width: 1000px) 50vw, 100vw';
-  return CLOSING_ROW.includes(id) ? '50vw' : '(min-width: 1000px) 25vw, 50vw';
+  const wide = SECOND_ROW.includes(id) ? '(min-width: 1440px) 400px, (min-width: 1000px) 32vw' : '(min-width: 1440px) 300px, (min-width: 1000px) 24vw';
+  return `${wide}, ${id === FLAGSHIP ? '100vw' : '50vw'}`;
+}
+
+/** The full guide's running time as a clock reads it ("13:26"), from the film's own length. */
+function clock(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 const TOPIC_KEY: Record<Opportunity['kind'], string> = {
@@ -93,8 +96,7 @@ function ago(t: Translator, at: Date, now: Date): string {
 }
 
 export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = new Date() }: HomeProps) {
-  const guide = guideFiles('guia');
-  const guideMinutes = Math.ceil(GUIDE_SECONDS.guia / 60);
+  const guideSeconds = GUIDE_SECONDS.guia;
   // A signed-out visitor is asked to sign in first and then lands on the form itself (return-path.ts).
   const member = (path: string) => (signedIn ? path : loginHref(path));
   /*
@@ -148,7 +150,7 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = 
         <div className="wrap hm-feature">
           <article className="hm-mk tone-mercadito">
             <Link className="hm-mk-photo" href={PAGE_PATHS.mercadito} tabIndex={-1} aria-hidden="true">
-              <SellerScene sizes="(min-width: 1000px) 34vw, 100vw" />
+              <ArtisanScene sizes="(min-width: 1440px) 620px, (min-width: 760px) 50vw, 100vw" />
               <span className="hm-mk-badge">{t('home.mk.badge')}</span>
             </Link>
             <div className="hm-mk-text">
@@ -170,21 +172,26 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = 
               <p className="hm-fine">{t('mercadito.opening.free', { count: starts.mercaditoFree })}</p>
             </div>
           </article>
+          {/* The whole banner is the way to the guide; its length is the film's own (config/guide.ts), never a round number. */}
           <Link className="hm-guide" href="/guia">
-            {/* eslint-disable-next-line @next/next/no-img-element -- a poster from /public, pre-sized */}
-            <img src={guide.posterWebp} srcSet={guide.posterSet} sizes="(min-width: 1000px) 22vw, 100vw" width={1280} height={720} alt="" loading="lazy" decoding="async" />
+            <span className="hm-guide-art">
+              <GuideScene />
+            </span>
+            <span className="hm-guide-time">
+              <Icon name="clock" />
+              <span aria-hidden="true">{clock(guideSeconds)}</span>
+              <span className="sr-only">{t('home.guide.duration', { minutes: Math.floor(guideSeconds / 60), seconds: guideSeconds % 60 })}</span>
+            </span>
             <span className="hm-guide-text">
-              <span className="hm-guide-eyebrow">{t('home.guide.eyebrow', { minutes: guideMinutes })}</span>
-              <strong>
-                <span className="hm-play" aria-hidden="true">
-                  ▶
-                </span>{' '}
-                {t('home.guide.title')}
-              </strong>
-              <span>{t('home.guide.text')}</span>
-              <span className="hm-guide-cta">
-                {t('home.guide.cta')} <span aria-hidden="true">→</span>
+              <span className="hm-guide-eyebrow">{t('home.guide.eyebrow')}</span>
+              <h2 className="hm-guide-title">{t('home.guide.title')}</h2>
+              <span className="hm-guide-sub">{t('home.guide.text')}</span>
+            </span>
+            <span className="hm-guide-go">
+              <span className="hm-guide-play" aria-hidden="true">
+                <Icon name="play" />
               </span>
+              <span className="hm-guide-cta">{t('home.guide.cta')}</span>
             </span>
           </Link>
         </div>
@@ -211,7 +218,7 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = 
                 <li key={id} className={`hm-d hm-d-${id}`}>
                   <Link className={`hm-d-card tone-${id}`} href={PAGE_PATHS[id]}>
                     <span className="hm-d-photo">
-                      <DistrictScene id={id} sizes={districtSizes(id)} />
+                      <HomeDistrictScene id={id} sizes={districtSizes(id)} />
                     </span>
                     <span className="hm-d-body">
                       <span className="hm-d-name">

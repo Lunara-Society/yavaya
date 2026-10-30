@@ -175,7 +175,12 @@ ul, ol { margin: 0; padding: 0; }
 
 /* Honest status ribbon, shown on every page. */
 .ribbon { background: var(--accent-soft); border-bottom: 1px solid var(--line); font-size: 0.9rem; color: var(--text-2); }
-.ribbon .wrap { padding-top: 9px; padding-bottom: 9px; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.ribbon .wrap { padding-top: 9px; padding-bottom: 9px; display: flex; gap: 10px; align-items: baseline; flex-wrap: nowrap; }
+/* One line, always: wrapped, the sentence took two lines in the fallback font and one once the web font arrived, and every
+   page jumped up under the reader (layout shift 0.12 at 768px). Where it does not fit it ends in an ellipsis; the link to
+   what works today carries the whole of it. */
+.ribbon span { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.ribbon strong, .ribbon a { flex: none; white-space: nowrap; }
 .ribbon strong { color: var(--accent); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.75rem; }
 .ribbon a { font-weight: 700; color: var(--text); }
 /* On a phone the ribbon keeps its label and link; the sentence would take three lines above the page. */
@@ -2693,6 +2698,8 @@ h3 { font-size: 1.18rem; }
 .hm-shortcut svg { width: 19px; height: 19px; color: #f3d77b; }
 .hm-shortcut:hover { border-color: #f3d77b; background: rgba(7, 27, 34, 0.9); }
 @media (max-width: 379px) { .hm-search-scope { display: none; } }
+/* The wide picture (home-hero): the church stands at about 80% across; 66% keeps it whole from a tablet's upright frame to a wide screen. */
+@media (min-width: 700px) { .hm-hero-art .hm-photo { object-position: 66% 50%; } }
 /* Below 900px the header sits above the hero and the dock floats over the bottom of the screen, so the hero's height is what is
    left between them: the search and shortcuts then open above the dock instead of under it. svh, where supported, ignores the
    browser's collapsing address bar. */
@@ -2707,7 +2714,8 @@ h3 { font-size: 1.18rem; }
   .hm-hero-art::after { background: linear-gradient(90deg, rgba(5, 15, 19, 0.9) 0%, rgba(5, 15, 19, 0.66) 30%, rgba(5, 15, 19, 0.12) 58%, rgba(5, 15, 19, 0) 72%),
     linear-gradient(180deg, rgba(5, 15, 19, 0.35) 0%, rgba(5, 15, 19, 0) 22%, rgba(5, 15, 19, 0) 80%, var(--bg) 100%); }
   .hm-hero-in { padding-top: 56px; padding-bottom: 72px; }
-  .hm-shortcuts { flex-wrap: wrap; max-width: 760px; overflow: visible; }
+  /* One row for all seven on a wide screen, as in the design; they wrap only where the row is too narrow. */
+  .hm-shortcuts { flex-wrap: wrap; max-width: 980px; overflow: visible; }
 }
 
 /* Bands */
@@ -2721,12 +2729,13 @@ h3 { font-size: 1.18rem; }
 .hm-band-obsidian { background: radial-gradient(800px 380px at 10% 100%, rgba(201, 155, 53, 0.07), transparent 70%), var(--obsidian); }
 :root[data-theme="light"] .hm-band-districts::before { opacity: 0.08; filter: invert(1); }
 
-/* Mercadito and the guide */
+/* Mercadito, then the guide: each the full width of the page. */
 .hm-feature { display: grid; gap: 18px; }
 .hm-mk { display: grid; overflow: hidden; border-radius: 24px; background: var(--surface); border: 1px solid var(--line-gold); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25); }
 .hm-mk-photo { position: relative; display: block; min-height: 220px; overflow: hidden; }
-/* The seller photograph (SellerScene): a little left of centre keeps both the bag and the seller's face in the near-square frame of wide screens. */
-.hm-mk-photo .district-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 40% 50%; }
+/* The artisan (ArtisanScene): her face is right of centre and the bags to the left; 55% keeps both in a phone's narrower frame. */
+.hm-mk-photo .district-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 55% 50%; transition: scale 0.9s cubic-bezier(.2,.7,.2,1); }
+.hm-mk:hover .hm-mk-photo .district-photo { scale: 1.03; }
 .hm-mk-badge { position: absolute; top: 14px; left: 14px; z-index: 2; padding: 6px 12px; border-radius: 999px; background: rgba(7, 27, 34, 0.82); color: #f3d77b;
   font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
 .hm-mk-photo .art-note { top: 14px; right: 14px; left: auto; bottom: auto; }
@@ -2739,18 +2748,50 @@ h3 { font-size: 1.18rem; }
   border: 1px solid var(--line-gold); background: rgba(201, 155, 53, 0.1); }
 .hm-icon-ring svg { width: 22px; height: 22px; }
 :root[data-theme="light"] .hm-icon-ring { color: var(--accent); }
-.hm-guide { display: grid; align-content: start; overflow: hidden; border-radius: 24px; text-decoration: none; color: var(--text); background: var(--surface); border: 1px solid var(--line-gold);
-  transition: transform 0.25s, border-color 0.25s; }
-.hm-guide:hover { transform: translateY(-3px); border-color: var(--accent); }
-.hm-guide img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-.hm-guide-text { display: grid; gap: 6px; padding: 16px 18px 20px; }
-.hm-guide-eyebrow { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
-.hm-guide strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
-.hm-guide-text > span:not(.hm-guide-eyebrow):not(.hm-guide-cta) { color: var(--text-2); font-size: 0.95rem; }
-.hm-play { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 0.72rem; vertical-align: 2px; }
-.hm-guide-cta { margin-top: 4px; font-weight: 700; color: var(--accent); }
-@media (min-width: 760px) { .hm-mk { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .hm-mk-photo { min-height: 320px; } }
-@media (min-width: 1000px) { .hm-feature { grid-template-columns: minmax(0, 2.6fr) minmax(0, 1fr); align-items: stretch; } }
+@media (min-width: 760px) { .hm-mk { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } .hm-mk-photo { min-height: 300px; } }
+
+/* The video guide: a cinematic banner, the old town at sunset under the title. The whole banner is the link.
+   Always night, like the hero, whatever the theme: its words sit on the photograph. */
+.hm-guide { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: flex-end; min-height: 320px; overflow: hidden; border-radius: 24px;
+  text-decoration: none; color: #f4ebd8; background: #071b22; border: 1px solid var(--line-gold); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.3s, box-shadow 0.3s; }
+.hm-guide:hover { border-color: #f3d77b; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(243, 215, 123, 0.14); }
+.hm-guide:focus-visible { outline: 3px solid #f3d77b; outline-offset: 3px; }
+.hm-guide-art { position: absolute; inset: 0; z-index: -1; }
+/* On a phone the banner is upright and shows the middle of the panorama: the volcano between the two churches. */
+.hm-guide-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 56% 50%; transition: scale 1.2s cubic-bezier(.2,.7,.2,1); }
+.hm-guide:hover .hm-guide-photo { scale: 1.03; }
+.hm-guide-art::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(0deg, rgba(5, 15, 19, 0.94) 0%, rgba(5, 15, 19, 0.7) 38%, rgba(5, 15, 19, 0.08) 72%); }
+.hm-guide-art .art-note { top: 14px; left: 14px; right: auto; bottom: auto; }
+.hm-guide-time { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px;
+  background: rgba(5, 15, 19, 0.72); border: 1px solid rgba(243, 215, 123, 0.35); font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.hm-guide-time svg { width: 15px; height: 15px; color: #f3d77b; }
+.hm-guide-text { display: grid; gap: 4px; padding: 0 20px 14px; }
+.hm-guide-eyebrow { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #f3d77b; }
+.hm-guide-title { margin: 0; font-family: var(--serif); font-size: clamp(2rem, 5.4vw, 3.5rem); font-weight: 600; line-height: 1.02; letter-spacing: -0.02em;
+  color: #f3d77b; background: linear-gradient(180deg, #fbe9b0 0%, #f3d77b 45%, #c99b35 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.5)); }
+.hm-guide-sub { color: rgba(244, 235, 216, 0.92); font-size: clamp(0.98rem, 1.6vw, 1.12rem); }
+.hm-guide-go { display: inline-flex; align-self: flex-start; align-items: center; gap: 10px; margin: 4px 20px 20px; padding: 5px 16px 5px 5px; border-radius: 999px;
+  background: rgba(5, 15, 19, 0.72); border: 1px solid rgba(243, 215, 123, 0.4); font-weight: 700; }
+.hm-guide-play { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #14100a;
+  background: linear-gradient(180deg, #fbe9b0 0%, #f3d77b 50%, #c99b35 100%); box-shadow: 0 6px 18px rgba(201, 155, 53, 0.35); transition: scale 0.3s cubic-bezier(.2,.7,.2,1); }
+.hm-guide-play svg { width: 22px; height: 22px; margin-left: 2px; }
+.hm-guide:hover .hm-guide-play { scale: 1.08; }
+/* Wide enough for the whole panorama: the words to the left, the way in to the right, as in the design. */
+@media (min-width: 760px) {
+  .hm-guide { min-height: clamp(260px, 24vw, 300px); }
+  .hm-guide-photo { object-position: 50% 50%; }
+  .hm-guide-art::after { background: linear-gradient(90deg, rgba(5, 15, 19, 0.86) 0%, rgba(5, 15, 19, 0.55) 34%, rgba(5, 15, 19, 0.04) 64%),
+    linear-gradient(0deg, rgba(5, 15, 19, 0.6) 0%, rgba(5, 15, 19, 0) 50%); }
+  .hm-guide-text { max-width: 620px; padding: 0 clamp(24px, 3vw, 36px) clamp(24px, 3vw, 34px); }
+  .hm-guide-go { position: absolute; right: clamp(18px, 2.4vw, 28px); bottom: clamp(18px, 2.4vw, 28px); margin: 0; }
+  .hm-guide-play { width: 52px; height: 52px; }
+  .hm-guide-play svg { width: 26px; height: 26px; }
+}
+/* Transitions already stop for reduced motion ("Motion and finish"); the zoom on hover stops too. */
+@media (prefers-reduced-motion: reduce) { .hm-guide:hover .hm-guide-photo, .hm-mk:hover .hm-mk-photo .district-photo, .hm-guide:hover .hm-guide-play { scale: none; } }
 
 /* Section heads */
 .hm-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 24px; margin-bottom: 22px; }
@@ -2761,17 +2802,22 @@ h3 { font-size: 1.18rem; }
 .hm-sub { margin: 0; color: var(--text-2); font-size: 0.98rem; }
 .hm-head-link { min-height: 44px; padding: 0 18px; font-size: 0.92rem; }
 
-/* The seven districts. Mercadito, the way in, leads as the flagship: full
-   width on a phone, a tall half beside four others on a wide screen; the
-   last two share the closing row. Each card wears its own colour world
-   (worlds.css, "Home: seven windows"). */
+/* The seven districts. On a phone Mercadito, the way in, goes full width
+   and the other six two to a row; on a wide screen four in the first row and
+   three in the second, as the owner's design lays them out. Each card wears
+   its own colour world (worlds.css, "Home: seven windows"). The pictures
+   (HomeDistrictScene) are wide: about 2:1 for the first row, 3:1 for the
+   second. */
 .hm-districts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
 .hm-d-mercadito { grid-column: 1 / -1; }
 .hm-d-card { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 20px; text-decoration: none; color: var(--text); background: var(--surface);
   border: 1px solid var(--line-gold); transition: transform 0.35s cubic-bezier(.2,.7,.2,1), border-color 0.35s, box-shadow 0.35s; }
 .hm-d-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28); }
-.hm-d-photo { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; }
-.hm-d-mercadito .hm-d-photo { aspect-ratio: 16 / 9; }
+.hm-d-photo { position: relative; display: block; aspect-ratio: 2 / 1; overflow: hidden; }
+/* In the 2:1 frame of a phone, the second row's panoramas keep their people: the friends in the middle, the raised hand and the tower, the woman and her dog. */
+.hm-d-community .district-photo { object-position: 50% 50%; }
+.hm-d-sanctuary .district-photo { object-position: 30% 50%; }
+.hm-d-animals .district-photo { object-position: 48% 50%; }
 .hm-d-photo .district-photo { width: 100%; height: 100%; object-fit: cover; transition: scale 0.9s cubic-bezier(.2,.7,.2,1); }
 .hm-d-card:hover .district-photo { scale: 1.06; }
 .hm-d-photo .art-note { top: 8px; right: 8px; bottom: auto; }
@@ -2798,15 +2844,10 @@ h3 { font-size: 1.18rem; }
 @media (min-width: 1000px) {
   .hm-districts { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
   .hm-d { grid-column: span 3; }
-  .hm-d-mercadito { grid-column: span 6; grid-row: span 2; }
-  .hm-d-mercadito .hm-d-photo { aspect-ratio: auto; flex: 1; min-height: 300px; }
-  .hm-d-mercadito .hm-d-body { flex: none; padding: 18px 22px 22px; }
-  .hm-d-mercadito .hm-d-name { font-size: 2rem; }
-  .hm-d-mercadito .hm-d-tag { font-size: 1.02rem; }
-  .hm-d-sanctuary, .hm-d-animals { grid-column: span 6; }
-  .hm-d-sanctuary .hm-d-photo, .hm-d-animals .hm-d-photo { aspect-ratio: 16 / 7; }
+  .hm-d-community, .hm-d-sanctuary, .hm-d-animals { grid-column: span 4; }
+  .hm-d-community .hm-d-photo, .hm-d-sanctuary .hm-d-photo, .hm-d-animals .hm-d-photo { aspect-ratio: 3 / 1; }
   .hm-d-body { padding: 14px 18px 18px; }
-  .hm-d-name { font-size: 1.3rem; }
+  .hm-d-name, .hm-d-mercadito .hm-d-name { font-size: 1.3rem; }
   .hm-d-go { right: 16px; bottom: 16px; width: 40px; height: 40px; }
 }
 

@@ -149,11 +149,24 @@ function srcSet(name: string, widths: number[]): string {
 export const MARKET_TALL_WIDTHS = [640, 800];
 
 /**
+ * The home page's photographs from the owner's design of 30 October 2026
+ * (tools/cinematic): each is that design's own picture with its words and
+ * buttons rebuilt away and enlarged 4x, so the widths stop at what the
+ * enlargement holds — they are not native photographs at these sizes.
+ */
+export const HOME_HERO_WIDTHS = [960, 1600, 2560, 3840];
+export const HOME_MERCADITO_WIDTHS = [640, 960, 1280, 1920];
+export const HOME_GUIDE_WIDTHS = [960, 1600, 2560, 3784];
+export const HOME_DISTRICT_WIDTHS = [400, 640, 920];
+
+/**
  * The home page's first picture: a market street in a colonial town at
- * sunset, the church and the volcano at the end of it. Phones get their own
- * upright crop instead of the middle of a wide photograph, and there the
- * scene comes alive when the visit can afford it (hero-film.tsx). People are
- * in it, so it carries the "Ilustración" note.
+ * sunset, lanterns lit, the church and the volcano at the end of it. A wide
+ * screen gets the design's own street (home-hero); a phone keeps its upright
+ * crop of the earlier market (market-tall), because there the scene comes
+ * alive when the visit can afford it (hero-film.tsx) and the film starts on
+ * exactly that picture. People are in both, so it carries the "Ilustración"
+ * note.
  */
 export function MarketScene({ className }: { className?: string }) {
   return (
@@ -163,11 +176,11 @@ export function MarketScene({ className }: { className?: string }) {
         {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
         <img
           className="hm-photo"
-          src="/art/market-1600.webp"
-          srcSet={srcSet('market', HERO_WIDTHS)}
+          src="/art/home-hero-1600.webp"
+          srcSet={srcSet('home-hero', HOME_HERO_WIDTHS)}
           sizes="100vw"
           width={1600}
-          height={896}
+          height={684}
           alt=""
           fetchPriority="high"
           decoding="async"
@@ -232,26 +245,21 @@ export function DistrictScene({ id, className, priority, sizes = DISTRICT_SIZES 
   );
 }
 
-/** The widths of the seller photograph: it was made at 1280 and is never shown wider than about 1200 device pixels. */
-export const SELLER_WIDTHS = [640, 960, 1280];
-
 /**
- * The home page's Mercadito feature: someone photographing what they made, to
- * sell it — the other half of the district's own photograph (a sale in the
- * street), which the districts gallery further down the same page shows. The
- * same picture twice on one page reads as having nothing else to show.
+ * The home page's Mercadito feature: an artisan at her stall among woven bags
+ * and pottery — what Mercadito is for, from the person selling.
  */
-export function SellerScene({ sizes }: { sizes: string }) {
+export function ArtisanScene({ sizes }: { sizes: string }) {
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
       <img
         className="district-photo"
-        src="/art/mercadito-seller-960.webp"
-        srcSet={srcSet('mercadito-seller', SELLER_WIDTHS)}
+        src="/art/home-mercadito-960.webp"
+        srcSet={srcSet('home-mercadito', HOME_MERCADITO_WIDTHS)}
         sizes={sizes}
-        width={1280}
-        height={720}
+        width={1920}
+        height={872}
         alt=""
         loading="lazy"
         decoding="async"
@@ -260,6 +268,55 @@ export function SellerScene({ sizes }: { sizes: string }) {
     </>
   );
 }
+
+/** The video guide's banner: the old town from above at sunset, the volcano behind, someone looking out over it. */
+export function GuideScene() {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img
+        className="hm-guide-photo"
+        src="/art/home-guide-1600.webp"
+        srcSet={srcSet('home-guide', HOME_GUIDE_WIDTHS)}
+        sizes="(min-width: 1440px) 1216px, (min-width: 1160px) 1100px, 100vw"
+        width={1600}
+        height={362}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <ArtNote />
+    </>
+  );
+}
+
+/**
+ * A district's window on the home page: the design's own picture for it,
+ * wider than tall, since the card's panel sits below it. Its gateway, page
+ * and header keep the district's full photograph (DistrictScene).
+ */
+export function HomeDistrictScene({ id, sizes }: { id: DistrictId; sizes: string }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img
+        className="district-photo"
+        src={`/art/home-d-${id}-640.webp`}
+        srcSet={srcSet(`home-d-${id}`, HOME_DISTRICT_WIDTHS)}
+        sizes={sizes}
+        width={920}
+        height={HOME_DISTRICT_HEIGHT[id]}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+      <ArtNote />
+    </>
+  );
+}
+
+/** Heights of the 920-wide files: the first row's pictures are about 2:1, the second row's about 3:1. */
+const HOME_DISTRICT_HEIGHT: Record<DistrictId, number> = { mercadito: 456, services: 454, work: 454, yavayago: 456, community: 296, sanctuary: 296, animals: 295 };
 
 /** Photographs that sit behind a page's header, full-bleed. */
 export const PAGE_PHOTOS = ['districts', 'trust', 'reputation', 'tokens', 'roadmap', 'street', 'transparency', 'status', 'sanctuary', 'sanctuary-church', 'sanctuary-word'] as const;

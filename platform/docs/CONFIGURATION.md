@@ -348,13 +348,32 @@ no reduced motion — and only after the page has loaded (`hero-film.tsx`);
 everyone else sees the still. Inspected frame by frame on 24 October: no
 malformed people, warped stalls or lettering.
 
-**The home page's Mercadito feature has its own picture** (since 24 October
-2026): someone photographing a woven bag to sell it
-(`mercadito-seller-*.webp`, made through the owner's ElevenLabs account at
-1280×720, the second of four takes). Until then the feature and the districts
-gallery below it showed the same handshake. Inspected at full size: hands,
-face and bag well formed, no lettering, and the phone shows its back, never a
-screen.
+**The home page's own pictures come from the owner's design** (since 30
+October 2026): the street in the hero on wide screens, the artisan in the
+Mercadito feature, the town under the video guide, and the window on each
+district card. The design was a single 1024×1536 image, so each picture is
+the design's own region with its words and buttons rebuilt away (LaMa) and
+enlarged 4× (Real-ESRGAN), by `tools/cinematic/` at the repository root, whose
+README lists every region, its size and how to reproduce it. They are
+upscaled, not native: the hero's largest file is 3840 wide but holds the
+detail of a 1024-pixel original. Phones keep the earlier upright market crop
+in the hero, so its film still starts on the same frame. The districts' own
+pages keep their full 1920-pixel photographs; the home cards show only the
+top of the design's pictures, where the card's panel did not cover them. The
+earlier seller photograph (`mercadito-seller-*`) was retired with this
+change.
+
+**Inspected 30 October 2026**, every new picture at full size and at the size
+it is shown. One flaw was found and removed: a jar at the edge of the
+Servicios picture carried three garbled letters, now rebuilt away (the mask
+is in `extract.py`). No other lettering, and faces and hands are well formed
+at the sizes they are shown. Things to know: the raised hand on the Santuario
+card has two fingertips that run together when enlarged several times (at
+the card's size it reads as an open hand); at 100% sunlight makes blotches on
+the Servicios man's face; where the hero's shortcuts were rebuilt, two
+walkers' legs fade into the dark street, under the hero's own shading; and
+the enlargement shows its nature up close: embroidery and stone look painted
+rather than photographed.
 
 **Real photography is the next step** (owner's to arrange: a photographer in
 Managua, signed releases from everyone pictured). Replacing any image is a
