@@ -251,6 +251,55 @@ member can aim, so it is fenced as one (`security/outbound.ts`,
 
 Driver photos and documents do not take links: those must be the driver's own.
 
+### Identity Studio
+
+"Personalizar mi perfil" (`/account/profile`) lets a member change how their
+public profile looks and who sees each part of it. Everything it accepts is
+checked on the server (`domains/identity/studio.ts`):
+
+- **A draft is its owner's alone.** Editing changes a draft only the owner
+  reads. Publishing is a separate action, needs an active (email-verified)
+  account, and is audited (`identity.profile_published`) in the same
+  transaction. Each save names the version it started from, and a save based
+  on an older one is refused instead of overwriting another window's work.
+- **No CSS, no HTML, no colour values.** `parseIdentity` is a strict schema:
+  unknown fields are refused, and every visual choice is an id from a fixed
+  vocabulary (surfaces, accents, borders, typography…). Every colour that
+  vocabulary can produce is tested for WCAG AA contrast against every surface
+  it can sit on (`tests/unit/identity-studio.test.ts`). Designs are ids from
+  the library, accepted only for the slot they were drawn for. A whole
+  profile is capped at `PROFILE_STUDIO_RULES.maxConfigBytes`.
+- **Words are cleaned:** control characters and direction-reversing marks
+  (which can disguise text) are removed, spaces tidied, and lengths capped.
+  React escapes everything rendered.
+- **Links** are whole `https` addresses to a named host: no IP literal, no
+  `localhost`, no credentials, no other scheme. They open with
+  `rel="nofollow ugc noopener noreferrer"`.
+- **Own photos** (profile photo, cover, background) go through the ordinary
+  image pipeline: type decided by the first bytes, decoded under the pixel
+  ceiling, re-encoded, no metadata kept. Uploads are same-origin, signed-in
+  and rate-limited (`RATE_LIMITS.identityUpload`), with at most
+  `PROFILE_STUDIO_RULES.maxOwnPhotos` per member. A member can only use their
+  own active photos, uploaded for that slot. `/api/identity/media/<id>`
+  serves a photo to its owner, and to anyone else only once a published
+  profile uses it, under the owner's choice for it (everyone, or signed-in
+  members): a photo used only in a draft reaches nobody else. Only a photo
+  for everyone may be kept by shared caches, and only for five minutes, so a
+  switch to members-only takes effect quickly. Unused photos are removed when
+  the profile is published, after a grace period so another window's fresh
+  upload survives.
+- **Who sees each section is decided on the server,** before its data is read:
+  a members-only section is never fetched for a visitor. Presentation modes
+  reorder and fold sections; they never change who sees them (tested).
+- **Reports.** Any signed-in member can report a profile; reports collect
+  into the shared moderation tickets (`domains/identity/profile-reports.ts`).
+  A moderator either closes the ticket or resets the profile to Yavaya's
+  design, which clears its words and takes down its photos, leaves the
+  account, listings and reputation alone, requires a note (kept in the audit
+  chain, never shown to the member), and notifies the member. Nobody decides
+  a report about themselves, and the reported member never learns who
+  reported them.
+
 ## Abuse resistance
 
 Rate limits are server-side counters keyed by an opaque subject, so a client

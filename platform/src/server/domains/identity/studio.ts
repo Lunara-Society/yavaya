@@ -7,6 +7,7 @@ import { DomainError, errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { requirePermission, type AuthContext } from '@/server/domains/access/authorize';
 import { markRemoved } from '@/server/domains/media/service';
+import { notify } from '@/server/domains/notifications/service';
 import { PROFILE_STUDIO_RULES } from '@/config/business-rules';
 import { identityAsset } from '@/config/identity-assets';
 import {
@@ -739,4 +740,8 @@ export async function resetIdentityByModerator(
     subjectId: params.userId,
     metadata: { note, photosRemoved: photos.length },
   });
+  // A member whose profile changed under them is told, and taken to the Studio.
+  await notify(tx, [
+    { userId: params.userId, category: 'moderation', type: 'identity.profile_reset', titleKey: 'notify.moderation.profile_reset', href: '/account/profile' },
+  ]);
 }

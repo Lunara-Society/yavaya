@@ -8,51 +8,20 @@ import manifest from './identity-assets.json';
  * (at the repository root) from the masters it is given: it measures each
  * file, derives the sizes a page needs, reads its dominant colours and writes
  * this manifest, so the dimensions below are measured, not claimed. Adding
- * artwork is a new master and a brief there, then a rebuild — nothing in the
- * Studio changes. `tests/unit/identity-assets.test.ts` checks that every file
- * named here exists and that every design has its name in both languages.
+ * artwork is a new entry in that tool's catalogue, then a rebuild — nothing
+ * in the Studio changes. `tests/unit/identity-assets.test.ts` checks that
+ * every file named here exists and that every design has its name in both
+ * languages.
+ *
+ * Server code only: the list is 250 KB. Browser code imports the vocabulary
+ * from identity-asset-types.ts instead.
  *
  * Names and descriptions are i18n keys: `identity.asset.<id>` and
  * `identity.asset.<id>.desc`.
  */
 
-export const IDENTITY_COLLECTIONS = ['surfaces', 'horizons', 'frames', 'expression', 'professional'] as const;
-export type IdentityCollection = (typeof IDENTITY_COLLECTIONS)[number];
-
-export type IdentityAssetKind = 'background' | 'cover' | 'frame' | 'decoration';
-
-/** Colour families the gallery filters by. */
-export const IDENTITY_COLOR_FAMILIES = ['gold', 'black', 'blue', 'violet', 'green', 'teal', 'pink', 'red', 'orange', 'white', 'silver', 'bronze'] as const;
-export type IdentityColorFamily = (typeof IDENTITY_COLOR_FAMILIES)[number];
-
-export type IdentityAsset = {
-  id: string;
-  collection: IdentityCollection;
-  kind: IdentityAssetKind;
-  /** The family of design, for the style filter: 'liquid', 'marble', 'photo', 'landscape', 'ring', 'botanical'… */
-  style: string;
-  colors: IdentityColorFamily[];
-  /** Dominant colours, darkest first, measured from the file. */
-  palette: string[];
-  /** Extra words search matches, in Spanish and English, beside the design's own name. */
-  tags: string[];
-  /** The master's measured size. A vector design reports its drawing box. */
-  width: number;
-  height: number;
-  format: 'webp' | 'svg';
-  /** The sizes served, smallest first. A vector design is one file. */
-  files: Array<{ width: number; url: string }>;
-  thumb: string;
-  transparent: boolean;
-  placement: 'background' | 'cover' | 'avatar-frame' | 'corners' | 'header' | 'border';
-  /** Where a phone's narrow crop should centre, in percent. */
-  focus: { x: number; y: number };
-  /** Frames only: the photo shape the frame is drawn around. */
-  frameShape?: 'circle' | 'rounded';
-  status: 'published' | 'retired';
-  /** Where the file came from, kept so nobody has to guess later. */
-  source: 'yavaya-photo' | 'supplied' | 'procedural-shader' | 'procedural-vector';
-};
+export * from './identity-asset-types';
+import type { IdentityAsset, IdentityAssetKind } from './identity-asset-types';
 
 export const IDENTITY_ASSETS = manifest.assets as IdentityAsset[];
 
@@ -65,14 +34,4 @@ export function identityAsset(id: string | null | undefined, kind?: IdentityAsse
   if (!asset || asset.status !== 'published') return null;
   if (kind && asset.kind !== kind) return null;
   return asset;
-}
-
-/** `srcset` for a raster design. */
-export function assetSrcSet(asset: Pick<IdentityAsset, 'files'>): string {
-  return asset.files.map((file) => `${file.url} ${file.width}w`).join(', ');
-}
-
-/** The largest file, for places that take one URL. */
-export function assetLargest(asset: Pick<IdentityAsset, 'files'>): string {
-  return asset.files[asset.files.length - 1]!.url;
 }

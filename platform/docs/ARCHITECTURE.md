@@ -27,7 +27,7 @@ domain service, never by reaching into another domain's tables.
 
 | Domain | Owns | Never does |
 | --- | --- | --- |
-| `identity` | users, YAY IDs, verification, devices, signals, risk | authorise anything |
+| `identity` | users, YAY IDs, verification, devices, signals, risk; the public profile as its owner published it in the Identity Studio (draft, published version, saved looks, profile photos, profile reports) | authorise anything; accept a style it did not define |
 | `geography` | the location tree, privacy-preserving coordinates | hard-code a place |
 | `access` | roles, permissions, grants, rate limits | infer authority from a client |
 | `audit` | the append-only hash chain | store secrets or raw addresses |
@@ -116,6 +116,15 @@ deploy, and no call site hard-codes a number.
 Opening a market is an insert. Mexico is modelled under North America and
 marked as an expansion market — supported geographically without being misfiled
 as Central American.
+
+**A profile is data, never markup.** The Identity Studio stores a member's
+profile as a small JSON document of ids from a fixed vocabulary (surfaces,
+accents, designs from the library), parsed strictly on every save; the one
+`ProfileCanvas` component draws it for the public page and the Studio's
+preview alike, so what the member previews is what visitors get. Who sees each
+section is applied on the server before its data is read. The design library
+is files plus a generated manifest (`config/identity-assets.json`), which only
+server code imports; the browser receives the entries it shows.
 
 **Distinct layout archetypes per district.** The district registry records a
 layout archetype (`request-board`, `discovery-density`, `motion-map`, …) as

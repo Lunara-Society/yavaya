@@ -61,7 +61,10 @@
 .idp-mod.is-empty { opacity: 0.78; border-style: dashed; }
 
 /* The controls. */
-.ids-panel { position: sticky; top: calc(var(--ids-bar) + 12px); max-height: calc(100dvh - var(--ids-bar) - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 4px 14px 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+/* Holds the gallery's place while it loads, so the panel does not jump. */
+.ids-gallery-loading { min-height: 420px; }
+/* No top padding: the heading sticks to the panel's edge, so nothing scrolls visibly above it. */
+.ids-panel { position: sticky; top: calc(var(--ids-bar) + 12px); max-height: calc(100dvh - var(--ids-bar) - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 0 14px 24px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
 .ids-panel-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 -14px 6px; padding: 12px 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .ids-panel-head h2 { font-size: 1.25rem; }
 .ids-close { display: none; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-strong); cursor: pointer; }

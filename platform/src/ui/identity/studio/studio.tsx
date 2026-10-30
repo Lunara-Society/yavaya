@@ -25,11 +25,11 @@ function looksLikeConfig(value: unknown): value is IdentityConfig {
  * — the failure is confined to the preview, which tries again on the next change.
  */
 class PreviewBoundary extends Component<{ message: string; children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
+  override state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
   }
-  render() {
+  override render() {
     return this.state.failed ? <p className="ids-notice is-error">{this.props.message}</p> : this.props.children;
   }
 }

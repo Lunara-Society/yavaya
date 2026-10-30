@@ -161,7 +161,7 @@ export function allCapabilities(): Capability[] {
  * works — both are wrong, so it follows the measured email state.
  */
 function measured(capability: Capability): Capability {
-  if (capability.key === 'mercadito') {
+  if (capability.key === 'mercadito' || capability.key === 'identity_photos') {
     const media = mediaStorageAvailability();
     return media.available ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
   }

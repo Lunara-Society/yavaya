@@ -1280,6 +1280,68 @@ on the next regeneration.
 
 ---
 
+## Identity Studio — what is built and what is open
+
+"Personalizar mi perfil" (`/account/profile`), linked from the member area
+and from the member's own profile. How it is secured is in docs/SECURITY.md,
+"Identity Studio".
+
+**Works with nothing to configure** (`identity_studio`, `REAL`): designs from
+the library, 40 themes, colours, cards, typography, sections (order, folding,
+the highlighted one, presentation modes), who sees each section, favourites,
+saved looks, a live preview as computer or phone and as yourself, a member or
+a visitor, switching between the draft and the published version, drafts,
+publishing, undo,
+reporting a profile, and the moderators' queue (`/admin/profiles`, also in
+the operations panel).
+
+**Needs media storage** (`identity_photos`, measured like the Mercadito): a
+member's own profile photo, cover and background. Without storage the Studio
+does not offer the upload. Production has it (see "Media storage").
+
+**The design library.** Made and measured by `tools/identity-assets/` (its
+README says how), served from `public/identity/`. Every design is a file a
+member can apply:
+
+| Collection | Designs | What they are |
+| --- | --- | --- |
+| Sovereign Surfaces (backgrounds) | 50 | The owner's liquid-gold artwork, as supplied: **1672×941, not 4K**. 49 drawn by shaders at 3840×2160. |
+| Infinite Horizons (covers) | 50 | 8 of Yavaya's own photographs (7 at 2560 wide, the crater lake at 1920). 42 illustrated landscapes at 3840×2160. |
+| Identity Frames | 40 | Vector (SVG), sharp at any size. |
+| Personal Expression (ornaments) | 40 | Vector (SVG): corners, crests, trims. |
+| Professional Signature | 30 | 3840×2160. |
+| Signature Realms | 40 themes | Named combinations of the designs above and the Studio's settings — configurations, not image files. |
+
+That is 210 design files (575 files on disk counting every size, 23 MB) and
+40 themes. The build counts 186 distinct drawings: the other 24 designs are a
+drawing again in another metal or colour, and are variants, not new work.
+The contact sheet that came with the directive was a visual reference only;
+nothing in the library is cut from it.
+
+**Defaults, not the owner's decisions** (`PROFILE_STUDIO_RULES` unless said):
+
+| Setting | Value |
+| --- | --- |
+| Headline · about · link label · link address | 80 · 600 · 40 · 300 characters |
+| Links · languages | 5 · 6 |
+| Favourites · saved looks | 60 · 12 |
+| Own photos kept at once | 12 (older unused ones are removed on publishing) |
+| Uploads · draft saves · publishes per hour | 30 · 240 · 30 |
+| Photo visibility | Everyone or signed-in members; a profile photo cannot be "only me" |
+| Why a profile can be reported (`profile-reports.ts`) | Offensive or harassment; impersonation or deception; scam; spam or advertising; other |
+| What a moderator's reset removes | The published look and draft, the member's words, saved looks and profile photos. Not the account, listings, reputation or anything in a district. |
+
+**Not built yet:**
+
+- **Roxi inside the Studio** (the directive's priority 3): suggestions or help
+  while customising. Roxi changes nothing in a profile today.
+- **Customising the private member area** (`/account`): its layout is fixed.
+- **Side-by-side comparison of two designs.** The Studio compares the draft
+  with the published profile, and a design is previewed by applying it (undo
+  takes it back).
+
+---
+
 ## Visit statistics — nothing to configure
 
 Yavaya counts its own visits (`src/server/domains/stats`, the owner reads them

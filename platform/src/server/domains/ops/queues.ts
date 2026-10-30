@@ -24,6 +24,7 @@ export type QueueKey =
   | 'work_reports'
   | 'mercadito_reports'
   | 'community_reports'
+  | 'profile_reports'
   | 'safe_space_reports'
   | 'go_stores'
   | 'go_drivers'
@@ -50,6 +51,7 @@ QUEUES.push(
   { key: 'work_reports', href: '/admin/work', permission: 'work.moderate', query: openTickets('works') },
   { key: 'mercadito_reports', href: '/admin/mercadito', permission: 'listings.moderate', query: openTickets('mercadito') },
   { key: 'community_reports', href: '/admin/community', permission: 'moderation.queue.read', query: openTickets('community') },
+  { key: 'profile_reports', href: '/admin/profiles', permission: 'moderation.queue.read', query: openTickets('profiles') },
   { key: 'go_stores', href: '/admin/yavayago#stores', permission: 'stores.review', query: pending('go_stores', 'pending') },
   { key: 'go_drivers', href: '/admin/yavayago#drivers', permission: 'drivers.review', query: pending('go_drivers', 'pending') },
   { key: 'safe_space_reports', href: '/admin/violeta', permission: 'safe_space.review', query: pending('safe_space_reports', 'open', 'status', 'created_at') },

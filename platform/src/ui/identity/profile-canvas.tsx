@@ -9,7 +9,7 @@ import {
   type ProfileViewer,
   type Visibility,
 } from '@/config/identity-studio';
-import { assetSrcSet, type IdentityAsset } from '@/config/identity-assets';
+import { assetSrcSet, type IdentityAsset } from '@/config/identity-asset-types';
 
 /**
  * A member's profile, drawn from their configuration.
@@ -195,8 +195,6 @@ export function ProfileCanvas({ config, person, assets, viewer, labels, slots, f
         <Picture asset={bgAsset} photo={bgPhoto} focus={a.backgroundFocus} sizes="100vw" className="idp-bg-img" />
         <span className="idp-bg-veil" />
       </div>
-      {decoration ? <Decoration asset={decoration} placement={a.decoration.placement} intensity={a.decoration.intensity} /> : null}
-
       <div className="idp-wrap">
         <header className="idp-head">
           {hasCover ? (
@@ -220,6 +218,8 @@ export function ProfileCanvas({ config, person, assets, viewer, labels, slots, f
           ) : (
             <div className="idp-cover is-plain" aria-hidden="true" />
           )}
+          {/* Ornaments trim the top of the header, where they are seen on every screen and never cover words. */}
+          {decoration ? <Decoration asset={decoration} placement={a.decoration.placement} intensity={a.decoration.intensity} /> : null}
           <div className="idp-id">
             <div className={`idp-avatar shape-${a.avatar.shape}${frame ? ' has-frame' : ''}`}>
               <div className="idp-avatar-clip">
@@ -349,12 +349,16 @@ function renderModule(
   }
 }
 
-/** Ornaments around the profile, at the strength the member chose. Decorative only: hidden from screen readers. */
+/**
+ * An ornament on the header, at the strength the member chose: in its two top
+ * corners, as a crest at the top centre, or as a trim along the top edge.
+ * Decorative only, so hidden from screen readers.
+ */
 function Decoration({ asset, placement, intensity }: { asset: CanvasAsset; placement: string; intensity: number }) {
   const url = asset.files[0]!.url;
   const style = { '--idp-decor': intensity / 100 } as CSSProperties;
   if (placement === 'border') {
-    return <div className={`idp-decor is-border`} style={{ ...style, backgroundImage: `url(${url})` }} aria-hidden="true" />;
+    return <div className="idp-decor is-border" style={{ ...style, backgroundImage: `url(${url})` }} aria-hidden="true" />;
   }
   if (placement === 'header') {
     return (
@@ -366,7 +370,7 @@ function Decoration({ asset, placement, intensity }: { asset: CanvasAsset; place
   }
   return (
     <div className="idp-decor is-corners" style={style} aria-hidden="true">
-      {(['tl', 'tr', 'bl', 'br'] as const).map((corner) => (
+      {(['tl', 'tr'] as const).map((corner) => (
         // eslint-disable-next-line @next/next/no-img-element -- vector ornament
         <img key={corner} className={`at-${corner}`} src={url} alt="" />
       ))}

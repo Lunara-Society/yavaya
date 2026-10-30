@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { IdentityAppearance, IdentityConfig, ProfileModuleId } from '@/config/identity-studio';
-import type { IdentityAsset } from '@/config/identity-assets';
+import type { IdentityAsset } from '@/config/identity-asset-types';
 import type { ThemeAppearance } from '@/config/identity-themes';
 import type { CanvasAsset, CanvasLabels } from '../profile-canvas';
 import type { StudioLabels } from './labels';

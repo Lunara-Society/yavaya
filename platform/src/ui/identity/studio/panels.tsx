@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useRef, useState } from 'react';
+import { lazy, Suspense, useId, useRef, useState } from 'react';
 import {
   PROFILE_LANGUAGES,
   PROFILE_MODES,
@@ -33,9 +33,18 @@ import {
   type Visibility,
 } from '@/config/identity-studio';
 import { Choice, fmt, Range, Section, Select, Swatches } from './controls';
-import { Gallery, type GalleryTab } from './gallery';
+import type { GalleryTab } from './gallery';
 import type { CatalogItem, StudioPreset, StudioProps, StudioTheme } from './types';
 import type { StudioChangeKind } from './labels';
+
+/**
+ * The gallery shows only in the Backgrounds panel, which is not the one the
+ * Studio opens on, so it is fetched the first time it is shown instead of
+ * with the page: on an inexpensive phone every kilobyte on arrival counts
+ * (scripts/check-budget.mjs). The space it will take is held meanwhile.
+ * React's own `lazy`: next/dynamic would add more to the page than this saves.
+ */
+const Gallery = lazy(() => import('./gallery').then((m) => ({ default: m.Gallery })));
 
 export type PhotoSlot = 'avatar' | 'cover' | 'background';
 
@@ -322,21 +331,23 @@ export function BackgroundsPanel({ ctx }: { ctx: PanelContext }) {
         ) : null}
       </Section>
 
-      <Gallery
-        catalog={props.catalog}
-        labels={props.labels}
-        tab={ctx.galleryTab}
-        onTab={ctx.setGalleryTab}
-        favorites={ctx.favorites}
-        onFavorite={ctx.onFavorite}
-        appearance={a}
-        onApply={(item, slot) => {
-          if (slot === 'background') look({ background: { kind: 'asset', asset: item.id }, backgroundFocus: item.focus });
-          if (slot === 'cover') look({ cover: { kind: 'asset', asset: item.id }, coverFocus: item.focus });
-          if (slot === 'frame') look({ avatar: { ...a.avatar, frame: item.id, shape: item.frameShape === 'rounded' ? 'rounded' : 'circle' } });
-          if (slot === 'decoration') look({ decoration: { ...a.decoration, asset: item.id, placement: item.placement === 'header' || item.placement === 'border' ? item.placement : 'corners' } });
-        }}
-      />
+      <Suspense fallback={<div className="ids-gallery-loading" aria-hidden="true" />}>
+        <Gallery
+          catalog={props.catalog}
+          labels={props.labels}
+          tab={ctx.galleryTab}
+          onTab={ctx.setGalleryTab}
+          favorites={ctx.favorites}
+          onFavorite={ctx.onFavorite}
+          appearance={a}
+          onApply={(item, slot) => {
+            if (slot === 'background') look({ background: { kind: 'asset', asset: item.id }, backgroundFocus: item.focus });
+            if (slot === 'cover') look({ cover: { kind: 'asset', asset: item.id }, coverFocus: item.focus });
+            if (slot === 'frame') look({ avatar: { ...a.avatar, frame: item.id, shape: item.frameShape === 'rounded' ? 'rounded' : 'circle' } });
+            if (slot === 'decoration') look({ decoration: { ...a.decoration, asset: item.id, placement: item.placement === 'header' || item.placement === 'border' ? item.placement : 'corners' } });
+          }}
+        />
+      </Suspense>
     </>
   );
 }

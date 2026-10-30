@@ -55,17 +55,20 @@ export default async function AccountPage() {
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
+  const studioShortcut = { href: '/account/profile', labelKey: 'profile.customize' as MessageKey, glyph: '✎' };
   // Phone verification is deferred (owner's decision, 20 October 2026): no
   // shortcut to a page where nothing can be verified.
   const available = SHORTCUTS.filter((shortcut) => shortcut.href !== '/account/phone' || canVerifyPhones());
   const shortcuts = moderator
     ? [
         profileShortcut,
+        studioShortcut,
         ...available,
         { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' },
         { href: '/admin/community', labelKey: 'nav.moderation_community' as MessageKey, glyph: '⚑' },
+        { href: '/admin/profiles', labelKey: 'nav.moderation_profiles' as MessageKey, glyph: '⚑' },
       ]
-    : [profileShortcut, ...available];
+    : [profileShortcut, studioShortcut, ...available];
   // Everyone who reviews anything starts from the one inbox.
   if (ops) shortcuts.unshift({ href: '/admin', labelKey: 'nav.ops' as MessageKey, glyph: '◎' });
   if (sanctuaryReviewer) shortcuts.push({ href: '/admin/sanctuary', labelKey: 'nav.moderation_sanctuary' as MessageKey, glyph: '⚑' });
@@ -95,6 +98,18 @@ export default async function AccountPage() {
           ) : null}
         </div>
       </section>
+
+      {/* The Identity Studio's front door. Nothing changes on a click: the
+          Studio keeps a draft until the member publishes it. */}
+      <Link href="/account/profile" className="surface-card mt-6 flex min-h-touch items-center justify-between gap-4 px-5 py-4">
+        <span>
+          <span className="block text-base font-semibold tracking-tight">{t('profile.customize')}</span>
+          <span className="mt-1 block text-sm text-[var(--text-secondary)]">{t('profile.customize_lead')}</span>
+        </span>
+        <span aria-hidden="true" className="text-[var(--text-muted)]">
+          →
+        </span>
+      </Link>
 
       {/* What happened lately, newest first, at the top where it is seen. Kept
           a week (LIVE_FEED_RULES.keepDays), then deleted by the scheduler. */}

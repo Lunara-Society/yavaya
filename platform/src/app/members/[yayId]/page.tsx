@@ -17,10 +17,14 @@ import { ProfileCanvas } from '@/ui/identity/profile-canvas';
 import { assetsFor, canvasLabels } from '@/ui/identity/labels';
 import { ListingsSlot, ServicesSlot, StoreSlot, TrustSlot, WorkSlot } from '@/ui/identity/module-slots';
 import type { MessageKey } from '@/i18n/dictionaries/es';
+import { loginHref } from '@/server/auth/return-path';
+import { PROFILE_REPORT_CATEGORIES } from '@/server/domains/identity/profile-reports';
+import { reportProfileAction } from './actions';
 
 export const dynamic = 'force-dynamic';
 
 type Params = { params: Promise<{ yayId: string }> };
+type PageProps = Params & { searchParams: Promise<{ reported?: string; error?: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { yayId } = await params;
@@ -39,8 +43,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
  * members-only section is never even fetched for a visitor. The Trust Shield
  * and the badges are always shown, whatever the member chose.
  */
-export default async function MemberProfilePage({ params }: Params) {
+export default async function MemberProfilePage({ params, searchParams }: PageProps) {
   const { yayId } = await params;
+  const query = await searchParams;
+  const reportError = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const profile = await findPublicMember(db(), yayId);
   if (!profile) notFound();
@@ -111,6 +117,48 @@ export default async function MemberProfilePage({ params }: Params) {
           store: data.store ? <StoreSlot store={data.store} t={t} /> : undefined,
         }}
       />
+      {/* Anyone but the owner can report what a profile shows; a visitor signs in first. */}
+      {!isOwner ? (
+        <section id="report" className="wrap idp-report">
+          {query.reported ? (
+            <p className="mk-banner" role="status">
+              {t('profile.report.done', { code: query.reported.slice(0, 16) })}
+            </p>
+          ) : null}
+          {reportError ? <p className="mk-error">{t(reportError as MessageKey)}</p> : null}
+          {userId ? (
+            <details>
+              <summary>{t('profile.report.title')}</summary>
+              <p className="muted">{t('profile.report.lead')}</p>
+              <form action={reportProfileAction} className="mk-form">
+                <input type="hidden" name="yayId" value={formatYayId(profile.yayDigits)} />
+                <label>
+                  {t('mercadito.report.category')}
+                  <select name="category" required defaultValue="">
+                    <option value="" disabled>
+                      {t('mercadito.form.choose')}
+                    </option>
+                    {PROFILE_REPORT_CATEGORIES.map((key) => (
+                      <option key={key} value={key}>
+                        {t(`profile.report.category.${key}` as MessageKey)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  {t('mercadito.report.details')}
+                  <textarea name="details" maxLength={2000} style={{ minHeight: 80 }} />
+                </label>
+                <button className="btn btn-line" type="submit">
+                  {t('mercadito.report.submit')}
+                </button>
+              </form>
+            </details>
+          ) : (
+            <Link href={loginHref(`/members/${formatYayId(profile.yayDigits)}#report`)}>{t('profile.report.sign_in')}</Link>
+          )}
+        </section>
+      ) : null}
     </SiteShell>
   );
 }

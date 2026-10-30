@@ -122,6 +122,27 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'platform',
   },
   {
+    // Designs from the library (files in public/identity, listed in
+    // identity-assets.json), themes, sections and privacy need nothing
+    // outside Yavaya, so they work wherever the site runs.
+    key: 'identity_studio',
+    nameKey: 'capability.identity_studio.name',
+    detailKey: 'capability.identity_studio.detail',
+    state: 'REAL',
+    group: 'platform',
+  },
+  {
+    // A member's own photos need somewhere to keep them. Measured from media
+    // storage like the Mercadito; without it the Studio does not offer the
+    // upload at all. This declaration is the not-yet-configured case.
+    key: 'identity_photos',
+    nameKey: 'capability.identity_photos.name',
+    detailKey: 'capability.identity_photos.detail',
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'Needs media storage (MEDIA_STORAGE_PROVIDER with its credentials). Designs from the library work without it.',
+  },
+  {
     // Yavaya's own counts: pages seen, where visits came from, and speed on
     // real phones, per day. First-party, no cookies or identifiers; the
     // owner reads them in the panel (/admin/visitas).
