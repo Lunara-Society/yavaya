@@ -65,7 +65,8 @@
 .idp-avatar.shape-hexagon .idp-avatar-clip { border-radius: 0; clip-path: polygon(25% 4%, 75% 4%, 99% 50%, 75% 96%, 25% 96%, 1% 50%); box-shadow: none; }
 .idp-avatar-clip img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .idp-initials { display: grid; place-items: center; width: 100%; height: 100%; font: 700 calc(var(--idp-avatar) * 0.36)/1 var(--serif); color: var(--idp-accent-ink); letter-spacing: 0.02em; }
-.idp-frame { position: absolute; left: -15%; top: -15%; width: 130%; height: 130%; pointer-events: none; }
+/* max-width: none, or the base reset (img { max-width: 100% }) holds the frame to the photo's width: it squeezes into an oval and slides off centre. */
+.idp-frame { position: absolute; left: -15%; top: -15%; width: 130%; max-width: none; height: 130%; pointer-events: none; }
 
 /* Ornaments (Decoration): over the cover, under the member's photo and words. */
 .idp-id { z-index: 2; }
