@@ -239,6 +239,13 @@
       "when": 1792952207947,
       "tag": "0033_roxi_welcome_and_help",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793312556896,
+      "tag": "0034_identity_studio",
+      "breakpoints": true
     }
   ]
 }

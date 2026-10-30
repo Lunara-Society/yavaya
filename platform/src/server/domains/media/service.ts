@@ -125,10 +125,12 @@ export async function markRemoved(tx: Executor, ids: string[]): Promise<void> {
 }
 
 /**
- * Purposes whose images the public route never serves: identity documents.
- * They are read through a route that checks the reader's permission instead.
+ * Purposes whose images the public route never serves. Identity documents are
+ * read through a route that checks the reader's permission; a member's
+ * profile photos through one that checks who the member chose to show them
+ * to (/api/identity/media — a draft photo is its owner's alone).
  */
-export const PRIVATE_MEDIA_PURPOSES: readonly string[] = ['go_driver_document'];
+export const PRIVATE_MEDIA_PURPOSES: readonly string[] = ['go_driver_document', 'identity_avatar', 'identity_cover', 'identity_background'];
 
 /** An active image's bytes, for the serving route. Private images only when the caller says the reader may see them. */
 export async function readActiveImage(

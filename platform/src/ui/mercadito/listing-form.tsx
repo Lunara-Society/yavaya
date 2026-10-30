@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PlacePicker, type PlacePickerLabels } from '@/ui/components/place-picker';
 import { ImageLink, type ImageLinkLabels } from '@/ui/components/image-link';
+import { shrinkImage } from '@/ui/components/shrink-image';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
 
@@ -43,8 +44,6 @@ export type ListingFormLabels = Record<
 
 type Photo = { key: string; kind: 'existing'; mediaId: string } | { key: string; kind: 'new'; file: File; url: string };
 type Advice = 'dark' | 'blurry' | 'small';
-
-const RESIZE_EDGE = 2000;
 
 /**
  * The photo coach: a look at each new photo, in the browser, for the three
@@ -103,22 +102,6 @@ async function advise(file: File): Promise<Advice[]> {
   } catch {
     // A format the browser cannot read: no advice rather than a wrong one.
     return [];
-  }
-}
-
-async function shrink(file: File): Promise<Blob> {
-  try {
-    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const scale = Math.min(1, RESIZE_EDGE / Math.max(bitmap.width, bitmap.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(bitmap.width * scale);
-    canvas.height = Math.round(bitmap.height * scale);
-    canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-    bitmap.close();
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-    return blob && blob.size < file.size ? blob : file;
-  } catch {
-    return file;
   }
 }
 
@@ -233,7 +216,7 @@ export function ListingForm({
     setPhase('preparing');
     for (const photo of photos) {
       if (photo.kind === 'existing') form.append('keep', photo.mediaId);
-      else form.append('photos', await shrink(photo.file), photo.file.name.replace(/\.\w+$/, '') + '.jpg');
+      else form.append('photos', await shrinkImage(photo.file), photo.file.name.replace(/\.\w+$/, '') + '.jpg');
     }
 
     setPhase('submitting');

@@ -124,9 +124,47 @@ export const userProfiles = pgTable(
     /** Coordinates as supplied. Always fuzzed by precision before exposure. */
     latitude: doublePrecision('latitude'),
     longitude: doublePrecision('longitude'),
+    /**
+     * Identity Studio (domains/identity/studio.ts). The draft is the owner's
+     * working copy and is never shown to anyone else; the published copy is
+     * what visitors see. Both are validated configurations — ids and short
+     * texts, never markup or styles. Null means "as Yavaya draws it".
+     */
+    identityDraft: jsonb('identity_draft'),
+    identityPublished: jsonb('identity_published'),
+    /**
+     * Bumped by every save, publish or discard. A save names the revision it
+     * was based on, so two open windows cannot silently overwrite each other.
+     */
+    identityRevision: integer('identity_revision').notNull().default(0),
+    identityDraftSavedAt: timestamp('identity_draft_saved_at', { withTimezone: true }),
+    identityPublishedAt: timestamp('identity_published_at', { withTimezone: true }),
+    /** Design ids the member keeps under "Favoritos". */
+    identityFavorites: text('identity_favorites').array().notNull().default([]),
+    /** How the member arranged their own account page: which shortcuts and sections, in what order. */
+    dashboardLayout: jsonb('dashboard_layout'),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index('user_profiles_location_idx').on(table.locationId)],
+);
+
+/**
+ * Looks a member saved under their own name in the Identity Studio: the
+ * appearance only, never their texts or who-sees-what.
+ */
+export const identityPresets = pgTable(
+  'identity_presets',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    appearance: jsonb('appearance').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [uniqueIndex('identity_presets_user_name_key').on(table.userId, table.name)],
 );
 
 export const sessions = pgTable(

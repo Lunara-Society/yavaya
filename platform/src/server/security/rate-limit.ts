@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { rateLimitCounters } from '@/server/db/schema';
-import { MEDIA_RULES, SAFE_SPACE_RULES } from '@/config/business-rules';
+import { MEDIA_RULES, PROFILE_STUDIO_RULES, SAFE_SPACE_RULES } from '@/config/business-rules';
 
 /**
  * Server-side rate limiting.
@@ -45,6 +45,10 @@ export const RATE_LIMITS = {
    */
   phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
+  /** Identity Studio, per member: photos stored, drafts saved, profiles published. */
+  identityUpload: { bucket: 'identity_upload', limit: PROFILE_STUDIO_RULES.uploadsPerHour, windowSeconds: 60 * 60 },
+  identityDraft: { bucket: 'identity_draft', limit: PROFILE_STUDIO_RULES.draftSavesPerHour, windowSeconds: 60 * 60 },
+  identityPublish: { bucket: 'identity_publish', limit: PROFILE_STUDIO_RULES.publishesPerHour, windowSeconds: 60 * 60 },
   /** Photos brought in from a link, per member: each is a download the server makes for them. */
   imageLink: { bucket: 'image_link', limit: MEDIA_RULES.linksPerHour, windowSeconds: 60 * 60 },
   /**

@@ -1,0 +1,465 @@
+{
+  "about": "One entry per design in the Identity Studio library. build.mjs measures and derives everything else, and writes each design's name and description into the dictionaries (src/i18n/dictionaries/identity-assets.ts) as identity.asset.<id> and identity.asset.<id>.desc.",
+  "assets": [
+    {
+      "id": "surface-liquid-gold-midnight",
+      "collection": "surfaces",
+      "kind": "background",
+      "style": "liquid",
+      "colors": [
+        "gold",
+        "black",
+        "blue"
+      ],
+      "tags": [
+        "oro",
+        "gold",
+        "líquido",
+        "liquid",
+        "olas",
+        "waves",
+        "mármol",
+        "marble",
+        "partículas",
+        "particles",
+        "azul noche",
+        "navy"
+      ],
+      "placement": "background",
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "source": "supplied",
+      "master": "sources/liquid-gold-midnight.webp",
+      "name": {
+        "es": "Oro líquido de medianoche",
+        "en": "Midnight liquid gold"
+      },
+      "desc": {
+        "es": "Ondas de oro líquido y mármol sobre azul noche, con partículas de luz.",
+        "en": "Waves of liquid gold and marble over midnight blue, with specks of light."
+      }
+    },
+    {
+      "id": "horizon-moonlit-volcano-lake",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "blue",
+        "black",
+        "gold"
+      ],
+      "tags": [
+        "volcán",
+        "volcano",
+        "lago",
+        "lake",
+        "luna",
+        "moon",
+        "noche",
+        "night",
+        "palmeras",
+        "palms"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/hero-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/hero-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/hero-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/hero-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Volcán y lago a la luz de la luna",
+        "en": "Moonlit volcano and lake"
+      },
+      "desc": {
+        "es": "Fotografía nocturna de un volcán sobre un lago, con luna llena y palmeras.",
+        "en": "Night photograph of a volcano above a lake, with a full moon and palm trees."
+      }
+    },
+    {
+      "id": "horizon-market-sunset",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "orange",
+        "gold",
+        "bronze"
+      ],
+      "tags": [
+        "mercado",
+        "market",
+        "calle colonial",
+        "colonial street",
+        "atardecer",
+        "sunset",
+        "iglesia",
+        "church",
+        "volcán",
+        "volcano"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 62,
+        "y": 50
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/market-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/market-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/market-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/market-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Mercado al atardecer",
+        "en": "Market at sunset"
+      },
+      "desc": {
+        "es": "Fotografía de un mercado de calle al caer el sol, con luces cálidas.",
+        "en": "Photograph of a street market as the sun goes down, in warm light."
+      }
+    },
+    {
+      "id": "horizon-colonial-street-dusk",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "pink",
+        "blue",
+        "violet"
+      ],
+      "tags": [
+        "calle colonial",
+        "colonial street",
+        "anochecer",
+        "dusk",
+        "faroles",
+        "lanterns",
+        "adoquines",
+        "cobblestones",
+        "arquitectura",
+        "architecture"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/street-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/street-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/street-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/street-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Calle colonial al anochecer",
+        "en": "Colonial street at dusk"
+      },
+      "desc": {
+        "es": "Fotografía de una calle colonial empedrada al anochecer, entre rosa y azul.",
+        "en": "Photograph of a cobbled colonial street at dusk, between pink and blue."
+      }
+    },
+    {
+      "id": "horizon-town-panorama",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "orange",
+        "green",
+        "gold"
+      ],
+      "tags": [
+        "pueblo",
+        "town",
+        "tejados",
+        "rooftops",
+        "volcán",
+        "volcano",
+        "amanecer",
+        "sunrise",
+        "buganvilias",
+        "bougainvillea"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 52,
+        "y": 45
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/districts-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/districts-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/districts-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/districts-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Panorama del pueblo",
+        "en": "Town panorama"
+      },
+      "desc": {
+        "es": "Fotografía de un pueblo entre colinas verdes, con tejados al sol de la tarde.",
+        "en": "Photograph of a town among green hills, roofs in the afternoon sun."
+      }
+    },
+    {
+      "id": "horizon-coffee-road-volcano",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "green",
+        "gold",
+        "orange"
+      ],
+      "tags": [
+        "camino",
+        "road",
+        "cafetal",
+        "coffee",
+        "montaña",
+        "mountain",
+        "volcán",
+        "volcano",
+        "campo",
+        "countryside",
+        "hora dorada",
+        "golden hour"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 48,
+        "y": 45
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/roadmap-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/roadmap-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/roadmap-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/roadmap-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Camino del café al volcán",
+        "en": "Coffee road to the volcano"
+      },
+      "desc": {
+        "es": "Fotografía de un camino entre cafetales con un volcán al fondo.",
+        "en": "Photograph of a road through coffee farms with a volcano behind."
+      }
+    },
+    {
+      "id": "horizon-lighthouse-night",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "blue",
+        "black",
+        "gold"
+      ],
+      "tags": [
+        "faro",
+        "lighthouse",
+        "mar",
+        "sea",
+        "costa",
+        "coast",
+        "estrellas",
+        "stars",
+        "noche",
+        "night"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/status-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/status-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/status-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/status-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Faro de noche",
+        "en": "Lighthouse at night"
+      },
+      "desc": {
+        "es": "Fotografía nocturna de un faro junto al mar, con luces doradas.",
+        "en": "Night photograph of a lighthouse by the sea, with golden lights."
+      }
+    },
+    {
+      "id": "horizon-crater-lake",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "teal",
+        "blue",
+        "white"
+      ],
+      "tags": [
+        "laguna",
+        "lagoon",
+        "cráter",
+        "crater",
+        "agua",
+        "water",
+        "turquesa",
+        "turquoise",
+        "lago",
+        "lake"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 50,
+        "y": 55
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/transparency-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/transparency-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/transparency-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/transparency-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Laguna de cráter",
+        "en": "Crater lake"
+      },
+      "desc": {
+        "es": "Fotografía de una laguna turquesa dentro de un cráter volcánico.",
+        "en": "Photograph of a turquoise lagoon inside a volcanic crater."
+      }
+    },
+    {
+      "id": "horizon-white-chapel-mist",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "white",
+        "pink",
+        "green"
+      ],
+      "tags": [
+        "capilla",
+        "chapel",
+        "iglesia",
+        "church",
+        "niebla",
+        "mist",
+        "volcán",
+        "volcano",
+        "palmeras",
+        "palms",
+        "mañana",
+        "morning"
+      ],
+      "placement": "cover",
+      "focus": {
+        "x": 50,
+        "y": 55
+      },
+      "source": "yavaya-photo",
+      "master": "platform/public/art/sanctuary-church-2560.webp",
+      "reuse": [
+        {
+          "width": 960,
+          "url": "/art/sanctuary-church-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/sanctuary-church-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/sanctuary-church-2560.webp"
+        }
+      ],
+      "name": {
+        "es": "Capilla blanca en la neblina",
+        "en": "White chapel in the mist"
+      },
+      "desc": {
+        "es": "Fotografía de una capilla blanca entre neblina y verde, a primera hora.",
+        "en": "Photograph of a white chapel in mist and greenery, early in the morning."
+      }
+    }
+  ]
+}

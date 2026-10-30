@@ -1,0 +1,547 @@
+{
+  "generatedBy": "tools/identity-assets/build.mjs",
+  "assets": [
+    {
+      "id": "surface-liquid-gold-midnight",
+      "collection": "surfaces",
+      "kind": "background",
+      "style": "liquid",
+      "colors": [
+        "gold",
+        "black",
+        "blue"
+      ],
+      "palette": [
+        "#0b0c10",
+        "#3f2817",
+        "#243449",
+        "#79522e",
+        "#c89f67"
+      ],
+      "tags": [
+        "oro",
+        "gold",
+        "líquido",
+        "liquid",
+        "olas",
+        "waves",
+        "mármol",
+        "marble",
+        "partículas",
+        "particles",
+        "azul noche",
+        "navy"
+      ],
+      "width": 1672,
+      "height": 941,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/surfaces/surface-liquid-gold-midnight-480.webp"
+        },
+        {
+          "width": 1280,
+          "url": "/identity/surfaces/surface-liquid-gold-midnight-1280.webp"
+        },
+        {
+          "width": 1672,
+          "url": "/identity/surfaces/surface-liquid-gold-midnight-1672.webp"
+        }
+      ],
+      "thumb": "/identity/surfaces/surface-liquid-gold-midnight-480.webp",
+      "transparent": false,
+      "placement": "background",
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "status": "published",
+      "source": "supplied"
+    },
+    {
+      "id": "horizon-moonlit-volcano-lake",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "blue",
+        "black",
+        "gold"
+      ],
+      "palette": [
+        "#03070b",
+        "#051d34",
+        "#0e3249",
+        "#414d4e",
+        "#baa971"
+      ],
+      "tags": [
+        "volcán",
+        "volcano",
+        "lago",
+        "lake",
+        "luna",
+        "moon",
+        "noche",
+        "night",
+        "palmeras",
+        "palms"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-moonlit-volcano-lake-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/hero-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/hero-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/hero-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-moonlit-volcano-lake-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-market-sunset",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "orange",
+        "gold",
+        "bronze"
+      ],
+      "palette": [
+        "#110705",
+        "#32160e",
+        "#56301e",
+        "#815031",
+        "#cb9369"
+      ],
+      "tags": [
+        "mercado",
+        "market",
+        "calle colonial",
+        "colonial street",
+        "atardecer",
+        "sunset",
+        "iglesia",
+        "church",
+        "volcán",
+        "volcano"
+      ],
+      "width": 2560,
+      "height": 1434,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-market-sunset-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/market-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/market-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/market-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-market-sunset-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 62,
+        "y": 50
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-colonial-street-dusk",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "pink",
+        "blue",
+        "violet"
+      ],
+      "palette": [
+        "#1e181f",
+        "#463e48",
+        "#795d64",
+        "#cb724a",
+        "#b3a6c4"
+      ],
+      "tags": [
+        "calle colonial",
+        "colonial street",
+        "anochecer",
+        "dusk",
+        "faroles",
+        "lanterns",
+        "adoquines",
+        "cobblestones",
+        "arquitectura",
+        "architecture"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-colonial-street-dusk-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/street-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/street-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/street-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-colonial-street-dusk-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-town-panorama",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "orange",
+        "green",
+        "gold"
+      ],
+      "palette": [
+        "#3d2615",
+        "#5f4328",
+        "#92532f",
+        "#977b66",
+        "#e8be8b"
+      ],
+      "tags": [
+        "pueblo",
+        "town",
+        "tejados",
+        "rooftops",
+        "volcán",
+        "volcano",
+        "amanecer",
+        "sunrise",
+        "buganvilias",
+        "bougainvillea"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-town-panorama-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/districts-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/districts-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/districts-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-town-panorama-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 52,
+        "y": 45
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-coffee-road-volcano",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "green",
+        "gold",
+        "orange"
+      ],
+      "palette": [
+        "#2e2e12",
+        "#645826",
+        "#9d7a49",
+        "#d1b093",
+        "#f4d9be"
+      ],
+      "tags": [
+        "camino",
+        "road",
+        "cafetal",
+        "coffee",
+        "montaña",
+        "mountain",
+        "volcán",
+        "volcano",
+        "campo",
+        "countryside",
+        "hora dorada",
+        "golden hour"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-coffee-road-volcano-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/roadmap-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/roadmap-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/roadmap-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-coffee-road-volcano-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 48,
+        "y": 45
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-lighthouse-night",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "blue",
+        "black",
+        "gold"
+      ],
+      "palette": [
+        "#050c16",
+        "#021b36",
+        "#172433",
+        "#113655",
+        "#92867e"
+      ],
+      "tags": [
+        "faro",
+        "lighthouse",
+        "mar",
+        "sea",
+        "costa",
+        "coast",
+        "estrellas",
+        "stars",
+        "noche",
+        "night"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-lighthouse-night-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/status-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/status-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/status-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-lighthouse-night-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-crater-lake",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "teal",
+        "blue",
+        "white"
+      ],
+      "palette": [
+        "#2b3538",
+        "#3d6469",
+        "#53a5af",
+        "#a4d8e0",
+        "#ecf4f4"
+      ],
+      "tags": [
+        "laguna",
+        "lagoon",
+        "cráter",
+        "crater",
+        "agua",
+        "water",
+        "turquesa",
+        "turquoise",
+        "lago",
+        "lake"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-crater-lake-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/transparency-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/transparency-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/transparency-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-crater-lake-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 50,
+        "y": 55
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    },
+    {
+      "id": "horizon-white-chapel-mist",
+      "collection": "horizons",
+      "kind": "cover",
+      "style": "photo",
+      "colors": [
+        "white",
+        "pink",
+        "green"
+      ],
+      "palette": [
+        "#4e4748",
+        "#756f70",
+        "#9e9799",
+        "#c6babc",
+        "#f9d5ba"
+      ],
+      "tags": [
+        "capilla",
+        "chapel",
+        "iglesia",
+        "church",
+        "niebla",
+        "mist",
+        "volcán",
+        "volcano",
+        "palmeras",
+        "palms",
+        "mañana",
+        "morning"
+      ],
+      "width": 2560,
+      "height": 1440,
+      "format": "webp",
+      "files": [
+        {
+          "width": 480,
+          "url": "/identity/horizons/horizon-white-chapel-mist-480.webp"
+        },
+        {
+          "width": 960,
+          "url": "/art/sanctuary-church-960.webp"
+        },
+        {
+          "width": 1600,
+          "url": "/art/sanctuary-church-1600.webp"
+        },
+        {
+          "width": 2560,
+          "url": "/art/sanctuary-church-2560.webp"
+        }
+      ],
+      "thumb": "/identity/horizons/horizon-white-chapel-mist-480.webp",
+      "transparent": false,
+      "placement": "cover",
+      "focus": {
+        "x": 50,
+        "y": 55
+      },
+      "status": "published",
+      "source": "yavaya-photo"
+    }
+  ]
+}

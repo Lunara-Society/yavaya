@@ -277,6 +277,38 @@ export const MEDIA_RULES = {
 } as const;
 
 /**
+ * Identity Studio — "Personalizar mi perfil".
+ *
+ * Limits on what a member's profile may hold. Technical limits rather than
+ * policy, like MEDIA_RULES: they bound storage and what a public page has to
+ * render, and keep a profile from being used as free file hosting.
+ */
+export const PROFILE_STUDIO_RULES = {
+  headlineMaxLength: 80,
+  aboutMaxLength: 600,
+  maxLinks: 5,
+  linkLabelMaxLength: 40,
+  linkUrlMaxLength: 300,
+  maxLanguages: 6,
+  /** Designs a member may keep under "Favoritos". */
+  maxFavorites: 60,
+  /** Looks a member may save under their own name. */
+  maxPresets: 12,
+  presetNameMaxLength: 40,
+  /**
+   * Their own photos (profile photo, cover, background) a member may keep for
+   * the profile at once, across the draft, the published profile and saved
+   * looks. Older unused ones are removed when the profile is published.
+   */
+  maxOwnPhotos: 12,
+  uploadsPerHour: 30,
+  draftSavesPerHour: 240,
+  publishesPerHour: 30,
+  /** Far above any real profile, low enough that nobody can use it as storage. */
+  maxConfigBytes: 16_384,
+} as const;
+
+/**
  * Mercadito.
  *
  * `newSellerWindowDays` and `newSellerMaxListings` are the Master Bible's

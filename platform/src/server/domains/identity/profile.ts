@@ -15,11 +15,18 @@ import { parseYayId } from './yay-id';
 export async function findPublicMember(
   executor: Executor,
   yayIdInput: string,
-): Promise<{ userId: string; displayName: string; memberSince: Date } | null> {
-  const digits = parseYayId(decodeURIComponent(yayIdInput));
+): Promise<{ userId: string; displayName: string; memberSince: Date; yayDigits: string } | null> {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(yayIdInput);
+  } catch {
+    // A malformed escape ("%E0%A4%A") is not a member: not found, never a server error.
+    return null;
+  }
+  const digits = parseYayId(decoded);
   if (!digits) return null;
   const [row] = await executor
-    .select({ userId: users.id, displayName: users.displayName, memberSince: users.createdAt })
+    .select({ userId: users.id, displayName: users.displayName, memberSince: users.createdAt, yayDigits: users.yayId })
     .from(users)
     .where(and(eq(users.yayId, digits), isNull(users.deactivatedAt), notInArray(users.status, ['banned', 'deactivated'])))
     .limit(1);
