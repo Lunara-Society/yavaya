@@ -128,6 +128,10 @@ export async function changeNameAction(_previous: SecurityState, formData: FormD
   } catch (error) {
     if (!isDomainError(error)) throw error;
     if (error.code === 'insufficient_tokens') return { status: 'error', message: t('settings.name.no_tokens') };
+    if (error.messageKey === 'settings.name.too_soon' && typeof error.details.date === 'string') {
+      const { locale } = await getTranslator();
+      return { status: 'error', message: t('settings.name.too_soon', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(new Date(error.details.date)) }) };
+    }
     return { status: 'error', message: t((error.messageKey.startsWith('settings.name.') ? error.messageKey : 'settings.name.failed') as MessageKey) };
   }
 }

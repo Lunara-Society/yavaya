@@ -3,7 +3,8 @@ import { eq } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
 import { auditEvents, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
-import { changeDisplayName, nameChangeQuote } from '@/server/domains/identity/display-name';
+import { changeDisplayName, nameChangeQuote, recentPreviousName } from '@/server/domains/identity/display-name';
+import { NAME_RULES } from '@/config/business-rules';
 import { getBalance, grantStarterTokensForPeriod } from '@/server/domains/tokens/service';
 import { resetTransactionalData } from '../helpers/database';
 
@@ -24,7 +25,9 @@ async function member(tokens: number) {
   return userId;
 }
 
-const rename = (userId: string, name: string) => db().transaction((tx) => changeDisplayName(tx, { userId, name }));
+const rename = (userId: string, name: string, now?: Date) => db().transaction((tx) => changeDisplayName(tx, { userId, name, now }));
+/** A moment past the wait between two changes. */
+const afterWait = (days = NAME_RULES.cooldownDays + 1) => new Date(Date.now() + days * 86_400_000);
 const nameOf = async (userId: string) => (await db().select({ name: users.displayName }).from(users).where(eq(users.id, userId)))[0]?.name;
 
 beforeEach(async () => {
@@ -44,7 +47,7 @@ describe('changing the display name', () => {
     expect(await getBalance(db(), userId)).toBe(2);
     expect(await nameChangeQuote(db(), userId)).toMatchObject({ freeLeft: 0, cost: 1 });
 
-    expect(await rename(userId, 'Ana M.')).toEqual({ displayName: 'Ana M.', cost: 1 });
+    expect(await rename(userId, 'Ana M.', afterWait())).toEqual({ displayName: 'Ana M.', cost: 1 });
     expect(await getBalance(db(), userId)).toBe(1);
     expect(await nameOf(userId)).toBe('Ana M.');
   });
@@ -67,8 +70,27 @@ describe('changing the display name', () => {
   it('keeps the old name when a paid change cannot be paid', async () => {
     const userId = await member(0);
     await rename(userId, 'Ana María');
-    await expect(rename(userId, 'Ana M.')).rejects.toMatchObject({ code: 'insufficient_tokens' });
+    await expect(rename(userId, 'Ana M.', afterWait())).rejects.toMatchObject({ code: 'insufficient_tokens' });
     expect(await nameOf(userId)).toBe('Ana María');
     expect(await nameChangeQuote(db(), userId)).toMatchObject({ freeLeft: 0 });
+  });
+
+  it('spaces changes out, paid or not, and refuses one too soon without charging', async () => {
+    const userId = await member(4);
+    await rename(userId, 'Ana María');
+    await expect(rename(userId, 'Ana M.')).rejects.toMatchObject({ messageKey: 'settings.name.too_soon' });
+    await expect(rename(userId, 'Ana M.', afterWait(NAME_RULES.cooldownDays - 1))).rejects.toMatchObject({ messageKey: 'settings.name.too_soon' });
+    expect(await getBalance(db(), userId)).toBe(4);
+    expect((await nameChangeQuote(db(), userId)).allowedFrom).not.toBeNull();
+    await rename(userId, 'Ana M.', afterWait());
+    expect(await getBalance(db(), userId)).toBe(3);
+  });
+
+  it('shows the previous name on the profile for a while after a change, then stops', async () => {
+    const userId = await member(2);
+    await rename(userId, 'Ana María');
+    const [row] = await db().select({ previousDisplayName: users.previousDisplayName, nameChangedAt: users.nameChangedAt }).from(users).where(eq(users.id, userId));
+    expect(await recentPreviousName(db(), row!)).toMatchObject({ name: 'Ana' });
+    expect(await recentPreviousName(db(), row!, new Date(Date.now() + (NAME_RULES.showPreviousDays + 1) * 86_400_000))).toBeNull();
   });
 });

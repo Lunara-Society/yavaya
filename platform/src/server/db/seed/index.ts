@@ -381,6 +381,8 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'mercadito.renew_cooldown_hours', value: MERCADITO_RULES.renewCooldownHours, description: 'Hours between two paid renewals of the same listing' },
     { key: 'mercadito.renew_suggest_after_days', value: MERCADITO_RULES.renewSuggestAfterDays, description: 'Days without a renewal after which My listings suggests renewing or featuring' },
     { key: 'identity.free_name_changes', value: NAME_RULES.freeNameChanges, description: 'Display name changes a member may make free; each one after costs a token' },
+    { key: 'identity.name_change_cooldown_days', value: NAME_RULES.cooldownDays, description: 'Days between two display name changes, paid or not' },
+    { key: 'identity.previous_name_days', value: NAME_RULES.showPreviousDays, description: 'Days the previous display name is shown on the public profile' },
     { key: 'work.free_open_posts', value: WORK_RULES.freeOpenPosts, description: 'Open Trabajo posts an employer may have at once without paying' },
     { key: 'work.feature_days', value: WORK_RULES.featureDays, description: 'Days a Trabajo post stays featured after one purchase' },
     { key: 'go.feature_days', value: GO_RULES.featureDays, description: 'Days a YavayaGo store stays featured after one purchase' },

@@ -60,6 +60,9 @@ export const users = pgTable(
     displayName: text('display_name').notNull(),
     /** Times the member changed their display name after sign-up: the first is free, the rest cost a token. */
     nameChanges: integer('name_changes').notNull().default(0),
+    /** When the name last changed, and what it was: the wait between changes and the public "formerly" notice. */
+    nameChangedAt: timestamp('name_changed_at', { withTimezone: true }),
+    previousDisplayName: text('previous_display_name'),
     status: accountStatusEnum('status').notNull().default('pending_verification'),
     trustState: trustStateEnum('trust_state').notNull().default('monitored'),
 

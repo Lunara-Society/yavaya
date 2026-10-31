@@ -363,11 +363,20 @@ export const MERCADITO_RULES = {
  * change is free, each one after costs the `identity.change_name` price (a
  * token). A name stays tied to the same YAY ID and reputation, and every
  * change is audited with the old and new name, so renaming cannot shed a
- * history; a cooldown between paid changes is not specified and none is
- * applied (see CONFIGURATION.md).
+ * history. The owner asked to prevent abuse (October 2026): changes are
+ * spaced by `cooldownDays`, and the previous name stays visible on the
+ * public profile for `showPreviousDays` (see CONFIGURATION.md).
  */
 export const NAME_RULES = {
   freeNameChanges: 1,
+  /**
+   * Days between two changes, whichever they are and whatever is paid: a
+   * token buys a change, never a faster one, so nobody can hop from name to
+   * name to shake off buyers who know them.
+   */
+  cooldownDays: 30,
+  /** Days the previous name is shown on the public profile after a change. */
+  showPreviousDays: 30,
 } as const;
 
 /**

@@ -197,12 +197,14 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.name.paid`: Ya usaste tu cambio gratis. Este cuesta tokens: {cost}. Tu saldo: {balance}.
 - `settings.name.submit`: Cambiar nombre
 - `settings.name.submit_paid`: Cambiar nombre (tokens: {cost})
-- `settings.name.hint`: Tu YAY ID, tu reputación y tu historial no cambian con el nombre.
+- `settings.name.hint`: Tu YAY ID, tu reputación y tu historial no cambian con el nombre. Entre un cambio y el siguiente pasan al menos {cooldown} días, y tu nombre anterior se ve en tu perfil durante {shown} días.
 - `settings.name.done`: Listo: ahora apareces como {name}.
 - `settings.name.no_tokens`: No tienes tokens suficientes. Consíguelos gratis invitando a tus amigos, o cómpralos en Tokens.
 - `settings.name.invalid`: Escribe un nombre de 2 a 60 caracteres.
 - `settings.name.same`: Ese ya es tu nombre.
 - `settings.name.failed`: No se pudo cambiar el nombre. Inténtalo de nuevo.
+- `settings.name.too_soon`: Cambiaste tu nombre hace poco. Podrás cambiarlo de nuevo desde el {date}.
+- `settings.name.wait`: Cambiaste tu nombre hace poco. Podrás cambiarlo de nuevo desde el {date}; así nadie puede saltar de nombre en nombre.
 - `settings.sessions.title`: Dónde tienes la sesión abierta
 - `settings.sessions.this_device`: Este dispositivo
 - `settings.sessions.last_active`: Última actividad: {when}
@@ -962,6 +964,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 ## profile
 - `profile.eyebrow`: Perfil de miembro
 - `profile.since`: Miembro desde {date}
+- `profile.formerly`: Antes se llamaba «{name}» · cambió su nombre el {date}
 - `profile.medals`: Insignias
 - `profile.medals_lead`: Cada insignia se gana con evidencia real. Ninguna se compra ni se asigna a mano.
 - `profile.medal.earned`: Obtenida

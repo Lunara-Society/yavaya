@@ -253,6 +253,13 @@
       "when": 1793406827700,
       "tag": "0035_name_changes_and_renewal",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793409060840,
+      "tag": "0036_name_change_guards",
+      "breakpoints": true
     }
   ]
 }

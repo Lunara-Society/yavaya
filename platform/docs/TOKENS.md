@@ -24,7 +24,7 @@ customization, saved searches, and the first change of display name.
 | Feature a YavayaGo store for 7 days | 5 | A business wanting more orders |
 | Each open Mercadito listing beyond 5 | 1 | Resellers and dealers: people earning from volume |
 | Each open Trabajo offer beyond 2 | 3 | Employers with many openings |
-| Change display name again (after the free one) | 1 | Anyone who wants a new name |
+| Change display name again (after the free one; 30 days apart, old name shown for 30 days) | 1 | Anyone who wants a new name |
 
 Renewing is the cheap first step; featuring is the strong one. The cooldown on
 renewal keeps the two distinct: staying on top for good is featuring, and

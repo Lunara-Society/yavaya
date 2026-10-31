@@ -54,6 +54,7 @@
 .idp-names { min-width: 0; padding-top: calc(var(--idp-avatar) * 0.5); }
 .idp-name { font: var(--idp-h1-font); margin: 0; overflow-wrap: anywhere; color: var(--idp-text); }
 .idp-yay { margin: 6px 0 0; color: var(--idp-text2); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.idp-formerly { margin: 4px 0 0; color: var(--idp-text2); font-size: 0.88rem; font-style: italic; }
 .idp-headline { margin: 10px 0 0; max-width: 62ch; font-size: 1.06rem; line-height: 1.45; color: var(--idp-text); }
 
 .idp-avatar { position: relative; flex: none; width: var(--idp-avatar); aspect-ratio: 1; }
@@ -94,6 +95,7 @@
 .idp[data-header="banner"] .idp-names { padding-top: 0; }
 .idp[data-header="banner"] :is(.idp-name, .idp-headline) { color: #fbf7ef; }
 .idp[data-header="banner"] .idp-yay { color: rgba(251, 247, 239, 0.86); }
+.idp[data-header="banner"] .idp-formerly { color: rgba(251, 247, 239, 0.8); }
 .idp[data-header="banner"] .idp-avatar { --idp-avatar: clamp(76px, 13cqi, 118px); }
 @container (max-width: 640px) {
   .idp-cover { aspect-ratio: 2 / 1; }

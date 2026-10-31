@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { recentPreviousName } from '@/server/domains/identity/display-name';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
@@ -57,10 +58,11 @@ export default async function MemberProfilePage({ params, searchParams }: PagePr
   const config = await publishedIdentity(db(), profile.userId);
   const visible = visibleModules(config, viewer);
 
-  const [shield, team, data] = await Promise.all([
+  const [shield, team, data, formerly] = await Promise.all([
     buildTrustShield(db(), profile.userId),
     publicTeamRole(db(), profile.userId),
     loadModuleData(db(), { userId: profile.userId, yayDigits: profile.yayDigits, locale, modules: visible }),
+    recentPreviousName(db(), profile),
   ]);
   if (!shield) notFound();
 
@@ -94,14 +96,24 @@ export default async function MemberProfilePage({ params, searchParams }: PagePr
         person={{
           displayName: profile.displayName,
           yayId: formatYayId(profile.yayDigits),
-          team: team ? (
-            <p className="team-badge">
-              <span className="team-badge-heart">
-                <Icon name="heart" />
-              </span>
-              {t(`staff.role.${team}` as MessageKey)} · {t('profile.team')}
-            </p>
-          ) : undefined,
+          // A recent rename is said under the name, beside the badges a member cannot hide: buyers who
+          // knew them by the old name can tell it is the same person, and a fresh name cannot shed a history.
+          team:
+            team || formerly ? (
+              <>
+                {team ? (
+                  <p className="team-badge">
+                    <span className="team-badge-heart">
+                      <Icon name="heart" />
+                    </span>
+                    {t(`staff.role.${team}` as MessageKey)} · {t('profile.team')}
+                  </p>
+                ) : null}
+                {formerly ? (
+                  <p className="idp-formerly">{t('profile.formerly', { name: formerly.name, date: formatDate(formerly.changedAt, locale) })}</p>
+                ) : null}
+              </>
+            ) : undefined,
         }}
         assets={assetsFor(config)}
         viewer={viewer}

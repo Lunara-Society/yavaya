@@ -15,7 +15,14 @@ import { parseYayId } from './yay-id';
 export async function findPublicMember(
   executor: Executor,
   yayIdInput: string,
-): Promise<{ userId: string; displayName: string; memberSince: Date; yayDigits: string } | null> {
+): Promise<{
+  userId: string;
+  displayName: string;
+  memberSince: Date;
+  yayDigits: string;
+  previousDisplayName: string | null;
+  nameChangedAt: Date | null;
+} | null> {
   let decoded: string;
   try {
     decoded = decodeURIComponent(yayIdInput);
@@ -26,7 +33,14 @@ export async function findPublicMember(
   const digits = parseYayId(decoded);
   if (!digits) return null;
   const [row] = await executor
-    .select({ userId: users.id, displayName: users.displayName, memberSince: users.createdAt, yayDigits: users.yayId })
+    .select({
+      userId: users.id,
+      displayName: users.displayName,
+      memberSince: users.createdAt,
+      yayDigits: users.yayId,
+      previousDisplayName: users.previousDisplayName,
+      nameChangedAt: users.nameChangedAt,
+    })
     .from(users)
     .where(and(eq(users.yayId, digits), isNull(users.deactivatedAt), notInArray(users.status, ['banned', 'deactivated'])))
     .limit(1);

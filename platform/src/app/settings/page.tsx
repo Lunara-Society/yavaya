@@ -171,7 +171,11 @@ export default async function SettingsPage() {
             </p>
             <p className="mt-0.5 font-medium">{member.displayName}</p>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">{t('auth.yay_id_explained')}</p>
-            {nameQuote ? (
+            {nameQuote?.allowedFrom ? (
+              <p className="mt-4 text-sm text-[var(--text-secondary)]">
+                {t('settings.name.wait', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(nameQuote.allowedFrom) })}
+              </p>
+            ) : nameQuote ? (
               <ChangeNameForm
                 current={member.displayName}
                 labels={{
@@ -181,7 +185,7 @@ export default async function SettingsPage() {
                       ? t('settings.name.free')
                       : t('settings.name.paid', { cost: nameQuote.cost ?? 0, balance: nameQuote.balance }),
                   submit: nameQuote.freeLeft > 0 ? t('settings.name.submit') : t('settings.name.submit_paid', { cost: nameQuote.cost ?? 0 }),
-                  hint: t('settings.name.hint'),
+                  hint: t('settings.name.hint', { cooldown: nameQuote.cooldownDays, shown: nameQuote.showPreviousDays }),
                 }}
               />
             ) : null}

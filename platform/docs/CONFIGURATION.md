@@ -772,14 +772,20 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
 | --- | --- | --- |
 | `identity.free_name_changes` | 1 | Owner decision, October 2026 |
 | Each change after the free ones | 1 token | `billable_actions` row `identity.change_name`; owner decision |
+| `identity.name_change_cooldown_days` | 30 | Owner asked to prevent abuse; 30 is our recommendation |
+| `identity.previous_name_days` | 30 | same |
 
 The YAY ID, reputation and history do not change with the name, and every
-change is audited with the old and new name. **Open:** whether paid changes
-need a minimum interval. None is applied; a member could rename daily for a
-token each time. If that is abused, add a cooldown setting rather than raising
-the price.
+change is audited with the old and new name. Against abuse (a seller hopping
+names to shake off buyers who know them):
 
----
+- **A wait between changes.** Any two changes are at least 30 days apart,
+  free or paid; a token buys a change, never a faster one. A change refused
+  for being too soon costs nothing, and Settings says when the next one is
+  allowed instead of showing the form.
+- **The previous name stays visible.** For 30 days after a change, the public
+  profile says "Antes se llamaba «…»" under the name, next to the badges a
+  member cannot hide.
 
 ## Revenue model (owner decision, October 2026)
 
