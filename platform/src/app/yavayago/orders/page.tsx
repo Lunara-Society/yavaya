@@ -21,8 +21,11 @@ export default async function MyOrders() {
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
       <div className="wrap go-page cm-column">
-        <p>
+        <p className="go-crumbs">
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>
+          <Link href="/yavayago/mapa" className="go-live-link">
+            {t('go.live.link')}
+          </Link>
         </p>
         <h1>{t('go.orders.title')}</h1>
         {orders.length === 0 ? (

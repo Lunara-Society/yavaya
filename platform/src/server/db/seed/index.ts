@@ -397,6 +397,7 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'go.free_orders_per_month', value: GO_PLAN_RULES.freeOrdersPerMonth, description: 'YavayaGo: delivered orders a month a store gets free outside its founding year' },
     { key: 'go.plan_price_usd_cents', value: GO_PLAN_RULES.planPriceUsdCents, description: 'YavayaGo: Plan Negocio, US cents a month (billing not built yet)' },
     { key: 'go.launch_place', value: GO_TRIP_RULES.launchPlaceCode, description: 'YavayaGo: location code of the launch city, shown first' },
+    { key: 'go.public_map_min_count', value: GO_RULES.publicMapMinCount, description: 'YavayaGo public map: the fewest drivers online shown as a number; below it the map says "fewer than"' },
     { key: 'go.trip_offer_window_minutes', value: GO_TRIP_RULES.offerWindowMinutes, description: 'Viajes y mandados: minutes an open request waits for the customer to choose a driver' },
     { key: 'go.store_answer_minutes', value: GO_RULES.storeAnswerMinutes, description: 'YavayaGo: minutes a store has to accept an order before it is cancelled' },
     { key: 'go.max_open_orders_per_customer', value: GO_RULES.maxOpenOrdersPerCustomer, description: 'YavayaGo: open cash orders one customer may have at once' },

@@ -38,16 +38,25 @@ export type PlacePickerLabels = {
 };
 
 const RESTORE_EVENT = 'yavaya:place-restore';
-const pendingRestore = new WeakMap<HTMLInputElement, string>();
+const pendingRestore = new WeakMap<HTMLInputElement, { saved: string; asChoice: boolean }>();
 
 /**
  * Puts a saved place back into a picker by its hidden input (a form sent back
  * with an error). Works whether or not the picker has hydrated yet: one that
  * has hears the event, one that hasn't finds the value when it does.
+ *
+ * `asChoice` makes it count as the person choosing it (Roxi filling the form
+ * in): the form then reacts as it would to a tap, for example switching the
+ * price to that place's currency.
  */
-export function restorePlace(field: HTMLInputElement, saved: string) {
-  pendingRestore.set(field, saved);
+export function restorePlace(field: HTMLInputElement, saved: string, options: { asChoice?: boolean } = {}) {
+  pendingRestore.set(field, { saved, asChoice: options.asChoice ?? false });
   field.dispatchEvent(new Event(RESTORE_EVENT));
+}
+
+/** The hidden input of a place picker, which only `restorePlace` can fill. */
+export function isPlacePickerField(field: Element): field is HTMLInputElement {
+  return field instanceof HTMLInputElement && field.type === 'hidden' && field.dataset.placePicker !== undefined;
 }
 
 export function PlacePicker({
@@ -89,6 +98,8 @@ export function PlacePicker({
   const [active, setActive] = useState(-1);
   // Enter pressed before the results for what was typed arrived: the best match is chosen when they do.
   const enterWhenFound = useRef<string | null>(null);
+  // A place restored as the person's own choice: once it is looked up, the form hears it like a tap.
+  const chooseOnLoad = useRef(false);
   const settlements = value === 'id';
 
   // What the form posts. It lives in state and is rendered as the hidden
@@ -122,6 +133,10 @@ export function PlacePicker({
           setText(place.name);
         }
         onLoad?.(place);
+        if (chooseOnLoad.current) {
+          chooseOnLoad.current = false;
+          if (place) onChange?.(place);
+        }
       })
       .catch(() => {});
     return () => controller.abort();
@@ -134,11 +149,12 @@ export function PlacePicker({
     const node = hidden.current;
     if (!node) return;
     const take = () => {
-      const saved = pendingRestore.get(node);
-      if (!saved) return;
+      const pending = pendingRestore.get(node);
+      if (!pending) return;
       pendingRestore.delete(node);
-      setPosted(saved);
-      setLookup(saved);
+      chooseOnLoad.current = pending.asChoice;
+      setPosted(pending.saved);
+      setLookup(pending.saved);
       setPicked(null);
       setText('');
     };
@@ -202,7 +218,7 @@ export function PlacePicker({
 
   return (
     <div className={`place-picker${open ? ' is-open' : ''}`}>
-      <input type="hidden" name={name} ref={hidden} value={posted} />
+      <input type="hidden" name={name} ref={hidden} value={posted} data-place-picker="" />
       <div className="pp-field">
         <svg className="pp-pin" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="none" stroke="currentColor" strokeWidth="1.8" />

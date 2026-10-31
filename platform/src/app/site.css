@@ -1424,6 +1424,12 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
 .go-warn { color: #f0a35b; font-weight: 700; }
 .go-wide { width: 100%; justify-content: center; margin-top: 10px; }
 .go-checkout { padding: 20px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); max-width: none; }
+.go-crumbs { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 18px; }
+.go-crumbs a { display: inline-flex; align-items: center; min-height: 44px; }
+/* The way to the live map, from every YavayaGo page that has to do with a delivery. */
+.go-live-link { font-weight: 700; }
+.go-live-link::before { content: ""; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--yavayago); box-shadow: 0 0 0 3px color-mix(in srgb, var(--yavayago) 30%, transparent); }
+.go-store-map-link { margin: 8px 0 0; }
 .go-map-wrap { position: relative; }
 .go-map { width: 100%; height: 320px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line-strong); background: #0b1526; }
 .go-map-track, .go-map-drive { height: min(62vh, 520px); }
@@ -1961,6 +1967,12 @@ a.live-text:hover { text-decoration: underline; }
   align-self: center; max-width: 94%; padding: 7px 14px; border-radius: 999px; text-align: center;
   color: var(--rx-ink-2); font-size: 0.84rem; line-height: 1.45; background: rgba(248, 246, 241, 0.04); border: 1px solid var(--rx-hair);
 }
+.roxi-msg.is-you.is-unanswered { opacity: 0.6; }
+.roxi-retry {
+  display: block; margin: 8px auto 2px; min-height: 36px; padding: 0 16px; border-radius: 999px; font: inherit; font-weight: 700;
+  color: var(--rx-gold); background: transparent; border: 1px solid rgba(212, 175, 55, 0.55); cursor: pointer;
+}
+.roxi-retry:disabled { opacity: 0.5; cursor: default; }
 .roxi-msg.is-photo { padding: 4px; border-radius: 18px 18px 6px 18px; }
 .roxi-msg.is-photo img { display: block; max-width: 210px; max-height: 210px; border-radius: 14px; object-fit: cover; }
 
@@ -1985,7 +1997,10 @@ a.live-text:hover { text-decoration: underline; }
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.24), rgba(212, 175, 55, 0.05) 70%); border-color: rgba(243, 220, 138, 0.35);
 }
 
-.roxi-typing { align-self: flex-start; display: inline-flex; gap: 6px; padding: 9px 0 9px 14px; border-left: 1.5px solid rgba(212, 175, 55, 0.55); animation: roxi-rise 0.35s var(--rx-ease) both; }
+.roxi-typing { align-self: flex-start; display: inline-flex; align-items: center; gap: 10px; padding: 9px 0 9px 14px; border-left: 1.5px solid rgba(212, 175, 55, 0.55); animation: roxi-rise 0.35s var(--rx-ease) both; }
+/* Said in words as well as dots, so a wait of ten seconds never looks like nothing is happening. */
+.roxi-typing-dots { display: inline-flex; gap: 6px; }
+.roxi-typing-text { color: var(--rx-ink-2); font-size: 0.86rem; line-height: 1.4; }
 .roxi-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--rx-gold); animation: roxi-bounce 1.3s ease-in-out infinite; }
 .roxi-typing i:nth-child(2) { animation-delay: 0.15s; }
 .roxi-typing i:nth-child(3) { animation-delay: 0.3s; }
@@ -2590,7 +2605,7 @@ a.live-text:hover { text-decoration: underline; }
 .go-where { display: flex; align-items: center; gap: 10px; max-width: 660px; margin-top: 22px; padding: 8px; border-radius: 18px;
   background: var(--surface); color: var(--text); border: 1px solid color-mix(in srgb, var(--yavayago) 50%, var(--line)); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); }
 .go-where label { flex: 1; min-width: 0; }
-.go-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; max-width: 660px; margin-top: 14px; }
+.go-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; max-width: 760px; min-width: 0; margin-top: 14px; }
 .go-mode { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 16px; text-decoration: none; color: #fff; font-size: 1rem;
   background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.24); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .go-mode:hover { background: rgba(255, 255, 255, 0.18); }

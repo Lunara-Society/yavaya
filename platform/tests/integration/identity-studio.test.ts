@@ -18,6 +18,7 @@ import {
   saveIdentityDraft,
   savePreset,
   setFavorite,
+  studioRevision,
   studioState,
 } from '@/server/domains/identity/studio';
 import { profileQueue, reportProfile, resolveProfileTicket } from '@/server/domains/identity/profile-reports';
@@ -127,6 +128,83 @@ describe('drafts and publishing', () => {
     const state = await studioState(db(), userId);
     expect(state.unpublished).toBe(false);
     expect(state.draft.content.headline).toBe('Publicado');
+  });
+
+  it('never brings back an older draft: save A, edit to B, publish B, come back, save again', async () => {
+    const userId = await member();
+    const A = edit((c) => (c.content.about = 'Texto A'));
+    const B = edit((c) => (c.content.about = 'Texto B'));
+    const saved = await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: A, baseRevision: 0 }));
+    // The member edits on top of draft A and publishes B straight from the editor.
+    const published = await db().transaction((tx) => publishIdentity(tx, { userId, input: B, baseRevision: saved.revision }));
+
+    // Coming back, the Studio starts from what was published: draft A is gone, not waiting underneath.
+    const back = await studioState(db(), userId);
+    expect(back.unpublished).toBe(false);
+    expect(back.draft.content.about).toBe('Texto B');
+    expect(back.published.content.about).toBe('Texto B');
+    expect(back.revision).toBe(published.revision);
+    expect(await studioRevision(db(), userId)).toBe(published.revision);
+
+    // Saving again starts from B; A never reappears, in the draft or on the profile.
+    const C = edit((c) => (c.content.about = 'Texto C'));
+    await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: C, baseRevision: back.revision }));
+    const after = await studioState(db(), userId);
+    expect(after.draft.content.about).toBe('Texto C');
+    expect(after.published.content.about).toBe('Texto B');
+    expect(JSON.stringify(after)).not.toContain('Texto A');
+  });
+
+  it('refuses to let a window still showing draft A save over a newer publication', async () => {
+    const userId = await member();
+    const first = await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: edit((c) => (c.content.about = 'Texto A')), baseRevision: 0 }));
+    await db().transaction((tx) => publishIdentity(tx, { userId, input: edit((c) => (c.content.about = 'Texto B')), baseRevision: first.revision }));
+    // The stale window edits draft A a little and tries to save it.
+    await expect(
+      db().transaction((tx) => saveIdentityDraft(tx, { userId, input: edit((c) => (c.content.about = 'Texto A, retocado')), baseRevision: first.revision })),
+    ).rejects.toMatchObject({ code: 'conflict' });
+    await expect(
+      db().transaction((tx) => publishIdentity(tx, { userId, input: edit((c) => (c.content.about = 'Texto A, retocado')), baseRevision: first.revision })),
+    ).rejects.toMatchObject({ code: 'conflict' });
+    expect((await studioState(db(), userId)).published.content.about).toBe('Texto B');
+  });
+
+  it('treats the same publication sent twice as one, without a second revision or audit record', async () => {
+    const userId = await member();
+    const B = edit((c) => (c.content.about = 'Texto B'));
+    const once = await db().transaction((tx) => publishIdentity(tx, { userId, input: B, baseRevision: 0 }));
+    // A retry after a lost answer carries the revision the page had before the first one.
+    const again = await db().transaction((tx) => publishIdentity(tx, { userId, input: B, baseRevision: 0 }));
+    expect(again.revision).toBe(once.revision);
+    expect(await studioRevision(db(), userId)).toBe(once.revision);
+    const audits = await db().select().from(auditEvents).where(and(eq(auditEvents.action, 'identity.profile_published'), eq(auditEvents.subjectId, userId)));
+    expect(audits).toHaveLength(1);
+    // A different profile on the old revision is still a conflict.
+    await expect(db().transaction((tx) => publishIdentity(tx, { userId, input: edit((c) => (c.content.about = 'Otro')), baseRevision: 0 }))).rejects.toMatchObject({ code: 'conflict' });
+  });
+
+  it('treats the same draft saved twice as one save', async () => {
+    const userId = await member();
+    const A = edit((c) => (c.content.about = 'Texto A'));
+    const once = await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: A, baseRevision: 0 }));
+    const again = await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: A, baseRevision: 0 }));
+    expect(again.revision).toBe(once.revision);
+  });
+
+  it('keeps the draft as it was when a publication is refused', async () => {
+    const userId = await member();
+    const saved = await db().transaction((tx) => saveIdentityDraft(tx, { userId, input: edit((c) => (c.content.about = 'Mi borrador')), baseRevision: 0 }));
+    // Someone else's photo: the publication is refused.
+    const stranger = await member();
+    const theirs = await photo(stranger);
+    await expect(
+      db().transaction((tx) => publishIdentity(tx, { userId, input: edit((c) => (c.appearance.avatar = { ...c.appearance.avatar, media: theirs })), baseRevision: saved.revision })),
+    ).rejects.toBeTruthy();
+    const state = await studioState(db(), userId);
+    expect(state.unpublished).toBe(true);
+    expect(state.draft.content.about).toBe('Mi borrador');
+    expect(state.revision).toBe(saved.revision);
+    expect(state.everPublished).toBe(false);
   });
 
   it('lets a member who has not verified their email prepare a draft, but not publish', async () => {

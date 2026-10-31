@@ -423,12 +423,41 @@ async function requireStanding(executor: Executor, userId: string, purpose: 'dra
 async function lockRow(tx: Executor, userId: string) {
   await tx.insert(userProfiles).values({ userId }).onConflictDoNothing({ target: userProfiles.userId });
   const [row] = await tx
-    .select({ revision: userProfiles.identityRevision, draft: userProfiles.identityDraft, published: userProfiles.identityPublished })
+    .select({
+      revision: userProfiles.identityRevision,
+      draft: userProfiles.identityDraft,
+      published: userProfiles.identityPublished,
+      draftSavedAt: userProfiles.identityDraftSavedAt,
+      publishedAt: userProfiles.identityPublishedAt,
+    })
     .from(userProfiles)
     .where(eq(userProfiles.userId, userId))
     .limit(1)
     .for('update');
   return row!;
+}
+
+/**
+ * A profile as text with its keys in a fixed order. Postgres keeps jsonb keys
+ * in an order of its own, so two equal profiles can serialise differently;
+ * this is what "the same profile" is compared by.
+ */
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>).filter(([, v]) => v !== undefined);
+    entries.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonical(v)}`).join(',')}}`;
+  }
+  return JSON.stringify(value) ?? 'null';
+}
+
+const sameIdentity = (a: IdentityConfig, b: IdentityConfig) => canonical(a) === canonical(b);
+
+/** The revision the server holds now, so a Studio left open elsewhere can tell it has fallen behind. */
+export async function studioRevision(executor: Executor, userId: string): Promise<number> {
+  const [row] = await executor.select({ revision: userProfiles.identityRevision }).from(userProfiles).where(eq(userProfiles.userId, userId)).limit(1);
+  return row?.revision ?? 0;
 }
 
 function checkRevision(current: number, base: number): void {
@@ -444,6 +473,11 @@ export async function saveIdentityDraft(
   await requireStanding(tx, params.userId, 'draft');
   const config = parseIdentity(params.input);
   const row = await lockRow(tx, params.userId);
+  // A save whose answer was lost on the way back, sent again: the draft is
+  // already this one, so it is the same save, not a conflict.
+  if (row.revision !== params.baseRevision && row.draft && sameIdentity(readStoredIdentity(row.draft), config)) {
+    return { revision: row.revision, savedAt: row.draftSavedAt ?? params.now ?? new Date() };
+  }
   checkRevision(row.revision, params.baseRevision);
   await checkPhotos(tx, params.userId, config.appearance);
   const savedAt = params.now ?? new Date();
@@ -471,6 +505,11 @@ export async function publishIdentity(
   await requireStanding(tx, params.userId, 'publish');
   const config = parseIdentity(params.input);
   const row = await lockRow(tx, params.userId);
+  // The same publication twice (a retry after a lost answer, a double tap)
+  // changes nothing and adds no revision: visitors already see exactly this.
+  if (row.revision !== params.baseRevision && row.draft === null && row.published && sameIdentity(readStoredIdentity(row.published), config)) {
+    return { revision: row.revision, publishedAt: row.publishedAt ?? params.now ?? new Date() };
+  }
   checkRevision(row.revision, params.baseRevision);
   await checkPhotos(tx, params.userId, config.appearance);
   const before = row.published ? readStoredIdentity(row.published) : defaultIdentity();

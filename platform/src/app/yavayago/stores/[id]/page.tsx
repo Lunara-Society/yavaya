@@ -85,6 +85,11 @@ export default async function StorePage({ params, searchParams }: { params: Prom
 
         <div className="go-store-map">
           <GoMap mode="view" store={{ latitude: store.latitude, longitude: store.longitude }} labels={mapLabels(t)} />
+          <p className="go-store-map-link">
+            <Link href="/yavayago/mapa" className="go-live-link">
+              {t('go.live.link')}
+            </Link>
+          </p>
         </div>
 
         {items.length === 0 ? (

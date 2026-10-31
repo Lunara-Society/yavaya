@@ -78,6 +78,9 @@ export default async function TripsPage({ searchParams }: { searchParams: Promis
             <Link className="btn btn-line" href="/yavayago">
               {t('go.trip.food_link')}
             </Link>
+            <Link className="btn btn-line" href="/yavayago/mapa">
+              {t('go.live.link')}
+            </Link>
             <Link className="btn btn-line" href={member ? '/yavayago/driver' : '/login?next=/yavayago/driver'}>
               {driver ? t('go.home.my_driving') : t('go.trip.drive_link')}
             </Link>

@@ -1,6 +1,7 @@
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
+import { normalizeDisplayName } from '@/server/domains/identity/normalize';
 import {
   changeNameAction,
   changePasswordAction,
@@ -129,17 +130,36 @@ export function ChangePasswordForm({ labels }: { labels: { current: string; next
 }
 
 /** The display name, with what the next change costs said before the button, never after. */
-export function ChangeNameForm({ current, labels }: { current: string; labels: { label: string; note: string; submit: string; hint: string } }) {
+export function ChangeNameForm({ current, labels }: { current: string; labels: { label: string; note: string; submit: string; hint: string; unchanged: string } }) {
   const [state, action, pending] = useActionState(changeNameAction, idle);
+  const [value, setValue] = useState(current);
+  // The same name, however it is spaced, would only be refused: the button waits for a real change.
+  // The server refuses it too, before anything is charged or the free change is used.
+  const unchanged = normalizeDisplayName(value) === normalizeDisplayName(current);
   return (
     <form action={action} className="mt-4 space-y-3">
       <label className="block">
         <span className="text-sm font-medium">{labels.label}</span>
-        <input name="name" defaultValue={current} minLength={2} maxLength={60} required autoComplete="nickname" className={field} />
+        <input
+          name="name"
+          value={value}
+          onChange={(event) => setValue(event.currentTarget.value)}
+          minLength={2}
+          maxLength={60}
+          required
+          autoComplete="nickname"
+          aria-describedby="name-unchanged"
+          className={field}
+        />
       </label>
       <p className="text-sm text-[var(--text-secondary)]">{labels.note}</p>
       <Outcome state={state} />
-      <button type="submit" disabled={pending} className="min-h-touch w-full rounded-xl border px-5 font-medium disabled:opacity-60">
+      {unchanged ? (
+        <p id="name-unchanged" className="text-sm text-[var(--text-secondary)]">
+          {labels.unchanged}
+        </p>
+      ) : null}
+      <button type="submit" disabled={pending || unchanged} className="min-h-touch w-full rounded-xl border px-5 font-medium disabled:opacity-60">
         {labels.submit}
       </button>
       <p className="text-xs text-[var(--text-secondary)]">{labels.hint}</p>

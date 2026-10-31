@@ -67,6 +67,40 @@ describe('changing the display name', () => {
     expect(await nameChangeQuote(db(), userId)).toMatchObject({ freeLeft: 1 });
   });
 
+  it('never charges or uses the free change for the same name, however it is spaced', async () => {
+    const userId = await member(2);
+    await expect(rename(userId, '  Ana  ')).rejects.toMatchObject({ messageKey: 'settings.name.same' });
+    expect(await nameChangeQuote(db(), userId)).toMatchObject({ freeLeft: 1, cost: 0 });
+    // An older account whose stored name kept a double space: a spacing-only edit is still the same name.
+    await db().update(users).set({ displayName: 'Ana  María' }).where(eq(users.id, userId));
+    await expect(rename(userId, 'Ana María')).rejects.toMatchObject({ messageKey: 'settings.name.same' });
+    expect(await nameChangeQuote(db(), userId)).toMatchObject({ freeLeft: 1 });
+    expect(await getBalance(db(), userId)).toBe(2);
+  });
+
+  it('charges once when two paid changes arrive at the same moment', async () => {
+    const userId = await member(4);
+    await rename(userId, 'Ana María');
+    const at = afterWait();
+    const outcomes = await Promise.allSettled([rename(userId, 'Ana M.', at), rename(userId, 'Ana Mar', at)]);
+    expect(outcomes.filter((o) => o.status === 'fulfilled')).toHaveLength(1);
+    // The other waited for the row, then found a change had just happened: too soon, and nothing charged for it.
+    const refused = outcomes.find((o) => o.status === 'rejected') as PromiseRejectedResult;
+    expect(refused.reason).toMatchObject({ messageKey: 'settings.name.too_soon' });
+    expect(await getBalance(db(), userId)).toBe(3);
+  });
+
+  it('charges a resubmitted change once', async () => {
+    const userId = await member(4);
+    await rename(userId, 'Ana María');
+    const at = afterWait();
+    await rename(userId, 'Ana M.', at);
+    // The same form sent again (a double tap, a retry): it is now the current name, so nothing happens.
+    await expect(rename(userId, 'Ana M.', at)).rejects.toMatchObject({ messageKey: 'settings.name.same' });
+    expect(await getBalance(db(), userId)).toBe(3);
+    expect(await nameOf(userId)).toBe('Ana M.');
+  });
+
   it('keeps the old name when a paid change cannot be paid', async () => {
     const userId = await member(0);
     await rename(userId, 'Ana María');

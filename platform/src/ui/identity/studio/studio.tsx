@@ -1,16 +1,29 @@
 'use client';
 
-import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { DEFAULT_APPEARANCE, type IdentityAppearance, type IdentityConfig, type ProfileModuleId, type ProfileViewer } from '@/config/identity-studio';
 import { shrinkImage } from '@/ui/components/shrink-image';
 import { ProfileCanvas, shownLinks, type CanvasAsset } from '../profile-canvas';
-import { deletePresetAction, discardDraftAction, favoriteAction, publishAction, renamePresetAction, saveDraftAction, savePresetAction } from '@/app/account/profile/actions';
+import {
+  deletePresetAction,
+  discardDraftAction,
+  favoriteAction,
+  publishAction,
+  renamePresetAction,
+  saveDraftAction,
+  savePresetAction,
+  studioRevisionAction,
+} from '@/app/account/profile/actions';
 import { Choice } from './controls';
 import { AppearancePanel, BackgroundsPanel, changesBetween, LayoutPanel, PrivacyPanel, PublishPanel, type PanelContext, type PhotoSlot } from './panels';
 import type { GalleryTab } from './gallery';
 import type { StudioArea, StudioPreset, StudioProps } from './types';
 
-type Notice = { kind: 'ok' | 'error' | 'conflict'; text: string } | null;
+type Notice = { kind: 'ok' | 'info' | 'error' | 'conflict'; text: string; retry?: () => void } | null;
+
+/** How often a Studio coming back into view may ask the server whether it fell behind. */
+const FRESHNESS_EVERY_MS = 5_000;
 
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
@@ -88,18 +101,28 @@ export function IdentityStudio(props: StudioProps) {
   const [presets, setPresets] = useState<StudioPreset[]>(props.presets);
   const [galleryTab, setGalleryTab] = useState<GalleryTab>('backgrounds');
   const [recovery, setRecovery] = useState<IdentityConfig | null>(null);
+  const [recoveryStale, setRecoveryStale] = useState(false);
 
   const dirty = !same(draft, saved.config);
   const unpublished = !same(draft, published.config);
+  const router = useRouter();
+  // One write at a time: a double tap on Publicar must not send two publications.
+  const inFlight = useRef(false);
+  const savedRef = useRef(saved);
+  savedRef.current = saved;
+  const dirtyRef = useRef(dirty);
+  dirtyRef.current = dirty;
 
   // --- This device's copy of unsaved work -------------------------------------------------
   useEffect(() => {
     try {
-      const stored = JSON.parse(window.localStorage.getItem(props.storageKey) ?? 'null') as { config?: unknown } | null;
+      const stored = JSON.parse(window.localStorage.getItem(props.storageKey) ?? 'null') as { config?: unknown; revision?: unknown } | null;
       if (!stored) return;
       // Offered back only when it differs from what the server already holds, draft or published.
       if (looksLikeConfig(stored.config) && !sameProfile(stored.config, props.initial.draft) && !sameProfile(stored.config, props.initial.published)) {
         setRecovery(stored.config);
+        // Edits made on top of a version that has since been saved or published over: say so, never restore them quietly.
+        setRecoveryStale(typeof stored.revision === 'number' && stored.revision < props.initial.revision);
       } else {
         window.localStorage.removeItem(props.storageKey);
       }
@@ -112,14 +135,70 @@ export function IdentityStudio(props: StudioProps) {
     if (recovery) return;
     const timer = window.setTimeout(() => {
       try {
-        if (dirty) window.localStorage.setItem(props.storageKey, JSON.stringify({ config: draft, at: Date.now() }));
+        if (dirty) window.localStorage.setItem(props.storageKey, JSON.stringify({ config: draft, at: Date.now(), revision: saved.revision }));
         else window.localStorage.removeItem(props.storageKey);
       } catch {
         // Nothing to do: the draft is still on screen.
       }
     }, 400);
     return () => window.clearTimeout(timer);
-  }, [draft, dirty, recovery, props.storageKey]);
+  }, [draft, dirty, recovery, props.storageKey, saved.revision]);
+
+  // --- Never edit an old version without knowing ------------------------------------------
+  /*
+   * Another window, another device, or this tab's own Back button can leave
+   * the Studio showing a version that is no longer the latest. When it comes
+   * back into view it asks the server which revision is current: behind and
+   * with nothing unsaved here, it loads the latest; behind with unsaved
+   * edits, it says so at once rather than at the next save.
+   */
+  const lastCheck = useRef(0);
+  const checkFresh = useCallback(async () => {
+    if (inFlight.current || Date.now() - lastCheck.current < FRESHNESS_EVERY_MS) return;
+    lastCheck.current = Date.now();
+    try {
+      const result = await studioRevisionAction();
+      if (!result.ok || inFlight.current || result.revision === savedRef.current.revision) return;
+      if (dirtyRef.current) setNotice({ kind: 'conflict', text: L.conflict });
+      else router.refresh();
+    } catch {
+      // Offline: asked again the next time the page comes into view.
+    }
+  }, [router, L.conflict]);
+
+  useEffect(() => {
+    void checkFresh();
+    const onShow = (event: PageTransitionEvent) => {
+      if (event.persisted) void checkFresh();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void checkFresh();
+    };
+    window.addEventListener('pageshow', onShow);
+    window.addEventListener('focus', onVisible);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.removeEventListener('pageshow', onShow);
+      window.removeEventListener('focus', onVisible);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [checkFresh]);
+
+  // The server sent a newer version (after a refresh): take it when nothing here is unsaved.
+  useEffect(() => {
+    if (inFlight.current || props.initial.revision <= savedRef.current.revision) return;
+    if (dirtyRef.current) {
+      setNotice({ kind: 'conflict', text: L.conflict });
+      return;
+    }
+    setHistory([]);
+    setDraft(props.initial.draft);
+    setSaved({ config: props.initial.draft, revision: props.initial.revision, onServer: props.initial.unpublished });
+    setPublished({ config: props.initial.published, ever: props.initial.everPublished });
+    setNotice({ kind: 'info', text: L.refreshed });
+    // Only a newer revision from the server matters here; the rest of `initial` comes with it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.initial.revision]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -148,6 +227,7 @@ export function IdentityStudio(props: StudioProps) {
   /** Saved or published: what this device kept is no longer needed, and neither is the offer to restore it. */
   const settled = () => {
     setRecovery(null);
+    setRecoveryStale(false);
     try {
       window.localStorage.removeItem(props.storageKey);
     } catch {
@@ -169,46 +249,62 @@ export function IdentityStudio(props: StudioProps) {
     setDraft(previous);
   };
 
-  const failed = (result: { code: string; message: string }) =>
-    setNotice(result.code === 'conflict' ? { kind: 'conflict', text: L.conflict } : { kind: 'error', text: result.message });
+  const failed = (result: { code: string; message: string }, retry?: () => void) =>
+    setNotice(result.code === 'conflict' ? { kind: 'conflict', text: L.conflict } : { kind: 'error', text: result.message, retry: result.code === 'validation' ? undefined : retry });
 
+  /*
+   * The status line follows the write itself: "Publicando…" from the tap,
+   * "Publicado" only once the server said so. It used to read "Cambios sin
+   * guardar" for the whole publication, which on a slow line was seconds.
+   * What is sent is the draft as it was at the tap; anything typed while it
+   * travels stays marked unsaved afterwards.
+   */
   async function save() {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    const sending = draft;
     setBusy('save');
     setNotice(null);
     try {
-      const result = await saveDraftAction(draft, saved.revision);
+      const result = await saveDraftAction(sending, saved.revision);
       if (result.ok) {
-        setSaved({ config: draft, revision: result.revision, onServer: true });
+        setSaved({ config: sending, revision: result.revision, onServer: true });
         settled();
         setNotice({ kind: 'ok', text: L.saved });
-      } else failed(result);
+      } else failed(result, () => void save());
     } catch {
-      setNotice({ kind: 'error', text: L.network });
+      setNotice({ kind: 'error', text: L.network, retry: () => void save() });
     } finally {
+      inFlight.current = false;
       setBusy(null);
     }
   }
 
   async function publish() {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    const sending = draft;
     setBusy('publish');
     setNotice(null);
     try {
-      const result = await publishAction(draft, saved.revision);
+      const result = await publishAction(sending, saved.revision);
       if (result.ok) {
-        setSaved({ config: draft, revision: result.revision, onServer: false });
-        setPublished({ config: draft, ever: true });
+        setSaved({ config: sending, revision: result.revision, onServer: false });
+        setPublished({ config: sending, ever: true });
         settled();
         setNotice({ kind: 'ok', text: L.published });
-      } else failed(result);
+      } else failed(result, () => void publish());
     } catch {
-      setNotice({ kind: 'error', text: L.network });
+      setNotice({ kind: 'error', text: L.network, retry: () => void publish() });
     } finally {
+      inFlight.current = false;
       setBusy(null);
     }
   }
 
   async function discard() {
-    if (!window.confirm(L.confirmDiscard)) return;
+    if (inFlight.current || !window.confirm(L.confirmDiscard)) return;
+    inFlight.current = true;
     setBusy('discard');
     setNotice(null);
     try {
@@ -227,6 +323,7 @@ export function IdentityStudio(props: StudioProps) {
     } catch {
       setNotice({ kind: 'error', text: L.network });
     } finally {
+      inFlight.current = false;
       setBusy(null);
     }
   }
@@ -371,7 +468,20 @@ export function IdentityStudio(props: StudioProps) {
   }, [device, shownConfig, viewer]);
 
   const changes = changesBetween(draft, published.config);
-  const status = dirty ? L.statusUnsaved : saved.onServer ? L.statusSaved : !published.ever ? L.statusNever : unpublished ? L.statusUnpublished : L.statusPublished;
+  const status =
+    busy === 'publish'
+      ? L.publishing
+      : busy === 'save'
+        ? L.saving
+        : dirty
+          ? L.statusUnsaved
+          : saved.onServer
+            ? L.statusSaved
+            : !published.ever
+              ? L.statusNever
+              : unpublished
+                ? L.statusUnpublished
+                : L.statusPublished;
 
   const ctx: PanelContext = {
     draft,
@@ -411,7 +521,7 @@ export function IdentityStudio(props: StudioProps) {
         <div className="ids-title">
           <h1>{L.title}</h1>
           <p className="ids-status" role="status">
-            <span className={`ids-dot${dirty ? ' is-dirty' : ''}`} aria-hidden="true" />
+            <span className={`ids-dot${busy === 'save' || busy === 'publish' ? ' is-busy' : dirty ? ' is-dirty' : ''}`} aria-hidden="true" />
             {status}
           </p>
         </div>
@@ -449,11 +559,16 @@ export function IdentityStudio(props: StudioProps) {
               {L.reload}
             </button>
           ) : null}
+          {notice.retry ? (
+            <button type="button" className="btn btn-line" onClick={notice.retry} disabled={busy !== null}>
+              {L.retry}
+            </button>
+          ) : null}
         </div>
       ) : null}
       {recovery ? (
-        <div className="ids-notice is-recover" role="status">
-          <span>{L.recovered}</span>
+        <div className={`ids-notice is-recover${recoveryStale ? ' is-stale' : ''}`} role={recoveryStale ? 'alert' : 'status'}>
+          <span>{recoveryStale ? L.recoveredStale : L.recovered}</span>
           <button
             type="button"
             className="btn btn-line"

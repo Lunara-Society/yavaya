@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { isPlacePickerField, restorePlace } from '@/ui/components/place-picker';
 import { onDraft, takeDraft, type RoxiForm } from './drafts';
 
 type Field = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -45,6 +46,11 @@ export function RoxiPrefill({ form, notice }: { form: RoxiForm; notice: string }
             box.checked = chosen.has(box.value);
             box.dispatchEvent(new Event('change', { bubbles: true }));
           }
+          continue;
+        }
+        // A town goes in by its location id, through the picker itself, as if the member had chosen it.
+        if (field && isPlacePickerField(field)) {
+          restorePlace(field, String(value), { asChoice: true });
           continue;
         }
         if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) continue;

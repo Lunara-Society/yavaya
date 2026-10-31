@@ -674,6 +674,16 @@ export const GO_RULES = {
   maxPhotos: 1,
   /** Days a store stays featured ("Destacado") after one purchase. */
   featureDays: 7,
+  /**
+   * The public map (/yavayago/mapa) shows how many drivers are online only
+   * from this many up. Below it the count reads "fewer than" rather than a
+   * number, so a lone driver in a small town is not pointed out to everyone.
+   * A privacy floor chosen for the public map, not a business rule; see
+   * CONFIGURATION.md.
+   */
+  publicMapMinCount: 3,
+  /** How often the public map asks for the aggregated picture. Nothing personal is in it. */
+  publicMapPollSeconds: 30,
 } as const;
 
 /**

@@ -141,12 +141,27 @@ const LEVEL_WEIGHT: Record<string, number> = { country: 0, state: 1, city: 2, to
 export async function searchPlaces(
   executor: Executor,
   query: string,
-  options: { locale?: string; settlementsOnly?: boolean; countryCode?: string; limit?: number } = {},
+  options: { locale?: string; settlementsOnly?: boolean; countryCode?: string; limit?: number; exact?: boolean } = {},
 ): Promise<PlaceHit[]> {
   const folded = foldText(query);
   if (folded.length < PLACE_RULES.searchMinChars) return [];
   const { places } = await index(executor, options.locale ?? 'es');
   const limit = Math.min(options.limit ?? PLACE_RULES.searchMaxResults, 50);
+
+  if (options.exact) {
+    // Every place with exactly this name, biggest first — for telling whether a
+    // name is one town or several (Roxi filling in a listing). The ranked search
+    // below cannot answer that: it can bury a same-named town under longer names.
+    const same: PlaceHit[] = [];
+    for (const place of places) {
+      if (place.key !== folded) continue;
+      if (options.settlementsOnly && !(SETTLEMENT_LEVELS as readonly string[]).includes(place.level)) continue;
+      if (options.countryCode && place.countryCode !== options.countryCode) continue;
+      same.push(strip(place));
+      if (same.length >= 50) break;
+    }
+    return same;
+  }
 
   const scored: Array<{ place: Indexed; score: number }> = [];
   for (const place of places) {

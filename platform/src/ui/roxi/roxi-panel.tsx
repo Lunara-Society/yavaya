@@ -7,6 +7,7 @@ import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
 import { languageOf } from './language';
 import { roxiTools, type RoxiResultCard } from './tools';
+import { tidyText } from './tidy';
 import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
 import { reportPresence } from './presence';
@@ -36,20 +37,46 @@ export type RoxiMember = { firstName: string; yayId: string; placeName: string |
 export type RoxiOpening = 'none' | 'checkin' | 'call';
 
 type Entry =
-  | { id: number; kind: 'roxi' | 'you'; text: string }
-  | { id: number; kind: 'note'; text: string }
+  /** `unanswered`: a message the conversation stopped at; it stays on screen but out of what the next conversation is told. */
+  | { id: number; kind: 'roxi' | 'you'; text: string; unanswered?: boolean }
+  /** `retry`: a message that got no answer in time, which the note's button sends again. */
+  | { id: number; kind: 'note'; text: string; retry?: string }
   | { id: number; kind: 'photo'; url: string }
   | { id: number; kind: 'results'; cards: RoxiResultCard[]; more: boolean };
 
 /** Omit that keeps a union a union, so each kind of entry is still checked on its own. */
 type NewEntry = Entry extends infer E ? (E extends unknown ? Omit<E, 'id'> : never) : never;
 
-type Phase = 'idle' | 'connecting' | 'live' | 'ended';
+/*
+ * `paused`: the connection closed without the member ending it (a refusal
+ * that stopped the conversation, a dropped network, the time limit). Nothing
+ * is over for the member: the next message reconnects and Roxi is told what
+ * was said. `ended` is only ever the member's (or Roxi's goodbye) doing.
+ */
+type Phase = 'idle' | 'connecting' | 'live' | 'paused' | 'ended';
 type Mode = 'voice' | 'text';
 
 const PHOTO_EDGE = 1600;
-/** If an answer never comes (a dropped tool call, a stalled model), the dots stop rather than spin forever. */
+/** After this long the wait says it is taking longer than usual (it still is waiting). */
+const WAIT_SLOW_MS = 15_000;
+/** If an answer never comes (a dropped tool call, a stalled model), the wait ends with a way to send again. */
 const WAIT_GIVE_UP_MS = 45_000;
+/** The same message sent again this soon, while the first is unanswered, is a double tap, not a question. */
+const DOUBLE_SEND_MS = 8_000;
+
+/**
+ * What the wait says while one of Roxi's tools runs. Only real stages: a
+ * label is shown because that tool is running, never on a timer.
+ */
+const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'checking' | 'opening'> = {
+  search_yavaya: 'searching',
+  prepare_listing: 'preparing',
+  prepare_post: 'preparing',
+  prepare_work: 'filling',
+  my_account: 'checking',
+  open_page: 'opening',
+  open_result: 'opening',
+};
 
 /** Entries this tab keeps (sessionStorage) so closing the panel or reloading does not lose the thread. Photos stay out: they are files, not text. */
 type KeptEntry = Exclude<Entry, { kind: 'photo' }>;
@@ -272,6 +299,10 @@ export default function RoxiPanel({
   const [waiting, setWaiting] = useState(false);
   const waitingRef = useRef(false);
   waitingRef.current = waiting;
+  // The tool running now, if any, for the words of the wait; and whether the wait has gone on long.
+  const [activity, setActivity] = useState<(typeof TOOL_ACTIVITY)[string] | null>(null);
+  const [slow, setSlow] = useState(false);
+  const lastSent = useRef<{ text: string; at: number }>({ text: '', at: 0 });
   const [muted, setMuted] = useState(false);
   const [aside, setAside] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -376,10 +407,23 @@ export default function RoxiPanel({
   }, [phase, mode, speaking]);
 
   useEffect(() => {
-    if (!waiting) return;
-    const timer = window.setTimeout(() => setWaiting(false), WAIT_GIVE_UP_MS);
-    return () => window.clearTimeout(timer);
-  }, [waiting, entries.length]);
+    if (!waiting) {
+      setActivity(null);
+      setSlow(false);
+      return;
+    }
+    const slowTimer = window.setTimeout(() => setSlow(true), WAIT_SLOW_MS);
+    const timer = window.setTimeout(() => {
+      setWaiting(false);
+      // Not a silent stop: say so, and offer to send the unanswered message again.
+      const last = entriesRef.current[entriesRef.current.length - 1];
+      add({ kind: 'note', text: labels.slow, ...(last?.kind === 'you' ? { retry: last.text } : {}) });
+    }, WAIT_GIVE_UP_MS);
+    return () => {
+      window.clearTimeout(slowTimer);
+      window.clearTimeout(timer);
+    };
+  }, [waiting, entries.length, add, labels.slow]);
 
   // While the panel is open the page makes room for it on a wide screen (see site.css), and Esc tucks it away.
   useEffect(() => {
@@ -439,6 +483,7 @@ export default function RoxiPanel({
         name,
         async (parameters: Record<string, unknown>) => {
           setWaiting(true);
+          setActivity(TOOL_ACTIVITY[name] ?? null);
           try {
             return await run(parameters);
           } finally {
@@ -452,7 +497,7 @@ export default function RoxiPanel({
   /** What was said before, when switching from writing to voice: a new conversation that remembers. */
   const recap = () =>
     entries
-      .filter((entry): entry is Extract<Entry, { kind: 'roxi' | 'you' }> => entry.kind === 'roxi' || entry.kind === 'you')
+      .filter((entry): entry is Extract<Entry, { kind: 'roxi' | 'you' }> => (entry.kind === 'roxi' || entry.kind === 'you') && !entry.unanswered)
       .slice(-12)
       .map((entry) => `${entry.kind === 'you' ? 'Member' : 'Roxi'}: ${entry.text}`)
       .join('\n')
@@ -531,20 +576,27 @@ export default function RoxiPanel({
           } else {
             setWaiting(false);
           }
-          add({ kind: source === 'user' ? 'you' : 'roxi', text: said });
+          add({ kind: source === 'user' ? 'you' : 'roxi', text: source === 'user' ? said : tidyText(said) });
         },
         onModeChange: ({ mode: now }) => setSpeaking(now === 'speaking'),
         onCanSendFeedbackChange: ({ canSendFeedback }) => setCanFeedback(canSendFeedback),
         onDisconnect: (details) => {
-          // The prompt-injection guardrail ends the conversation before Roxi answers. The member's message
-          // must not sit there unanswered: say she cannot help with it, and the next message carries on.
+          /*
+           * A connection that closes while the member waits for an answer was
+           * not a goodbye: a guardrail stopped that message, or the network or
+           * the time limit cut in. The message must not sit there unanswered,
+           * and the conversation is not over — the next message reconnects,
+           * with what was said before (minus the message that stopped it).
+           */
           const last = entriesRef.current[entriesRef.current.length - 1];
-          if (details.reason !== 'user' && waitingRef.current && last?.kind === 'you') {
+          const interrupted = details.reason !== 'user' && waitingRef.current && last?.kind === 'you';
+          if (interrupted) {
+            setEntries((current) => current.map((entry) => (entry.id === last.id ? { ...entry, unanswered: true } : entry)));
             add({ kind: 'note', text: refusals[languageOf(last.text, locale)] ?? refusals[locale] ?? '' });
           }
           conversation.current = null;
           setCanFeedback(false);
-          setPhase('ended');
+          setPhase(details.reason === 'user' || (details.reason === 'agent' && !interrupted) ? 'ended' : 'paused');
           setSpeaking(false);
           setWaiting(false);
         },
@@ -571,6 +623,12 @@ export default function RoxiPanel({
   async function sendText(text: string, fromBox: boolean) {
     const said = text.trim();
     if (!said) return;
+    // A double tap (or Enter held down) sends the question once.
+    if (said === lastSent.current.text && waitingRef.current && Date.now() - lastSent.current.at < DOUBLE_SEND_MS) {
+      if (fromBox) setDraft('');
+      return;
+    }
+    lastSent.current = { text: said, at: Date.now() };
     if (fromBox) setDraft('');
     const live = conversation.current;
     add({ kind: 'you', text: said });
@@ -700,11 +758,13 @@ export default function RoxiPanel({
   }
   const welcome = entries.length === 0 && !voice;
 
+  // The wait names the stage only when a tool is actually running; otherwise she is thinking.
+  const waitLabel = activity ? labels[`activity.${activity}`] : slow ? labels.still_working : labels.thinking;
   const status =
     phase === 'connecting'
       ? labels['status.connecting']
       : waiting
-        ? labels.thinking
+        ? waitLabel
         : phase === 'live'
           ? mode === 'voice'
             ? speaking
@@ -713,7 +773,9 @@ export default function RoxiPanel({
             : labels['status.ready']
           : phase === 'ended'
             ? labels['status.ended']
-            : labels.role;
+            : phase === 'paused'
+              ? labels['status.paused']
+              : labels.role;
 
   const suggestions = [
     { key: 'find', icon: 'search', text: labels['suggest.find'] },
@@ -863,8 +925,23 @@ export default function RoxiPanel({
             if (voice && entry.id === lastSaidId) return null;
             if (entry.kind !== 'roxi') {
               return (
-                <li key={entry.id} className={`roxi-msg is-${entry.kind}`}>
+                <li key={entry.id} className={`roxi-msg is-${entry.kind}${entry.kind === 'you' && entry.unanswered ? ' is-unanswered' : ''}`}>
                   {entry.text}
+                  {entry.kind === 'note' && entry.retry ? (
+                    <button
+                      type="button"
+                      className="roxi-retry"
+                      disabled={phase === 'connecting' || waiting}
+                      onClick={() => {
+                        const again = entry.retry!;
+                        // One retry per note: the button goes once it is used.
+                        setEntries((current) => current.map((item) => (item.id === entry.id ? { id: item.id, kind: 'note', text: entry.text } : item)));
+                        void sendText(again, false);
+                      }}
+                    >
+                      {labels.retry}
+                    </button>
+                  ) : null}
                 </li>
               );
             }
@@ -898,10 +975,13 @@ export default function RoxiPanel({
             );
           })}
           {waiting && !voice ? (
-            <li className="roxi-typing" role="status" aria-label={labels.thinking}>
-              <i />
-              <i />
-              <i />
+            <li className="roxi-typing" role="status" aria-live="polite">
+              <span className="roxi-typing-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span className="roxi-typing-text">{waitLabel}</span>
             </li>
           ) : null}
         </ol>

@@ -20,7 +20,7 @@ import type { Map as MapLibreMap, Marker } from 'maplibre-gl';
  */
 
 export const MAPLIBRE_VERSION = '6.11.2';
-const STYLE = '/api/map/styles/dark';
+export const STYLE = '/api/map/styles/dark';
 
 type Point = { latitude: number; longitude: number };
 
@@ -39,13 +39,13 @@ type Tracking = {
   driver: (Point & { accuracy: number | null; heading: number | null; ageSeconds: number; live: boolean }) | null;
 };
 
-async function loadMapLibre() {
+export async function loadMapLibre() {
   const maplibre = await import('maplibre-gl');
   maplibre.setWorkerUrl(`/maplibre/${MAPLIBRE_VERSION}/maplibre-gl-worker.mjs`);
   return maplibre;
 }
 
-function pin(kind: 'store' | 'home' | 'driver' | 'me', photo?: string | null): HTMLElement {
+export function pin(kind: 'store' | 'home' | 'driver' | 'me', photo?: string | null): HTMLElement {
   const element = document.createElement('div');
   element.className = `go-pin go-pin-${kind}`;
   if (photo) {

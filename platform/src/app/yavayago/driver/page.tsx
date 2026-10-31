@@ -47,8 +47,11 @@ export default async function DriverPage({ searchParams }: { searchParams: Promi
       {approved && driver.online && !busy ? <Refresher seconds={15} /> : null}
       {busy ? <Refresher seconds={30} /> : null}
       <div className="wrap go-page cm-column">
-        <p>
+        <p className="go-crumbs">
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>
+          <Link href="/yavayago/mapa" className="go-live-link">
+            {t('go.live.link')}
+          </Link>
         </p>
         <h1>{t('go.driver.title')}</h1>
         {query.applied ? <p className="mk-banner" role="status">{t('go.driver.applied')}</p> : null}

@@ -32,3 +32,83 @@
   100% { opacity: 1; translate: none; transform: none; }
 }
 .alive .site[data-tone="yavayago"] .go-stores > .rv.in { animation: go-arrive 0.62s cubic-bezier(.2, .8, .3, 1) var(--rv-delay, 0ms) both; }
+
+/* ── Mapa en vivo (/yavayago/mapa) ──
+ * The map comes first and takes most of a phone's screen; the panel follows
+ * it on a phone and sits beside it on a wide screen. Glass and a little gold,
+ * no glow: nothing is laid over the map but the controls and, in the
+ * demonstration, the banner saying it is one. */
+.site[data-tone="yavayago"] .lm-page { padding-bottom: 40px; }
+.site[data-tone="yavayago"] .lm-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 6px 20px; padding-top: 16px; padding-bottom: 12px; }
+.site[data-tone="yavayago"] .lm-head .eyebrow { margin-bottom: 2px; }
+.site[data-tone="yavayago"] .lm-head h1 { margin: 0; font-size: clamp(1.55rem, 4.2vw, 2.3rem); line-height: 1.1; }
+.site[data-tone="yavayago"] .lm-lead { margin: 6px 0 0; max-width: 62ch; color: var(--text-2); font-size: 0.95rem; }
+.site[data-tone="yavayago"] .lm-head-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; }
+.site[data-tone="yavayago"] .lm-head-links a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
+.site[data-tone="yavayago"] .lm { display: grid; gap: 14px; width: min(100% - 2 * var(--gutter, 16px), 1320px); margin: 0 auto; }
+@media (min-width: 1000px) { .site[data-tone="yavayago"] .lm { grid-template-columns: minmax(0, 1fr) 380px; align-items: start; } }
+.site[data-tone="yavayago"] .lm-map-area { position: relative; min-width: 0; }
+.site[data-tone="yavayago"] .lm-map { width: 100%; height: 64svh; min-height: 340px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line-strong); background: #0b1526; }
+@media (min-width: 1000px) { .site[data-tone="yavayago"] .lm-map { height: calc(100svh - 64px - 160px); min-height: 520px; } }
+.site[data-tone="yavayago"] .lm-controls { position: absolute; right: 12px; top: 12px; display: grid; gap: 8px; }
+.site[data-tone="yavayago"] .lm-controls button {
+  display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; cursor: pointer;
+  font-size: 1.45rem; font-weight: 700; line-height: 1; color: var(--text);
+  background: color-mix(in srgb, var(--bg) 78%, transparent); border: 1px solid var(--line-strong);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.site[data-tone="yavayago"] .lm-controls button:disabled { opacity: 0.45; cursor: default; }
+.site[data-tone="yavayago"] .lm-controls button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.site[data-tone="yavayago"] .lm-demo-banner {
+  position: absolute; left: 12px; right: 68px; top: 12px; margin: 0; padding: 9px 12px; border-radius: 12px; text-align: center;
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 0.06em; color: #160b02; background: #f3dc8a; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.site[data-tone="yavayago"] .lm-chip {
+  position: absolute; left: 12px; bottom: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; max-width: calc(100% - 24px);
+  margin: 0; padding: 6px 6px 6px 14px; border-radius: 999px; font-size: 0.86rem; font-weight: 700;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); border: 1px solid var(--line-strong); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.site[data-tone="yavayago"] .lm-chip button { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 0; font: inherit; font-weight: 800; color: #160b02; background: var(--yavayago); cursor: pointer; }
+/* A phone keeps the heading short so the map starts high; the panel repeats what the lead says. */
+@media (max-width: 599px) {
+  .site[data-tone="yavayago"] .lm-lead { display: none; }
+  .site[data-tone="yavayago"] .lm-head { padding-top: 10px; padding-bottom: 8px; }
+  .site[data-tone="yavayago"] .lm-head-links a { min-height: 40px; }
+}
+.site[data-tone="yavayago"] .lm-failed { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 12px; padding: 24px; text-align: center; border-radius: 18px; background: rgba(5, 11, 22, 0.86); }
+.site[data-tone="yavayago"] .lm-failed p { margin: 0; max-width: 34ch; }
+.site[data-tone="yavayago"] .lm-panel { display: grid; gap: 12px; min-width: 0; }
+.site[data-tone="yavayago"] .lm-card { margin: 0; padding: 16px 18px; border-radius: 16px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 90%, transparent); }
+.site[data-tone="yavayago"] .lm-card h2 { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.3; }
+.site[data-tone="yavayago"] .lm-card p { margin: 0 0 10px; color: var(--text-2); }
+.site[data-tone="yavayago"] .lm-card .btn { min-height: 44px; }
+.site[data-tone="yavayago"] .lm-empty { border-color: color-mix(in srgb, var(--yavayago) 50%, var(--line)); }
+.site[data-tone="yavayago"] .lm-card .lm-note { font-size: 0.86rem; color: var(--text-3); }
+.site[data-tone="yavayago"] .lm-role a { font-weight: 700; }
+.site[data-tone="yavayago"] .lm-status .lm-status-h { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.site[data-tone="yavayago"] .lm-status dl { display: grid; margin: 0; }
+.site[data-tone="yavayago"] .lm-status dl > div { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--line); }
+.site[data-tone="yavayago"] .lm-status dl > div:first-child { border-top: 0; padding-top: 2px; }
+.site[data-tone="yavayago"] .lm-status dt { color: var(--text-3); font-size: 0.78rem; letter-spacing: 0.02em; }
+.site[data-tone="yavayago"] .lm-status dd { margin: 0; font-weight: 700; font-size: 0.94rem; overflow-wrap: anywhere; }
+/* The colour repeats what the words say; it never says it alone. */
+.site[data-tone="yavayago"] .lm-status dd.is-ready::before,
+.site[data-tone="yavayago"] .lm-status dd.is-warn::before,
+.site[data-tone="yavayago"] .lm-status dd.is-loading::before,
+.site[data-tone="yavayago"] .lm-status dd.is-failed::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 7px; border-radius: 50%; vertical-align: 1px; }
+.site[data-tone="yavayago"] .lm-status dd.is-ready::before { background: #3fbf7f; }
+.site[data-tone="yavayago"] .lm-status dd.is-warn::before, .site[data-tone="yavayago"] .lm-status dd.is-loading::before { background: #e0a82e; }
+.site[data-tone="yavayago"] .lm-status dd.is-failed::before { background: #e05a4f; }
+.site[data-tone="yavayago"] .lm-demo { border-color: #f3dc8a; }
+.site[data-tone="yavayago"] .lm-card .lm-demo-tag { display: inline-block; margin: 0 0 8px; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.05em; color: #160b02; background: #f3dc8a; }
+.site[data-tone="yavayago"] .lm-progress { height: 8px; margin: 10px 0; border-radius: 999px; overflow: hidden; background: var(--line); }
+.site[data-tone="yavayago"] .lm-progress span { display: block; height: 100%; background: var(--yavayago); transition: width 0.25s linear; }
+.site[data-tone="yavayago"] .lm-card .lm-eta { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.site[data-tone="yavayago"] .lm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.site[data-tone="yavayago"] .lm-how summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font-weight: 700; }
+.site[data-tone="yavayago"] .lm-how ol { display: grid; gap: 6px; margin: 4px 0 10px 18px; padding: 0; color: var(--text-2); }
+.site[data-tone="yavayago"] .lm-popup { display: grid; gap: 4px; min-width: 160px; color: #14171f; }
+.site[data-tone="yavayago"] .lm-popup a { font-weight: 700; color: #a14a05; }
+.site[data-tone="yavayago"] .go-pin-store.is-closed { filter: grayscale(0.75); opacity: 0.75; }
+.site[data-tone="yavayago"] .go-pin-driver.is-demo { outline: 3px dashed #f3dc8a; outline-offset: 5px; }
+@media (prefers-reduced-motion: reduce) { .site[data-tone="yavayago"] .lm-progress span { transition: none; } }

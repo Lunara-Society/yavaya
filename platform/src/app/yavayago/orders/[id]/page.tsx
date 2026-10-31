@@ -37,8 +37,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
       {!closed ? <Refresher seconds={20} /> : null}
       <div className="wrap go-page cm-column">
-        <p>
+        <p className="go-crumbs">
           <Link href="/yavayago/orders">← {t('go.orders.back')}</Link>
+          {!closed ? (
+            <Link href="/yavayago/mapa" className="go-live-link">
+              {t('go.live.link_track')}
+            </Link>
+          ) : null}
         </p>
         {query.placed ? (
           <p className="mk-banner" role="status">

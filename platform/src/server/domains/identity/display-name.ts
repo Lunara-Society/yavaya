@@ -87,7 +87,9 @@ export async function changeDisplayName(
     .for('update')
     .limit(1);
   if (!user) throw errors.unauthenticated();
-  if (user.displayName === name) throw errors.validation('settings.name.same');
+  // Compared as normalised on both sides: an older name stored with a double
+  // space must not make a spacing-only edit count (and be charged) as a change.
+  if (normalizeDisplayName(user.displayName) === name) throw errors.validation('settings.name.same');
 
   // Checked before any charge: a change refused for being too soon costs nothing.
   const cooldownDays = await getSetting(tx, 'identity.name_change_cooldown_days', NAME_RULES.cooldownDays);

@@ -17,8 +17,16 @@ import {
   saveIdentityDraft,
   savePreset,
   setFavorite,
+  studioRevision,
   type IdentityPreset,
 } from '@/server/domains/identity/studio';
+
+/*
+ * Every write ends by invalidating the Studio's own page. Without it the
+ * browser could keep the page as it was first loaded and show it again on
+ * Back — an older draft, presented as the current one.
+ */
+const STUDIO_PATH = '/account/profile';
 
 /**
  * The Identity Studio's actions. Each one checks who is asking on the
@@ -57,6 +65,7 @@ export async function saveDraftAction(input: unknown, baseRevision: number): Pro
     const limit = await consumeRateLimit(db(), RATE_LIMITS.identityDraft, `user:${user.userId}`);
     if (!limit.allowed) throw errors.rateLimited(limit.retryAfterSeconds);
     const result = await db().transaction((tx) => saveIdentityDraft(tx, { userId: user.userId, input, baseRevision }));
+    revalidatePath(STUDIO_PATH);
     return { ok: true, revision: result.revision, savedAt: result.savedAt.toISOString() };
   } catch (error) {
     return fail(error);
@@ -72,6 +81,7 @@ export async function publishAction(input: unknown, baseRevision: number): Promi
     const audit = { ipHash: context.addressHash, userAgentHash: await userAgentHash() };
     const result = await db().transaction((tx) => publishIdentity(tx, { userId: user.userId, input, baseRevision, audit }));
     revalidatePath(`/members/${formatYayId(user.yayId)}`);
+    revalidatePath(STUDIO_PATH);
     return { ok: true, revision: result.revision, publishedAt: result.publishedAt.toISOString() };
   } catch (error) {
     return fail(error);
@@ -82,7 +92,18 @@ export async function discardDraftAction(baseRevision: number): Promise<StudioRe
   try {
     const user = await member();
     const result = await db().transaction((tx) => discardIdentityDraft(tx, { userId: user.userId, baseRevision }));
+    revalidatePath(STUDIO_PATH);
     return { ok: true, revision: result.revision };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** The revision the server holds: a Studio that comes back into view asks, and reloads if it fell behind. */
+export async function studioRevisionAction(): Promise<StudioResult<{ revision: number }>> {
+  try {
+    const user = await member();
+    return { ok: true, revision: await studioRevision(db(), user.userId) };
   } catch (error) {
     return fail(error);
   }

@@ -1,4 +1,6 @@
 import { putDraft, type RoxiForm } from './drafts';
+import { matchPlace, type PlaceCandidate } from './places';
+import { tidyField } from './tidy';
 
 /**
  * Roxi's hands on the site: the client tools the agent calls, run here in the
@@ -86,6 +88,7 @@ export const ROXI_PAGES: Record<string, string> = {
   my_listings: '/mercadito/mine',
   yavayago: '/yavayago',
   yavayago_trips: '/yavayago/viajes',
+  yavayago_map: '/yavayago/mapa',
   services: '/services',
   services_new: '/services/new',
   work: '/work',
@@ -146,6 +149,32 @@ const FORM_PAGES: Record<string, string> = {
 const RESULT_PATH = /^\/(mercadito|yavayago\/stores|work\/posts|animals|sanctuary\/churches|services\/requests)\/[0-9a-f-]{36}$/;
 
 const reply = (value: unknown) => JSON.stringify(value);
+
+type FoundPlace = { kind: 'one'; place: PlaceCandidate } | { kind: 'several'; options: PlaceCandidate[] } | { kind: 'unknown'; asked: string } | { kind: 'unsaid' };
+
+const PLACE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * The place a listing is in, from the member's words or from the option they
+ * chose. Looked up in Yavaya's own place table (towns and cities); see
+ * places.ts for how a name is matched. A lookup that fails is the same as a
+ * place not found: the member chooses it in the form.
+ */
+async function findPlace(asked: string, chosenId: string): Promise<FoundPlace> {
+  if (chosenId && PLACE_ID.test(chosenId)) {
+    const { ok, body } = await getJson(`/api/places?id=${encodeURIComponent(chosenId)}`);
+    const place = ok ? (body as { places?: PlaceCandidate[] } | null)?.places?.[0] : undefined;
+    if (place) return { kind: 'one', place };
+  }
+  if (!asked) return chosenId ? { kind: 'unknown', asked: chosenId } : { kind: 'unsaid' };
+  const name = asked.split(',')[0]!.trim();
+  const { ok, body } = await getJson(`/api/places?settlements=1&exact=1&q=${encodeURIComponent(name)}`);
+  const candidates = ok ? ((body as { places?: PlaceCandidate[] } | null)?.places ?? []) : [];
+  const match = matchPlace(asked, candidates);
+  if (match.kind === 'one') return { kind: 'one', place: match.place };
+  if (match.kind === 'several') return { kind: 'several', options: match.options };
+  return { kind: 'unknown', asked };
+}
 const text = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
 const oneOf = (allowed: string[], value: unknown) => (typeof value === 'string' && allowed.includes(value) ? value : '');
 
@@ -197,14 +226,28 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
 
     async prepare_listing(parameters) {
       const fields: Record<string, string> = {
-        title: text(parameters.title, 90),
-        description: text(parameters.description, 4000),
+        title: tidyField(text(parameters.title, 90)).replace(/\s+/g, ' '),
+        description: tidyField(text(parameters.description, 4000)),
         category: oneOf(LISTING_CATEGORIES, parameters.category),
         condition: oneOf(LISTING_CONDITIONS, parameters.condition),
       };
       const price = text(parameters.price, 20).replace(/[^\d.,]/g, '');
       if (price) fields.price = price;
-      return prepare(ctx, 'mercadito_listing', '/mercadito/publish', fields, true);
+
+      // The town goes in as the id of a place Yavaya knows, never as words in the description.
+      const place = await findPlace(text(parameters.place, 80), text(parameters.place_id, 40));
+      if (place.kind === 'several') {
+        // Nothing opens yet, and the photos wait: Roxi asks, then calls again with the chosen place_id.
+        return reply({ ok: false, error: 'ambiguous_place', options: place.options.map((option) => ({ place_id: option.id, name: option.name, where: option.context })), ask_member: 'which of these places they mean' });
+      }
+      if (place.kind === 'one') fields.locationId = place.place.id;
+      const prepared = JSON.parse(prepare(ctx, 'mercadito_listing', '/mercadito/publish', fields, true)) as Record<string, unknown>;
+      return reply({
+        ...prepared,
+        ...(place.kind === 'one' ? { place: `${place.place.name}, ${place.place.context}` } : {}),
+        // Said but not found: the member picks it in the form. Roxi must not name a town for them.
+        ...(place.kind === 'unknown' ? { place_not_found: place.asked, member_must_choose_place: true } : {}),
+      });
     },
 
     async prepare_post(parameters) {

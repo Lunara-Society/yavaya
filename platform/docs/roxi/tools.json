@@ -53,7 +53,7 @@
   {
     "type": "client",
     "name": "prepare_listing",
-    "description": "Prepares a Mercadito listing: opens the publish form on the member's screen and fills it with this draft, attaching the photos the member sent in this conversation. Nothing is published. The member checks it, adds the price if missing and their place, and taps Publicar. Use it when the member wants to sell something, typically after they send a photo. Write the draft yourself from the photo and what they said; ask only for what you cannot see (above all the price, and the condition if unclear).",
+    "description": "Prepares a Mercadito listing: opens the publish form on the member's screen and fills it with this draft, attaching the photos the member sent in this conversation. Nothing is published. The member checks it, adds the price if missing, checks their place, and taps Publicar. Use it when the member wants to sell something, typically after they send a photo. Write the draft yourself from the photo and what they said; ask only for what you cannot see (above all the price, and the condition if unclear). If the member said where the item is, pass it as place: it is looked up among Yavaya's towns and put in the form's place field. An answer of ambiguous_place lists options: ask which one, then call again with place_id. place_not_found means the member chooses it in the form.",
     "expects_response": true,
     "response_timeout_secs": 20,
     "parameters": {
@@ -95,6 +95,14 @@
         "price": {
           "type": "string",
           "description": "Optional. ONLY if the member said the price: the number as they said it, without currency symbol (for example '350' or '1200.50'). Never suggest or guess a price into this field."
+        },
+        "place": {
+          "type": "string",
+          "description": "Optional. ONLY if the member said where the item is: the town or city as they said it, for example 'Nandaime', optionally followed by a comma and the department or country ('San Juan, Rivas'). Never take it from their profile, the photo, or a guess."
+        },
+        "place_id": {
+          "type": "string",
+          "description": "Optional. Only after an ambiguous_place answer: the place_id of the option the member chose. Never invent one."
         }
       },
       "required": [
@@ -287,6 +295,7 @@
             "my_listings",
             "yavayago",
             "yavayago_trips",
+            "yavayago_map",
             "services",
             "services_new",
             "work",

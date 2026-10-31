@@ -33,6 +33,15 @@ const KEYS = [
   'status.speaking',
   'status.ready',
   'status.ended',
+  'status.paused',
+  'activity.searching',
+  'activity.preparing',
+  'activity.filling',
+  'activity.checking',
+  'activity.opening',
+  'still_working',
+  'slow',
+  'retry',
   'you',
   'mic_denied',
   'connect_error',
@@ -132,8 +141,8 @@ export function roxiWelcomeLabels(t: Translator): RoxiWelcomeLabels {
 }
 
 /**
- * What the panel says when a message is stopped before Roxi can answer it (the
- * agent's prompt-injection guardrail ends the conversation). It is said in the
+ * What the panel says when a message is stopped before Roxi can answer it (a
+ * guardrail or a dropped connection closed the conversation). It is said in the
  * language the member was writing in, not the site's, so it is sent in both.
  */
 export function roxiRefusals(): Record<Locale, string> {

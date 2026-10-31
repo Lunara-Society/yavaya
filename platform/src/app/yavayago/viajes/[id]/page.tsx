@@ -40,8 +40,13 @@ export default async function TripPage({ params, searchParams }: { params: Promi
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
       {!closed ? <Refresher seconds={trip.status === 'open' ? 10 : 20} /> : null}
       <div className="wrap go-page cm-column">
-        <p>
+        <p className="go-crumbs">
           <Link href="/yavayago/viajes">← {t('go.trip.back')}</Link>
+          {!closed ? (
+            <Link href="/yavayago/mapa" className="go-live-link">
+              {t('go.live.link_track')}
+            </Link>
+          ) : null}
         </p>
         {query.requested ? (
           <p className="mk-banner" role="status">

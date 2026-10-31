@@ -186,6 +186,7 @@ export default async function SettingsPage() {
                       : t('settings.name.paid', { cost: nameQuote.cost ?? 0, balance: nameQuote.balance }),
                   submit: nameQuote.freeLeft > 0 ? t('settings.name.submit') : t('settings.name.submit_paid', { cost: nameQuote.cost ?? 0 }),
                   hint: t('settings.name.hint', { cooldown: nameQuote.cooldownDays, shown: nameQuote.showPreviousDays }),
+                  unchanged: t('settings.name.unchanged'),
                 }}
               />
             ) : null}

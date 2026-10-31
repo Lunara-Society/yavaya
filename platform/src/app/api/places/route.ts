@@ -18,6 +18,7 @@ const CODE = /^[a-z0-9._-]{2,80}$/;
  *
  *   ?q=chin            places whose name matches, best first
  *   ?q=…&settlements=1 towns and cities only (what a form needs)
+ *   ?q=…&exact=1       only places named exactly that (is a name one town or several?)
  *   ?id=<uuid> / ?code=<code>   one place, to show a saved choice
  *   ?near=<lat>,<lon>  the nearest town; the coordinate is not stored
  *   (nothing)          the largest cities of each country, as suggestions
@@ -68,6 +69,7 @@ export async function GET(request: Request) {
       locale,
       settlementsOnly: url.searchParams.get('settlements') === '1',
       countryCode: country && CODE.test(country) ? country : undefined,
+      exact: url.searchParams.get('exact') === '1',
     }),
     120,
   );

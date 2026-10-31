@@ -92,6 +92,10 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
               <Icon name="car" />
               <strong>{t('go.home.trips')}</strong>
             </Link>
+            <Link className="go-mode" href="/yavayago/mapa">
+              <Icon name="map" />
+              <strong>{t('go.live.link')}</strong>
+            </Link>
             {member ? (
               <Link className="go-mode go-mode-quiet" href="/yavayago/orders">
                 <Icon name="basket" />

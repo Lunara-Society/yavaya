@@ -53,6 +53,23 @@ const LEGACY_PATHS: Record<string, string> = {
   'admin.html': '/',
 };
 
+/*
+ * Rides and errands live at /yavayago/viajes and the live map at
+ * /yavayago/mapa; an English "rides" link (a tester followed one) found
+ * nothing. The store list is a section of /yavayago itself.
+ */
+const GO_ALIASES: Record<string, string> = {
+  rides: '/yavayago/viajes',
+  ride: '/yavayago/viajes',
+  trips: '/yavayago/viajes',
+  errands: '/yavayago/viajes',
+  mandados: '/yavayago/viajes',
+  map: '/yavayago/mapa',
+  'live-map': '/yavayago/mapa',
+  live: '/yavayago/mapa',
+  stores: '/yavayago#stores',
+};
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -79,11 +96,20 @@ const nextConfig: NextConfig = {
     remotePatterns: [],
   },
   async redirects() {
-    return Object.entries(LEGACY_PATHS).map(([from, to]) => ({
-      source: `/${from}{/}?`,
-      destination: to,
-      permanent: true,
-    }));
+    return [
+      ...Object.entries(LEGACY_PATHS).map(([from, to]) => ({
+        source: `/${from}{/}?`,
+        destination: to,
+        permanent: true,
+      })),
+      // Addresses people guess for YavayaGo's pages, in either language. Each
+      // lands on the one real page, never a 404 or a second copy of it.
+      ...Object.entries(GO_ALIASES).map(([from, to]) => ({
+        source: `/yavayago/${from}{/}?`,
+        destination: to,
+        permanent: true,
+      })),
+    ];
   },
   async headers() {
     return [

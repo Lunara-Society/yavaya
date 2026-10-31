@@ -198,8 +198,11 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
       {store?.status === 'approved' ? <Refresher seconds={15} /> : null}
       <div className="wrap go-page">
-        <p>
+        <p className="go-crumbs">
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>
+          <Link href="/yavayago/mapa" className="go-live-link">
+            {t('go.live.link')}
+          </Link>
         </p>
         <h1>{store ? store.name : t('go.store.apply_title')}</h1>
         {query.saved ? <p className="mk-banner" role="status">{t('go.store.saved')}</p> : null}
