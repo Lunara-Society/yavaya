@@ -164,18 +164,19 @@ nothing is typed twice:
 
 | Document | ID | Use |
 | --- | --- | --- |
-| `knowledge/sitio.md` — every public page | `0bEsOyaPEVdz0RNQKnYh` | retrieval |
-| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `fqdIaQ23FTBuUdlMlYAM` | retrieval |
-| `knowledge/reglas.md` — member-facing business rules | `SKLpYnPf1hJZmddBMqXg` | always in the prompt |
+| `knowledge/sitio.md` — every public page | `y5DBL4hsc6pmrlhb2wCs` | retrieval |
+| `knowledge/textos-de-la-plataforma.md` — every form, notice and error | `ScfGSwXaohmQu2V2dDsz` | retrieval |
+| `knowledge/reglas.md` — member-facing business rules | `8maeACd4SOSSbiefFNH5` | always in the prompt |
 | `knowledge/guia-narrada.md` — the video guide's narration | `L9cayZOfF2vdeYW1szOv` | retrieval |
 
 Retrieval uses the multilingual embedding model. The rules document leaves
 out anti-abuse thresholds and plumbing on purpose (`INTERNAL_FIELD` in the
 script).
 
-The IDs above are the current documents (the first two pinned to commit
-`5c4ed0d`, 25 October 2026); a replacement gets a new ID (see "Changing the
-knowledge"), so check the agent before trusting this table. The documents
+The IDs above are the current documents (31 October 2026: the texts and
+the rules pinned to commit `8a87b76`, the site to `92a6996`); a replacement
+gets a new ID (see "Changing the knowledge"), so check the agent before
+trusting this table. The documents
 they replaced cannot be deleted while older agent versions still name them;
 they are in no live configuration.
 
