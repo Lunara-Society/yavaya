@@ -36,3 +36,17 @@ export async function clearSessionCookie(): Promise<void> {
   const store = await cookies();
   store.delete(SESSION_RULES.cookieName);
 }
+
+/**
+ * The answer to "Mantener mi sesión iniciada", taken once by whichever sign-in
+ * finishes. The box writes it as a short-lived cookie in the browser, so it
+ * survives the trip through Google or the two-step code page. It is only a
+ * preference: all it can do is lengthen the idle window of a session the
+ * person is opening themselves.
+ */
+export async function takeRememberChoice(): Promise<boolean> {
+  const store = await cookies();
+  const chosen = store.get(SESSION_RULES.rememberCookie)?.value === '1';
+  if (store.has(SESSION_RULES.rememberCookie)) store.delete(SESSION_RULES.rememberCookie);
+  return chosen;
+}

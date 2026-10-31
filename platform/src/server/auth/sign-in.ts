@@ -3,7 +3,7 @@ import { db } from '@/server/db/client';
 import { hasUnseenWelcome } from '@/server/domains/access/welcome';
 import { isTwoStepEnabled } from '@/server/domains/identity/two-step';
 import { createSession } from './session';
-import { setSessionCookie } from './cookies';
+import { setSessionCookie, takeRememberChoice } from './cookies';
 import { requestContext } from './context';
 import { rememberGoogle } from './google-cookies';
 import { holdSecondStep } from './two-step-cookies';
@@ -26,10 +26,11 @@ export async function beginSignIn(userId: string, to: string, google?: string): 
   return completeSignIn(userId, to, google);
 }
 
-/** Opens the session. Returns where to go next. */
+/** Opens the session — remembered on this device if the person ticked the box. Returns where to go next. */
 export async function completeSignIn(userId: string, to: string, google?: string): Promise<string> {
   const context = await requestContext();
-  const session = await db().transaction((tx) => createSession(tx, { userId, ipHash: context.addressHash, userAgent: context.userAgent }));
+  const remember = await takeRememberChoice();
+  const session = await db().transaction((tx) => createSession(tx, { userId, ipHash: context.addressHash, userAgent: context.userAgent, remember }));
   await setSessionCookie(session.token, session.absoluteExpiresAt);
   if (google) await rememberGoogle(google);
   // Someone just named to the team sees their welcome first, once.

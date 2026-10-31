@@ -25,6 +25,16 @@ session's last use, which every visit moves forward (written at most every five
 minutes); the absolute lifetime is 30 days. A banned or suspended account's
 sessions stop working immediately, without waiting for a revocation sweep.
 
+**Staying signed in** (since 31 October 2026). A box at sign-in, never ticked
+for the person, makes that one session's idle window 14 days
+(`sessions.remember`). It changes nothing else — absolute lifetime,
+revocation, suspension — and it is listed as such under "where you're signed
+in". Its answer travels in a short-lived cookie the box writes
+(`yav_remember`, 15 minutes), read once when the session opens; forged, it
+can only lengthen a session the person is opening themselves. On a
+remembered device, turning on two-step needs a sign-in from the last hour,
+the one change a stranger holding the phone could use to lock the owner out.
+
 The cookie is `httpOnly` (an XSS bug cannot read it), `sameSite=lax` (a
 cross-site form post cannot carry it), and `secure` everywhere except local
 HTTP. It lives until the absolute expiry: the browser cannot see activity, so a
@@ -501,6 +511,18 @@ above:
   verification, reset and appeal pages; opening Espacio Violeta ends the
   conversation, and nothing from it is ever sent.
 
+### YavayaGo's public live map
+
+`/yavayago/mapa` and `/api/go/live-map` are public and carry no personal
+data: approved stores (public on their own pages) and counts. No position of
+a driver, a customer or a drop-off is in them; the driver count is withheld
+below a floor of 3. Exact tracking stays behind `/api/go/orders/[id]/tracking`
+and `/api/go/trips/[id]/tracking`, which check on the server that the caller
+is the order's customer (404 for anyone else, 401 signed out), and behind the
+expiring share link of a trip. Hiding a marker in the browser is never the
+protection. `tests/e2e/live-tracking.cjs` checks all of this in a real
+browser, and that the map's demonstration sends nothing but page views.
+
 ## Visit statistics
 
 `POST /api/metrics` takes page views and speed measurements from Yavaya's own
@@ -538,7 +560,9 @@ reads these tables.
   token is due for re-issue, but nothing re-issues it: that needs a point that
   can write the cookie on an ordinary page view (middleware, which runs on the
   edge without the database, or a route handler). A stolen cookie is limited by
-  the two-hour idle window and the 30-day absolute lifetime instead.
+  the idle window (two hours, or 14 days for a session the member chose to
+  keep) and the 30-day absolute lifetime instead; signing out, "sign out the
+  other devices" and suspension end it at once.
 
 Stated plainly rather than left for someone to discover.
 

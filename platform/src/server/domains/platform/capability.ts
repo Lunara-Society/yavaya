@@ -121,12 +121,16 @@ export function integrationCapabilities(): Capability[] {
       key: 'geoip',
       nameKey: 'capability.geoip.name',
       detailKey: 'capability.geoip.detail',
-      state: env.GEOIP_PROVIDER === 'unconfigured' ? 'REQUIRES_CONFIGURATION' : 'REAL',
+      /*
+       * Never REAL today, whatever GEOIP_PROVIDER says: no provider is
+       * integrated, and its only values ("none", "unconfigured") look nothing
+       * up. It used to read REAL for "none" — a setting standing in for an
+       * implementation, which is exactly what this register exists to stop.
+       */
+      state: 'REQUIRES_CONFIGURATION',
       group: 'integration',
       blockedBy:
-        env.GEOIP_PROVIDER === 'unconfigured'
-          ? 'Location is chosen manually or via explicit GPS permission. This is a degraded experience, not a broken one.'
-          : undefined,
+        'Not built: no IP-to-place provider is integrated (GEOIP_PROVIDER takes only "none" or "unconfigured", and neither looks anything up). Location is chosen by hand or with the browser\'s explicit permission — a degraded start, not a broken one. Building it needs a provider (a local IP-to-city database or an API), consent wording, and a rule to keep nothing: look up, suggest a country or city, discard.',
     },
   ];
 

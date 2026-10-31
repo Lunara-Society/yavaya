@@ -6,6 +6,7 @@ import { Icon, Mark } from '@/ui/site/icons';
 import { PageScene } from '@/ui/site/art';
 import { loginHref } from '@/server/auth/return-path';
 import { GoogleButton } from './google-button';
+import { RememberBox } from './remember-box';
 
 export type AuthNotice = 'signed_out' | 'password_reset' | 'ended' | 'cancelled' | 'failed' | 'unavailable' | 'busy' | null;
 
@@ -68,6 +69,7 @@ export function AuthCard({
             {noticeText}
           </p>
         ) : null}
+        {mode === 'login' ? <RememberBox label={t('auth.remember.label')} hint={t('auth.remember.hint', { days: SESSION_RULES.rememberedIdleDays })} /> : null}
         {google ? (
           <div className="auth-google">
             <GoogleButton href={googleHref} label={mode === 'login' ? t('auth.google.continue') : t('auth.google.register')} className="btn-google-wide" />

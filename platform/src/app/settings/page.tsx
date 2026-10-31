@@ -237,6 +237,7 @@ export default async function SettingsPage() {
                   <li key={device.id} className="rounded-lg border px-3 py-2 text-sm">
                     <span className="font-medium">{name}</span>
                     {device.id === session.sessionId ? <span className="ml-2 text-xs text-[var(--accent)]">{t('settings.sessions.this_device')}</span> : null}
+                    {device.remember ? <span className="ml-2 text-xs text-[var(--text-secondary)]">· {t('settings.sessions.remembered')}</span> : null}
                     <span className="block text-xs text-[var(--text-secondary)]">{t('settings.sessions.last_active', { when: when.format(device.lastUsedAt) })}</span>
                   </li>
                 );

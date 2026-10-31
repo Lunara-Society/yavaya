@@ -555,6 +555,15 @@ td strong { color: var(--text); }
 .mk-facts dt { color: var(--text-3); }
 .mk-desc { white-space: pre-line; }
 .mk-side { display: grid; gap: 16px; align-content: start; }
+/* Mercadito's two listing limits, said together, with where the member stands under them. */
+/* "Mantener mi sesión iniciada": a whole-row tap target, above every way in. */
+.auth-remember { display: flex; gap: 12px; align-items: flex-start; margin: 4px 0 16px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); cursor: pointer; }
+.auth-remember input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--accent); }
+.auth-remember span { display: grid; gap: 3px; }
+.auth-remember small { color: var(--text-3); font-size: 0.82rem; line-height: 1.4; }
+.mk-limits-h { margin: 0 0 8px; font-size: 1.05rem; }
+.mk-limits-list { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: var(--text-2); }
+.mk-limits-you { margin: 12px 0 0; font-weight: 700; }
 .mk-banner { padding: 12px 16px; border-radius: 12px; border: 1px solid var(--tone); background: color-mix(in srgb, var(--tone) 12%, transparent); font-weight: 700; }
 .mk-wa { background: #1f9d55; color: #fff; }
 .mk-wa:hover { filter: brightness(1.08); }
@@ -1002,6 +1011,16 @@ td strong { color: var(--text); }
 @media (max-width: 359px) {
   /* The link keeps its aria-label; only the word gives way to the mark. */
   .top-in .brand > span { display: none; }
+  /* A member's row on a 320px phone: tighter spacing, so a balance of four digits still fits. */
+  .top.is-member .top-in { gap: 4px; }
+  .top.is-member .tools { gap: 2px; }
+}
+@media (max-width: 419px) {
+  /* A member's header carries place, balance, notices, display and menu: with
+     the word as well it needed 383px, and the menu went off the edge of the
+     most common phones (360–390px). The mark alone leaves room for a balance
+     of several digits. */
+  .top.is-member .brand > span { display: none; }
 }
 .chip.bell { position: relative; }
 .bell-count {
@@ -2589,7 +2608,10 @@ a.live-text:hover { text-decoration: underline; }
 }
 
 /* YavayaGo: where you are first, then what you can ask for, as a delivery app does. */
-.go-hero { position: relative; display: grid; align-items: end; min-height: clamp(480px, 66vh, 660px); overflow: hidden; background: #120a04; color: #fff; }
+/* One column that may shrink below its content's widest line (minmax(0, 1fr)):
+   with the default track the hero grew to fit the mode cards and the place
+   field, and its overflow:hidden cut the headline off on phones. */
+.go-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; min-height: clamp(480px, 66vh, 660px); overflow: hidden; background: #120a04; color: #fff; }
 .go-hero-art { position: absolute; inset: 0; }
 .go-hero-art .district-photo { width: 100%; height: 100%; object-fit: cover; }
 .go-hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18, 10, 4, 0.35) 0%, rgba(18, 10, 4, 0.5) 45%, rgba(18, 10, 4, 0.93) 100%); }
@@ -2598,7 +2620,7 @@ a.live-text:hover { text-decoration: underline; }
   .go-hero-art::after { background: linear-gradient(90deg, rgba(18, 10, 4, 0.86) 0%, rgba(18, 10, 4, 0.6) 38%, rgba(18, 10, 4, 0) 68%), linear-gradient(180deg, rgba(18, 10, 4, 0) 60%, rgba(18, 10, 4, 0.75) 100%); }
 }
 .go-hero-art .art-note { top: 14px; bottom: auto; }
-.go-hero-in { position: relative; z-index: 1; padding-top: 96px; padding-bottom: 32px; }
+.go-hero-in { position: relative; z-index: 1; min-width: 0; padding-top: 96px; padding-bottom: 32px; }
 .go-hero .eyebrow { color: #ffb36b; }
 .go-hero h1 { max-width: 840px; color: #fff; text-shadow: 0 4px 40px rgba(0, 0, 0, 0.45); }
 .go-hero .lead { color: rgba(255, 255, 255, 0.88); }

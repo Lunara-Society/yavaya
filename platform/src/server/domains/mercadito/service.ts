@@ -80,7 +80,8 @@ export async function sellerStanding(
 ): Promise<{
   allowed: boolean;
   reasonKey?: string;
-  newSeller: { limited: boolean; used: number; max: number; windowDays: number };
+  /** `until`: when the new-account limit stops applying (null once it no longer does). */
+  newSeller: { limited: boolean; used: number; max: number; windowDays: number; until: Date | null };
 }> {
   const [user] = await executor
     .select({ status: users.status, createdAt: users.createdAt })
@@ -94,7 +95,8 @@ export async function sellerStanding(
     .where(eq(mercaditoListings.sellerUserId, userId));
   const used = row?.used ?? 0;
   const limited = Boolean(user) && isNewSeller(user!.createdAt, rules.windowDays);
-  const newSeller = { limited, used, max: rules.maxListings, windowDays: rules.windowDays };
+  const until = limited ? new Date(user!.createdAt.getTime() + rules.windowDays * 24 * 60 * 60 * 1000) : null;
+  const newSeller = { limited, used, max: rules.maxListings, windowDays: rules.windowDays, until };
 
   if (!user) return { allowed: false, reasonKey: 'error.unauthenticated', newSeller };
   const statusKey = statusBlock(user.status);

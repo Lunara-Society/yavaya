@@ -10,6 +10,10 @@ import { getTranslator } from '@/i18n/server';
 import { readSetup } from '@/server/auth/two-step-cookies';
 import { enrolmentUri, twoStepAvailable, twoStepStatus } from '@/server/domains/identity/two-step';
 import { startTwoStepAction } from '../security-actions';
+import { signOutAction } from '../actions';
+import { currentSession } from '@/server/auth/context';
+import { needsFreshSignIn } from '@/server/auth/session';
+import { SESSION_RULES } from '@/config/business-rules';
 import { ConfirmTwoStepForm, TwoStepCodeForm } from '../security-forms';
 import { signInPath } from '@/server/auth/sign-in-path';
 
@@ -53,6 +57,24 @@ export default async function TwoStepPage({ searchParams }: { searchParams: Prom
             labels={{ ...recoveryLabels, code: t('two_step.manage.code_label'), submit: t('two_step.manage.off'), title: t('two_step.manage.off'), lead: t('two_step.manage.off_lead') }}
           />
         </div>
+      </AppShell>
+    );
+  }
+
+  // A device that stays signed in must sign in again before two-step goes on (see needsFreshSignIn).
+  const session = await currentSession();
+  if (session && needsFreshSignIn(session)) {
+    return (
+      <AppShell t={t} language={language} theme={theme} member={member}>
+        <h1 className="text-2xl font-semibold tracking-tight">{t('two_step.title')}</h1>
+        <p className="mt-3" role="status">
+          {t('two_step.error.fresh_sign_in', { minutes: SESSION_RULES.freshSignInMinutes })}
+        </p>
+        <form action={signOutAction} className="mt-5">
+          <button type="submit" className="min-h-touch w-full rounded-xl px-5 font-medium" style={{ backgroundColor: 'var(--accent)', color: 'var(--accent-contrast-text)' }}>
+            {t('two_step.fresh_sign_in.action')}
+          </button>
+        </form>
       </AppShell>
     );
   }

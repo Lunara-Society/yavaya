@@ -181,6 +181,23 @@ export const SESSION_RULES = {
   /** Activity is written at most this often, so a busy page is not a database write per request. */
   touchAfterMinutes: 5,
   absoluteTimeoutDays: 30,
+  /**
+   * "Mantener mi sesión iniciada" (a box the member ticks at sign-in, never
+   * ticked for them): signed out after this many days without use instead of
+   * two hours, still within the 30-day absolute lifetime. Requested by the
+   * owner's stabilisation brief (October 2026); the figure is ours, chosen
+   * as the common practice for an explicit opt-in, and documented in
+   * CONFIGURATION.md.
+   */
+  rememberedIdleDays: 14,
+  /** The short-lived cookie that carries the box's answer to whichever sign-in finishes (password, Google, two-step). */
+  rememberCookie: 'yav_remember',
+  /**
+   * A remembered session older than this must sign in again before turning
+   * on two-step: on a device someone else can pick up, the one thing a
+   * stranger could do to lock the owner out needs a fresh sign-in.
+   */
+  freshSignInMinutes: 60,
   /** Sessions are re-issued this often to limit the value of a stolen cookie. */
   rotateAfterMinutes: 60,
   /**

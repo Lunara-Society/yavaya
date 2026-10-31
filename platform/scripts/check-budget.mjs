@@ -18,6 +18,13 @@
  * layout), and adding up seven files that no page ever loads together
  * measured nothing anyone downloads. A page counts the root layout's styles,
  * every layout above it, and its own.
+ *
+ * 31 October 2026, 135 → 137 KB: the profile Studio (/account/profile, the
+ * heaviest page) grew by about 1.5 KB for the checks that stop an old version
+ * of a profile from coming back — asking the server which version is current
+ * when the page returns to view, one write at a time, a retry, and a status
+ * line that follows the write. Its labels already come from the server and
+ * its gallery already loads on demand; nothing lighter does the same job.
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -25,7 +32,7 @@ import { gzipSync } from 'node:zlib';
 
 const BUDGET = {
   /** Compressed JavaScript any one page loads on arrival. */
-  pageJsKb: 135,
+  pageJsKb: 137,
   /** Compressed CSS any one page loads on arrival. */
   cssKb: 60,
 };

@@ -1,0 +1,1 @@
+ALTER TABLE "sessions" ADD COLUMN "remember" boolean DEFAULT false NOT NULL;

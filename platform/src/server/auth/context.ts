@@ -50,7 +50,7 @@ export async function currentSession(): Promise<ValidatedSession | null> {
   if (!token) return null;
   const session = await validateSession(db(), token);
   if (session && Date.now() - session.lastUsedAt.getTime() >= SESSION_RULES.touchAfterMinutes * 60_000) {
-    await touchSession(db(), session.sessionId).catch(() => {});
+    await touchSession(db(), session.sessionId, session.remember).catch(() => {});
   }
   return session;
 }

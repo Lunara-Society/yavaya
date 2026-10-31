@@ -900,8 +900,19 @@ happened, nothing is shown. The pacing (`LIVE_FEED_RULES`) is a judgement:
 
 **Needed for:** suggesting a country and city on first visit.
 
-**Until configured:** users pick their location manually, and GPS is offered
+**Not built** (audit, 31 October 2026). No provider is integrated: the
+variable takes only `none` or `unconfigured`, and neither looks anything up.
+`/status` used to show the row as REAL for `none`; it now always reads
+REQUIRES_CONFIGURATION, because a setting is not an implementation.
+
+**Until built:** users pick their location manually, and GPS is offered
 with explicit permission. This is a degraded experience, not a broken one.
+
+**To build it:** choose a provider (a local IP-to-city database file, which
+sends nothing anywhere, or an API), then: suggest a country or city only,
+never a street; keep nothing — look up, suggest, discard the address; and
+say so where the suggestion appears. The privacy page needs a line before it
+ships.
 
 **Never:** raise a user's published location precision because GPS was granted.
 Precision is a separate, explicit choice — see `LOCATION_PRIVACY`.
@@ -946,6 +957,20 @@ themselves. Keep the origin hostname quiet, and prefer a platform that can
 restrict inbound traffic to the proxy's addresses.
 
 ---
+
+## Configuration readiness — audit of 31 October 2026
+
+What each outstanding dependency has, lacks, and needs from whom. None of
+them is shown as working: each reads REQUIRES_CONFIGURATION on `/status`.
+
+| Dependency | Built | Missing | Needs credentials or a provider | Blocked? | Tested without credentials | Administrator steps |
+| --- | --- | --- | --- | --- | --- | --- |
+| **SMS delivery** (`sms_delivery`) | The whole phone-verification flow at `/account/phone`, its limits, the reputation rule, Mercadito's "verified by SMS" (see SMS delivery above). | Only the provider account. | Yes — Twilio Verify (`TWILIO_*`). Costs per message. | Deferred by the owner (20 October 2026); drivers' phones are confirmed by a reviewer calling them meanwhile. | `tests/integration/phone.test.ts` runs the flow against the local console verifier, which sends nothing and never counts as delivery. | Create the Twilio Verify service, enable the launch countries, set the four variables. |
+| **Approximate location by IP** (`geoip`) | Nothing beyond the setting and manual/GPS location. | The provider adapter, consent wording and a keep-nothing rule (see IP geolocation above). | Yes — a provider (database file or API). | Not built; nothing depends on it. | — | Choose the provider; then it is a code change. |
+| **Mercadito automatic screening** (`listing_screening`) | Exact duplicate photos across sellers and repeated titles are flagged to the moderation queue; people decide, with appeals. | Reverse image search, scam-keyword lists, price-anomaly thresholds. | Reverse image search needs a provider; keywords and thresholds need an operations decision per category and market. | Not built. Human review and appeals stay mandatory for any consequential decision, whatever is added. | The duplicate checks are covered by `tests/integration/mercadito.test.ts`. | Decide the keyword lists and thresholds; choose an image-search provider. |
+| **Trabajo subscriptions** (`work_subscriptions`) | Trabajo itself; card payments (Stripe) for tokens. | Recurring billing, plans and a start date. | Uses the existing Stripe account; needs Stripe Billing products. | Waiting for the owner's start date; applying is free and employers post up to 2 open offers free (beyond that, tokens). | — | Owner: set plans, prices and start date; then it is a code change. |
+
+Nothing here was switched on, invented or charged for by this audit.
 
 ## Infrastructure decisions still open
 
@@ -1033,6 +1058,25 @@ to be replaced, only that route's `UPSTREAM` and allowed paths change. The
 map worker is a copy of `maplibre-gl`'s own file in
 `public/maplibre/<version>/`; upgrading the package means copying the new
 one (a unit test checks they match).
+
+**Live map** (`/yavayago/mapa`, since 31 October 2026). Open to anyone,
+with or without an account and with or without anything happening. It shows
+approved stores (their addresses are public on their own pages) and counts —
+deliveries under way and drivers online — never a position of a driver, a
+customer or a drop-off. The driver count is withheld below
+`go.public_map_min_count` (3, `GO_RULES.publicMapMinCount`), so a lone driver
+in a small town is not pointed out; this is a privacy floor we chose, not a
+specification rule. A signed-in member also sees their own order or trip on
+it through the same authorised tracking endpoint as its own page. With no
+deliveries it says so and offers a **demonstration**: one made-up delivery,
+drawn in the browser from `src/config/go-demo.ts` (steps in metres from the
+launch city's centre, whichever city `go.launch_place` names), labelled
+"DEMOSTRACIÓN — DATOS SIMULADOS" throughout, never sent to or stored by the
+server. Its route is drawn, not routed, and its arrival estimate is marked
+simulated. `/status` lists it as DEMO (`live_map_demo`); real tracking is the
+separate `live_tracking` row, REAL with its evidence stated (proved end to
+end by tests/e2e/live-tracking.cjs; no real order yet, as no store is
+approved).
 
 **Operational guesses, not specification** (in `GO_RULES`, retunable):
 15 minutes for a store to answer before the order is cancelled; 2 open cash
@@ -1134,6 +1178,21 @@ A member is signed out after **two hours without activity**
 (`SESSION_RULES.idleTimeoutMinutes`); using the site keeps the session open.
 The bar at the top then says the session closed and offers the quickest way
 back in — with Google, a single tap to the same account.
+
+**"Mantener mi sesión iniciada"** (since 31 October 2026, asked for in the
+owner's stabilisation brief). A box on the sign-in page, never ticked for the
+person, applies to whichever way they sign in — email, Google or the
+two-step code. A remembered session is signed out after **14 days without
+use** (`SESSION_RULES.rememberedIdleDays`, our figure: the usual practice for
+an explicit opt-in) instead of two hours; everything else stays: the 30-day
+absolute lifetime, signing out, "sign out the other devices", immediate end
+on suspension. Remembered sessions are marked in Settings → "where you're
+signed in". On a remembered device, turning on two-step needs a sign-in from
+the last hour (`SESSION_RULES.freshSignInMinutes`), because it is the one
+change a stranger holding the phone could use to lock the owner out;
+changing the password already asks for the current one, and turning two-step
+off asks for a code. Session tokens are still re-issued only at sign-in (see
+docs/SECURITY.md, Known gaps).
 
 ## Account sanctions
 

@@ -1,4 +1,4 @@
-import { and, eq, gt, isNull, lt, sql } from 'drizzle-orm';
+import { and, eq, gt, isNull, lt, or, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { sessions, users } from '@/server/db/schema';
 import { SESSION_RULES } from '@/config/business-rules';
@@ -28,6 +28,8 @@ export type SessionUser = {
 
 export type ValidatedSession = {
   sessionId: string;
+  /** The member chose "Mantener mi sesión iniciada" when signing in here. */
+  remember: boolean;
   /** When the member signed in. Rotation keeps it: it is the login, not the token. */
   createdAt: Date;
   /** When the session last saw activity; the idle window runs from here. */
@@ -37,13 +39,30 @@ export type ValidatedSession = {
   shouldRotate: boolean;
 };
 
+/**
+ * A remembered session that has not signed in for a while. On a device that
+ * stays signed in, someone else may be holding it: the change that could lock
+ * the owner out (turning on two-step with another phone) asks for a fresh
+ * sign-in first. Changing the password already asks for the current one, and
+ * turning two-step off or renewing its codes asks for a code.
+ */
+export function needsFreshSignIn(session: { remember: boolean; createdAt: Date }, now = Date.now()): boolean {
+  return session.remember && now - session.createdAt.getTime() > SESSION_RULES.freshSignInMinutes * 60_000;
+}
+
+/** How long a session may go unused: two hours, or the remembered window if the member asked for it. */
+export function idleWindowMs(remember: boolean): number {
+  return remember ? SESSION_RULES.rememberedIdleDays * 86_400_000 : SESSION_RULES.idleTimeoutMinutes * 60_000;
+}
+
 export async function createSession(
   tx: Executor,
-  params: { userId: string; deviceId?: string | null; ipHash?: string | null; userAgent?: string | null },
+  params: { userId: string; deviceId?: string | null; ipHash?: string | null; userAgent?: string | null; remember?: boolean },
 ): Promise<{ token: string; sessionId: string; expiresAt: Date; absoluteExpiresAt: Date }> {
   const token = generateToken(32);
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000);
+  const remember = params.remember ?? false;
+  const expiresAt = new Date(now.getTime() + idleWindowMs(remember));
   const absoluteExpiresAt = new Date(now.getTime() + SESSION_RULES.absoluteTimeoutDays * 86_400_000);
 
   const [row] = await tx
@@ -56,6 +75,7 @@ export async function createSession(
       userAgent: params.userAgent?.slice(0, 512) ?? null,
       expiresAt,
       absoluteExpiresAt,
+      remember,
     })
     .returning({ id: sessions.id });
 
@@ -79,6 +99,7 @@ export async function validateSession(
   const [row] = await executor
     .select({
       sessionId: sessions.id,
+      remember: sessions.remember,
       createdAt: sessions.createdAt,
       lastUsedAt: sessions.lastUsedAt,
       expiresAt: sessions.expiresAt,
@@ -104,7 +125,7 @@ export async function validateSession(
   if (row.expiresAt <= now) return null;
   // The idle rule is checked from the last activity too, so a change to it
   // applies to sessions issued under the old one.
-  if (row.lastUsedAt.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000 <= now.getTime()) return null;
+  if (row.lastUsedAt.getTime() + idleWindowMs(row.remember) <= now.getTime()) return null;
   if (row.absoluteExpiresAt <= now) return null;
   if (row.deactivatedAt) return null;
   // A banned account's sessions stop working immediately, without waiting for
@@ -115,6 +136,7 @@ export async function validateSession(
 
   return {
     sessionId: row.sessionId,
+    remember: row.remember,
     createdAt: row.createdAt,
     lastUsedAt: row.lastUsedAt,
     shouldRotate: now >= rotateAfter,
@@ -130,13 +152,13 @@ export async function validateSession(
 }
 
 /** Extends the idle window and records activity. */
-export async function touchSession(executor: Executor, sessionId: string): Promise<void> {
+export async function touchSession(executor: Executor, sessionId: string, remember = false): Promise<void> {
   const now = new Date();
   await executor
     .update(sessions)
     .set({
       lastUsedAt: now,
-      expiresAt: new Date(now.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000),
+      expiresAt: new Date(now.getTime() + idleWindowMs(remember)),
     })
     .where(eq(sessions.id, sessionId));
 }
@@ -145,7 +167,7 @@ export async function touchSession(executor: Executor, sessionId: string): Promi
  * Replaces a session's token in place, keeping its identity and absolute
  * expiry. The old token stops working the moment this commits.
  */
-export async function rotateSession(tx: Executor, sessionId: string): Promise<string> {
+export async function rotateSession(tx: Executor, sessionId: string, remember = false): Promise<string> {
   const token = generateToken(32);
   const now = new Date();
   await tx
@@ -153,7 +175,7 @@ export async function rotateSession(tx: Executor, sessionId: string): Promise<st
     .set({
       tokenHash: sha256(token),
       lastUsedAt: now,
-      expiresAt: new Date(now.getTime() + SESSION_RULES.idleTimeoutMinutes * 60_000),
+      expiresAt: new Date(now.getTime() + idleWindowMs(remember)),
     })
     .where(eq(sessions.id, sessionId));
   return token;
@@ -203,10 +225,12 @@ export async function activeSessions(
   executor: Executor,
   userId: string,
   now = new Date(),
-): Promise<{ id: string; userAgent: string | null; createdAt: Date; lastUsedAt: Date }[]> {
-  const idleCutoff = new Date(now.getTime() - SESSION_RULES.idleTimeoutMinutes * 60_000);
+): Promise<{ id: string; userAgent: string | null; createdAt: Date; lastUsedAt: Date; remember: boolean }[]> {
+  // Each session by its own idle window: a remembered one left a day ago is still live, and must be listed.
+  const idleCutoff = new Date(now.getTime() - idleWindowMs(false));
+  const rememberedCutoff = new Date(now.getTime() - idleWindowMs(true));
   return executor
-    .select({ id: sessions.id, userAgent: sessions.userAgent, createdAt: sessions.createdAt, lastUsedAt: sessions.lastUsedAt })
+    .select({ id: sessions.id, userAgent: sessions.userAgent, createdAt: sessions.createdAt, lastUsedAt: sessions.lastUsedAt, remember: sessions.remember })
     .from(sessions)
     .where(
       and(
@@ -214,7 +238,7 @@ export async function activeSessions(
         isNull(sessions.revokedAt),
         gt(sessions.expiresAt, now),
         gt(sessions.absoluteExpiresAt, now),
-        gt(sessions.lastUsedAt, idleCutoff),
+        or(and(eq(sessions.remember, false), gt(sessions.lastUsedAt, idleCutoff)), and(eq(sessions.remember, true), gt(sessions.lastUsedAt, rememberedCutoff))),
       ),
     )
     .orderBy(sql`${sessions.lastUsedAt} desc`)

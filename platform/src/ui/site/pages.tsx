@@ -744,11 +744,57 @@ export function PricingBody({ c }: { c: SiteContent }) {
   );
 }
 
-export function TransparencyBody({ c }: { c: SiteContent }) {
+/** What /transparency says works today: read from the capability register, as /status is. */
+export type TransparencyNow = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  counts: string;
+  demo: string;
+  statusLink: string;
+  evidenceLabel: string;
+  rows: Array<{ key: string; name: string; detail: string; state: SiteState; label: string; evidence?: string }>;
+};
+
+export function TransparencyBody({ c, now }: { c: SiteContent; now?: TransparencyNow }) {
   const p = c.pages.transparency;
   return (
     <>
       <PageHero eyebrow={p.eyebrow} title={p.title} lead={p.lead} photo="transparency" />
+      {now ? (
+        <section className="section">
+          <div className="wrap narrow">
+            <SectionHead eyebrow={now.eyebrow} title={now.title} />
+            <p className="lead">{now.lead}</p>
+            <p>
+              <strong>{now.counts}</strong>
+            </p>
+            <div className="register">
+              {now.rows.map((row) => (
+                <div key={row.key} className="reg-row" style={{ marginBottom: 8 }}>
+                  <div>
+                    <h3>{row.name}</h3>
+                    <p>{row.detail}</p>
+                    {row.evidence ? (
+                      <details className="reg-note">
+                        <summary>{now.evidenceLabel}</summary>
+                        <p>{row.evidence}</p>
+                      </details>
+                    ) : null}
+                  </div>
+                  <span className={`badge badge-${row.state}`}>{row.label}</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt">{now.demo}</p>
+            <p>
+              <a className="btn btn-line" href="/status">
+                {now.statusLink}
+              </a>
+            </p>
+          </div>
+        </section>
+      ) : null}
       <section className="section">
         <div className="wrap">
           <SectionHead {...p.willHead} />
@@ -786,6 +832,8 @@ export type StatusRow = {
   label: string;
   /** What would have to change, for anything not REAL. Operator-facing, untranslated. */
   note?: string;
+  /** How a REAL claim is known, in the reader's language, when the register says. */
+  evidence?: string;
 };
 
 export function StatusBody({
@@ -793,11 +841,13 @@ export function StatusBody({
   groups,
   legend,
   noteLabel,
+  evidenceLabel,
 }: {
   c: SiteContent;
   groups: { title: string; rows: StatusRow[] }[];
   /** The notes are operator text kept in English; this says so in the reader's language. */
   noteLabel: string;
+  evidenceLabel: string;
   legend: { state: SiteState; label: string; explain: string }[];
 }) {
   const p = c.pages.status;
@@ -815,6 +865,12 @@ export function StatusBody({
                     <div>
                       <h3>{row.name}</h3>
                       <p>{row.detail}</p>
+                      {row.evidence ? (
+                        <details className="reg-note">
+                          <summary>{evidenceLabel}</summary>
+                          <p>{row.evidence}</p>
+                        </details>
+                      ) : null}
                       {row.note ? (
                         <details className="reg-note">
                           <summary>{noteLabel}</summary>

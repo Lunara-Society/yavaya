@@ -104,7 +104,8 @@ export async function SiteShell({
       </a>
       {!member && authBar ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
       {!member && googlePrompt !== 'off' && googleSignIn().available ? <GooglePrompt locale={locale} afterSignOut={googlePrompt === 'after-sign-out'} /> : null}
-      <header className="top">
+      {/* A member's header holds more than a visitor's (balance, notices); its phone layout gives way sooner. */}
+      <header className={member ? 'top is-member' : 'top'}>
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label={`${c.ui.brand} — ${c.nav.home}`}>
             <Mark />

@@ -49,6 +49,7 @@ export default async function StatusPage() {
         state: STYLE[capability.state],
         label: t(`capability.state.${capability.state}` as MessageKey),
         note: capability.state === 'REAL' ? undefined : capability.blockedBy,
+        evidence: capability.evidenceKey ? t(capability.evidenceKey as MessageKey) : undefined,
       }));
 
   return (
@@ -56,6 +57,7 @@ export default async function StatusPage() {
       <StatusBody
         c={c}
         noteLabel={t('status.note_label')}
+        evidenceLabel={t('status.evidence_label')}
         groups={groups
           .map((g) => ({ title: t(g.titleKey), rows: rows(g.key) }))
           .filter((g) => g.rows.length > 0)}

@@ -190,6 +190,13 @@ export const sessions = pgTable(
     absoluteExpiresAt: timestamp('absolute_expires_at', { withTimezone: true }).notNull(),
     revokedAt: timestamp('revoked_at', { withTimezone: true }),
     revokedReason: text('revoked_reason'),
+    /**
+     * "Mantener mi sesión iniciada": the member asked, at sign-in, to stay
+     * signed in on this device. Only the idle window changes (see
+     * SESSION_RULES); the absolute lifetime, revocation and every check on
+     * sensitive actions stay as they are.
+     */
+    remember: boolean('remember').notNull().default(false),
   },
   (table) => [
     uniqueIndex('sessions_token_hash_key').on(table.tokenHash),

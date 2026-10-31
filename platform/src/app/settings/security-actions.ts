@@ -9,7 +9,7 @@ import { getTranslator } from '@/i18n/server';
 import { isLocale } from '@/i18n/config';
 import type { MessageKey } from '@/i18n';
 import { currentSession } from '@/server/auth/context';
-import { revokeAllSessions } from '@/server/auth/session';
+import { needsFreshSignIn, revokeAllSessions } from '@/server/auth/session';
 import { dropSetup, holdSetup, readSetup } from '@/server/auth/two-step-cookies';
 import { disableTwoStep, enableTwoStep, newSecret, replaceRecoveryCodes, twoStepAvailable, verifySecondStep } from '@/server/domains/identity/two-step';
 import { changePassword } from '@/server/domains/identity/password';
@@ -20,6 +20,7 @@ import { sendSecurityNotice, type SecurityNotice } from '@/server/domains/notifi
 import { isDomainError, toClientError } from '@/server/errors';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { SESSION_RULES } from '@/config/business-rules';
 
 export type SecurityState = { status: 'idle' } | { status: 'error'; message: string } | { status: 'done'; message: string } | { status: 'codes'; codes: string[] };
 
@@ -39,6 +40,8 @@ async function notify(userId: string, kind: SecurityNotice): Promise<void> {
 export async function startTwoStepAction(): Promise<void> {
   const session = await signedIn();
   if (!twoStepAvailable()) redirect('/settings#security');
+  // The page explains; this is the check that counts.
+  if (needsFreshSignIn(session)) redirect('/settings/dos-pasos');
   await holdSetup(session.user.userId, newSecret());
   redirect('/settings/dos-pasos');
 }
@@ -46,6 +49,7 @@ export async function startTwoStepAction(): Promise<void> {
 export async function confirmTwoStepAction(_previous: SecurityState, formData: FormData): Promise<SecurityState> {
   const session = await signedIn();
   const { t } = await getTranslator();
+  if (needsFreshSignIn(session)) return { status: 'error', message: t('two_step.error.fresh_sign_in', { minutes: SESSION_RULES.freshSignInMinutes }) };
   const secret = await readSetup(session.user.userId);
   if (!secret) return { status: 'error', message: t('two_step.setup.expired') };
   try {

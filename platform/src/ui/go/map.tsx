@@ -72,6 +72,7 @@ export function GoMap(props: Props) {
     let cancelled = false;
     let timer: ReturnType<typeof setInterval> | null = null;
     let watch: number | null = null;
+    let trailing: ReturnType<typeof setTimeout> | null = null;
     let wakeLock: { release: () => Promise<void> } | null = null;
 
     (async () => {
@@ -162,8 +163,29 @@ export function GoMap(props: Props) {
         } catch {
           wakeLock = null;
         }
+        let stopped = false;
+        let newest: GeolocationPosition | null = null;
+        const send = async (position: GeolocationPosition) => {
+          if (stopped || cancelled) return;
+          lastSent = Date.now();
+          const point = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+          const response = await fetch(props.positionUrl ?? '/api/go/position', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [props.idField ?? 'orderId']: props.orderId, ...point, accuracy: position.coords.accuracy ?? null, heading: position.coords.heading ?? null }),
+          }).catch(() => null);
+          if (response?.status === 404) {
+            // The order is no longer theirs to report on: stop at once.
+            stopped = true;
+            if (watch !== null) navigator.geolocation.clearWatch(watch);
+            if (trailing) clearTimeout(trailing);
+            router.refresh();
+            return;
+          }
+          setNote(response?.ok ? props.labels.sharing ?? null : props.labels.offline ?? null);
+        };
         watch = navigator.geolocation.watchPosition(
-          async (position) => {
+          (position) => {
             const point = { latitude: position.coords.latitude, longitude: position.coords.longitude };
             if (!me) me = new maplibre.Marker({ element: pin('me') }).setLngLat([point.longitude, point.latitude]).addTo(instance);
             else me.setLngLat([point.longitude, point.latitude]);
@@ -171,21 +193,26 @@ export function GoMap(props: Props) {
               framed = true;
               fit([point, props.store, ...(props.dropoff ? [props.dropoff] : [])]);
             }
-            const now = Date.now();
-            if (now - lastSent < props.minIntervalSeconds * 1000) return;
-            lastSent = now;
-            const response = await fetch(props.positionUrl ?? '/api/go/position', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ [props.idField ?? 'orderId']: props.orderId, ...point, accuracy: position.coords.accuracy ?? null, heading: position.coords.heading ?? null }),
-            }).catch(() => null);
-            if (response?.status === 404) {
-              // The order is no longer theirs to report on: stop at once.
-              if (watch !== null) navigator.geolocation.clearWatch(watch);
-              router.refresh();
+            const wait = props.minIntervalSeconds * 1000 - (Date.now() - lastSent);
+            if (wait <= 0) {
+              void send(position);
               return;
             }
-            setNote(response?.ok ? props.labels.sharing ?? null : props.labels.offline ?? null);
+            /*
+             * Too soon after the last report, so the newest point waits for the
+             * interval instead of being dropped. A phone that stands still
+             * reports nothing more, so a point dropped here was the driver's
+             * position until they moved again: a driver who drove on and then
+             * stopped at a light stayed, on the customer's map, where they had
+             * been — until the map called it old.
+             */
+            newest = position;
+            trailing ??= setTimeout(() => {
+              trailing = null;
+              const next = newest;
+              newest = null;
+              if (next) void send(next);
+            }, wait);
           },
           () => setNote(props.labels.locationDenied ?? null),
           { enableHighAccuracy: true, maximumAge: 2_000, timeout: 20_000 },
@@ -246,6 +273,7 @@ export function GoMap(props: Props) {
     return () => {
       cancelled = true;
       if (timer) clearInterval(timer);
+      if (trailing) clearTimeout(trailing);
       if (watch !== null) navigator.geolocation.clearWatch(watch);
       void wakeLock?.release().catch(() => undefined);
       map.current?.remove();

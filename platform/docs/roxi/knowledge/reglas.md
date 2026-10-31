@@ -148,7 +148,9 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
 ```json
 {
   "idleTimeoutMinutes": 120,
-  "absoluteTimeoutDays": 30
+  "absoluteTimeoutDays": 30,
+  "rememberedIdleDays": 14,
+  "freshSignInMinutes": 60
 }
 ```
 
@@ -361,7 +363,9 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
   "maxDeliveryKm": 15,
   "menuMaxItems": 200,
   "maxPhotos": 1,
-  "featureDays": 7
+  "featureDays": 7,
+  "publicMapMinCount": 3,
+  "publicMapPollSeconds": 30
 }
 ```
 

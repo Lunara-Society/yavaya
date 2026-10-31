@@ -1,4 +1,4 @@
-import { and, eq, isNull, lte } from 'drizzle-orm';
+import { and, eq, gt, isNull, lte, sql } from 'drizzle-orm';
 import type { Database, Executor } from '@/server/db/client';
 import { demoContent } from '@/server/db/schema';
 import { DEMO_CONTENT_RULES } from '@/config/business-rules';
@@ -35,6 +35,15 @@ export async function demoLifetimeDays(executor: Executor): Promise<number> {
     DEMO_CONTENT_RULES.maximumLifetimeDays,
     Math.max(DEMO_CONTENT_RULES.minimumLifetimeDays, configured),
   );
+}
+
+/** Demo items published right now (registered, not removed, not expired): what /transparency reports. */
+export async function activeDemoCount(executor: Executor, now = new Date()): Promise<number> {
+  const [row] = await executor
+    .select({ n: sql<number>`count(*)::int` })
+    .from(demoContent)
+    .where(and(isNull(demoContent.removedAt), gt(demoContent.expiresAt, now)));
+  return row?.n ?? 0;
 }
 
 /** Whether a row is registered demo content that has not been removed. */

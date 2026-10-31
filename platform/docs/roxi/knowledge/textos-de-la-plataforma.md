@@ -157,6 +157,8 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `auth.verify.error_too_many_attempts`: Demasiados intentos con este código. Pide uno nuevo.
 - `auth.verify.error_cooldown`: Espera {seconds} segundos antes de pedir otro código.
 - `auth.verify.error_daily_limit`: Alcanzaste el máximo de códigos por hoy. Inténtalo mañana o escribe a soporte.
+- `auth.remember.label`: Mantener mi sesión iniciada en este dispositivo
+- `auth.remember.hint`: Hasta {days} días sin volver a entrar, con tu correo o con Google. No lo marques en un teléfono o una computadora que usan otras personas.
 - `auth.forgot.link`: ¿Olvidaste tu contraseña?
 - `auth.forgot.title`: Recupera tu cuenta
 - `auth.forgot.lead`: Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.
@@ -185,6 +187,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.location.neighborhood`: Barrio
 - `settings.location.exact`: Exacta
 - `settings.security`: Cuenta y seguridad
+- `settings.sessions.remembered`: sesión recordada
 - `settings.password.title`: Contraseña
 - `settings.password.current`: Contraseña actual
 - `settings.password.new`: Contraseña nueva
@@ -203,6 +206,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.name.invalid`: Escribe un nombre de 2 a 60 caracteres.
 - `settings.name.same`: Ese ya es tu nombre.
 - `settings.name.failed`: No se pudo cambiar el nombre. Inténtalo de nuevo.
+- `settings.name.unchanged`: Escribe el nombre nuevo para poder cambiarlo. Dejar el mismo no cuenta como cambio ni cuesta nada.
 - `settings.name.too_soon`: Cambiaste tu nombre hace poco. Podrás cambiarlo de nuevo desde el {date}.
 - `settings.name.wait`: Cambiaste tu nombre hace poco. Podrás cambiarlo de nuevo desde el {date}; así nadie puede saltar de nombre en nombre.
 - `settings.sessions.title`: Dónde tienes la sesión abierta
@@ -245,6 +249,8 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.notify.daily_detail`: Un aviso cada mañana a las 8 cuando hay una nueva oración, refrán, frase o bendición.
 
 ## two_step
+- `two_step.error.fresh_sign_in`: Por seguridad, vuelve a entrar antes de activar la verificación en dos pasos: este dispositivo mantiene tu sesión iniciada y entraste hace más de {minutes} minutos.
+- `two_step.fresh_sign_in.action`: Cerrar sesión para volver a entrar
 - `two_step.title`: Verificación en dos pasos
 - `two_step.code.title`: Escribe tu código
 - `two_step.code.lead`: Abre tu app de autenticación y escribe los 6 números que muestra para Yavaya.
@@ -259,7 +265,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `two_step.error.expired`: Pasó demasiado tiempo. Vuelve a entrar.
 - `two_step.error.unavailable`: La verificación en dos pasos no está disponible en este momento.
 - `two_step.error.already_on`: La verificación en dos pasos ya está activa.
-- `two_step.settings.off_lead`: Al entrar, además de tu contraseña o de Google, te pedimos un código de tu teléfono. Si alguien consigue tu contraseña, igual no puede entrar. Es gratis.
+- `two_step.settings.off_lead`: Al entrar, además de tu contraseña o de Google, te pedimos los 6 números que muestra una app de autenticación en tu teléfono. No usa SMS: el código se genera en el propio teléfono, así que nadie lo puede interceptar en el camino. Si alguien consigue tu contraseña, igual no puede entrar. Es gratis.
 - `two_step.settings.turn_on`: Activar la verificación en dos pasos
 - `two_step.settings.on`: Activa desde el {date}.
 - `two_step.settings.recovery_left`: Te quedan {count} códigos de respaldo.
@@ -392,7 +398,17 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `activity.church_joined`: Una iglesia se unió a Santuario en {place}
 - `activity.community_post_published`: Nueva publicación en la comunidad de {place}
 
+## transparency
+- `transparency.now.eyebrow`: Hoy, sin adornos
+- `transparency.now.title`: Lo que funciona hoy
+- `transparency.now.lead`: Leído en este momento del mismo registro de capacidades que la página de estado. Si las dos dijeran cosas distintas, sería un error nuestro.
+- `transparency.now.counts`: {real} funcionan de verdad · {demo} son demostración · {mock} simulados · {pending} esperan configuración
+- `transparency.now.demo_none`: Contenido de demostración publicado ahora mismo: ninguno.
+- `transparency.now.demo_some`: Contenido de demostración publicado ahora mismo: {count} elementos, todos marcados DEMO y fuera de toda estadística.
+- `transparency.now.status_link`: Ver el estado completo
+
 ## status
+- `status.evidence_label`: Cómo lo sabemos
 - `status.note_label`: Qué falta (nota técnica, en inglés)
 - `status.title`: Estado de la plataforma
 - `status.subtitle`: Lo que funciona hoy, sin adornos.
@@ -569,8 +585,6 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `mercadito.report.category.other`: Otro
 - `mercadito.publish.title`: Publicar en Mercadito
 - `mercadito.publish.edit_title`: Editar publicación
-- `mercadito.publish.free`: Publicar es gratis. Te quedan {left} de {max} publicaciones activas gratis. Buscar, comprar y escribir a vendedores también es gratis.
-- `mercadito.publish.cost_beyond`: Ya tienes {max} publicaciones activas: cada publicación nueva cuesta {cost} token. Marca como vendidas las que ya vendiste y vuelves a publicar gratis.
 - `mercadito.form.submit_free`: Publicar gratis
 - `mercadito.feature.tag`: Destacado
 - `mercadito.feature.title`: Vende más rápido: destaca tu publicación
@@ -600,10 +614,18 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `mercadito.nudge.action`: Renovar o destacar
 - `mercadito.nudge.age`: Hace {days} días
 - `mercadito.publish.cost`: Publicar cuesta {cost} token. Buscar, comprar y escribir a vendedores es gratis.
+- `mercadito.limits.title`: Cuántas publicaciones puedes tener
+- `mercadito.limits.new`: Cuenta nueva: en sus primeros {days} días puede crear hasta {max} publicaciones.
+- `mercadito.limits.standard`: Después: hasta {max} publicaciones activas a la vez, gratis.
+- `mercadito.limits.beyond`: Por encima de eso, cada publicación nueva cuesta tokens ({cost} por publicación). Al marcar una como vendida, liberas su lugar.
+- `mercadito.limits.you_new`: Tu cuenta es nueva hasta el {date}: llevas {used} de {max} publicaciones, te quedan {left}.
+- `mercadito.limits.you_new_full`: Ya creaste las {max} publicaciones de tus primeros {days} días. Desde el {date} puedes volver a publicar, con hasta {free} activas gratis.
+- `mercadito.limits.you_free`: Tienes {open} publicaciones activas: te quedan {left} gratis.
+- `mercadito.limits.you_paid`: Tienes {open} publicaciones activas, el máximo gratis: la próxima cuesta tokens ({cost}).
+- `mercadito.limits.you_full`: Tienes {open} publicaciones activas, el máximo gratis. Para publicar otra, marca una como vendida o retírala.
 - `mercadito.publish.balance`: Tienes {balance} tokens.
 - `mercadito.publish.no_tokens`: No tienes tokens suficientes para publicar.
 - `mercadito.publish.see_tokens`: Ver mis tokens
-- `mercadito.publish.new_seller`: Tu cuenta es nueva: has creado {used} de las {max} publicaciones permitidas en tus primeros {days} días.
 - `mercadito.publish.sign_in`: Inicia sesión para publicar.
 - `mercadito.publish.verify`: Verificar mi correo
 - `mercadito.publish.unavailable`: Publicar no está disponible todavía: el almacenamiento de fotos no está configurado.
@@ -1053,6 +1075,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `studio.done.discarded`: Borrador descartado.
 - `studio.leave_warning`: Tienes cambios sin guardar en tu perfil. ¿Salir de todos modos? Si sales, quedan guardados solo en este dispositivo hasta que vuelvas.
 - `studio.recovered`: Encontramos cambios de este dispositivo que no alcanzaste a guardar.
+- `studio.recovered_stale`: Encontramos cambios de este dispositivo hechos sobre una versión anterior de tu perfil, antes de tu último guardado o publicación. Si sigues con ellos, reemplazarán lo que ves ahora.
+- `studio.refreshed`: Cargamos la versión más reciente de tu perfil.
+- `studio.retry`: Reintentar
 - `studio.recover.keep`: Seguir con ellos
 - `studio.recover.drop`: Descartarlos
 - `studio.conflict`: Tu perfil cambió en otra ventana o dispositivo. Recarga para ver la versión más reciente; tus cambios de aquí quedan guardados en este dispositivo.
@@ -2553,6 +2578,15 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.ui.status.speaking`: Roxi está hablando
 - `roxi.ui.status.ready`: Lista para ayudarte
 - `roxi.ui.status.ended`: Conversación terminada
+- `roxi.ui.status.paused`: Lista para seguir: escríbeme o háblame
+- `roxi.ui.activity.searching`: Roxi está buscando…
+- `roxi.ui.activity.preparing`: Roxi está preparando tu publicación…
+- `roxi.ui.activity.filling`: Roxi está llenando el formulario…
+- `roxi.ui.activity.checking`: Roxi está revisando tu cuenta…
+- `roxi.ui.activity.opening`: Roxi está abriendo la página…
+- `roxi.ui.still_working`: Roxi sigue en eso, un momento…
+- `roxi.ui.slow`: La respuesta de Roxi no llegó a tiempo. Tu mensaje no se perdió: puedes enviarlo otra vez.
+- `roxi.ui.retry`: Enviar otra vez
 - `roxi.ui.you`: Tú
 - `roxi.ui.mic_denied`: No tengo acceso al micrófono, así que seguimos por escrito. Puedes permitir el micrófono en tu navegador cuando quieras.
 - `roxi.ui.connect_error`: No pude conectarme ahora. Inténtalo otra vez en un momento.
@@ -3105,6 +3139,84 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.trip.whatsapp_driver`: Escribir al conductor
 - `go.checkout.place`: Hacer pedido
 - `go.checkout.sign_in`: Entra para pedir
+- `go.live.title`: Mapa en vivo
+- `go.live.meta_title`: Mapa en vivo · YavayaGo
+- `go.live.meta_description`: El mapa de YavayaGo: tiendas, entregas en curso y una demostración del seguimiento en vivo. Se abre sin cuenta.
+- `go.live.lead`: Tiendas y entregas de YavayaGo en tiempo real. Dónde va cada entrega solo lo ven quien la pidió y su repartidor.
+- `go.live.link`: Mapa en vivo
+- `go.live.link_track`: Ver en el mapa en vivo
+- `go.live.back`: Volver a YavayaGo
+- `go.live.aria`: Mapa en vivo de YavayaGo
+- `go.live.status_title`: Estado en este momento
+- `go.live.label_map`: Mapa
+- `go.live.map_loading`: Cargando…
+- `go.live.map_ready`: Listo
+- `go.live.map_failed`: No cargó
+- `go.live.map_failed_long`: El mapa no pudo cargar. Puede ser la conexión o el proveedor del mapa.
+- `go.live.retry`: Reintentar
+- `go.live.label_provider`: Proveedor del mapa
+- `go.live.provider_ok`: Funcionando
+- `go.live.provider_trouble`: Con problemas: algunas zonas pueden verse incompletas
+- `go.live.provider_down`: Sin respuesta
+- `go.live.label_data`: Datos en vivo de YavayaGo
+- `go.live.data_live`: Conectado · actualizado {ago}
+- `go.live.data_retrying`: Sin respuesta, reintentando · últimos datos {ago}
+- `go.live.data_offline`: Sin conexión: se actualizará cuando vuelva la señal
+- `go.live.label_deliveries`: Entregas en curso
+- `go.live.deliveries_none`: Ninguna en este momento
+- `go.live.deliveries_count`: {count}
+- `go.live.active_headline`: Entregas en curso ahora mismo: {count}
+- `go.live.label_drivers`: Repartidores en línea
+- `go.live.drivers_count`: {count}
+- `go.live.drivers_few`: Menos de {count}
+- `go.live.label_stores`: Tiendas en el mapa
+- `go.live.stores_count`: {count} · {open} abiertas ahora
+- `go.live.stores_none`: Todavía ninguna
+- `go.live.empty_title`: YavayaGo está listo para moverse.
+- `go.live.empty_text`: Todavía no hay entregas activas para mostrar. Cuando haya una entrega disponible para seguimiento, podrás ver su recorrido en tiempo real.
+- `go.live.see_demo`: Ver demostración
+- `go.live.privacy`: El mapa público solo muestra tiendas y cifras generales. Dónde va una entrega lo ven únicamente quien la pidió y su repartidor.
+- `go.live.how_title`: Cómo funciona el seguimiento
+- `go.live.how1`: Cuando un repartidor lleva tu pedido o tu viaje, su teléfono comparte su ubicación con Yavaya mientras tiene abierta su página de repartidor.
+- `go.live.how2`: Tú la ves en tu mapa, con la hora de la última ubicación. Si deja de llegar, el mapa lo dice y no la muestra como si fuera en vivo.
+- `go.live.how3`: Al entregar o cancelar, el seguimiento se detiene: su último punto se borra y el punto de entrega, al día siguiente.
+- `go.live.zoom_in`: Acercar
+- `go.live.zoom_out`: Alejar
+- `go.live.recenter`: Centrar el mapa
+- `go.live.store_open`: abierta ahora
+- `go.live.store_closed`: cerrada
+- `go.live.store_view`: Ver la tienda
+- `go.live.demo_banner`: DEMOSTRACIÓN — DATOS SIMULADOS
+- `go.live.demo_mode`: Demostración · nada de esto es real
+- `go.live.demo_exit`: Salir de la demostración
+- `go.live.demo_pause`: Pausar
+- `go.live.demo_resume`: Seguir
+- `go.live.demo_restart`: Ver de nuevo
+- `go.live.demo_eta`: Llegada estimada (simulada): {minutes} min
+- `go.live.demo_note`: Una entrega inventada para que veas cómo se ve el seguimiento. El recorrido está dibujado, no calculado sobre calles reales, y avanza más rápido que una entrega de verdad. No usa datos de nadie y no se guarda nada.
+- `go.live.demo_phase.to_pickup`: El repartidor va a la tienda
+- `go.live.demo_phase.at_pickup`: Recogiendo el pedido
+- `go.live.demo_phase.to_dropoff`: En camino a la entrega
+- `go.live.demo_phase.delivered`: Entregado
+- `go.live.demo_pickup`: Tienda de la demostración
+- `go.live.demo_dropoff`: Entrega de la demostración
+- `go.live.demo_driver`: Repartidor de la demostración
+- `go.live.label_tracking`: Seguimiento de tu entrega
+- `go.live.your_order`: Tu pedido #{code}
+- `go.live.your_trip`: Tu viaje #{code}
+- `go.live.track_live`: En vivo · ubicación de {ago}
+- `go.live.track_stale`: Última ubicación {ago}: puede no ser la actual
+- `go.live.track_waiting`: Esperando la primera ubicación del repartidor
+- `go.live.track_no_driver`: Todavía sin repartidor asignado
+- `go.live.track_ended`: Terminó: el seguimiento se detuvo
+- `go.live.track_retrying`: Sin conexión: reintentando…
+- `go.live.open_delivery`: Ver los detalles
+- `go.live.driver_active`: Tienes una entrega en curso. Tu ubicación se comparte desde tu página de repartidor, no desde este mapa.
+- `go.live.driver_link`: Ir a mi página de repartidor
+- `go.live.store_owner`: Los pedidos de tu tienda se atienden en tu panel.
+- `go.live.store_link`: Ir a mi tienda
+- `go.live.ago_seconds`: hace {n} s
+- `go.live.ago_minutes`: hace {n} min
 - `go.map.aria`: Mapa
 - `go.map.use_my_location`: Usar mi ubicación
 - `go.map.pick_hint`: O toca el mapa, o arrastra el punto, hasta tu puerta.

@@ -34,6 +34,13 @@ export type Capability = {
    * configuration keys, which are not translated.
    */
   blockedBy?: string;
+  /**
+   * i18n key for how a REAL claim is known, shown under it on /status and
+   * /transparency. For a capability whose real-data path has been proved by
+   * tests but has not yet carried real use, this says exactly that — "it
+   * renders" or "the demo works" is never offered as evidence.
+   */
+  evidenceKey?: string;
 };
 
 /**
@@ -383,11 +390,34 @@ export const CAPABILITIES: readonly Capability[] = [
   {
     // Driver position from the phone's browser, shown to that one customer,
     // on maps whose tiles are proxied through Yavaya (see /api/map).
+    // REAL because the whole path is built and proved end to end in a real
+    // browser (tests/e2e/live-tracking.cjs): phone → server → only that
+    // customer's map. What has not happened yet is real use, and the
+    // evidence note says so rather than letting "REAL" imply it.
     key: 'live_tracking',
     nameKey: 'capability.live_tracking.name',
     detailKey: 'capability.live_tracking.detail',
     state: 'REAL',
     group: 'district',
+    evidenceKey: 'capability.live_tracking.evidence',
+  },
+  {
+    // /yavayago/mapa: approved stores and counts for anyone, nothing about a
+    // person; works with nothing happening. Its data are the real tables.
+    key: 'live_map',
+    nameKey: 'capability.live_map.name',
+    detailKey: 'capability.live_map.detail',
+    state: 'REAL',
+    group: 'district',
+  },
+  {
+    key: 'live_map_demo',
+    nameKey: 'capability.live_map_demo.name',
+    detailKey: 'capability.live_map_demo.detail',
+    state: 'DEMO',
+    group: 'district',
+    blockedBy:
+      'A demonstration on purpose, and it stays one: a fixed, made-up delivery drawn in the browser (src/config/go-demo.ts), labelled "DEMOSTRACIÓN — DATOS SIMULADOS" for as long as it shows. It is never sent to or stored by the server and never counts as activity. Real tracking is the separate live_tracking row.',
   },
   {
     // Rides, parcels, errands and personal help with fares the customer

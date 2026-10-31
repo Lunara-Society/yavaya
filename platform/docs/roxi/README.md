@@ -281,10 +281,24 @@ set it on the agent's Voice tab.
 - Automatic redaction of names and numbers in transcripts needs an enterprise
   plan and is off; the prompt tells Roxi never to ask for or repeat passwords,
   codes, card or document numbers.
-- The prompt-injection guardrail is on. The content guardrails are off on
-  purpose: in streaming mode their only action is to end the conversation,
-  which would cut off a member who mentions self-harm — exactly when Roxi
-  should stay (one of the tests).
+- **Refusing never ends the conversation** (since 31 October 2026). The
+  platform's "manipulation" (prompt-injection) guardrail is **off**, because
+  its only action is to end the conversation: a member whose message it
+  flagged had to start again, even to ask something ordinary next. Its place
+  is taken by three layers that refuse without hanging up: the prompt's
+  `# Guardrails` section (refuse in one sentence, carry on, never call
+  end_call for a refusal); the Focus guardrail; and a custom response
+  guardrail in blocking mode whose action is **retry** — it stops a reply
+  that would reveal the instructions, configuration, keys or another
+  member's data, and has the model answer again (after three failed tries
+  ElevenLabs ends the call: the one case that still does). Nothing Roxi can
+  do depends on the prompt holding: every tool acts with the member's own
+  session and the server's checks. If a conversation is cut off anyway
+  (network, time limit), the panel keeps it open: the next message
+  reconnects with what was said, minus the message that stopped it.
+- The content guardrails are off on purpose: in streaming mode their only
+  action is to end the conversation, which would cut off a member who
+  mentions self-harm — exactly when Roxi should stay (one of the tests).
 - Only `yavaya.lat` and `www.yavaya.lat` may open a conversation, and the
   origin header is required. See `docs/SECURITY.md`, "Roxi", and
   `docs/CONFIGURATION.md`, "Roxi".

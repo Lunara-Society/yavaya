@@ -9,12 +9,46 @@ import { ListingForm } from '@/ui/mercadito/listing-form';
 import { listingFormProps } from '@/ui/mercadito/form-props';
 import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
-import { getWhatsapp, openListingCount, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
+import { getWhatsapp, newSellerRules, openListingCount, pricingRules, sellerStanding } from '@/server/domains/mercadito/service';
 import { mediaStorageAvailability } from '@/server/domains/media/storage';
 import { LISTING_CATEGORIES } from '@/server/domains/mercadito/rules';
 import { loginHref } from '@/server/auth/return-path';
+import { formatDate } from '@/ui/mercadito/format';
+import { limitsStanding } from '@/ui/mercadito/limits';
+import type { Translator } from '@/i18n';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Both limits, said together and in the same words Roxi uses: a new account
+ * creates at most a few listings in its first days, and after that a number
+ * of open listings are free, with more costing tokens. Then where this
+ * member stands, when we know. The rules themselves are the server's
+ * (sellerStanding, pricingRules); this only reads them.
+ */
+function Limits({
+  t,
+  rules,
+  you,
+}: {
+  t: Translator;
+  rules: { newMax: number; days: number; free: number; cost: number | null };
+  you?: string;
+}) {
+  return (
+    <section className="card mk-limits" aria-labelledby="mk-limits-h">
+      <h2 id="mk-limits-h" className="mk-limits-h">
+        {t('mercadito.limits.title')}
+      </h2>
+      <ul className="mk-limits-list">
+        <li>{t('mercadito.limits.new', { max: rules.newMax, days: rules.days })}</li>
+        <li>{t('mercadito.limits.standard', { max: rules.free })}</li>
+        {rules.cost ? <li>{t('mercadito.limits.beyond', { cost: rules.cost })}</li> : null}
+      </ul>
+      {you ? <p className="mk-limits-you">{you}</p> : null}
+    </section>
+  );
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await siteContext();
@@ -46,22 +80,22 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
   if (!userId) {
     // What publishing costs comes before the request to sign in: it is the
     // first thing someone about to sell wants to know.
-    const pricing = await pricingRules(db());
+    const [pricing, newRules, cost] = await Promise.all([pricingRules(db()), newSellerRules(db()), actionCost(db(), 'mercadito.publish_listing')]);
     return shell(
-      <div className="card">
-        <p>
-          <strong>{t('mercadito.opening.free', { count: pricing.freeOpenListings })}</strong>
-        </p>
-        <p>{t('mercadito.publish.sign_in')}</p>
-        <div className="btn-row">
-          <Link className="btn btn-gold" href={loginHref('/mercadito/publish')}>
-            {t('nav.sign_in')}
-          </Link>
-          <Link className="btn btn-line" href={loginHref('/mercadito/publish', '/register')}>
-            {t('auth.submit_register')}
-          </Link>
+      <>
+        <Limits t={t} rules={{ newMax: newRules.maxListings, days: newRules.windowDays, free: pricing.freeOpenListings, cost }} />
+        <div className="card">
+          <p>{t('mercadito.publish.sign_in')}</p>
+          <div className="btn-row">
+            <Link className="btn btn-gold" href={loginHref('/mercadito/publish')}>
+              {t('nav.sign_in')}
+            </Link>
+            <Link className="btn btn-line" href={loginHref('/mercadito/publish', '/register')}>
+              {t('auth.submit_register')}
+            </Link>
+          </div>
         </div>
-      </div>,
+      </>,
     );
   }
 
@@ -82,17 +116,24 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
   const freeLeft = Math.max(0, pricing.freeOpenListings - open);
   const price = freeLeft > 0 ? 0 : (cost ?? 0);
   const limits = { max: standing.newSeller.max, days: standing.newSeller.windowDays, used: standing.newSeller.used };
+  const rules = { newMax: standing.newSeller.max, days: standing.newSeller.windowDays, free: pricing.freeOpenListings, cost };
+  const until = standing.newSeller.until ? formatDate(standing.newSeller.until, locale) : '';
+  const line = limitsStanding({ newSeller: standing.newSeller, open, freeOpenListings: pricing.freeOpenListings, cost, until });
+  const you = t(line.key, line.params);
 
   if (!standing.allowed) {
     return shell(
-      <div className="card">
-        <p className="mk-error">{t(standing.reasonKey as MessageKey, limits)}</p>
-        {standing.reasonKey === 'mercadito.error.verify_email' ? (
-          <Link className="btn btn-gold mt" href="/verify">
-            {t('mercadito.publish.verify')}
-          </Link>
-        ) : null}
-      </div>,
+      <>
+        <div className="card">
+          <p className="mk-error">{t(standing.reasonKey as MessageKey, limits)}</p>
+          {standing.reasonKey === 'mercadito.error.verify_email' ? (
+            <Link className="btn btn-gold mt" href="/verify">
+              {t('mercadito.publish.verify')}
+            </Link>
+          ) : null}
+        </div>
+        {standing.reasonKey === 'mercadito.error.new_seller_limit' ? <Limits t={t} rules={rules} you={you} /> : null}
+      </>,
     );
   }
 
@@ -100,17 +141,10 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
 
   return shell(
     <>
-      <div className="card">
-        <p>
-          {price === 0
-            ? t('mercadito.publish.free', { left: freeLeft, max: pricing.freeOpenListings })
-            : t('mercadito.publish.cost_beyond', { cost: price, max: pricing.freeOpenListings })}
-        </p>
-        <p className="mb0">
-          {t('mercadito.publish.balance', { balance })} <Link href="/account/tokens">{t('mercadito.publish.see_tokens')}</Link>
-        </p>
-        {standing.newSeller.limited ? <p className="muted mt mb0">{t('mercadito.publish.new_seller', limits)}</p> : null}
-      </div>
+      <Limits t={t} rules={rules} you={you} />
+      <p className="mb0">
+        {t('mercadito.publish.balance', { balance })} <Link href="/account/tokens">{t('mercadito.publish.see_tokens')}</Link>
+      </p>
 
       <WhatsappForm t={t} current={whatsapp} back="/mercadito/publish" invalid={query.wa === 'invalid'} />
 
