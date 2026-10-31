@@ -16,7 +16,7 @@ import { MERCADITO_RULES, REPUTATION_RULES } from '@/config/business-rules';
 import { statusKeyFor } from '@/server/domains/trust/shield';
 import { DomainError, errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
-import { chargeForAction } from '@/server/domains/tokens/service';
+import { actionCost, chargeForAction } from '@/server/domains/tokens/service';
 import { publishActivity } from '@/server/domains/notifications/activity';
 import { getSetting } from '@/server/domains/platform/settings';
 import { formatYayId } from '@/server/domains/identity/yay-id';
@@ -475,7 +475,13 @@ export async function closeListing(
 
 async function lockOwnListing(tx: Executor, listingId: string, sellerUserId: string) {
   const [listing] = await tx
-    .select({ status: mercaditoListings.status, sellerUserId: mercaditoListings.sellerUserId, featuredUntil: mercaditoListings.featuredUntil })
+    .select({
+      status: mercaditoListings.status,
+      sellerUserId: mercaditoListings.sellerUserId,
+      featuredUntil: mercaditoListings.featuredUntil,
+      publishedAt: mercaditoListings.publishedAt,
+      renewedAt: mercaditoListings.renewedAt,
+    })
     .from(mercaditoListings)
     .where(eq(mercaditoListings.id, listingId))
     .limit(1)
@@ -532,6 +538,8 @@ export type ListingCard = {
   placeName: string;
   coverMediaId: string | null;
   publishedAt: Date;
+  /** The last paid renewal, if any: what the newest order sorts by. */
+  renewedAt: Date | null;
   /** Paid placement in force: the card says "Destacado" so buyers know. */
   featured: boolean;
   /**
@@ -551,6 +559,7 @@ const cardColumns = {
   condition: mercaditoListings.condition,
   status: mercaditoListings.status,
   publishedAt: mercaditoListings.publishedAt,
+  renewedAt: mercaditoListings.renewedAt,
   featuredUntil: mercaditoListings.featuredUntil,
   placeName: locations.name,
   placeNames: locations.names,
@@ -562,7 +571,7 @@ const cardColumns = {
 };
 
 type CardRow = {
-  [K in keyof typeof cardColumns]: (typeof cardColumns)[K]['_']['data'] | (K extends 'sellerScore' | 'sellerEmailVerifiedAt' | 'sellerIdentityVerifiedAt' | 'featuredUntil' ? null : never);
+  [K in keyof typeof cardColumns]: (typeof cardColumns)[K]['_']['data'] | (K extends 'sellerScore' | 'sellerEmailVerifiedAt' | 'sellerIdentityVerifiedAt' | 'featuredUntil' | 'renewedAt' ? null : never);
 } & { coverMediaId: string | null };
 
 function isFeatured(until: Date | null, now = new Date()): boolean {
@@ -583,6 +592,7 @@ function toCard(row: CardRow, locale: string): ListingCard {
     condition: row.condition,
     status: row.status,
     publishedAt: row.publishedAt,
+    renewedAt: row.renewedAt,
     featured: isFeatured(row.featuredUntil),
     placeName: localized(row.placeName, row.placeNames, locale),
     coverMediaId: row.coverMediaId,
@@ -646,7 +656,8 @@ export async function browseListings(
     .where(and(...conditions))
     // "Listings with no phone: reduced visibility" (Master Bible): a seller
     // buyers cannot reach sorts after those they can, never out of sight.
-    .orderBy(featuredFirst, sql`(${userProfiles.whatsappE164} is null)`, desc(mercaditoListings.publishedAt))
+    // A renewed listing sorts by its renewal; its "published" date stays the real one.
+    .orderBy(featuredFirst, sql`(${userProfiles.whatsappE164} is null)`, desc(sql`coalesce(${mercaditoListings.renewedAt}, ${mercaditoListings.publishedAt})`))
     .limit(size + 1)
     .offset((page - 1) * size);
 
@@ -659,6 +670,7 @@ export async function browseListings(
 
 export type ListingDetail = Omit<ListingCard, 'trust'> & {
   featuredUntil: Date | null;
+  renewedAt: Date | null;
   description: string;
   flags: string[];
   updatedAt: Date;
@@ -689,6 +701,7 @@ export async function getListing(executor: Executor, id: string, locale: string)
       flags: mercaditoListings.flags,
       publishedAt: mercaditoListings.publishedAt,
       featuredUntil: mercaditoListings.featuredUntil,
+      renewedAt: mercaditoListings.renewedAt,
       updatedAt: mercaditoListings.updatedAt,
       locationId: mercaditoListings.locationId,
       placeName: locations.name,
@@ -737,6 +750,7 @@ export async function getListing(executor: Executor, id: string, locale: string)
     status: row.status,
     flags: row.flags,
     publishedAt: row.publishedAt,
+    renewedAt: row.renewedAt,
     featured: isFeatured(row.featuredUntil),
     featuredUntil: row.featuredUntil,
     updatedAt: row.updatedAt,
@@ -895,6 +909,63 @@ export async function featureListing(
     metadata: { cost: charge.cost, featuredUntil: featuredUntil.toISOString() },
   });
   return { featuredUntil, cost: charge.cost };
+}
+
+/** Renewal rules as operations have set them: the price, and the hours between two renewals. */
+export async function renewalRules(executor: Executor) {
+  const [cost, cooldownHours, suggestAfterDays] = await Promise.all([
+    actionCost(executor, 'mercadito.renew_listing'),
+    getSetting(executor, 'mercadito.renew_cooldown_hours', MERCADITO_RULES.renewCooldownHours),
+    getSetting(executor, 'mercadito.renew_suggest_after_days', MERCADITO_RULES.renewSuggestAfterDays),
+  ]);
+  return { cost, cooldownHours, suggestAfterDays };
+}
+
+/** When a listing may next be renewed: its last renewal (or publication) plus the cooldown. */
+export function nextRenewalAt(listing: { publishedAt: Date; renewedAt: Date | null }, cooldownHours: number): Date {
+  return new Date((listing.renewedAt ?? listing.publishedAt).getTime() + cooldownHours * 60 * 60 * 1000);
+}
+
+/**
+ * "Renovar": the listing goes back to the top of the newest, for the
+ * `mercadito.renew_listing` price. Only a published listing, and at most once
+ * per cooldown — staying on top for good is featuring, which is labelled.
+ * The purchase id makes a retried submit a no-op, as with featuring.
+ */
+export async function renewListing(
+  tx: Executor,
+  params: { listingId: string; sellerUserId: string; purchaseId: string; now?: Date; audit?: AuditContext },
+): Promise<{ renewedAt: Date; cost: number }> {
+  const now = params.now ?? new Date();
+  const listing = await lockOwnListing(tx, params.listingId, params.sellerUserId);
+  if (listing.status !== 'published') throw errors.conflict('mercadito.error.not_renewable');
+  const { cooldownHours } = await renewalRules(tx);
+  const charge = await chargeForAction(tx, {
+    userId: params.sellerUserId,
+    actionKey: 'mercadito.renew_listing',
+    idempotencyKey: `mercadito.renew:${params.purchaseId}`,
+    relatedType: 'mercadito_listing',
+    relatedId: params.listingId,
+  });
+  // The same purchase, retried: already applied.
+  if (charge.deduplicated && charge.cost > 0) return { renewedAt: listing.renewedAt ?? now, cost: charge.cost };
+  // Checked after the replay test, so a retried renewal reports success instead of "too soon".
+  if (nextRenewalAt(listing, cooldownHours).getTime() > now.getTime()) {
+    throw errors.conflict('mercadito.error.renew_too_soon', { hours: cooldownHours });
+  }
+  await tx.update(mercaditoListings).set({ renewedAt: now, updatedAt: now }).where(eq(mercaditoListings.id, params.listingId));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.sellerUserId,
+    action: 'mercadito.listing_renewed',
+    subjectType: 'mercadito_listing',
+    subjectId: params.listingId,
+    district: 'mercadito',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+    metadata: { cost: charge.cost },
+  });
+  return { renewedAt: now, cost: charge.cost };
 }
 
 /** Other open listings in the same category, newest first — "you may also like". */

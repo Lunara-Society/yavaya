@@ -13,10 +13,11 @@ import { revokeAllSessions } from '@/server/auth/session';
 import { dropSetup, holdSetup, readSetup } from '@/server/auth/two-step-cookies';
 import { disableTwoStep, enableTwoStep, newSecret, replaceRecoveryCodes, twoStepAvailable, verifySecondStep } from '@/server/domains/identity/two-step';
 import { changePassword } from '@/server/domains/identity/password';
+import { changeDisplayName } from '@/server/domains/identity/display-name';
 import { passwordSchema } from '@/server/domains/identity/service';
 import { recordAudit } from '@/server/domains/audit/service';
 import { sendSecurityNotice, type SecurityNotice } from '@/server/domains/notifications/email/service';
-import { toClientError } from '@/server/errors';
+import { isDomainError, toClientError } from '@/server/errors';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { signInPath } from '@/server/auth/sign-in-path';
 
@@ -114,6 +115,21 @@ export async function changePasswordAction(_previous: SecurityState, formData: F
   if (!result.ok) return { status: 'error', message: t('settings.password.wrong') };
   await sendSecurityNotice({ to: result.email, locale: isLocale(result.locale) ? result.locale : 'es', kind: 'password_changed' });
   return { status: 'done', message: t('settings.password.done') };
+}
+
+/** Changes the display name: the first change free, each one after for a token. */
+export async function changeNameAction(_previous: SecurityState, formData: FormData): Promise<SecurityState> {
+  const session = await signedIn();
+  const { t } = await getTranslator();
+  try {
+    const result = await db().transaction((tx) => changeDisplayName(tx, { userId: session.user.userId, name: String(formData.get('name') ?? '') }));
+    revalidatePath('/', 'layout');
+    return { status: 'done', message: t('settings.name.done', { name: result.displayName }) };
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    if (error.code === 'insufficient_tokens') return { status: 'error', message: t('settings.name.no_tokens') };
+    return { status: 'error', message: t((error.messageKey.startsWith('settings.name.') ? error.messageKey : 'settings.name.failed') as MessageKey) };
+  }
 }
 
 /** Signs out every other device; this one stays. */

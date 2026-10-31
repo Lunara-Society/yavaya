@@ -24,6 +24,7 @@ import {
   featureListing,
   getListing,
   publishListing,
+  renewListing,
   sellerListings,
   sellerStanding,
   setWhatsapp,
@@ -336,6 +337,70 @@ describe('featuring a listing', () => {
       db().transaction((tx) => featureListing(tx, { listingId, sellerUserId: stranger, purchaseId: crypto.randomUUID() })),
     ).rejects.toMatchObject({ code: 'not_found' });
     expect((await getListing(db(), listingId, 'es'))?.featured).toBe(false);
+  });
+});
+
+describe('renewing a listing', () => {
+  const later = (hours: number) => new Date(Date.now() + hours * 3_600_000);
+
+  it('charges one token and puts the listing back at the top of the newest, keeping its date', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 2 });
+    const other = await createMember({ ageDays: 8 });
+    const { listingId } = await publish(seller, 1, { title: 'Mesa de comedor' });
+    await publish(other, 2, { title: 'Silla de oficina' });
+    const before = await getListing(db(), listingId, 'es');
+    expect((await browseListings(db(), { locale: 'es' })).items[0]?.id).not.toBe(listingId);
+
+    const now = later(MERCADITO_RULES.renewCooldownHours + 1);
+    await db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID(), now }));
+    expect(await getBalance(db(), seller)).toBe(1);
+
+    const { items } = await browseListings(db(), { locale: 'es' });
+    expect(items[0]?.id).toBe(listingId);
+    // Renewed is not featured: no label, and the publication date shown is the real one.
+    expect(items[0]?.featured).toBe(false);
+    const after = await getListing(db(), listingId, 'es');
+    expect(after?.publishedAt.getTime()).toBe(before?.publishedAt.getTime());
+    expect(after?.renewedAt?.getTime()).toBe(now.getTime());
+    const [audit] = await db().select().from(auditEvents).where(eq(auditEvents.action, 'mercadito.listing_renewed'));
+    expect(audit?.subjectId).toBe(listingId);
+  });
+
+  it('allows one renewal per cooldown, without charging a refused one, and charges a retry once', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 4 });
+    const { listingId } = await publish(seller, 1);
+    // Too soon after publishing: refused, and the token stays.
+    await expect(
+      db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID() })),
+    ).rejects.toMatchObject({ messageKey: 'mercadito.error.renew_too_soon' });
+    expect(await getBalance(db(), seller)).toBe(4);
+
+    const purchaseId = crypto.randomUUID();
+    const now = later(MERCADITO_RULES.renewCooldownHours + 1);
+    await db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId, now }));
+    await db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId, now }));
+    expect(await getBalance(db(), seller)).toBe(3);
+
+    // A new renewal an hour later is too soon again.
+    await expect(
+      db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID(), now: later(MERCADITO_RULES.renewCooldownHours + 2) })),
+    ).rejects.toMatchObject({ messageKey: 'mercadito.error.renew_too_soon' });
+    expect(await getBalance(db(), seller)).toBe(3);
+  });
+
+  it('refuses someone else\'s listing and a closed one', async () => {
+    const seller = await createMember({ ageDays: 8, tokens: 4 });
+    const stranger = await createMember({ ageDays: 8, tokens: 4 });
+    const { listingId } = await publish(seller, 1);
+    const now = later(MERCADITO_RULES.renewCooldownHours + 1);
+    await expect(
+      db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: stranger, purchaseId: crypto.randomUUID(), now })),
+    ).rejects.toMatchObject({ code: 'not_found' });
+    await db().transaction((tx) => closeListing(tx, { listingId, sellerUserId: seller, outcome: 'sold' }));
+    await expect(
+      db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: seller, purchaseId: crypto.randomUUID(), now })),
+    ).rejects.toMatchObject({ messageKey: 'mercadito.error.not_renewable' });
+    expect(await getBalance(db(), stranger)).toBe(4);
   });
 });
 

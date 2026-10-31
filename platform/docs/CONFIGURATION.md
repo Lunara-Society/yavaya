@@ -724,6 +724,9 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
 | Publishing within the allowance | free | `billable_actions` row `mercadito.publish_listing_free` (cost 0) |
 | Each open listing beyond the allowance | 1 token | `billable_actions` row `mercadito.publish_listing` |
 | Featuring a listing ("Destacado") | 3 tokens | `billable_actions` row `mercadito.feature_listing` |
+| Renewing a listing ("Renovar": back to the top of the newest) | 1 token | `billable_actions` row `mercadito.renew_listing`; owner decision, October 2026 |
+| `mercadito.renew_cooldown_hours` | 24 | Our default, not the owner's: stops renewing from becoming a permanent top spot (that is featuring, and it is labelled) |
+| `mercadito.renew_suggest_after_days` | 7 | Our default: when "Mis publicaciones" suggests renewing or featuring a listing |
 
 **Decisions the specification leaves open:**
 
@@ -755,6 +758,26 @@ Live values are in `system_settings` (seeded from `MERCADITO_RULES` in
    reports. Whether animals may be sold here is also undecided (Animales
    handles adoption). Roxi declines the obvious cases on her own — see
    "Roxi" below.
+
+8. **Renewal and saved searches.** A renewed listing sorts by its renewal
+   (`renewed_at`) but keeps its publication date, so it is not announced again
+   to saved searches whose members have already seen it, and the date buyers
+   see is the real one. The nudge on "Mis publicaciones" is by age only:
+   Yavaya does not count listing views, so it never claims a listing "got no
+   visits".
+
+## Display names
+
+| Setting | Default | Source |
+| --- | --- | --- |
+| `identity.free_name_changes` | 1 | Owner decision, October 2026 |
+| Each change after the free ones | 1 token | `billable_actions` row `identity.change_name`; owner decision |
+
+The YAY ID, reputation and history do not change with the name, and every
+change is audited with the old and new name. **Open:** whether paid changes
+need a minimum interval. None is applied; a member could rename daily for a
+token each time. If that is abused, add a cooldown setting rather than raising
+the price.
 
 ---
 

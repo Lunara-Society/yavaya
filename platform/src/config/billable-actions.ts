@@ -10,17 +10,21 @@
  * table (tokens/service.ts, actionCost), so operations can retune a price
  * without a deploy. Each key appears once; asking for a service is free (until
  * October 2026 the seed listed it twice, the free entry winning).
+ *
+ * A key removed from this list is switched off by the seed, not left live in
+ * the table: until 31 October 2026 "publish a service offer" and "publish a
+ * Works project" sat there at 1 token each though nothing charged them.
  */
-export const BILLABLE_ACTIONS: ReadonlyArray<{ key: string; district: string; cost: number; description: string }> = [
+export const BILLABLE_ACTIONS: ReadonlyArray<{ key: string; district: string | null; cost: number; description: string }> = [
   { key: 'mercadito.publish_listing', district: 'mercadito', cost: 1, description: 'Publish a Mercadito listing beyond the free allowance' },
   { key: 'mercadito.publish_listing_free', district: 'mercadito', cost: 0, description: 'Publish a Mercadito listing within the free allowance (free)' },
   { key: 'mercadito.feature_listing', district: 'mercadito', cost: 3, description: 'Feature a Mercadito listing at the top for a week' },
+  { key: 'mercadito.renew_listing', district: 'mercadito', cost: 1, description: 'Renew a Mercadito listing: back to the top of the newest' },
+  { key: 'identity.change_name', district: null, cost: 1, description: 'Change the display name after the free first change' },
   { key: 'work.publish_post', district: 'works', cost: 3, description: 'Publish a Trabajo post beyond the free allowance (employers only)' },
   { key: 'work.publish_post_free', district: 'works', cost: 0, description: 'Publish a Trabajo post within the free allowance (free)' },
   { key: 'work.feature_post', district: 'works', cost: 3, description: 'Feature a Trabajo post at the top for a week' },
   { key: 'go.feature_store', district: 'yavayago', cost: 5, description: 'Feature a YavayaGo store at the top for a week' },
-  { key: 'services.publish_offer', district: 'services', cost: 1, description: 'Publish a service offer' },
-  { key: 'works.publish_project', district: 'works', cost: 1, description: 'Publish a Works project' },
   { key: 'community.publish_request', district: 'community', cost: 0, description: 'Publish a community support request (free)' },
   { key: 'services.publish_request', district: 'services', cost: 0, description: 'Ask for a service (free)' },
   { key: 'services.respond', district: 'services', cost: 0, description: 'Answer a service request (free)' },

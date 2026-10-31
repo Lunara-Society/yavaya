@@ -34,6 +34,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `nav.work_employer`: Empleador verificado
 - `nav.ops`: Panel de operaciones
 - `nav.moderation_community`: Moderación · Comunidad
+- `nav.moderation_profiles`: Moderación · Perfiles
 - `nav.sanctuary`: Santuario
 - `nav.moderation_sanctuary`: Revisión · Santuario
 - `nav.phone`: Teléfono
@@ -191,6 +192,17 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.password.wrong`: La contraseña actual no es correcta.
 - `settings.password.done`: Listo. Cerramos tu sesión en los demás dispositivos.
 - `settings.password.google_hint`: ¿Creaste tu cuenta con Google y nunca pusiste contraseña? Usa “¿Olvidaste tu contraseña?” para crear una.
+- `settings.name.label`: Tu nombre visible
+- `settings.name.free`: Tu primer cambio de nombre es gratis. Los siguientes cuestan un token.
+- `settings.name.paid`: Ya usaste tu cambio gratis. Este cuesta tokens: {cost}. Tu saldo: {balance}.
+- `settings.name.submit`: Cambiar nombre
+- `settings.name.submit_paid`: Cambiar nombre (tokens: {cost})
+- `settings.name.hint`: Tu YAY ID, tu reputación y tu historial no cambian con el nombre.
+- `settings.name.done`: Listo: ahora apareces como {name}.
+- `settings.name.no_tokens`: No tienes tokens suficientes. Consíguelos gratis invitando a tus amigos, o cómpralos en Tokens.
+- `settings.name.invalid`: Escribe un nombre de 2 a 60 caracteres.
+- `settings.name.same`: Ese ya es tu nombre.
+- `settings.name.failed`: No se pudo cambiar el nombre. Inténtalo de nuevo.
 - `settings.sessions.title`: Dónde tienes la sesión abierta
 - `settings.sessions.this_device`: Este dispositivo
 - `settings.sessions.last_active`: Última actividad: {when}
@@ -324,6 +336,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `place.picker.required`: Elige un lugar de la lista.
 - `place.picker.clear`: Quitar lugar
 - `place.picker.suggested`: Ciudades principales
+- `place.picker.searching`: Buscando…
 - `place.picker.any`: Centroamérica y México
 - `place.kind.city_big`: Ciudad grande
 - `place.kind.city_medium`: Ciudad mediana
@@ -436,6 +449,18 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `media.error.too_large`: Cada foto puede pesar hasta {maxMegabytes} MB.
 - `media.error.unsupported_type`: Solo aceptamos fotos JPEG, PNG o WebP.
 - `media.error.unreadable`: No pudimos leer una de las fotos. Prueba con otra.
+- `media.link.label`: O pega el enlace de una foto
+- `media.link.hint`: El enlace directo a la foto (JPG, PNG o WebP), no a la página donde aparece. Usa solo fotos tuyas o que tengas permiso de usar.
+- `media.link.placeholder`: https://…
+- `media.link.add`: Agregar foto
+- `media.link.adding`: Trayendo la foto…
+- `media.link.added`: Foto agregada.
+- `media.link.full`: Ya no caben más fotos.
+- `media.link.error.invalid`: Ese enlace no es válido: copia la dirección completa, la que empieza con https://.
+- `media.link.error.blocked`: No podemos usar ese enlace.
+- `media.link.error.unreachable`: No pudimos traer la foto de ese enlace. Prueba con otro, o sube la foto desde tu teléfono.
+- `media.link.error.page`: Ese enlace abre una página, no una foto. Abre la foto, mantenla presionada y elige «Copiar dirección de la imagen».
+- `media.link.error.network`: No hay conexión. Inténtalo de nuevo.
 
 ## mercadito
 - `mercadito.error.title`: El título debe tener entre {titleMin} y {titleMax} caracteres.
@@ -558,6 +583,20 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `mercadito.feature.invite`: Consigue tokens gratis invitando amigos
 - `mercadito.feature.get_tokens`: Comprar tokens
 - `mercadito.error.not_featurable`: Solo se puede destacar una publicación activa.
+- `mercadito.renew.title`: ¿Pocas visitas? Renueva tu publicación
+- `mercadito.renew.body`: Vuelve arriba de lo más nuevo en Mercadito, sin cambiar su fecha de publicación. Una vez cada {hours} horas.
+- `mercadito.renew.buy`: Renovar (tokens: {cost})
+- `mercadito.renew.done`: Listo: tu publicación volvió arriba.
+- `mercadito.renew.soon`: Todavía no se puede renovar. Podrás hacerlo desde el {date}.
+- `mercadito.renew.next`: Podrás renovarla de nuevo desde el {date}.
+- `mercadito.renew.failed`: No se pudo renovar. Inténtalo de nuevo.
+- `mercadito.renew.balance`: Tienes {balance} tokens; renovar cuesta {cost}.
+- `mercadito.error.not_renewable`: Solo se puede renovar una publicación activa.
+- `mercadito.error.renew_too_soon`: Ya la renovaste hace poco. Se puede una vez cada {hours} horas.
+- `mercadito.nudge.title`: ¿Alguna publicación sin movimiento?
+- `mercadito.nudge.body`: Estas llevan {days} días o más sin renovarse. Renuévala para que vuelva arriba, o destácala para que aparezca primero.
+- `mercadito.nudge.action`: Renovar o destacar
+- `mercadito.nudge.age`: Hace {days} días
 - `mercadito.publish.cost`: Publicar cuesta {cost} token. Buscar, comprar y escribir a vendedores es gratis.
 - `mercadito.publish.balance`: Tienes {balance} tokens.
 - `mercadito.publish.no_tokens`: No tienes tokens suficientes para publicar.
@@ -931,7 +970,447 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `profile.no_listings`: Este miembro no tiene publicaciones activas.
 - `profile.view`: Ver perfil
 - `profile.mine`: Ver mi perfil público
+- `profile.customize`: Personalizar mi perfil
+- `profile.customize_lead`: Fondos, portada, marco, colores y qué ve cada quien. Nada cambia hasta que publicas.
+- `profile.report.title`: Reportar este perfil
+- `profile.report.lead`: Cuéntanos qué está mal en lo que muestra este perfil. Lo revisa una persona del equipo, y la persona reportada no sabe quién lo reportó.
+- `profile.report.sign_in`: Inicia sesión para reportar este perfil
+- `profile.report.done`: Recibimos tu reporte. Número de caso: {code}.
+- `profile.report.error.own`: No puedes reportar tu propio perfil.
+- `profile.report.category.harassment`: Ofensivo o acoso
+- `profile.report.category.fraud`: Se hace pasar por otra persona o engaña
+- `profile.report.category.scam`: Estafa
+- `profile.report.category.spam`: Spam o publicidad
+- `profile.report.category.other`: Otro
+- `profile.module.about`: Sobre mí
+- `profile.module.links`: Enlaces
+- `profile.module.languages`: Idiomas
+- `profile.module.contact`: Contacto
+- `profile.module.listings`: Publicaciones en Mercadito
+- `profile.module.work`: Trabajo
+- `profile.module.services`: Servicios que ofrece
+- `profile.module.store`: Su tienda en YavayaGo
+- `profile.module.work.experience`: {years} años de experiencia
+- `profile.module.work.more`: Ver su perfil de Trabajo
+- `profile.module.services.more`: Ver su perfil en Servicios
+- `profile.module.store.more`: Ver la tienda
+- `profile.contact.whatsapp`: Escribir por WhatsApp
+- `profile.contact.unverified`: Número declarado por el miembro; Yavaya no lo ha verificado.
+- `profile.link_elsewhere`: se abre en otro sitio
+- `profile.members_only_note`: Este miembro muestra un poco más a quienes iniciaron sesión en Yavaya.
+- `profile.avatar_alt`: Foto de perfil de {name}
+- `profile.report`: Reportar este perfil
+- `profile.language.es`: Español
+- `profile.language.en`: Inglés
+- `profile.language.pt`: Portugués
+- `profile.language.fr`: Francés
+- `profile.language.it`: Italiano
+- `profile.language.de`: Alemán
+- `profile.language.zh`: Chino
+- `profile.language.miq`: Miskito
+- `profile.language.cab`: Garífuna
+- `profile.language.quc`: K'iche'
+- `profile.language.cak`: Kaqchikel
+- `profile.language.kek`: Q'eqchi'
+- `profile.language.mam`: Mam
+- `profile.language.yua`: Maya yucateco
+- `profile.language.nah`: Náhuatl
+- `profile.language.sgn`: Lengua de señas
 - `profile.team`: Equipo Yavaya
+
+## profiles
+- `profiles.mod.title`: Perfiles reportados
+- `profiles.mod.lead`: Lo que un miembro muestra en su perfil. Restablecerlo lo devuelve al diseño de Yavaya, borra sus textos y retira sus fotos de perfil; su cuenta, sus anuncios y su reputación no cambian.
+- `profiles.mod.empty`: No hay perfiles reportados.
+- `profiles.mod.note`: Nota interna
+- `profiles.mod.note_hint`: Obligatoria para restablecer. Queda en el registro de auditoría; el miembro no la ve.
+- `profiles.mod.decision.dismiss`: No hay nada que corregir
+- `profiles.mod.decision.reset`: Restablecer el perfil
+
+## studio
+- `studio.lead`: Todo lo que cambies aquí es un borrador: solo tú lo ves hasta que lo publicas.
+- `studio.status.published`: Publicado
+- `studio.status.never`: Aún no has publicado tu perfil
+- `studio.status.unsaved`: Cambios sin guardar
+- `studio.status.saved`: Borrador guardado
+- `studio.status.unpublished`: Borrador sin publicar
+- `studio.action.undo`: Deshacer
+- `studio.action.save`: Guardar borrador
+- `studio.action.saving`: Guardando…
+- `studio.action.publish`: Publicar
+- `studio.action.publishing`: Publicando…
+- `studio.action.discard`: Descartar borrador
+- `studio.action.reset`: Restablecer apariencia
+- `studio.action.more`: Más opciones
+- `studio.confirm.discard`: ¿Descartar el borrador? Tu perfil vuelve a ser el que ya está publicado.
+- `studio.confirm.reset`: ¿Volver a la apariencia de Yavaya? Tu foto, tus textos y quién ve qué no cambian.
+- `studio.confirm.delete_preset`: ¿Eliminar este estilo guardado?
+- `studio.done.saved`: Borrador guardado. Solo tú lo ves.
+- `studio.done.published`: Publicado. Así ven ahora tu perfil.
+- `studio.done.discarded`: Borrador descartado.
+- `studio.leave_warning`: Tienes cambios sin guardar en tu perfil. ¿Salir de todos modos? Si sales, quedan guardados solo en este dispositivo hasta que vuelvas.
+- `studio.recovered`: Encontramos cambios de este dispositivo que no alcanzaste a guardar.
+- `studio.recover.keep`: Seguir con ellos
+- `studio.recover.drop`: Descartarlos
+- `studio.conflict`: Tu perfil cambió en otra ventana o dispositivo. Recarga para ver la versión más reciente; tus cambios de aquí quedan guardados en este dispositivo.
+- `studio.conflict.reload`: Recargar
+- `studio.error.network`: No hay conexión. Tus cambios siguen en este dispositivo; inténtalo de nuevo.
+- `studio.verify_first`: Verifica tu correo para publicar tu perfil y subir tus fotos. Mientras tanto puedes preparar y guardar tu borrador.
+- `studio.areas`: Partes del estudio
+- `studio.area.appearance`: Apariencia
+- `studio.area.backgrounds`: Fondos y decoración
+- `studio.area.layout`: Diseño y contenido
+- `studio.area.privacy`: Privacidad
+- `studio.area.publish`: Vista previa y publicar
+- `studio.sheet.close`: Ver la vista previa
+- `studio.preview.label`: Vista previa
+- `studio.preview.device`: Pantalla
+- `studio.preview.desktop`: Computadora
+- `studio.preview.mobile`: Teléfono
+- `studio.preview.as`: Ver como
+- `studio.preview.version`: Versión
+- `studio.preview.published`: Publicada
+- `studio.preview.draft`: Borrador
+- `studio.preview.hint_owner`: Así lo ves tú: incluye las secciones que tienes ocultas.
+- `studio.preview.hint_member`: Así lo ve un miembro con sesión iniciada.
+- `studio.preview.hint_visitor`: Así lo ve alguien sin cuenta en Yavaya.
+- `studio.section.themes`: Temas
+- `studio.themes.lead`: Un punto de partida: fondo, portada, marco y colores que combinan. Después puedes cambiar cualquier detalle.
+- `studio.themes.apply`: Aplicar
+- `studio.themes.applied`: Aplicado
+- `studio.section.photo`: Foto de perfil
+- `studio.photo.upload`: Subir foto
+- `studio.photo.replace`: Cambiar foto
+- `studio.photo.remove`: Quitar foto
+- `studio.photo.uploading`: Subiendo…
+- `studio.photo.hint`: JPG, PNG o WebP, hasta {max} MB. Quitamos la ubicación y los datos de la cámara.
+- `studio.photo.unavailable`: Subir fotos no está disponible por ahora. Puedes usar los diseños de la galería.
+- `studio.photo.zoom`: Acercar
+- `studio.photo.focus_x`: Posición horizontal
+- `studio.photo.focus_y`: Posición vertical
+- `studio.photo.shape`: Forma
+- `studio.photo.frame`: Marco
+- `studio.photo.no_frame`: Sin marco
+- `studio.section.colors`: Colores
+- `studio.colors.surface`: Color de las tarjetas
+- `studio.colors.accent`: Color de acento
+- `studio.tone.night`: Noche
+- `studio.tone.day`: Día
+- `studio.section.cards`: Tarjetas
+- `studio.card.style`: Estilo
+- `studio.card.opacity`: Transparencia del cristal
+- `studio.card.border`: Borde
+- `studio.card.radius`: Esquinas
+- `studio.card.divider`: Separador de títulos
+- `studio.section.type`: Tipografía
+- `studio.section.header`: Encabezado
+- `studio.section.density`: Espaciado
+- `studio.section.background`: Fondo de la página
+- `studio.bg.kind`: Tipo de fondo
+- `studio.bg.default`: El de Yavaya
+- `studio.bg.asset`: Un diseño
+- `studio.bg.solid`: Un color
+- `studio.bg.gradient`: Un degradado
+- `studio.bg.upload`: Tu foto
+- `studio.bg.dim`: Sombra sobre el fondo
+- `studio.section.cover`: Portada
+- `studio.cover.default`: La de Yavaya
+- `studio.cover.asset`: Un diseño o paisaje
+- `studio.cover.upload`: Tu foto
+- `studio.cover.none`: Sin portada
+- `studio.cover.dim`: Sombra sobre la portada
+- `studio.section.decoration`: Decoración
+- `studio.decoration.none`: Sin decoración
+- `studio.decoration.intensity`: Intensidad
+- `studio.pick_in_gallery`: Elige uno en la galería de abajo.
+- `studio.gallery.title`: Galería
+- `studio.gallery.search`: Buscar diseños
+- `studio.gallery.color`: Color
+- `studio.gallery.any_color`: Todos los colores
+- `studio.gallery.style`: Estilo
+- `studio.gallery.any_style`: Todos los estilos
+- `studio.gallery.count`: {count} diseños
+- `studio.gallery.more`: Mostrar más
+- `studio.gallery.empty`: Ningún diseño coincide. Prueba con otro color, estilo o palabra.
+- `studio.gallery.no_favorites`: Aún no tienes favoritos. Toca el corazón de un diseño para guardarlo aquí.
+- `studio.gallery.tab.backgrounds`: Fondos
+- `studio.gallery.tab.covers`: Portadas
+- `studio.gallery.tab.frames`: Marcos
+- `studio.gallery.tab.decorations`: Decoraciones
+- `studio.gallery.tab.professional`: Profesional
+- `studio.gallery.tab.favorites`: Favoritos
+- `studio.gallery.use_background`: Usar de fondo
+- `studio.gallery.use_cover`: Usar de portada
+- `studio.gallery.use_frame`: Usar este marco
+- `studio.gallery.use_decoration`: Usar esta decoración
+- `studio.gallery.in_use`: En uso
+- `studio.gallery.favorite`: Guardar en favoritos
+- `studio.gallery.unfavorite`: Quitar de favoritos
+- `studio.gallery.size`: {width} × {height} px
+- `studio.section.mode`: Modo del perfil
+- `studio.mode.lead`: El modo ordena tus secciones y destaca una. Nunca cambia quién ve qué.
+- `studio.section.headline`: Frase de presentación
+- `studio.headline.hint`: Una línea bajo tu nombre, que todos ven. Hasta {max} caracteres.
+- `studio.about.hint`: Hasta {max} caracteres. Solo texto: sin enlaces ni formato.
+- `studio.chars`: {count} de {max}
+- `studio.links.hint`: Hasta {max}. Solo direcciones https://. Tu perfil muestra a qué sitio lleva cada uno.
+- `studio.links.label`: Texto del enlace
+- `studio.links.url`: Dirección (https://…)
+- `studio.links.add`: Agregar enlace
+- `studio.links.remove`: Quitar enlace
+- `studio.languages.hint`: Hasta {max}.
+- `studio.section.modules`: Secciones
+- `studio.modules.lead`: Ordénalas, elige quién ve cada una o pliégalas. Ocultar una sección no borra nada.
+- `studio.modules.up`: Subir {name}
+- `studio.modules.down`: Bajar {name}
+- `studio.modules.featured`: Sección destacada
+- `studio.modules.no_featured`: Ninguna
+- `studio.modules.collapsed`: Plegada
+- `studio.modules.visibility`: Quién la ve
+- `studio.modules.trust_fixed`: Tu escudo de confianza y tus insignias siempre se muestran, primero: en Yavaya la confianza nunca se oculta.
+- `studio.modules.create`: Ir a crearlo
+- `studio.section.privacy`: Quién ve qué
+- `studio.privacy.lead`: Así queda tu perfil para cada persona. Al publicar se aplica de inmediato y queda registrado.
+- `studio.privacy.name`: Tu nombre y tu YAY ID
+- `studio.privacy.name_value`: Todos: ya aparecen en todo lo que publicas.
+- `studio.privacy.trust`: Escudo de confianza e insignias
+- `studio.privacy.trust_value`: Todos: la confianza nunca se oculta.
+- `studio.privacy.photo`: Foto de perfil
+- `studio.privacy.cover`: Tus fotos de portada y de fondo
+- `studio.privacy.never`: Nunca se muestran en tu perfil: tu correo, el teléfono de tu cuenta, tu ubicación exacta ni tus pagos.
+- `studio.privacy.members_photo`: Con «Miembros», quien no inició sesión ve tus iniciales y la portada de Yavaya.
+- `studio.section.changes`: Cambios sin publicar
+- `studio.changes.none`: No hay cambios: tu borrador es igual a lo publicado.
+- `studio.publish.lead`: Al publicar, tu perfil se verá así para todos, según lo que elegiste en Privacidad.
+- `studio.section.presets`: Mis estilos guardados
+- `studio.presets.lead`: Guarda la apariencia actual para volver a ella cuando quieras. Solo guarda el aspecto: ni tus textos ni quién ve qué.
+- `studio.presets.name`: Nombre del estilo
+- `studio.presets.save`: Guardar estilo
+- `studio.presets.apply`: Aplicar
+- `studio.presets.rename`: Renombrar
+- `studio.presets.duplicate`: Duplicar
+- `studio.presets.delete`: Eliminar
+- `studio.presets.empty`: Aún no has guardado ningún estilo.
+- `studio.presets.count`: {count} de {max}
+- `studio.presets.copy_suffix`: (copia)
+- `studio.noscript`: El estudio necesita JavaScript para mostrar la vista previa. Tu perfil público funciona sin él.
+- `studio.theme.marble-noir`: Mármol negro
+- `studio.theme.satin-night`: Satén de noche
+- `studio.theme.starlight`: Luz de estrellas
+- `studio.theme.gilded-deco`: Art déco dorado
+- `studio.theme.champagne-lights`: Luces de champán
+- `studio.theme.botanical`: Botánico
+- `studio.theme.carrara`: Carrara
+- `studio.style.aurora`: Aurora
+- `studio.style.linen`: Lino
+- `studio.style.grid`: Cuadrícula
+- `studio.style.pinstripe`: Raya diplomática
+- `studio.style.topographic`: Curvas de nivel
+- `studio.style.paper`: Papel
+- `studio.style.gradient`: Degradado
+- `studio.style.illustration`: Ilustración
+- `studio.style.pearl`: Perlas
+- `studio.style.laurel`: Laurel
+- `studio.style.rope`: Cordón
+- `studio.preview.failed`: La vista previa no pudo dibujarse con este cambio. Tu borrador sigue aquí: sigue editando o deshaz el último cambio.
+- `studio.empty.about`: Aquí irá lo que cuentes de ti. Escríbelo en «Diseño y contenido».
+- `studio.empty.links`: Aquí irán tus enlaces. Añádelos en «Diseño y contenido».
+- `studio.empty.languages`: Aquí irán los idiomas que hablas. Elígelos en «Diseño y contenido».
+- `studio.theme.yavaya-night`: Noche Yavaya
+- `studio.theme.liquid-gold`: Oro líquido
+- `studio.theme.black-gold`: Negro y oro
+- `studio.theme.midnight-sapphire`: Zafiro de medianoche
+- `studio.theme.aurora`: Aurora
+- `studio.theme.emerald-night`: Noche esmeralda
+- `studio.theme.violet-horizon`: Horizonte violeta
+- `studio.theme.dusk-market`: Mercado al atardecer
+- `studio.theme.deep-ocean`: Océano profundo
+- `studio.theme.forest-moss`: Musgo del bosque
+- `studio.theme.espresso`: Espresso
+- `studio.theme.rose-noir`: Rosa noche
+- `studio.theme.ruby-velvet`: Terciopelo rubí
+- `studio.theme.graphite`: Grafito
+- `studio.theme.night-market`: Mercado nocturno
+- `studio.theme.lighthouse`: Faro
+- `studio.theme.volcano-moon`: Luna del volcán
+- `studio.theme.obsidian-pearl`: Obsidiana y perla
+- `studio.theme.ivory-silk`: Seda marfil
+- `studio.theme.platinum-day`: Platino de día
+- `studio.theme.sunrise`: Amanecer
+- `studio.theme.sage-garden`: Jardín de salvia
+- `studio.theme.clear-sky`: Cielo claro
+- `studio.theme.sandstone`: Piedra arenisca
+- `studio.theme.blush-orchid`: Orquídea rosada
+- `studio.theme.editorial`: Editorial
+- `studio.theme.classic-ivory`: Marfil clásico
+- `studio.theme.chapel-morning`: Mañana en la capilla
+- `studio.theme.executive`: Ejecutivo
+- `studio.theme.counsel`: Consejo
+- `studio.theme.studio-white`: Estudio blanco
+- `studio.theme.consultant`: Consultoría
+- `studio.theme.artisan`: Artesano
+- `studio.accent.gold`: Oro
+- `studio.accent.champagne`: Champán
+- `studio.accent.rosegold`: Oro rosa
+- `studio.accent.coral`: Coral
+- `studio.accent.ruby`: Rubí
+- `studio.accent.orchid`: Orquídea
+- `studio.accent.violet`: Violeta
+- `studio.accent.sapphire`: Zafiro
+- `studio.accent.sky`: Cielo
+- `studio.accent.teal`: Turquesa
+- `studio.accent.emerald`: Esmeralda
+- `studio.accent.lime`: Lima
+- `studio.accent.pearl`: Perla
+- `studio.accent.platinum`: Platino
+- `studio.accent.bronze`: Bronce
+- `studio.surface.obsidian`: Obsidiana
+- `studio.surface.midnight`: Medianoche
+- `studio.surface.forest`: Bosque
+- `studio.surface.plum`: Ciruela
+- `studio.surface.espresso`: Café
+- `studio.surface.ivory`: Marfil
+- `studio.surface.paper`: Papel
+- `studio.surface.mist`: Neblina
+- `studio.surface.blush`: Rubor
+- `studio.surface.sage`: Salvia
+- `studio.solid.midnight`: Medianoche
+- `studio.solid.obsidian`: Obsidiana
+- `studio.solid.forest`: Bosque
+- `studio.solid.ocean`: Océano
+- `studio.solid.plum`: Ciruela
+- `studio.solid.wine`: Vino
+- `studio.solid.graphite`: Grafito
+- `studio.solid.sand`: Arena
+- `studio.solid.ivory`: Marfil
+- `studio.solid.blush`: Rubor
+- `studio.solid.sage`: Salvia
+- `studio.solid.sky`: Cielo
+- `studio.gradient.black-gold`: Negro y oro
+- `studio.gradient.midnight-sapphire`: Zafiro de medianoche
+- `studio.gradient.dusk`: Anochecer
+- `studio.gradient.ocean`: Océano
+- `studio.gradient.emerald-night`: Noche esmeralda
+- `studio.gradient.violet-horizon`: Horizonte violeta
+- `studio.gradient.rose-gold`: Oro rosa
+- `studio.gradient.ivory-silk`: Seda marfil
+- `studio.gradient.platinum`: Platino
+- `studio.gradient.sunrise`: Amanecer
+- `studio.gradient.forest-moss`: Musgo
+- `studio.gradient.aurora`: Aurora
+- `studio.card.solid`: Sólida
+- `studio.card.glass`: Cristal
+- `studio.card.elevated`: Con sombra
+- `studio.card.framed`: Enmarcada
+- `studio.border.none`: Sin borde
+- `studio.border.hairline`: Fino
+- `studio.border.accent`: De color
+- `studio.border.double`: Doble
+- `studio.radius.sharp`: Rectas
+- `studio.radius.soft`: Suaves
+- `studio.radius.round`: Redondas
+- `studio.divider.line`: Línea
+- `studio.divider.dots`: Puntos
+- `studio.divider.ornament`: Filete
+- `studio.divider.none`: Ninguno
+- `studio.type.classic`: Clásica
+- `studio.type.modern`: Moderna
+- `studio.type.elegant`: Elegante
+- `studio.type.editorial`: Editorial
+- `studio.header.classic`: Clásico
+- `studio.header.centered`: Centrado
+- `studio.header.banner`: Sobre la portada
+- `studio.header.minimal`: Sin portada
+- `studio.density.compact`: Compacto
+- `studio.density.comfortable`: Cómodo
+- `studio.density.spacious`: Amplio
+- `studio.shape.circle`: Círculo
+- `studio.shape.rounded`: Redondeada
+- `studio.shape.square`: Cuadrada
+- `studio.shape.hexagon`: Hexágono
+- `studio.shape.arch`: Arco
+- `studio.mode.personal`: Personal
+- `studio.mode.professional`: Profesional
+- `studio.mode.business`: Negocio
+- `studio.mode.freelancer`: Independiente
+- `studio.mode.creator`: Creador
+- `studio.mode.seller`: Vendedor
+- `studio.mode.provider`: Servicios
+- `studio.mode.jobseeker`: Busco trabajo
+- `studio.mode.community`: Comunidad
+- `studio.visibility.public`: Todos
+- `studio.visibility.members`: Miembros
+- `studio.visibility.private`: Solo tú
+- `studio.visibility_hint.public`: Cualquiera, aunque no tenga cuenta
+- `studio.visibility_hint.members`: Quienes iniciaron sesión en Yavaya
+- `studio.visibility_hint.private`: Nadie más: queda guardada, oculta
+- `studio.color.gold`: Oro
+- `studio.color.black`: Negro
+- `studio.color.blue`: Azul
+- `studio.color.violet`: Violeta
+- `studio.color.green`: Verde
+- `studio.color.teal`: Turquesa
+- `studio.color.pink`: Rosa
+- `studio.color.red`: Rojo
+- `studio.color.orange`: Naranja
+- `studio.color.white`: Blanco
+- `studio.color.silver`: Plata
+- `studio.color.bronze`: Bronce
+- `studio.style.liquid`: Líquido
+- `studio.style.photo`: Fotografía
+- `studio.style.marble`: Mármol
+- `studio.style.geometric`: Geométrico
+- `studio.style.cosmic`: Cósmico
+- `studio.style.silk`: Seda
+- `studio.style.deco`: Art déco
+- `studio.style.metal`: Metal
+- `studio.style.bokeh`: Luces
+- `studio.style.glass`: Cristal
+- `studio.style.landscape`: Paisaje ilustrado
+- `studio.style.ring`: Anillo
+- `studio.style.gem`: Gemas
+- `studio.style.floral`: Floral
+- `studio.style.botanical`: Botánico
+- `studio.style.celestial`: Celeste
+- `studio.style.ornamental`: Ornamental
+- `studio.style.minimal`: Minimalista
+- `studio.style.lines`: Líneas
+- `studio.style.texture`: Textura
+- `studio.style.waves`: Ondas
+- `studio.change.photo`: Foto de perfil
+- `studio.change.cover`: Portada
+- `studio.change.background`: Fondo
+- `studio.change.frame`: Marco
+- `studio.change.decoration`: Decoración
+- `studio.change.look`: Colores, tarjetas y tipografía
+- `studio.change.content`: Textos, enlaces e idiomas
+- `studio.change.modules`: Secciones
+- `studio.change.mode`: Modo del perfil
+- `studio.change.privacy`: Quién ve qué
+- `studio.unavailable.listings`: No tienes publicaciones en Mercadito.
+- `studio.unavailable.work`: Aún no tienes perfil de Trabajo.
+- `studio.unavailable.services`: Aún no ofreces servicios en Servicios.
+- `studio.unavailable.store`: No tienes una tienda aprobada en YavayaGo.
+- `studio.unavailable.contact`: No has guardado un número de WhatsApp.
+- `studio.error.headline`: La frase de presentación puede tener hasta {max} caracteres.
+- `studio.error.about`: «Sobre mí» puede tener hasta {max} caracteres.
+- `studio.error.link`: Cada enlace debe ser una dirección https:// completa, con un nombre de sitio.
+- `studio.error.link_label`: Cada enlace necesita un texto corto.
+- `studio.error.links`: Puedes poner hasta {max} enlaces.
+- `studio.error.languages`: Elige hasta {max} idiomas, cada uno una vez.
+- `studio.error.config`: Algo de tu perfil no es válido. Recarga el estudio e inténtalo de nuevo.
+- `studio.error.asset`: Ese diseño ya no está disponible. Elige otro.
+- `studio.error.media`: Una de tus fotos ya no está disponible. Súbela de nuevo.
+- `studio.error.too_large`: Tu perfil tiene demasiado contenido. Acorta algún texto.
+- `studio.error.conflict`: Tu perfil cambió en otra ventana o dispositivo.
+- `studio.error.verify_email`: Verifica tu correo para publicar tu perfil y subir fotos.
+- `studio.error.account_restricted`: Tu cuenta tiene una restricción y no puede publicar cambios en el perfil.
+- `studio.error.presets_full`: Puedes guardar hasta {max} estilos. Elimina uno para guardar otro.
+- `studio.error.preset_name`: El nombre del estilo debe tener entre 1 y {max} caracteres.
+- `studio.error.preset_exists`: Ya tienes un estilo con ese nombre.
+- `studio.error.favorites_full`: Puedes tener hasta {max} favoritos.
+- `studio.error.photos_full`: Ya tienes {max} fotos guardadas para tu perfil. Publica o quita alguna para subir otra.
+- `studio.error.moderation_note`: Escribe una nota breve sobre el motivo.
 
 ## community
 - `community.square.title`: La plaza
@@ -1023,6 +1502,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `notify.moderation.listing_removed`: Retiramos tu anuncio «{title}»
 - `notify.moderation.listing_removed_warned`: Retiramos tu anuncio «{title}» y recibiste un aviso
 - `notify.moderation.words_removed`: Retiramos una palabra publicada por {church}
+- `notify.moderation.profile_reset`: Tu perfil volvió al diseño de Yavaya después de una revisión de moderación
 - `notify.sanctuary.church_approved`: {church} fue verificada y ya es visible en el Santuario
 - `notify.sanctuary.church_rejected`: La solicitud de {church} no fue aprobada
 - `notify.sanctuary.church_suspended`: {church} fue suspendida en el Santuario
@@ -2076,11 +2556,9 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.ui.photo_sending`: Enviando la foto…
 - `roxi.ui.photo_text`: Te mando esta foto.
 - `roxi.ui.photo_error`: No pude enviar la foto. Inténtalo otra vez.
-- `roxi.ui.draft_opened`: Abrí el formulario con tu borrador. Revísalo, completa lo que falte y publícalo cuando esté listo.
-- `roxi.ui.opened`: Abrí la página.
+- `roxi.ui.refusal`: Con eso no te puedo ayudar. Sigamos con otra cosa: escríbeme cuando quieras.
 - `roxi.ui.results`: Lo que encontré
-- `roxi.ui.no_results`: No encontré nada con eso.
-- `roxi.ui.disclosure`: Roxi es una asistente con inteligencia artificial y puede equivocarse: revisa siempre antes de publicar. Lo que le dices y las fotos que le envías los procesa ElevenLabs.
+- `roxi.ui.disclosure`: Roxi es una asistente con inteligencia artificial y puede equivocarse: revisa siempre antes de publicar. Lo que le dices y las fotos que le envías los procesa ElevenLabs. Tu voz no se graba. La conversación escrita y las fotos se guardan 30 días, para revisar la calidad y prevenir abusos, y después se borran.
 - `roxi.ui.privacy`: Privacidad
 - `roxi.ui.voice_switch`: Seguir con voz
 - `roxi.ui.new`: Nueva conversación
@@ -2251,6 +2729,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `guide.watch_title`: Mira cómo funciona {name}
 - `guide.watch_hint`: Dale play: en menos de {minutes} minutos te mostramos todo lo que puedes hacer aquí.
 - `guide.spoken`: Narrado en español, con subtítulos en español e inglés.
+- `guide.instagram`: Cada capítulo también está en nuestro Instagram, en formato vertical para el teléfono:
 - `guide.full_link`: Ver la guía completa de Yavaya
 - `guide.captions`: Español
 - `guide.captions_en`: Inglés
@@ -2287,7 +2766,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `home.hero.eyebrow`: El hogar digital de Centroamérica
 - `home.hero.title_1`: Lo que buscas.
 - `home.hero.title_2`: Cerca de ti.
-- `home.hero.lead`: Compra, vende y encuentra ayuda en tu comunidad.
+- `home.hero.lead`: Compra, vende, trabaja, descubre servicios y conecta con tu comunidad, todo en un solo lugar.
 - `home.search.label`: Buscar en Mercadito
 - `home.search.placeholder`: ¿Qué buscas?
 - `home.search.scope`: Mercadito
@@ -2298,10 +2777,11 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `home.mk.text`: Compra y vende en tu mercado local: ropa, electrónica, hogar, vehículos y mucho más. Cada vendedor muestra su reputación antes de que le escribas.
 - `home.mk.explore`: Explorar mercado
 - `home.mk.publish`: Publicar anuncio
-- `home.guide.eyebrow`: Guía en video · {minutes} min
-- `home.guide.title`: Conoce Yavaya
-- `home.guide.text`: Descubre qué puedes hacer y cómo empezar.
-- `home.guide.cta`: Ver la guía
+- `home.guide.eyebrow`: Guía en video
+- `home.guide.title`: La guía de Yavaya
+- `home.guide.text`: Todo lo que puedes hacer, distrito por distrito.
+- `home.guide.cta`: Ver guía
+- `home.guide.duration`: Dura {minutes} minutos y {seconds} segundos
 - `home.districts.eyebrow`: Los siete distritos
 - `home.districts.title_1`: Todo lo que necesitas.
 - `home.districts.title_2`: En un solo lugar.
@@ -2875,3 +3355,425 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `phone.error.mismatch`: Ese código no es correcto.
 - `phone.error.failed`: No pudimos comprobar el código en este momento. Inténtalo de nuevo.
 - `phone.error.format`: Escribe los 6 dígitos del código.
+
+## identity
+- `identity.asset.surface-liquid-gold-midnight`: Oro líquido de medianoche
+- `identity.asset.surface-liquid-gold-midnight.desc`: Ondas de oro líquido y mármol sobre azul noche, con partículas de luz.
+- `identity.asset.surface-liquid-gold-navy`: Oro líquido sobre azul noche
+- `identity.asset.surface-liquid-gold-navy.desc`: Cintas de oro pulido que fluyen sobre un fondo azul noche, con destellos finos.
+- `identity.asset.surface-liquid-rose-plum`: Oro rosa líquido sobre ciruela
+- `identity.asset.surface-liquid-rose-plum.desc`: Pliegues de oro rosa pulido sobre un fondo ciruela oscuro.
+- `identity.asset.surface-liquid-silver-teal`: Plata líquida sobre verde petróleo
+- `identity.asset.surface-liquid-silver-teal.desc`: Cintas de plata brillante que cruzan en diagonal un fondo verde petróleo.
+- `identity.asset.surface-liquid-gold-onyx`: Oro líquido sobre ónix
+- `identity.asset.surface-liquid-gold-onyx.desc`: Oro fundido en vetas apretadas sobre negro profundo.
+- `identity.asset.surface-liquid-champagne-espresso`: Champán líquido sobre café
+- `identity.asset.surface-liquid-champagne-espresso.desc`: Ondas anchas de color champán sobre un fondo café oscuro.
+- `identity.asset.surface-liquid-copper-forest`: Cobre líquido sobre bosque
+- `identity.asset.surface-liquid-copper-forest.desc`: Cobre pulido en cintas que fluyen sobre verde bosque.
+- `identity.asset.surface-liquid-platinum-ink`: Platino líquido sobre tinta
+- `identity.asset.surface-liquid-platinum-ink.desc`: Platino brillante en curvas cerradas sobre azul tinta.
+- `identity.asset.surface-marble-carrara`: Mármol blanco de vetas grises
+- `identity.asset.surface-marble-carrara.desc`: Piedra blanca y lisa cruzada por vetas grises suaves.
+- `identity.asset.surface-marble-gold-white`: Mármol blanco con vetas de oro
+- `identity.asset.surface-marble-gold-white.desc`: Mármol blanco con vetas de oro que brillan a lo largo.
+- `identity.asset.surface-marble-nero-gold`: Mármol negro con vetas de oro
+- `identity.asset.surface-marble-nero-gold.desc`: Mármol negro profundo atravesado por vetas de oro.
+- `identity.asset.surface-marble-verde`: Mármol verde de vetas claras
+- `identity.asset.surface-marble-verde.desc`: Piedra verde intensa con vetas claras que se ramifican.
+- `identity.asset.surface-marble-rosa`: Mármol rosa con vetas de oro
+- `identity.asset.surface-marble-rosa.desc`: Mármol rosa pálido con vetas finas de oro.
+- `identity.asset.surface-marble-lapis`: Lapislázuli con vetas de oro
+- `identity.asset.surface-marble-lapis.desc`: Piedra azul intensa con vetas y motas de oro.
+- `identity.asset.surface-silk-champagne`: Seda champán
+- `identity.asset.surface-silk-champagne.desc`: Satén color champán en pliegues amplios y suaves.
+- `identity.asset.surface-silk-midnight`: Seda azul noche
+- `identity.asset.surface-silk-midnight.desc`: Satén azul noche con brillos fríos en cada pliegue.
+- `identity.asset.surface-silk-emerald`: Seda esmeralda
+- `identity.asset.surface-silk-emerald.desc`: Satén esmeralda de pliegues profundos y brillo intenso.
+- `identity.asset.surface-silk-burgundy`: Seda vino
+- `identity.asset.surface-silk-burgundy.desc`: Satén color vino tinto con reflejos rosados.
+- `identity.asset.surface-silk-blush`: Seda rosada
+- `identity.asset.surface-silk-blush.desc`: Satén rosa pálido, suave y luminoso.
+- `identity.asset.surface-silk-pearl`: Seda perla
+- `identity.asset.surface-silk-pearl.desc`: Satén blanco perla con reflejos plateados.
+- `identity.asset.surface-nebula-violet`: Nebulosa violeta
+- `identity.asset.surface-nebula-violet.desc`: Nubes de gas violeta y turquesa entre miles de estrellas.
+- `identity.asset.surface-nebula-magenta`: Nebulosa magenta y azul
+- `identity.asset.surface-nebula-magenta.desc`: Gas magenta y azul profundo, cruzado por polvo oscuro.
+- `identity.asset.surface-nebula-gold`: Nebulosa dorada
+- `identity.asset.surface-nebula-gold.desc`: Una nube de luz dorada sobre el añil del espacio profundo.
+- `identity.asset.surface-nebula-emerald`: Nebulosa esmeralda
+- `identity.asset.surface-nebula-emerald.desc`: Verde esmeralda y azul cielo en un campo de estrellas.
+- `identity.asset.surface-nebula-rose`: Nebulosa rosa y ámbar
+- `identity.asset.surface-nebula-rose.desc`: Nubes rosadas y ámbar que brillan en la oscuridad.
+- `identity.asset.surface-bokeh-gold`: Luces doradas
+- `identity.asset.surface-bokeh-gold.desc`: Luces doradas desenfocadas sobre un fondo cálido y oscuro.
+- `identity.asset.surface-bokeh-city`: Luces de ciudad
+- `identity.asset.surface-bokeh-city.desc`: Luces azules y ámbar de una ciudad de noche, desenfocadas.
+- `identity.asset.surface-bokeh-rose`: Luces rosadas
+- `identity.asset.surface-bokeh-rose.desc`: Círculos de luz rosada que flotan sobre un fondo oscuro.
+- `identity.asset.surface-bokeh-emerald`: Luces esmeralda
+- `identity.asset.surface-bokeh-emerald.desc`: Luces verdes desenfocadas, como un jardín de noche.
+- `identity.asset.surface-bokeh-champagne`: Luces de champán
+- `identity.asset.surface-bokeh-champagne.desc`: Destellos color champán, suaves y elegantes.
+- `identity.asset.surface-deco-fans-gold`: Abanicos art déco en oro
+- `identity.asset.surface-deco-fans-gold.desc`: Abanicos de líneas doradas, fila tras fila, sobre azul noche.
+- `identity.asset.surface-deco-sunburst`: Sol art déco
+- `identity.asset.surface-deco-sunburst.desc`: Rayos y anillos de oro que nacen del borde, sobre negro.
+- `identity.asset.surface-deco-chevron-rose`: Chevrones en oro rosa
+- `identity.asset.surface-deco-chevron-rose.desc`: Chevrones de líneas paralelas en oro rosa sobre ciruela.
+- `identity.asset.surface-deco-lattice-silver`: Celosía de plata
+- `identity.asset.surface-deco-lattice-silver.desc`: Una celosía de rombos en plata sobre verde profundo.
+- `identity.asset.surface-deco-arches`: Arcos art déco
+- `identity.asset.surface-deco-arches.desc`: Arcos anidados en champán, como ventanas de un gran salón.
+- `identity.asset.surface-deco-fans-ivory`: Abanicos sobre marfil
+- `identity.asset.surface-deco-fans-ivory.desc`: Abanicos de oro fino sobre papel marfil.
+- `identity.asset.surface-lines-gold-navy`: Líneas de oro sobre azul
+- `identity.asset.surface-lines-gold-navy.desc`: Hilos de oro que dibujan curvas de nivel sobre azul noche.
+- `identity.asset.surface-lines-silver-onyx`: Líneas de plata sobre ónix
+- `identity.asset.surface-lines-silver-onyx.desc`: Líneas finas de plata en ondas cerradas sobre negro.
+- `identity.asset.surface-lines-copper-forest`: Líneas de cobre sobre bosque
+- `identity.asset.surface-lines-copper-forest.desc`: Curvas de cobre que se abren y se cierran sobre verde bosque.
+- `identity.asset.surface-lines-rose-plum`: Líneas rosadas sobre ciruela
+- `identity.asset.surface-lines-rose-plum.desc`: Líneas rosadas que fluyen como agua sobre ciruela.
+- `identity.asset.surface-lines-gold-ivory`: Líneas de oro sobre marfil
+- `identity.asset.surface-lines-gold-ivory.desc`: Curvas de nivel en oro fino sobre papel marfil.
+- `identity.asset.surface-glass-aurora`: Cristal aurora
+- `identity.asset.surface-glass-aurora.desc`: Turquesa, azul y violeta que se funden tras un cristal esmerilado.
+- `identity.asset.surface-glass-sunset`: Cristal atardecer
+- `identity.asset.surface-glass-sunset.desc`: Naranja, rosa y violeta de un atardecer tras el cristal.
+- `identity.asset.surface-glass-ocean`: Cristal océano
+- `identity.asset.surface-glass-ocean.desc`: Azules y turquesas del mar, suaves como el vidrio.
+- `identity.asset.surface-glass-orchid`: Cristal orquídea
+- `identity.asset.surface-glass-orchid.desc`: Violetas y rosas de orquídea tras un cristal esmerilado.
+- `identity.asset.surface-metal-brushed-gold`: Oro cepillado
+- `identity.asset.surface-metal-brushed-gold.desc`: Una placa de oro cepillado bajo una luz amplia y suave.
+- `identity.asset.surface-metal-spun-silver`: Plata torneada
+- `identity.asset.surface-metal-spun-silver.desc`: Plata pulida en círculos finos, con el brillo de una joya.
+- `identity.asset.surface-metal-brushed-rose`: Oro rosa cepillado
+- `identity.asset.surface-metal-brushed-rose.desc`: Oro rosa cepillado con un brillo cálido que lo cruza.
+- `identity.asset.surface-aurora-green`: Aurora verde y violeta
+- `identity.asset.surface-aurora-green.desc`: Cortinas de luz verde y violeta sobre colinas oscuras y estrellas.
+- `identity.asset.surface-aurora-teal`: Aurora turquesa y magenta
+- `identity.asset.surface-aurora-teal.desc`: Una aurora turquesa con orillas magenta en un cielo estrellado.
+- `identity.asset.horizon-moonlit-volcano-lake`: Volcán y lago a la luz de la luna
+- `identity.asset.horizon-moonlit-volcano-lake.desc`: Fotografía nocturna de un volcán sobre un lago, con luna llena y palmeras.
+- `identity.asset.horizon-market-sunset`: Mercado al atardecer
+- `identity.asset.horizon-market-sunset.desc`: Fotografía de un mercado de calle al caer el sol, con luces cálidas.
+- `identity.asset.horizon-colonial-street-dusk`: Calle colonial al anochecer
+- `identity.asset.horizon-colonial-street-dusk.desc`: Fotografía de una calle colonial empedrada al anochecer, entre rosa y azul.
+- `identity.asset.horizon-town-panorama`: Panorama del pueblo
+- `identity.asset.horizon-town-panorama.desc`: Fotografía de un pueblo entre colinas verdes, con tejados al sol de la tarde.
+- `identity.asset.horizon-coffee-road-volcano`: Camino del café al volcán
+- `identity.asset.horizon-coffee-road-volcano.desc`: Fotografía de un camino entre cafetales con un volcán al fondo.
+- `identity.asset.horizon-lighthouse-night`: Faro de noche
+- `identity.asset.horizon-lighthouse-night.desc`: Fotografía nocturna de un faro junto al mar, con luces doradas.
+- `identity.asset.horizon-crater-lake`: Laguna de cráter
+- `identity.asset.horizon-crater-lake.desc`: Fotografía de una laguna turquesa dentro de un cráter volcánico.
+- `identity.asset.horizon-white-chapel-mist`: Capilla blanca en la neblina
+- `identity.asset.horizon-white-chapel-mist.desc`: Fotografía de una capilla blanca entre neblina y verde, a primera hora.
+- `identity.asset.horizon-volcano-lake-dawn`: Volcán sobre el lago al amanecer
+- `identity.asset.horizon-volcano-lake-dawn.desc`: Ilustración de un volcán que se refleja en un lago al amanecer.
+- `identity.asset.horizon-volcano-lake-morning`: Volcán sobre el lago por la mañana
+- `identity.asset.horizon-volcano-lake-morning.desc`: Ilustración de un volcán que se refleja en un lago por la mañana.
+- `identity.asset.horizon-volcano-lake-golden`: Volcán sobre el lago en la hora dorada
+- `identity.asset.horizon-volcano-lake-golden.desc`: Ilustración de un volcán que se refleja en un lago en la hora dorada.
+- `identity.asset.horizon-volcano-lake-sunset`: Volcán sobre el lago al atardecer
+- `identity.asset.horizon-volcano-lake-sunset.desc`: Ilustración de un volcán que se refleja en un lago al atardecer.
+- `identity.asset.horizon-volcano-lake-dusk`: Volcán sobre el lago al anochecer
+- `identity.asset.horizon-volcano-lake-dusk.desc`: Ilustración de un volcán que se refleja en un lago al anochecer.
+- `identity.asset.horizon-volcano-lake-moonlit`: Volcán sobre el lago bajo la luna
+- `identity.asset.horizon-volcano-lake-moonlit.desc`: Ilustración de un volcán que se refleja en un lago bajo la luna.
+- `identity.asset.horizon-twin-volcanoes-dawn`: Volcanes gemelos al amanecer
+- `identity.asset.horizon-twin-volcanoes-dawn.desc`: Ilustración de una isla de dos volcanes en un lago al amanecer.
+- `identity.asset.horizon-twin-volcanoes-noon`: Volcanes gemelos a mediodía
+- `identity.asset.horizon-twin-volcanoes-noon.desc`: Ilustración de una isla de dos volcanes en un lago a mediodía.
+- `identity.asset.horizon-twin-volcanoes-golden`: Volcanes gemelos en la hora dorada
+- `identity.asset.horizon-twin-volcanoes-golden.desc`: Ilustración de una isla de dos volcanes en un lago en la hora dorada.
+- `identity.asset.horizon-twin-volcanoes-sunset`: Volcanes gemelos al atardecer
+- `identity.asset.horizon-twin-volcanoes-sunset.desc`: Ilustración de una isla de dos volcanes en un lago al atardecer.
+- `identity.asset.horizon-twin-volcanoes-dusk`: Volcanes gemelos al anochecer
+- `identity.asset.horizon-twin-volcanoes-dusk.desc`: Ilustración de una isla de dos volcanes en un lago al anochecer.
+- `identity.asset.horizon-twin-volcanoes-moonlit`: Volcanes gemelos bajo la luna
+- `identity.asset.horizon-twin-volcanoes-moonlit.desc`: Ilustración de una isla de dos volcanes en un lago bajo la luna.
+- `identity.asset.horizon-coffee-hills-dawn`: Colinas del café al amanecer
+- `identity.asset.horizon-coffee-hills-dawn.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo al amanecer.
+- `identity.asset.horizon-coffee-hills-morning`: Colinas del café por la mañana
+- `identity.asset.horizon-coffee-hills-morning.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo por la mañana.
+- `identity.asset.horizon-coffee-hills-noon`: Colinas del café a mediodía
+- `identity.asset.horizon-coffee-hills-noon.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo a mediodía.
+- `identity.asset.horizon-coffee-hills-golden`: Colinas del café en la hora dorada
+- `identity.asset.horizon-coffee-hills-golden.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo en la hora dorada.
+- `identity.asset.horizon-coffee-hills-sunset`: Colinas del café al atardecer
+- `identity.asset.horizon-coffee-hills-sunset.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo al atardecer.
+- `identity.asset.horizon-coffee-hills-dusk`: Colinas del café al anochecer
+- `identity.asset.horizon-coffee-hills-dusk.desc`: Ilustración de colinas de cafetales en hileras, con un volcán al fondo al anochecer.
+- `identity.asset.horizon-cloud-forest-dawn`: Bosque nuboso al amanecer
+- `identity.asset.horizon-cloud-forest-dawn.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina al amanecer.
+- `identity.asset.horizon-cloud-forest-morning`: Bosque nuboso por la mañana
+- `identity.asset.horizon-cloud-forest-morning.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina por la mañana.
+- `identity.asset.horizon-cloud-forest-noon`: Bosque nuboso a mediodía
+- `identity.asset.horizon-cloud-forest-noon.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina a mediodía.
+- `identity.asset.horizon-cloud-forest-golden`: Bosque nuboso en la hora dorada
+- `identity.asset.horizon-cloud-forest-golden.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina en la hora dorada.
+- `identity.asset.horizon-cloud-forest-dusk`: Bosque nuboso al anochecer
+- `identity.asset.horizon-cloud-forest-dusk.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina al anochecer.
+- `identity.asset.horizon-cloud-forest-night`: Bosque nuboso de noche
+- `identity.asset.horizon-cloud-forest-night.desc`: Ilustración de sierras cubiertas de bosque entre nubes y neblina de noche.
+- `identity.asset.horizon-headland-coast-dawn`: Costa y promontorio al amanecer
+- `identity.asset.horizon-headland-coast-dawn.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras al amanecer.
+- `identity.asset.horizon-headland-coast-noon`: Costa y promontorio a mediodía
+- `identity.asset.horizon-headland-coast-noon.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras a mediodía.
+- `identity.asset.horizon-headland-coast-golden`: Costa y promontorio en la hora dorada
+- `identity.asset.horizon-headland-coast-golden.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras en la hora dorada.
+- `identity.asset.horizon-headland-coast-sunset`: Costa y promontorio al atardecer
+- `identity.asset.horizon-headland-coast-sunset.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras al atardecer.
+- `identity.asset.horizon-headland-coast-dusk`: Costa y promontorio al anochecer
+- `identity.asset.horizon-headland-coast-dusk.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras al anochecer.
+- `identity.asset.horizon-headland-coast-moonlit`: Costa y promontorio bajo la luna
+- `identity.asset.horizon-headland-coast-moonlit.desc`: Ilustración de el mar abierto junto a un promontorio con palmeras bajo la luna.
+- `identity.asset.horizon-islands-morning`: Islas al horizonte por la mañana
+- `identity.asset.horizon-islands-morning.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras por la mañana.
+- `identity.asset.horizon-islands-noon`: Islas al horizonte a mediodía
+- `identity.asset.horizon-islands-noon.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras a mediodía.
+- `identity.asset.horizon-islands-golden`: Islas al horizonte en la hora dorada
+- `identity.asset.horizon-islands-golden.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras en la hora dorada.
+- `identity.asset.horizon-islands-sunset`: Islas al horizonte al atardecer
+- `identity.asset.horizon-islands-sunset.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras al atardecer.
+- `identity.asset.horizon-islands-dusk`: Islas al horizonte al anochecer
+- `identity.asset.horizon-islands-dusk.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras al anochecer.
+- `identity.asset.horizon-islands-moonlit`: Islas al horizonte bajo la luna
+- `identity.asset.horizon-islands-moonlit.desc`: Ilustración de islas pequeñas en un mar tranquilo, con palmeras bajo la luna.
+- `identity.asset.horizon-crater-lake-dawn`: Lago entre volcanes al amanecer
+- `identity.asset.horizon-crater-lake-dawn.desc`: Ilustración de un lago rodeado de volcanes y montañas al amanecer.
+- `identity.asset.horizon-crater-lake-morning`: Lago entre volcanes por la mañana
+- `identity.asset.horizon-crater-lake-morning.desc`: Ilustración de un lago rodeado de volcanes y montañas por la mañana.
+- `identity.asset.horizon-crater-lake-golden`: Lago entre volcanes en la hora dorada
+- `identity.asset.horizon-crater-lake-golden.desc`: Ilustración de un lago rodeado de volcanes y montañas en la hora dorada.
+- `identity.asset.horizon-crater-lake-sunset`: Lago entre volcanes al atardecer
+- `identity.asset.horizon-crater-lake-sunset.desc`: Ilustración de un lago rodeado de volcanes y montañas al atardecer.
+- `identity.asset.horizon-crater-lake-dusk`: Lago entre volcanes al anochecer
+- `identity.asset.horizon-crater-lake-dusk.desc`: Ilustración de un lago rodeado de volcanes y montañas al anochecer.
+- `identity.asset.horizon-crater-lake-night`: Lago entre volcanes de noche
+- `identity.asset.horizon-crater-lake-night.desc`: Ilustración de un lago rodeado de volcanes y montañas de noche.
+- `identity.asset.frame-ring-gold`: Anillo de oro
+- `identity.asset.frame-ring-gold.desc`: Un aro doble de oro pulido alrededor de tu foto.
+- `identity.asset.frame-ring-silver`: Anillo de plata
+- `identity.asset.frame-ring-silver.desc`: Un aro doble de plata, fino y brillante.
+- `identity.asset.frame-ring-rose`: Anillo de oro rosa
+- `identity.asset.frame-ring-rose.desc`: Un aro ancho de oro rosa con un hilo exterior.
+- `identity.asset.frame-ring-bronze`: Anillo de bronce
+- `identity.asset.frame-ring-bronze.desc`: Un aro grueso de bronce cálido.
+- `identity.asset.frame-pearl-gold`: Perlas y oro
+- `identity.asset.frame-pearl-gold.desc`: Una corona de perlas sobre un aro de oro.
+- `identity.asset.frame-pearl-silver`: Perlas y plata
+- `identity.asset.frame-pearl-silver.desc`: Perlas grandes sobre un aro de plata.
+- `identity.asset.frame-pearl-rose`: Perlas y oro rosa
+- `identity.asset.frame-pearl-rose.desc`: Perlas pequeñas y apretadas sobre oro rosa.
+- `identity.asset.frame-laurel-gold`: Laurel de oro
+- `identity.asset.frame-laurel-gold.desc`: Dos ramas de laurel de oro que abrazan tu foto.
+- `identity.asset.frame-laurel-silver`: Laurel de plata
+- `identity.asset.frame-laurel-silver.desc`: Ramas de laurel de plata, abiertas arriba.
+- `identity.asset.frame-laurel-emerald`: Laurel esmeralda
+- `identity.asset.frame-laurel-emerald.desc`: Hojas de esmalte verde sobre un aro de oro.
+- `identity.asset.frame-deco-gold`: Sol art déco en oro
+- `identity.asset.frame-deco-gold.desc`: Rayos de oro alrededor de tu foto, con cuatro diamantes.
+- `identity.asset.frame-deco-silver`: Sol art déco en plata
+- `identity.asset.frame-deco-silver.desc`: Rayos finos de plata con cuatro diamantes.
+- `identity.asset.frame-deco-onyx`: Ónix y oro art déco
+- `identity.asset.frame-deco-onyx.desc`: Un anillo de ónix con rayos y diamantes de oro.
+- `identity.asset.frame-gem-emerald`: Esmeraldas en oro
+- `identity.asset.frame-gem-emerald.desc`: Seis esmeraldas engastadas en un aro de oro.
+- `identity.asset.frame-gem-sapphire`: Zafiros en plata
+- `identity.asset.frame-gem-sapphire.desc`: Ocho zafiros engastados en plata.
+- `identity.asset.frame-gem-ruby`: Rubíes en oro
+- `identity.asset.frame-gem-ruby.desc`: Cuatro rubíes grandes en un aro de oro.
+- `identity.asset.frame-floral-blossom`: Flores rosadas
+- `identity.asset.frame-floral-blossom.desc`: Flores rosadas con hojas verdes alrededor de tu foto.
+- `identity.asset.frame-floral-ivory`: Flores de marfil
+- `identity.asset.frame-floral-ivory.desc`: Flores blancas como el marfil, con hojas finas.
+- `identity.asset.frame-floral-gold`: Flores de oro
+- `identity.asset.frame-floral-gold.desc`: Seis flores de oro entre hojas verdes.
+- `identity.asset.frame-celestial-gold`: Luna y estrellas de oro
+- `identity.asset.frame-celestial-gold.desc`: Una luna creciente y estrellas de oro alrededor de tu foto.
+- `identity.asset.frame-celestial-silver`: Luna y estrellas de plata
+- `identity.asset.frame-celestial-silver.desc`: Luna creciente y estrellas de plata.
+- `identity.asset.frame-rope-gold`: Cordón de oro
+- `identity.asset.frame-rope-gold.desc`: Un cordón trenzado de oro.
+- `identity.asset.frame-rope-silver`: Cordón de plata
+- `identity.asset.frame-rope-silver.desc`: Un cordón trenzado de plata, más fino.
+- `identity.asset.frame-geometric-gold`: Facetas de oro
+- `identity.asset.frame-geometric-gold.desc`: Un aro de oro tallado en doce facetas.
+- `identity.asset.frame-geometric-silver`: Facetas de plata
+- `identity.asset.frame-geometric-silver.desc`: Plata tallada en dieciséis facetas.
+- `identity.asset.frame-geometric-rose`: Octágono de oro rosa
+- `identity.asset.frame-geometric-rose.desc`: Un octágono facetado de oro rosa.
+- `identity.asset.frame-botanical-green`: Enredadera verde
+- `identity.asset.frame-botanical-green.desc`: Una enredadera de hojas verdes alrededor de tu foto.
+- `identity.asset.frame-botanical-gold`: Enredadera de oro
+- `identity.asset.frame-botanical-gold.desc`: Hojas de oro que rodean tu foto.
+- `identity.asset.frame-minimal-gold`: Línea fina de oro
+- `identity.asset.frame-minimal-gold.desc`: Una sola línea de oro con un pequeño diamante.
+- `identity.asset.frame-minimal-silver`: Línea fina de plata
+- `identity.asset.frame-minimal-silver.desc`: Una sola línea de plata con un punto.
+- `identity.asset.frame-scalloped-gold`: Festón de oro
+- `identity.asset.frame-scalloped-gold.desc`: Un borde festoneado de oro.
+- `identity.asset.frame-scalloped-silver`: Festón de plata
+- `identity.asset.frame-scalloped-silver.desc`: Un festón de plata más menudo.
+- `identity.asset.frame-rounded-ring-gold`: Marco redondeado de oro
+- `identity.asset.frame-rounded-ring-gold.desc`: Un marco doble de oro para la foto redondeada.
+- `identity.asset.frame-rounded-ring-silver`: Marco redondeado de plata
+- `identity.asset.frame-rounded-ring-silver.desc`: Un marco doble de plata para la foto redondeada.
+- `identity.asset.frame-rounded-deco-gold`: Escuadras art déco en oro
+- `identity.asset.frame-rounded-deco-gold.desc`: Escuadras escalonadas de oro en las esquinas.
+- `identity.asset.frame-rounded-deco-silver`: Escuadras art déco en plata
+- `identity.asset.frame-rounded-deco-silver.desc`: Escuadras escalonadas de plata en las esquinas.
+- `identity.asset.frame-rounded-pearl-gold`: Marco de perlas
+- `identity.asset.frame-rounded-pearl-gold.desc`: Perlas alrededor de la foto redondeada.
+- `identity.asset.frame-rounded-gem-emerald`: Esmeraldas en marco redondeado
+- `identity.asset.frame-rounded-gem-emerald.desc`: Ocho esmeraldas en un marco de oro redondeado.
+- `identity.asset.frame-rounded-gem-sapphire`: Zafiros en marco redondeado
+- `identity.asset.frame-rounded-gem-sapphire.desc`: Ocho zafiros en un marco de plata redondeado.
+- `identity.asset.frame-rounded-minimal-rose`: Línea fina de oro rosa
+- `identity.asset.frame-rounded-minimal-rose.desc`: Una línea fina de oro rosa para la foto redondeada.
+- `identity.asset.decor-corner-deco-gold`: Escuadras art déco en oro
+- `identity.asset.decor-corner-deco-gold.desc`: Líneas escalonadas y un abanico de oro en las esquinas de tu portada.
+- `identity.asset.decor-corner-deco-silver`: Escuadras art déco en plata
+- `identity.asset.decor-corner-deco-silver.desc`: Líneas escalonadas y un abanico de plata en las esquinas.
+- `identity.asset.decor-corner-filigree-gold`: Filigrana de oro
+- `identity.asset.decor-corner-filigree-gold.desc`: Volutas de oro que se enroscan en las esquinas.
+- `identity.asset.decor-corner-filigree-silver`: Filigrana de plata
+- `identity.asset.decor-corner-filigree-silver.desc`: Volutas de plata, sencillas y elegantes.
+- `identity.asset.decor-corner-filigree-rose`: Filigrana de oro rosa
+- `identity.asset.decor-corner-filigree-rose.desc`: Volutas de oro rosa en las esquinas.
+- `identity.asset.decor-corner-sprig-green`: Ramas verdes
+- `identity.asset.decor-corner-sprig-green.desc`: Ramas de hojas verdes que bordean las esquinas.
+- `identity.asset.decor-corner-sprig-gold`: Ramas de oro
+- `identity.asset.decor-corner-sprig-gold.desc`: Ramas de hojas de oro en las esquinas.
+- `identity.asset.decor-corner-floral-blossom`: Flores en la esquina
+- `identity.asset.decor-corner-floral-blossom.desc`: Un ramillete de flores rosadas en cada esquina.
+- `identity.asset.decor-corner-floral-ivory`: Flores de marfil en la esquina
+- `identity.asset.decor-corner-floral-ivory.desc`: Flores blancas y hojas finas en las esquinas.
+- `identity.asset.decor-corner-celestial-gold`: Luna y estrellas
+- `identity.asset.decor-corner-celestial-gold.desc`: Una luna creciente y estrellas de oro en las esquinas.
+- `identity.asset.decor-corner-celestial-silver`: Luna y estrellas de plata
+- `identity.asset.decor-corner-celestial-silver.desc`: Luna y estrellas de plata en las esquinas.
+- `identity.asset.decor-corner-geometric-gold`: Triángulos de oro
+- `identity.asset.decor-corner-geometric-gold.desc`: Triángulos anidados de oro en las esquinas.
+- `identity.asset.decor-corner-geometric-silver`: Triángulos de plata
+- `identity.asset.decor-corner-geometric-silver.desc`: Triángulos anidados de plata en las esquinas.
+- `identity.asset.decor-corner-laurel-gold`: Laurel en la esquina
+- `identity.asset.decor-corner-laurel-gold.desc`: Ramas de laurel de oro a lo largo de las esquinas.
+- `identity.asset.decor-corner-dotted-gold`: Arcos de puntos de oro
+- `identity.asset.decor-corner-dotted-gold.desc`: Arcos de puntos de oro que nacen de la esquina.
+- `identity.asset.decor-corner-dotted-rose`: Arcos de puntos de oro rosa
+- `identity.asset.decor-corner-dotted-rose.desc`: Arcos de puntos de oro rosa en las esquinas.
+- `identity.asset.decor-crest-fan-gold`: Abanico art déco
+- `identity.asset.decor-crest-fan-gold.desc`: Un abanico de oro con líneas que se abren a los lados.
+- `identity.asset.decor-crest-fan-silver`: Abanico art déco en plata
+- `identity.asset.decor-crest-fan-silver.desc`: Un abanico de plata en lo alto de tu portada.
+- `identity.asset.decor-crest-flourish-gold`: Floritura de oro
+- `identity.asset.decor-crest-flourish-gold.desc`: Volutas de oro a ambos lados de un diamante.
+- `identity.asset.decor-crest-flourish-silver`: Floritura de plata
+- `identity.asset.decor-crest-flourish-silver.desc`: Una floritura sencilla de plata.
+- `identity.asset.decor-crest-flourish-rose`: Floritura de oro rosa
+- `identity.asset.decor-crest-flourish-rose.desc`: Volutas de oro rosa alrededor de un diamante.
+- `identity.asset.decor-crest-laurel-gold`: Corona de laurel
+- `identity.asset.decor-crest-laurel-gold.desc`: Dos ramas de laurel de oro con una estrella al centro.
+- `identity.asset.decor-crest-laurel-green`: Laurel verde
+- `identity.asset.decor-crest-laurel-green.desc`: Ramas de laurel verde con una estrella de oro.
+- `identity.asset.decor-crest-celestial-gold`: Arco de estrellas
+- `identity.asset.decor-crest-celestial-gold.desc`: Estrellas de oro en arco, con una estrella mayor al centro.
+- `identity.asset.decor-crest-celestial-silver`: Arco de estrellas de plata
+- `identity.asset.decor-crest-celestial-silver.desc`: Un arco de estrellas de plata.
+- `identity.asset.decor-crest-garland-blossom`: Guirnalda de flores
+- `identity.asset.decor-crest-garland-blossom.desc`: Una guirnalda de flores rosadas y hojas.
+- `identity.asset.decor-crest-garland-ivory`: Guirnalda de marfil
+- `identity.asset.decor-crest-garland-ivory.desc`: Flores blancas y hojas en guirnalda.
+- `identity.asset.decor-crest-chevron-gold`: Chevrones de oro
+- `identity.asset.decor-crest-chevron-gold.desc`: Chevrones de oro anidados entre dos líneas.
+- `identity.asset.decor-trim-greek-gold`: Greca de oro
+- `identity.asset.decor-trim-greek-gold.desc`: Una greca de oro a lo largo del borde superior.
+- `identity.asset.decor-trim-greek-silver`: Greca de plata
+- `identity.asset.decor-trim-greek-silver.desc`: Una greca de plata a lo largo del borde.
+- `identity.asset.decor-trim-fans-gold`: Abanicos de oro
+- `identity.asset.decor-trim-fans-gold.desc`: Una fila de abanicos art déco de oro.
+- `identity.asset.decor-trim-fans-silver`: Abanicos de plata
+- `identity.asset.decor-trim-fans-silver.desc`: Una fila de abanicos art déco de plata.
+- `identity.asset.decor-trim-waves-gold`: Ondas de oro
+- `identity.asset.decor-trim-waves-gold.desc`: Dos líneas de oro que ondulan juntas.
+- `identity.asset.decor-trim-waves-silver`: Ondas de plata
+- `identity.asset.decor-trim-waves-silver.desc`: Dos líneas de plata que ondulan juntas.
+- `identity.asset.decor-trim-beads-gold`: Cuentas de oro
+- `identity.asset.decor-trim-beads-gold.desc`: Una sarta de cuentas de oro.
+- `identity.asset.decor-trim-beads-pearl`: Perlas
+- `identity.asset.decor-trim-beads-pearl.desc`: Una sarta de perlas con puntos de oro.
+- `identity.asset.decor-trim-vine-green`: Enredadera
+- `identity.asset.decor-trim-vine-green.desc`: Una enredadera verde que corre por el borde.
+- `identity.asset.decor-trim-vine-gold`: Enredadera de oro
+- `identity.asset.decor-trim-vine-gold.desc`: Una enredadera de oro a lo largo del borde.
+- `identity.asset.decor-trim-stars-gold`: Estrellas de oro
+- `identity.asset.decor-trim-stars-gold.desc`: Estrellas y puntos de oro en fila.
+- `identity.asset.decor-trim-stars-silver`: Estrellas de plata
+- `identity.asset.decor-trim-stars-silver.desc`: Estrellas y puntos de plata en fila.
+- `identity.asset.pro-linen-ivory`: Lino marfil
+- `identity.asset.pro-linen-ivory.desc`: Tela de lino color marfil, vista de cerca.
+- `identity.asset.pro-linen-sand`: Lino arena
+- `identity.asset.pro-linen-sand.desc`: Lino color arena con su trama natural.
+- `identity.asset.pro-linen-slate`: Lino pizarra
+- `identity.asset.pro-linen-slate.desc`: Lino gris pizarra, sobrio y cálido.
+- `identity.asset.pro-linen-navy`: Lino azul marino
+- `identity.asset.pro-linen-navy.desc`: Lino azul marino con una trama fina.
+- `identity.asset.pro-linen-charcoal`: Lino carbón
+- `identity.asset.pro-linen-charcoal.desc`: Lino color carbón, elegante y discreto.
+- `identity.asset.pro-grid-blueprint`: Cuadrícula de plano
+- `identity.asset.pro-grid-blueprint.desc`: La cuadrícula fina de un plano, sobre azul.
+- `identity.asset.pro-grid-graphite`: Cuadrícula grafito
+- `identity.asset.pro-grid-graphite.desc`: Cuadrícula discreta sobre gris grafito.
+- `identity.asset.pro-grid-ivory`: Cuadrícula sobre marfil
+- `identity.asset.pro-grid-ivory.desc`: Cuadrícula de cuaderno fino sobre marfil.
+- `identity.asset.pro-grid-sage`: Cuadrícula salvia
+- `identity.asset.pro-grid-sage.desc`: Cuadrícula suave sobre verde salvia.
+- `identity.asset.pro-grid-dots`: Puntos de dibujo
+- `identity.asset.pro-grid-dots.desc`: Una malla de puntos para dibujar, sobre pizarra.
+- `identity.asset.pro-pinstripe-charcoal`: Raya diplomática carbón
+- `identity.asset.pro-pinstripe-charcoal.desc`: Tela de traje carbón con raya fina clara.
+- `identity.asset.pro-pinstripe-navy`: Raya diplomática marino
+- `identity.asset.pro-pinstripe-navy.desc`: Tela azul marino con raya diplomática.
+- `identity.asset.pro-pinstripe-grey`: Raya fina gris
+- `identity.asset.pro-pinstripe-grey.desc`: Gris medio con rayas finas dobles.
+- `identity.asset.pro-pinstripe-cream`: Raya fina sobre crema
+- `identity.asset.pro-pinstripe-cream.desc`: Crema claro con rayas azul marino muy finas.
+- `identity.asset.pro-pinstripe-black-gold`: Raya de oro sobre negro
+- `identity.asset.pro-pinstripe-black-gold.desc`: Negro profundo con rayas finas de oro.
+- `identity.asset.pro-topo-sand`: Curvas de nivel arena
+- `identity.asset.pro-topo-sand.desc`: Las curvas de nivel de un mapa, sobre arena.
+- `identity.asset.pro-topo-slate`: Curvas de nivel pizarra
+- `identity.asset.pro-topo-slate.desc`: Curvas de nivel finas sobre gris pizarra.
+- `identity.asset.pro-topo-forest`: Curvas de nivel bosque
+- `identity.asset.pro-topo-forest.desc`: Curvas de nivel sobre verde bosque.
+- `identity.asset.pro-topo-navy`: Curvas de nivel marino
+- `identity.asset.pro-topo-navy.desc`: Curvas de nivel sobre azul marino.
+- `identity.asset.pro-topo-stone`: Curvas de nivel piedra
+- `identity.asset.pro-topo-stone.desc`: Curvas de nivel sobre gris piedra claro.
+- `identity.asset.pro-paper-cream`: Papel crema
+- `identity.asset.pro-paper-cream.desc`: Una hoja de papel crema con fibras finas.
+- `identity.asset.pro-paper-laid`: Papel verjurado
+- `identity.asset.pro-paper-laid.desc`: Papel verjurado con las líneas finas del molde.
+- `identity.asset.pro-paper-grey`: Papel gris
+- `identity.asset.pro-paper-grey.desc`: Papel gris claro, mate y suave.
+- `identity.asset.pro-paper-kraft`: Papel kraft
+- `identity.asset.pro-paper-kraft.desc`: Papel kraft con sus fibras visibles.
+- `identity.asset.pro-paper-ivory`: Papel marfil
+- `identity.asset.pro-paper-ivory.desc`: Papel marfil fino bajo una luz cálida.
+- `identity.asset.pro-gradient-corporate`: Degradado azul corporativo
+- `identity.asset.pro-gradient-corporate.desc`: Un degradado sereno de azules profundos.
+- `identity.asset.pro-gradient-teal`: Degradado turquesa
+- `identity.asset.pro-gradient-teal.desc`: Un degradado sereno de turquesas oscuros.
+- `identity.asset.pro-gradient-graphite`: Degradado grafito
+- `identity.asset.pro-gradient-graphite.desc`: Grises grafito que se funden con suavidad.
+- `identity.asset.pro-gradient-sand`: Degradado arena
+- `identity.asset.pro-gradient-sand.desc`: Tonos arena claros, cálidos y tranquilos.
+- `identity.asset.pro-gradient-plum`: Degradado ciruela
+- `identity.asset.pro-gradient-plum.desc`: Un degradado sereno de ciruela y violeta.

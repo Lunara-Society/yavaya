@@ -1,5 +1,5 @@
 import type { Executor } from '@/server/db/client';
-import { GO_RULES, MERCADITO_RULES, REFERRAL_RULES, TOKEN_RULES, WORK_RULES } from '@/config/business-rules';
+import { GO_RULES, MERCADITO_RULES, NAME_RULES, REFERRAL_RULES, TOKEN_RULES, WORK_RULES } from '@/config/business-rules';
 import { getSetting } from '@/server/domains/platform/settings';
 import type { TokenFacts } from '@/ui/tokens/facts';
 import type { HomeStarts } from '@/ui/site/home';
@@ -31,6 +31,10 @@ export async function tokenFacts(executor: Executor): Promise<TokenFacts> {
     inviterReward,
     inviteeReward,
     inviteMonthCap,
+    renewCost,
+    renewHours,
+    nameCost,
+    nameFree,
   ] = await Promise.all([
     getSetting(executor, 'mercadito.free_open_listings', MERCADITO_RULES.freeOpenListings),
     actionCost(executor, 'mercadito.publish_listing'),
@@ -45,6 +49,10 @@ export async function tokenFacts(executor: Executor): Promise<TokenFacts> {
     getSetting(executor, 'referral.inviter_reward', REFERRAL_RULES.inviterReward),
     getSetting(executor, 'referral.invitee_reward', REFERRAL_RULES.inviteeReward),
     getSetting(executor, 'referral.max_rewarded_per_month', REFERRAL_RULES.maxRewardedPerMonth),
+    actionCost(executor, 'mercadito.renew_listing'),
+    getSetting(executor, 'mercadito.renew_cooldown_hours', MERCADITO_RULES.renewCooldownHours),
+    actionCost(executor, 'identity.change_name'),
+    getSetting(executor, 'identity.free_name_changes', NAME_RULES.freeNameChanges),
   ]);
   return {
     mercadito_free: mercaditoFree,
@@ -57,6 +65,10 @@ export async function tokenFacts(executor: Executor): Promise<TokenFacts> {
     post_days: postDays,
     feature_store_cost: featureStoreCost,
     store_days: storeDays,
+    renew_cost: renewCost,
+    renew_hours: renewHours,
+    name_cost: nameCost,
+    name_free: nameFree,
     // The starter grant is not a setting: the service reads these constants directly.
     starter_per_day: TOKEN_RULES.starterGrantPerDay,
     starter_days: TOKEN_RULES.starterGrantDays,
@@ -70,7 +82,7 @@ export async function tokenFacts(executor: Executor): Promise<TokenFacts> {
  * What starting out costs, for the home page's "Empieza hoy": how many
  * listings and job posts may be open at once for free, and whether asking
  * for or answering a service request is still free. Four reads, not the
- * tokens page's thirteen: this runs on every visit to the home page.
+ * tokens page's seventeen: this runs on every visit to the home page.
  */
 export async function startingFacts(executor: Executor): Promise<HomeStarts> {
   const [mercaditoFree, workFree, askCost, answerCost] = await Promise.all([

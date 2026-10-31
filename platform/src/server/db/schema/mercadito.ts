@@ -52,6 +52,12 @@ export const mercaditoListings = pgTable(
      * "Destacado" label, so buyers always know which places were bought.
      */
     featuredUntil: timestamp('featured_until', { withTimezone: true }),
+    /**
+     * When the seller last renewed the listing (paid, back to the top of the newest).
+     * Kept apart from publishedAt so a renewal neither changes the date shown
+     * nor counts as "new" for saved searches, whose members already saw it.
+     */
+    renewedAt: timestamp('renewed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
     closedAt: timestamp('closed_at', { withTimezone: true }),

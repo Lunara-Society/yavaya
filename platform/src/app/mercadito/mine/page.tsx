@@ -9,6 +9,7 @@ import { WhatsappForm } from '@/ui/mercadito/whatsapp-form';
 import {
   getWhatsapp,
   listSavedSearches,
+  renewalRules,
   sellerListings,
   type SavedSearch,
 } from '@/server/domains/mercadito/service';
@@ -29,11 +30,19 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect(await signInPath());
 
-  const [listings, whatsapp, saved] = await Promise.all([
+  const [listings, whatsapp, saved, renewal] = await Promise.all([
     sellerListings(db(), userId, locale),
     getWhatsapp(db(), userId),
     listSavedSearches(db(), userId),
+    renewalRules(db()),
   ]);
+  // Listings that have sat a while without a renewal: offered a way back to the top, never pushed.
+  // Only by age — Yavaya does not count views, so it never claims a listing "got no visits".
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const quiet = listings
+    .filter((listing) => listing.status === 'published' && !listing.featured)
+    .map((listing) => ({ listing, days: Math.floor((Date.now() - (listing.renewedAt ?? listing.publishedAt).getTime()) / DAY_MS) }))
+    .filter(({ days }) => days >= renewal.suggestAfterDays);
   const placeNames = new Map(
     await Promise.all(
       [...new Set(saved.map((search) => search.placeCode).filter((code): code is string => Boolean(code)))].map(
@@ -64,6 +73,25 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
         </div>
       </section>
       <div className="wrap" style={{ paddingBottom: 56 }}>
+        {quiet.length > 0 && (renewal.cost !== null) ? (
+          <section className="mk-feature" style={{ maxWidth: 820, marginBottom: 24 }} aria-labelledby="quiet-h">
+            <h2 id="quiet-h" className="mk-feature-h">{t('mercadito.nudge.title')}</h2>
+            <p className="hint muted mb0">{t('mercadito.nudge.body', { days: renewal.suggestAfterDays })}</p>
+            <ul className="mk-saved">
+              {quiet.map(({ listing, days }) => (
+                <li key={listing.id}>
+                  <Link href={`/mercadito/${listing.id}#renovar`} className="mk-saved-link">
+                    <strong>{listing.title}</strong>
+                    <span className="muted">{t('mercadito.nudge.age', { days })}</span>
+                  </Link>
+                  <Link className="chip" href={`/mercadito/${listing.id}#renovar`}>
+                    {t('mercadito.nudge.action')}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
         {listings.length === 0 ? (
           <p className="mk-empty">{t('mercadito.mine.empty')}</p>
         ) : (

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNull, notInArray, sql } from 'drizzle-orm';
 import { closeDb, db, type Database, type Executor } from '../client';
 import {
   billableActions,
@@ -25,6 +25,7 @@ import {
   TOKEN_PACKAGES,
   TOKEN_RULES,
   MERCADITO_RULES,
+  NAME_RULES,
   SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES, SITE_STATS_RULES, ROXI_RULES } from '@/config/business-rules';
 import { districtList } from '@/config/districts';
 import { BILLABLE_ACTIONS } from '@/config/billable-actions';
@@ -336,6 +337,11 @@ async function seedTokenConfiguration(database: Database): Promise<void> {
         set: { cost: action.cost, description: action.description, updatedAt: new Date() },
       });
   }
+  // A price removed from the list stops being chargeable (and stops being shown) rather than lingering.
+  await database
+    .update(billableActions)
+    .set({ enabled: false, updatedAt: new Date() })
+    .where(notInArray(billableActions.key, BILLABLE_ACTIONS.map((action) => action.key)));
 }
 
 async function seedReputationRules(database: Database): Promise<void> {
@@ -372,6 +378,9 @@ async function seedSettings(database: Database): Promise<void> {
     { key: 'mercadito.new_seller_max_listings', value: MERCADITO_RULES.newSellerMaxListings, description: 'Listings a new seller may create inside that window' },
     { key: 'mercadito.free_open_listings', value: MERCADITO_RULES.freeOpenListings, description: 'Open listings a member may have at once without paying' },
     { key: 'mercadito.feature_days', value: MERCADITO_RULES.featureDays, description: 'Days a listing stays featured after one purchase' },
+    { key: 'mercadito.renew_cooldown_hours', value: MERCADITO_RULES.renewCooldownHours, description: 'Hours between two paid renewals of the same listing' },
+    { key: 'mercadito.renew_suggest_after_days', value: MERCADITO_RULES.renewSuggestAfterDays, description: 'Days without a renewal after which My listings suggests renewing or featuring' },
+    { key: 'identity.free_name_changes', value: NAME_RULES.freeNameChanges, description: 'Display name changes a member may make free; each one after costs a token' },
     { key: 'work.free_open_posts', value: WORK_RULES.freeOpenPosts, description: 'Open Trabajo posts an employer may have at once without paying' },
     { key: 'work.feature_days', value: WORK_RULES.featureDays, description: 'Days a Trabajo post stays featured after one purchase' },
     { key: 'go.feature_days', value: GO_RULES.featureDays, description: 'Days a YavayaGo store stays featured after one purchase' },

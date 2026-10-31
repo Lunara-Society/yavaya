@@ -11,7 +11,9 @@ import { db } from '@/server/db/client';
 import { currentSession } from '@/server/auth/context';
 import { activeSessions, describeDevice } from '@/server/auth/session';
 import { twoStepAvailable, twoStepStatus } from '@/server/domains/identity/two-step';
-import { ChangePasswordForm, SignOutOthersForm } from './security-forms';
+import { nameChangeQuote } from '@/server/domains/identity/display-name';
+import { getBalance } from '@/server/domains/tokens/service';
+import { ChangeNameForm, ChangePasswordForm, SignOutOthersForm } from './security-forms';
 import {
   readLocationPrecision,
   readNotificationPreferences,
@@ -44,6 +46,12 @@ export default async function SettingsPage() {
   const [twoStep, devices] = session
     ? await Promise.all([twoStepStatus(db(), session.user.userId), activeSessions(db(), session.user.userId)])
     : [null, []];
+  // What the next name change costs, and the balance to pay it; no form when a paid change is switched off.
+  const nameQuote = session
+    ? await Promise.all([nameChangeQuote(db(), session.user.userId), getBalance(db(), session.user.userId)]).then(([quote, balance]) =>
+        quote.freeLeft > 0 || quote.cost !== null ? { ...quote, balance } : null,
+      )
+    : null;
   const when = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
 
   const preferenceFor = (category: string, channel: string): boolean =>
@@ -163,6 +171,20 @@ export default async function SettingsPage() {
             </p>
             <p className="mt-0.5 font-medium">{member.displayName}</p>
             <p className="mt-2 text-sm text-[var(--text-secondary)]">{t('auth.yay_id_explained')}</p>
+            {nameQuote ? (
+              <ChangeNameForm
+                current={member.displayName}
+                labels={{
+                  label: t('settings.name.label'),
+                  note:
+                    nameQuote.freeLeft > 0
+                      ? t('settings.name.free')
+                      : t('settings.name.paid', { cost: nameQuote.cost ?? 0, balance: nameQuote.balance }),
+                  submit: nameQuote.freeLeft > 0 ? t('settings.name.submit') : t('settings.name.submit_paid', { cost: nameQuote.cost ?? 0 }),
+                  hint: t('settings.name.hint'),
+                }}
+              />
+            ) : null}
             <form action={signOutAction} className="mt-4">
               <button type="submit" className="min-h-touch w-full rounded-xl border px-4 font-medium">
                 {t('auth.sign_out')}

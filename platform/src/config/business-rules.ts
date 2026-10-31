@@ -346,6 +346,28 @@ export const MERCADITO_RULES = {
   freeOpenListings: 5,
   /** Days a listing stays featured ("Destacado") after one purchase. */
   featureDays: 7,
+  /**
+   * Renewing ("Renovar") puts a listing back at the top of the newest, for the
+   * `mercadito.renew_listing` price. At most once in this many hours per
+   * listing, so renewing cannot be used to sit at the top for good: that is
+   * what featuring is for, and featuring is labelled.
+   * The owner's decision (October 2026): tokens renew and promote; publishing stays free.
+   */
+  renewCooldownHours: 24,
+  /** After this many days without a renewal, "Mis publicaciones" suggests renewing or featuring. */
+  renewSuggestAfterDays: 7,
+} as const;
+
+/**
+ * Changing the display name. The owner's decision (October 2026): the first
+ * change is free, each one after costs the `identity.change_name` price (a
+ * token). A name stays tied to the same YAY ID and reputation, and every
+ * change is audited with the old and new name, so renaming cannot shed a
+ * history; a cooldown between paid changes is not specified and none is
+ * applied (see CONFIGURATION.md).
+ */
+export const NAME_RULES = {
+  freeNameChanges: 1,
 } as const;
 
 /**

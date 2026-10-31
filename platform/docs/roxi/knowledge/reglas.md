@@ -179,7 +179,9 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
 ## MEDIA_RULES
 ```json
 {
-  "maxUploadBytes": 8388608
+  "maxUploadBytes": 8388608,
+  "linkTimeoutSeconds": 10,
+  "linkMaxRedirects": 3
 }
 ```
 
@@ -198,7 +200,8 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
   "maxPriceMinor": 1000000000,
   "maxSavedSearches": 20,
   "freeOpenListings": 5,
-  "featureDays": 7
+  "featureDays": 7,
+  "renewSuggestAfterDays": 7
 }
 ```
 

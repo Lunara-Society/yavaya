@@ -6,7 +6,7 @@ import { db } from '@/server/db/client';
 import { currentSession, requestContext, userAgentHash } from '@/server/auth/context';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { isDomainError } from '@/server/errors';
-import { closeListing, deleteSavedSearch, featureListing, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
+import { closeListing, deleteSavedSearch, featureListing, renewListing, saveSearch, setReserved, setWhatsapp } from '@/server/domains/mercadito/service';
 import { LISTING_CATEGORIES, normalizeWhatsapp, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES, reportListing, type ListingReportCategory } from '@/server/domains/mercadito/moderation';
 import { signInPath } from '@/server/auth/sign-in-path';
@@ -127,6 +127,26 @@ export async function featureListingAction(formData: FormData): Promise<void> {
   }
   revalidatePath('/mercadito', 'layout');
   redirect(`/mercadito/${listingId}?feature=${outcome}#destacar`);
+}
+
+/** "Renovar": pays a token to put this listing back at the top of the newest. */
+export async function renewListingAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect(await signInPath());
+  const listingId = String(formData.get('listingId') ?? '');
+  const purchaseId = String(formData.get('purchaseId') ?? '');
+  if (!UUID.test(listingId) || !UUID.test(purchaseId)) redirect('/mercadito/mine');
+
+  const audit = await auditContext();
+  let outcome = 'ok';
+  try {
+    await db().transaction((tx) => renewListing(tx, { listingId, sellerUserId: session.user.userId, purchaseId, audit }));
+  } catch (error) {
+    if (!isDomainError(error)) throw error;
+    outcome = error.code === 'insufficient_tokens' ? 'tokens' : error.messageKey === 'mercadito.error.renew_too_soon' ? 'soon' : 'failed';
+  }
+  revalidatePath('/mercadito', 'layout');
+  redirect(`/mercadito/${listingId}?renew=${outcome}#renovar`);
 }
 
 export async function saveSearchAction(formData: FormData): Promise<void> {

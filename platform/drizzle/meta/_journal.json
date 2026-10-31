@@ -246,6 +246,13 @@
       "when": 1793312556896,
       "tag": "0034_identity_studio",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1793406827700,
+      "tag": "0035_name_changes_and_renewal",
+      "breakpoints": true
     }
   ]
 }

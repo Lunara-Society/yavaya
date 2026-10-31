@@ -563,7 +563,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 
 ## Página: Créditos para participar. Nada más.
 - Los Tokens Yavaya son créditos de participación en la plataforma. No son criptomoneda ni inversión. Paquetes, usos y límites.
-- Publicar es gratis. Los tokens son para quien quiere vender más rápido: destacar una publicación o tener más de 5 activas a la vez. No son criptomoneda, no son una inversión y no se intercambian.
+- Publicar es gratis, y casi todo en Yavaya también. Los tokens son un impulso opcional para quien quiere más: renovar una publicación para que vuelva arriba, destacarla, tener más de 5 activas a la vez o cambiar tu nombre otra vez. No necesitas comprarlos: te llegan al empezar y al invitar amigos. No son criptomoneda, no son una inversión y no se intercambian.
 
 #### No son criptomoneda
 - Sin lenguaje de inversión, sin especulación, sin mercados de tokens.
@@ -593,6 +593,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 | --- | --- |
 | Publicar en Mercadito (hasta 5 publicaciones activas) | Gratis |
 | Cada publicación activa más allá de las primeras 5 | 1 token |
+| Renovar una publicación: vuelve arriba de lo más nuevo (una vez cada 24 horas) | 1 token |
 | Destacar una publicación durante 7 días | 3 tokens |
 | Trabajo: publicar hasta 2 ofertas abiertas a la vez | Gratis |
 | Trabajo: cada oferta abierta más allá de las primeras 2 | 3 tokens |
@@ -600,6 +601,8 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 | YavayaGo: destacar tu negocio durante 7 días | 5 tokens |
 | Postular a un trabajo, pedir y recibir pedidos en YavayaGo (sin comisión) | Gratis |
 | Pedir ayuda, Comunidad, Animales, Santuario y Espacio Violeta | Gratis |
+| Cambiar tu nombre visible: la primera vez | Gratis |
+| Cambiar tu nombre visible: cada vez después de la primera | 1 token |
 
 #### Límites
 
@@ -644,7 +647,7 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 | Trabajo · mensual | $14.99 por mes | Sin fecha todavía |
 | Trabajo · negocio | $39.99 por mes | Más adelante |
 | Trabajo · agencia | $79.99 por mes | Más adelante |
-| Destacar en Mercadito, Trabajo y YavayaGo | En tokens (ver Tokens) | Ya disponible |
+| Renovar en Mercadito; destacar en Mercadito, Trabajo y YavayaGo | En tokens (ver Tokens) | Ya disponible |
 | Verificación premium (negocio, profesional, organización) | Por anunciar | Más adelante |
 | Herramientas para negocios y restaurantes | Por anunciar | Más adelante |
 
@@ -923,6 +926,8 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 - Tus **sesiones**: cuándo entraste, el tipo de navegador y un resumen cifrado de la red. La cookie de sesión identifica tu sesión y nada más.
 - Los **códigos de verificación**, solo como resumen, y solo hasta que vencen.
 - Tu saldo de **tokens** y tu **reputación**, con el historial de cada movimiento.
+- En tu dispositivo, no en Yavaya: al enviar una solicitud, una publicación o un aviso, tu navegador guarda en esa pestaña una copia de lo que escribiste, para devolvértelo si el formulario vuelve con un error. Se borra la próxima vez que abres el formulario o al cerrar la pestaña, y esa copia nunca sale de tu dispositivo.
+- Si agregas una foto con un enlace, el servidor de Yavaya la descarga de esa dirección por ti: el sitio de origen ve que la pidió Yavaya, no tú. El enlace no se guarda.
 
 #### Si participas en Comunidad
 - Lo que publicas en la plaza lo ven solo los miembros con sesión iniciada, no el público ni los buscadores.

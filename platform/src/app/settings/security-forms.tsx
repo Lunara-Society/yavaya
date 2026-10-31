@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import {
+  changeNameAction,
   changePasswordAction,
   confirmTwoStepAction,
   disableTwoStepAction,
@@ -123,6 +124,25 @@ export function ChangePasswordForm({ labels }: { labels: { current: string; next
       <button type="submit" disabled={pending} className="min-h-touch w-full rounded-xl border px-5 font-medium disabled:opacity-60">
         {labels.submit}
       </button>
+    </form>
+  );
+}
+
+/** The display name, with what the next change costs said before the button, never after. */
+export function ChangeNameForm({ current, labels }: { current: string; labels: { label: string; note: string; submit: string; hint: string } }) {
+  const [state, action, pending] = useActionState(changeNameAction, idle);
+  return (
+    <form action={action} className="mt-4 space-y-3">
+      <label className="block">
+        <span className="text-sm font-medium">{labels.label}</span>
+        <input name="name" defaultValue={current} minLength={2} maxLength={60} required autoComplete="nickname" className={field} />
+      </label>
+      <p className="text-sm text-[var(--text-secondary)]">{labels.note}</p>
+      <Outcome state={state} />
+      <button type="submit" disabled={pending} className="min-h-touch w-full rounded-xl border px-5 font-medium disabled:opacity-60">
+        {labels.submit}
+      </button>
+      <p className="text-xs text-[var(--text-secondary)]">{labels.hint}</p>
     </form>
   );
 }

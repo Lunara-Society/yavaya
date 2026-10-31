@@ -13,13 +13,13 @@ import { formatDate, formatPrice } from '@/ui/mercadito/format';
 import { Gallery } from '@/ui/mercadito/gallery';
 import { buildTrustShield } from '@/server/domains/trust/shield';
 import { hasPermission } from '@/server/domains/access/authorize';
-import { getListing, pricingRules, similarListings, type ListingDetail } from '@/server/domains/mercadito/service';
+import { getListing, nextRenewalAt, pricingRules, renewalRules, similarListings, type ListingDetail } from '@/server/domains/mercadito/service';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
 import { ListingCard } from '@/ui/mercadito/listing-card';
 import { OPEN_STATUSES, PUBLIC_STATUSES, whatsappLink } from '@/server/domains/mercadito/rules';
 import { LISTING_REPORT_CATEGORIES } from '@/server/domains/mercadito/moderation';
 import { ShareOnWhatsApp } from '@/ui/site/share-whatsapp';
-import { closeListingAction, featureListingAction, reportListingAction, reserveListingAction } from '../actions';
+import { closeListingAction, featureListingAction, renewListingAction, reportListingAction, reserveListingAction } from '../actions';
 import { loginHref } from '@/server/auth/return-path';
 import { JsonLd } from '@/ui/site/json-ld';
 import { listingData } from '@/ui/site/structured-data';
@@ -30,7 +30,7 @@ export const dynamic = 'force-dynamic';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ reported?: string; report?: string; feature?: string }> };
+type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ reported?: string; report?: string; feature?: string; renew?: string }> };
 
 /**
  * Who may see a listing: anyone while it is up or once sold; only its seller
@@ -77,6 +77,17 @@ export default async function ListingPage({ params, searchParams }: Params) {
         ([cost, balance, rules]) => ({ cost, balance, days: rules.featureDays, outcome: query.feature ?? null }),
       )
     : null;
+  // Renewing, likewise: its price, and when it is next allowed.
+  const renew =
+    own && feature
+      ? await renewalRules(db()).then((rules) => ({
+          cost: rules.cost,
+          balance: feature.balance,
+          nextAt: nextRenewalAt(listing, rules.cooldownHours),
+          hours: rules.cooldownHours,
+          outcome: query.renew ?? null,
+        }))
+      : null;
   const listingUrl = `${serverEnv().APP_URL.replace(/\/$/, '')}/mercadito/${listing.id}`;
   const structured = listingData(listing, { url: listingUrl, base: siteUrl(), category: t(`mercadito.category.${listing.category}` as MessageKey), demo });
 
@@ -141,7 +152,7 @@ export default async function ListingPage({ params, searchParams }: Params) {
               </p>
 
               {own ? (
-                <SellerControls listing={listing} t={t} locale={locale} feature={feature} />
+                <SellerControls listing={listing} t={t} locale={locale} feature={feature} renew={renew} />
               ) : !(OPEN_STATUSES as readonly string[]).includes(listing.status) ? null : !member ? (
                 <Link className="btn btn-gold" href={loginHref(`/mercadito/${listing.id}`)} style={{ width: '100%' }}>
                   {t('mercadito.listing.sign_in_to_contact')}
@@ -248,21 +259,27 @@ export default async function ListingPage({ params, searchParams }: Params) {
 }
 
 type FeatureOffer = { cost: number | null; balance: number; days: number; outcome: string | null };
+type RenewOffer = { cost: number | null; balance: number; nextAt: Date; hours: number; outcome: string | null };
 
 function SellerControls({
   listing,
   t,
   locale,
   feature,
+  renew,
 }: {
   listing: ListingDetail;
   t: Parameters<typeof TrustShieldCard>[0]['t'];
   locale: string;
   feature: FeatureOffer | null;
+  renew: RenewOffer | null;
 }) {
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <p className="mk-banner mb0">{t('mercadito.listing.own')}</p>
+      {listing.status === 'published' && renew && renew.cost !== null ? (
+        <RenewCard listing={listing} t={t} locale={locale} renew={renew as RenewOffer & { cost: number }} />
+      ) : null}
       {listing.status === 'published' && feature && feature.cost !== null ? (
         <FeatureCard listing={listing} t={t} locale={locale} feature={feature as FeatureOffer & { cost: number }} />
       ) : null}
@@ -299,7 +316,55 @@ function SellerControls({
 }
 
 /**
- * "Destacar": the one thing a seller can pay for. Shown with its price and
+ * "Renovar": back to the top of the newest, for a token, at most once per
+ * cooldown. The price, the balance and the next time it is allowed are shown
+ * before the button; a seller without tokens sees the free way to get them.
+ */
+function RenewCard({
+  listing,
+  t,
+  locale,
+  renew,
+}: {
+  listing: ListingDetail;
+  t: Parameters<typeof TrustShieldCard>[0]['t'];
+  locale: string;
+  renew: RenewOffer & { cost: number };
+}) {
+  const ready = renew.nextAt.getTime() <= Date.now();
+  const enough = renew.balance >= renew.cost;
+  return (
+    <div className="mk-feature" id="renovar">
+      <p className="mk-feature-h">{t('mercadito.renew.title')}</p>
+      <p className="hint muted mb0">{t('mercadito.renew.body', { hours: renew.hours })}</p>
+      {renew.outcome === 'ok' ? <p className="mk-banner mb0" role="status">{t('mercadito.renew.done')}</p> : null}
+      {renew.outcome === 'tokens' ? <p className="mk-error mb0" role="alert">{t('mercadito.feature.no_tokens')}</p> : null}
+      {renew.outcome === 'soon' ? <p className="mk-error mb0" role="alert">{t('mercadito.renew.soon', { date: formatDate(renew.nextAt, locale) })}</p> : null}
+      {renew.outcome === 'failed' ? <p className="mk-error mb0" role="alert">{t('mercadito.renew.failed')}</p> : null}
+      {!ready ? (
+        <p className="hint mb0">{t('mercadito.renew.next', { date: formatDate(renew.nextAt, locale) })}</p>
+      ) : enough ? (
+        <form action={renewListingAction}>
+          <input type="hidden" name="listingId" value={listing.id} />
+          <input type="hidden" name="purchaseId" value={randomUUID()} />
+          <button className="btn btn-line" type="submit" style={{ width: '100%' }}>
+            {t('mercadito.renew.buy', { cost: renew.cost })}
+          </button>
+        </form>
+      ) : (
+        <div style={{ display: 'grid', gap: 8 }}>
+          <p className="hint mb0">{t('mercadito.renew.balance', { balance: renew.balance, cost: renew.cost })}</p>
+          <Link className="btn btn-line" href="/account/invite">
+            {t('mercadito.feature.invite')}
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * "Destacar": a week at the top, always labelled. Shown with its price and
  * the seller's balance up front, and a way to get tokens free (inviting
  * friends) next to the way to buy them.
  */
