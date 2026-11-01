@@ -1,33 +1,26 @@
+import './home.css';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { SOCIAL } from '@/config/social';
 import { HomeBody } from '@/ui/site/home';
 import { JsonLd } from '@/ui/site/json-ld';
-import { db } from '@/server/db/client';
-import { recentOpportunities } from '@/server/domains/discovery/recent';
-import { startingFacts } from '@/server/domains/tokens/uses';
+import { locationBarProps } from '@/ui/site/location-props';
 import { servedCountryNames, siteUrl } from '@/server/seo';
 
-/** How many recent things the home page shows: two rows of four on a wide screen. */
-const RECENT_LIMIT = 8;
-
 /**
- * Yavaya home.
+ * Yavaya home: the owner's design of 31 October 2026 (ui/site/home.tsx).
  *
- * Deliberately honest: districts are shown with their real status, the recent
- * list is read from what has actually been published, and nothing here claims
- * activity, membership numbers or transactions that do not exist.
+ * Deliberately honest: every district card leads into the district itself,
+ * one that is not open says so, the search is Mercadito's and labelled as
+ * such, and nothing here claims activity, membership numbers or transactions
+ * that do not exist.
  */
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, opportunities, starts] = await Promise.all([
-    servedCountryNames(),
-    recentOpportunities(db(), { locale, limit: RECENT_LIMIT }),
-    startingFacts(db()),
-  ]);
+  const [countries, location] = await Promise.all([servedCountryNames(), locationBarProps(t, locale)]);
   return (
-    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home">
+    <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
       <JsonLd
         data={[
           {
@@ -52,7 +45,7 @@ export default async function HomePage() {
           },
         ]}
       />
-      <HomeBody c={c} t={t} locale={locale} signedIn={Boolean(member)} opportunities={opportunities} starts={starts} />
+      <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} />
     </SiteShell>
   );
 }

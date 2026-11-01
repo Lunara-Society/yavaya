@@ -3,5 +3,6 @@ models/
 venv/
 # 4x masters and masks: reproducible from source/ with extract.py.
 masters/
+masters2/
 # Python bytecode from running the scripts.
 __pycache__/

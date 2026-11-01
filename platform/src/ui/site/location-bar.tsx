@@ -34,15 +34,21 @@ export function LocationBar({
   countries,
   cookieName,
   maxAgeSeconds,
+  detail = false,
 }: {
   labels: LocationBarLabels;
   initial: Choice;
   countries: Array<{ code: string; name: string }>;
   cookieName: string;
   maxAgeSeconds: number;
+  /** Name the place with its state as well ("Nandaime, Granada"), where there is room for it. */
+  detail?: boolean;
 }) {
   const router = useRouter();
   const [choice, setChoice] = useState<Choice>(initial);
+  // A place's context is "state, country" (geography/places.ts); its first part is the state. A country has none.
+  const region = choice?.context.split(',')[0]?.trim();
+  const shown = choice ? (detail && region ? `${choice.name}, ${region}` : choice.name) : labels.everywhere;
   const [open, setOpen] = useState(false);
   const [locating, setLocating] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -124,14 +130,14 @@ export function LocationBar({
         className={`chip locbar-chip${choice ? ' is-set' : ''}`}
         aria-expanded={open}
         aria-haspopup="dialog"
-        aria-label={`${labels.label}: ${choice?.name ?? labels.everywhere}`}
+        aria-label={`${labels.label}: ${shown}`}
         onClick={() => setOpen((value) => !value)}
       >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" fill="none" stroke="currentColor" strokeWidth="1.8" />
           <circle cx="12" cy="10" r="2.6" fill="currentColor" />
         </svg>
-        <span className="locbar-name">{choice?.name ?? labels.everywhere}</span>
+        <span className="locbar-name">{shown}</span>
       </button>
       {open ? (
         <div className="locbar-panel" role="dialog" aria-label={labels.title}>

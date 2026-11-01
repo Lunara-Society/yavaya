@@ -330,6 +330,29 @@ Since 21 October 2026 each photograph with people in it also says
 reputation, tokens and sanctuary page photographs. The footer's sentence was
 true but far from the picture.
 
+**The home page since 1 November 2026** is the owner's second design (one
+1536×1024 image, desktop and phone side by side,
+`tools/cinematic/source/home-design-1536x1024.png`). Its photographs exist
+nowhere but in that image, so each was cut out of it, its words, buttons,
+emblems and arrows rebuilt away (LaMa) and enlarged 4× (Real-ESRGAN), exactly
+as the first design's were (`tools/cinematic/extract2.py`, `build2.mjs`):
+the balcony hero (`home-balcony-*`, and its phone crop `home-balcony-tall-*`),
+the seven district cards (`home-card-<district>-*`), the closing night valley
+(`home-valley-*`), Santuario's round emblem (`home-sanctuary-emblem-*`) and the
+sun of the logo (`brand/sun-*`). **Upscaled, not native**: the 3840 hero holds
+the detail of a 1220-pixel original. Two retouches, both removals: garbled
+letters on the YavayaGo courier's box, and the glow of the design's emblems,
+which LaMa otherwise painted back as a ghost disc. The woman on the balcony and
+the people in six of the cards are illustrations: each carries the
+"Ilustración" note; Santuario's card and the valley are places.
+
+The sun is the home page's mark only (header and footer there); the rest of the
+site, the favicon and the app icons still use the seal. The design's district
+colours apply to the home page's cards only; the district pages keep their
+colour worlds. The earlier home page's photographs (`home-hero`,
+`home-mercadito`, `home-guide`, `home-d-*`, `market-tall`, the market film) are
+no longer shown and can be removed.
+
 **Inspected 21 October 2026**, every photograph at full size: no malformed
 hands, faces or garbled lettering; the landscapes, dress and architecture
 read as Central American. One thing to know: the banknotes in the Mercadito

@@ -5,16 +5,21 @@ import { GUIDE_KEYS, guideFiles } from '@/config/guide';
 import {
   DISTRICT_WIDTHS,
   HERO_WIDTHS,
+  HOME_BALCONY_TALL_WIDTHS,
+  HOME_BALCONY_WIDTHS,
+  HOME_CARD_WIDTHS,
   HOME_DISTRICT_WIDTHS,
   HOME_GUIDE_WIDTHS,
   HOME_HERO_WIDTHS,
   HOME_MERCADITO_WIDTHS,
+  HOME_SANCTUARY_EMBLEM_WIDTHS,
+  HOME_VALLEY_WIDTHS,
   MARKET_TALL_WIDTHS,
   PAGE_PHOTOS,
 } from '@/ui/site/art';
 import { DISTRICT_IDS } from '@/ui/site/blocks';
 import { HERO_FILM } from '@/ui/site/hero-film';
-import { SEAL_WIDTHS } from '@/ui/site/icons';
+import { SEAL_WIDTHS, SUN_WIDTHS } from '@/ui/site/icons';
 
 /**
  * Every file a srcset offers must exist: a browser that picks a missing size
@@ -45,6 +50,21 @@ describe('published image sizes', () => {
       ...DISTRICT_IDS.flatMap((id) => HOME_DISTRICT_WIDTHS.map((w) => `art/home-d-${id}-${w}.webp`)),
     ];
     expect(missing(files)).toEqual([]);
+  });
+
+  it("has every width of the second design's photographs: the balcony (and its phone crop), each card, the valley and Santuario's emblem", () => {
+    const files = [
+      ...HOME_BALCONY_WIDTHS.map((w) => `art/home-balcony-${w}.webp`),
+      ...HOME_BALCONY_TALL_WIDTHS.map((w) => `art/home-balcony-tall-${w}.webp`),
+      ...DISTRICT_IDS.flatMap((id) => HOME_CARD_WIDTHS.map((w) => `art/home-card-${id}-${w}.webp`)),
+      ...HOME_VALLEY_WIDTHS.map((w) => `art/home-valley-${w}.webp`),
+      ...HOME_SANCTUARY_EMBLEM_WIDTHS.map((w) => `art/home-sanctuary-emblem-${w}.webp`),
+    ];
+    expect(missing(files)).toEqual([]);
+  });
+
+  it('has every width of the sun of the logo', () => {
+    expect(missing(SUN_WIDTHS.map((w) => `brand/sun-${w}.webp`))).toEqual([]);
   });
 
   it('has every width of the seal', () => {

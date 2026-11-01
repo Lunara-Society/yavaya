@@ -112,6 +112,20 @@ export function Mark({ size = 34, priority, sizes }: { size?: number; priority?:
 }
 
 /**
+ * The sun of the logo in the owner's second design of the home page (31 October
+ * 2026): a gold sunburst in a ring of dots. Cut from that design with its night
+ * sky made transparent and enlarged 4x (tools/cinematic/build2.mjs), so it sits
+ * on the hero's photograph with nothing behind it. The rest of the site, the
+ * favicon and the app icons still use the seal above.
+ */
+export const SUN_WIDTHS = [96, 224];
+const SUN_SRCSET = SUN_WIDTHS.map((w) => `/brand/sun-${w}.webp ${w}w`).join(', ');
+
+export function SunMark({ size = 44 }: { size?: number }) {
+  return <img className="brand-sun" src="/brand/sun-96.webp" srcSet={SUN_SRCSET} sizes={`${size}px`} width={size} height={size} alt="" decoding="async" />;
+}
+
+/**
  * The Yavaya token: a gold coin with a teal enamel ring. Filled, not a line
  * icon, so it reads as something of value at any size.
  */

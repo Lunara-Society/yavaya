@@ -51,3 +51,26 @@ region was compared with the first and matched exactly.
 - `build.mjs` cuts the published widths from the masters, never wider than a master.
 
 `models/`, `masters/` and `venv/` are not committed.
+
+## The second design (31 October 2026)
+
+`source/home-design-1536x1024.png`: the desktop page on the left (x 0–1220),
+the phone on the right. The current home page. Same method, its own script:
+
+| Region (design pixels) | Rebuilt | 4× master | Published as |
+| --- | --- | --- | --- |
+| Hero and the districts' heading, 1220×494 | header, headline, lead, search, heading, "Explorar todos" | 4880×1976 | `home-balcony-{960,1600,2560,3840}`; the right of it (x 600–1220) as `home-balcony-tall-{640,960,1280}` for phones |
+| Seven district cards, 251–365 wide | emblem (and its glow), words, arrow, corners; the courier box's garbled letters | 1004–1460 wide | `home-card-<district>-{400,640,960}` |
+| Closing valley, 1220×216 | the whole closing text block | 4880×864 | `home-valley-{960,1600,2560}` |
+| The logo's sun, 56×56 | nothing; the night sky made transparent | 224×224 | `brand/sun-{96,224}` |
+| Santuario's emblem, 75×75 | nothing; outside its circle made transparent | 300×300 | `home-sanctuary-emblem-{160,300}` |
+
+```bash
+./venv/bin/python extract2.py --preview   # masks over the crops only, to check by eye
+./venv/bin/python extract2.py             # every region → masters2/ (about 4 minutes on 4 CPU cores)
+cd ../../platform && node ../tools/cinematic/build2.mjs
+```
+
+An emblem's mask is drawn wider than the emblem: its ring glows past its edge,
+and a mask that stops at the ring leaves LaMa enough of the glow to paint a
+ghost disc back (the first run did, on four cards).

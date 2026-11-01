@@ -1,0 +1,449 @@
+/*
+ * Home page — ui/site/home.tsx, and the home header in ui/site/site-shell.tsx
+ * (`home`). The owner's design of 31 October 2026: midnight black and deep
+ * navy under a dusk photograph, antique gold kept for the brand, each district
+ * in its own colour.
+ *
+ * Loaded by app/page.tsx alone, so nothing here reaches another page — which
+ * is also why custom properties may sit on :root. Unlayered on purpose: the
+ * shared header's rules live in site.css's `components` layer, and the home
+ * header must win over them without a specificity race.
+ *
+ * The district colours are the design's, for these cards only. The district
+ * pages keep their own colour worlds (worlds.css): changing those is a
+ * separate decision.
+ */
+
+:root {
+  --hx-ink: #04060c;
+  --hx-night: #070b16;
+  --hx-navy: #0b1222;
+  --hx-ivory: #f6eedd;
+  --hx-ivory-2: rgba(246, 238, 221, 0.86);
+  --hx-ivory-3: rgba(246, 238, 221, 0.66);
+  --hx-gold: #d8b25a;
+  --hx-gold-light: #f3d98f;
+  --hx-line: rgba(216, 178, 90, 0.44);
+  --hx-glass: rgba(5, 8, 14, 0.55);
+  /* The header's height, which the hero starts under: it lies over the photograph. */
+  --hx-top-h: 64px;
+  --hx-sun: clamp(38px, 1.6vw + 28px, 54px);
+  --hx-tail: 120px;
+  --hx-indent: clamp(0px, 2.6vw, 38px);
+}
+@media (min-width: 1000px) {
+  :root { --hx-top-h: 80px; --hx-tail: 150px; }
+}
+/* The design spreads wider than the site's usual column on a large screen. */
+@media (min-width: 1440px) {
+  .hx-page .wrap, .top.is-home .wrap { max-width: 1360px; }
+}
+
+/* ── Header (site-shell.tsx, home) ──────────────────────────────────────── */
+
+.top.is-home {
+  position: sticky; top: 0; z-index: 50;
+  margin-bottom: calc(-1 * var(--hx-top-h));
+  background: transparent; border-bottom-color: transparent;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  color: var(--hx-ivory);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.top.is-home::after { opacity: 0; transition: opacity 0.3s ease; }
+/* Scrolled (top-scroll.tsx): a ground of its own, so it stays readable over whatever passes under it. */
+.top.is-home[data-scrolled] {
+  background: rgba(5, 8, 14, 0.84);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 12px 30px -20px rgba(0, 0, 0, 0.9);
+}
+.top.is-home[data-scrolled]::after { opacity: 0.55; }
+.top.is-home .top-in { position: relative; height: var(--hx-top-h); gap: 12px; padding-top: env(safe-area-inset-top); }
+
+.top.is-home .brand { min-height: 44px; gap: 10px; font-size: clamp(1.45rem, 0.75rem + 2vw, 2.35rem); letter-spacing: 0.035em; }
+.top.is-home .brand-sun { display: block; flex: none; width: var(--hx-sun); height: var(--hx-sun); filter: drop-shadow(0 2px 10px rgba(243, 217, 143, 0.22)); }
+:root[data-theme="light"] .top.is-home .brand > span { background-image: linear-gradient(180deg, #fff4c4 0%, #f2cf5b 45%, #c8961c 100%); }
+
+/* The tagline under the name, the design's gold rule beside it; wide screens only, and only over the photograph. */
+.top.is-home .top-tagline { display: none; }
+@media (min-width: 1000px) {
+  .top.is-home .top-tagline {
+    display: grid; position: absolute; left: calc(var(--gutter) + var(--hx-sun) + 10px); top: calc(var(--hx-top-h) - 12px);
+    font: 600 0.7rem/1.45 var(--sans); letter-spacing: 0.26em; text-transform: uppercase; color: var(--hx-ivory-2);
+    transition: opacity 0.25s ease, visibility 0.25s;
+  }
+  .top.is-home .top-tagline::before {
+    content: ""; position: absolute; right: calc(100% + 12px); top: 50%; width: calc(var(--hx-sun) - 6px); height: 1px;
+    background: linear-gradient(90deg, rgba(216, 178, 90, 0.15), var(--hx-gold));
+  }
+  .top.is-home .top-tagline > span { display: block; white-space: nowrap; }
+  .top.is-home[data-scrolled] .top-tagline { opacity: 0; visibility: hidden; }
+}
+
+/* The place, beside the name. From 1280px; narrower, the hero's search shows the same choice. */
+.top.is-home .top-place { display: none; }
+@media (min-width: 1280px) {
+  .top.is-home .top-place { display: block; margin-left: clamp(8px, 1.6vw, 28px); }
+  .top.is-home.is-member .top-place { display: none; }
+}
+@media (min-width: 1440px) {
+  .top.is-home.is-member .top-place { display: block; }
+}
+.top.is-home .top-place .locbar-chip {
+  min-height: 44px; max-width: 250px; padding: 0 16px 0 14px; gap: 10px; border-radius: 999px;
+  border: 1px solid var(--hx-line); background: var(--hx-glass); color: var(--hx-ivory);
+  font: 600 0.92rem/1 var(--sans); letter-spacing: 0;
+}
+.top.is-home .top-place .locbar-chip svg { width: 19px; height: 19px; color: var(--hx-gold); }
+.top.is-home .top-place .locbar-chip .locbar-name { display: inline; }
+.top.is-home .top-place .locbar-chip::after {
+  content: ""; flex: none; width: 7px; height: 7px; margin: -4px 0 0 4px;
+  border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); opacity: 0.85;
+}
+.top.is-home .top-place .locbar-panel { left: 0; right: auto; }
+
+/* Explorar · Sobre Yavaya · Ayuda, centred between the place and the way in. */
+.top.is-home .nav { margin: 0 auto; gap: 4px; }
+.top.is-home .nav a { display: inline-flex; padding: 8px 14px; border-radius: 999px; color: var(--hx-ivory-2); font-weight: 500; font-size: 0.97rem; }
+.top.is-home .nav a:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+@media (min-width: 1000px) {
+  .top.is-home .nav { display: flex; }
+}
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .top.is-home.is-member .nav { display: none; }
+}
+
+.top.is-home .tools { gap: 8px; margin-left: auto; }
+.top.is-home .nav + .tools { margin-left: 0; }
+.top.is-home .tools > .chip { border-color: rgba(246, 238, 221, 0.22); background: var(--hx-glass); color: var(--hx-ivory); border-radius: 999px; }
+/* The design's round buttons: search, the controls (language, appearance) and the menu. */
+.top.is-home .top-search,
+.top.is-home .menu > summary.chip,
+.top.is-home .tools > details.group > summary {
+  width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; gap: 0;
+  border: 1px solid rgba(246, 238, 221, 0.24); border-radius: 50%; background: var(--hx-glass); color: var(--hx-ivory);
+}
+.top.is-home .tools > details.group > summary > :not(:first-child) { display: none; }
+.top.is-home .top-search svg, .top.is-home .menu > summary svg, .top.is-home .tools > details.group > summary svg { width: 20px; height: 20px; }
+.top.is-home .top-search:hover,
+.top.is-home .menu > summary.chip:hover,
+.top.is-home .tools > details.group > summary:hover { border-color: var(--hx-gold); color: #fff; }
+.top.is-home .top-search { display: none; }
+@media (min-width: 1000px) {
+  .top.is-home .top-search { display: inline-flex; align-items: center; }
+}
+
+/* The way in. A phone keeps Entrar in the header (the sign-in row above it is gone here); Crear cuenta from 560px. */
+.top.is-home .top-auth { display: inline-flex; align-items: center; gap: 8px; margin-left: 2px; }
+.top.is-home .top-auth-btn { min-height: 40px; padding: 0 15px; border-radius: 999px; font-size: 0.9rem; white-space: nowrap; }
+.top.is-home .top-auth .btn-line { border-color: rgba(246, 238, 221, 0.34); background: var(--hx-glass); color: var(--hx-ivory); }
+.top.is-home .top-auth .btn-line:hover { border-color: var(--hx-gold); color: #fff; }
+.top.is-home .top-auth .btn-gold { color: #1d1405; }
+.top.is-home .top-auth-register { display: none; }
+@media (min-width: 560px) {
+  .top.is-home .top-auth-register { display: inline-flex; }
+}
+@media (min-width: 1000px) {
+  .top.is-home .top-auth-btn { min-height: 46px; padding: 0 20px; font-size: 0.95rem; }
+}
+/*
+ * On a phone Entrar sits after the menu and the controls, so a panel anchored to
+ * its own button would open past the left edge: anchor both to the header instead.
+ */
+@media (max-width: 999px) {
+  .top.is-home .menu, .top.is-home .tools > details.group { position: static; }
+  .top.is-home .menu-panel, .top.is-home .tools > details.group > div { right: var(--gutter); left: auto; }
+}
+@media (max-width: 379px) {
+  .top.is-home .tools { gap: 6px; }
+  .top.is-home .top-auth-btn { padding: 0 12px; }
+}
+
+/* ── The page ───────────────────────────────────────────────────────────── */
+
+.hx-page {
+  position: relative; isolation: isolate; overflow-x: clip;
+  background: linear-gradient(180deg, var(--hx-ink) 0%, var(--hx-night) 38%, var(--hx-navy) 78%, var(--hx-ink) 100%);
+  color: var(--hx-ivory);
+}
+
+/* ── Hero ── */
+
+.hx-hero { position: relative; padding-top: calc(var(--hx-top-h) + clamp(44px, 15vw, 64px)); }
+@media (min-width: 700px) {
+  .hx-hero { padding-top: calc(var(--hx-top-h) + clamp(10px, 2.4vw, 26px)); }
+}
+/*
+ * The photograph runs under the header and on behind the districts' heading,
+ * the way the design paints them as one picture. It sits in the page's own
+ * stacking context under both, so the location panel inside the search can
+ * still open over the cards below.
+ */
+.hx-stage-art { position: absolute; z-index: 0; inset: 0 0 auto 0; height: clamp(300px, 85vw, 400px); pointer-events: none; }
+.hx-stage-art picture { display: block; width: 100%; height: 100%; }
+.hx-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 100% 0; }
+.hx-stage-art::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(4, 6, 12, 0.78) 0%, rgba(4, 6, 12, 0.42) 34%, rgba(4, 6, 12, 0) 62%),
+    linear-gradient(180deg, rgba(4, 6, 12, 0.5) 0%, rgba(4, 6, 12, 0) 20%, rgba(4, 6, 12, 0) 52%, var(--hx-ink) 100%);
+}
+@media (min-width: 700px) {
+  .hx-stage-art { height: calc(100% + var(--hx-tail)); }
+  .hx-stage-art::after {
+    background:
+      linear-gradient(90deg, rgba(4, 6, 12, 0.8) 0%, rgba(4, 6, 12, 0.5) 26%, rgba(4, 6, 12, 0) 52%),
+      linear-gradient(180deg, rgba(4, 6, 12, 0.45) 0%, rgba(4, 6, 12, 0) 16%, rgba(4, 6, 12, 0) 60%, var(--hx-ink) 100%);
+  }
+}
+.hx-stage-art .art-note { top: calc(var(--hx-top-h) + 10px); right: 12px; bottom: auto; }
+
+.hx-hero-in { position: relative; z-index: 2; padding-bottom: clamp(6px, 1vw, 12px); }
+.hx-title {
+  margin: 0; font-family: var(--serif); font-weight: 650; font-size: clamp(2.4rem, 1.15rem + 2.75vw, 3.65rem);
+  line-height: 1.0; letter-spacing: -0.012em; color: var(--hx-ivory); text-wrap: initial;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+}
+.hx-title > span { display: block; }
+.hx-title em {
+  font-style: normal; color: var(--hx-gold-light);
+  background: linear-gradient(180deg, #f9e6a8 8%, #e5c067 58%, #c7993b 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hx-lead { margin: clamp(10px, 1.2vw, 14px) 0 0; max-width: 34ch; font-size: clamp(1rem, 0.9rem + 0.45vw, 1.2rem); line-height: 1.36; color: var(--hx-ivory-2); text-shadow: 0 1px 14px rgba(0, 0, 0, 0.5); }
+
+/* Mercadito's search. Phone: two rows (what, where) beside one gold button; from 700px, one pill as designed. */
+.hx-search {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "field go" "place go"; align-items: center;
+  margin-top: clamp(16px, 2.2vw, 24px); padding: 6px 8px 6px 16px; border-radius: 22px;
+  border: 1px solid var(--hx-line);
+  background: linear-gradient(180deg, rgba(11, 15, 26, 0.84), rgba(5, 8, 14, 0.9));
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px rgba(243, 217, 143, 0.06), 0 0 26px rgba(216, 178, 90, 0.16), 0 18px 40px -22px rgba(0, 0, 0, 0.95);
+}
+.hx-search:focus-within { border-color: rgba(243, 217, 143, 0.8); box-shadow: inset 0 0 0 1px rgba(243, 217, 143, 0.1), 0 0 0 3px rgba(216, 178, 90, 0.22), 0 0 30px rgba(216, 178, 90, 0.2); }
+.hx-search-field { grid-area: field; display: flex; align-items: center; gap: 12px; min-width: 0; border-bottom: 1px solid rgba(246, 238, 221, 0.12); }
+.hx-search-field svg { flex: none; width: 21px; height: 21px; color: var(--hx-ivory); }
+.hx-search input {
+  flex: 1; min-width: 0; height: 46px; border: 0; padding: 0; background: transparent; color: var(--hx-ivory);
+  font: 400 1rem var(--sans); outline: none;
+}
+.hx-search input::placeholder { color: rgba(246, 238, 221, 0.6); opacity: 1; }
+.hx-search input::-webkit-search-cancel-button { filter: invert(1) brightness(1.4); }
+.hx-search-place { grid-area: place; display: flex; align-items: center; min-width: 0; }
+.hx-search-place .locbar { position: static; min-width: 0; }
+.hx-search-place .locbar-chip {
+  max-width: 100%; min-height: 44px; padding: 0 4px 0 0; gap: 12px; justify-content: flex-start;
+  border: 0; border-radius: 10px; background: transparent; color: var(--hx-ivory); font: 600 0.92rem/1 var(--sans); letter-spacing: 0;
+}
+.hx-search-place .locbar-chip svg { width: 20px; height: 20px; color: var(--hx-gold); }
+/* The header hides a phone's place name to save room; here it is the point. */
+.hx-search-place .locbar-chip .locbar-name { display: inline; }
+.hx-search-place .locbar-chip.is-set::after { content: none; }
+.hx-search-place .locbar-chip:hover { color: #fff; }
+.hx-search-place .locbar-panel { left: 0; right: 0; width: auto; top: calc(100% + 10px); }
+.hx-search-go {
+  grid-area: go; align-self: center; width: 56px; height: 56px; margin-left: 10px; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: #1b1406;
+  background: radial-gradient(120% 120% at 30% 25%, #fbe7a6 0%, #e6c162 46%, #b98a2c 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 8px 22px rgba(216, 178, 90, 0.34);
+}
+.hx-search-go svg { width: 22px; height: 22px; }
+.hx-search-go:hover { filter: brightness(1.06); }
+@media (min-width: 700px) {
+  .hx-search {
+    display: flex; margin-left: var(--hx-indent); max-width: 1030px; min-height: 62px; padding: 5px 5px 5px 22px; border-radius: 999px;
+  }
+  .hx-search-field { flex: 1 1 auto; gap: 14px; border-bottom: 0; }
+  .hx-search input { height: 50px; font-size: 1.04rem; }
+  .hx-search-place { flex: none; max-width: 42%; margin-left: 12px; padding: 0 12px 0 18px; border-left: 1px solid rgba(246, 238, 221, 0.18); }
+  .hx-search-place .locbar-chip { padding: 0 2px; }
+  .hx-search-place .locbar-panel { left: auto; right: 6px; width: min(380px, calc(100vw - 24px)); }
+  .hx-search-go { width: 52px; height: 52px; margin-left: 4px; }
+}
+
+/* The ribbon's line: what is open, under the search, where the design leaves room. */
+.hx-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 10px 0 0; font-size: 0.8rem; line-height: 1.4; color: var(--hx-ivory-3); }
+.hx-status strong { font-weight: 800; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--hx-gold); }
+.hx-status a { display: inline-flex; align-items: center; min-height: 32px; color: var(--hx-ivory-2); font-weight: 600; text-decoration: none; }
+.hx-status a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.hx-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hx-gold); box-shadow: 0 0 0 3px rgba(216, 178, 90, 0.18); }
+@media (min-width: 700px) {
+  .hx-status { margin-left: calc(var(--hx-indent) + 22px); }
+}
+
+/* ── The seven districts ── */
+
+.hx-districts { position: relative; z-index: 1; padding-bottom: clamp(34px, 5vw, 60px); }
+.hx-d-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 18px; padding-top: clamp(18px, 1.8vw, 22px); margin-bottom: clamp(14px, 1.6vw, 18px); }
+.hx-eyebrow { display: inline-flex; align-items: center; gap: 14px; margin: 0 0 8px; font: 700 0.72rem/1 var(--sans); letter-spacing: 0.28em; text-transform: uppercase; color: var(--hx-gold); }
+.hx-eyebrow::before { content: ""; width: clamp(30px, 4vw, 52px); height: 1px; background: linear-gradient(90deg, rgba(216, 178, 90, 0.18), var(--hx-gold)); }
+.hx-h2 { margin: 0; font-family: var(--serif); font-weight: 650; font-size: clamp(1.75rem, 1rem + 1.9vw, 2.8rem); line-height: 1.06; letter-spacing: -0.012em; color: var(--hx-ivory); }
+.hx-d-sub { margin: 6px 0 0; font-size: clamp(0.98rem, 0.9rem + 0.25vw, 1.14rem); line-height: 1.4; color: var(--hx-ivory-2); }
+.hx-pill {
+  flex: none; display: inline-flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 20px 0 24px; border-radius: 999px;
+  border: 1px solid var(--hx-line); background: rgba(6, 9, 16, 0.45); color: var(--hx-ivory); text-decoration: none; font-weight: 600; font-size: 0.96rem;
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.hx-pill svg { width: 19px; height: 19px; color: var(--hx-gold); }
+.hx-pill:hover { border-color: var(--hx-gold-light); background: rgba(216, 178, 90, 0.08); }
+
+/*
+ * Phone and tablet: the design's editorial sequence — wide, a pair, wide, a
+ * pair, and Santuario wide to close. Wide screens: the design's three, then
+ * four. Each card lays itself out by its own width (container queries), so the
+ * same card reads well as a wide band, a quarter of a row or half a phone.
+ */
+.hx-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.hx-card {
+  --a: var(--hx-gold); --deep: #140c05; --focus: 50% 35%; --em-fill: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--a) 24%, var(--deep)), var(--deep) 72%); --em-ink: var(--a); --arrow: var(--a);
+  container-type: inline-size; min-width: 0;
+}
+.hx-card.is-wide { grid-column: 1 / -1; }
+.hx-card-sanctuary { order: 1; }
+@media (max-width: 339px) {
+  .hx-cards { grid-template-columns: minmax(0, 1fr); }
+}
+
+.hx-card-link {
+  --pad: 14px; --em: 46px;
+  position: relative; display: block; height: 100%; min-height: 200px; overflow: hidden; isolation: isolate; border-radius: 16px;
+  background: var(--deep); color: var(--hx-ivory); text-decoration: none;
+  box-shadow: 0 16px 34px -22px rgba(0, 0, 0, 0.95);
+}
+/* The design's lit edge, in the district's colour, drawn over the photograph. */
+.hx-card-link::after {
+  content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--a) 72%, transparent), inset 0 0 22px -10px color-mix(in srgb, var(--a) 70%, transparent);
+  transition: box-shadow 0.3s ease;
+}
+.hx-card.is-wide .hx-card-link { min-height: clamp(152px, 38vw, 240px); }
+.hx-card-art { position: absolute; inset: 0; z-index: 0; }
+.hx-card-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--focus); }
+/* Shade only where the words are: from the left and from the bottom, in the district's own deep tone. */
+.hx-card-art::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(0deg, color-mix(in srgb, var(--deep) 86%, transparent) 0%, color-mix(in srgb, var(--deep) 30%, transparent) 46%, transparent 72%),
+    linear-gradient(90deg, color-mix(in srgb, var(--deep) 62%, transparent) 0%, transparent 58%);
+}
+.hx-card .art-note { top: 10px; right: 10px; bottom: auto; }
+.hx-card .art-note::after { padding: 3px 7px; font-size: 0.56rem; background: rgba(5, 8, 14, 0.5); }
+
+.hx-emblem {
+  position: absolute; z-index: 2; left: var(--pad); top: var(--pad); width: var(--em); height: var(--em);
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--em-fill); color: var(--em-ink);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--a) 88%, transparent), 0 0 18px -3px color-mix(in srgb, var(--a) 60%, transparent), inset 0 0 12px rgba(0, 0, 0, 0.45);
+}
+.hx-emblem svg { width: 52%; height: 52%; stroke-width: 1.8; }
+.hx-card-sanctuary .hx-emblem { overflow: hidden; background: none; box-shadow: 0 0 0 2px rgba(243, 217, 143, 0.75), 0 0 18px -2px rgba(236, 184, 98, 0.5); }
+.hx-emblem-photo { display: block; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+.hx-card-text { position: absolute; z-index: 2; left: var(--pad); right: var(--pad); bottom: var(--pad); display: grid; gap: 3px; }
+.hx-card-name { font-family: var(--serif); font-weight: 700; font-size: 1.12rem; line-height: 1.1; letter-spacing: -0.005em; color: #fff; text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55); }
+.hx-card-line { font-size: 0.82rem; line-height: 1.3; color: var(--hx-ivory-2); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6); }
+.hx-card-state {
+  justify-self: start; margin-top: 4px; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(0, 0, 0, 0.55); color: var(--hx-ivory); font: 700 0.62rem/1.5 var(--sans); letter-spacing: 0.1em; text-transform: uppercase;
+}
+.hx-arrow {
+  position: absolute; z-index: 2; right: var(--pad); bottom: var(--pad); width: 40px; height: 40px; display: none; place-items: center; border-radius: 50%;
+  border: 2px solid var(--a); background: rgba(0, 0, 0, 0.3); color: var(--arrow); box-shadow: 0 0 14px -4px color-mix(in srgb, var(--a) 70%, transparent);
+  transition: transform 0.25s ease, background-color 0.25s ease;
+}
+.hx-arrow svg { width: 20px; height: 20px; stroke-width: 2.2; }
+
+/* A quarter of a wide row, or a small tablet's pair: the emblem above, the words below, the arrow beside them. */
+@container (min-width: 200px) {
+  .hx-card-link { --pad: 16px; --em: 52px; }
+  .hx-card-text { right: calc(var(--pad) + 46px); }
+  .hx-arrow { display: grid; width: 38px; height: 38px; }
+  .hx-card-name { font-size: 1.2rem; }
+  .hx-card-line { font-size: 0.86rem; }
+}
+/* A wide band: the design's own layout — the emblem at the bottom left, the words beside it, the arrow at the right. */
+@container (min-width: 280px) {
+  .hx-card-link { --pad: clamp(14px, 5cqi, 22px); --em: clamp(54px, 19cqi, 80px); }
+  .hx-emblem { top: auto; bottom: var(--pad); }
+  .hx-card-text { left: calc(var(--pad) + var(--em) + 14px); right: calc(var(--pad) + 52px); bottom: var(--pad); min-height: var(--em); align-content: center; }
+  .hx-arrow { width: 42px; height: 42px; bottom: calc(var(--pad) + (var(--em) - 42px) / 2); }
+  .hx-card-name { font-size: clamp(1.15rem, 6.4cqi, 1.6rem); }
+  .hx-card-line { font-size: clamp(0.86rem, 3.9cqi, 1.1rem); max-width: 21ch; }
+}
+.hx-card-sanctuary .hx-emblem { width: calc(var(--em) * 1.08); height: calc(var(--em) * 1.08); }
+
+.hx-card-link:hover::after { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--a) 95%, transparent), inset 0 0 30px -8px color-mix(in srgb, var(--a) 85%, transparent); }
+.hx-card-link:hover .hx-arrow { background: color-mix(in srgb, var(--a) 24%, transparent); transform: translateX(2px); }
+.hx-card-link:focus-visible { outline: 2px solid var(--hx-gold-light); outline-offset: 3px; }
+@media (hover: hover) {
+  .hx-card-link { transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .hx-card-link:hover { transform: translateY(-2px); }
+}
+
+/* Each district in the design's colour, and its picture held where its people are. */
+.hx-card-mercadito { --a: #e3ad44; --deep: #1d1106; --focus: 72% 32%; }
+.hx-card-services { --a: #36bbe6; --deep: #04172a; --focus: 64% 26%; --em-ink: #9fe3fb; }
+.hx-card-work { --a: #ec4d73; --deep: #2a0712; --focus: 56% 30%; --em-ink: #ff9fb6; --arrow: #fff; }
+.hx-card-yavayago { --a: #2fc6c4; --deep: #031b21; --focus: 40% 20%; --em-ink: #e9fbfb; }
+.hx-card-community { --a: #a77bff; --deep: #150935; --focus: 54% 26%; --em-fill: linear-gradient(145deg, #7b46f2, #4a1fb8); --em-ink: #fff; --arrow: #fff; }
+.hx-card-sanctuary { --a: #ecb862; --deep: #24150a; --focus: 50% 34%; --arrow: #fff; }
+.hx-card-animals { --a: #79d35e; --deep: #0a1f0e; --focus: 46% 30%; --em-fill: radial-gradient(circle at 35% 30%, #3f9334, #1c5a1b 75%); --em-ink: #f8dba8; --arrow: #fff; }
+
+@media (min-width: 700px) {
+  .hx-cards { gap: 14px; }
+  .hx-card:not(.is-wide) .hx-card-link { min-height: 224px; }
+}
+@media (min-width: 1000px) {
+  .hx-d-head { padding-top: 10px; }
+  .hx-cards { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .hx-card, .hx-card.is-wide { grid-column: span 3; }
+  .hx-card.hx-card-mercadito, .hx-card.hx-card-services, .hx-card.hx-card-work { grid-column: span 4; }
+  .hx-card-sanctuary { order: 0; }
+  .hx-card-link, .hx-card.is-wide .hx-card-link, .hx-card:not(.is-wide) .hx-card-link { min-height: 0; height: clamp(194px, 14.6vw, 222px); }
+  .hx-card-mercadito .hx-card-link, .hx-card-services .hx-card-link, .hx-card-work .hx-card-link { height: clamp(172px, 12.8vw, 196px); }
+}
+
+/* ── Closing ── */
+
+.hx-closing { position: relative; isolation: isolate; padding: clamp(40px, 6vw, 70px) 0 clamp(48px, 7vw, 84px); text-align: center; }
+.hx-closing-art { position: absolute; inset: 0; z-index: -1; }
+.hx-closing-art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
+.hx-closing-art::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, var(--hx-navy) 0%, rgba(11, 18, 34, 0.55) 26%, rgba(4, 6, 12, 0.3) 58%, rgba(4, 6, 12, 0.8) 100%);
+}
+.hx-closing-in { position: relative; display: grid; justify-items: center; }
+.hx-eyebrow-center { margin-bottom: 10px; }
+.hx-eyebrow-center::before, .hx-eyebrow-center::after { content: ""; width: clamp(28px, 11vw, 160px); height: 1px; }
+.hx-eyebrow-center::before { background: linear-gradient(90deg, rgba(216, 178, 90, 0), var(--hx-gold)); }
+.hx-eyebrow-center::after { background: linear-gradient(270deg, rgba(216, 178, 90, 0), var(--hx-gold)); }
+.hx-closing-title { font-size: clamp(1.75rem, 1.15rem + 1.6vw, 2.45rem); }
+.hx-closing-title > span { display: block; }
+.hx-closing-text { margin: 12px 0 0; max-width: 46rem; font-size: clamp(0.95rem, 0.88rem + 0.25vw, 1.06rem); line-height: 1.5; color: var(--hx-ivory-2); }
+.hx-closing-text > span { display: block; }
+.hx-trust {
+  list-style: none; margin: clamp(20px, 3vw, 28px) 0 0; padding: 0; width: 100%; max-width: 760px;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 14px;
+}
+.hx-trust li { display: flex; align-items: center; gap: 12px; min-width: 0; text-align: left; font-size: 0.86rem; line-height: 1.3; color: var(--hx-ivory-2); }
+.hx-trust svg { flex: none; width: 32px; height: 32px; color: var(--hx-gold); stroke-width: 1.5; }
+.hx-trust span { max-width: 11ch; }
+@media (min-width: 700px) {
+  .hx-closing-title > span { display: inline; }
+  .hx-trust { grid-template-columns: repeat(4, auto); justify-content: center; gap: 0; }
+  .hx-trust li { padding: 4px clamp(14px, 2.4vw, 28px); }
+  .hx-trust li + li { border-left: 1px solid rgba(246, 238, 221, 0.18); }
+}
+.hx-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px; margin-top: clamp(22px, 3vw, 30px);
+  min-height: 54px; min-width: min(100%, 220px); padding: 0 32px; border-radius: 999px;
+  color: #1d1405; text-decoration: none; font-weight: 700; font-size: 1.04rem;
+  background: linear-gradient(180deg, #f8e3a2 0%, #e2bd62 52%, #c2963a 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 14px 32px -12px rgba(216, 178, 90, 0.6);
+}
+.hx-cta svg { width: 20px; height: 20px; }
+.hx-cta:hover { filter: brightness(1.06); }
+
+@media (prefers-reduced-motion: reduce) {
+  .top.is-home, .top.is-home::after, .hx-card-link, .hx-card-link::after, .hx-arrow, .hx-pill { transition: none; }
+  .hx-card-link:hover, .hx-card-link:hover .hx-arrow { transform: none; }
+}

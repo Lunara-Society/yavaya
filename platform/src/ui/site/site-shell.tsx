@@ -8,16 +8,14 @@ import { QuickControls } from '@/ui/components/quick-controls';
 import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
 import { NightScene } from './art';
-import { Icon, Mark, TokenCoin } from './icons';
+import { Icon, Mark, SunMark, TokenCoin } from './icons';
 import { Md } from './md';
 import { LocationBar } from './location-bar';
 import { LiveTicker } from './live-ticker';
-import { placePickerLabels } from '@/ui/components/place-labels';
-import { db } from '@/server/db/client';
-import { placeCountries } from '@/server/domains/geography/places';
-import { chosenPlace, PLACE_COOKIE } from '@/server/place-choice';
+import { locationBarProps, placeChoice } from './location-props';
+import { TopScroll } from './top-scroll';
 import { resolveLocale } from '@/server/preferences';
-import { LIVE_FEED_RULES, PLACE_RULES } from '@/config/business-rules';
+import { LIVE_FEED_RULES } from '@/config/business-rules';
 import { readSessionCookie } from '@/server/auth/cookies';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { AuthBar } from './auth-bar';
@@ -56,6 +54,7 @@ export async function SiteShell({
   tone,
   authBar = true,
   googlePrompt = 'auto',
+  home = false,
   children,
 }: {
   c: SiteContent;
@@ -75,18 +74,29 @@ export async function SiteShell({
    * `after-sign-out` shows it without signing anyone straight back in.
    */
   googlePrompt?: 'auto' | 'after-sign-out' | 'off';
+  /**
+   * The home page's own header, from the owner's design of 31 October 2026:
+   * the sun and its tagline, the place beside them, Explorar · Sobre Yavaya ·
+   * Ayuda, and the way in — lying over the hero's photograph (home.css). The
+   * ribbon's line moves into the hero, under the search, and the phone's
+   * sign-in row gives way to the header's own Entrar unless a session has
+   * just ended. Every other page keeps the header below as it is.
+   */
+  home?: boolean;
   children: ReactNode;
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
   const locale = await resolveLocale();
-  // The location bar is a convenience: if places cannot be read, the page still renders without a choice.
-  const [place, countries] = await Promise.all([
-    chosenPlace(locale).catch(() => null),
-    placeCountries(db(), locale).catch(() => []),
-  ]);
+  const [{ place }, location] = await Promise.all([placeChoice(locale), locationBarProps(t, locale)]);
   // Signed out with a session cookie still present: the server closed it.
   const ended = !member && Boolean(await readSessionCookie());
   const primary: PageId[] = ['districts', 'trust', 'reputation', 'tokens', 'status'];
+  // The design's three links, each to the page it names: Explorar is the districts.
+  const homeNav: Array<{ id: PageId; label: string }> = [
+    { id: 'districts', label: t('home.nav.explore') },
+    { id: 'about', label: t('home.nav.about') },
+    { id: 'help', label: c.nav.help },
+  ];
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],
     [c.ui.menu.platform, ['trust', 'reputation', 'tokens', 'pricing', 'transparency']],
@@ -102,47 +112,49 @@ export async function SiteShell({
       <a className="skip" href="#main">
         {c.ui.skip}
       </a>
-      {!member && authBar ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
+      {/* On the home page the header carries its own Entrar; the row stays only to say a session has ended. */}
+      {!member && authBar && (!home || ended) ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
       {!member && googlePrompt !== 'off' && googleSignIn().available ? <GooglePrompt locale={locale} afterSignOut={googlePrompt === 'after-sign-out'} /> : null}
       {/* A member's header holds more than a visitor's (balance, notices); its phone layout gives way sooner. */}
-      <header className={member ? 'top is-member' : 'top'}>
+      <header className={['top', member ? 'is-member' : null, home ? 'is-home' : null].filter(Boolean).join(' ')}>
+        {home ? <TopScroll /> : null}
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label={`${c.ui.brand} — ${c.nav.home}`}>
-            <Mark />
+            {home ? <SunMark /> : <Mark />}
             <span>YAVAYA</span>
           </Link>
-          {/* The ribbon below, as a badge, on wide screens: what is open, one click from the whole answer. */}
-          <Link className="top-stage" href={PAGE_PATHS.status} aria-label={`${c.ui.ribbon.label}. ${c.ui.ribbon.text.replace(/\*/g, '')} ${c.ui.ribbon.link}`}>
-            <span className="top-stage-dot" aria-hidden="true" />
-            {c.ui.ribbon.label}
-          </Link>
+          {home ? (
+            <>
+              <span className="top-tagline">
+                <span>{t('home.tagline_1')}</span> <span>{t('home.tagline_2')}</span>
+              </span>
+              {/* The place, beside the name, as the design has it; the hero's search shows the same choice. */}
+              <div className="top-place">
+                <LocationBar {...location} detail />
+              </div>
+            </>
+          ) : (
+            // The ribbon below, as a badge, on wide screens: what is open, one click from the whole answer.
+            <Link className="top-stage" href={PAGE_PATHS.status} aria-label={`${c.ui.ribbon.label}. ${c.ui.ribbon.text.replace(/\*/g, '')} ${c.ui.ribbon.link}`}>
+              <span className="top-stage-dot" aria-hidden="true" />
+              {c.ui.ribbon.label}
+            </Link>
+          )}
           <nav className="nav" aria-label={c.ui.navLabel}>
-            {primary.map((id) => (
-              <Link key={id} href={PAGE_PATHS[id]} aria-current={cur(id)}>
-                {c.nav[id]}
-              </Link>
-            ))}
+            {home
+              ? homeNav.map(({ id, label }) => (
+                  <Link key={id} href={PAGE_PATHS[id]}>
+                    {label}
+                  </Link>
+                ))
+              : primary.map((id) => (
+                  <Link key={id} href={PAGE_PATHS[id]} aria-current={cur(id)}>
+                    {c.nav[id]}
+                  </Link>
+                ))}
           </nav>
           <div className="tools">
-            <LocationBar
-              labels={{
-                label: t('place.bar.label'),
-                everywhere: t('place.bar.everywhere'),
-                title: t('place.bar.title'),
-                intro: t('place.bar.intro'),
-                useLocation: t('place.bar.use_location'),
-                locating: t('place.bar.locating'),
-                locationFailed: t('place.bar.location_failed'),
-                countries: t('place.bar.countries'),
-                close: t('place.bar.close'),
-                privacy: t('place.bar.privacy'),
-                picker: placePickerLabels(t),
-              }}
-              initial={place ? { code: place.code, name: place.name, context: place.context } : null}
-              countries={countries.map((country) => ({ code: country.code, name: country.name }))}
-              cookieName={PLACE_COOKIE}
-              maxAgeSeconds={PLACE_RULES.choiceCookieSeconds}
-            />
+            {home ? null : <LocationBar {...location} />}
             {member ? (
               <>
                 {/* The owner's way into what is happening: the panel, one tap from anywhere. A shortcut, not a permission — /admin checks again. */}
@@ -170,6 +182,12 @@ export async function SiteShell({
                 </Link>
               </>
             ) : null /* signed out: the row above the header on a phone, the header's own buttons on a wide screen */}
+            {/* The design's search button: to the hero's search, which is Mercadito's (home.tsx). */}
+            {home ? (
+              <a className="chip top-search" href="#buscar" aria-label={t('home.search.label')}>
+                <Icon name="search" />
+              </a>
+            ) : null}
             <QuickControls t={t} language={language} theme={theme} member={member} />
             <details className="menu">
               <summary className="chip" aria-label={c.ui.menuOpen}>
@@ -192,27 +210,31 @@ export async function SiteShell({
             {/* Signed out on a wide screen, the way in sits in the header itself; phones keep the row above it. */}
             {!member && authBar ? (
               <span className="top-auth">
-                {googleSignIn().available ? <GoogleButton href="/auth/google" label={t('auth.google.continue')} className="btn-google-icon" /> : null}
+                {/* The home page's header is the design's: Entrar and Crear cuenta. Google stays on /login, /register and its own prompt. */}
+                {!home && googleSignIn().available ? <GoogleButton href="/auth/google" label={t('auth.google.continue')} className="btn-google-icon" /> : null}
                 <Link className="btn btn-line top-auth-btn" href="/login">
                   {t('auth.submit_login')}
                 </Link>
-                <Link className="btn btn-gold top-auth-btn" href="/register">
-                  {t('auth.bar.register')}
+                <Link className="btn btn-gold top-auth-btn top-auth-register" href="/register">
+                  {home ? t('auth.submit_register') : t('auth.bar.register')}
                 </Link>
               </span>
             ) : null}
           </div>
         </div>
       </header>
-      <div className="ribbon" role="note">
-        <div className="wrap">
-          <strong>{c.ui.ribbon.label}</strong>
-          <span>
-            <Md text={c.ui.ribbon.text} />
-          </span>
-          <Link href={PAGE_PATHS.status}>{c.ui.ribbon.link}</Link>
+      {/* The home page says the same under its search (home.tsx), where the design leaves room for it. */}
+      {home ? null : (
+        <div className="ribbon" role="note">
+          <div className="wrap">
+            <strong>{c.ui.ribbon.label}</strong>
+            <span>
+              <Md text={c.ui.ribbon.text} />
+            </span>
+            <Link href={PAGE_PATHS.status}>{c.ui.ribbon.link}</Link>
+          </div>
         </div>
-      </div>
+      )}
 
       <main id="main" className={tone ? `tone-${tone}` : undefined}>
         {children}
@@ -225,7 +247,7 @@ export async function SiteShell({
           <div className="foot-grid">
             <div className="foot-brand">
               <Link className="brand" href="/">
-                <Mark />
+                {home ? <SunMark size={40} /> : <Mark />}
                 <span>YAVAYA</span>
               </Link>
               <p className="muted mt">{c.ui.footer.about}</p>

@@ -1,23 +1,26 @@
 import Link from 'next/link';
 import type { MessageKey, Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
-import { GUIDE_SECONDS } from '@/config/guide';
-import type { Opportunity } from '@/server/domains/discovery/recent';
-import { formatPrice } from '@/ui/mercadito/format';
-import { ArtisanScene, GuideScene, HomeDistrictScene, MarketScene } from './art';
-import { DISTRICT_IDS, PAGE_PATHS, districtState, type DistrictId } from './blocks';
-import { Icon, type IconName } from './icons';
-import { loginHref } from '@/server/auth/return-path';
+import { BalconyScene, HomeCardScene, SanctuaryEmblem, ValleyScene } from './art';
+import { PAGE_PATHS, districtState, type DistrictId } from './blocks';
+import { Icon } from './icons';
+import { LocationBar } from './location-bar';
+import type { locationBarProps } from './location-props';
 
 /**
- * The home page: a market street at sunset with one search in it, Mercadito
- * as the way in, the seven districts, what has really been posted lately,
- * and why it can be trusted.
+ * The home page, as the owner's design of 31 October 2026 draws it: the old
+ * town at dusk from a balcony, one line and one search over it, the seven
+ * districts as seven lit cards, and a quiet closing about the people it is for.
  *
- * Every figure on it is real or absent. The search is Mercadito's own and
- * says so; the recent list is read from the districts' public listings and,
- * while nothing has been posted, says exactly that instead of showing
- * examples.
+ * Everything on it works or is not there. The search is Mercadito's and says
+ * so — nothing else on Yavaya is searchable from one box yet, so the design's
+ * "Buscar en todo Yavaya" would have promised what does not exist. The place
+ * beside it is the visitor's real choice, the same one the header shows. A
+ * district that is not open says so on its card. The closing makes no promise
+ * of safety, only of what is there: one account, reputation, community and
+ * moderation that can be seen.
+ *
+ * Styles: app/home.css, loaded by this page alone.
  */
 
 /**
@@ -39,201 +42,133 @@ export type HomeStarts = {
 type HomeProps = {
   c: SiteContent;
   t: Translator;
-  locale: string;
   signedIn: boolean;
-  opportunities: Opportunity[];
-  starts: HomeStarts;
-  now?: Date;
+  location: Awaited<ReturnType<typeof locationBarProps>>;
 };
-
-/** The hero's shortcuts: buying first, then every district by its own name. */
-const SHORTCUTS: ReadonlyArray<{ id: DistrictId; buy?: true }> = [
-  { id: 'mercadito', buy: true },
-  { id: 'services' },
-  { id: 'work' },
-  { id: 'community' },
-  { id: 'yavayago' },
-  { id: 'sanctuary' },
-  { id: 'animals' },
-];
 
 /**
- * The gallery's shape (site.css, "The seven districts"): on a wide screen,
- * four in the first row and three in the second, the way the owner's design
- * lays them out. On a phone Mercadito, the way in, goes full width and the
- * other six two to a row, so no card is left alone at the bottom.
+ * The design's order: three cards, then four. On a tablet or a phone the list
+ * becomes the design's editorial sequence — Mercadito wide, Servicios and
+ * Trabajo side by side, YavayaGo wide, Comunidad and Animales side by side,
+ * Santuario wide to close (home.css moves Santuario last there).
  */
-const FLAGSHIP: DistrictId = 'mercadito';
-const SECOND_ROW: readonly DistrictId[] = ['community', 'sanctuary', 'animals'];
+const FIRST_ROW: readonly DistrictId[] = ['mercadito', 'services', 'work'];
+const CARDS: readonly DistrictId[] = [...FIRST_ROW, 'yavayago', 'community', 'sanctuary', 'animals'];
+const WIDE_ON_PHONE: readonly DistrictId[] = ['mercadito', 'yavayago', 'sanctuary'];
 
-/** How wide each photograph is shown, so a phone never fetches one twice the size it displays. */
-function districtSizes(id: DistrictId): string {
-  const wide = SECOND_ROW.includes(id) ? '(min-width: 1440px) 400px, (min-width: 1000px) 32vw' : '(min-width: 1440px) 300px, (min-width: 1000px) 24vw';
-  return `${wide}, ${id === FLAGSHIP ? '100vw' : '50vw'}`;
+/** How wide each card's picture is shown, so a phone never fetches one twice the size it displays. */
+function cardSizes(id: DistrictId): string {
+  const desk = FIRST_ROW.includes(id) ? '(min-width: 1440px) 420px, (min-width: 1000px) 33vw' : '(min-width: 1440px) 320px, (min-width: 1000px) 25vw';
+  return `${desk}, ${WIDE_ON_PHONE.includes(id) ? '100vw' : '50vw'}`;
 }
 
-/** The full guide's running time as a clock reads it ("13:26"), from the film's own length. */
-function clock(seconds: number): string {
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-const TOPIC_KEY: Record<Opportunity['kind'], string> = {
-  listing: 'mercadito.category',
-  job: 'work.field',
-  animal: 'animals.species',
-  store: 'go.category',
+/** The district emblems the design draws as marks (Santuario's is a photograph: SanctuaryEmblem). */
+const GLYPHS: Record<Exclude<DistrictId, 'sanctuary'>, string> = {
+  // A shopping bag.
+  mercadito: '<path d="M5.6 8.4h12.8l-1.1 10.9a1.6 1.6 0 0 1-1.6 1.4H8.3a1.6 1.6 0 0 1-1.6-1.4z"/><path d="M9 10.6V7.3a3 3 0 0 1 6 0v3.3"/>',
+  // A wrench and a screwdriver, crossed.
+  services:
+    '<path d="M5.1 4.3a3.2 3.2 0 0 0 3.6 4.4l9.1 9.1a1.5 1.5 0 0 0 2.1-2.1L10.8 6.6a3.2 3.2 0 0 0-4.4-3.6l2 2-.5 1.5-1.5.5z"/><path d="M19.6 4.4l-4.4 4.4M13.6 10.4l-6.5 6.5"/><path d="M6 15.9l-2.3 3.5.9.9 3.5-2.3z"/>',
+  // A briefcase with its clasp.
+  work: '<rect x="3.5" y="7.5" width="17" height="12" rx="2"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5"/><path d="M3.5 12.6h17"/><rect x="10.4" y="11.2" width="3.2" height="2.8" rx=".8"/>',
+  // A motorbike.
+  yavayago: '<circle cx="6" cy="16.6" r="3"/><circle cx="18" cy="16.6" r="3"/><path d="M6 16.6h5.6l2.6-5.1h2.4l1.4 5.1"/><path d="M8.2 11.5h4.1l1.4 2"/><path d="M14.4 8.4h2.4l.9 3.1"/>',
+  // Three people together.
+  community:
+    '<circle cx="12" cy="7.4" r="2.6"/><circle cx="5.9" cy="9.6" r="2"/><circle cx="18.1" cy="9.6" r="2"/><path d="M7.4 19.6v-1.1a4.6 4.6 0 0 1 9.2 0v1.1z"/><path d="M2.6 18.6v-.7a3.3 3.3 0 0 1 4.5-3.1M21.4 18.6v-.7a3.3 3.3 0 0 0-4.5-3.1"/>',
+  // A paw, filled.
+  animals:
+    '<g fill="currentColor" stroke="none"><ellipse cx="6.4" cy="10.6" rx="2" ry="2.5"/><ellipse cx="9.9" cy="6.4" rx="2" ry="2.6"/><ellipse cx="14.1" cy="6.4" rx="2" ry="2.6"/><ellipse cx="17.6" cy="10.6" rx="2" ry="2.5"/><path d="M12 11.4c-3 0-5.6 3.9-5.6 6.3 0 1.6 1.2 2.4 2.6 2.4 1.2 0 1.9-.6 3-.6s1.8.6 3 .6c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.6-6.3-5.6-6.3z"/></g>',
 };
 
-const KIND_ICON: Record<Opportunity['kind'], IconName> = { listing: 'tag', job: 'work', animal: 'animals', store: 'store' };
-
-function ago(t: Translator, at: Date, now: Date): string {
-  const minutes = Math.max(0, Math.floor((now.getTime() - at.getTime()) / 60_000));
-  if (minutes < 1) return t('home.recent.ago_now');
-  if (minutes < 60) return t('home.recent.ago_minutes', { count: minutes });
-  const hours = Math.floor(minutes / 60);
-  if (hours < 48) return t('home.recent.ago_hours', { count: hours });
-  return t('home.recent.ago_days', { count: Math.floor(hours / 24) });
+function Glyph({ id }: { id: Exclude<DistrictId, 'sanctuary'> }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: GLYPHS[id] }} />;
 }
 
-export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = new Date() }: HomeProps) {
-  const guideSeconds = GUIDE_SECONDS.guia;
-  // A signed-out visitor is asked to sign in first and then lands on the form itself (return-path.ts).
-  const member = (path: string) => (signedIn ? path : loginHref(path));
-  /*
-   * "Empieza hoy": the four first steps anyone can take on opening day, each
-   * with what it really costs. Publishing in Mercadito handles a signed-out
-   * visitor itself, explaining what publishing involves before asking them
-   * to sign in.
-   */
-  const firstSteps: ReadonlyArray<{ key: string; tone: DistrictId; icon: IconName; href: string; title: string; note: string }> = [
-    { key: 'sell', tone: 'mercadito', icon: 'tag', href: '/mercadito/publish', title: t('home.start.sell'), note: t('home.start.sell_note', { count: starts.mercaditoFree }) },
-    { key: 'hire', tone: 'work', icon: 'work', href: member('/work/posts/new'), title: t('home.start.hire'), note: t('home.start.hire_note', { count: starts.workFree }) },
-    { key: 'ask', tone: 'services', icon: 'hands', href: member('/services/new'), title: t('home.start.ask'), note: t(starts.askFree ? 'home.start.ask_note_free' : 'home.start.ask_note') },
-    { key: 'offer', tone: 'services', icon: 'wrench', href: member('/services/provider'), title: t('home.start.offer'), note: t(starts.answerFree ? 'home.start.offer_note_free' : 'home.start.offer_note') },
-  ];
+function Arrow() {
   return (
-    <>
-      <section className="hm-hero">
-        <MarketScene className="hm-hero-art" />
-        <div className="wrap hm-hero-in">
-          <p className="eyebrow">{t('home.hero.eyebrow')}</p>
-          <h1 className="hm-title">
-            <span>{t('home.hero.title_1')}</span> <span>{t('home.hero.title_2')}</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M5 12h13.5M13 6.5l5.5 5.5-5.5 5.5" />
+    </svg>
+  );
+}
+
+export function HomeBody({ c, t, signedIn, location }: HomeProps) {
+  return (
+    <div className="hx-page">
+      <section className="hx-hero" aria-labelledby="hx-title">
+        <BalconyScene className="hx-stage-art" />
+        <div className="wrap hx-hero-in">
+          {/* The design's three lines, kept as lines: they are part of the picture's composition. */}
+          <h1 id="hx-title" className="hx-title">
+            <span>{t('home.hero.line_1')}</span> <span>{t('home.hero.line_2')}</span>{' '}
+            <span>
+              {t('home.hero.line_3')} <em>{t('home.hero.line_gold')}</em>
+            </span>
           </h1>
-          <p className="hm-lead">{t('home.hero.lead')}</p>
-          {/* Mercadito's own search, and labelled as such: nothing else on Yavaya is searchable from here yet. */}
-          <form className="hm-search" action={PAGE_PATHS.mercadito} method="get" role="search">
-            <label className="sr-only" htmlFor="hm-q">
+          <p className="hx-lead">{t('home.hero.lead')}</p>
+          {/* Mercadito's own search, and labelled as such; the place is the visitor's choice, the same as the header's. */}
+          <form className="hx-search" id="buscar" action={PAGE_PATHS.mercadito} method="get" role="search">
+            <label className="sr-only" htmlFor="hx-q">
               {t('home.search.label')}
             </label>
-            <Icon name="search" className="hm-search-icon" />
-            <input id="hm-q" type="search" name="q" maxLength={80} placeholder={t('home.search.placeholder')} enterKeyHint="search" autoComplete="off" />
-            <span className="hm-search-scope" aria-hidden="true">
-              {t('home.search.scope')}
+            <span className="hx-search-field">
+              <Icon name="search" />
+              <input id="hx-q" type="search" name="q" maxLength={80} placeholder={t('home.search.placeholder')} enterKeyHint="search" autoComplete="off" />
             </span>
-            <button type="submit" className="hm-search-go" aria-label={t('home.search.label')}>
-              <span aria-hidden="true">→</span>
+            <span className="hx-search-place">
+              <LocationBar {...location} detail />
+            </span>
+            <button type="submit" className="hx-search-go" aria-label={t('home.search.submit')}>
+              <Arrow />
             </button>
           </form>
-          <nav className="hm-shortcuts" aria-label={t('home.shortcuts.label')}>
-            {SHORTCUTS.map(({ id, buy }) => (
-              <Link key={id} className={`hm-shortcut tone-${id}`} href={PAGE_PATHS[id]}>
-                <Icon name={id} />
-                <span>{buy ? t('home.shortcut.buy') : c.districts[id].name}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
-      </section>
-
-      <section className="hm-band hm-band-forest" aria-labelledby="hm-mk-title">
-        <div className="wrap hm-feature">
-          <article className="hm-mk tone-mercadito">
-            <Link className="hm-mk-photo" href={PAGE_PATHS.mercadito} tabIndex={-1} aria-hidden="true">
-              <ArtisanScene sizes="(min-width: 1440px) 620px, (min-width: 760px) 50vw, 100vw" />
-              <span className="hm-mk-badge">{t('home.mk.badge')}</span>
+          {/* The ribbon's line, which the rest of the site shows under its header: what is open, one click from the whole answer. */}
+          <p className="hx-status" role="note">
+            <span className="hx-status-dot" aria-hidden="true" />
+            <strong>{c.ui.ribbon.label}</strong>
+            <Link href={PAGE_PATHS.status}>
+              {c.ui.ribbon.link} <span aria-hidden="true">→</span>
             </Link>
-            <div className="hm-mk-text">
-              <h2 id="hm-mk-title" className="hm-mk-title">
-                <span className="hm-icon-ring" aria-hidden="true">
-                  <Icon name="mercadito" />
-                </span>
-                {c.districts.mercadito.name}
-              </h2>
-              <p>{t('home.mk.text')}</p>
-              <div className="btn-row">
-                <Link className="btn btn-gold" href={PAGE_PATHS.mercadito}>
-                  {t('home.mk.explore')} <span aria-hidden="true">→</span>
-                </Link>
-                <Link className="btn btn-line" href="/mercadito/publish">
-                  {t('home.mk.publish')}
-                </Link>
-              </div>
-              <p className="hm-fine">{t('mercadito.opening.free', { count: starts.mercaditoFree })}</p>
-            </div>
-          </article>
-          {/* The whole banner is the way to the guide; its length is the film's own (config/guide.ts), never a round number. */}
-          <Link className="hm-guide" href="/guia">
-            <span className="hm-guide-art">
-              <GuideScene />
-            </span>
-            <span className="hm-guide-time">
-              <Icon name="clock" />
-              <span aria-hidden="true">{clock(guideSeconds)}</span>
-              <span className="sr-only">{t('home.guide.duration', { minutes: Math.floor(guideSeconds / 60), seconds: guideSeconds % 60 })}</span>
-            </span>
-            <span className="hm-guide-text">
-              <span className="hm-guide-eyebrow">{t('home.guide.eyebrow')}</span>
-              <h2 className="hm-guide-title">{t('home.guide.title')}</h2>
-              <span className="hm-guide-sub">{t('home.guide.text')}</span>
-            </span>
-            <span className="hm-guide-go">
-              <span className="hm-guide-play" aria-hidden="true">
-                <Icon name="play" />
-              </span>
-              <span className="hm-guide-cta">{t('home.guide.cta')}</span>
-            </span>
-          </Link>
+          </p>
         </div>
       </section>
 
-      <section className="hm-band hm-band-districts" id="distritos" aria-labelledby="hm-d-title">
+      <section className="hx-districts" id="distritos" aria-labelledby="hx-d-title">
         <div className="wrap">
-          <div className="hm-head">
+          <div className="hx-d-head">
             <div>
-              <p className="eyebrow">{t('home.districts.eyebrow')}</p>
-              <h2 id="hm-d-title" className="hm-h2">
-                <span>{t('home.districts.title_1')}</span> <span>{t('home.districts.title_2')}</span>
+              <p className="hx-eyebrow">{t('home.districts.eyebrow')}</p>
+              <h2 id="hx-d-title" className="hx-h2">
+                {t('home.districts.title')}
               </h2>
+              <p className="hx-d-sub">{t('home.districts.sub')}</p>
             </div>
-            <Link className="btn btn-line hm-head-link" href={PAGE_PATHS.districts}>
-              {t('home.districts.all')} <span aria-hidden="true">→</span>
+            <Link className="hx-pill" href={PAGE_PATHS.districts}>
+              {t('home.districts.all')} <Arrow />
             </Link>
           </div>
-          <ul className="hm-districts">
-            {DISTRICT_IDS.map((id) => {
+          <ul className="hx-cards">
+            {CARDS.map((id) => {
               const state = districtState(id);
               return (
-                // The card wears its district's colour world (worlds.css): a window into the place it opens.
-                <li key={id} className={`hm-d hm-d-${id}`}>
-                  <Link className={`hm-d-card tone-${id}`} href={PAGE_PATHS[id]}>
-                    <span className="hm-d-photo">
-                      <HomeDistrictScene id={id} sizes={districtSizes(id)} />
+                // The whole card is the way in; its colours are the design's for that district (home.css).
+                <li key={id} className={`hx-card hx-card-${id}${WIDE_ON_PHONE.includes(id) ? ' is-wide' : ''}`}>
+                  <Link className="hx-card-link" href={PAGE_PATHS[id]}>
+                    <span className="hx-card-art">
+                      <HomeCardScene id={id} sizes={cardSizes(id)} eager={FIRST_ROW.includes(id)} />
                     </span>
-                    <span className="hm-d-body">
-                      <span className="hm-d-name">
-                        <span className="hm-icon-ring" aria-hidden="true">
-                          <Icon name={id} />
-                        </span>
-                        {c.districts[id].name}
-                      </span>
-                      <span className="hm-d-tag">{c.districts[id].tagline}</span>
-                      <span className={`hm-d-state is-${state}`}>
-                        {c.ui.states[state]} · {c.districts[id].phase}
-                      </span>
-                      <span className="hm-d-go" aria-hidden="true">
-                        →
-                      </span>
+                    <span className="hx-emblem" aria-hidden="true">
+                      {id === 'sanctuary' ? <SanctuaryEmblem /> : <Glyph id={id} />}
+                    </span>
+                    <span className="hx-card-text">
+                      <span className="hx-card-name">{c.districts[id].name}</span>
+                      <span className="hx-card-line">{t(`home.card.${id}` as MessageKey)}</span>
+                      {/* All seven are open today; one that is not would say so here rather than look open. */}
+                      {state === 'live' ? null : <span className={`hx-card-state is-${state}`}>{c.ui.states[state]}</span>}
+                    </span>
+                    <span className="hx-arrow" aria-hidden="true">
+                      <Arrow />
                     </span>
                   </Link>
                 </li>
@@ -243,104 +178,46 @@ export function HomeBody({ c, t, locale, signedIn, opportunities, starts, now = 
         </div>
       </section>
 
-      <section className="hm-band hm-band-obsidian" aria-labelledby="hm-r-title">
-        <div className="wrap hm-lower">
-          <div className="hm-recent">
-            <div className="hm-head">
-              <div>
-                <h2 id="hm-r-title" className="hm-h3">
-                  {t('home.recent.title')}
-                </h2>
-                <p className="hm-sub">{t('home.recent.lead')}</p>
-              </div>
-              {opportunities.length > 0 ? (
-                <Link className="btn btn-line hm-head-link" href={PAGE_PATHS.mercadito}>
-                  {t('home.recent.see_all')} <span aria-hidden="true">→</span>
-                </Link>
-              ) : null}
-            </div>
-            {opportunities.length > 0 ? (
-              <ul className="hm-opps">
-                {opportunities.map((o) => (
-                  <li key={`${o.kind}:${o.id}`}>
-                    <Link className="hm-opp" href={o.href}>
-                      {/* The icon stays under the photo, so a photo that fails to load leaves the kind showing, not a blank tile. */}
-                      <span className="hm-opp-photo">
-                        <Icon name={KIND_ICON[o.kind]} />
-                        {o.photoId ? (
-                          // eslint-disable-next-line @next/next/no-img-element -- member photos from /media, already re-encoded
-                          <img src={`/media/${o.photoId}`} alt="" loading="lazy" decoding="async" />
-                        ) : null}
-                        <span className="hm-opp-kind">{t(`home.recent.kind.${o.kind}` as MessageKey)}</span>
-                      </span>
-                      <span className="hm-opp-body">
-                        <strong>{o.title}</strong>
-                        <span className="hm-opp-meta">{t(`${TOPIC_KEY[o.kind]}.${o.topic}` as MessageKey)}</span>
-                        <span className="hm-opp-meta">
-                          {o.placeName} · {ago(t, o.at, now)}
-                        </span>
-                        {o.price ? <span className="hm-opp-price">{formatPrice(o.price.minor, o.price.currency, locale)}</span> : null}
-                        {o.payText ? <span className="hm-opp-price">{o.payText}</span> : null}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="hm-empty">
-                <p className="hm-empty-title">{t('home.recent.empty_title')}</p>
-                <p>{t('home.recent.empty_text')}</p>
-                <h3 className="hm-start-title" id="hm-start-title">
-                  {t('home.start.title')}
-                </h3>
-                <ul className="hm-start" aria-labelledby="hm-start-title">
-                  {firstSteps.map((step) => (
-                    <li key={step.key}>
-                      <Link className={`hm-start-item tone-${step.tone}`} href={step.href}>
-                        <span className="hm-icon-ring" aria-hidden="true">
-                          <Icon name={step.icon} />
-                        </span>
-                        <span className="hm-start-text">
-                          <strong>{step.title}</strong>
-                          <span>{step.note}</span>
-                        </span>
-                        <span className="hm-start-go" aria-hidden="true">
-                          →
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <aside className="hm-trust" aria-labelledby="hm-t-title">
-            <h2 id="hm-t-title" className="hm-h3">
-              <span>{t('home.trust.title_1')}</span> <span>{t('home.trust.title_2')}</span>
-            </h2>
-            <p className="hm-sub">{t('home.trust.text')}</p>
-            <ul className="hm-trust-points">
-              {(
-                [
-                  ['id', 'home.trust.one'],
-                  ['star', 'home.trust.reputation'],
-                  ['shield', 'home.trust.fraud'],
-                  ['eye', 'home.trust.moderation'],
-                ] as const
-              ).map(([icon, key]) => (
-                <li key={key}>
-                  <Icon name={icon} />
-                  <span>{t(key)}</span>
-                </li>
-              ))}
-            </ul>
-            <Link className="btn btn-line" href={PAGE_PATHS.trust}>
-              {t('home.trust.cta')} <span aria-hidden="true">→</span>
+      <section className="hx-closing" aria-labelledby="hx-c-title">
+        <ValleyScene className="hx-closing-art" />
+        <div className="wrap hx-closing-in">
+          <p className="hx-eyebrow hx-eyebrow-center">{t('home.closing.eyebrow')}</p>
+          <h2 id="hx-c-title" className="hx-h2 hx-closing-title">
+            <span>{t('home.closing.title_1')}</span> <span>{t('home.closing.title_2')}</span> <span>{t('home.closing.title_3')}</span>
+          </h2>
+          <p className="hx-closing-text">
+            <span>{t('home.closing.text_1')}</span> <span>{t('home.closing.text_2')}</span>
+          </p>
+          <ul className="hx-trust">
+            <li>
+              <Icon name="shield" />
+              <span>{t('home.closing.one')}</span>
+            </li>
+            <li>
+              <Icon name="star" />
+              <span>{t('home.closing.reputation')}</span>
+            </li>
+            <li>
+              <Glyph id="community" />
+              <span>{t('home.closing.community')}</span>
+            </li>
+            <li>
+              <Icon name="eye" />
+              <span>{t('home.closing.moderation')}</span>
+            </li>
+          </ul>
+          {/* The design's "Únete hoy" goes to registration; someone already signed in is taken to their own area instead. */}
+          {signedIn ? (
+            <Link className="hx-cta" href="/account">
+              {t('nav.member_area')} <Arrow />
             </Link>
-          </aside>
+          ) : (
+            <Link className="hx-cta" href="/register">
+              {t('home.closing.join')} <Arrow />
+            </Link>
+          )}
         </div>
       </section>
-    </>
+    </div>
   );
 }

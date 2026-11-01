@@ -318,6 +318,113 @@ export function HomeDistrictScene({ id, sizes }: { id: DistrictId; sizes: string
 /** Heights of the 920-wide files: the first row's pictures are about 2:1, the second row's about 3:1. */
 const HOME_DISTRICT_HEIGHT: Record<DistrictId, number> = { mercadito: 456, services: 454, work: 454, yavayago: 456, community: 296, sanctuary: 296, animals: 295 };
 
+/**
+ * The home page's photographs from the owner's second design (31 October
+ * 2026, tools/cinematic/extract2.py): each is that design's own picture with
+ * its words, buttons, emblems and arrows rebuilt away and enlarged 4x, so the
+ * widths stop at what the enlargement holds — not native photographs at these
+ * sizes.
+ */
+export const HOME_BALCONY_WIDTHS = [960, 1600, 2560, 3840];
+export const HOME_BALCONY_TALL_WIDTHS = [640, 960, 1280];
+export const HOME_CARD_WIDTHS = [400, 640, 960];
+export const HOME_VALLEY_WIDTHS = [960, 1600, 2560];
+export const HOME_SANCTUARY_EMBLEM_WIDTHS = [160, 300];
+
+/**
+ * The home page's first picture: the old town at dusk seen from a balcony, its
+ * two lit towers, the volcano and the last of the sun, and a woman looking out
+ * over it beside a lantern. A phone gets the right of it (home-balcony-tall,
+ * design x 600–1220), where she stands, instead of a wide file it would mostly
+ * crop away. She is an illustration like every person on the site, so the
+ * picture carries the note.
+ */
+export function BalconyScene({ className }: { className?: string }) {
+  return (
+    <div className={className} aria-hidden="true">
+      <picture>
+        {/* Shown taller than wide on a phone, so wider than the screen: hence more than 100vw. */}
+        <source media="(max-width: 699px)" srcSet={srcSet('home-balcony-tall', HOME_BALCONY_TALL_WIDTHS)} sizes="130vw" />
+        {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+        <img
+          className="hx-photo"
+          src="/art/home-balcony-1600.webp"
+          srcSet={srcSet('home-balcony', HOME_BALCONY_WIDTHS)}
+          sizes="100vw"
+          width={1600}
+          height={648}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+        />
+      </picture>
+      <ArtNote />
+    </div>
+  );
+}
+
+/** Heights of the 960-wide card files (build2.mjs). */
+const HOME_CARD_HEIGHT: Record<DistrictId, number> = { mercadito: 355, services: 371, work: 372, yavayago: 559, community: 526, sanctuary: 534, animals: 570 };
+
+/**
+ * A district's card on the home page: the design's own picture for it, whole —
+ * the card draws its emblem, words and arrow back over it. Every one has people
+ * in it but Santuario's, which is architecture. `eager` for the cards a wide
+ * screen shows on arrival.
+ */
+export function HomeCardScene({ id, sizes, eager }: { id: DistrictId; sizes: string; eager?: boolean }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img
+        className="hx-card-photo"
+        src={`/art/home-card-${id}-640.webp`}
+        srcSet={srcSet(`home-card-${id}`, HOME_CARD_WIDTHS)}
+        sizes={sizes}
+        width={960}
+        height={HOME_CARD_HEIGHT[id]}
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+      {id === 'sanctuary' ? null : <ArtNote />}
+    </>
+  );
+}
+
+/** The home page's last picture, behind its closing words: the town's lights in the valley at night, flowers at either edge. A place; never the first thing loaded. */
+export function ValleyScene({ className }: { className?: string }) {
+  return (
+    <div className={className} aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img src="/art/home-valley-1600.webp" srcSet={srcSet('home-valley', HOME_VALLEY_WIDTHS)} sizes="100vw" width={1600} height={283} alt="" loading="lazy" decoding="async" />
+    </div>
+  );
+}
+
+/**
+ * Santuario's round emblem from the design: a sanctuary's dome and arches lit
+ * by the sunrise, no cross and no denomination — the district is for every
+ * faith. A separate picture from the card's background, and the one emblem
+ * that is a photograph rather than a drawn mark.
+ */
+export function SanctuaryEmblem() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public
+    <img
+      className="hx-emblem-photo"
+      src="/art/home-sanctuary-emblem-160.webp"
+      srcSet={srcSet('home-sanctuary-emblem', HOME_SANCTUARY_EMBLEM_WIDTHS)}
+      sizes="72px"
+      width={160}
+      height={160}
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+  );
+}
+
 /** Photographs that sit behind a page's header, full-bleed. */
 export const PAGE_PHOTOS = ['districts', 'trust', 'reputation', 'tokens', 'roadmap', 'street', 'transparency', 'status', 'sanctuary', 'sanctuary-church', 'sanctuary-word'] as const;
 export type PagePhoto = (typeof PAGE_PHOTOS)[number];
