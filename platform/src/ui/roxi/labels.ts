@@ -43,7 +43,15 @@ const KEYS = [
   'slow',
   'retry',
   'you',
-  'mic_denied',
+  'mic_blocked',
+  'mic_missing',
+  'mic_busy',
+  'mic_retry',
+  'speak_replies',
+  'cut',
+  'left',
+  'stop_waiting',
+  'waited',
   'connect_error',
   'photo_sending',
   'photo_text',
@@ -75,8 +83,8 @@ export type RoxiLabels = Record<(typeof KEYS)[number], string>;
 export function roxiLabels(t: Translator): RoxiLabels {
   const labels = {} as RoxiLabels;
   for (const key of KEYS) {
-    // The greeting keeps its placeholder; the panel puts the member's name in.
-    labels[key] = key === 'hello' ? t('roxi.ui.hello', { name: '{name}' }) : t(`roxi.ui.${key}`);
+    // The greeting and the wait keep their placeholders; the panel fills them in.
+    labels[key] = key === 'hello' ? t('roxi.ui.hello', { name: '{name}' }) : key === 'waited' ? t('roxi.ui.waited', { seconds: '{seconds}' }) : t(`roxi.ui.${key}`);
   }
   return labels;
 }
@@ -103,6 +111,7 @@ const PRESENCE_KEYS = [
   'settings.quiet_from',
   'settings.quiet_to',
   'settings.keep',
+  'settings.speak',
   'settings.stored',
   'settings.forget',
   'settings.forgotten',

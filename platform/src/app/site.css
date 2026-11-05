@@ -945,6 +945,8 @@ td strong { color: var(--text); }
 .sc-read { display: inline-block; margin-top: 10px; font-weight: 700; font-size: 0.88rem; text-decoration: none; }
 
 .sc-filter { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+/* Controls keep their own height: a chosen place's department, on its line under the field, does not stretch the button beside it. */
+.sc-filter { align-items: flex-start; }
 .sc-filter input, .sc-filter select { min-height: 44px; }
 .sc-filter label:first-child { flex: 1 1 220px; }
 .sc-filter input { width: 100%; }
@@ -1163,7 +1165,7 @@ td strong { color: var(--text); }
 .wk-pay.big { font-size: 1.5rem; margin: 6px 0 10px; }
 .wk-principles { display: grid; gap: 8px; margin: 24px 0 8px; padding: 18px 20px; border: 1px solid color-mix(in srgb, var(--tone) 40%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--tone) 8%, var(--surface)); }
 .wk-principles p { margin: 0; }
-.wk-check { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.wk-check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; white-space: nowrap; }
 .wk-check input { width: 18px; height: 18px; margin: 0; }
 .wk-links { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 .wk-links a { overflow-wrap: anywhere; }
@@ -1561,9 +1563,10 @@ p .go-badge, .go-open-toggle .go-badge, summary .go-badge { position: static; di
   background: var(--surface); color: var(--text); border: 1px solid var(--line-strong); border-radius: 10px;
 }
 .place-picker input[type="text"]::placeholder { color: var(--text-3); font-weight: 500; }
+/* The place's department and country, under the field: never over the name the member chose. */
 .place-picker .pp-context {
-  position: absolute; right: 40px; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 0.76rem; font-weight: 600; color: var(--text-3); pointer-events: none;
+  display: block; margin: 5px 0 0 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 0.76rem; font-weight: 600; line-height: 1.3; color: var(--text-3);
 }
 .place-picker .pp-clear {
   position: absolute; right: 6px; width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent;
@@ -1983,7 +1986,8 @@ a.live-text:hover { text-decoration: underline; }
   border: 1px solid rgba(243, 220, 138, 0.26); box-shadow: inset 0 1px 0 rgba(255, 245, 210, 0.1);
 }
 .roxi-msg.is-note {
-  align-self: center; max-width: 94%; padding: 7px 14px; border-radius: 999px; text-align: center;
+  /* A pill on one line; a note that runs to several lines keeps soft corners instead of turning oval. */
+  align-self: center; max-width: 94%; padding: 7px 14px; border-radius: 18px; text-align: center;
   color: var(--rx-ink-2); font-size: 0.84rem; line-height: 1.45; background: rgba(248, 246, 241, 0.04); border: 1px solid var(--rx-hair);
 }
 .roxi-msg.is-you.is-unanswered { opacity: 0.6; }
@@ -2023,6 +2027,14 @@ a.live-text:hover { text-decoration: underline; }
 .roxi-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--rx-gold); animation: roxi-bounce 1.3s ease-in-out infinite; }
 .roxi-typing i:nth-child(2) { animation-delay: 0.15s; }
 .roxi-typing i:nth-child(3) { animation-delay: 0.3s; }
+.roxi-typing { flex-wrap: wrap; row-gap: 6px; }
+.roxi-typing-time { color: var(--rx-ink-3); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.roxi-typing-stop {
+  min-height: 32px; padding: 0 12px; border-radius: 999px; font: 600 0.8rem/1 var(--sans); cursor: pointer;
+  color: var(--rx-ink-2); background: transparent; border: 1px solid var(--rx-hair);
+}
+.roxi-typing-stop:hover { color: var(--rx-ink); border-color: rgba(212, 175, 55, 0.5); }
+.roxi-typing-stop:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 2px; }
 
 .roxi-results { align-self: stretch; margin: 0 -20px; animation: roxi-rise 0.5s var(--rx-ease) both; }
 .roxi-results-title { display: block; margin: 0 20px 9px; color: rgba(243, 220, 138, 0.82); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
@@ -2054,6 +2066,28 @@ a.live-text:hover { text-decoration: underline; }
 }
 .roxi-talk:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -2px 0 rgba(90, 64, 8, 0.3), 0 16px 40px rgba(212, 175, 55, 0.4); }
 .roxi-talk:disabled { opacity: 0.6; cursor: default; transform: none; }
+/* Her written answers read aloud: a quiet switch under the talk button, for anyone who would rather listen than read. */
+.roxi-speak {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; margin-top: 8px; padding: 6px 12px 6px 14px;
+  border-radius: 999px; border: 1px solid var(--rx-hair); background: rgba(248, 246, 241, 0.035); color: var(--rx-ink-2);
+  font: 600 0.88rem/1.25 var(--sans); text-align: left; cursor: pointer; transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+}
+.roxi-speak svg { flex: none; color: var(--rx-gold-hi); }
+.roxi-speak span:not(.roxi-speak-switch) { flex: 1; min-width: 0; }
+.roxi-speak:hover { color: var(--rx-ink); border-color: rgba(212, 175, 55, 0.45); }
+.roxi-speak:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 2px; }
+.roxi-speak-switch {
+  position: relative; flex: none; width: 38px; height: 22px; border-radius: 999px;
+  background: rgba(248, 246, 241, 0.14); transition: background 0.25s ease;
+}
+.roxi-speak-switch::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%;
+  background: #f8f6f1; transition: transform 0.25s var(--rx-ease);
+}
+.roxi-speak[aria-pressed="true"] { color: var(--rx-ink); border-color: rgba(243, 220, 138, 0.4); background: rgba(212, 175, 55, 0.1); }
+.roxi-speak[aria-pressed="true"] .roxi-speak-switch { background: linear-gradient(180deg, #f3da7e, #c99b35); }
+.roxi-speak[aria-pressed="true"] .roxi-speak-switch::after { transform: translateX(16px); background: #1d1404; }
+@media (prefers-reduced-motion: reduce) { .roxi-speak-switch, .roxi-speak-switch::after { transition: none; } }
 .roxi-voicebar { display: flex; justify-content: center; gap: 22px; padding: 2px 0; }
 .roxi-round {
   display: inline-grid; place-items: center; width: 58px; height: 58px; flex: none; padding: 0; border-radius: 50%; cursor: pointer;
@@ -2597,7 +2631,7 @@ a.live-text:hover { text-decoration: underline; }
 .wk-hero h1 { color: #fff; }
 .wk-hero .lead { max-width: 560px; color: rgba(248, 246, 241, 0.88); }
 .wk-hero .btn-line { color: #fff; border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.06); }
-.wk-search { align-items: center; max-width: 1040px; margin: 28px 0 0; padding: 12px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); color: var(--text); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); }
+.wk-search { align-items: flex-start; max-width: 1040px; margin: 28px 0 0; padding: 12px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); color: var(--text); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35); }
 .wk-layout { display: grid; gap: 24px; padding-top: 32px; }
 .wk-list { min-width: 0; }
 .wk-list .sv-list, .wk-list .sc-empty { margin-top: 0; }

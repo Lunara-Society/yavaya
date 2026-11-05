@@ -27,6 +27,12 @@ export type RoxiPrefs = {
   quietTo: number;
   /** Keep this tab's conversation until the tab closes (sessionStorage). */
   keep: boolean;
+  /**
+   * Read Roxi's written answers aloud with the device's own voice
+   * (speechSynthesis): spoken replies for someone who cannot or would rather
+   * not use the microphone. Nothing leaves the device.
+   */
+  speak: boolean;
 };
 
 export const DEFAULT_PREFS: RoxiPrefs = {
@@ -36,6 +42,7 @@ export const DEFAULT_PREFS: RoxiPrefs = {
   quietFrom: ROXI_RULES.quietHours.from,
   quietTo: ROXI_RULES.quietHours.to,
   keep: true,
+  speak: false,
 };
 
 /** Text-to-speech speed for each choice, inside the range the voice accepts (0.7–1.2). */
@@ -58,6 +65,7 @@ export function cleanPrefs(raw: unknown): RoxiPrefs {
     quietFrom: hour(value.quietFrom, DEFAULT_PREFS.quietFrom),
     quietTo: hour(value.quietTo, DEFAULT_PREFS.quietTo),
     keep: typeof value.keep === 'boolean' ? value.keep : DEFAULT_PREFS.keep,
+    speak: typeof value.speak === 'boolean' ? value.speak : DEFAULT_PREFS.speak,
   };
 }
 

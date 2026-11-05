@@ -8,8 +8,9 @@ import { forgetEverything, readPrefs, ROXI_LENGTHS, ROXI_MODES, ROXI_SPEEDS, wri
  * Roxi's settings, all in this browser: how present she is (Quiet,
  * Available, Proactive — the simulated call exists only in Proactive, which
  * the member picks here), how long she answers, how fast she speaks, quiet
- * hours, and whether this tab keeps the conversation. It says plainly what
- * is kept and offers to forget all of it.
+ * hours, whether this tab keeps the conversation, and whether her written
+ * answers are read aloud. It says plainly what is kept and offers to forget
+ * all of it.
  */
 export function RoxiSettingsSheet({ labels, onClose }: { labels: RoxiPresenceLabels; onClose: () => void }) {
   const [prefs, setPrefs] = useState<RoxiPrefs>(() => readPrefs());
@@ -100,6 +101,10 @@ export function RoxiSettingsSheet({ labels, onClose }: { labels: RoxiPresenceLab
           <label className="roxi-check">
             <input type="checkbox" checked={prefs.keep} onChange={(event) => set('keep', event.currentTarget.checked)} />
             <span>{labels['settings.keep']}</span>
+          </label>
+          <label className="roxi-check">
+            <input type="checkbox" checked={prefs.speak} onChange={(event) => set('speak', event.currentTarget.checked)} />
+            <span>{labels['settings.speak']}</span>
           </label>
           <p className="roxi-sheet-note">{labels['settings.stored']}</p>
           {notice ? (

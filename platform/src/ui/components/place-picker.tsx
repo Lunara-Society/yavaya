@@ -274,13 +274,18 @@ export function PlacePicker({
             }
           }}
         />
-        {picked ? <span className="pp-context">{picked.context}</span> : null}
         {picked && !required && !disabled ? (
           <button type="button" className="pp-clear" aria-label={labels.clear} onClick={() => choose(null)}>
             ×
           </button>
         ) : null}
       </div>
+      {/*
+       * Where the place is, on its own line under the field. Inside the field
+       * it was drawn over the name: in a narrow form "Nandaime" read as
+       * "Granada, Nicaragua", its department, while Roxi said "check Nandaime".
+       */}
+      {picked?.context ? <span className="pp-context">{picked.context}</span> : null}
       {open ? (
         <ul className="pp-list" id={listId} role="listbox">
           {!query && results && results.length > 0 ? (

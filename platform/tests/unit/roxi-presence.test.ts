@@ -77,6 +77,14 @@ describe('Roxi preferences', () => {
     expect(cleanPrefs({ mode: 'always-on', length: 'short', quietFrom: 99, keep: 'yes' })).toEqual({ ...DEFAULT_PREFS, length: 'short' });
   });
 
+  it('reads written answers aloud only when the member turned it on', () => {
+    expect(DEFAULT_PREFS.speak).toBe(false);
+    expect(cleanPrefs({ speak: true }).speak).toBe(true);
+    expect(cleanPrefs({ speak: 'yes' }).speak).toBe(false);
+    // A value stored before the choice existed keeps everything else.
+    expect(cleanPrefs({ mode: 'quiet', keep: false })).toEqual({ ...DEFAULT_PREFS, mode: 'quiet', keep: false, speak: false });
+  });
+
   it('tells Roxi only the answer length, as a preference', () => {
     expect(preferencesForRoxi(DEFAULT_PREFS)).toBe('');
     expect(preferencesForRoxi({ ...DEFAULT_PREFS, length: 'short' })).toMatch(/short/i);
