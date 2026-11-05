@@ -187,10 +187,13 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
         </section>
 
         <div className="go-partners">
-          <Link className="go-partner" href={member ? '/yavayago/store' : '/login?next=/yavayago/store'}>
-            <Icon name="store" />
-            <strong>{store ? t('go.home.my_store') : t('go.home.open_store')}</strong>
-          </Link>
+          {/* With no stores yet, the empty list above already says "Abre tu negocio": not twice on one page. */}
+          {store || stores.length > 0 ? (
+            <Link className="go-partner" href={member ? '/yavayago/store' : '/login?next=/yavayago/store'}>
+              <Icon name="store" />
+              <strong>{store ? t('go.home.my_store') : t('go.home.open_store')}</strong>
+            </Link>
+          ) : null}
           <Link className="go-partner" href={member ? '/yavayago/driver' : '/login?next=/yavayago/driver'}>
             <Icon name="car" />
             <strong>{driver ? t('go.home.my_driving') : t('go.home.drive')}</strong>

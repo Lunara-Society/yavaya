@@ -192,6 +192,19 @@ export async function revokeSession(
     .where(and(eq(sessions.id, sessionId), isNull(sessions.revokedAt)));
 }
 
+/**
+ * The session a browser already carried ends when that browser signs in
+ * again. Before, signing in twice left two live sessions from one browser,
+ * listed twice in Settings with the same time: one browser, one session.
+ */
+export async function revokeSessionByToken(tx: Executor, token: string | null, reason = 'replaced_by_sign_in'): Promise<void> {
+  if (!token) return;
+  await tx
+    .update(sessions)
+    .set({ revokedAt: new Date(), revokedReason: reason })
+    .where(and(eq(sessions.tokenHash, sha256(token)), isNull(sessions.revokedAt)));
+}
+
 /** Used on password change, ban, and "sign out everywhere". */
 export async function revokeAllSessions(
   tx: Executor,

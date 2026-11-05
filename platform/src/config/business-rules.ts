@@ -679,6 +679,11 @@ export const GO_RULES = {
   maxOpenOrdersPerCustomer: 2,
   /** Distance from the store, straight line, beyond which an order is refused. */
   maxDeliveryKm: 15,
+  /**
+   * A store's map pin this far (straight line) from the town it chose is refused as a mistake:
+   * the pin was left where the map opened. A sanity bound, not a policy (CONFIGURATION.md).
+   */
+  storePinMaxKmFromPlace: 25,
   /** Driver position updates accepted at most this often. */
   trackingMinIntervalSeconds: 3,
   /** A position older than this is shown as "last seen", not as live. */

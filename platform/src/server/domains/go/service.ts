@@ -4,7 +4,7 @@ import { and, asc, desc, eq, gt, inArray, isNull, lt, ne, or, sql } from 'drizzl
 import { z } from 'zod';
 import type { Database, Executor } from '@/server/db/client';
 import { goDrivers, goMenuItems, goOrders, goStores, goTracking, locations, userProfiles, users, type GoOrderLine } from '@/server/db/schema';
-import { GO_RULES as R } from '@/config/business-rules';
+import { GO_RULES as R, GO_TRIP_RULES } from '@/config/business-rules';
 import { GO_CATEGORIES, GO_VEHICLES, VEHICLES_WITH_PLATE } from '@/config/go';
 import { DomainError, errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
@@ -109,6 +109,11 @@ export async function saveStore(
 ): Promise<string> {
   await activeMember(tx, params.userId);
   await cityExists(tx, params.input.locationId);
+  // A pin left where the map opened (another town, another country) would send drivers there.
+  const town = await placePoint(tx, params.input.locationId);
+  if (town && haversineKm(town.latitude, town.longitude, params.input.latitude, params.input.longitude) > R.storePinMaxKmFromPlace) {
+    throw errors.validation('go.error.map_far', { maxKm: R.storePinMaxKmFromPlace });
+  }
   const now = params.now ?? new Date();
   const currency = await currencyOf(tx, params.input.locationId);
   if (params.photo) await insertMediaRows(tx, { ownerUserId: params.userId, purpose: STORE_PHOTO_PURPOSE, images: [params.photo] });
@@ -945,6 +950,14 @@ export async function mapStart(executor: Executor, userId: string | null): Promi
       .limit(1);
     if (own?.latitude != null && own.longitude != null) return { latitude: own.latitude, longitude: own.longitude };
   }
+  // Without a place of their own, the city YavayaGo opened in — not the first supported city by name,
+  // which became Acapulco once Mexico opened and put Nicaraguan stores' pins in Mexico.
+  const [launch] = await executor
+    .select({ latitude: locations.latitude, longitude: locations.longitude })
+    .from(locations)
+    .where(and(eq(locations.code, GO_TRIP_RULES.launchPlaceCode), sql`${locations.latitude} is not null`))
+    .limit(1);
+  if (launch?.latitude != null && launch.longitude != null) return { latitude: launch.latitude, longitude: launch.longitude };
   const [first] = await executor
     .select({ latitude: locations.latitude, longitude: locations.longitude })
     .from(locations)

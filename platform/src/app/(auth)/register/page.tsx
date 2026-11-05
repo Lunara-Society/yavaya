@@ -63,6 +63,8 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
             }),
             undeliverable: t('auth.verification_undeliverable'),
             verifyContinue: t('auth.verify.continue'),
+            signIn: t('auth.error.have_account'),
+            forgot: t('auth.error.forgot'),
           }}
         />
       </AuthCard>

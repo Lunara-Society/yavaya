@@ -13,7 +13,8 @@ import { getCertificate, getRescuer, listAnimals } from '@/server/domains/animal
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { Rotulo } from '@/ui/site/rotulo';
-import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
+import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
@@ -33,8 +34,8 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-  const [animals, certificate, rescuer] = await Promise.all([
-    listAnimals(db(), { locale, species: query.species, size: query.size, placeCode: place, page }),
+  const [{ result: animals, chosen, widenedTo }, certificate, rescuer] = await Promise.all([
+    widenWhenEmpty(place, page, locale, (code) => listAnimals(db(), { locale, species: query.species, size: query.size, placeCode: code, page })),
     userId ? getCertificate(db(), userId) : Promise.resolve(null),
     userId ? getRescuer(db(), userId) : Promise.resolve(null),
   ]);
@@ -146,6 +147,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
               {t('sanctuary.churches.filter')}
             </button>
           </form>
+          <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
           {animals.items.length === 0 ? (
             <div className="sc-empty an-empty">
               <span className="an-empty-icon" aria-hidden="true">

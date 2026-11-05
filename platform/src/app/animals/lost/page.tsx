@@ -9,7 +9,8 @@ import { LostCard } from '@/ui/animals/lost-card';
 import { listLostFound, myLostFound } from '@/server/domains/animals/lost-found';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
-import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
+import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
@@ -20,14 +21,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** Lost and found. Public: a post nobody sees brings nobody home. */
-export default async function LostFoundPage({ searchParams }: { searchParams: Promise<{ kind?: string; species?: string; place?: string; page?: string }> }) {
+export default async function LostFoundPage({ searchParams }: { searchParams: Promise<{ kind?: string; species?: string; place?: string; page?: string; deleted?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const kind = query.kind === 'lost' || query.kind === 'found' ? query.kind : undefined;
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-  const [posts, mine] = await Promise.all([
-    listLostFound(db(), { locale, kind, species: query.species, placeCode: place, page }),
+  const [{ result: posts, chosen, widenedTo }, mine] = await Promise.all([
+    widenWhenEmpty(place, page, locale, (code) => listLostFound(db(), { locale, kind, species: query.species, placeCode: code, page })),
     userId ? myLostFound(db(), { userId, locale }) : Promise.resolve([]),
   ]);
   const href = (next: { kind?: string; page?: number }) => {
@@ -48,6 +49,7 @@ export default async function LostFoundPage({ searchParams }: { searchParams: Pr
         </p>
         <p className="eyebrow">{c.districts.animals.name}</p>
         <h1 className="h-md">{t('animals.lost.title')}</h1>
+        {query.deleted ? <p className="mk-banner" role="status">{t('animals.mine.deleted')}</p> : null}
         <p className="lead">{t('animals.lost.lead')}</p>
         <div className="btn-row">
           <Link className="btn btn-gold" href={member ? '/animals/lost/new?kind=lost' : loginHref('/animals/lost/new?kind=lost')}>
@@ -103,6 +105,7 @@ export default async function LostFoundPage({ searchParams }: { searchParams: Pr
               {t('sanctuary.churches.filter')}
             </button>
           </form>
+          <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
           {posts.items.length === 0 ? (
             <div className="sc-empty">
               <p>{t('animals.lost.empty')}</p>

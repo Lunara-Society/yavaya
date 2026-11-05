@@ -39,6 +39,7 @@ import { applyRule } from '@/server/domains/reputation/service';
 import { canonicalEmail } from '@/server/domains/identity/normalize';
 import { GEOGRAPHY_SEED } from './geography-data';
 import { PLACES } from './places-data';
+import { VILLAGES } from './villages-data';
 
 /**
  * Idempotent seed.
@@ -126,7 +127,8 @@ async function seedPlaces(database: Database): Promise<void> {
   const byCode = new Map(states.map((state) => [state.code, state]));
   // Rank within each department by size, so the largest places come first.
   const rank = new Map<string, number>();
-  const rows = PLACES.flatMap(([code, stateCode, name, level, population, latitude, longitude]) => {
+  // Cities and towns first, then villages: within a department the larger places keep the first places in order.
+  const rows = [...PLACES, ...VILLAGES].flatMap(([code, stateCode, name, level, population, latitude, longitude]) => {
     const state = byCode.get(stateCode);
     if (!state) return [];
     const order = rank.get(stateCode) ?? 0;

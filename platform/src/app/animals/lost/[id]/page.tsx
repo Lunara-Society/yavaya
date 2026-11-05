@@ -17,7 +17,7 @@ import { loginHref } from '@/server/auth/return-path';
 export const dynamic = 'force-dynamic';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; published?: string; reported?: string }> };
+type Params = { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; published?: string; reported?: string; saved?: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { id } = await params;
@@ -48,6 +48,7 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
         {query.published ? <p className="mk-banner" role="status">{t('animals.lost.published')}</p> : null}
         {query.reported ? <p className="mk-banner" role="status">{t('services.report.done', { code: query.reported.slice(0, 16) })}</p> : null}
         {error ? <p className="mk-error">{t(error as MessageKey)}</p> : null}
+        {query.saved ? <p className="mk-banner" role="status">{t('animals.lost.saved')}</p> : null}
         <div className="an-detail">
           <div className="an-gallery">
             {photos.map((photo, index) => (
@@ -68,6 +69,17 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
             <p className="sv-meta">{t('animals.lost.posted_by', { name: authorName, date: formatDate(post.createdAt, locale) })}</p>
 
             <div className="an-apply-box card">
+              {isAuthor ? (
+                <p className="btn-row" style={{ marginTop: 0 }}>
+                  {/* The author can always correct or delete their own post, open or closed. */}
+                  <Link className="btn btn-line" href={`/animals/lost/${post.id}/edit`}>
+                    {t('animals.lost.edit')}
+                  </Link>
+                  <Link className="btn btn-line" href={`/animals/lost/${post.id}/edit#delete`}>
+                    {t('animals.lost.delete')}
+                  </Link>
+                </p>
+              ) : null}
               {isAuthor ? (
                 post.status === 'open' ? (
                   <div className="btn-row">

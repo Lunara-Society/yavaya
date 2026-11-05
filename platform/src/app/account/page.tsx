@@ -1,5 +1,6 @@
 import { canSeeOps } from '@/server/domains/ops/queues';
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -16,7 +17,11 @@ import type { MessageKey } from '@/i18n';
 import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
 import { signInPath } from '@/server/auth/sign-in-path';
 
-export const metadata: Metadata = { title: 'Member area' };
+// The tab's title in the member's language, like the page under it.
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: t('nav.member_area') };
+}
 export const dynamic = 'force-dynamic';
 
 /**

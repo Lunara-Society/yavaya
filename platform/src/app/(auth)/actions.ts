@@ -15,8 +15,8 @@ import {
   registrationSchema,
   reissueEmailVerificationCode,
 } from '@/server/domains/identity/service';
-import { createSession } from '@/server/auth/session';
-import { setSessionCookie } from '@/server/auth/cookies';
+import { createSession, revokeSessionByToken } from '@/server/auth/session';
+import { readSessionCookie, setSessionCookie } from '@/server/auth/cookies';
 import { currentSession, requestContext } from '@/server/auth/context';
 import { beginSignIn } from '@/server/auth/sign-in';
 import { formatYayId } from '@/server/domains/identity/yay-id';
@@ -35,7 +35,8 @@ import { safeNext } from '@/server/auth/return-path';
 
 export type ActionState =
   | { status: 'idle' }
-  | { status: 'error'; messageKey: string; message: string }
+  /** `fields`: a sentence for each field the server found wrong, shown under that field. */
+  | { status: 'error'; messageKey: string; message: string; fields?: Record<string, string> }
   | { status: 'registered'; yayId: string; verificationNotice: 'sent' | 'undeliverable'; code?: string };
 
 /** Resolves a domain error's key against the request locale. */
@@ -65,10 +66,30 @@ export async function registerAction(
   });
 
   if (!parsed.success) {
-    const issue = parsed.error.issues[0];
-    return localizedError(
-      issue?.message?.startsWith('error.') ? issue.message : 'error.validation_failed',
-    );
+    /*
+     * Every field that is wrong is said under that field, not only "check the
+     * details": an empty form named nothing it needed.
+     */
+    const { t } = await getTranslator();
+    const perField: Record<string, MessageKey> = {
+      displayName: 'auth.error.display_name',
+      email: 'form.check.email',
+      password: 'error.password.too_short',
+      acceptedTerms: 'auth.error.terms',
+    };
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const name = String(issue.path[0] ?? '');
+      const key = perField[name];
+      if (key && !fields[name]) fields[name] = t(key);
+    }
+    const count = Object.keys(fields).length;
+    return {
+      status: 'error',
+      messageKey: 'error.validation_failed',
+      message: count === 1 ? t('form.check.summary_one') : count > 1 ? t('form.check.summary_many', { count }) : t('error.validation_failed'),
+      fields,
+    };
   }
 
   try {
@@ -81,13 +102,15 @@ export async function registerAction(
      * verification page to know whose code is being entered, and asking for the
      * address again would let anyone request a code for a stranger's account.
      */
-    const session = await db().transaction((tx) =>
-      createSession(tx, {
+    const previous = await readSessionCookie();
+    const session = await db().transaction(async (tx) => {
+      await revokeSessionByToken(tx, previous);
+      return createSession(tx, {
         userId: result.userId,
         ipHash: context.addressHash,
         userAgent: context.userAgent,
-      }),
-    );
+      });
+    });
     await setSessionCookie(session.token, session.absoluteExpiresAt);
 
     const env = serverEnv();

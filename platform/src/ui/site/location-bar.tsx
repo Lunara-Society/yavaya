@@ -47,7 +47,9 @@ export function LocationBar({
   const router = useRouter();
   const [choice, setChoice] = useState<Choice>(initial);
   // A place's context is "state, country" (geography/places.ts); its first part is the state. A country has none.
-  const region = choice?.context.split(',')[0]?.trim();
+  // Its department, unless it carries the same name ("Managua, Managua" said nothing): then its country.
+  const parts = choice?.context.split(',').map((part) => part.trim()).filter(Boolean) ?? [];
+  const region = parts.find((part) => part !== choice?.name);
   const shown = choice ? (detail && region ? `${choice.name}, ${region}` : choice.name) : labels.everywhere;
   const [open, setOpen] = useState(false);
   const [locating, setLocating] = useState(false);

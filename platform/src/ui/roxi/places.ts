@@ -46,6 +46,9 @@ export function matchPlace(asked: string, candidates: PlaceCandidate[]): PlaceMa
   // The same place can come back twice (a city also listed as its municipality): one id is one place.
   const unique = [...new Map(exact.map((place) => [place.id, place])).values()];
   if (unique.length === 1) return { kind: 'one', place: unique[0]! };
+  // A town and a few villages of the same name: the town is what people mean unless they say otherwise.
+  const larger = unique.filter((place) => place.level !== 'village');
+  if (larger.length === 1 && unique.length > 1 && !within) return { kind: 'one', place: larger[0]! };
   if (unique.length > 1) return { kind: 'several', options: unique.slice(0, MAX_PLACE_OPTIONS) };
   return { kind: 'none' };
 }

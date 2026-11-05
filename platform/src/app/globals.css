@@ -193,3 +193,16 @@ body {
     border-radius: 0.5rem;
   }
 }
+
+/* Forms that will not send say why (src/ui/site/form-check.tsx): a line under each field, and how many at the top. */
+[data-check-error]::after {
+  content: attr(data-check-error); display: block; flex-basis: 100%; margin-top: 6px;
+  color: var(--color-critical, #e0574c); font-size: 0.86rem; font-weight: 600; line-height: 1.35;
+}
+form[data-check-summary]::before {
+  content: attr(data-check-summary); display: block; grid-column: 1 / -1; flex-basis: 100%; margin-bottom: 14px; padding: 10px 14px;
+  border-radius: 12px; border: 1px solid var(--color-critical, #e0574c); background: color-mix(in srgb, var(--color-critical, #e0574c) 12%, transparent);
+  color: inherit; font-weight: 600; line-height: 1.4;
+}
+[aria-invalid="true"] { border-color: var(--color-critical, #e0574c) !important; outline-color: var(--color-critical, #e0574c); }
+.field-error { display: block; margin-top: 6px; color: var(--color-critical, #e0574c); font-size: 0.86rem; font-weight: 600; line-height: 1.35; }

@@ -17,7 +17,7 @@
  * place as data through operations. Nothing in the application compares these
  * names; they are rows.
  */
-export type SeedPlace = [code: string, state: string, name: string, level: 'city' | 'town', population: number | null, latitude: number, longitude: number];
+export type SeedPlace = [code: string, state: string, name: string, level: 'city' | 'town' | 'village', population: number | null, latitude: number, longitude: number];
 
 export const PLACES: SeedPlace[] = [
   ["ca.bz.bz.belize-city", "ca.bz.bz", "Belize City", "city", 65222, 17.49952, -88.19756],

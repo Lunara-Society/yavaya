@@ -7,6 +7,7 @@ import { grantRole } from '@/server/domains/access/authorize';
 import { readActiveImage } from '@/server/domains/media/service';
 import {
   addMenuItem,
+  mapStart,
   applyDriver,
   browseStores,
   featureStore,
@@ -34,7 +35,7 @@ import {
   trackingForCustomer,
   parseMoney,
 } from '@/server/domains/go/service';
-import { GO_RULES } from '@/config/business-rules';
+import { GO_RULES, GO_TRIP_RULES } from '@/config/business-rules';
 import { getBalance, grantReward } from '@/server/domains/tokens/service';
 import { resetTransactionalData } from '../helpers/database';
 
@@ -327,5 +328,17 @@ describe('featured stores', () => {
     const pending = await member('Don Pedro');
     await db().transaction((tx) => saveStore(tx, { userId: pending, input: storeInput() }));
     await expect(db().transaction((tx) => featureStore(tx, { userId: pending, purchaseId: crypto.randomUUID() }))).rejects.toMatchObject({ code: 'forbidden' });
+  });
+
+  it('refuses a store whose pin was left far from its town, and says why', async () => {
+    const owner = await member('Lejos');
+    // The pin where the map used to open for a member with no town: Acapulco.
+    await expect(db().transaction((tx) => saveStore(tx, { userId: owner, input: storeInput({ latitude: 16.8494, longitude: -99.9089 }) }))).rejects.toMatchObject({ messageKey: 'go.error.map_far' });
+    await db().transaction((tx) => saveStore(tx, { userId: owner, input: storeInput({ latitude: city.latitude! + 0.01, longitude: city.longitude! + 0.01 }) }));
+  });
+
+  it('opens a map without a town of the member’s own at the launch city', async () => {
+    const [launch] = await db().select().from(locations).where(eq(locations.code, GO_TRIP_RULES.launchPlaceCode));
+    expect(await mapStart(db(), null)).toEqual({ latitude: launch!.latitude, longitude: launch!.longitude });
   });
 });

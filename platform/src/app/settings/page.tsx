@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import { preferenceDefault } from '@/server/domains/notifications/service';
 import Link from 'next/link';
 import { LOCATION_PRIVACY } from '@/config/business-rules';
@@ -25,7 +26,11 @@ import {
 } from './actions';
 import { loginHref } from '@/server/auth/return-path';
 
-export const metadata: Metadata = { title: 'Settings' };
+// The tab's title in the member's language, like the page under it.
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: t('nav.settings') };
+}
 export const dynamic = 'force-dynamic';
 
 /**

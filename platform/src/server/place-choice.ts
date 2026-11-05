@@ -39,3 +39,36 @@ export async function browsePlace(param: string | undefined, locale: string): Pr
   const chosen = await chosenPlace(locale);
   return { code: chosen?.code, link: chosen?.code };
 }
+
+/** A place's wider areas, nearest first: 'ca.ni.gr.nandaime' → 'ca.ni.gr' (Granada), 'ca.ni' (Nicaragua). */
+export function widerPlaces(code: string): string[] {
+  const parts = code.split('.');
+  const wider: string[] = [];
+  for (let length = parts.length - 1; length >= 2; length--) wider.push(parts.slice(0, length).join('.'));
+  return wider;
+}
+
+/**
+ * A district list for the chosen place; when there is nothing there, for its
+ * department, then its country — and which, so the page can say so. Before,
+ * a live listing 60 km away read as "no results" until the member thought to
+ * widen the place themselves. Only the first page widens: a later page keeps
+ * the area its first page showed (the page links carry it).
+ */
+export async function widenWhenEmpty<T extends { items: unknown[] }>(
+  code: string | undefined,
+  page: number,
+  locale: string,
+  run: (code: string | undefined) => Promise<T>,
+): Promise<{ result: T; chosen: PlaceHit | null; widenedTo: PlaceHit | null }> {
+  const first = await run(code);
+  if (!code || page > 1 || first.items.length > 0) return { result: first, chosen: null, widenedTo: null };
+  for (const wider of widerPlaces(code)) {
+    const result = await run(wider);
+    if (result.items.length > 0) {
+      const [chosen, widenedTo] = await Promise.all([placeByCode(db(), code, locale), placeByCode(db(), wider, locale)]);
+      return { result, chosen, widenedTo };
+    }
+  }
+  return { result: first, chosen: null, widenedTo: null };
+}

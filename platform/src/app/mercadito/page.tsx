@@ -13,7 +13,8 @@ import { saveSearchAction } from './actions';
 import { LISTING_CATEGORIES, type ListingCategory } from '@/server/domains/mercadito/rules';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
-import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
+import { WidenedNote } from '@/ui/site/widened-note';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { FabWhenAway } from '@/ui/components/fab-when-away';
 import { Rotulo } from '@/ui/site/rotulo';
@@ -54,7 +55,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   const query = params.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
 
-  const result = await browseListings(db(), { query, category, placeCode, page, locale });
+  const { result, chosen, widenedTo } = await widenWhenEmpty(placeCode, page, locale, (code) => browseListings(db(), { query, category, placeCode: code, page, locale }));
   if (userId && params.saved && /^[0-9a-f-]{36}$/i.test(params.saved)) {
     await markSavedSearchSeen(db(), { userId, id: params.saved });
   }
@@ -141,6 +142,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
       </section>
 
       <section className="wrap mc-market" aria-label={t('mercadito.browse.results_label')}>
+        <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
         {result.items.length > 0 ? (
           <div className="mk-grid mc-grid">
             {result.items.map((listing) => (

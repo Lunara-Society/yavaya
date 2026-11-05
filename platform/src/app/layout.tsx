@@ -4,6 +4,7 @@ import { resolveLocale, resolveThemeAttribute } from '@/server/preferences';
 import { themeAttributeAt } from '@/config/preferences';
 import { ThemeKeeper } from '@/ui/site/theme-keeper';
 import { RoxiRoot } from '@/ui/roxi/roxi-root';
+import { FormCheck, type FormCheckLabels } from '@/ui/site/form-check';
 import { createTranslator } from '@/i18n';
 import { ERROR_TEXTS_ID, errorTexts } from '@/i18n/error-texts';
 import './globals.css';
@@ -86,6 +87,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // `<` is escaped so the text can never close the element.
   const t = createTranslator(locale);
   const errorJson = JSON.stringify(errorTexts(t)).replace(/</g, '\\u003c');
+  const formCheck: FormCheckLabels = {
+    summaryOne: t('form.check.summary_one'),
+    summaryMany: t('form.check.summary_many', { count: '{count}' }),
+    required: t('form.check.required'),
+    choose: t('form.check.choose'),
+    file: t('form.check.file'),
+    checkbox: t('form.check.checkbox'),
+    email: t('form.check.email'),
+    tooShort: t('form.check.too_short', { min: '{min}' }),
+    tooLong: t('form.check.too_long', { max: '{max}' }),
+    tooLow: t('form.check.too_low', { min: '{min}' }),
+    tooHigh: t('form.check.too_high', { max: '{max}' }),
+    number: t('form.check.number'),
+    format: t('form.check.format'),
+  };
   // The word in the corner of illustrative photographs (ArtNote in src/ui/site/art.tsx), read by site.css.
   const artNote = { ['--art-note' as string]: JSON.stringify(t('art.note')) } as React.CSSProperties;
   return (
@@ -95,6 +111,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script id={ERROR_TEXTS_ID} type="application/json" dangerouslySetInnerHTML={{ __html: errorJson }} />
         {/* Santuario is candlelit whatever the member chose (config/preferences.ts); this keeps that true across navigation. */}
         <ThemeKeeper chosen={theme} />
+        {/* Every form that will not send says why, field by field (src/ui/site/form-check.tsx). */}
+        <FormCheck labels={formCheck} />
         {children}
         {/* Roxi, the assistant: here rather than in a page so a conversation survives navigation. */}
         <RoxiRoot />

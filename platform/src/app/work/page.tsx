@@ -12,7 +12,8 @@ import { getProfile, listPosts } from '@/server/domains/work/service';
 import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { Rotulo } from '@/ui/site/rotulo';
-import { ANY_PLACE, browsePlace } from '@/server/place-choice';
+import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
+import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
@@ -31,7 +32,10 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
   const kind = query.kind === 'job' || query.kind === 'project' ? query.kind : undefined;
   const remote = query.remote === '1';
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-  const [posts, profile] = await Promise.all([listPosts(db(), { locale, field, kind, placeCode: place, remoteOnly: remote, page }), userId ? getProfile(db(), userId) : Promise.resolve(null)]);
+  const [{ result: posts, chosen, widenedTo }, profile] = await Promise.all([
+    widenWhenEmpty(place, page, locale, (code) => listPosts(db(), { locale, field, kind, placeCode: code, remoteOnly: remote, page })),
+    userId ? getProfile(db(), userId) : Promise.resolve(null),
+  ]);
   const href = (to: number) => {
     const search = new URLSearchParams();
     if (field) search.set('field', field);
@@ -106,6 +110,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
 
       <div className="wrap wk-layout">
         <div className="wk-list">
+          <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
           {posts.items.length === 0 ? (
             <div className="sc-empty">
               <p>{t('work.board.empty')}</p>

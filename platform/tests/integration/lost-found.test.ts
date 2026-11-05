@@ -7,6 +7,7 @@ import { grantRole } from '@/server/domains/access/authorize';
 import { listNotifications } from '@/server/domains/notifications/service';
 import {
   closeLostFound,
+  deleteLostFound,
   expireLostFound,
   getLostFound,
   listLostFound,
@@ -15,6 +16,7 @@ import {
   publishLostFound,
   reportLostFound,
   resolveLostFoundTicket,
+  updateLostFound,
 } from '@/server/domains/animals/lost-found';
 import type { StoredImage } from '@/server/domains/media/service';
 import { ANIMALS_RULES } from '@/config/business-rules';
@@ -112,5 +114,33 @@ describe('lost and found', () => {
     expect(ticket?.priority).toBe('high');
     await db().transaction((tx) => resolveLostFoundTicket(tx, { actor: { userId: rev, status: 'active' }, ticketId: ticket!.ticketId, decision: 'remove_post', note: 'Pedía rescate.' }));
     expect(await getLostFound(db(), { postId: id, viewerId: owner, viewerIsReviewer: false, locale: 'es' })).toBeNull();
+  });
+
+  it('lets the author correct a wrong species and the place, and nobody else', async () => {
+    const owner = await member();
+    const stranger = await member();
+    const id = await db().transaction((tx) => publishLostFound(tx, { authorUserId: owner, input: post(), images: photo() }));
+    await expect(db().transaction((tx) => updateLostFound(tx, { authorUserId: stranger, postId: id, input: post({ species: 'cat' }) }))).rejects.toMatchObject({ code: 'not_found' });
+    await db().transaction((tx) => updateLostFound(tx, { authorUserId: owner, postId: id, input: post({ species: 'cat', locationId: otherPlaceId }) }));
+    const [row] = await db().select().from(animalsLostFound).where(eq(animalsLostFound.id, id));
+    expect(row?.species).toBe('cat');
+    expect(row?.locationId).toBe(otherPlaceId);
+  });
+
+  it('lets the author delete a post, which then opens for nobody', async () => {
+    const owner = await member();
+    const id = await db().transaction((tx) => publishLostFound(tx, { authorUserId: owner, input: post(), images: photo() }));
+    await db().transaction((tx) => deleteLostFound(tx, { authorUserId: owner, postId: id }));
+    expect(await getLostFound(db(), { postId: id, viewerId: null, viewerIsReviewer: false, locale: 'es' })).toBeNull();
+    expect(await getLostFound(db(), { postId: id, viewerId: owner, viewerIsReviewer: false, locale: 'es' })).toBeNull();
+    expect((await listLostFound(db(), { locale: 'es', page: 1 })).items.map((item) => item.id)).not.toContain(id);
+  });
+
+  it('keeps a closed post from the public, but not from its author', async () => {
+    const owner = await member();
+    const id = await db().transaction((tx) => publishLostFound(tx, { authorUserId: owner, input: post(), images: photo() }));
+    await db().transaction((tx) => closeLostFound(tx, { authorUserId: owner, postId: id, outcome: 'reunited' }));
+    expect(await getLostFound(db(), { postId: id, viewerId: null, viewerIsReviewer: false, locale: 'es' })).toBeNull();
+    expect((await getLostFound(db(), { postId: id, viewerId: owner, viewerIsReviewer: false, locale: 'es' }))?.isAuthor).toBe(true);
   });
 });

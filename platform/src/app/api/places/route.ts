@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db/client';
 import { getTranslator } from '@/i18n/server';
 import type { MessageKey } from '@/i18n';
+import { placePoint } from '@/server/domains/go/service';
 import { majorPlaces, nearestPlace, placeByCode, placeById, searchPlaces, type PlaceHit } from '@/server/domains/geography/places';
 
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,12 @@ export async function GET(request: Request) {
   const reply = (places: PlaceHit[], maxAge = 300) =>
     NextResponse.json({ places: places.map(shape) }, { headers: { 'cache-control': `private, max-age=${maxAge}` } });
 
+  // One place's coordinates, for a map that follows the town chosen in its form (ui/go/map.tsx). Public data.
+  const point = url.searchParams.get('point');
+  if (point) {
+    if (!UUID.test(point)) return NextResponse.json({ point: null });
+    return NextResponse.json({ point: await placePoint(db(), point) }, { headers: { 'cache-control': 'private, max-age=3600' } });
+  }
   const id = url.searchParams.get('id');
   if (id) {
     if (!UUID.test(id)) return reply([]);

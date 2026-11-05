@@ -38,6 +38,11 @@ export type PlacePickerLabels = {
 };
 
 const RESTORE_EVENT = 'yavaya:place-restore';
+/**
+ * Fired (bubbling) from the hidden input whenever a place becomes the choice,
+ * by a tap or as a restored choice: a map in the same form follows it.
+ */
+export const PLACE_CHOSEN_EVENT = 'yavaya:place-chosen';
 const pendingRestore = new WeakMap<HTMLInputElement, { saved: string; asChoice: boolean }>();
 
 /**
@@ -57,6 +62,19 @@ export function restorePlace(field: HTMLInputElement, saved: string, options: { 
 /** The hidden input of a place picker, which only `restorePlace` can fill. */
 export function isPlacePickerField(field: Element): field is HTMLInputElement {
   return field instanceof HTMLInputElement && field.type === 'hidden' && field.dataset.placePicker !== undefined;
+}
+
+/** Names compared the way people type them: without accents or case. */
+const fold = (text: string) => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+
+/** The one place whose name is exactly what was typed, if there is exactly one. */
+function exactlyOne(typed: string, places: PickedPlace[]): PickedPlace | null {
+  const name = fold(typed.split(',')[0] ?? '');
+  const same = places.filter((place) => fold(place.name) === name);
+  if (same.length === 1) return same[0]!;
+  // A town and villages of the same name: the town, unless the member picks a village from the list.
+  const larger = same.filter((place) => place.level !== 'village');
+  return larger.length === 1 ? larger[0]! : null;
 }
 
 export function PlacePicker({
@@ -98,6 +116,8 @@ export function PlacePicker({
   const [active, setActive] = useState(-1);
   // Enter pressed before the results for what was typed arrived: the best match is chosen when they do.
   const enterWhenFound = useRef<string | null>(null);
+  // Left with a town typed but not chosen from the list: chosen when exactly one place has that name.
+  const leftWithText = useRef<string | null>(null);
   // A place restored as the person's own choice: once it is looked up, the form hears it like a tap.
   const chooseOnLoad = useRef(false);
   const settlements = value === 'id';
@@ -135,7 +155,10 @@ export function PlacePicker({
         onLoad?.(place);
         if (chooseOnLoad.current) {
           chooseOnLoad.current = false;
-          if (place) onChange?.(place);
+          if (place) {
+            onChange?.(place);
+            hidden.current?.dispatchEvent(new CustomEvent(PLACE_CHOSEN_EVENT, { bubbles: true, detail: place }));
+          }
         }
       })
       .catch(() => {});
@@ -174,6 +197,7 @@ export function PlacePicker({
     setLookup('');
     setPosted(place ? place[value] : anyValue);
     onChange?.(place);
+    if (place) hidden.current?.dispatchEvent(new CustomEvent(PLACE_CHOSEN_EVENT, { bubbles: true, detail: place }));
     if (autoSubmit) {
       // After React has written the hidden value.
       window.setTimeout(() => hidden.current?.form?.requestSubmit(), 0);
@@ -196,6 +220,11 @@ export function PlacePicker({
           // so Enter in a field that already holds a choice never swaps it for the first big city.
           setActive(query ? 0 : -1);
           if (query && enterWhenFound.current === query && data.places[0]) choose(data.places[0]);
+          else if (query && leftWithText.current === query) {
+            leftWithText.current = null;
+            const only = exactlyOne(query, data.places);
+            if (only) choose(only);
+          }
         })
         .catch(() => {});
     }, query ? 140 : 0);
@@ -240,7 +269,22 @@ export function PlacePicker({
           onFocus={() => setOpen(true)}
           // A field that already has focus opens again when clicked, to change the place.
           onClick={() => setOpen(true)}
-          onBlur={() => window.setTimeout(() => setOpen(false), 150)}
+          onBlur={() =>
+            window.setTimeout(() => {
+              setOpen(false);
+              /*
+               * A town typed and left without tapping it in the list looked
+               * filled in but was not chosen: the form then refused it as empty
+               * ("Elige un lugar de la lista") only when sent. When exactly one
+               * place has that name, it is the choice; when several do, the
+               * list stays the way to say which.
+               */
+              if (picked || !query) return;
+              const only = results ? exactlyOne(query, results) : null;
+              if (only) choose(only);
+              else if (!results) leftWithText.current = query;
+            }, 150)
+          }
           onChange={(event) => {
             setText(event.currentTarget.value);
             setOpen(true);

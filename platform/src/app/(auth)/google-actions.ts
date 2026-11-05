@@ -6,8 +6,8 @@ import { getTranslator } from '@/i18n/server';
 import type { MessageKey } from '@/i18n';
 import { toClientError } from '@/server/errors';
 import { registerWithGoogle } from '@/server/domains/identity/google';
-import { createSession } from '@/server/auth/session';
-import { setSessionCookie } from '@/server/auth/cookies';
+import { createSession, revokeSessionByToken } from '@/server/auth/session';
+import { readSessionCookie, setSessionCookie } from '@/server/auth/cookies';
 import { requestContext } from '@/server/auth/context';
 import { dropSignup, readSignup, rememberGoogle } from '@/server/auth/google-cookies';
 
@@ -34,9 +34,11 @@ export async function registerWithGoogleAction(_previous: GoogleSignupState, for
       { profile: signup.profile, displayName, locale, acceptedTerms: true, inviter: signup.inviter },
       context,
     );
-    const session = await db().transaction((tx) =>
-      createSession(tx, { userId: result.userId, ipHash: context.addressHash, userAgent: context.userAgent }),
-    );
+    const previous = await readSessionCookie();
+    const session = await db().transaction(async (tx) => {
+      await revokeSessionByToken(tx, previous);
+      return createSession(tx, { userId: result.userId, ipHash: context.addressHash, userAgent: context.userAgent });
+    });
     await setSessionCookie(session.token, session.absoluteExpiresAt);
     await rememberGoogle(signup.profile.subject);
     await dropSignup();

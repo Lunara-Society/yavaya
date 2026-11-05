@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -9,7 +10,11 @@ import { shellContext } from '@/ui/shell-context';
 import { invitationSummary } from '@/server/domains/referrals/service';
 import { signInPath } from '@/server/auth/sign-in-path';
 
-export const metadata: Metadata = { title: 'Invita' };
+// The tab's title in the member's language, like the page under it.
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: t('invite.title') };
+}
 export const dynamic = 'force-dynamic';
 
 /**

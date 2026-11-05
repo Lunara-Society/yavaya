@@ -4,13 +4,13 @@ import { redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
 import { GO_CATEGORIES } from '@/config/go';
-import { GO_RULES, MEDIA_RULES } from '@/config/business-rules';
+import { GO_PLAN_RULES, GO_RULES, MEDIA_RULES } from '@/config/business-rules';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { GoMap } from '@/ui/go/map';
 import { Refresher } from '@/ui/go/client';
 import { money, moneyInput, waLink } from '@/ui/go/format';
-import { cityPoints, goFeatureDays, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
+import { goFeatureDays, mapStart, myStore, storeMenu, storeOrders } from '@/server/domains/go/service';
 import { planStatus } from '@/server/domains/go/plan';
 import { siteUrl } from '@/server/seo';
 import { actionCost, getBalance } from '@/server/domains/tokens/service';
@@ -34,7 +34,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login?next=/yavayago/store');
-  const [store, points] = await Promise.all([myStore(db(), userId), cityPoints(db())]);
+  const store = await myStore(db(), userId);
   const [items, orders, start] = await Promise.all([
     store ? storeMenu(db(), store.id, { includeUnavailable: true }) : Promise.resolve([]),
     store ? storeOrders(db(), userId) : Promise.resolve([]),
@@ -157,7 +157,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
       <div>
         <span className="go-label">{t('go.form.map')}</span>
         <small className="hint muted">{t('go.form.map_hint')}</small>
-        <GoMap mode="pick" initial={start} zoom={store ? 17 : 13} name="place" labels={mapLabels(t)} follow={{ select: 'locationId', points }} />
+        <GoMap mode="pick" initial={start} zoom={store ? 17 : 13} name="place" labels={mapLabels(t)} follow={{ field: 'locationId' }} />
       </div>
       <label>
         <span>{t('go.form.whatsapp')}</span>
@@ -220,6 +220,15 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
               <li>{t('go.store.apply_review')}</li>
               <li>{t('go.store.apply_money')}</li>
               <li>{t('go.store.apply_free')}</li>
+              {/* The whole plan before anyone applies: when it is free, until when, what comes after, and that nothing is charged yet. */}
+              <li>
+                {t('go.store.apply_plan', {
+                  cutoff: new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${GO_PLAN_RULES.foundingCutoff}T12:00:00Z`)),
+                  months: GO_PLAN_RULES.foundingMonths,
+                  free: GO_PLAN_RULES.freeOrdersPerMonth,
+                  price: (GO_PLAN_RULES.planPriceUsdCents / 100).toFixed(0),
+                })}
+              </li>
             </ul>
             <DetailsForm />
           </div>

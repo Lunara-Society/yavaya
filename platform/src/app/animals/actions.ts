@@ -29,7 +29,7 @@ import {
   type ApplicationDecision,
   type RescuerDecision,
 } from '@/server/domains/animals/service';
-import { closeLostFound, reportLostFound, resolveLostFoundTicket } from '@/server/domains/animals/lost-found';
+import { closeLostFound, deleteLostFound, lostFoundInputSchema, reportLostFound, resolveLostFoundTicket, updateLostFound } from '@/server/domains/animals/lost-found';
 import { signInPath } from '@/server/auth/sign-in-path';
 
 /** Animales' mutations: plain forms that work on any phone, without JavaScript. */
@@ -263,4 +263,46 @@ export async function resolveLostFoundReportAction(formData: FormData): Promise<
   }
   revalidatePath('/admin/animals');
   redirect('/admin/animals?done=1');
+}
+
+/** The author corrects their lost or found post. */
+export async function editLostFoundAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const postId = field(formData, 'postId');
+  if (!UUID.test(postId)) redirect('/animals/lost');
+  const page = `/animals/lost/${postId}/edit`;
+  const parsed = lostFoundInputSchema.safeParse({
+    kind: field(formData, 'kind'),
+    species: field(formData, 'species'),
+    name: field(formData, 'name'),
+    description: field(formData, 'description'),
+    locationId: field(formData, 'locationId'),
+    seenOn: field(formData, 'seenOn'),
+    whatsapp: field(formData, 'whatsapp'),
+  });
+  if (!parsed.success) redirect(back(page, parsed.error.issues[0]?.message ?? 'error.validation_failed'));
+  try {
+    const audit = await auditContext();
+    await db().transaction((tx) => updateLostFound(tx, { authorUserId: session.user.userId, postId, input: parsed.data, audit }));
+  } catch (error) {
+    redirect(back(page, errorKey(error)));
+  }
+  revalidatePath('/animals/lost');
+  redirect(`/animals/lost/${postId}?saved=1`);
+}
+
+/** The author deletes their lost or found post, after confirming. */
+export async function deleteLostFoundAction(formData: FormData): Promise<void> {
+  const session = await signedIn();
+  const postId = field(formData, 'postId');
+  if (!UUID.test(postId)) redirect('/animals/lost');
+  if (field(formData, 'confirm') !== 'yes') redirect(back(`/animals/lost/${postId}/edit`, 'animals.lost.error.confirm_delete'));
+  try {
+    const audit = await auditContext();
+    await db().transaction((tx) => deleteLostFound(tx, { authorUserId: session.user.userId, postId, audit }));
+  } catch (error) {
+    redirect(back(`/animals/lost/${postId}`, errorKey(error)));
+  }
+  revalidatePath('/animals/lost');
+  redirect('/animals/lost?deleted=1');
 }

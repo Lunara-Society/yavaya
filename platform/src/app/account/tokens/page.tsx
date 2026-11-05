@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { Metadata } from 'next';
+import { getTranslator } from '@/i18n/server';
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/server/db/client';
@@ -18,7 +19,11 @@ import { packageSavingPercent, TOKEN_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 import { signInPath } from '@/server/auth/sign-in-path';
 
-export const metadata: Metadata = { title: 'Tokens' };
+// The tab's title in the member's language, like the page under it.
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: t('nav.tokens') };
+}
 export const dynamic = 'force-dynamic';
 
 /**

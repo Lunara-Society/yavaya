@@ -3,6 +3,7 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { PLACE_CHOSEN_EVENT } from '@/ui/components/place-picker';
 import type { Map as MapLibreMap, Marker } from 'maplibre-gl';
 
 /**
@@ -27,7 +28,7 @@ type Point = { latitude: number; longitude: number };
 type Labels = Record<string, string>;
 
 type Props =
-  | { mode: 'pick'; initial: Point; zoom?: number; name: string; labels: Labels; follow?: { select: string; points: Record<string, Point> } }
+  | { mode: 'pick'; initial: Point; zoom?: number; name: string; labels: Labels; follow?: { field: string } }
   | { mode: 'view'; store: Point; dropoff?: Point | null; labels: Labels }
   | { mode: 'track'; orderId: string; pollSeconds: number; driverPhoto: string | null; labels: Labels; trackingUrl?: string }
   | { mode: 'drive'; orderId: string; store: Point; dropoff: Point | null; minIntervalSeconds: number; labels: Labels; positionUrl?: string; idField?: 'orderId' | 'tripId' };
@@ -108,15 +109,26 @@ export function GoMap(props: Props) {
           setPicked({ latitude: Number(lat.toFixed(6)), longitude: Number(lng.toFixed(6)) });
         };
         if (props.follow) {
-          // When the form's city changes, the map goes there: a pin left in the
-          // default city would put the store somewhere it is not.
-          const follow = props.follow;
-          const select = container.current.closest('form')?.querySelector<HTMLSelectElement>(`select[name="${follow.select}"]`);
-          select?.addEventListener('change', () => {
-            const point = follow.points[select.value];
-            if (!point) return;
-            set(point.longitude, point.latitude);
-            instance.flyTo({ center: [point.longitude, point.latitude], zoom: 14 });
+          /*
+           * When the form's town is chosen, the map and its pin go there: a pin
+           * left where the map opened would put the store somewhere it is not.
+           * The town is the place picker's choice (PLACE_CHOSEN_EVENT), and its
+           * coordinates are asked for that one place only.
+           */
+          const field = props.follow.field;
+          const form = container.current.closest('form');
+          form?.addEventListener(PLACE_CHOSEN_EVENT, (event) => {
+            const target = event.target as HTMLInputElement | null;
+            const id = (event as CustomEvent<{ id?: string }>).detail?.id;
+            if (target?.name !== field || !id) return;
+            fetch(`/api/places?point=${encodeURIComponent(id)}`)
+              .then((response) => response.json())
+              .then((body: { point: Point | null }) => {
+                if (!body.point || cancelled) return;
+                set(body.point.longitude, body.point.latitude);
+                instance.flyTo({ center: [body.point.longitude, body.point.latitude], zoom: 14 });
+              })
+              .catch(() => undefined);
           });
         }
         marker.on('dragend', () => {

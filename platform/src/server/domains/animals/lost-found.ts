@@ -156,6 +156,61 @@ export async function closeLostFound(tx: Executor, params: { authorUserId: strin
 }
 
 /** Scheduler job: posts open for `lostOpenDays` close, and their authors are told. */
+/**
+ * The author corrects their own post (a wrong species, a better description,
+ * the right place). Checked with the publishing schema; whether it is a lost or
+ * a found animal, and its photos, stay as they were. Not once it has been removed. Audited with the fields that
+ * changed, never their contents.
+ */
+export async function updateLostFound(tx: Executor, params: { authorUserId: string; postId: string; input: LostFoundInput; audit?: AuditContext; now?: Date }): Promise<void> {
+  await activeMember(tx, params.authorUserId);
+  const now = params.now ?? new Date();
+  const [post] = await tx.select().from(animalsLostFound).where(eq(animalsLostFound.id, params.postId)).limit(1).for('update');
+  if (!post || post.authorUserId !== params.authorUserId || post.status === 'removed') throw errors.notFound('animals_lost_found');
+  const { input } = params;
+  const earliest = isoDay(new Date(post.createdAt.getTime() - R.lostSeenDaysBack * 86_400_000));
+  if (input.seenOn < earliest || input.seenOn > isoDay(new Date(now.getTime() + 86_400_000))) throw errors.validation('animals.lost.error.date');
+  const [place] = await tx.select({ id: locations.id }).from(locations).where(eq(locations.id, input.locationId)).limit(1);
+  if (!place) throw errors.validation('animals.error.location');
+  const next = { species: input.species, name: post.kind === 'lost' ? input.name : null, description: input.description, locationId: input.locationId, seenOn: input.seenOn, whatsappE164: input.whatsapp };
+  const changed = (Object.keys(next) as Array<keyof typeof next>).filter((key) => String(next[key] ?? '') !== String(post[key] ?? ''));
+  if (changed.length === 0) return;
+  await tx.update(animalsLostFound).set({ ...next, updatedAt: now }).where(eq(animalsLostFound.id, post.id));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.authorUserId,
+    action: 'animals.lost_found_edited',
+    subjectType: SUBJECT,
+    subjectId: post.id,
+    district: 'animals',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+    metadata: { fields: changed },
+  });
+}
+
+/**
+ * The author takes their post down for good: it leaves the board, matches and
+ * their own list, and its page answers as if it never existed. Kept as a
+ * removed row (as moderation does) so reports and the audit chain still point
+ * at something.
+ */
+export async function deleteLostFound(tx: Executor, params: { authorUserId: string; postId: string; audit?: AuditContext }): Promise<void> {
+  const [post] = await tx.select({ authorUserId: animalsLostFound.authorUserId, status: animalsLostFound.status }).from(animalsLostFound).where(eq(animalsLostFound.id, params.postId)).limit(1).for('update');
+  if (!post || post.authorUserId !== params.authorUserId || post.status === 'removed') throw errors.notFound('animals_lost_found');
+  await tx.update(animalsLostFound).set({ status: 'removed', removedBy: params.authorUserId, closedAt: new Date(), updatedAt: new Date() }).where(eq(animalsLostFound.id, params.postId));
+  await recordAudit(tx, {
+    actorType: 'user',
+    actorUserId: params.authorUserId,
+    action: 'animals.lost_found_deleted',
+    subjectType: SUBJECT,
+    subjectId: params.postId,
+    district: 'animals',
+    ipHash: params.audit?.ipHash ?? null,
+    userAgentHash: params.audit?.userAgentHash ?? null,
+  });
+}
+
 export async function expireLostFound(database: Database, now = new Date()): Promise<{ closed: number }> {
   const cutoff = new Date(now.getTime() - R.lostOpenDays * 86_400_000);
   return database.transaction(async (tx) => {
@@ -283,7 +338,7 @@ export async function listLostFound(
 
 export async function getLostFound(executor: Executor, params: { postId: string; viewerId: string | null; viewerIsReviewer: boolean; locale: string }) {
   const [row] = await executor
-    .select({ ...cardColumns, authorUserId: animalsLostFound.authorUserId, whatsappE164: animalsLostFound.whatsappE164, locationId: animalsLostFound.locationId, authorName: users.displayName })
+    .select({ ...cardColumns, authorUserId: animalsLostFound.authorUserId, whatsappE164: animalsLostFound.whatsappE164, locationId: animalsLostFound.locationId, authorName: users.displayName, removedBy: animalsLostFound.removedBy })
     .from(animalsLostFound)
     .innerJoin(locations, eq(locations.id, animalsLostFound.locationId))
     .innerJoin(users, eq(users.id, animalsLostFound.authorUserId))
@@ -292,6 +347,10 @@ export async function getLostFound(executor: Executor, params: { postId: string;
   if (!row) return null;
   const isAuthor = row.authorUserId === params.viewerId;
   if (row.status === 'removed' && !isAuthor && !params.viewerIsReviewer) return null;
+  // A closed or reunited post is no longer public: it carries the author's WhatsApp number and served its purpose.
+  if (row.status !== 'open' && !isAuthor && !params.viewerIsReviewer) return null;
+  // Taken down by its author: gone for them too (moderation's removals stay visible to the author, with the reason).
+  if (row.status === 'removed' && isAuthor && row.removedBy === row.authorUserId && !params.viewerIsReviewer) return null;
   const photos = await executor.select({ id: animalsLostFoundPhotos.mediaId }).from(animalsLostFoundPhotos).where(eq(animalsLostFoundPhotos.postId, row.id)).orderBy(asc(animalsLostFoundPhotos.position));
   // Possible matches: the other kind, same species and place, still open.
   const matches =
@@ -316,6 +375,8 @@ export async function getLostFound(executor: Executor, params: { postId: string;
     authorName: row.authorName,
     photos: photos.map((photo) => photo.id),
     isAuthor,
+    // For the author's edit form only.
+    locationId: isAuthor ? row.locationId : null,
     // Contact is for signed-in members: a number on the open web invites the ransom scam.
     whatsappE164: params.viewerId ? row.whatsappE164 : null,
     matches: matches.map((match) => toCard(match as Row, params.locale)),

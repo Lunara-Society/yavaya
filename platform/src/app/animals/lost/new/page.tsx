@@ -11,6 +11,7 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
 import { KeepTyped } from '@/ui/components/keep-typed';
+import { SpeciesChoice } from '@/ui/animals/species-choice';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { ImageLink } from '@/ui/components/image-link';
 import { imageLinkLabels } from '@/ui/components/image-link-labels';
@@ -43,19 +44,7 @@ export default async function NewLostFoundPage({ searchParams }: { searchParams:
           <RoxiPrefill form={kind === 'lost' ? 'lost_pet' : 'found_pet'} notice={t('roxi.prefill.notice')} />
           <KeepTyped form={kind === 'lost' ? 'lost_pet' : 'found_pet'} />
           <input type="hidden" name="kind" value={kind} />
-          <label>
-            {t('animals.form.species')}
-            <select name="species" required defaultValue="">
-              <option value="" disabled>
-                {t('mercadito.form.choose')}
-              </option>
-              {SPECIES.map((value) => (
-                <option key={value} value={value}>
-                  {t(`animals.species.${value}` as MessageKey)}
-                </option>
-              ))}
-            </select>
-          </label>
+          <SpeciesChoice label={t('animals.form.species')} options={SPECIES.map((value) => ({ value, label: t(`animals.species.${value}` as MessageKey) }))} />
           {kind === 'lost' ? (
             <label>
               {t('animals.lost.name')}
