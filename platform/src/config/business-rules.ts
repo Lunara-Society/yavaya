@@ -157,6 +157,19 @@ export const TRUST_BANDS = [
   { key: 'trusted', minScore: 800, label: 'trusted' },
 ] as const;
 
+/**
+ * How the site looks. Each look is a switch the owner can turn back in
+ * Admin → Diseño del sitio, without a deploy (a feature flag; see
+ * server/domains/platform/looks.ts). These values only apply while nobody has
+ * touched a switch: they are the owner's choice of 6 November 2026.
+ */
+export const SITE_LOOK_RULES = {
+  /** The First Light (ui/first-light) as the home page; off, the home page of 31 October 2026. */
+  home: true,
+  /** Each district opening with the world behind its door; off, the district pages as they were. */
+  worlds: true,
+} as const;
+
 export const DEMO_CONTENT_RULES = {
   /** Demo content is off unless an administrator turns it on. */
   defaultEnabled: false,

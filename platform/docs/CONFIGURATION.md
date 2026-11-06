@@ -409,15 +409,26 @@ illustration — and only then.
 The guilloché seal and ornamental rules are drawn in code
 (`src/ui/site/art.tsx`).
 
-**The First Light preview's pictures** (`/first-light`, since 6 November
-2026; [`FIRST-LIGHT.md`](FIRST-LIGHT.md)) are in `public/first-light/`. The
+**The site's looks are switches** (since 6 November 2026): Admin → Diseño
+del sitio has "Portada: La Primera Luz" and "Mundos de los distritos", each
+a feature flag an administrator can turn off and on again without a deploy
+(audited; effective within a minute). Both are on until someone touches them
+(`SITE_LOOK_RULES` in `config/business-rules.ts`); off, the home page of 31
+October 2026 and the district pages as they were come back. See
+[`FIRST-LIGHT.md`](FIRST-LIGHT.md).
+
+**The First Light's pictures** (the home page since 6 November 2026;
+[`FIRST-LIGHT.md`](FIRST-LIGHT.md)) are in `public/first-light/`, with the
+worlds behind the doors (`world-<district>-*`: the door pictures widened and
+enlarged with Real-ESRGAN). The
 Guardian is the owner's approved artwork, cut out and separated into four
 layers and two light maps without retouching or redrawing. The dawn horizon
 and the seven doors were made for the page with an image model through the
 owner's ElevenLabs account. **Inspected 6 November 2026** at full size: no
 lettering or logos, no malformed people. The Mercadito and Comunidad doors
 show people and carry the "Ilustración" note; the other doors are places.
-The preview is not the home page: `/` still shows the pictures above.
+While the First Light is the home page, the photographs above are only seen
+if the owner switches back.
 
 ---
 

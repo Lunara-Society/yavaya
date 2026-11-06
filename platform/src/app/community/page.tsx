@@ -12,6 +12,7 @@ import { PostCard } from '@/ui/community/post-card';
 import { Rotulo } from '@/ui/site/rotulo';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
 import { loginHref } from '@/server/auth/return-path';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +47,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="community" tone="community">
+      <DistrictWorld id="community" show={Object.keys(params).length === 0} />
       {/* Comunidad's own shape: a town square. The photograph runs edge to
           edge with the title in the middle of it, and below, three columns as
           on a square: what people come here for, the conversation itself,

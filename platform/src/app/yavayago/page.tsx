@@ -15,6 +15,7 @@ import { placePickerLabels } from '@/ui/components/place-labels';
 import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace } from '@/server/place-choice';
 import { subtreeIds } from '@/server/domains/geography/service';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +61,7 @@ export default async function YavayaGo({ searchParams }: { searchParams: Promise
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">
+      <DistrictWorld id="yavayago" show={Object.keys(query).length === 0} />
       {/* YavayaGo's own shape: a delivery app. Where you are comes first, in
           a bar over the photograph; then the two things you can ask for, the
           kinds of shop as big round icons, the shops themselves, and at the

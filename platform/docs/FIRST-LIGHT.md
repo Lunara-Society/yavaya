@@ -1,22 +1,34 @@
 # First Light
 
-The proposed new home page: the Guardian of the First Light over a dawn
-horizon, the seven districts as seven doors, Roxi as a living presence, and
-sound that is off until the visitor turns it on.
+The home page: the Guardian of the First Light over a dawn horizon, the seven
+districts as seven doors, Roxi as a living presence, and sound that is off
+until the visitor turns it on. Behind each door, the district opens with the
+world the door showed.
 
-**Status: preview.** It is served at `/first-light`, marked `noindex`, and
-linked from nowhere but its own "Ver la portada actual" pill. The home page at
-`/` is untouched (`src/app/page.tsx`, `src/ui/site/home.tsx`, `src/app/home.css`).
-Promoting it means rendering `FirstLightBody` from `src/app/page.tsx`; the
-current page stays in the tree, so rolling back is the reverse one-line change.
-Nothing here is promoted without the owner's word.
+**Status: the home page since 6 November 2026, on the owner's word — with a
+way back.** Both looks are switches in Admin → Diseño del sitio (only
+administrators, who hold `flags.manage`; every change is audited):
+
+| Switch | On | Off |
+| --- | --- | --- |
+| Portada: La Primera Luz | `/` is the First Light; `/first-light` leads to `/` | `/` is the home page of 31 October 2026; the First Light waits at `/first-light` as a `noindex` preview |
+| Mundos de los distritos | each district's front page opens with its world | the district pages as they were |
+
+A switch takes effect within a minute (the flag cache is 30 s per process),
+without a deploy. Until someone touches one, both are on
+(`SITE_LOOK_RULES` in `config/business-rules.ts`; the switches themselves are
+`server/domains/platform/looks.ts`). The previous home page stays in the tree
+(`src/ui/site/home.tsx`, `src/app/home.css`) for exactly this.
 
 ## Where things live
 
 | Piece | File |
 | --- | --- |
-| Page (route, metadata) | `src/app/first-light/page.tsx` |
+| Home page (switch between the two) | `src/app/page.tsx` |
+| Preview while the switch is off | `src/app/first-light/page.tsx` |
+| The switches | `src/server/domains/platform/looks.ts`, Admin (`src/app/admin/page.tsx`, `actions.ts`) |
 | Page body (server component) | `src/ui/first-light/first-light.tsx` |
+| The worlds behind the doors | `src/ui/first-light/district-world.tsx`, `district-world.css` |
 | Styles, motion, tiers | `src/app/first-light/first-light.css` |
 | The engine (tier, light, doors, pausing) | `src/ui/first-light/engine.tsx` |
 | Device tiers | `src/ui/first-light/tier.ts` |
@@ -24,12 +36,12 @@ Nothing here is promoted without the owner's word.
 | Roxi on the page | `src/ui/first-light/roxi-presence.tsx`, `src/ui/roxi/state-bus.ts` |
 | Picture sizes and the list of files | `src/ui/first-light/assets.ts` |
 | Pictures | `public/first-light/` |
-| Tests | `tests/unit/first-light.test.ts`, `tests/e2e/first-light.cjs` |
+| Tests | `tests/unit/first-light.test.ts`, `tests/integration/site-looks.test.ts`, `tests/e2e/first-light.cjs` |
 
-The home page's header (the transparent bar that lies over the picture) moved
-from `home.css` to `src/app/home-header.css` so both pages share it; the
-current home page imports it too and renders exactly as before (the e2e test
-checks its hero and its transparent header).
+The previous home page's header (the transparent bar that lies over the
+picture) is in `src/app/home-header.css`, shared by both bodies, so turning
+the switch off brings it back exactly as it was (the e2e test checks its hero
+and its transparent header).
 
 ## The layers
 
@@ -124,8 +136,31 @@ Each door is a plain link: it works with JavaScript off, opens in a new tab
 with a modifier key, and is reached with the keyboard. With JavaScript, a
 door that comes near the screen has its district prefetched; a click opens
 it in place — the door's own picture grows from the arch to the whole screen
-(640 ms) while the district loads, then dissolves once the district is the
-page. On the still tier the click simply navigates.
+(640 ms) while the district loads and its world picture is fetched; then it
+settles onto the district's world (below) and gives way to it. Without a
+world (the switch off) it dissolves instead. On the still tier the click
+simply navigates.
+
+## The worlds behind the doors
+
+Each district's front page opens with its world (`ui/first-light/district-world.tsx`):
+the door's own picture, widened into a strip, in the First Light's dawn and
+the district's own light, with a light that runs once along its threshold.
+Below it the district's page is its own, unchanged — its layout, colours and
+tools. The strip is short enough (34% of the screen's height, at most 360 px;
+on phones 30%, at most 250 px) that the district's search and tools stay in
+the first screen, and it is not shown over search results or filtered views.
+
+It is the same picture as the door, so the passage is continuous: the strip's
+image carries where it lies in the door's picture (`data-dw-crop`), and the
+open door is moved and clipped to show exactly those pixels in exactly that
+place before it gives way (`landOnWorld` in `engine.tsx`).
+
+The strips are crops of the door pictures' originals (1360 × 2048), each
+1360 × 640 around the door's subject, enlarged four times with Real-ESRGAN
+(`tools/cinematic/sr.py`) and saved at 2720, 1920, 1280 and 800 px wide
+(`world-<district>-<width>`); the largest AVIF is about 160 KB. As with the
+doors, Mercadito's and Comunidad's show people and say "Ilustración".
 
 ## Roxi on the page
 
@@ -214,14 +249,20 @@ of work in 3 s, with no repaints.
 
 ```bash
 npx vitest run tests/unit/first-light.test.ts     # pictures exist, tiers, Roxi's states, sound limits
+npx vitest run tests/integration/site-looks.test.ts  # the switches: defaults, administrators only, audited
 npm run build && npx next start -p 3100            # or any local server
 BASE=http://localhost:3100 node tests/e2e/first-light.cjs
 ```
 
-The e2e script (Playwright) checks the page on a phone and at seven widths,
-sound off by default with no audio context, the choice kept and reversible,
-layout shift, the doors (pointer and keyboard), reduced motion, no console
-errors, and that the current home page is unchanged. Given a member (see
+The e2e script (Playwright) checks the home page on a phone and at seven
+widths, that it is indexed and keeps its structured data, sound off by
+default with no audio context, the choice kept and reversible, layout shift,
+the doors (pointer and keyboard) and the door settling onto the district's
+world, every district's world at two widths (and none over search results),
+reduced motion and no console errors. Given an administrator (`LOOKS_ADMIN`,
+see the script's header) it turns each switch off in Admin, checks that the
+previous design is back — the old home page with its header, the preview at
+`/first-light`, the districts as they were — and turns it on again. Given a member (see
 `tests/e2e/README.md`, with the site run as `ROXI_AGENT_ID=agent_localtest`)
 it also checks Roxi's states against a stand-in for her agent: idle,
 understanding while a question waits, a problem when the connection drops,
@@ -238,7 +279,6 @@ it.
 
 The next milestones, each to be shown before it replaces anything:
 
-- the district worlds behind each door;
 - Roxi's states across the whole site, not only on this page;
 - a living activity feed — of real events only, never invented ones;
 - the map, geographically accurate;

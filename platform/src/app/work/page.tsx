@@ -15,6 +15,7 @@ import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,7 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="work" tone="work">
+      <DistrictWorld id="work" show={Object.keys(query).length === 0} />
       {/* Trabajo's own shape: a job board. A banner with the search right in
           it, as people look for work by searching first; then the offers in
           one long list, with the board's rules pinned beside them. */}

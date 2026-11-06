@@ -17,21 +17,26 @@ import { recentActivity, type FeedItem } from '@/server/domains/notifications/ac
 import { isTwoStepEnabled, twoStepAvailable } from '@/server/domains/identity/two-step';
 import { LIVE_FEED_RULES } from '@/config/business-rules';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { allLooks, LOOK_KEYS } from '@/server/domains/platform/looks';
+import { setLookAction } from './actions';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
 
 /** Everything waiting for a person, for whoever may act on it. */
-export default async function OpsPage() {
+export default async function OpsPage({ searchParams }: { searchParams: Promise<{ look?: string }> }) {
+  const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect(await signInPath());
   if (!(await canSeeOps(db(), userId))) notFound();
-  const [queues, canManage, admin, canReadMembers] = await Promise.all([
+  const [queues, canManage, admin, canReadMembers, canChangeLooks] = await Promise.all([
     queuesFor(db(), userId),
     hasPermission(db(), userId, 'roles.manage'),
     isAdmin(db(), userId),
     hasPermission(db(), userId, 'users.read'),
+    hasPermission(db(), userId, 'flags.manage'),
   ]);
+  const looks = canChangeLooks ? await allLooks(db()) : null;
   const health = admin ? await jobHealth(db()) : null;
   const session = await currentSession();
   // The owner's overview: roles.manage only; ownerOverview checks it again.
@@ -85,6 +90,40 @@ export default async function OpsPage() {
             {t('ops.two_step_prompt')}{' '}
             <Link href="/settings/dos-pasos">{t('ops.two_step_cta')}</Link>
           </p>
+        ) : null}
+
+        {/* The site's design, as switches: each new look can be turned back here, without a deploy. */}
+        {looks ? (
+          <section className="card ops-section ops-looks" id="looks" aria-labelledby="looks-title">
+            <h2 id="looks-title">{t('ops.looks.title')}</h2>
+            <p className="muted">{t('ops.looks.lead')}</p>
+            {params.look === 'saved' ? (
+              <p className="ops-looks-saved" role="status">
+                {t('ops.looks.saved')}
+              </p>
+            ) : null}
+            <ul className="ops-looks-list">
+              {LOOK_KEYS.map((key) => {
+                const on = looks[key];
+                return (
+                  <li key={key} data-look={key} data-on={on ? 'true' : 'false'}>
+                    <div>
+                      <strong>{t(`ops.looks.${key}.name` as MessageKey)}</strong>{' '}
+                      <span className={on ? 'ops-ok' : 'ops-warn'}>{on ? t('ops.looks.on') : t('ops.looks.off')}</span>
+                      <p className="muted mb0">{t(`ops.looks.${key}.${on ? 'on_note' : 'off_note'}` as MessageKey)}</p>
+                    </div>
+                    <form action={setLookAction}>
+                      <input type="hidden" name="look" value={key} />
+                      <input type="hidden" name="enabled" value={on ? 'off' : 'on'} />
+                      <button type="submit" className={on ? 'btn btn-line' : 'btn btn-gold'}>
+                        {t(`ops.looks.${key}.${on ? 'turn_off' : 'turn_on'}` as MessageKey)}
+                      </button>
+                    </form>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
         ) : null}
 
         {overview ? (

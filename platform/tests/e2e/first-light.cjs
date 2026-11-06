@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- a plain Node script run outside the build */
 /**
- * Browser check of the First Light preview (/first-light) against a local
- * server, and of the current home page it must not disturb:
+ * Browser check of the First Light as the home page, the worlds behind the
+ * district doors, and the owner's switches that undo both:
  *
  *   BASE=http://localhost:3100 node tests/e2e/first-light.cjs
+ *
+ * With an administrator (LOOKS_ADMIN: the JSON that tests/e2e/roxi-plans-setup.ts
+ * prints), it turns each look off in Admin → Diseño del sitio, checks that the
+ * previous design is back, and turns it on again:
+ *
+ *   npx tsx --conditions=react-server tests/e2e/roxi-plans-setup.ts > /tmp/plans.json
+ *   LOOKS_ADMIN=/tmp/plans.json BASE=http://localhost:3100 node tests/e2e/first-light.cjs
  *
  * With a member (the site run with ROXI_AGENT_ID=agent_localtest), it also
  * checks that the page shows Roxi's real state, against a stand-in for the
@@ -25,6 +32,7 @@ const check = (ok, what) => {
   if (!ok) failures += 1;
 };
 const DOORS = ['/mercadito', '/services', '/work', '/yavayago', '/community', '/sanctuary', '/animals'];
+const WITH_PEOPLE = new Set(['/mercadito', '/community']);
 
 // Counts audio contexts, so "silent by default" means nothing was even started.
 const COUNT_AUDIO = () => {
@@ -56,18 +64,21 @@ const COUNT_AUDIO = () => {
       const fromGoogleSignIn = /accounts\.google\.com/.test(message.location().url ?? '') || /GSI_LOGGER|FedCM|identity provider|accounts list is empty/i.test(message.text());
       if (message.type() === 'error' && !fromGoogleSignIn) errors.push(message.text());
     });
-    const response = await page.goto(`${BASE}/first-light`, { waitUntil: 'networkidle' });
-    check(response && response.status() === 200, 'the preview answers 200');
+    const response = await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    check(response && response.status() === 200, 'the home page answers 200');
+    check((await page.locator('[data-fl]').count()) === 1, 'the home page is the First Light');
     check(
-      (await page.locator('meta[name="robots"][content*="noindex"]').count()) === 1 && /noindex/.test(response?.headers()['x-robots-tag'] ?? ''),
-      'the preview is not indexed (meta tag and header)',
+      (await page.locator('meta[name="robots"][content*="noindex"]').count()) === 0 && !/noindex/.test(response?.headers()['x-robots-tag'] ?? ''),
+      'the home page is indexed (no noindex in the meta tag or the header)',
     );
+    check((await page.locator('script[type="application/ld+json"]').count()) >= 1, "the home page still tells search engines who Yavaya is (structured data)");
+    check((await page.locator('.fl-preview').count()) === 0, 'the home page does not call itself a preview');
     check(await page.locator('h1#fl-title').isVisible(), 'the title is visible');
     check((await page.locator('.fl-g img').count()) === 4, 'the Guardian is drawn in its four layers');
     const hrefs = await page.locator('a[data-fl-door]').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
     check(JSON.stringify(hrefs) === JSON.stringify(DOORS), `seven doors lead into the seven districts (${hrefs.join(' ')})`);
     check((await page.locator('form.fl-search[action="/mercadito"] input[name="q"]').count()) === 1, "the search is Mercadito's");
-    check((await page.locator('.fl-roxi.is-visitor a[href="/login?next=/first-light"]').count()) === 1, 'a visitor is shown the way in to Roxi');
+    check((await page.locator('.fl-roxi.is-visitor a[href="/login?next=/"]').count()) === 1, 'a visitor is shown the way in to Roxi, and back to the home page');
     const tier = await page.locator('[data-fl]').getAttribute('data-tier');
     check(tier === 'full' || tier === 'lite', `a capable browser is upgraded from the served lite tier (${tier})`);
 
@@ -97,21 +108,41 @@ const COUNT_AUDIO = () => {
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/fl-phone.png` });
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/fl-phone-full.png`, fullPage: true });
 
-    // A door opens into its district.
+    // A door opens into its district, and settles onto the world behind it.
     await page.locator('#distritos').scrollIntoViewIfNeeded();
     await page.locator('a[data-fl-door][href="/services"]').click();
     await page.waitForURL(`${BASE}/services`, { timeout: 20_000 });
-    await page.waitForTimeout(1500);
-    check((await page.locator('div[aria-hidden="true"][style*="2147483000"]').count()) === 0, 'the opening door dissolves once the district is the page');
+    const landed = await page
+      .waitForSelector('[data-fl-veil="landing"]', { state: 'attached', timeout: 8_000 })
+      .then(() => true)
+      .catch(() => false);
+    check(landed, "the open door settles onto the district's world");
+    await page.waitForSelector('[data-fl-veil]', { state: 'detached', timeout: 8_000 }).catch(() => undefined);
+    check((await page.locator('[data-fl-veil]').count()) === 0, 'and then gives way to it');
+    const world = await page.locator('[data-dw="services"] img').evaluate((img) => ({
+      loaded: img.naturalWidth > 0,
+      first: document.querySelector('main#main')?.firstElementChild?.hasAttribute('data-dw') ?? false,
+      visible: img.getBoundingClientRect().top < window.innerHeight / 2,
+    }));
+    check(world.loaded && world.first && world.visible, 'the world is the first thing on the district’s page, in view on arrival');
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/world-services-phone.png` });
     check(errors.length === 0, `no errors in the console (${errors.slice(0, 3).join(' | ')})`);
     await context.close();
+  }
+
+  // While it is the home page, the preview's address leads there.
+  {
+    const page = await browser.newPage();
+    await page.goto(`${BASE}/first-light`, { waitUntil: 'domcontentloaded' });
+    check(new URL(page.url()).pathname === '/', `/first-light leads to the home page (${new URL(page.url()).pathname})`);
+    await page.close();
   }
 
   // Asked for less motion: still, and a door still works.
   {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce', locale: 'es' });
     const page = await context.newPage();
-    await page.goto(`${BASE}/first-light`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
     check((await page.locator('[data-fl]').getAttribute('data-tier')) === 'still', 'reduced motion gets the still tier');
     const moving = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
     check(moving === 0, `nothing moves (${moving} running animations)`);
@@ -125,7 +156,7 @@ const COUNT_AUDIO = () => {
   // Every width, without sideways scrolling.
   for (const width of [320, 390, 768, 1024, 1280, 1440, 1920]) {
     const page = await browser.newPage({ viewport: { width, height: width < 700 ? 800 : 900 } });
-    await page.goto(`${BASE}/first-light`, { waitUntil: 'networkidle' });
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
     const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
     check(fits, `no sideways scroll at ${width}px`);
     if (SHOTS && (width === 1440 || width === 768)) await page.screenshot({ path: `${SHOTS}/fl-${width}.png` });
@@ -201,14 +232,66 @@ const COUNT_AUDIO = () => {
     await context.close();
   }
 
-  // The current home page is untouched by the shared header move.
+  // The world behind each door, on every district's front page — and not over search results.
+  for (const [width, height] of [[1440, 900], [390, 844]]) {
+    const page = await browser.newPage({ viewport: { width, height } });
+    for (const path of DOORS) {
+      await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
+      const id = path.slice(1);
+      const world = await page.locator(`[data-dw="${id}"]`).count();
+      const loaded = world ? await page.locator(`[data-dw="${id}"] img`).evaluate((img) => img.naturalWidth > 0) : false;
+      const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+      const note = await page.locator(`[data-dw="${id}"] .art-note`).count();
+      check(world === 1 && loaded && fits && note === (WITH_PEOPLE.has(path) ? 1 : 0), `${path} opens with its world at ${width}px (loaded, fits${WITH_PEOPLE.has(path) ? ', says "Ilustración"' : ''})`);
+      if (SHOTS) await page.screenshot({ path: `${SHOTS}/world-${id}-${width}.png` });
+    }
+    await page.close();
+  }
   {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const page = await browser.newPage();
+    await page.goto(`${BASE}/mercadito?q=bicicleta`, { waitUntil: 'domcontentloaded' });
+    check((await page.locator('[data-dw]').count()) === 0, 'search results open without the world');
+    await page.close();
+  }
+
+  // The owner's switches: each look can be undone in Admin → Diseño del sitio, and redone.
+  if (process.env.LOOKS_ADMIN) {
+    const { admin } = JSON.parse(fs.readFileSync(process.env.LOOKS_ADMIN, 'utf8'));
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: 'es' });
+    const page = await context.newPage();
+    await page.goto(`${BASE}/login`, { timeout: 120_000 });
+    await page.fill('input[name="email"]', admin.email);
+    await page.fill('input[name="password"]', admin.password);
+    await Promise.all([page.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 120_000 }), page.click('form:has(input[name="password"]) button[type="submit"]')]);
+    const flip = async (look) => {
+      await page.goto(`${BASE}/admin`, { waitUntil: 'domcontentloaded' });
+      await Promise.all([page.waitForURL(/look=saved/, { timeout: 30_000 }), page.locator(`#looks li[data-look="${look}"] button[type="submit"]`).click()]);
+      return page.locator(`#looks li[data-look="${look}"]`).getAttribute('data-on');
+    };
+    await page.goto(`${BASE}/admin`, { waitUntil: 'domcontentloaded' });
+    check((await page.locator('#looks li[data-look="home"][data-on="true"]').count()) === 1 && (await page.locator('#looks li[data-look="worlds"][data-on="true"]').count()) === 1, 'Admin shows both looks, on');
+
+    check((await flip('home')) === 'false', 'the owner can go back to the previous home page');
     await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
-    check(await page.locator('.hx-hero').isVisible(), 'the current home page still renders its hero');
+    check((await page.locator('.hx-hero').isVisible()) && (await page.locator('[data-fl]').count()) === 0, 'the previous home page is back at once');
     const headerBg = await page.locator('header.top').evaluate((el) => getComputedStyle(el).backgroundColor);
     check(headerBg === 'rgba(0, 0, 0, 0)', `its header still lies over the picture (${headerBg})`);
-    await page.close();
+    const preview = await page.goto(`${BASE}/first-light`, { waitUntil: 'networkidle' });
+    check(
+      (await page.locator('.fl-preview').isVisible()) && (await page.locator('meta[name="robots"][content*="noindex"]').count()) === 1 && /noindex/.test(preview?.headers()['x-robots-tag'] ?? ''),
+      'meanwhile the First Light waits at /first-light, as a preview nobody indexes',
+    );
+    check((await flip('home')) === 'true', 'and can be the home page again');
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    check((await page.locator('[data-fl]').count()) === 1, 'the First Light is back at once');
+
+    check((await flip('worlds')) === 'false', 'the owner can remove the worlds');
+    await page.goto(`${BASE}/mercadito`, { waitUntil: 'networkidle' });
+    check((await page.locator('[data-dw]').count()) === 0 && (await page.locator('.mc-top').count()) === 1, 'the districts are as they were');
+    check((await flip('worlds')) === 'true', 'and show them again');
+    await page.goto(`${BASE}/mercadito`, { waitUntil: 'networkidle' });
+    check((await page.locator('[data-dw="mercadito"]').count()) === 1, 'the worlds are back at once');
+    await context.close();
   }
 
   await browser.close();

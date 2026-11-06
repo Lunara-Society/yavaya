@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { WORLD_CROP, WORLD_WIDTHS, flSrcSet } from './assets';
 import { sound } from './sound';
 import { chooseTier, readDeviceSignals, type Tier } from './tier';
 
@@ -224,6 +225,8 @@ function openDoor(a: HTMLAnchorElement, href: string, go: () => void) {
 
   const veil = document.createElement('div');
   veil.setAttribute('aria-hidden', 'true');
+  // Where the door is in its passage (opening, landing on the district's world, dissolving): for whoever debugs it.
+  veil.dataset.flVeil = 'opening';
   Object.assign(veil.style, {
     position: 'fixed',
     inset: '0',
@@ -271,13 +274,20 @@ function openDoor(a: HTMLAnchorElement, href: string, go: () => void) {
 
   const started = performance.now();
   const target = new URL(href, window.location.href).pathname;
+  preloadWorld(target.slice(1));
   go();
   let finished = false;
+  const dissolve = () => {
+    veil.dataset.flVeil = 'dissolving';
+    const fade = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 480, easing: 'ease-out', fill: 'forwards' });
+    fade.onfinish = () => veil.remove();
+  };
   const finish = () => {
     if (finished) return;
     finished = true;
-    const fade = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 480, easing: 'ease-out', fill: 'forwards' });
-    fade.onfinish = () => veil.remove();
+    void landOnWorld(veil, img, edge, { width, height, vw, vh }).then((landed) => {
+      if (!landed) dissolve();
+    });
   };
   // Dissolve once the district is the page and the door has finished opening; never later than 5 s.
   const wait = () => {
@@ -290,4 +300,70 @@ function openDoor(a: HTMLAnchorElement, href: string, go: () => void) {
   };
   wait();
   window.setTimeout(finish, 5000);
+}
+
+/** The district's world picture, asked for as the door opens, so it is there when the door settles onto it. */
+function preloadWorld(id: string) {
+  if (!(id in WORLD_CROP)) return;
+  const picture = new Image();
+  picture.sizes = '100vw';
+  picture.srcset = flSrcSet(`world-${id}`, WORLD_WIDTHS, 'avif');
+}
+
+/**
+ * The district's world (district-world.tsx) is the door's own picture,
+ * widened into a strip: the open door settles exactly onto that strip, then
+ * gives way to it, so the place chosen becomes the place arrived in.
+ *
+ * The strip's image says where it lies in the door's picture
+ * (`data-dw-crop`: its top and height, as fractions of the picture's height),
+ * so the door's picture can be placed to show the same pixels in the same
+ * place. Resolves false when there is no world to land on (the owner's switch
+ * is off, or the page is not a district's front page): the door dissolves.
+ */
+async function landOnWorld(veil: HTMLElement, img: HTMLImageElement, edge: HTMLElement, door: { width: number; height: number; vw: number; vh: number }): Promise<boolean> {
+  const band = document.querySelector<HTMLImageElement>('[data-dw] img');
+  const crop = band?.dataset.dwCrop?.split(',').map(Number) ?? [];
+  const [cropTop] = crop;
+  if (!band || crop.length !== 2 || cropTop === undefined || Number.isNaN(cropTop)) return false;
+  if (!band.complete || !band.naturalWidth) {
+    // Wait a little for the strip's picture (it was asked for when the door opened), never long.
+    await Promise.race([band.decode().catch(() => undefined), new Promise((resolve) => window.setTimeout(resolve, 1200))]);
+    if (!band.naturalWidth) return false;
+  }
+  // The strip settles in on its own when there is no door; under the door it must be still to be met exactly.
+  for (const animation of band.getAnimations()) animation.finish();
+  const box = band.getBoundingClientRect();
+  if (box.height < 40 || box.bottom <= 0 || box.top >= door.vh) return false;
+  const [px = 0.5, py = 0.5] = getComputedStyle(band)
+    .objectPosition.split(' ')
+    .map((part) => (part.endsWith('%') ? Number.parseFloat(part) / 100 : 0.5));
+  const scale = Math.max(box.width / band.naturalWidth, box.height / band.naturalHeight);
+  const stripWidth = band.naturalWidth * scale;
+  const stripHeight = band.naturalHeight * scale;
+  const stripLeft = box.left + (box.width - stripWidth) * px;
+  const stripTop = box.top + (box.height - stripHeight) * py;
+  // The whole door picture at the strip's scale: the strip spans its width and starts `cropTop` down it.
+  const doorWidth = stripWidth;
+  const doorHeight = stripWidth * (door.height / door.width);
+  const doorTop = stripTop - cropTop * doorHeight;
+  const k = doorWidth / door.width;
+  const dx = stripLeft + doorWidth / 2 - door.vw / 2;
+  const dy = doorTop + doorHeight / 2 - door.vh / 2;
+  const timing: KeyframeAnimationOptions = { duration: 720, easing: 'cubic-bezier(0.22, 0.8, 0.18, 1)', fill: 'forwards' };
+  veil.dataset.flVeil = 'landing';
+  img.animate([{ transform: 'translate(0px, 0px) scale(1.04)' }, { transform: `translate(${dx}px, ${dy}px) scale(${k})` }], timing);
+  edge.animate([{ opacity: 1 }, { opacity: 0 }], timing);
+  const land = veil.animate(
+    [
+      { clipPath: 'inset(0px 0px 0px 0px round 0px 0px 0px 0px / 0px 0px 0px 0px)' },
+      { clipPath: `inset(${box.top}px ${door.vw - box.right}px ${door.vh - box.bottom}px ${box.left}px round 0px 0px 0px 0px / 0px 0px 0px 0px)` },
+    ],
+    timing,
+  );
+  land.onfinish = () => {
+    const out = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-out', fill: 'forwards' });
+    out.onfinish = () => veil.remove();
+  };
+  return true;
 }

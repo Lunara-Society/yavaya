@@ -1257,6 +1257,10 @@ blockquote.vt-text { padding: 10px 14px; border-left: 3px solid var(--tone); bac
 .ops-team-meta { display: flex; gap: 12px; align-items: center; font-size: 0.85rem; color: var(--text-3); }
 .ops-ok { color: #3fbf7f; font-weight: 700; }
 .ops-warn { color: #e0a93b; font-weight: 700; }
+.ops-looks-list { list-style: none; padding: 0; margin: 10px 0 0; display: grid; }
+.ops-looks-list li { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 20px; padding: 12px 0; border-top: 1px solid var(--line); }
+.ops-looks-list li > div { flex: 1 1 320px; }
+.ops-looks-saved { margin: 8px 0 0; font-weight: 700; color: #3fbf7f; }
 .ops-two-step { margin-bottom: 18px; }
 .ops-two-step a { font-weight: 800; }
 .ops-card { display: grid; gap: 4px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); color: var(--text); text-decoration: none; box-shadow: inset 4px 0 0 #e0a93b; }

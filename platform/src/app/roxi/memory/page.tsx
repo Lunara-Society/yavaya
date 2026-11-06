@@ -12,6 +12,7 @@ import { itemsAvailable, listItems, type ItemView } from '@/server/domains/roxi/
 import { LocalTimeFields } from '@/ui/roxi/local-time';
 import { addCapsuleAction, addItemAction, addMilestoneAction, addMissionAction, addWatchAction, deleteItemAction, forgetAllAction, progressItemAction, snoozeAction, stepAction, toggleItemAction } from '../actions';
 import { lifePath, memberClock } from '@/server/domains/roxi/world';
+import { inMemberZone, memberDay } from '@/ui/roxi/member-time';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslator();
@@ -32,12 +33,12 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const available = itemsAvailable();
   const plan = (await currentPlan(db(), userId)).plan;
   const limits = ROXI_PLANS[plan];
-  const { currency: homeCurrency } = await memberClock(db(), userId);
+  const { currency: homeCurrency, timeZone } = await memberClock(db(), userId);
   const items = available ? await listItems(db(), userId) : [];
   const of = (kind: ItemView['kind']) => items.filter((item) => item.kind === kind);
   const goals = of('goal');
   const reminders = of('reminder');
-  const recentDays = new Set(Array.from({ length: 4 }, (_, back) => new Date(Date.now() - back * 86_400_000).toISOString().slice(0, 10)));
+  const recentDays = new Set(Array.from({ length: 4 }, (_, back) => memberDay(new Date(Date.now() - back * 86_400_000), timeZone)));
   const tasks = of('task').filter((task) => !task.done || (task.day && recentDays.has(task.day)));
   const moments = of('moment').sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   const facts = of('fact');
@@ -47,7 +48,7 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const path = available ? await lifePath(db(), userId) : [];
   const pathYears = [...new Set(path.map((entry) => entry.day.slice(0, 4)))];
   const errorKey = query.error && /^(roxi\.[a-z_.]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
-  const when = (date: Date) => date.toLocaleString(locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const when = (date: Date) => inMemberZone(date, locale, timeZone, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
   const remove = (item: ItemView) => (
     <form action={deleteItemAction}>

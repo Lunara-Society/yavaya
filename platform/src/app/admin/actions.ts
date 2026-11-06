@@ -20,6 +20,7 @@ import {
   type SanctionReason,
 } from '@/server/domains/access/sanctions';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { isLookKey, setLook } from '@/server/domains/platform/looks';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -109,4 +110,28 @@ export async function appealDecisionAction(formData: FormData): Promise<void> {
   await deliverSanctionNotices([notice]);
   revalidatePath('/admin/appeals');
   redirect(`/admin/appeals?done=${outcome}`);
+}
+
+/**
+ * Turns one of the site's looks on or off (Admin → Diseño del sitio). The
+ * permission is checked by setLook, inside the transaction that writes the
+ * flag and its audit record; the form being shown only to administrators is
+ * a courtesy, not the check.
+ */
+export async function setLookAction(formData: FormData) {
+  const session = await currentSession();
+  if (!session) redirect(await signInPath());
+  const key = String(formData.get('look') ?? '');
+  const enabled = String(formData.get('enabled') ?? '') === 'on';
+  if (!isLookKey(key)) redirect('/admin');
+  try {
+    await db().transaction((tx) => setLook(tx, { actor: { userId: session.user.userId, status: session.user.status }, key, enabled }));
+  } catch (error) {
+    // Refused (not an administrator, or suspended): back to Admin, nothing changed.
+    if (isDomainError(error)) redirect('/admin');
+    throw error;
+  }
+  revalidatePath('/');
+  revalidatePath('/admin');
+  redirect('/admin?look=saved#looks');
 }

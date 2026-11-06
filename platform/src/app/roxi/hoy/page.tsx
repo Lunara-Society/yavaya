@@ -12,6 +12,7 @@ import { itemsAvailable, listItems } from '@/server/domains/roxi/items';
 import { businessAvailable, businessSummary } from '@/server/domains/roxi/business';
 import { communityPulse, memberClock, memberPlace, opportunityFor, type Pulse } from '@/server/domains/roxi/world';
 import { FrontDoor } from '@/ui/roxi/front-door';
+import { inMemberZone } from '@/ui/roxi/member-time';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslator();
@@ -82,7 +83,7 @@ export default async function RoxiWorldPage() {
             ))}
             {reminders.map((reminder) => (
               <li key={reminder.id}>
-                {reminder.title} · {reminder.dueAt!.toLocaleString(locale, { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
+                {reminder.title} · {inMemberZone(reminder.dueAt!, locale, timeZone, { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
               </li>
             ))}
           </ul>

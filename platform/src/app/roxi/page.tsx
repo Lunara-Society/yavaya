@@ -46,6 +46,9 @@ export default async function RoxiPlansPage({ searchParams }: { searchParams: Pr
   const status = (skill: RoxiSkill) => (skill === 'connectors_google' && !googleReady ? 'soon' : ROXI_SKILL_STATUS[skill]);
   const errorKey = query.error && /^(roxi\.[a-z_.]+|payments\.error\.[a-z_]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
   const date = (value: Date) => value.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
+  // One is said in words, not "1 metas": each limit has its own "_one" line, as elsewhere on the site.
+  type LimitKey = 'roxi.plans.limit.goals' | 'roxi.plans.limit.reminders' | 'roxi.plans.limit.reminders_repeat' | 'roxi.plans.limit.connections_all' | 'roxi.plans.limit.connections_google';
+  const limit = (key: LimitKey, n: number) => (n === 1 ? t(`${key}_one`) : t(key, { n }));
 
   const planButton = (plan: RoxiPlanKey) => {
     if (plan === 'free') return current === 'free' ? <p className="rx-current">{t('roxi.plans.current')}</p> : null;
@@ -132,9 +135,9 @@ export default async function RoxiPlansPage({ searchParams }: { searchParams: Pr
               <p className="rx-credits">{t('roxi.plans.monthly_credits', { n: plan.monthlyCredits.toLocaleString(locale) })}</p>
               <p className="rx-small">{t('roxi.plans.credits_mean', { written: Math.round(plan.monthlyCredits / 25).toLocaleString(locale), minutes: Math.round(plan.monthlyCredits / 150).toLocaleString(locale) })}</p>
               <ul className="rx-limits">
-                <li>{t('roxi.plans.limit.goals', { n: plan.goals })}</li>
-                <li>{t(plan.recurringReminders ? 'roxi.plans.limit.reminders_repeat' : 'roxi.plans.limit.reminders', { n: plan.reminders })}</li>
-                <li>{plan.connections === 0 ? t('roxi.plans.limit.no_connections') : t(key === 'max' ? 'roxi.plans.limit.connections_all' : 'roxi.plans.limit.connections_google', { n: plan.connections })}</li>
+                <li>{limit('roxi.plans.limit.goals', plan.goals)}</li>
+                <li>{limit(plan.recurringReminders ? 'roxi.plans.limit.reminders_repeat' : 'roxi.plans.limit.reminders', plan.reminders)}</li>
+                <li>{plan.connections === 0 ? t('roxi.plans.limit.no_connections') : limit(key === 'max' ? 'roxi.plans.limit.connections_all' : 'roxi.plans.limit.connections_google', plan.connections)}</li>
               </ul>
               {key !== 'free' ? <p className="rx-includes">{t(key === 'pro' ? 'roxi.plans.everything_free' : 'roxi.plans.everything_pro')}</p> : null}
               <ul className="rx-skills">

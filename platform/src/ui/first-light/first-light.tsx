@@ -10,9 +10,11 @@ import { DistrictMark, Glyph, heroDoors } from '@/ui/site/home';
 import { FrontDoor } from '@/ui/roxi/front-door';
 import type { RoxiVisual } from '@/ui/roxi/state-bus';
 import {
+  DISTRICT_LIGHT,
   DOOR_HEIGHT,
   DOOR_WIDTHS,
   DOORS_WITH_PEOPLE,
+  FL_PATH,
   GUARDIAN_LIGHTS,
   GUARDIAN_PARTS,
   GUARDIAN_WIDTHS,
@@ -26,8 +28,9 @@ import { RoxiPresence } from './roxi-presence';
 import { SoundToggle } from './sound-toggle';
 
 /**
- * The First Light: the cinematic home page, as a preview at /first-light
- * while the current home page stays where it is (docs/FIRST-LIGHT.md).
+ * The First Light: the cinematic home page (docs/FIRST-LIGHT.md). It is the
+ * home page while the owner's switch says so (Admin → Diseño del sitio), and
+ * the preview at /first-light while it does not.
  *
  * The same things as the home page, and only true ones: Mercadito's search
  * labelled as Mercadito's, the visitor's real place, the seven districts each
@@ -39,20 +42,11 @@ import { SoundToggle } from './sound-toggle';
  * decorative and hidden from assistive technology; the ones with people in
  * them say "Ilustración".
  *
- * Styles: app/first-light/first-light.css, loaded by that page alone.
+ * Styles: app/first-light/first-light.css, loaded by the two pages that show it.
  */
 
-/** The doors, in the home page's order; each one's own light. */
+/** The doors, in the home page's order. */
 const DOORS: readonly DistrictId[] = ['mercadito', 'services', 'work', 'yavayago', 'community', 'sanctuary', 'animals'];
-const DOOR_LIGHT: Record<DistrictId, string> = {
-  mercadito: '#e9b949',
-  services: '#4cb5f0',
-  work: '#ec5d7c',
-  yavayago: '#2fc6c4',
-  community: '#b48cff',
-  sanctuary: '#f2c46b',
-  animals: '#7fd36a',
-};
 
 /** The Guardian is shown about this wide: most of a phone (its wings run off the edges, as in the artwork), a column on a desktop. */
 const GUARDIAN_SIZES = '(min-width: 1000px) min(56vh, 620px), 112vw';
@@ -64,6 +58,8 @@ type Props = {
   t: Translator;
   signedIn: boolean;
   location: Awaited<ReturnType<typeof locationBarProps>>;
+  /** At /first-light while the home page is another: says it is a preview, with the way to the home page. */
+  preview?: boolean;
 };
 
 function Arrow() {
@@ -84,7 +80,7 @@ function Picture({ name, widths, sizes, width, height, className, loading, prior
   );
 }
 
-export function FirstLightBody({ c, t, signedIn, location }: Props) {
+export function FirstLightBody({ c, t, signedIn, location, preview = false }: Props) {
   const roxiLabels = {
     name: t('firstlight.roxi.name'),
     talk: t('firstlight.roxi.talk'),
@@ -155,7 +151,7 @@ export function FirstLightBody({ c, t, signedIn, location }: Props) {
           </form>
           {signedIn ? <FrontDoor variant="hero" title={t('roxi.door.title')} doors={heroDoors(t)} /> : null}
           <div className="fl-hero-foot">
-            <RoxiPresence labels={roxiLabels} signedIn={signedIn} enterHref="/login?next=/first-light" />
+            <RoxiPresence labels={roxiLabels} signedIn={signedIn} enterHref={preview ? `/login?next=${FL_PATH}` : '/login?next=/'} />
             <p className="fl-status" role="note">
               <span className="fl-status-dot" aria-hidden="true" />
               <strong>{c.ui.ribbon.label}</strong>
@@ -167,9 +163,11 @@ export function FirstLightBody({ c, t, signedIn, location }: Props) {
         </div>
 
         <div className="fl-corner">
-          <p className="fl-preview">
-            {t('firstlight.preview.label')} · <Link href="/">{t('firstlight.preview.current')}</Link>
-          </p>
+          {preview ? (
+            <p className="fl-preview">
+              {t('firstlight.preview.label')} · <Link href="/">{t('firstlight.preview.current')}</Link>
+            </p>
+          ) : null}
           <SoundToggle name={t('firstlight.sound.name')} onText={t('firstlight.sound.on')} offText={t('firstlight.sound.off')} />
         </div>
       </section>
@@ -195,8 +193,8 @@ export function FirstLightBody({ c, t, signedIn, location }: Props) {
             {DOORS.map((id, index) => {
               const state = districtState(id);
               return (
-                <li key={id} className={`fl-door-item fl-door-${id}`} style={{ '--acc': DOOR_LIGHT[id] } as CSSProperties}>
-                  <a className="fl-door" href={PAGE_PATHS[id]} data-fl-door data-acc={DOOR_LIGHT[id]} data-pitch={index}>
+                <li key={id} className={`fl-door-item fl-door-${id}`} style={{ '--acc': DISTRICT_LIGHT[id] } as CSSProperties}>
+                  <a className="fl-door" href={PAGE_PATHS[id]} data-fl-door data-acc={DISTRICT_LIGHT[id]} data-pitch={index}>
                     <span className="fl-door-frame" data-fl-door-frame>
                       <Picture name={`door-${id}`} widths={DOOR_WIDTHS} sizes={DOOR_SIZES} width={720} height={DOOR_HEIGHT[720]} loading="lazy" />
                       {DOORS_WITH_PEOPLE.has(id) ? <span className="art-note" aria-hidden="true" /> : null}

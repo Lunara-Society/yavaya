@@ -32,6 +32,37 @@ export const DOOR_HEIGHT: Record<(typeof DOOR_WIDTHS)[number], number> = { 480: 
 /** Doorways whose picture has people in it, however small: those carry the "Ilustración" note. */
 export const DOORS_WITH_PEOPLE: ReadonlySet<DistrictId> = new Set<DistrictId>(['mercadito', 'community']);
 
+/** Each district's own light: its door's arch on the First Light, and the light of its world. */
+export const DISTRICT_LIGHT: Record<DistrictId, string> = {
+  mercadito: '#e9b949',
+  services: '#4cb5f0',
+  work: '#ec5d7c',
+  yavayago: '#2fc6c4',
+  community: '#b48cff',
+  sanctuary: '#f2c46b',
+  animals: '#7fd36a',
+};
+
+/**
+ * The world behind each door (district-world.tsx): a wide strip of the door's
+ * own picture, enlarged twice (Real-ESRGAN) so it stays sharp across a wide
+ * screen. `top` and `height` say where the strip lies in the door's picture,
+ * as fractions of its height, so the door can open exactly onto it (engine.tsx).
+ */
+export const WORLD_WIDTHS = [800, 1280, 1920, 2720] as const;
+/** Districts whose own page is light: their world does not darken into night at its foot. */
+export const WORLD_LIGHT_BELOW: ReadonlySet<DistrictId> = new Set<DistrictId>(['sanctuary']);
+export const WORLD_SIZE = { width: 2720, height: 1280 } as const;
+export const WORLD_CROP: Record<DistrictId, { top: number; height: number }> = {
+  mercadito: { top: 0.3936, height: 0.3125 },
+  services: { top: 0.3936, height: 0.3125 },
+  work: { top: 0.4438, height: 0.3125 },
+  yavayago: { top: 0.4438, height: 0.3125 },
+  community: { top: 0.4438, height: 0.3125 },
+  sanctuary: { top: 0.3438, height: 0.3125 },
+  animals: { top: 0.4639, height: 0.3125 },
+};
+
 export type ImageFormat = 'avif' | 'webp';
 
 export function flSrcSet(name: string, widths: readonly number[], format: ImageFormat): string {
@@ -50,5 +81,6 @@ export function firstLightFiles(districts: readonly DistrictId[]): string[] {
     ...HORIZON_WIDTHS.flatMap((w) => formats.map((f) => `first-light/horizon-${w}.${f}`)),
     ...HORIZON_TALL_WIDTHS.flatMap((w) => formats.map((f) => `first-light/horizon-tall-${w}.${f}`)),
     ...districts.flatMap((id) => DOOR_WIDTHS.flatMap((w) => formats.map((f) => `first-light/door-${id}-${w}.${f}`))),
+    ...districts.flatMap((id) => WORLD_WIDTHS.flatMap((w) => formats.map((f) => `first-light/world-${id}-${w}.${f}`))),
   ];
 }

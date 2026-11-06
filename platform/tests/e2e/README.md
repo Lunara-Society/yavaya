@@ -76,3 +76,22 @@ cannot be counted), Free's limits on goals and repeating reminders, saving,
 ticking and forgetting, and, as an administrator trying Max, connecting a real
 public MCP server (mcp.deepwiki.com), refusing a private address, listing and
 calling its tools, and removing it. Needs internet access for the MCP part.
+
+## The First Light, the worlds and the switches — `first-light.cjs`
+
+The home page as the First Light (phone and seven widths, indexed, sound off
+until asked for, no layout shift, reduced motion), the doors settling onto
+each district's world, every district's world at two widths, and — given an
+administrator — each of Admin's "Diseño del sitio" switches turned off (the
+previous design back) and on again. With a member and the site run as
+`ROXI_AGENT_ID=agent_localtest`, Roxi's states on the page too.
+
+```bash
+npx tsx --conditions=react-server tests/e2e/roxi-plans-setup.ts > /tmp/plans.json
+npx tsx --conditions=react-server tests/e2e/roxi-setup.ts > /tmp/roxi.json
+LOOKS_ADMIN=/tmp/plans.json BASE=http://localhost:3100 node tests/e2e/first-light.cjs /tmp/roxi.json
+```
+
+The switch checks leave both switches on, as they found them. Against the
+live site, run it without `LOOKS_ADMIN` and without a member: it then only
+reads pages.

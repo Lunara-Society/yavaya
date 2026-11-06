@@ -16,6 +16,7 @@ import type { MessageKey } from '@/i18n/dictionaries/es';
 import { currentLightDate, memberTimezone, readDailyKinds } from '@/server/domains/sanctuary/daily';
 import { setDailyKindsAction } from './actions';
 import { loginHref } from '@/server/auth/return-path';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 const KIND_LABEL: Record<DailyKind, MessageKey> = {
   prayer: 'sanctuary.daily.kind.prayer',
@@ -56,6 +57,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
+      <DistrictWorld id="sanctuary" show={Object.keys(query).length === 0} />
       {/* The Sanctuary's own shape: candlelight and a page of a book. A tall,
           quiet photograph with the title in its centre; then the day's light
           set like an epigraph, alone on the page; then the churches' words

@@ -16,6 +16,7 @@ import { Rotulo } from '@/ui/site/rotulo';
 import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,6 +52,7 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="animals" tone="animals">
+      <DistrictWorld id="animals" show={Object.keys(query).length === 0} />
       {/* Animales' own shape: a gallery. The photograph is the first thing,
           framed like a print, because here a face is what finds a home; the
           way to adopt reads as a path, one step after the other; and the

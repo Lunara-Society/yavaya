@@ -18,6 +18,7 @@ import { WidenedNote } from '@/ui/site/widened-note';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { FabWhenAway } from '@/ui/components/fab-when-away';
 import { Rotulo } from '@/ui/site/rotulo';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -71,6 +72,7 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="mercadito" tone="mercadito">
+      <DistrictWorld id="mercadito" show={Object.keys(params).length === 0} />
       {/* Mercadito's own shape: a market stall. The awning on top, one big
           search, categories you swipe through, and the goods in a tight grid. */}
       <section className="mc-top">

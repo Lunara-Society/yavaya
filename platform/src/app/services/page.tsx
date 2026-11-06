@@ -12,6 +12,7 @@ import { Rotulo } from '@/ui/site/rotulo';
 import { getProviderProfile, listBoard } from '@/server/domains/services/service';
 import { availabilityAction } from './actions';
 import { loginHref } from '@/server/auth/return-path';
+import { DistrictWorld } from '@/ui/first-light/district-world';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,6 +45,7 @@ export default async function ServicesBoard({ searchParams }: { searchParams: Pr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="services" tone="services">
+      <DistrictWorld id="services" show={Object.keys(params).length === 0} />
       {/* Servicios' own shape: a help desk. The question and "I need it today"
           on the left, someone at work on the right, and every kind of help
           laid out below as tiles. The guide film waits at the end. */}
