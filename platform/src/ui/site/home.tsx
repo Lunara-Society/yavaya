@@ -82,8 +82,28 @@ const GLYPHS: Record<Exclude<DistrictId, 'sanctuary'>, string> = {
     '<g fill="currentColor" stroke="none"><ellipse cx="6.4" cy="10.6" rx="2" ry="2.5"/><ellipse cx="9.9" cy="6.4" rx="2" ry="2.6"/><ellipse cx="14.1" cy="6.4" rx="2" ry="2.6"/><ellipse cx="17.6" cy="10.6" rx="2" ry="2.5"/><path d="M12 11.4c-3 0-5.6 3.9-5.6 6.3 0 1.6 1.2 2.4 2.6 2.4 1.2 0 1.9-.6 3-.6s1.8.6 3 .6c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.6-6.3-5.6-6.3z"/></g>',
 };
 
-function Glyph({ id }: { id: Exclude<DistrictId, 'sanctuary'> }) {
+export function Glyph({ id }: { id: Exclude<DistrictId, 'sanctuary'> }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: GLYPHS[id] }} />;
+}
+
+/** A district's mark as the home pages draw it: Santuario's is a photograph, the rest are drawn. Shared with the First Light preview. */
+export function DistrictMark({ id }: { id: DistrictId }) {
+  return id === 'sanctuary' ? <SanctuaryEmblem /> : <Glyph id={id} />;
+}
+
+/**
+ * "¿Qué necesitas hoy?" (the Roxi proposal of 6 November 2026): for a signed-in
+ * member, five doors that open Roxi with the request already said. Shared by
+ * both home pages so the two never drift apart.
+ */
+export function heroDoors(t: Translator) {
+  return [
+    { key: 'help', label: t('roxi.door.help'), ask: t('roxi.door.help_ask'), href: '/services/new' },
+    { key: 'sell', label: t('roxi.door.sell'), ask: t('roxi.door.sell_ask'), href: '/mercadito/publish' },
+    { key: 'work', label: t('roxi.door.work'), ask: t('roxi.door.work_ask'), href: '/work' },
+    { key: 'community', label: t('roxi.door.community'), ask: t('roxi.door.community_ask'), href: '/community' },
+    { key: 'talk', label: t('roxi.door.talk'), ask: '', href: '/roxi/hoy' },
+  ];
 }
 
 function Arrow() {
@@ -133,13 +153,7 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
             <FrontDoor
               variant="hero"
               title={t('roxi.door.title')}
-              doors={[
-                { key: 'help', label: t('roxi.door.help'), ask: t('roxi.door.help_ask'), href: '/services/new' },
-                { key: 'sell', label: t('roxi.door.sell'), ask: t('roxi.door.sell_ask'), href: '/mercadito/publish' },
-                { key: 'work', label: t('roxi.door.work'), ask: t('roxi.door.work_ask'), href: '/work' },
-                { key: 'community', label: t('roxi.door.community'), ask: t('roxi.door.community_ask'), href: '/community' },
-                { key: 'talk', label: t('roxi.door.talk'), ask: '', href: '/roxi/hoy' },
-              ]}
+              doors={heroDoors(t)}
             />
           ) : null}
           {/* The ribbon's line, which the rest of the site shows under its header: what is open, one click from the whole answer. */}
@@ -178,7 +192,7 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
                       <HomeCardScene id={id} sizes={cardSizes(id)} eager={FIRST_ROW.includes(id)} />
                     </span>
                     <span className="hx-emblem" aria-hidden="true">
-                      {id === 'sanctuary' ? <SanctuaryEmblem /> : <Glyph id={id} />}
+                      <DistrictMark id={id} />
                     </span>
                     <span className="hx-card-text">
                       <span className="hx-card-name">{c.districts[id].name}</span>

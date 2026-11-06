@@ -11,6 +11,8 @@ import { tidyText } from './tidy';
 import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE, writePrefs } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
 import { reportPresence } from './presence';
+import { ROXI_ASK_EVENT } from './ask';
+import { publishRoxiState } from './state-bus';
 
 /**
  * The conversation with Roxi. Loaded only when a member opens it: the
@@ -990,6 +992,35 @@ export default function RoxiPanel({
 
   const voice = phase === 'live' && mode === 'voice';
   const orbState: OrbState = phase === 'connecting' || waiting ? 'thinking' : voice ? (speaking ? 'speaking' : 'listening') : 'idle';
+
+  /*
+   * What she is doing, for the presence shown elsewhere on the page
+   * (state-bus.ts). Every field is something already true here; "completed"
+   * is stamped only when a tool really finished or a confirmation was allowed.
+   */
+  const confirming = entries.some((entry) => entry.kind === 'confirm' && entry.state === 'open');
+  const allowedCount = entries.filter((entry) => entry.kind === 'confirm' && entry.state === 'allowed').length;
+  let lastYouUnanswered = false;
+  for (const entry of entries) if (entry.kind === 'you') lastYouUnanswered = Boolean(entry.unanswered);
+  const problem = micIssue !== null || lastYouUnanswered;
+  const previousActivity = useRef(activity);
+  const previousAllowed = useRef(allowedCount);
+  useEffect(() => {
+    const finished = (previousActivity.current !== null && activity === null) || allowedCount > previousAllowed.current;
+    previousActivity.current = activity;
+    previousAllowed.current = allowedCount;
+    // Tucked away, she is not "open" to the page: a call to her from elsewhere brings the panel back (below).
+    publishRoxiState({ open: !aside, phase, orb: orbState, waiting, activity, confirming, problem, ...(finished ? { completedAt: Date.now() } : {}) });
+  }, [aside, phase, orbState, waiting, activity, confirming, problem, allowedCount]);
+  useEffect(() => {
+    const back = () => setAside(false);
+    window.addEventListener(ROXI_ASK_EVENT, back);
+    return () => window.removeEventListener(ROXI_ASK_EVENT, back);
+  }, []);
+  useEffect(
+    () => () => publishRoxiState({ open: false, phase: 'idle', orb: 'idle', waiting: false, activity: null, confirming: false, problem: false }),
+    [],
+  );
   let lastSaid: string | undefined;
   let lastSaidId = 0;
   for (const entry of entries) {

@@ -1,3 +1,4 @@
+import './home-header.css';
 import './home.css';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';

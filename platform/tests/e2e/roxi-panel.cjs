@@ -118,9 +118,10 @@ const notes = (page, fragment) => log(page).locator('.roxi-msg.is-note', { hasTe
     await page.locator('.roxi-round.is-end').click();
     await page.locator('.roxi-talk').waitFor();
     check('after voice: the welcome and suggestions are back, the greeting not repeated', (await page.locator('.roxi-chips').isVisible()) && (await log(page).locator('.roxi-msg', { hasText: 'soy Roxi' }).count()) === 0);
-    await page.locator('.roxi-chip', { hasText: 'tokens' }).click();
-    await log(page).locator('.roxi-msg.is-roxi', { hasText: 'Respuesta a: ¿Cuántos tokens tengo?' }).waitFor({ timeout: 30_000 }).catch(() => undefined);
-    check('the tokens suggestion is sent and answered', (await log(page).locator('.roxi-msg.is-roxi', { hasText: 'Respuesta a: ¿Cuántos tokens tengo?' }).count()) === 1);
+    // The "Mi mundo" suggestion (it took the tokens one's place in Roxi's second wave).
+    await page.locator('.roxi-chip', { hasText: 'mi mundo' }).click();
+    await log(page).locator('.roxi-msg.is-roxi', { hasText: 'Respuesta a: ¿Qué hay de nuevo en mi mundo?' }).waitFor({ timeout: 30_000 }).catch(() => undefined);
+    check('a suggestion is sent and answered', (await log(page).locator('.roxi-msg.is-roxi', { hasText: 'Respuesta a: ¿Qué hay de nuevo en mi mundo?' }).count()) === 1);
     check('voice: two conversations, one per mode', agent.sockets.length === 2, agent.sockets.length);
     await context.close();
   }

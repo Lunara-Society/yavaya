@@ -8,6 +8,7 @@ import type { RoxiMember, RoxiOpening } from './roxi-panel';
 import { RoxiPresence } from './presence';
 import { ROXI_ASK_EVENT } from './ask';
 import { RoxiWelcomeNote, type RoxiWelcome } from './welcome-note';
+import { publishRoxiState } from './state-bus';
 
 const RoxiPanel = dynamic(() => import('./roxi-panel'), { ssr: false });
 // Opened from the panel or the check-in, rarely: it loads when asked for, not with every page.
@@ -66,6 +67,12 @@ export function RoxiRoot() {
   useEffect(() => {
     if (quiet) setOpen(false);
   }, [quiet]);
+
+  // Whether she is here at all, for the presence shown elsewhere on the page (state-bus.ts).
+  const available = Boolean(session?.enabled) && !quiet;
+  useEffect(() => {
+    publishRoxiState({ available, open: available && open });
+  }, [available, open]);
 
   // Any page can open Roxi with a request already said: window.dispatchEvent(new CustomEvent(ROXI_ASK_EVENT, { detail: { text } })).
   useEffect(() => {

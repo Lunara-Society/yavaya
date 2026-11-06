@@ -409,6 +409,16 @@ illustration — and only then.
 The guilloché seal and ornamental rules are drawn in code
 (`src/ui/site/art.tsx`).
 
+**The First Light preview's pictures** (`/first-light`, since 6 November
+2026; [`FIRST-LIGHT.md`](FIRST-LIGHT.md)) are in `public/first-light/`. The
+Guardian is the owner's approved artwork, cut out and separated into four
+layers and two light maps without retouching or redrawing. The dawn horizon
+and the seven doors were made for the page with an image model through the
+owner's ElevenLabs account. **Inspected 6 November 2026** at full size: no
+lettering or logos, no malformed people. The Mercadito and Comunidad doors
+show people and carry the "Ilustración" note; the other doors are places.
+The preview is not the home page: `/` still shows the pictures above.
+
 ---
 
 ## District structure (owner decision, October 2026)

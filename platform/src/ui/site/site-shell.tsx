@@ -264,7 +264,7 @@ export async function SiteShell({
             </div>
             {groups.map(([label, ids]) => (
               <div key={label}>
-                <h4>{label}</h4>
+                <h2 className="foot-h">{label}</h2>
                 <ul>
                   {ids.map((id) => (
                     <li key={id}>

@@ -149,10 +149,13 @@ const nextConfig: NextConfig = {
       // swapped for the guide's stills under the same names), so a day, not a
       // year — but not zero either: on a slow connection, re-checking every
       // photo and font on every page is time a phone does not have.
-      ...['art', 'brand', 'fonts', 'tokens', 'guide', 'share'].map((folder) => ({
+      ...['art', 'brand', 'fonts', 'tokens', 'guide', 'share', 'first-light'].map((folder) => ({
         source: `/${folder}/:path*`,
         headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
       })),
+      // The First Light preview is not to be indexed. Its robots meta tag can be
+      // streamed after <head> for ordinary browsers, so the header says it too.
+      { source: '/first-light', headers: [{ key: 'X-Robots-Tag', value: 'noindex' }] },
     ];
   },
 };
