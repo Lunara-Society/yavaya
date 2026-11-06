@@ -182,6 +182,8 @@ export const paymentDomainEnum = pgEnum('payment_domain', [
   'yavayago_commercial',
   'marketplace',
   'impact_donation',
+  'roxi_plan',
+  'roxi_credits',
 ]);
 
 export const paymentStatusEnum = pgEnum('payment_status', [

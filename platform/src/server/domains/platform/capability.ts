@@ -9,6 +9,10 @@ import { twoStepAvailable } from '@/server/domains/identity/two-step';
 import { canVerifyPhones, phoneVerifierAvailability } from '@/server/domains/identity/phone/verifier';
 import { googleSignIn } from '@/server/domains/identity/google';
 import { roxiAvailability } from '@/server/domains/roxi/service';
+import { billingReadiness } from '@/server/domains/roxi/billing';
+import { itemsAvailable } from '@/server/domains/roxi/items';
+import { connectorsAvailable } from '@/server/domains/roxi/connectors/service';
+import { googleConnectorAvailable } from '@/server/domains/roxi/connectors/google';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -93,6 +97,52 @@ export function integrationCapabilities(): Capability[] {
       blockedBy: roxi.available
         ? undefined
         : 'Set ROXI_AGENT_ID to the ElevenLabs agent (docs/roxi/README.md). ELEVENLABS_API_KEY is optional and makes conversations start only from signed links.',
+    },
+    {
+      key: 'roxi_plans',
+      nameKey: 'capability.roxi_plans.name',
+      detailKey: 'capability.roxi_plans.detail',
+      // Sold only when their credit limits can be kept: Stripe to take the
+      // money and an ElevenLabs key to read each conversation's real cost.
+      state: roxi.available && billingReadiness().ready ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: (() => {
+        const readiness = billingReadiness();
+        if (readiness.ready) return roxi.available ? undefined : 'Roxi herself is not configured (ROXI_AGENT_ID).';
+        return [
+          readiness.missing.includes('metering') ? 'ELEVENLABS_API_KEY (Agents permission) is not set, so conversation costs cannot be read back and credits cannot be counted; then enable authentication on the agent so only signed links open conversations.' : '',
+          readiness.missing.includes('payments') ? 'Stripe is not configured.' : '',
+        ]
+          .filter(Boolean)
+          .join(' ');
+      })(),
+    },
+    {
+      key: 'roxi_memory',
+      nameKey: 'capability.roxi_memory.name',
+      detailKey: 'capability.roxi_memory.detail',
+      state: roxi.available && itemsAvailable() ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: itemsAvailable() ? undefined : 'Set ROXI_KEY (at least 32 random characters): goals, reminders and moments are sealed with it and are never stored without it.',
+    },
+    {
+      key: 'roxi_connectors_google',
+      nameKey: 'capability.roxi_connectors_google.name',
+      detailKey: 'capability.roxi_connectors_google.detail',
+      state: googleConnectorAvailable() && connectorsAvailable() ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy:
+        googleConnectorAvailable() && connectorsAvailable()
+          ? undefined
+          : 'In the Google Cloud project behind GOOGLE_CLIENT_ID: enable the Gmail and Calendar APIs, add their scopes to the consent screen, register /api/roxi/connectors/google/callback as a redirect URI, then set ROXI_GOOGLE_CONNECTOR=enabled (and ROXI_KEY). Gmail scopes are restricted: until Google verifies the app, at most 100 accounts can connect and the consent screen warns them.',
+    },
+    {
+      key: 'roxi_connectors_custom',
+      nameKey: 'capability.roxi_connectors_custom.name',
+      detailKey: 'capability.roxi_connectors_custom.detail',
+      state: roxi.available && connectorsAvailable() ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: connectorsAvailable() ? undefined : 'Set ROXI_KEY: connector secrets are sealed with it and are never stored without it.',
     },
     {
       key: 'kyc',

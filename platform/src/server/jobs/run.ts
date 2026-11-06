@@ -20,6 +20,8 @@ import { grantDueStarterTokens } from '@/server/domains/tokens/service';
 import { goUpkeep } from '@/server/domains/go/service';
 import { tripsUpkeep } from '@/server/domains/go/trips';
 import { purgeSiteStats } from '@/server/domains/stats/service';
+import { meterOpenConversations, plansUpkeep } from '@/server/domains/roxi/billing';
+import { deliverDueReminders } from '@/server/domains/roxi/items';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -170,6 +172,17 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     };
   },
 
+  /** Roxi: each finished conversation's real cost counted as credits; renewals and endings of paid plans read from Stripe. */
+  'roxi-upkeep': async () => {
+    const meter = await meterOpenConversations(db());
+    const plans = await plansUpkeep(db());
+    const reminders = await deliverDueReminders(db());
+    if (meter.metered + meter.unmetered + plans.renewed + plans.ended + plans.replaced + reminders.sent === 0) return { summary: 'no Roxi upkeep needed' };
+    return {
+      summary: `metered ${meter.metered} conversation(s) (${meter.waiting} waiting, ${meter.unmetered} never reported); ${plans.renewed} plan(s) renewed, ${plans.ended} ended, ${plans.replaced} replaced subscription(s) cancelled; ${reminders.sent} reminder(s) sent`,
+    };
+  },
+
   /** Days 1 to 6 of the starter tokens, for members verified in the last 7 days. */
   'starter-tokens': async () => {
     const result = await grantDueStarterTokens(db());
@@ -198,7 +211,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'purge-site-stats', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'purge-site-stats', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'roxi-upkeep', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

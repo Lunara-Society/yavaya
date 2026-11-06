@@ -64,6 +64,7 @@ missed tick costs nothing and an overlapping one is harmless:
 | Suspensions: lift timed ones that have run out, email the member (`SANCTION_RULES`) | `jobs.cjs lift-suspensions` | in the tick (every 15 min) |
 | Activity: delete events older than a week (`LIVE_FEED_RULES.keepDays`) | `jobs.cjs purge-activity` | in the tick (every 15 min) |
 | Payments: re-read any payment whose notification never arrived | `jobs.cjs reconcile-payments` | in the tick (every 15 min) |
+| Roxi: meter finished conversations, read plan renewals from Stripe, send due reminders | `jobs.cjs roxi-upkeep` | in the tick (every 15 min) |
 | YavayaGo: cancel orders a store never answered, take idle drivers offline, erase old drop-off points | `jobs.cjs go-upkeep` | in the tick (every 15 min) |
 | Starter tokens: days 1–6 after a member verifies their email | `jobs.cjs starter-tokens` | in the tick (every 15 min) |
 | Daily email summary | `jobs.cjs send-digests` | every 15 min (each member gets at most one a day) |

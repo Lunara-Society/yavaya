@@ -28,6 +28,7 @@ export default defineConfig({
       SIGNAL_PEPPER: 'test-signal-pepper-value-that-is-long-enough-0000',
       SAFE_SPACE_KEY: 'test-safe-space-key-value-that-is-long-enough-00',
       TWO_STEP_KEY: 'test-two-step-key-value-that-is-long-enough-0000',
+      ROXI_KEY: 'test-roxi-key-value-that-is-long-enough-00000000',
       PRIMARY_ADMIN_EMAIL: 'yavayago@gmail.com',
     },
   },

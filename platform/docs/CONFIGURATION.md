@@ -1328,6 +1328,27 @@ times and chapter times are in `src/config/guide.ts`.
   its film can say something that is no longer true, so a change to a
   district's rules is also a reason to re-cut its film.
 
+## Roxi's plans, memory and connectors — `ROXI_KEY`, `ELEVENLABS_API_KEY`, `ROXI_GOOGLE_CONNECTOR`
+
+Free, Pro ($5.99) and Max ($14.99), credits, extra credits and connectors are
+described, with the arithmetic behind the prices, in
+[`docs/roxi/PLANS.md`](roxi/PLANS.md). The prices, allowances and the
+skill-to-plan map are business numbers chosen on the owner's instruction of
+5 November 2026 ("you figure out price and skills") and live in
+`ROXI_PLANS`, `ROXI_CREDIT_PACKS`, `ROXI_CREDIT_RULES` and `ROXI_SKILL_PLANS`.
+
+| Setting | What it turns on |
+| --- | --- |
+| `ROXI_KEY` (≥ 32 random characters) | Goals, reminders, moments and connections. Everything a member gives Roxi to keep is sealed with it; without it none of it is stored. Rotate with `ROXI_KEY_PREVIOUS`. |
+| `ELEVENLABS_API_KEY` (Agents permission) | Counting credits: each conversation opens from a signed link whose id is recorded, and its real cost is read back when it ends. **Paid plans are not sold without it.** After setting it, enable authentication on the agent so conversations cannot start any other way. |
+| `ROXI_GOOGLE_CONNECTOR=enabled` | Gmail and Calendar, once the Google Cloud project behind `GOOGLE_CLIENT_ID` has both APIs enabled, their scopes on the consent screen and `/api/roxi/connectors/google/callback` as a redirect URI. Restricted Gmail scopes: at most 100 accounts until Google verifies the app. |
+
+Not decided by the specification, chosen as technical defaults: 150 credits to
+open a conversation, 2 credits per connector call, purchased credits valid
+12 months, 30 tasks a day, 1,000 moments and 100 remembered facts per member,
+and a one-month first period for a plan whose exact Stripe period is read at
+the first renewal.
+
 ## Roxi — `ROXI_AGENT_ID`, `ELEVENLABS_API_KEY`
 
 Roxi, the assistant, is an ElevenLabs agent (`docs/roxi/README.md` has the

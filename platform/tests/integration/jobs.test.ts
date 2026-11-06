@@ -58,6 +58,7 @@ describe('scheduled jobs', () => {
       'purge-sessions',
       'purge-site-stats',
       'reconcile-payments',
+      'roxi-upkeep',
       'send-digests',
       'starter-tokens',
       'tick',

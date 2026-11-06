@@ -381,6 +381,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.yavayago_detail',
   },
   {
+    category: 'roxi',
+    channel: 'in_app',
+    labelKey: 'settings.notify.roxi',
+    detailKey: 'settings.notify.roxi_detail',
+  },
+  {
     category: 'moderation',
     channel: 'in_app',
     labelKey: 'settings.notify.moderation',

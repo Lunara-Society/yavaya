@@ -4,6 +4,8 @@ import { currentSession } from '@/server/auth/context';
 import { sameOrigin } from '@/app/api/go/upload';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { roxiAvailability, signedConversationUrl } from '@/server/domains/roxi/service';
+import { meteringOn, recordConversationStart, signedConversation } from '@/server/domains/roxi/billing';
+import { canStart, creditView } from '@/server/domains/roxi/credits';
 import { roxiPlatformStatus } from '@/server/domains/roxi/status';
 import { json } from '../shared';
 
@@ -28,6 +30,17 @@ export async function POST(request: Request) {
   const limit = await consumeRateLimit(db(), RATE_LIMITS.roxiConversation, `user:${session.user.userId}`);
   if (!limit.allowed) return json({ ok: false, message: t('roxi.error.daily_limit') }, 429);
   const status = roxiPlatformStatus(t);
+  // With metering on (an ElevenLabs key is set), a conversation opens only
+  // with credits left, and its id is recorded so its real cost can be read
+  // back and counted once it has ended (src/server/domains/roxi/billing.ts).
+  if (meteringOn()) {
+    const credits = await creditView(db(), session.user.userId);
+    if (!canStart(credits)) return json({ ok: false, message: t('roxi.error.no_credits'), plans: '/roxi' }, 402);
+    const signed = await signedConversation(availability.agentId);
+    if (!signed) return json({ ok: false, message: t('roxi.error.unavailable') }, 502);
+    if (signed.conversationId) await recordConversationStart(db(), { conversationId: signed.conversationId, userId: session.user.userId });
+    return json({ ok: true, signedUrl: signed.signedUrl, status, credits: credits.available });
+  }
   if (availability.signed) {
     const signedUrl = await signedConversationUrl(availability.agentId);
     if (!signedUrl) return json({ ok: false, message: t('roxi.error.unavailable') }, 502);

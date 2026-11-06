@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/server/db/client';
 import { serverEnv } from '@/config/env';
 import { settleFromProvider } from '@/server/domains/payments/service';
+import { plansUpkeep } from '@/server/domains/roxi/billing';
 
 /**
  * Where Stripe sends the buyer back (`?session_id=<session>`).
@@ -17,13 +18,17 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request, { params }: { params: Promise<{ provider: string }> }) {
   const { provider } = await params;
   const base = serverEnv().APP_URL.replace(/\/$/, '');
-  const back = (state: string) => NextResponse.redirect(`${base}/account/tokens?purchase=${state}`, 303);
   const query = new URL(request.url).searchParams;
+  // Roxi's plans and credits come back to their own page; tokens to theirs.
+  const page = query.get('next') === 'roxi' ? '/roxi' : '/account/tokens';
+  const back = (state: string) => NextResponse.redirect(`${base}${page}?purchase=${state}`, 303);
   if (provider !== 'stripe') return new NextResponse(null, { status: 404 });
   const id = query.get('session_id') ?? '';
   if (!/^cs_(live|test)_[A-Za-z0-9]{10,200}$/.test(id)) return back('returned');
   try {
     const result = await settleFromProvider(db(), { providerKey: provider, providerTransactionId: id, source: 'server_capture' });
+    // An upgrade from Pro to Max stops the Pro subscription now rather than at the next upkeep.
+    if (page === '/roxi' && result.applied) await plansUpkeep(db()).catch(() => undefined);
     return back(result.status === 'succeeded' && result.applied ? 'paid' : result.status === 'failed' ? 'failed' : 'returned');
   } catch (error) {
     // Not lost: the reconciliation job retries the capture.

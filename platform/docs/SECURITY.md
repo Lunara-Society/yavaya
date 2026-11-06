@@ -523,6 +523,29 @@ expiring share link of a trip. Hiding a marker in the browser is never the
 protection. `tests/e2e/live-tracking.cjs` checks all of this in a real
 browser, and that the map's demonstration sends nothing but page views.
 
+### Roxi's connectors and memory
+
+Members can connect Gmail/Calendar, MCP servers and APIs
+(`src/server/domains/roxi/connectors/`, `docs/roxi/PLANS.md`).
+
+- **Server-side request forgery.** A member-typed address must be https and
+  resolve only to public addresses. The check runs in the socket's DNS look-up
+  (`safe-http.ts`), so DNS rebinding cannot swap the address after the check.
+  Redirects are not followed. Answers are time- and size-limited.
+- **Actions outside Yavaya** run only with a confirmation token bound by HMAC
+  to the member, connection, tool and exact arguments (five minutes). The
+  server gives it to the browser, and the panel uses it only after the
+  member's tap. A prompt-injected Roxi can ask but cannot approve.
+- **Untrusted content.** Results from connected tools are marked as data;
+  Roxi's instructions forbid following instructions found in them.
+- **At rest.** Connector secrets, Google refresh tokens and members' goals,
+  reminders and moments are sealed with `ROXI_KEY`. This is encryption at
+  rest, not end to end. Reminder notifications never carry the reminder's
+  text.
+- **Credits** are counted from ElevenLabs' own cost report for conversations
+  Yavaya itself opened (signed links). A conversation id reported by a browser
+  is counted only if ElevenLabs says it was opened with that member's YAY ID.
+
 ## Visit statistics
 
 `POST /api/metrics` takes page views and speed measurements from Yavaya's own

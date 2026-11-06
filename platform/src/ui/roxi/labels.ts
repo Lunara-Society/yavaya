@@ -53,6 +53,14 @@ const KEYS = [
   'stop_waiting',
   'waited',
   'connect_error',
+  'plans_link',
+  'saved',
+  'saved_see',
+  'confirm_title',
+  'confirm_allow',
+  'confirm_decline',
+  'confirm_allowed',
+  'confirm_declined',
   'photo_sending',
   'photo_text',
   'photo_error',
@@ -80,11 +88,15 @@ const KEYS = [
 
 export type RoxiLabels = Record<(typeof KEYS)[number], string>;
 
+/** Labels whose placeholder the panel fills in itself. */
+const KEPT_PLACEHOLDERS: Partial<Record<(typeof KEYS)[number], string>> = { hello: 'name', waited: 'seconds', saved: 'title', confirm_title: 'connection' };
+
 export function roxiLabels(t: Translator): RoxiLabels {
   const labels = {} as RoxiLabels;
   for (const key of KEYS) {
     // The greeting and the wait keep their placeholders; the panel fills them in.
-    labels[key] = key === 'hello' ? t('roxi.ui.hello', { name: '{name}' }) : key === 'waited' ? t('roxi.ui.waited', { seconds: '{seconds}' }) : t(`roxi.ui.${key}`);
+    const keep = KEPT_PLACEHOLDERS[key];
+    labels[key] = keep ? t(`roxi.ui.${key}`, { [keep]: `{${keep}}` }) : t(`roxi.ui.${key}`);
   }
   return labels;
 }
@@ -110,6 +122,9 @@ const PRESENCE_KEYS = [
   'settings.quiet_hours',
   'settings.quiet_from',
   'settings.quiet_to',
+  'settings.plans',
+  'settings.memory',
+  'settings.connections',
   'settings.keep',
   'settings.speak',
   'settings.stored',

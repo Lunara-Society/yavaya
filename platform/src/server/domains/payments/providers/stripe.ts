@@ -51,6 +51,7 @@ type Session = {
   currency?: string | null;
   payment_intent?: string | null;
   client_reference_id?: string | null;
+  subscription?: string | null;
 };
 
 export class StripeProvider implements PaymentProvider {
@@ -69,7 +70,7 @@ export class StripeProvider implements PaymentProvider {
     return /_test_/.test(this.secret() ?? '');
   }
 
-  private async call(path: string, init: { method: 'GET' | 'POST'; body?: Record<string, unknown>; idempotencyKey?: string }): Promise<Session & Record<string, unknown>> {
+  private async call(path: string, init: { method: 'GET' | 'POST' | 'DELETE'; body?: Record<string, unknown>; idempotencyKey?: string }): Promise<Session & Record<string, unknown>> {
     const secret = this.secret();
     if (!secret) throw new ProviderUnconfiguredError(this.key, ['STRIPE_SECRET_KEY']);
     const response = await fetch(`${API}${path}`, {
@@ -133,8 +134,71 @@ export class StripeProvider implements PaymentProvider {
       status,
       money: { amountMinor: typeof session.amount_total === 'number' ? session.amount_total : 0, currency },
       failureCode: status === 'failed' ? 'expired' : undefined,
-      raw: { id: session.id, status: session.status, payment_status: session.payment_status, amount_total: session.amount_total, currency: session.currency, payment_intent: session.payment_intent ?? null },
+      raw: { id: session.id, status: session.status, payment_status: session.payment_status, amount_total: session.amount_total, currency: session.currency, payment_intent: session.payment_intent ?? null, subscription: session.subscription ?? null },
     };
+  }
+
+  /**
+   * A monthly subscription on Stripe's hosted page (Roxi's plans). Settles
+   * like a one-off payment: the session reads `complete` and `paid` once the
+   * first month is paid, and `subscription` names what renews. Renewals are
+   * read from the subscription itself (getSubscription), not from webhooks.
+   */
+  async createSubscriptionCheckout(request: CheckoutRequest & { interval: 'month' }): Promise<CheckoutSession> {
+    const session = await this.call('/checkout/sessions', {
+      method: 'POST',
+      idempotencyKey: `checkout-${request.reference}`,
+      body: {
+        mode: 'subscription',
+        client_reference_id: request.reference,
+        metadata: { reference: request.reference },
+        subscription_data: { metadata: { reference: request.reference }, description: request.description.slice(0, 200) },
+        line_items: {
+          0: {
+            quantity: 1,
+            price_data: {
+              currency: request.money.currency.toLowerCase(),
+              unit_amount: request.money.amountMinor,
+              recurring: { interval: request.interval },
+              product_data: { name: request.description.slice(0, 120) },
+            },
+          },
+        },
+        success_url: `${request.returnUrl}${request.returnUrl.includes('?') ? '&' : '?'}session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: request.cancelUrl,
+        locale: 'es-419',
+      },
+    });
+    if (!session.id || !session.url) throw new Error('Stripe returned a checkout session without id or url');
+    return { providerTransactionId: session.id, redirectUrl: session.url, expiresAt: new Date(Date.now() + 24 * 3_600_000) };
+  }
+
+  /** A subscription as Stripe has it now. The period sits on the item in newer API versions and on the subscription in older ones. */
+  async getSubscription(id: string): Promise<{ status: string; cancelAtPeriodEnd: boolean; periodStart: Date | null; periodEnd: Date | null }> {
+    if (!/^sub_[A-Za-z0-9]{6,200}$/.test(id)) throw new Error('not a Stripe subscription id');
+    const sub = (await this.call(`/subscriptions/${id}`, { method: 'GET' })) as Record<string, unknown>;
+    const item = ((sub.items as { data?: Array<Record<string, unknown>> } | undefined)?.data ?? [])[0] ?? {};
+    const pick = (key: string) => (typeof sub[key] === 'number' ? (sub[key] as number) : typeof item[key] === 'number' ? (item[key] as number) : null);
+    const start = pick('current_period_start');
+    const end = pick('current_period_end');
+    return {
+      status: String(sub.status ?? 'unknown'),
+      cancelAtPeriodEnd: sub.cancel_at_period_end === true,
+      periodStart: start ? new Date(start * 1000) : null,
+      periodEnd: end ? new Date(end * 1000) : null,
+    };
+  }
+
+  /** At period end (the member keeps what they paid for), or now (replaced by another plan). */
+  async cancelSubscription(id: string, when: 'period_end' | 'now'): Promise<void> {
+    if (!/^sub_[A-Za-z0-9]{6,200}$/.test(id)) throw new Error('not a Stripe subscription id');
+    if (when === 'now') await this.call(`/subscriptions/${id}`, { method: 'DELETE' });
+    else await this.call(`/subscriptions/${id}`, { method: 'POST', body: { cancel_at_period_end: true } });
+  }
+
+  async resumeSubscription(id: string): Promise<void> {
+    if (!/^sub_[A-Za-z0-9]{6,200}$/.test(id)) throw new Error('not a Stripe subscription id');
+    await this.call(`/subscriptions/${id}`, { method: 'POST', body: { cancel_at_period_end: false } });
   }
 
   async verifyWebhook(_input: { rawBody: string; headers: Record<string, string> }): Promise<WebhookVerification> {

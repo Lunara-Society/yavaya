@@ -48,8 +48,10 @@ type Entry =
    */
   | { id: number; kind: 'roxi' | 'you'; text: string; unanswered?: boolean; pending?: boolean; greeting?: boolean }
   /** `retry`: a message that got no answer in time, which the note's button sends again. */
-  | { id: number; kind: 'note'; text: string; retry?: string }
+  | { id: number; kind: 'note'; text: string; retry?: string; link?: { href: string; label: string } }
   | { id: number; kind: 'photo'; url: string }
+  /** An action outside Yavaya Roxi wants to take; nothing happens until the member taps Allow. */
+  | { id: number; kind: 'confirm'; connection: string; tool: string; lines: string[]; state: 'open' | 'allowed' | 'declined' }
   | { id: number; kind: 'results'; cards: RoxiResultCard[]; more: boolean };
 
 /** Something the member or Roxi said. */
@@ -93,6 +95,11 @@ const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'che
   my_account: 'checking',
   open_page: 'opening',
   open_result: 'opening',
+  my_memory: 'checking',
+  remember: 'preparing',
+  update_memory: 'preparing',
+  connected_tools: 'checking',
+  use_connected_tool: 'checking',
 };
 
 /** Entries this tab keeps (sessionStorage) so closing the panel or reloading does not lose the thread. Photos stay out: they are files, not text. */
@@ -404,6 +411,10 @@ export default function RoxiPanel({
   const spokenUpTo = useRef(0);
   // A page change during an answer, told to Roxi once that answer has arrived.
   const contextLater = useRef<string | null>(null);
+  // The open conversation's id, reported when it ends so its cost is counted.
+  const liveId = useRef<string | null>(null);
+  // Answers to confirmation cards still on screen, by entry id.
+  const confirmations = useRef(new Map<number, (allowed: boolean) => void>());
 
   const add = useCallback((entry: NewEntry) => {
     setEntries((current) => [...current, { ...entry, id: nextId.current++ } as Entry]);
@@ -575,8 +586,23 @@ export default function RoxiPanel({
         stepAside: () => {
           if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
         },
+        saved: (text, href) => add({ kind: 'note', text: labels.saved.replace('{title}', text), link: { href, label: labels.saved_see } }),
+        confirm: (summary) =>
+          new Promise<boolean>((resolve) => {
+            const id = nextId.current++;
+            // The member is reading, not waiting on Roxi: no countdown while the card is open.
+            setAside(false);
+            setWaiting(false);
+            confirmations.current.set(id, (allowed) => {
+              confirmations.current.delete(id);
+              setEntries((current) => current.map((entry) => (entry.id === id && entry.kind === 'confirm' ? { ...entry, state: allowed ? 'allowed' : 'declined' } : entry)));
+              setWaiting(true);
+              resolve(allowed);
+            });
+            setEntries((current) => [...current, { id, kind: 'confirm', connection: summary.connection, tool: summary.tool, lines: summary.lines.slice(0, 4), state: 'open' }]);
+          }),
       }),
-    [add, router, countPrompted],
+    [add, router, countPrompted, labels.saved, labels.saved_see],
   );
 
   /*
@@ -623,9 +649,10 @@ export default function RoxiPanel({
         signedUrl?: string;
         status?: string;
         message?: string;
+        plans?: string;
       } | null;
       if (!body?.ok) {
-        add({ kind: 'note', text: body?.message ?? labels.connect_error });
+        add({ kind: 'note', text: body?.message ?? labels.connect_error, ...(body?.plans ? { link: { href: body.plans, label: labels.plans_link } } : {}) });
         setWaiting(false);
         setPhase(entries.length > 0 ? 'ended' : 'idle');
         return;
@@ -690,6 +717,10 @@ export default function RoxiPanel({
         onCanSendFeedbackChange: ({ canSendFeedback }) => setCanFeedback(canSendFeedback),
         onDisconnect: (details) => {
           conversation.current = null;
+          // Credits are counted from what the conversation really cost; the server reads it from ElevenLabs.
+          const ended = liveId.current;
+          liveId.current = null;
+          if (ended) void fetch('/api/roxi/usage', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ conversationId: ended }) }).catch(() => undefined);
           setCanFeedback(false);
           setSpeaking(false);
           setWaiting(false);
@@ -730,6 +761,11 @@ export default function RoxiPanel({
         },
       });
       conversation.current = live;
+      try {
+        liveId.current = live.getId();
+      } catch {
+        liveId.current = null;
+      }
       setMode(wanted);
       setMuted(false);
       setPhase('live');
@@ -1140,10 +1176,39 @@ export default function RoxiPanel({
             if (voice && entry.id === lastSaidId) return null;
             // Her greeting waits behind the welcome, which already says hello, until the member has said something.
             if (entry.kind === 'roxi' && entry.greeting && !started) return null;
+            if (entry.kind === 'confirm') {
+              return (
+                <li key={entry.id} className={`roxi-msg is-confirm is-${entry.state}`}>
+                  <p className="roxi-confirm-head">{labels.confirm_title.replace('{connection}', entry.connection)}</p>
+                  {entry.lines.map((line, index) => (
+                    <p key={index} className="roxi-confirm-line">
+                      {line}
+                    </p>
+                  ))}
+                  {entry.state === 'open' ? (
+                    <span className="roxi-confirm-actions">
+                      <button type="button" className="roxi-retry" onClick={() => confirmations.current.get(entry.id)?.(true)}>
+                        {labels.confirm_allow}
+                      </button>
+                      <button type="button" className="roxi-retry is-quiet" onClick={() => confirmations.current.get(entry.id)?.(false)}>
+                        {labels.confirm_decline}
+                      </button>
+                    </span>
+                  ) : (
+                    <p className="roxi-confirm-state">{entry.state === 'allowed' ? labels.confirm_allowed : labels.confirm_declined}</p>
+                  )}
+                </li>
+              );
+            }
             if (entry.kind !== 'roxi') {
               return (
                 <li key={entry.id} className={`roxi-msg is-${entry.kind}${entry.kind === 'you' && entry.unanswered ? ' is-unanswered' : ''}`}>
                   {entry.text}
+                  {entry.kind === 'note' && entry.link ? (
+                    <a className="roxi-retry" href={entry.link.href}>
+                      {entry.link.label}
+                    </a>
+                  ) : null}
                   {entry.kind === 'note' && entry.retry ? (
                     <button
                       type="button"

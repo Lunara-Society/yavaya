@@ -267,6 +267,13 @@
       "when": 1793422820768,
       "tag": "0037_remembered_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793920795117,
+      "tag": "0038_roxi_plans",
+      "breakpoints": true
     }
   ]
 }

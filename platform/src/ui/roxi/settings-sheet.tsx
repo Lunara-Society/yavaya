@@ -107,6 +107,11 @@ export function RoxiSettingsSheet({ labels, onClose }: { labels: RoxiPresenceLab
             <span>{labels['settings.speak']}</span>
           </label>
           <p className="roxi-sheet-note">{labels['settings.stored']}</p>
+          <p className="roxi-sheet-links">
+            <a href="/roxi">{labels['settings.plans']}</a>
+            <a href="/roxi/memory">{labels['settings.memory']}</a>
+            <a href="/roxi/connections">{labels['settings.connections']}</a>
+          </p>
           {notice ? (
             <p className="roxi-sheet-done" role="status">
               {notice}

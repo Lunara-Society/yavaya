@@ -1006,6 +1006,9 @@ export const siteEn: SiteContent = {
             'Roxi does not publish, pay or send anything to other people. She prepares a draft in the usual form and you decide whether to send it. On Mercadito, the audit record notes that Roxi helped write the listing.',
             'Roxi is not available in Espacio Violeta or on the sign-in and sign-up pages, and nothing from Espacio Violeta reaches her. There is a daily limit of conversations per person.',
             'On your device, Roxi keeps her settings and, if you allow it, the conversation in that tab, which is erased when you close it; none of it is stored at Yavaya, and you can erase it all from her settings. Of her greetings and simulated calls, Yavaya only counts per day how many there were and what happened, without knowing whose.',
+            'If you ask Roxi to remember something (a goal, a task, a reminder, a moment, a detail about you), she asks first and keeps it at Yavaya, **encrypted**. You can see, change and delete all of it in “My things with Roxi”. A reminder\'s notice never carries its text.',
+            'If you connect your tools (Gmail, Google Calendar, an MCP server, an API), Roxi only uses them with you and asks your permission before sending or changing anything. Keys are stored **encrypted** and deleted when you remove the connection; with Google the permission is also revoked. What Roxi reads there goes through ElevenLabs and its language model like the rest of the conversation.',
+            'To count your plan\'s credits, Yavaya keeps each conversation\'s id, how long it lasted and what it cost. It does not keep what was said.',
           ],
         },
         {

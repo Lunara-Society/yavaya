@@ -5,6 +5,7 @@ import { paymentEvents, paymentTransactions, paymentWebhookEvents } from '@/serv
 import { errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { creditPurchasedTokens } from '@/server/domains/tokens/service';
+import { grantPurchasedCredits, setPlan } from '@/server/domains/roxi/credits';
 import type { PaymentProvider } from './provider';
 import { StripeProvider } from './providers/stripe';
 
@@ -21,6 +22,12 @@ import { StripeProvider } from './providers/stripe';
  */
 
 const providers = new Map<string, PaymentProvider>([['stripe', new StripeProvider()]]);
+
+/** Stripe, for what only it does here: subscriptions. Null when it is not configured. */
+export function stripeProvider(): StripeProvider | null {
+  const stripe = providers.get('stripe');
+  return stripe instanceof StripeProvider && stripe.availability().available ? stripe : null;
+}
 
 /** The provider a new checkout uses: the first one that is configured. */
 export function activeProvider(): PaymentProvider | null {
@@ -52,7 +59,9 @@ export type PaymentDomain =
   | 'works_subscription'
   | 'yavayago_commercial'
   | 'marketplace'
-  | 'impact_donation';
+  | 'impact_donation'
+  | 'roxi_plan'
+  | 'roxi_credits';
 
 export type StartCheckoutInput = {
   domain: PaymentDomain;
@@ -68,6 +77,8 @@ export type StartCheckoutInput = {
   cancelUrl: string;
   /** The payer's country (ISO alpha-2), when known. */
   country?: string | null;
+  /** 'month' for a subscription renewed by the provider (Roxi's plans). One-off by default. */
+  recurring?: 'month';
 };
 
 /**
@@ -127,7 +138,7 @@ export async function startCheckout(
     return created.id;
   });
 
-  const session = await provider.createCheckout({
+  const request = {
     reference,
     money: { amountMinor: input.amountMinor, currency: input.currency },
     description: input.description,
@@ -135,7 +146,14 @@ export async function startCheckout(
     cancelUrl: input.cancelUrl,
     country: input.country ?? null,
     metadata: { reference },
-  });
+  };
+  let session;
+  if (input.recurring) {
+    if (!(provider instanceof StripeProvider)) throw errors.integrationUnconfigured(`payments:${provider.key}:subscriptions`);
+    session = await provider.createSubscriptionCheckout({ ...request, interval: input.recurring });
+  } else {
+    session = await provider.createCheckout(request);
+  }
 
   await database.transaction(async (tx) => {
     await tx
@@ -167,6 +185,8 @@ export async function startCheckout(
 export type Fulfiller = (
   tx: Executor,
   transaction: typeof paymentTransactions.$inferSelect,
+  /** What the provider reported, as read server to server (a subscription id, for one). */
+  detail: Record<string, unknown>,
 ) => Promise<void>;
 
 const fulfillers = new Map<PaymentDomain, Fulfiller>();
@@ -185,6 +205,27 @@ registerFulfiller('tokens', async (tx, transaction) => {
   const tokens = Number(transaction.intent.tokens);
   if (!transaction.userId || !Number.isInteger(tokens) || tokens <= 0) throw errors.internal(`token purchase ${transaction.id} has no valid intent`);
   await creditPurchasedTokens(tx, { userId: transaction.userId, tokens, paymentTransactionId: transaction.id });
+});
+
+/**
+ * Roxi's plans and extra credits (src/server/domains/roxi/credits.ts). A plan
+ * starts for one month from the payment; the subscription Stripe reports is
+ * kept so that renewals and cancellations can be read from it later.
+ */
+registerFulfiller('roxi_plan', async (tx, transaction, detail) => {
+  const plan = transaction.intent.plan;
+  if (!transaction.userId || (plan !== 'pro' && plan !== 'max')) throw errors.internal(`roxi plan payment ${transaction.id} has no valid intent`);
+  const subscription = typeof detail.subscription === 'string' ? detail.subscription : null;
+  const start = new Date();
+  const end = new Date(start);
+  end.setUTCMonth(end.getUTCMonth() + 1);
+  await setPlan(tx, { userId: transaction.userId, plan, source: 'payment', providerSubscriptionId: subscription, periodStart: start, periodEnd: end });
+});
+
+registerFulfiller('roxi_credits', async (tx, transaction) => {
+  const credits = Number(transaction.intent.credits);
+  if (!transaction.userId || !Number.isInteger(credits) || credits <= 0) throw errors.internal(`roxi credit purchase ${transaction.id} has no valid intent`);
+  await grantPurchasedCredits(tx, { userId: transaction.userId, credits, paymentReference: transaction.reference });
 });
 
 /**
@@ -251,7 +292,7 @@ export async function applyProviderOutcome(
     if (nextStatus === 'succeeded') {
       const fulfiller = fulfillers.get(transaction.domain as PaymentDomain);
       if (!fulfiller) throw errors.internal(`no fulfiller registered for ${transaction.domain}`);
-      await fulfiller(tx, { ...transaction, status: 'succeeded' });
+      await fulfiller(tx, { ...transaction, status: 'succeeded' }, params.detail ?? {});
     }
 
     await recordAudit(tx, {

@@ -86,6 +86,15 @@ const serverSchema = z.object({
   // Seals authenticator secrets at rest. Like SAFE_SPACE_KEY: without it,
   // two-step sign-in is simply not offered.
   TWO_STEP_KEY: z.string().optional(),
+  // Seals what members give Roxi to keep: connector secrets (an MCP token, an
+  // API key, a Google refresh token) and their goals, reminders and saved
+  // moments. Without it those features are unavailable, never stored in clear.
+  ROXI_KEY: z.string().optional(),
+  ROXI_KEY_PREVIOUS: z.string().optional(),
+  // "enabled" once the Google Cloud project behind GOOGLE_CLIENT_ID has the
+  // Gmail and Calendar APIs on, their scopes on the consent screen, and
+  // /api/roxi/connectors/google/callback as a redirect address.
+  ROXI_GOOGLE_CONNECTOR: z.preprocess((value) => (value === '' ? undefined : value), z.enum(['enabled']).optional()),
   // The keys being rotated away from. While set, what they sealed still opens,
   // and the release step reseals it under the current key (security/reseal.ts).
   // See CONFIGURATION.md § Rotating keys.

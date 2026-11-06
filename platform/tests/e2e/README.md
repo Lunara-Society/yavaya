@@ -61,3 +61,18 @@ The listing check needs the publish form, which appears only with media
 storage configured: locally, `MEDIA_STORAGE_PROVIDER=s3` and any `MEDIA_S3_*`
 values are enough for it to render (nothing is uploaded). `E2E_SHOTS=<dir>`
 saves screenshots of the panel and the form.
+
+## Roxi's plans, memory and connections — `roxi-plans.cjs`
+
+Against a local server started with `ROXI_KEY` and `ROXI_AGENT_ID` set:
+
+```bash
+npx tsx --conditions=react-server tests/e2e/roxi-plans-setup.ts > /tmp/plans.json
+PLANS_SETUP=/tmp/plans.json BASE=http://localhost:3100 node tests/e2e/roxi-plans.cjs
+```
+
+Checks the plans page signed out and signed in (no buy button while credits
+cannot be counted), Free's limits on goals and repeating reminders, saving,
+ticking and forgetting, and, as an administrator trying Max, connecting a real
+public MCP server (mcp.deepwiki.com), refusing a private address, listing and
+calling its tools, and removing it. Needs internet access for the MCP part.

@@ -6,10 +6,11 @@ import { useEffect, useState } from 'react';
 import type { RoxiLabels, RoxiPresenceLabels } from './labels';
 import type { RoxiMember, RoxiOpening } from './roxi-panel';
 import { RoxiPresence } from './presence';
-import { RoxiSettingsSheet } from './settings-sheet';
 import { RoxiWelcomeNote, type RoxiWelcome } from './welcome-note';
 
 const RoxiPanel = dynamic(() => import('./roxi-panel'), { ssr: false });
+// Opened from the panel or the check-in, rarely: it loads when asked for, not with every page.
+const RoxiSettingsSheet = dynamic(() => import('./settings-sheet').then((module) => module.RoxiSettingsSheet), { ssr: false });
 
 type Session =
   | { enabled: false }

@@ -875,3 +875,108 @@ export const ROXI_RULES = {
   /** Default quiet hours (local time, 24 h clock): no check-in and no call. The member can change them. */
   quietHours: { from: 21, to: 7 },
 } as const;
+
+/**
+ * Roxi's three plans (the owner's request, 5 November 2026: "Free, what we
+ * have now; Pro and Max — you figure out price and skills; both paid plans
+ * have credit limits; extra credits can be bought"). The prices, allowances
+ * and the skill-to-plan map below were chosen on that instruction from what
+ * a conversation actually costs at ElevenLabs (docs/roxi/PLANS.md has the
+ * arithmetic). They are business numbers the owner may retune.
+ *
+ * A credit is a fixed slice of what Roxi really costs to run, read back from
+ * ElevenLabs after each conversation — not a count of messages — so a long
+ * spoken conversation uses more than a short written one, and a change of
+ * model or voice cannot silently make the plans lose money.
+ */
+export const ROXI_CREDIT_RULES = {
+  /** US dollars of provider cost one credit stands for: 1 credit = $0.001. */
+  usdPerCredit: 0.001,
+  /**
+   * Below this balance a new conversation does not open (about a minute of
+   * voice). A conversation already open is never cut off mid-sentence: it may
+   * take the balance below zero, and the next one waits for credits.
+   */
+  minimumToStart: 150,
+  /** Credits each connector call uses (a Gmail search, an MCP tool call): the server work is small but not free. */
+  connectorCall: 2,
+  /** Months purchased credits stay usable. Plan credits reset each period and do not roll over. */
+  purchasedCreditMonths: 12,
+} as const;
+
+export type RoxiPlanKey = 'free' | 'pro' | 'max';
+
+export type RoxiPlan = {
+  key: RoxiPlanKey;
+  /** Monthly price in US cents; 0 for Free. */
+  priceMinor: number;
+  currency: 'USD';
+  /** Credits granted each month (each billing period for paid plans, each calendar month for Free). */
+  monthlyCredits: number;
+  /** Active goals Roxi keeps (skill 1: the proposal caps it at three). */
+  goals: number;
+  /** Active reminders. */
+  reminders: number;
+  /** Whether reminders can repeat (every week, every month). */
+  recurringReminders: boolean;
+  /** Connected tools at once. */
+  connections: number;
+  /** Which kinds of connection the plan may add. */
+  connectorKinds: ReadonlyArray<'google' | 'mcp' | 'api'>;
+  /** People in a family circle, including the owner (0: none). */
+  familyCircle: number;
+};
+
+export const ROXI_PLANS: Readonly<Record<RoxiPlanKey, RoxiPlan>> = {
+  free: { key: 'free', priceMinor: 0, currency: 'USD', monthlyCredits: 1_500, goals: 1, reminders: 5, recurringReminders: false, connections: 0, connectorKinds: [], familyCircle: 0 },
+  pro: { key: 'pro', priceMinor: 599, currency: 'USD', monthlyCredits: 4_000, goals: 3, reminders: 30, recurringReminders: true, connections: 3, connectorKinds: ['google'], familyCircle: 0 },
+  max: { key: 'max', priceMinor: 1_499, currency: 'USD', monthlyCredits: 10_000, goals: 3, reminders: 100, recurringReminders: true, connections: 10, connectorKinds: ['google', 'mcp', 'api'], familyCircle: 6 },
+};
+
+/** Extra credits, for any member on any plan. Usable for ROXI_CREDIT_RULES.purchasedCreditMonths. */
+export const ROXI_CREDIT_PACKS: ReadonlyArray<{ key: string; credits: number; priceMinor: number; currency: 'USD' }> = [
+  { key: 'roxi_credits_1000', credits: 1_000, priceMinor: 199, currency: 'USD' },
+  { key: 'roxi_credits_3000', credits: 3_000, priceMinor: 499, currency: 'USD' },
+  { key: 'roxi_credits_10000', credits: 10_000, priceMinor: 1_499, currency: 'USD' },
+];
+
+/**
+ * Which plan each of Roxi's skills needs. The proposal's skills by number
+ * (docs/roxi/PLANS.md). Help that people with little need — finding work
+ * without money, a lost animal, community help — stays free on purpose.
+ */
+export const ROXI_SKILL_PLANS = {
+  // Free: what Roxi already does, and help that must never sit behind a payment.
+  search: 'free',
+  drafts: 'free',
+  surprise: 'free', // 6
+  good_moments: 'free', // 7
+  celebrations: 'free', // 8
+  thank_you: 'free', // 10
+  problem_solver: 'free', // 11
+  lost_pet_guard: 'free', // 14
+  start_with_nothing: 'free', // 16
+  skill_discovery: 'free', // 17
+  help_match: 'free', // 18
+  goals: 'free', // 1 (one goal on Free, three on Pro and Max)
+  reminders: 'free', // 5 (five on Free, more and repeating on Pro and Max)
+  day_plan: 'free', // 3
+  // Pro
+  daily_opportunity: 'pro', // 2
+  neighbourhood: 'pro', // 4
+  budget_finder: 'pro', // 12
+  sell_with_me: 'pro', // 15 (the follow-ups and price comparison; the draft itself stays free)
+  connectors_google: 'pro',
+  // Max
+  family_circle: 'max', // 13
+  business_insights: 'max', // the pulpería: "am I actually making money?"
+  connectors_custom: 'max', // MCP servers and APIs of the member's own
+} as const satisfies Record<string, RoxiPlanKey>;
+
+export type RoxiSkill = keyof typeof ROXI_SKILL_PLANS;
+
+const PLAN_ORDER: Record<RoxiPlanKey, number> = { free: 0, pro: 1, max: 2 };
+
+export function planAllows(plan: RoxiPlanKey, skill: RoxiSkill): boolean {
+  return PLAN_ORDER[plan] >= PLAN_ORDER[ROXI_SKILL_PLANS[skill]];
+}
