@@ -15,9 +15,11 @@ import {
   DOOR_WIDTHS,
   DOORS_WITH_PEOPLE,
   FL_PATH,
+  GUARDIAN_FILE,
   GUARDIAN_LIGHTS,
   GUARDIAN_PARTS,
   GUARDIAN_WIDTHS,
+  type GuardianVersion,
   HORIZON_TALL_WIDTHS,
   HORIZON_WIDTHS,
   flSrc,
@@ -60,6 +62,8 @@ type Props = {
   location: Awaited<ReturnType<typeof locationBarProps>>;
   /** At /first-light while the home page is another: says it is a preview, with the way to the home page. */
   preview?: boolean;
+  /** The owner's choice of Guardian (Admin → Diseño del sitio). */
+  guardian?: GuardianVersion;
 };
 
 function Arrow() {
@@ -80,7 +84,9 @@ function Picture({ name, widths, sizes, width, height, className, loading, prior
   );
 }
 
-export function FirstLightBody({ c, t, signedIn, location, preview = false }: Props) {
+export function FirstLightBody({ c, t, signedIn, location, preview = false, guardian = 'second' }: Props) {
+  // The first Guardian's light maps and eye glow; the second is shown exactly as drawn, with none (assets.ts).
+  const lit = guardian === 'first';
   const roxiLabels = {
     name: t('firstlight.roxi.name'),
     talk: t('firstlight.roxi.talk'),
@@ -105,18 +111,22 @@ export function FirstLightBody({ c, t, signedIn, location, preview = false }: Pr
         </div>
 
         {/* The Guardian of the First Light: the approved artwork in four layers, put back exactly as drawn. */}
-        <div className="fl-guardian" data-fl-guardian aria-hidden="true">
+        <div className="fl-guardian" data-fl-guardian={guardian} aria-hidden="true">
           <span className="fl-aura" />
           {GUARDIAN_PARTS.map((part) => (
-            <Picture key={part} className={`fl-g fl-g-${part}`} name={`guardian-${part}`} widths={GUARDIAN_WIDTHS} sizes={GUARDIAN_SIZES} width={840} height={840} priority={part === 'body'} />
+            <Picture key={part} className={`fl-g fl-g-${part}`} name={`${GUARDIAN_FILE[guardian]}-${part}`} widths={GUARDIAN_WIDTHS} sizes={GUARDIAN_SIZES} width={840} height={840} priority={part === 'body'} />
           ))}
-          {GUARDIAN_LIGHTS.map((light) => (
-            <span key={light} className={`fl-g-light fl-g-${light}`} />
-          ))}
-          <span className="fl-g-sweep">
-            <span className="fl-g-band" />
-          </span>
-          <span className="fl-eye" />
+          {lit ? (
+            <>
+              {GUARDIAN_LIGHTS.map((light) => (
+                <span key={light} className={`fl-g-light fl-g-${light}`} />
+              ))}
+              <span className="fl-g-sweep">
+                <span className="fl-g-band" />
+              </span>
+              <span className="fl-eye" />
+            </>
+          ) : null}
         </div>
         <div className="fl-shade" aria-hidden="true" />
 

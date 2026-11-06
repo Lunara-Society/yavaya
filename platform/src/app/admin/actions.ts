@@ -131,7 +131,8 @@ export async function setLookAction(formData: FormData) {
     if (isDomainError(error)) redirect('/admin');
     throw error;
   }
-  revalidatePath('/');
+  // The logo is in every page's header and metadata: refresh them all.
+  revalidatePath('/', 'layout');
   revalidatePath('/admin');
   redirect('/admin?look=saved#looks');
 }

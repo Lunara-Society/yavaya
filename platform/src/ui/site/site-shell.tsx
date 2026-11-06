@@ -8,7 +8,8 @@ import { QuickControls } from '@/ui/components/quick-controls';
 import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
 import { NightScene } from './art';
-import { Icon, Mark, SunMark, TokenCoin } from './icons';
+import { BrandMark } from './brand-mark';
+import { Icon, TokenCoin } from './icons';
 import { Md } from './md';
 import { LocationBar } from './location-bar';
 import { LiveTicker } from './live-ticker';
@@ -120,7 +121,7 @@ export async function SiteShell({
         {home ? <TopScroll /> : null}
         <div className="wrap top-in">
           <Link className="brand" href="/" aria-label={`${c.ui.brand} — ${c.nav.home}`}>
-            {home ? <SunMark /> : <Mark />}
+            <BrandMark home={home} />
             <span>YAVAYA</span>
           </Link>
           {home ? (
@@ -247,7 +248,7 @@ export async function SiteShell({
           <div className="foot-grid">
             <div className="foot-brand">
               <Link className="brand" href="/">
-                {home ? <SunMark size={40} /> : <Mark />}
+                {home ? <BrandMark home size={40} /> : <BrandMark />}
                 <span>YAVAYA</span>
               </Link>
               <p className="muted mt">{c.ui.footer.about}</p>

@@ -27,7 +27,7 @@ export default async function FirstLightPage() {
   const location = await locationBarProps(t, locale);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
-      <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} preview />
+      <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} guardian={(await lookEnabled(db(), 'guardian')) ? 'second' : 'first'} preview />
     </SiteShell>
   );
 }

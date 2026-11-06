@@ -269,7 +269,7 @@ const COUNT_AUDIO = () => {
       return page.locator(`#looks li[data-look="${look}"]`).getAttribute('data-on');
     };
     await page.goto(`${BASE}/admin`, { waitUntil: 'domcontentloaded' });
-    check((await page.locator('#looks li[data-look="home"][data-on="true"]').count()) === 1 && (await page.locator('#looks li[data-look="worlds"][data-on="true"]').count()) === 1, 'Admin shows both looks, on');
+    check((await page.locator('#looks li[data-on="true"]').count()) === 4, 'Admin shows the looks, on');
 
     check((await flip('home')) === 'false', 'the owner can go back to the previous home page');
     await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
@@ -291,6 +291,29 @@ const COUNT_AUDIO = () => {
     check((await flip('worlds')) === 'true', 'and show them again');
     await page.goto(`${BASE}/mercadito`, { waitUntil: 'networkidle' });
     check((await page.locator('[data-dw="mercadito"]').count()) === 1, 'the worlds are back at once');
+
+    // The owner's new Guardian, shown exactly as drawn: its own four layers and nothing painted on it.
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    const second = page.locator('[data-fl-guardian="second"]');
+    check(
+      (await second.count()) === 1 && (await second.locator('img[src*="/guardian2-"]').count()) === 4 && (await second.locator('.fl-g-light, .fl-g-sweep, .fl-eye').count()) === 0,
+      'the home page shows the new Guardian in its four layers, with no light painted on it',
+    );
+    check((await flip('guardian')) === 'false', 'the owner can go back to the first Guardian');
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
+    check((await page.locator('[data-fl-guardian="first"] img[src*="/guardian-body-"]').count()) === 1, 'the first Guardian is back at once');
+    check((await flip('guardian')) === 'true', 'and the new one again');
+
+    // The owner's new logo: the header mark, the icons and the share card, and the seal back when it is off.
+    await page.goto(`${BASE}/mercadito`, { waitUntil: 'networkidle' });
+    const cardOf = () => page.locator('meta[property="og:image"]').first().getAttribute('content');
+    check((await page.locator('header.top .brand .brand-logo img').count()) === 1 && /og-logo\.jpg/.test((await cardOf()) ?? '') && (await page.locator('link[rel="icon"][href*="logo-favicon"]').count()) === 1, 'the new logo is the mark, the icon and the share card');
+    const manifest = await (await page.request.get(`${BASE}/manifest.webmanifest`)).json();
+    check(manifest.icons.every((icon) => icon.src.startsWith('/logo-icon')), 'the phone icon is the new logo');
+    check((await flip('logo')) === 'false', 'the owner can go back to the seal');
+    await page.goto(`${BASE}/mercadito`, { waitUntil: 'networkidle' });
+    check((await page.locator('header.top .brand img.brand-mark').count()) === 1 && /\/og\.jpg/.test((await cardOf()) ?? ''), 'the seal and its share card are back at once');
+    check((await flip('logo')) === 'true', 'and the new logo again');
     await context.close();
   }
 

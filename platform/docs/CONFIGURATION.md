@@ -410,11 +410,12 @@ The guilloché seal and ornamental rules are drawn in code
 (`src/ui/site/art.tsx`).
 
 **The site's looks are switches** (since 6 November 2026): Admin → Diseño
-del sitio has "Portada: La Primera Luz" and "Mundos de los distritos", each
-a feature flag an administrator can turn off and on again without a deploy
-(audited; effective within a minute). Both are on until someone touches them
+del sitio has "Portada: La Primera Luz", "Mundos de los distritos", "El
+Guardián de la portada" and "Logo", each a feature flag an administrator can turn off and on again without a deploy
+(audited; effective within a minute). All are on until someone touches them
 (`SITE_LOOK_RULES` in `config/business-rules.ts`); off, the home page of 31
-October 2026 and the district pages as they were come back. See
+October 2026, the district pages as they were, the first Guardian and the
+seal come back. See
 [`FIRST-LIGHT.md`](FIRST-LIGHT.md).
 
 **The First Light's pictures** (the home page since 6 November 2026;

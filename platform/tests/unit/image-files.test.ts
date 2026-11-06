@@ -19,7 +19,7 @@ import {
 } from '@/ui/site/art';
 import { DISTRICT_IDS } from '@/ui/site/blocks';
 import { HERO_FILM } from '@/ui/site/hero-film';
-import { SEAL_WIDTHS, SUN_WIDTHS } from '@/ui/site/icons';
+import { LOGO_MARK_WIDTHS, SEAL_WIDTHS, SUN_WIDTHS } from '@/ui/site/icons';
 
 /**
  * Every file a srcset offers must exist: a browser that picks a missing size
@@ -77,5 +77,13 @@ describe('published image sizes', () => {
       return [f.poster, f.posterWebp, ...f.posterSet.split(', ').map((entry) => entry.split(' ')[0]!)];
     });
     expect(missing(files.map((p) => p.replace(/^\//, '')))).toEqual([]);
+  });
+  it("has the owner's new logo: the mark at every width, both icon sets and both share cards", () => {
+    const files = [
+      ...LOGO_MARK_WIDTHS.flatMap((w) => [`brand/logo-mark-${w}.avif`, `brand/logo-mark-${w}.webp`]),
+      'logo-favicon.ico', 'logo-icon-192.png', 'logo-icon-512.png', 'logo-icon-maskable-512.png', 'logo-apple-touch-icon.png', 'og-logo.jpg',
+      'favicon.ico', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'og.jpg',
+    ];
+    expect(missing(files)).toEqual([]);
   });
 });

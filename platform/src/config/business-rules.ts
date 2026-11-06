@@ -168,6 +168,10 @@ export const SITE_LOOK_RULES = {
   home: true,
   /** Each district opening with the world behind its door; off, the district pages as they were. */
   worlds: true,
+  /** The owner's new Guardian (6 November 2026, wings spread) on the First Light; off, the first Guardian. */
+  guardian: true,
+  /** The owner's new logo (6 November 2026, the Guardian on the YAVAYA pedestal) in the header, icons and share card; off, the seal. */
+  logo: true,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

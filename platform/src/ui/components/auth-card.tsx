@@ -2,7 +2,8 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { Translator } from '@/i18n';
 import { SESSION_RULES } from '@/config/business-rules';
-import { Icon, Mark } from '@/ui/site/icons';
+import { BrandMark } from '@/ui/site/brand-mark';
+import { Icon } from '@/ui/site/icons';
 import { PageScene } from '@/ui/site/art';
 import { loginHref } from '@/server/auth/return-path';
 import { GoogleButton } from './google-button';
@@ -60,7 +61,7 @@ export function AuthCard({
     <div className="auth-split">
       <section className="auth-card">
         <header className="auth-head">
-          <Mark size={56} />
+          <BrandMark size={56} />
           <h1>{title}</h1>
           <p>{subtitle}</p>
         </header>

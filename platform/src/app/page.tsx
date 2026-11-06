@@ -26,7 +26,7 @@ import { servedCountryNames, siteUrl } from '@/server/seo';
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, location, firstLight] = await Promise.all([servedCountryNames(), locationBarProps(t, locale), lookEnabled(db(), 'home')]);
+  const [countries, location, firstLight, guardian2] = await Promise.all([servedCountryNames(), locationBarProps(t, locale), lookEnabled(db(), 'home'), lookEnabled(db(), 'guardian')]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
       <JsonLd
@@ -54,7 +54,7 @@ export default async function HomePage() {
         ]}
       />
       {firstLight ? (
-        <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} />
+        <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} guardian={guardian2 ? 'second' : 'first'} />
       ) : (
         <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} />
       )}

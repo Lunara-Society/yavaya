@@ -6,6 +6,8 @@ import { ThemeKeeper } from '@/ui/site/theme-keeper';
 import { RoxiRoot } from '@/ui/roxi/roxi-root';
 import { FormCheck, type FormCheckLabels } from '@/ui/site/form-check';
 import { createTranslator } from '@/i18n';
+import { db } from '@/server/db/client';
+import { lookEnabled } from '@/server/domains/platform/looks';
 import { ERROR_TEXTS_ID, errorTexts } from '@/i18n/error-texts';
 import './globals.css';
 
@@ -14,7 +16,8 @@ import './globals.css';
  * Search Console verification code is an environment variable the owner
  * sets on the host: GOOGLE_SITE_VERIFICATION.
  *
- * The share card (og.jpg) and the icons live in /public. Pages set their own
+ * The share card and the icons live in /public, in two sets: the owner's new
+ * logo and the seal before it, chosen by the "logo" look switch. Pages set their own
  * title and description; Open Graph has no title here on purpose, so sharing
  * a page shows that page's own title rather than the site's.
  */
@@ -25,7 +28,11 @@ export async function generateMetadata(): Promise<Metadata> {
    * sort orders (`?category=…`) count as the page they filter. Rendered as a
    * tag, not a header: the host's edge merges duplicate Link headers.
    */
-  const [pathname, locale] = await Promise.all([(async () => (await headers()).get('x-pathname') ?? '/')(), resolveLocale()]);
+  const [pathname, locale, newLogo] = await Promise.all([(async () => (await headers()).get('x-pathname') ?? '/')(), resolveLocale(), lookEnabled(db(), 'logo')]);
+  // The owner's new logo while its switch is on (Admin → Diseño del sitio); the seal's files otherwise, untouched.
+  const brand = newLogo
+    ? { favicon: '/logo-favicon.ico', icon: '/logo-icon-192.png', apple: '/logo-apple-touch-icon.png', card: '/og-logo.jpg' }
+    : { favicon: '/favicon.ico', icon: '/icon-192.png', apple: '/apple-touch-icon.png', card: '/og.jpg' };
   const canonical = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
   // The default title and description speak the visitor's language, like the page under them.
   const t = createTranslator(locale);
@@ -38,10 +45,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('meta.description'),
     icons: {
       icon: [
-        { url: '/favicon.ico', sizes: '48x48' },
-        { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { url: brand.favicon, sizes: '48x48' },
+        { url: brand.icon, sizes: '192x192', type: 'image/png' },
       ],
-      apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+      apple: [{ url: brand.apple, sizes: '180x180' }],
     },
     manifest: '/manifest.webmanifest',
     alternates: { canonical },
@@ -52,9 +59,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Yavaya',
       locale: locale === 'en' ? 'en_US' : 'es_LA',
       alternateLocale: [locale === 'en' ? 'es_LA' : 'en_US'],
-      images: [{ url: '/og.jpg', width: 1200, height: 630, alt: t('meta.title') }],
+      images: [{ url: brand.card, width: 1200, height: 630, alt: t('meta.title') }],
     },
-    twitter: { card: 'summary_large_image', images: ['/og.jpg'] },
+    twitter: { card: 'summary_large_image', images: [brand.card] },
     ...(verification ? { verification: { google: verification } } : {}),
   };
 }

@@ -55,6 +55,7 @@
 
 .top.is-home .brand { min-height: 44px; gap: 10px; font-size: clamp(1.45rem, 0.75rem + 2vw, 2.35rem); letter-spacing: 0.035em; }
 .top.is-home .brand-sun { display: block; flex: none; width: var(--hx-sun); height: var(--hx-sun); filter: drop-shadow(0 2px 10px rgba(243, 217, 143, 0.22)); }
+.top.is-home .brand-logo { width: var(--hx-sun); height: var(--hx-sun); }
 :root[data-theme="light"] .top.is-home .brand > span { background-image: linear-gradient(180deg, #fff4c4 0%, #f2cf5b 45%, #c8961c 100%); }
 
 /* The tagline under the name, the design's gold rule beside it; wide screens only, and only over the photograph. */

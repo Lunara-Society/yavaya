@@ -20,6 +20,17 @@ export const GUARDIAN_PARTS = ['wing-l', 'wing-r', 'tail', 'body'] as const;
 export const GUARDIAN_LIGHTS = ['glint-gold', 'glint-violet'] as const;
 export type GuardianPart = (typeof GUARDIAN_PARTS)[number];
 
+/**
+ * Which Guardian the page shows (the owner's "guardian" switch). `second` is
+ * the owner's new artwork of 6 November 2026, wings spread: the same four
+ * parts, cut from its sky by tools/cinematic/guardian2_layers.py so that,
+ * stacked, they are the cut-out exactly. The owner asked that not the
+ * slightest detail of it change, so the page paints no light onto it: no
+ * light maps, no passing band, no glow on the eye. It only moves.
+ */
+export type GuardianVersion = 'first' | 'second';
+export const GUARDIAN_FILE: Record<GuardianVersion, string> = { first: 'guardian', second: 'guardian2' };
+
 /** 16:9 for a wide screen; the 9:16 centre of the same picture for a phone. */
 export const HORIZON_WIDTHS = [960, 1600, 2560] as const;
 export const HORIZON_TALL_WIDTHS = [640, 960, 1215] as const;
@@ -78,6 +89,7 @@ export function firstLightFiles(districts: readonly DistrictId[]): string[] {
   const formats: ImageFormat[] = ['avif', 'webp'];
   return [
     ...[...GUARDIAN_PARTS, ...GUARDIAN_LIGHTS].flatMap((part) => GUARDIAN_WIDTHS.flatMap((w) => formats.map((f) => `first-light/guardian-${part}-${w}.${f}`))),
+    ...GUARDIAN_PARTS.flatMap((part) => GUARDIAN_WIDTHS.flatMap((w) => formats.map((f) => `first-light/guardian2-${part}-${w}.${f}`))),
     ...HORIZON_WIDTHS.flatMap((w) => formats.map((f) => `first-light/horizon-${w}.${f}`)),
     ...HORIZON_TALL_WIDTHS.flatMap((w) => formats.map((f) => `first-light/horizon-tall-${w}.${f}`)),
     ...districts.flatMap((id) => DOOR_WIDTHS.flatMap((w) => formats.map((f) => `first-light/door-${id}-${w}.${f}`))),

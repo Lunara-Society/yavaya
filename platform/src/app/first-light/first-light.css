@@ -101,6 +101,19 @@
 .fl-g-wing-r { transform-origin: 61% 31%; }
 .fl-g-tail { transform-origin: 52% 62%; }
 .fl-g-light { position: absolute; inset: 0; pointer-events: none; }
+/*
+ * The second Guardian (the owner's of 6 November 2026, wings spread): its own shoulders and tail root,
+ * measured on its artwork. Nothing is painted on it (assets.ts); its square frame only cuts the
+ * outermost wingtips, so the fade at the sides is narrow, and the tail is not faded at all.
+ */
+.fl-guardian[data-fl-guardian="second"] {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 4%, #000 96%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 4%, #000 96%, transparent 100%);
+}
+.fl-guardian[data-fl-guardian="second"] .fl-g-wing-l { transform-origin: 35.7% 33.1%; }
+.fl-guardian[data-fl-guardian="second"] .fl-g-wing-r { transform-origin: 65.7% 33.1%; }
+.fl-guardian[data-fl-guardian="second"] .fl-g-tail { transform-origin: 49.7% 58.5%; }
+
 .fl-g-sweep { display: none; }
 .fl-eye { position: absolute; left: 45.3%; top: 18.7%; width: 4.4%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(255, 246, 214, 0.95) 0%, rgba(255, 196, 92, 0.45) 38%, transparent 70%); mix-blend-mode: screen; opacity: 0.45; }

@@ -6,16 +6,18 @@ until the visitor turns it on. Behind each door, the district opens with the
 world the door showed.
 
 **Status: the home page since 6 November 2026, on the owner's word — with a
-way back.** Both looks are switches in Admin → Diseño del sitio (only
+way back.** Each look is a switch in Admin → Diseño del sitio (only
 administrators, who hold `flags.manage`; every change is audited):
 
 | Switch | On | Off |
 | --- | --- | --- |
 | Portada: La Primera Luz | `/` is the First Light; `/first-light` leads to `/` | `/` is the home page of 31 October 2026; the First Light waits at `/first-light` as a `noindex` preview |
 | Mundos de los distritos | each district's front page opens with its world | the district pages as they were |
+| El Guardián de la portada | the owner's new Guardian (6 November 2026, wings spread) | the first Guardian, with its light maps |
+| Logo | the owner's new logo: header mark, favicon, phone icons, share card | the seal and its icons and share card |
 
 A switch takes effect within a minute (the flag cache is 30 s per process),
-without a deploy. Until someone touches one, both are on
+without a deploy. Until someone touches one, all are on
 (`SITE_LOOK_RULES` in `config/business-rules.ts`; the switches themselves are
 `server/domains/platform/looks.ts`). The previous home page stays in the tree
 (`src/ui/site/home.tsx`, `src/app/home.css`) for exactly this.
@@ -83,6 +85,38 @@ fade into the night instead of ending on a straight edge, and lets the tail's
 last feathers dissolve into the dawn, so the words under it stay readable
 without being pushed below the fold. Those are masks over the drawing, not
 changes to it.
+
+## The second Guardian and the logo (6 November 2026)
+
+The owner sent two pictures with one instruction: **not the slightest detail
+may change.** So:
+
+- **The Guardian** (wings spread) was cut from its sky with BiRefNet and split
+  into the same four parts by `tools/cinematic/guardian2_layers.py`. Every
+  pixel belongs to exactly one layer, unchanged; a wing or the tail also
+  carries, under the layer above it, the fully opaque pixels at its edge, so
+  turning a degree never opens a gap. The script asserts that the layers,
+  stacked, are the cut-out **exactly** (difference 0) at all three sizes, on
+  black, white and the page's night. The page paints nothing on it: no light
+  maps, no passing band, no glow on the eye. It moves (the wings breathe, the
+  tail sways, a tap lifts the wings) and that is all. Its square frame cuts
+  the outermost wingtips, so the sides fade over 4% instead of 9%, and the
+  tail is not faded. Files: `public/first-light/guardian2-*`, AVIF at full
+  colour resolution (4:4:4, ~41 dB against the cut-out; the usual 4:2:0
+  visibly softened the gold against the black) with lossless WebP behind it.
+- **The logo** is used only as crops and scaling
+  (`tools/cinematic/logo2_assets.py`): the mark is the square of it around the
+  Guardian's head, the orb and the arch, shown as a tile with rounded corners
+  (`src/ui/site/brand-mark.tsx`); the icons are the same square; the share
+  card is the whole logo on the page's obsidian. Files:
+  `public/brand/logo-mark-*`, `public/logo-*`, `public/og-logo.jpg`,
+  `public/brand/logo-1080.webp` (the whole logo, for press). The seal's files
+  are untouched, for the switch.
+- The originals (3840 px, about 30 MB) are not in git; the scripts read them
+  from `OWNER_ART`.
+- Not switched yet: a page about one thing without its own photo still
+  shares with the seal's card (`src/ui/site/share-meta.ts`), and the 24-second
+  film still shows the first Guardian.
 
 ## Pictures
 

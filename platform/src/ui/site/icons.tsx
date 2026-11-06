@@ -119,6 +119,9 @@ export function Mark({ size = 34, priority, sizes }: { size?: number; priority?:
  * favicon and the app icons still use the seal above.
  */
 export const SUN_WIDTHS = [96, 224];
+
+/** The widths the owner's new logo's mark is published at (public/brand/logo-mark-*; brand-mark.tsx). A test holds the files to this list. */
+export const LOGO_MARK_WIDTHS = [96, 192, 384];
 const SUN_SRCSET = SUN_WIDTHS.map((w) => `/brand/sun-${w}.webp ${w}w`).join(', ');
 
 export function SunMark({ size = 44 }: { size?: number }) {
