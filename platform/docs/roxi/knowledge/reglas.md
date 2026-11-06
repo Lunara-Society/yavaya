@@ -147,7 +147,7 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
 ## SESSION_RULES
 ```json
 {
-  "idleTimeoutMinutes": 120,
+  "idleTimeoutMinutes": 240,
   "absoluteTimeoutDays": 30,
   "rememberedIdleDays": 14,
   "freshSignInMinutes": 60
@@ -361,6 +361,7 @@ Valores por defecto de las reglas de negocio, tal como están en el código. Ope
   "maxQuantityPerLine": 20,
   "maxOpenOrdersPerCustomer": 2,
   "maxDeliveryKm": 15,
+  "storePinMaxKmFromPlace": 25,
   "menuMaxItems": 200,
   "maxPhotos": 1,
   "featureDays": 7,

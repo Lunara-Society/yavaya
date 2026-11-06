@@ -38,7 +38,7 @@ the one change a stranger holding the phone could use to lock the owner out.
 The cookie is `httpOnly` (an XSS bug cannot read it), `sameSite=lax` (a
 cross-site form post cannot carry it), and `secure` everywhere except local
 HTTP. It lives until the absolute expiry: the browser cannot see activity, so a
-cookie that expired by itself after two hours would sign out someone still using
+cookie that expired by itself after four hours would sign out someone still using
 the site. The server is what enforces the idle window.
 
 **Coming back after signing in** (since 25 October 2026). A page or form that
@@ -583,7 +583,7 @@ reads these tables.
   token is due for re-issue, but nothing re-issues it: that needs a point that
   can write the cookie on an ordinary page view (middleware, which runs on the
   edge without the database, or a route handler). A stolen cookie is limited by
-  the idle window (two hours, or 14 days for a session the member chose to
+  the idle window (four hours, or 14 days for a session the member chose to
   keep) and the 30-day absolute lifetime instead; signing out, "sign out the
   other devices" and suspension end it at once.
 

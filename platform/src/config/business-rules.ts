@@ -190,18 +190,19 @@ export const DEMO_CONTENT_RULES = {
 
 export const SESSION_RULES = {
   /**
-   * Signed out after two hours without activity (the owner's decision, 18
-   * October 2026). Every visit extends it, so someone using Yavaya is never
-   * thrown out mid-task; a phone left on a table is.
+   * Signed out after four hours without activity (the owner's decision of 6
+   * November 2026; two hours from 18 October). Every visit extends it, so
+   * someone using Yavaya is never thrown out mid-task; a phone left on a
+   * table is.
    */
-  idleTimeoutMinutes: 120,
+  idleTimeoutMinutes: 240,
   /** Activity is written at most this often, so a busy page is not a database write per request. */
   touchAfterMinutes: 5,
   absoluteTimeoutDays: 30,
   /**
    * "Mantener mi sesión iniciada" (a box the member ticks at sign-in, never
    * ticked for them): signed out after this many days without use instead of
-   * two hours, still within the 30-day absolute lifetime. Requested by the
+   * four hours, still within the 30-day absolute lifetime. Requested by the
    * owner's stabilisation brief (October 2026); the figure is ours, chosen
    * as the common practice for an explicit opt-in, and documented in
    * CONFIGURATION.md.

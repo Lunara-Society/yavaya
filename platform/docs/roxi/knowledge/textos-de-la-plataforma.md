@@ -174,6 +174,10 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `auth.reset.invalid`: Este enlace ya se usó o venció. Pide uno nuevo.
 - `auth.reset.ask_again`: Pedir otro enlace
 - `auth.notice.password_reset`: Tu contraseña cambió. Entra con la nueva.
+- `auth.error.display_name`: Escribe tu nombre: al menos 2 letras.
+- `auth.error.terms`: Para crear la cuenta, acepta los términos.
+- `auth.error.have_account`: Entrar con ese correo
+- `auth.error.forgot`: Recuperar mi contraseña
 
 ## settings
 - `settings.title`: Ajustes
@@ -245,6 +249,8 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `settings.notify.work_detail`: Postulaciones a tus ofertas, respuestas a las tuyas y ofertas nuevas en tus áreas.
 - `settings.notify.yavayago`: YavayaGo
 - `settings.notify.yavayago_detail`: Tus pedidos, tu negocio y tus entregas.
+- `settings.notify.roxi`: Roxi
+- `settings.notify.roxi_detail`: Los recordatorios que le pediste a Roxi.
 - `settings.notify.daily`: La luz de cada día
 - `settings.notify.daily_detail`: Un aviso cada mañana a las 8 cuando hay una nueva oración, refrán, frase o bendición.
 
@@ -370,6 +376,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `place.bar.close`: Cerrar
 - `place.bar.privacy`: Tu posición solo se usa para encontrar el pueblo más cercano; no se guarda.
 - `place.attribution`: Lugares y población: GeoNames (CC BY 4.0).
+- `place.widened`: Todavía no hay nada en {place}. Te mostramos lo de {wider}.
 
 ## live
 - `live.label`: En vivo
@@ -402,7 +409,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `transparency.now.eyebrow`: Hoy, sin adornos
 - `transparency.now.title`: Lo que funciona hoy
 - `transparency.now.lead`: Leído en este momento del mismo registro de capacidades que la página de estado. Si las dos dijeran cosas distintas, sería un error nuestro.
-- `transparency.now.counts`: {real} funcionan de verdad · {demo} son demostración · {mock} simulados · {pending} esperan configuración
+- `transparency.now.counts`: Funcionan de verdad: {real} · En demostración: {demo} · Simulados: {mock} · Esperan configuración: {pending}
 - `transparency.now.demo_none`: Contenido de demostración publicado ahora mismo: ninguno.
 - `transparency.now.demo_some`: Contenido de demostración publicado ahora mismo: {count} elementos, todos marcados DEMO y fuera de toda estadística.
 - `transparency.now.status_link`: Ver el estado completo
@@ -458,9 +465,24 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `error.boundary.retry`: Reintentar
 - `error.boundary.reference`: Referencia: {digest}
 - `error.password.too_short`: La contraseña debe tener al menos 10 caracteres.
-- `error.registration.email_unavailable`: No pudimos crear la cuenta con ese correo.
+- `error.registration.email_unavailable`: No pudimos crear una cuenta nueva con ese correo. Si ya tienes una cuenta con él, entra o recupera tu contraseña.
 - `error.tokens.invalid_amount`: Cantidad de tokens inválida.
 - `error.tokens.purchase_limit_exceeded`: La compra máxima es de {limit} tokens.
+
+## form
+- `form.check.summary_one`: Falta un dato para enviar. Está marcado abajo.
+- `form.check.summary_many`: Faltan {count} datos para enviar. Están marcados abajo.
+- `form.check.required`: Completa este campo.
+- `form.check.choose`: Elige una opción.
+- `form.check.file`: Falta agregar este archivo.
+- `form.check.checkbox`: Marca esta casilla para continuar.
+- `form.check.email`: Escribe un correo completo, como nombre@correo.com.
+- `form.check.too_short`: Escribe al menos {min} caracteres.
+- `form.check.too_long`: Usa como máximo {max} caracteres.
+- `form.check.too_low`: El mínimo es {min}.
+- `form.check.too_high`: El máximo es {max}.
+- `form.check.number`: Escribe solo un número.
+- `form.check.format`: Revisa cómo está escrito.
 
 ## media
 - `media.error.empty`: El archivo está vacío.
@@ -1624,13 +1646,13 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `sanctuary.eyebrow`: Comunidad · Santuario
 - `sanctuary.title`: Santuario
 - `sanctuary.lead`: El distrito de la fe: la oración y la palabra del día que comparten las iglesias, sus horarios y un lugar para encontrarte con la tuya.
-- `sanctuary.honest`: Yavaya no escribe estas palabras. Cada oración la firma una iglesia que una persona de Yavaya revisó.
+- `sanctuary.honest`: Las oraciones de esta página no las escribe Yavaya: cada una la firma una iglesia que una persona de Yavaya revisó.
 - `sanctuary.daily.title`: La luz de hoy
 - `sanctuary.daily.kind.prayer`: Oración
 - `sanctuary.daily.kind.saying`: Refrán
 - `sanctuary.daily.kind.quote`: Frase
 - `sanctuary.daily.kind.blessing`: Bendición
-- `sanctuary.daily.note`: De Yavaya, para todos, crean en lo que crean. Una nueva cada mañana a las 8.
+- `sanctuary.daily.note`: La luz de hoy sí la elige Yavaya, para todos, crean en lo que crean. Una nueva cada mañana a las 8.
 - `sanctuary.daily.choose`: Elegir qué quiero recibir
 - `sanctuary.daily.choose_hint`: Si no marcas ninguna, recibes todas: así hay una distinta cada día del año.
 - `sanctuary.daily.save`: Guardar
@@ -2249,6 +2271,16 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `animals.error.rate_limited`: Vas muy rápido. Espera un momento y vuelve a intentarlo.
 - `animals.error.upload`: No pudimos guardar las fotos. Inténtalo de nuevo.
 - `animals.home.lost_text`: ¿Se perdió tu animal o encontraste uno? Publícalo y te avisamos si aparece una coincidencia.
+- `animals.lost.edit`: Editar
+- `animals.lost.delete`: Eliminar
+- `animals.lost.saved`: Cambios guardados.
+- `animals.lost.edit_title`: Corregir la publicación
+- `animals.lost.save`: Guardar cambios
+- `animals.lost.delete_title`: Eliminar la publicación
+- `animals.lost.delete_lead`: Desaparece del tablero y de tu lista, y ya no se puede abrir. No se puede deshacer.
+- `animals.lost.delete_confirm`: Sí, quiero eliminarla.
+- `animals.lost.error.confirm_delete`: Marca la casilla para confirmar que quieres eliminarla.
+- `animals.mine.deleted`: Publicación eliminada.
 - `animals.lost.title`: Perdidos y encontrados
 - `animals.lost.lead`: Cada hora cuenta. Publica con foto, el lugar y el día: si alguien encuentra un animal de la misma especie en tu ciudad, te avisamos.
 - `animals.lost.post_lost`: Perdí a mi animal
@@ -2588,7 +2620,15 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.ui.slow`: La respuesta de Roxi no llegó a tiempo. Tu mensaje no se perdió: puedes enviarlo otra vez.
 - `roxi.ui.retry`: Enviar otra vez
 - `roxi.ui.you`: Tú
-- `roxi.ui.mic_denied`: No tengo acceso al micrófono, así que seguimos por escrito. Puedes permitir el micrófono en tu navegador cuando quieras.
+- `roxi.ui.mic_blocked`: Tu navegador tiene bloqueado el micrófono para Yavaya, así que seguimos por escrito. Para hablarme: toca el candado o el ícono de ajustes junto a la dirección yavaya.lat (en iPhone, «aA» y luego «Configuración del sitio web»), pon «Micrófono» en «Permitir» y toca otra vez el botón del micrófono. Si prefieres escucharme, activa «Leer sus respuestas en voz alta».
+- `roxi.ui.mic_missing`: No encuentro un micrófono en este dispositivo, así que seguimos por escrito. Si conectas uno, toca otra vez el botón del micrófono. Si prefieres escucharme, activa «Leer sus respuestas en voz alta».
+- `roxi.ui.mic_busy`: Otra aplicación está usando el micrófono. Ciérrala y toca otra vez el botón del micrófono; mientras tanto seguimos por escrito.
+- `roxi.ui.mic_retry`: Probar el micrófono otra vez
+- `roxi.ui.speak_replies`: Leer sus respuestas en voz alta
+- `roxi.ui.cut`: Se cortó la conexión antes de que Roxi respondiera. Tu mensaje no se perdió: puedes enviarlo otra vez.
+- `roxi.ui.left`: Roxi no alcanzó a responder antes de que cambiaras de página o cerraras la conversación. Tu mensaje no se perdió: puedes enviarlo otra vez.
+- `roxi.ui.stop_waiting`: Dejar de esperar
+- `roxi.ui.waited`: {seconds} s
 - `roxi.ui.connect_error`: No pude conectarme ahora. Inténtalo otra vez en un momento.
 - `roxi.ui.photo_sending`: Enviando la foto…
 - `roxi.ui.photo_text`: Te mando esta foto.
@@ -2648,7 +2688,11 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.settings.quiet_hours`: Horas de silencio (sin saludos ni llamadas)
 - `roxi.settings.quiet_from`: Desde
 - `roxi.settings.quiet_to`: Hasta
+- `roxi.settings.plans`: Planes y créditos
+- `roxi.settings.memory`: Mis cosas con Roxi
+- `roxi.settings.connections`: Herramientas conectadas
 - `roxi.settings.keep`: Guardar la conversación en esta pestaña hasta que la cierres
+- `roxi.settings.speak`: Leer en voz alta las respuestas escritas de Roxi (con la voz de este dispositivo)
 - `roxi.settings.stored`: Lo que Roxi guarda en este dispositivo: estos ajustes y, si lo permites, la conversación de esta pestaña. Se guarda solo en este navegador; Roxi recibe tus ajustes al empezar cada conversación.
 - `roxi.settings.forget`: Borrar todo lo que Roxi guarda aquí
 - `roxi.settings.forgotten`: Listo: no queda nada guardado.
@@ -2667,6 +2711,449 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `roxi.call.decline`: Rechazar
 - `roxi.call.why`: Suena porque activaste el modo Proactiva en los ajustes de Roxi.
 - `roxi.call.off`: Desactivar llamadas
+- `roxi.ui.suggest.help`: Necesito ayuda con algo
+- `roxi.ui.suggest.work`: Busco trabajo
+- `roxi.ui.suggest.community`: ¿Qué pasa hoy en mi comunidad?
+- `roxi.ui.suggest.world`: ¿Qué hay de nuevo en mi mundo?
+- `roxi.ui.share`: Compartir
+- `roxi.ui.share_text`: Mira lo que encontré en Yavaya: {title}
+- `roxi.door.title`: ¿Qué necesitas hoy?
+- `roxi.door.help`: Necesito ayuda
+- `roxi.door.help_ask`: Necesito ayuda con algo
+- `roxi.door.sell`: Quiero vender
+- `roxi.door.sell_ask`: Quiero vender algo
+- `roxi.door.work`: Busco trabajo
+- `roxi.door.work_ask`: Busco trabajo
+- `roxi.door.community`: Mi comunidad
+- `roxi.door.community_ask`: ¿Qué pasa hoy en mi comunidad?
+- `roxi.door.talk`: Hablar con Roxi
+- `roxi.world.title`: Mi mundo
+- `roxi.world.hello`: Hola, {name}
+- `roxi.world.opportunity`: Algo bueno para ti hoy:
+- `roxi.world.day`: Tu día
+- `roxi.world.day_empty`: Nada pendiente para hoy. Cuéntale a Roxi lo que tienes que hacer y te arma la lista.
+- `roxi.world.see_all`: Ver todo
+- `roxi.world.community`: Tu comunidad
+- `roxi.world.community_in`: Hoy en {place}
+- `roxi.world.community_empty`: Hoy no encontré novedades públicas en {place}.
+- `roxi.world.no_place`: Elige tu pueblo o ciudad para ver lo que pasa cerca.
+- `roxi.world.set_place`: Elegir mi lugar
+- `roxi.world.goals`: Tus metas
+- `roxi.world.goals_empty`: Todavía no tienes metas con Roxi.
+- `roxi.world.steps`: {done} de {total} pasos
+- `roxi.world.business`: Tu negocio hoy
+- `roxi.world.honest`: Todo lo que ves aquí sale de Yavaya o de lo que tú le pediste a Roxi que guardara. Si no hay nada, no se inventa nada.
+- `roxi.pulse.listings`: {n} publicaciones nuevas en Mercadito
+- `roxi.pulse.work`: {n} ofertas de trabajo nuevas
+- `roxi.pulse.help`: {n} personas piden ayuda en Comunidad
+- `roxi.pulse.services`: {n} solicitudes abiertas en Servicios
+- `roxi.pulse.lost`: {n} animales siguen perdidos
+- `roxi.business.title`: Mi negocio
+- `roxi.business.lead`: Lo que vendes, compras y gastas, dicho a Roxi o escrito aquí. Las cuentas las hace Yavaya, no la inteligencia artificial, y siempre separa lo que entró de lo que ganaste.
+- `roxi.business.saved`: Anotado.
+- `roxi.business.today`: Hoy
+- `roxi.business.week`: Esta semana
+- `roxi.business.month`: Este mes
+- `roxi.business.nothing`: Nada anotado todavía.
+- `roxi.business.sales`: Ventas (dinero que entró)
+- `roxi.business.sales_line`: {amount} en ventas ({n} anotadas)
+- `roxi.business.gross`: Ganancia estimada de ventas con costo conocido ({amount})
+- `roxi.business.stock`: Mercadería comprada
+- `roxi.business.expenses`: Otros gastos
+- `roxi.business.cash`: Diferencia de caja (no es ganancia)
+- `roxi.business.owed_to_me`: Te deben
+- `roxi.business.i_owe`: Debes
+- `roxi.business.how`: La diferencia de caja es lo que entró menos lo que salió: la mercadería que compras hoy se vende después, así que no es tu ganancia. La ganancia estimada solo cuenta las ventas en las que dijiste cuánto te costó lo vendido.
+- `roxi.business.add`: Anotar
+- `roxi.business.save`: Anotar
+- `roxi.business.history`: Lo anotado
+- `roxi.business.void`: Anular
+- `roxi.business.voided`: anulado
+- `roxi.business.cost_was`: te costó {amount}
+- `roxi.business.field.kind`: Qué fue
+- `roxi.business.field.amount`: Monto
+- `roxi.business.field.currency`: Moneda
+- `roxi.business.field.cost`: Si fue una venta, ¿cuánto te costó lo vendido? (opcional)
+- `roxi.business.field.note`: Nota (opcional)
+- `roxi.business.field.note_hint`: 3 gaseosas · doña Marta
+- `roxi.business.kind.sale`: Venta
+- `roxi.business.kind.stock`: Compra de mercadería
+- `roxi.business.kind.expense`: Otro gasto
+- `roxi.business.kind.owed_to_me`: Me quedaron debiendo
+- `roxi.business.kind.paid_to_me`: Me pagaron una deuda
+- `roxi.business.kind.i_owe`: Quedé debiendo
+- `roxi.business.kind.i_paid`: Pagué una deuda
+- `roxi.business.error.amount`: Escribe un monto válido, mayor que cero.
+- `roxi.business.error.kind`: No sé qué tipo de anotación es esa.
+- `roxi.business.error.currency`: La moneda tiene que ser un código de tres letras, como NIO o USD.
+- `roxi.business.error.day`: La fecha no es válida.
+- `roxi.business.error.limit`: Ya anotaste {limit} cosas este día.
+- `roxi.memory.snooze`: Mañana
+- `roxi.memory.watches`: Avísame si aparece
+- `roxi.memory.watches_lead`: Roxi revisa Mercadito o Trabajo y te avisa una vez por cada cosa nueva que coincida. Hasta {n} con tu plan.
+- `roxi.memory.watch_any`: Cualquier cosa
+- `roxi.memory.watch_mercadito`: En Mercadito
+- `roxi.memory.watch_work`: En Trabajo
+- `roxi.memory.watch_max`: hasta {amount}
+- `roxi.memory.watch_query`: Qué buscas
+- `roxi.memory.watch_hint`: refrigeradora
+- `roxi.memory.watch_where`: Dónde
+- `roxi.memory.watch_price`: Precio máximo (opcional)
+- `roxi.memory.watch_place`: Pueblo o ciudad (opcional)
+- `roxi.memory.missions`: Misiones
+- `roxi.memory.missions_lead`: Un objetivo con sus pasos y su presupuesto. Hasta {n} a la vez.
+- `roxi.memory.needs_pro`: Disponible con Pro o Max.
+- `roxi.memory.budget`: Presupuesto: {amount}
+- `roxi.memory.mission_title`: Qué quieres lograr
+- `roxi.memory.mission_hint`: El cumpleaños de mi hija
+- `roxi.memory.mission_budget`: Presupuesto (opcional)
+- `roxi.memory.mission_steps`: Pasos, uno por línea
+- `roxi.memory.mission_steps_hint`: Elegir la fecha Buscar el pastel Invitar a la familia
+- `roxi.memory.capsules`: Cápsulas del tiempo
+- `roxi.memory.capsules_lead`: Un mensaje para tu futuro. Queda sellado hasta la fecha que elijas: ni tú ni Roxi lo leen antes. Ese día te llega un aviso.
+- `roxi.memory.capsule_sealed`: Sellada hasta el {date}
+- `roxi.memory.capsule_title`: Título
+- `roxi.memory.capsule_detail`: Tu mensaje
+- `roxi.memory.capsule_opens`: Se abre el
+- `roxi.memory.path`: Mi camino
+- `roxi.memory.path_lead`: Lo que Yavaya registró y los logros que tú decidiste guardar, cada uno marcado como lo que es.
+- `roxi.memory.milestone_title`: Un logro que quieres guardar
+- `roxi.memory.milestone_hint`: Conseguí mi primer trabajo
+- `roxi.memory.milestone_when`: Cuándo (opcional)
+- `roxi.memory.error.watch`: Dime qué buscar o hasta qué precio.
+- `roxi.memory.error.watches`: Tu plan permite {limit} avisos. Borra alguno para añadir otro.
+- `roxi.memory.error.missions`: Tu plan permite {limit} misiones a la vez.
+- `roxi.memory.error.needs_pro`: Esto es de Pro o Max.
+- `roxi.memory.error.capsule_when`: Elige una fecha a partir de mañana.
+- `roxi.memory.error.capsules`: Tu plan permite {limit} cápsulas esperando.
+- `roxi.memory.error.capsule_sealed`: Una cápsula sellada no se puede leer ni cambiar antes de abrirse; solo borrarla.
+- `roxi.memory.error.milestones`: Ya guardaste {limit} logros.
+- `roxi.memory.error.place`: No encontré ese lugar.
+- `roxi.path.joined`: Te uniste a Yavaya
+- `roxi.path.first_listing`: Tu primera publicación en Mercadito
+- `roxi.path.first_sold_marked`: Marcaste tu primera venta en Mercadito
+- `roxi.path.work_profile`: Creaste tu perfil de Trabajo
+- `roxi.path.first_application`: Tu primera postulación
+- `roxi.path.store`: Tu tienda en YavayaGo fue aprobada
+- `roxi.path.goal_done`: Lograste: {title}
+- `roxi.path.source_yavaya`: Registro de Yavaya
+- `roxi.path.source_member`: Lo guardaste tú
+- `roxi.notify.watch`: Apareció algo que esperabas
+- `roxi.notify.watch_body`: {title}
+- `roxi.notify.opportunity`: Algo bueno para ti hoy
+- `roxi.notify.opportunity_body`: {title}
+- `roxi.notify.capsule`: Hoy se abre una cápsula del tiempo
+- `roxi.notify.capsule_body`: Guardaste algo para este día. Ábrelo en Mis cosas con Roxi.
+- `roxi.skill.front_door`: ¿Qué necesitas hoy?
+- `roxi.skill.front_door_detail`: Dile lo que necesitas, por voz o escrito: Roxi encuentra el distrito y deja todo listo para que tú lo apruebes.
+- `roxi.skill.promise_keeper`: Quedamos en algo
+- `roxi.skill.promise_keeper_detail`: Te recuerda lo que dijiste que harías y te pregunta cómo te fue. Lo pospones o lo cancelas cuando quieras.
+- `roxi.skill.life_map`: Mi camino
+- `roxi.skill.life_map_detail`: Tu avance: lo que Yavaya registró y los logros que tú guardas, sin mezclarlos.
+- `roxi.skill.community_pulse`: Así está tu comunidad hoy
+- `roxi.skill.community_pulse_detail`: Lo nuevo y público en tu pueblo. Si no hay nada, te lo dice.
+- `roxi.skill.business_ledger`: ¿Cómo va mi negocio?
+- `roxi.skill.business_ledger_detail`: Ventas, compras, gastos y deudas, dichos en voz alta. Yavaya hace las cuentas.
+- `roxi.skill.human_connection`: No estás solo
+- `roxi.skill.human_connection_detail`: Conversa con respeto y te acerca a tu comunidad si quieres. No reemplaza a nadie.
+- `roxi.skill.price_memory`: Avísame si aparece
+- `roxi.skill.price_memory_detail`: Una refrigeradora por menos de 5,000 córdobas, un trabajo de conductor: un aviso por cada cosa nueva.
+- `roxi.skill.trusted_contact`: Tarjeta de contacto de confianza
+- `roxi.skill.trusted_contact_detail`: Antes de una cita de compra o servicio, una tarjeta privada para compartir con alguien de confianza.
+- `roxi.skill.share`: Compártelo con alguien
+- `roxi.skill.share_detail`: Un mensaje corto y correcto con el enlace. Tú eliges a quién y lo envías.
+- `roxi.skill.real_world_memory`: ¿Dónde lo dejé?
+- `roxi.skill.real_world_memory_detail`: Recuerda dónde guardaste los papeles de la moto o el nombre del técnico. Nunca contraseñas.
+- `roxi.skill.camera_eyes`: Muéstrame
+- `roxi.skill.camera_eyes_detail`: Desde una foto: preparar un anuncio, leer una etiqueta o pasar una lista escrita a mano a tu día.
+- `roxi.skill.second_chance`: Todavía podemos intentarlo
+- `roxi.skill.second_chance_detail`: Cuando algo no salió, pregunta qué pasó y busca un siguiente paso concreto.
+- `roxi.skill.personal_world`: Mi mundo
+- `roxi.skill.personal_world_detail`: Tu día, tu comunidad y tus metas en tres tarjetas.
+- `roxi.skill.time_capsule`: Un mensaje para tu futuro
+- `roxi.skill.time_capsule_detail`: Escribe algo que se abre en la fecha que elijas. Voz, más adelante.
+- `roxi.skill.anticipation`: Antes de que lo necesites
+- `roxi.skill.anticipation_detail`: Del cambio de aceite a la comida del perro: rutinas que tú le cuentas, avisadas a tiempo.
+- `roxi.skill.missions`: Misiones
+- `roxi.skill.missions_detail`: Un objetivo grande con sus pasos y presupuesto, que retomas cualquier día.
+- `roxi.skill.negotiation_coach`: Un trato justo
+- `roxi.skill.negotiation_coach_detail`: Preguntas que hacer, precios de anuncios parecidos y señales de estafa.
+- `roxi.skill.knowledge_vault`: Tu archivo personal
+- `roxi.skill.knowledge_vault_detail`: Facturas, garantías y manuales que Roxi puede consultar por ti.
+- `roxi.skill.cross_district`: Una cosa lleva a la otra
+- `roxi.skill.cross_district_detail`: Vendiste la moto: ¿actualizamos tu meta? Siempre con tu permiso.
+- `roxi.skill.store_rescue`: ¿Por qué no estoy vendiendo?
+- `roxi.skill.store_rescue_detail`: Revisa tu tienda en YavayaGo y te da una recomendación concreta.
+- `roxi.skill.connects_dots`: Roxi une los puntos
+- `roxi.skill.connects_dots_detail`: Une necesidades y ofertas entre Mercadito, Servicios, Trabajo y Comunidad.
+- `roxi.skill.opportunity_radar`: Radar de oportunidades
+- `roxi.skill.opportunity_radar_detail`: Junta lo que hay en Yavaya para tu meta en una lista de inicio.
+- `roxi.skill.chain_reaction`: Una buena acción lleva a otra
+- `roxi.skill.chain_reaction_detail`: Coordina a varias personas para resolver una necesidad, con el permiso de todas.
+- `roxi.skill.storykeeper`: Cuéntame cómo era antes
+- `roxi.skill.storykeeper_detail`: Guarda las historias de la familia, con la grabación original.
+- `roxi.skill.mission_agent`: Roxi, encárgate
+- `roxi.skill.mission_agent_detail`: Investiga y organiza un objetivo por días; tú apruebas cada compromiso.
+- `roxi.skill.live_world`: Lo que pasa a tu alrededor
+- `roxi.skill.live_world_detail`: Pedidos, clima y demanda de tu zona, con su fuente y su hora.
+- `roxi.skill.digital_twin`: Cómo prefieres las cosas
+- `roxi.skill.digital_twin_detail`: Tus preferencias, visibles y editables, aplicadas a cada búsqueda.
+- `roxi.skill.multi_agent`: Varios especialistas
+- `roxi.skill.multi_agent_detail`: Para proyectos grandes: plan, mercado, números y riesgos revisados por separado.
+- `roxi.skill.life_os`: ¿Qué atiendo primero hoy?
+- `roxi.skill.life_os_detail`: Tus pendientes de toda Yavaya ordenados en un plan corto.
+- `roxi.ui.plans_link`: Ver planes de Roxi
+- `roxi.ui.saved`: Guardado en Mis cosas con Roxi: «{title}».
+- `roxi.ui.saved_see`: Ver o borrar
+- `roxi.ui.confirm_title`: Roxi quiere usar {connection}. ¿Lo permites?
+- `roxi.ui.confirm_allow`: Permitir
+- `roxi.ui.confirm_decline`: No
+- `roxi.ui.confirm_allowed`: Permitido.
+- `roxi.ui.confirm_declined`: No lo permitiste. No se hizo nada.
+- `roxi.error.no_credits`: Ya usaste los créditos de Roxi de este mes. Puedes esperar a que se renueven, comprar créditos o pasarte a otro plan.
+- `roxi.error.generic`: Algo salió mal. Inténtalo otra vez en un momento.
+- `roxi.notify.reminder`: Tienes un recordatorio de Roxi
+- `roxi.notify.reminder_body`: Ábrelo para verlo en Mis cosas con Roxi.
+- `roxi.plan.free`: Gratis
+- `roxi.plan.pro`: Pro
+- `roxi.plan.max`: Max
+- `roxi.plan.free_tagline`: Todo lo que Roxi hace hoy, sin pagar.
+- `roxi.plan.pro_tagline`: Más tiempo con Roxi, y tu correo y tu calendario.
+- `roxi.plan.max_tagline`: Para quien vive con Roxi: tus propias herramientas, y tu familia.
+- `roxi.plans.title`: Planes de Roxi
+- `roxi.plans.eyebrow`: Roxi
+- `roxi.plans.lead`: Roxi siempre es gratis para lo esencial. Pro y Max le dan más tiempo, más memoria y la conectan con las herramientas que ya usas.
+- `roxi.plans.your_plan`: Tu plan:
+- `roxi.plans.admin_trial`: prueba de administración
+- `roxi.plans.credits_left`: Te quedan {n} créditos
+- `roxi.plans.used`: Usaste {used} de {total} créditos
+- `roxi.plans.refills`: Se renuevan {n} créditos el {date}
+- `roxi.plans.purchased_left`: {n} comprados, válidos hasta el {date}
+- `roxi.plans.not_counting`: Los créditos todavía no se cuentan: mientras tanto Roxi funciona como hasta ahora, con un límite de conversaciones por día.
+- `roxi.plans.paid`: Pago confirmado. Tu plan ya está activo.
+- `roxi.plans.cancelled`: Listo: tu plan no se renovará. Lo sigues teniendo hasta el final del periodo que pagaste.
+- `roxi.plans.resumed`: Tu plan se renovará otra vez.
+- `roxi.plans.trial_started`: Prueba de 30 días activada para esta cuenta de administración. No se cobra nada.
+- `roxi.plans.not_open_title`: Los planes de pago todavía no se pueden comprar
+- `roxi.plans.not_open_metering`: Para vender un plan con límite de créditos, Yavaya tiene que poder contar lo que gasta cada conversación, y eso todavía no está conectado. Hasta entonces nadie paga, y Roxi sigue funcionando como siempre.
+- `roxi.plans.not_open_payments`: Los pagos con tarjeta no están disponibles en este momento.
+- `roxi.plans.free_price`: Gratis
+- `roxi.plans.per_month`:  al mes
+- `roxi.plans.monthly_credits`: {n} créditos al mes
+- `roxi.plans.credits_mean`: Unas {written} respuestas escritas o {minutes} minutos de voz.
+- `roxi.plans.limit.goals`: Hasta {n} metas a la vez
+- `roxi.plans.limit.reminders`: Hasta {n} recordatorios
+- `roxi.plans.limit.reminders_repeat`: Hasta {n} recordatorios, también repetidos (cada semana, mes o año)
+- `roxi.plans.limit.no_connections`: Sin herramientas conectadas
+- `roxi.plans.limit.connections_google`: Hasta {n} cuentas de Google conectadas
+- `roxi.plans.limit.connections_all`: Hasta {n} herramientas: Google, servidores MCP y APIs
+- `roxi.plans.limit.goals_one`: Una meta a la vez
+- `roxi.plans.limit.reminders_one`: Un recordatorio
+- `roxi.plans.limit.reminders_repeat_one`: Un recordatorio, también repetido (cada semana, mes o año)
+- `roxi.plans.limit.connections_google_one`: Una cuenta de Google conectada
+- `roxi.plans.limit.connections_all_one`: Una herramienta: Google, un servidor MCP o una API
+- `roxi.plans.everything_free`: Todo lo de Gratis, y además:
+- `roxi.plans.everything_pro`: Todo lo de Pro, y además:
+- `roxi.plans.soon`: Próximamente
+- `roxi.plans.current`: Tu plan actual
+- `roxi.plans.ending`: Termina el {date}; no se renovará.
+- `roxi.plans.sign_in`: Entra para elegirlo
+- `roxi.plans.downgrade_note`: Para pasar a Pro, cancela Max: cuando termine, eliges Pro.
+- `roxi.plans.upgrade`: Pasarme a Max
+- `roxi.plans.choose`: Elegir {plan}
+- `roxi.plans.manage`: Tu suscripción
+- `roxi.plans.resume`: Seguir con mi plan
+- `roxi.plans.cancel_explain`: Si cancelas, no se te vuelve a cobrar y conservas el plan hasta el {date}. Después vuelves a Gratis; lo que Roxi guardó para ti sigue ahí.
+- `roxi.plans.cancel_confirm`: Sí, quiero cancelar la renovación
+- `roxi.plans.cancel`: Cancelar la renovación
+- `roxi.plans.packs_title`: Créditos extra
+- `roxi.plans.packs_lead`: Para cualquier plan, también Gratis. Se usan después de los créditos del mes y valen {months} meses desde tu última compra.
+- `roxi.plans.pack_credits`: {n} créditos
+- `roxi.plans.how_title`: Cómo funcionan los créditos
+- `roxi.plans.how.credit`: Un crédito es lo que de verdad cuesta hacer funcionar a Roxi, medido después de cada conversación. Una respuesta escrita usa unos {written}; un minuto de voz, unos {minute}.
+- `roxi.plans.how.minimum`: Para empezar una conversación necesitas al menos {n} créditos. Una conversación empezada nunca se corta a la mitad.
+- `roxi.plans.how.reset`: Los créditos del plan se renuevan cada mes y no se acumulan. Los comprados no se pierden al renovarse.
+- `roxi.plans.how.upgrade`: Si pasas de Pro a Max, Max empieza ese día y los créditos que te quedaban de Pro se suman.
+- `roxi.plans.how.cancel`: Cancelas cuando quieras desde esta página; el plan dura hasta el final de lo que pagaste.
+- `roxi.plans.how.free_stays`: Buscar trabajo sin dinero, un animal perdido y la ayuda entre vecinos siempre son gratis con Roxi.
+- `roxi.plans.how.privacy`: Lo que Roxi guarda para ti y las claves de tus herramientas se guardan cifrados, y puedes borrarlos cuando quieras.
+- `roxi.plans.admin_title`: Probar un plan (solo administración)
+- `roxi.plans.admin_lead`: Activa un plan por 30 días en tu propia cuenta, sin pagar, para probarlo. Queda registrado.
+- `roxi.plans.admin_try`: Probar {plan}
+- `roxi.plans.checkout.pro`: Roxi Pro · suscripción mensual
+- `roxi.plans.checkout.max`: Roxi Max · suscripción mensual
+- `roxi.plans.checkout.credits`: Créditos de Roxi
+- `roxi.plans.error.unavailable`: Los planes de Roxi todavía no se pueden comprar.
+- `roxi.plans.error.already`: Ya tienes este plan.
+- `roxi.plans.error.downgrade`: Para pasar de Max a Pro, cancela Max y elige Pro cuando termine.
+- `roxi.plans.error.no_plan`: No tienes un plan de pago activo.
+- `roxi.plans.error.pack`: Ese paquete de créditos no existe.
+- `roxi.plans.error.confirm`: Marca la casilla para confirmar.
+- `roxi.skill.search`: Buscar en Yavaya y preparar borradores
+- `roxi.skill.search_detail`: Encuentra cosas, tiendas, trabajos y animales, y te deja listo el formulario.
+- `roxi.skill.drafts`: Vender, pedir ayuda, publicar
+- `roxi.skill.drafts_detail`: Un anuncio desde una foto, una petición en Servicios o Comunidad. Tú publicas.
+- `roxi.skill.surprise`: Sorpréndeme
+- `roxi.skill.surprise_detail`: Una cosa buena y real de Yavaya, elegida para ti.
+- `roxi.skill.good_moments`: Hoy hice algo bueno
+- `roxi.skill.good_moments_detail`: Un diario privado de momentos que importaron.
+- `roxi.skill.celebrations`: Pequeñas celebraciones
+- `roxi.skill.celebrations_detail`: Tu primera venta, tu primera entrevista, una adopción.
+- `roxi.skill.thank_you`: Gracias por ayudarme
+- `roxi.skill.thank_you_detail`: Roxi te ayuda a escribir un agradecimiento; tú decides si lo envías.
+- `roxi.skill.problem_solver`: Ayúdame a resolverlo
+- `roxi.skill.problem_solver_detail`: Se arruinó algo: revisiones seguras o un técnico, con la petición lista.
+- `roxi.skill.lost_pet_guard`: Busquemos juntos
+- `roxi.skill.lost_pet_guard_detail`: Aviso de mascota perdida, imagen para WhatsApp y aviso a vecinos que quieren ayudar.
+- `roxi.skill.start_with_nothing`: Empecemos con lo que tienes
+- `roxi.skill.start_with_nothing_detail`: Buscar trabajo sin gastar: tu perfil y oportunidades reales.
+- `roxi.skill.skill_discovery`: Tienes más habilidades de las que crees
+- `roxi.skill.skill_discovery_detail`: Lo que sabes hacer, dicho con palabras de trabajo, sin inventar nada.
+- `roxi.skill.help_match`: Alguien cerca puede ayudarte
+- `roxi.skill.help_match_detail`: Une a quien necesita ayuda con quien puede darla.
+- `roxi.skill.goals`: Tus metas conmigo
+- `roxi.skill.goals_detail`: Una meta en Gratis, tres en Pro y Max, con tu avance.
+- `roxi.skill.reminders`: No se me olvida
+- `roxi.skill.reminders_detail`: Recordatorios que te avisan en Yavaya.
+- `roxi.skill.day_plan`: Organiza mi día
+- `roxi.skill.day_plan_detail`: Lo que tienes pendiente, en una lista sencilla.
+- `roxi.skill.daily_opportunity`: Algo bueno para ti hoy
+- `roxi.skill.daily_opportunity_detail`: Una sola oportunidad al día, solo cuando de verdad hay una.
+- `roxi.skill.neighbourhood`: Mi barrio
+- `roxi.skill.neighbourhood_detail`: Lo que pasa cerca de ti en Yavaya.
+- `roxi.skill.budget_finder`: Cuidemos tu dinero
+- `roxi.skill.budget_finder_detail`: Resolver con tu presupuesto: lo más barato que hay en Yavaya, regalos y reparaciones.
+- `roxi.skill.sell_with_me`: Véndelo conmigo
+- `roxi.skill.sell_with_me_detail`: Seguimiento de tu anuncio y precios de anuncios parecidos.
+- `roxi.skill.connectors_google`: Gmail y Google Calendar
+- `roxi.skill.connectors_google_detail`: Roxi lee y redacta correos y agenda citas. Antes de enviar, te pregunta.
+- `roxi.skill.family_circle`: Ayuda a mi familia
+- `roxi.skill.family_circle_detail`: Un círculo familiar privado de hasta 6 personas para pedir ayuda.
+- `roxi.skill.business_insights`: Tu negocio, a fondo
+- `roxi.skill.business_insights_detail`: Para tu pulpería: ¿de verdad estás ganando dinero?
+- `roxi.skill.connectors_custom`: Tus propias herramientas
+- `roxi.skill.connectors_custom_detail`: Conecta servidores MCP y APIs con su clave.
+- `roxi.connect.title`: Herramientas conectadas
+- `roxi.connect.lead`: Conecta a Roxi con lo que ya usas: tu correo, tu calendario, tus servidores MCP y tus APIs. Roxi solo las usa contigo, y te pregunta antes de enviar o cambiar algo.
+- `roxi.connect.count`: {n} de {limit} conectadas con tu plan {plan}.
+- `roxi.connect.connected`: Conectado. Ya puedes pedirle a Roxi que lo use.
+- `roxi.connect.removed`: Herramienta quitada. Roxi ya no puede usarla.
+- `roxi.connect.refreshed`: Lista de herramientas actualizada.
+- `roxi.connect.unavailable`: Conectar herramientas todavía no está disponible: falta la clave que las guarda cifradas.
+- `roxi.connect.yours`: Tus conexiones
+- `roxi.connect.none`: Todavía no conectaste nada.
+- `roxi.connect.kind.google`: Google
+- `roxi.connect.kind.mcp`: MCP
+- `roxi.connect.kind.api`: API
+- `roxi.connect.tools`: {n} herramientas
+- `roxi.connect.last_used`: usada el {date}
+- `roxi.connect.not_in_plan`: Tu plan actual no incluye este tipo de conexión: queda guardada, pero Roxi no la usa.
+- `roxi.connect.failing`: La última vez no respondió bien. Revisa la dirección o la clave.
+- `roxi.connect.refresh`: Actualizar
+- `roxi.connect.remove`: Quitar
+- `roxi.connect.google_title`: Gmail y Google Calendar
+- `roxi.connect.google_lead`: Roxi podrá buscar y leer tus correos, guardar borradores, enviar los que tú apruebes, ver tu agenda y añadir citas. Google te muestra exactamente qué permites.
+- `roxi.connect.google_pending`: Todavía no disponible: falta que Google habilite el acceso a Gmail y Calendar para Yavaya.
+- `roxi.connect.google_button`: Conectar mi cuenta de Google
+- `roxi.connect.needs_pro`: Disponible con Pro o Max.
+- `roxi.connect.needs_max`: Disponible con Max.
+- `roxi.connect.see_plans`: Ver planes
+- `roxi.connect.full`: Ya usas todas las conexiones de tu plan. Quita una o cambia de plan.
+- `roxi.connect.mcp_title`: Servidor MCP
+- `roxi.connect.mcp_lead`: Cualquier servidor MCP remoto (HTTPS). Roxi lee sus herramientas al conectarlo. Las que no se declaran de solo lectura te las pregunta antes de usarlas.
+- `roxi.connect.api_title`: API
+- `roxi.connect.api_lead`: Cualquier API por HTTPS con su clave. Roxi solo llama direcciones dentro de la que pongas, y te pregunta antes de todo lo que no sea leer.
+- `roxi.connect.field.label`: Nombre (para reconocerla)
+- `roxi.connect.field.mcp_url`: Dirección del servidor
+- `roxi.connect.field.api_url`: Dirección base de la API
+- `roxi.connect.field.token`: Token (opcional)
+- `roxi.connect.field.secret`: Clave (opcional)
+- `roxi.connect.field.header`: Cabecera de la clave
+- `roxi.connect.field.prefix`: Prefijo
+- `roxi.connect.field.notes`: Notas para Roxi (opcional)
+- `roxi.connect.field.notes_hint`: Qué hace esta API y qué rutas usar, por ejemplo: «GET orders?status=open lista los pedidos abiertos».
+- `roxi.connect.add_mcp`: Conectar servidor
+- `roxi.connect.add_api`: Conectar API
+- `roxi.connect.safety_title`: Tu seguridad
+- `roxi.connect.safety.confirm`: Enviar un correo, añadir una cita o cambiar algo en tus herramientas solo pasa si tú tocas «Permitir». Roxi no puede aprobarlo por ti.
+- `roxi.connect.safety.sealed`: Tus claves y tokens se guardan cifrados y nunca se muestran otra vez, ni a ti ni al equipo.
+- `roxi.connect.safety.data`: Lo que llega de tus herramientas (un correo, una página) es información: Roxi no sigue instrucciones escritas ahí.
+- `roxi.connect.safety.private`: Yavaya no se conecta a direcciones privadas ni internas, aunque las escribas.
+- `roxi.connect.safety.remove`: Quitar una conexión la borra de Yavaya; en Google también se revoca el permiso.
+- `roxi.connect.error.unavailable`: Conectar herramientas todavía no está disponible.
+- `roxi.connect.error.google_unavailable`: La conexión con Google todavía no está disponible.
+- `roxi.connect.error.needs_pro`: Conectar Google necesita Pro o Max.
+- `roxi.connect.error.needs_max`: Los servidores MCP y las APIs necesitan Max.
+- `roxi.connect.error.limit`: Tu plan permite {limit} conexiones. Quita una para añadir otra.
+- `roxi.connect.error.address`: Esa dirección no se puede usar: tiene que ser https y pública.
+- `roxi.connect.error.unauthorized`: El servidor no aceptó la clave. Revísala.
+- `roxi.connect.error.unreachable`: No pude hablar con ese servidor. Revisa la dirección.
+- `roxi.connect.error.token`: La clave no puede tener saltos de línea.
+- `roxi.connect.error.header`: Ese nombre de cabecera no se puede usar.
+- `roxi.connect.error.expired`: El permiso tardó demasiado o no es de esta cuenta. Inténtalo otra vez.
+- `roxi.connect.error.declined`: No diste permiso en Google. No se conectó nada.
+- `roxi.connect.error.failed`: No se pudo conectar. Inténtalo otra vez en un momento.
+- `roxi.connect.error.kind`: Esa acción no aplica a esta conexión.
+- `roxi.connect.error.method`: Ese método no está permitido.
+- `roxi.connect.error.path`: Esa ruta no está dentro de la dirección de la API.
+- `roxi.connect.error.tool`: Esa herramienta no existe en esta conexión.
+- `roxi.connect.error.address_to`: La dirección de correo no es válida.
+- `roxi.connect.error.when`: La fecha y hora no son válidas.
+- `roxi.memory.title`: Mis cosas con Roxi
+- `roxi.memory.lead`: Lo que le pediste a Roxi que recuerde. Roxi pregunta antes de guardar algo, y aquí puedes cambiarlo o borrarlo todo.
+- `roxi.memory.unavailable`: Esto todavía no está disponible: falta la clave que guarda tus cosas cifradas.
+- `roxi.memory.forgotten`: Listo: Roxi olvidó todo lo que guardaba para ti.
+- `roxi.memory.goals`: Mis metas
+- `roxi.memory.goals_lead`: Hasta {n} metas a la vez con tu plan. Marca una como lograda para hacer espacio.
+- `roxi.memory.progress`: Llevas {done} de {target}
+- `roxi.memory.progress_label`: Lo que llevas
+- `roxi.memory.goal_title`: Nueva meta
+- `roxi.memory.goal_hint`: Comprar una moto
+- `roxi.memory.goal_target`: Cuánto necesitas (opcional)
+- `roxi.memory.today`: Mi día
+- `roxi.memory.today_lead`: Lo que tienes pendiente. Roxi puede armar la lista contigo.
+- `roxi.memory.task_title`: Algo que hacer hoy
+- `roxi.memory.task_hint`: Ir al banco
+- `roxi.memory.reminders`: Recordatorios
+- `roxi.memory.reminders_lead`: Hasta {n} recordatorios. Te llegan como aviso en Yavaya.
+- `roxi.memory.reminders_lead_repeat`: Hasta {n} recordatorios, también repetidos. Te llegan como aviso en Yavaya.
+- `roxi.memory.reminder_title`: Recordarme
+- `roxi.memory.reminder_hint`: Comprar comida para el perro
+- `roxi.memory.reminder_when`: Cuándo
+- `roxi.memory.reminder_repeat`: Repetir
+- `roxi.memory.repeat.none`: Una vez
+- `roxi.memory.repeat.weekly`: Cada semana
+- `roxi.memory.repeat.monthly`: Cada mes
+- `roxi.memory.repeat.yearly`: Cada año
+- `roxi.memory.moments`: Hoy hice algo bueno
+- `roxi.memory.moments_lead`: Tus momentos, solo para ti. Nadie más los ve.
+- `roxi.memory.moment_title`: Un momento que quieres guardar
+- `roxi.memory.moment_hint`: Ayudé a una señora con sus bolsas
+- `roxi.memory.facts`: Lo que Roxi recuerda de ti
+- `roxi.memory.facts_lead`: Detalles que le pediste recordar, como un cumpleaños. Roxi los usa para ayudarte mejor.
+- `roxi.memory.fact_title`: Algo que Roxi debe recordar
+- `roxi.memory.fact_hint`: Mi mamá cumple años el 17 de marzo
+- `roxi.memory.add`: Añadir
+- `roxi.memory.save`: Guardar
+- `roxi.memory.delete`: Borrar
+- `roxi.memory.mark_done`: Marcar como hecho
+- `roxi.memory.undo`: Marcar como pendiente
+- `roxi.memory.forget_title`: Olvidar todo
+- `roxi.memory.forget_lead`: Borra todas tus metas, tareas, recordatorios, momentos y lo que Roxi recuerda de ti. No se puede deshacer.
+- `roxi.memory.forget_confirm`: Sí, quiero que Roxi olvide todo
+- `roxi.memory.forget`: Olvidar todo
+- `roxi.memory.error.unavailable`: Esto todavía no está disponible.
+- `roxi.memory.error.title`: Escribe qué quieres guardar.
+- `roxi.memory.error.kind`: No sé qué tipo de cosa es esa.
+- `roxi.memory.error.when`: Elige cuándo quieres el recordatorio.
+- `roxi.memory.error.day`: Falta el día de la tarea.
+- `roxi.memory.error.goals`: Tu plan permite {limit} metas a la vez. Marca una como lograda o bórrala.
+- `roxi.memory.error.reminders`: Tu plan permite {limit} recordatorios. Borra alguno para añadir otro.
+- `roxi.memory.error.repeat`: Los recordatorios que se repiten son de Pro y Max.
+- `roxi.memory.error.tasks`: Ya tienes {limit} tareas ese día.
+- `roxi.memory.error.moments`: Ya guardaste {limit} momentos. Borra alguno para añadir otro.
+- `roxi.memory.error.facts`: Roxi ya recuerda {limit} cosas. Borra alguna para añadir otra.
+- `roxi.memory.error.confirm`: Marca la casilla para confirmar.
 
 ## sanctions
 - `sanctions.title`: Miembros
@@ -2800,61 +3287,65 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `guide.violeta_privacy`: Si alguien puede escucharte, usa audífonos o activa los subtítulos.
 
 ## home
-- `home.hero.eyebrow`: El hogar digital de Centroamérica
-- `home.hero.title_1`: Lo que buscas.
-- `home.hero.title_2`: Cerca de ti.
-- `home.hero.lead`: Compra, vende, trabaja, descubre servicios y conecta con tu comunidad, todo en un solo lugar.
+- `home.tagline_1`: Centroamérica
+- `home.tagline_2`: en un solo lugar
+- `home.nav.explore`: Explorar
+- `home.nav.about`: Sobre Yavaya
+- `home.hero.line_1`: Un lugar
+- `home.hero.line_2`: para todo
+- `home.hero.line_3`: lo que
+- `home.hero.line_gold`: nos une.
+- `home.hero.lead`: Compra, vende, encuentra servicios, trabajo, descubre oportunidades y conecta con tu comunidad.
 - `home.search.label`: Buscar en Mercadito
-- `home.search.placeholder`: ¿Qué buscas?
-- `home.search.scope`: Mercadito
+- `home.search.placeholder`: Buscar en Mercadito…
 - `home.search.submit`: Buscar
-- `home.shortcuts.label`: Ir a un distrito
-- `home.shortcut.buy`: Comprar
-- `home.mk.badge`: Empieza aquí
-- `home.mk.text`: Compra y vende en tu mercado local: ropa, electrónica, hogar, vehículos y mucho más. Cada vendedor muestra su reputación antes de que le escribas.
-- `home.mk.explore`: Explorar mercado
-- `home.mk.publish`: Publicar anuncio
-- `home.guide.eyebrow`: Guía en video
-- `home.guide.title`: La guía de Yavaya
-- `home.guide.text`: Todo lo que puedes hacer, distrito por distrito.
-- `home.guide.cta`: Ver guía
-- `home.guide.duration`: Dura {minutes} minutos y {seconds} segundos
 - `home.districts.eyebrow`: Los siete distritos
-- `home.districts.title_1`: Todo lo que necesitas.
-- `home.districts.title_2`: En un solo lugar.
-- `home.districts.all`: Explora todos los distritos
-- `home.recent.title`: Oportunidades recientes
-- `home.recent.lead`: Lo más nuevo que cualquiera puede ver en Mercadito, Trabajo, Animales y YavayaGo.
-- `home.recent.kind.listing`: Venta
-- `home.recent.kind.job`: Trabajo
-- `home.recent.kind.animal`: Adopción
-- `home.recent.kind.store`: Negocio
-- `home.recent.see_all`: Ver Mercadito
-- `home.recent.empty_title`: Todavía no hay publicaciones.
-- `home.recent.empty_text`: Yavaya acaba de abrir. Lo que se publique en Mercadito, Trabajo, Animales y YavayaGo aparecerá aquí, tal cual: sin relleno ni ejemplos inventados.
-- `home.start.title`: Empieza hoy
-- `home.start.sell`: Vende algo
-- `home.start.sell_note`: Gratis hasta {count} publicaciones activas a la vez.
-- `home.start.hire`: Publica un empleo
-- `home.start.hire_note`: Gratis hasta {count} ofertas abiertas a la vez.
-- `home.start.ask`: Pide un servicio
-- `home.start.ask_note_free`: Pedir un servicio es gratis.
-- `home.start.ask_note`: Di qué necesitas y dónde.
-- `home.start.offer`: Ofrece tus servicios
-- `home.start.offer_note_free`: Tu perfil y tus respuestas no cuestan nada.
-- `home.start.offer_note`: Crear tu perfil no cuesta nada.
-- `home.recent.ago_now`: ahora
-- `home.recent.ago_minutes`: hace {count} min
-- `home.recent.ago_hours`: hace {count} h
-- `home.recent.ago_days`: hace {count} d
-- `home.trust.title_1`: Tu confianza
-- `home.trust.title_2`: es nuestra prioridad.
-- `home.trust.text`: Una persona, una cuenta. Reputación que se gana con lo que haces, protección contra el fraude y moderación que se ve.
-- `home.trust.one`: Cuenta única
-- `home.trust.reputation`: Reputación
-- `home.trust.fraud`: Antifraude
-- `home.trust.moderation`: Moderación
-- `home.trust.cta`: Cómo funciona la confianza
+- `home.districts.title`: Todo lo que necesitas.
+- `home.districts.sub`: Siete distritos. Una sola comunidad.
+- `home.districts.all`: Explorar todos
+- `home.card.mercadito`: Compra y vende en tu comunidad.
+- `home.card.services`: Encuentra ayuda cuando la necesitas.
+- `home.card.work`: Oportunidades reales sin cobros.
+- `home.card.yavayago`: Pide y entrega localmente.
+- `home.card.community`: Aquí nos apoyamos.
+- `home.card.sanctuary`: Fe, palabras y esperanza.
+- `home.card.animals`: Adopta, ayuda y reporta.
+- `home.closing.eyebrow`: Más que una plataforma
+- `home.closing.title_1`: Gente real.
+- `home.closing.title_2`: Apoyo real.
+- `home.closing.title_3`: Un mejor mañana.
+- `home.closing.text_1`: Un espacio transparente, con reglas claras, para nuestra comunidad.
+- `home.closing.text_2`: Oportunidades, ayuda y conexiones que hacen la vida mejor en toda Centroamérica.
+- `home.closing.one`: Una cuenta para todo
+- `home.closing.reputation`: Reputación que importa
+- `home.closing.community`: Comunidad que apoya
+- `home.closing.moderation`: Moderación transparente
+- `home.closing.join`: Únete hoy
+
+## firstlight
+- `firstlight.meta.title`: Yavaya — La Primera Luz (vista previa)
+- `firstlight.meta.description`: La nueva portada de Yavaya, en vista previa: el Guardián de la Primera Luz, los siete distritos y Roxi.
+- `firstlight.hero.eyebrow`: La Primera Luz
+- `firstlight.preview.label`: Vista previa
+- `firstlight.preview.current`: Ver la portada actual
+- `firstlight.sound.name`: Sonido
+- `firstlight.sound.on`: Sonido activado
+- `firstlight.sound.off`: Activar sonido
+- `firstlight.doors.sub`: Siete distritos, siete puertas. Una sola comunidad.
+- `firstlight.roxi.name`: Roxi
+- `firstlight.roxi.talk`: Hablar con Roxi
+- `firstlight.roxi.visitor`: La asistente de Yavaya. Entra y te ayuda a encontrar lo que necesitas.
+- `firstlight.roxi.enter`: Entrar
+- `firstlight.roxi.state.unavailable`: No está disponible ahora
+- `firstlight.roxi.state.idle`: Lista cuando la necesites
+- `firstlight.roxi.state.listening`: Te escucha
+- `firstlight.roxi.state.understanding`: Entendiendo lo que pediste
+- `firstlight.roxi.state.processing`: Preparándolo
+- `firstlight.roxi.state.searching`: Buscando en Yavaya
+- `firstlight.roxi.state.responding`: Te está respondiendo
+- `firstlight.roxi.state.awaiting`: Espera tu permiso
+- `firstlight.roxi.state.completed`: Listo
+- `firstlight.roxi.state.error`: No pudo terminar. Puedes intentarlo otra vez.
 
 ## welcome
 - `welcome.meta`: Bienvenida al equipo
@@ -3261,6 +3752,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.store.apply_review`: Una persona de Yavaya revisa cada negocio antes de abrirlo: que exista y que tú lo atiendes.
 - `go.store.apply_money`: Tú pones tus precios y tu envío. El cliente paga en efectivo al repartidor; el negocio y el repartidor se arreglan entre ellos.
 - `go.store.apply_free`: Abrir y vender en YavayaGo no cuesta nada por ahora: Yavaya no cobra comisión.
+- `go.store.apply_plan`: Plan: si te aprueban a más tardar el {cutoff}, eres restaurante fundador y usas YavayaGo gratis {months} meses desde tu aprobación, vendas lo que vendas. Después, {free} pedidos entregados al mes son gratis; si vendes más, Plan Negocio de US${price} al mes. El cobro todavía no existe: hoy no se cobra nada, y te avisaremos antes de empezar. Tus fechas aparecen en tu panel cuando te aprueben.
 - `go.store.saved`: Guardado.
 - `go.store.item_added`: Agregado al menú.
 - `go.store.state.pending`: Tu negocio está en revisión. Te avisamos cuando esté aprobado.
@@ -3315,8 +3807,8 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.menu.mark_available`: Volver a ofrecer
 - `go.menu.remove`: Quitar del menú
 - `go.driver.title`: Reparte con YavayaGo
-- `go.driver.applied`: Recibimos tu solicitud. Una persona de Yavaya te llamará al número que diste para comprobarlo.
-- `go.driver.state.pending`: Tu solicitud está en revisión. Te llamaremos al número que diste.
+- `go.driver.applied`: Recibimos tu solicitud. Una persona de Yavaya la revisa y te escribe por WhatsApp al número que diste. Yavaya no envía SMS ni hace llamadas automáticas.
+- `go.driver.state.pending`: Tu solicitud está en revisión. Una persona de Yavaya te escribirá por WhatsApp al número que diste.
 - `go.driver.state.approved`: Estás aprobado para repartir.
 - `go.driver.state.rejected`: Tu solicitud no fue aprobada. Puedes corregirla y enviarla de nuevo.
 - `go.driver.state.suspended`: Tu cuenta de repartidor está suspendida.
@@ -3344,7 +3836,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.driver.req_identity`: Tu documento de identidad. Solo lo ve la persona de Yavaya que revisa tu solicitud.
 - `go.driver.req_photo`: Una foto clara de tu cara: es la que verá cada cliente.
 - `go.driver.req_vehicle`: Tu vehículo y su placa, si tiene.
-- `go.driver.req_phone`: Tu teléfono: te llamaremos para comprobarlo.
+- `go.driver.req_phone`: Tu número de WhatsApp: una persona de Yavaya te escribe ahí para comprobarlo.
 - `go.driver.req_money`: Cobras el envío que pone cada negocio; el cliente te paga en efectivo. Yavaya no te cobra comisión.
 - `go.driver.vehicle`: Vehículo
 - `go.driver.vehicle_description`: Marca, modelo y color
@@ -3385,6 +3877,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.error.location`: Elige la ciudad.
 - `go.error.address`: Escribe la dirección.
 - `go.error.map_point`: Marca el punto en el mapa.
+- `go.error.map_far`: El punto del mapa quedó a más de {maxKm} km de la ciudad que elegiste. Muévelo hasta la puerta de tu negocio: toca el mapa ahí, o arrastra el punto.
 - `go.error.whatsapp`: Escribe el WhatsApp con código de país, por ejemplo +505 8888 1234.
 - `go.error.hours`: Escribe el horario.
 - `go.error.delivery_fee`: Escribe el costo de envío, por ejemplo 30 o 1.50.
@@ -3431,7 +3924,7 @@ Lo que la plataforma muestra a los miembros: botones, formularios, avisos y mens
 - `go.error.account_restricted`: Tu cuenta no puede hacer esto ahora.
 - `go.error.rate_limited`: Demasiados intentos seguidos. Espera un momento.
 - `go.error.upload`: No pudimos subir la foto. Intenta de nuevo.
-- `go.form.map_hint`: Al elegir la ciudad, el mapa va allí. Luego mueve el punto hasta tu puerta.
+- `go.form.map_hint`: Al elegir la ciudad, el mapa y el punto van allí. Luego toca el mapa en tu puerta, o arrastra el punto hasta ella.
 
 ## phone
 - `phone.title`: Tu teléfono

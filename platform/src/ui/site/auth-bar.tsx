@@ -6,7 +6,7 @@ import { GoogleButton } from '@/ui/components/google-button';
 /**
  * The way in, at the very top of every page for someone signed out: enter,
  * create an account, or — when it is configured — continue with Google.
- * When the browser still holds a session the server has closed (two hours
+ * When the browser still holds a session the server has closed (four hours
  * without activity), it says so, so a returning member is not greeted as a
  * stranger.
  *

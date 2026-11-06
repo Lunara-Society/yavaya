@@ -994,6 +994,9 @@ Texto de las páginas públicas de yavaya.lat (Inicio, distritos, Confianza, Rep
 - Roxi no publica, no paga y no envía nada a otras personas. Prepara un borrador en el mismo formulario de siempre y tú decides si lo envías. En Mercadito, el registro de auditoría anota que Roxi ayudó a escribir la publicación.
 - Roxi no está en el Espacio Violeta ni en las páginas para entrar o registrarse, y nada del Espacio Violeta le llega. Hay un límite diario de conversaciones por persona.
 - En tu dispositivo, Roxi guarda sus ajustes y, si lo permites, la conversación de esa pestaña, que se borra al cerrarla; nada de eso se guarda en Yavaya, y puedes borrarlo todo desde sus ajustes. De sus saludos y llamadas simuladas, Yavaya solo cuenta por día cuántas hubo y qué pasó con ellas, sin saber de quién.
+- Si le pides a Roxi que recuerde algo (una meta, una tarea, un recordatorio, un momento, un detalle tuyo), te pregunta antes y lo guarda en Yavaya **cifrado**. Lo ves, lo cambias y lo borras todo en «Mis cosas con Roxi». Los avisos de un recordatorio no llevan su texto.
+- Si conectas tus herramientas (Gmail, Google Calendar, un servidor MCP, una API), Roxi solo las usa contigo y te pide permiso antes de enviar o cambiar algo. Las claves se guardan **cifradas** y se borran al quitar la conexión; en Google también se revoca el permiso. Lo que Roxi lee ahí pasa por ElevenLabs y su modelo de lenguaje como el resto de la conversación.
+- Para contar los créditos de tu plan, Yavaya guarda el identificador de cada conversación, cuánto duró y cuánto costó. No guarda lo que se dijo.
 
 #### Estadísticas de visitas
 - id: visitas

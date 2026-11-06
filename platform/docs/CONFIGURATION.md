@@ -1234,9 +1234,9 @@ To switch it on (about ten minutes, in a Google account the owner controls):
 
 How accounts are matched and why is in `SECURITY.md` → *Continuar con Google*.
 
-## Signing out after inactivity (owner decision, October 2026)
+## Signing out after inactivity (owner decision, October 2026; four hours since 6 November 2026)
 
-A member is signed out after **two hours without activity**
+A member is signed out after **four hours without activity**
 (`SESSION_RULES.idleTimeoutMinutes`); using the site keeps the session open.
 The bar at the top then says the session closed and offers the quickest way
 back in — with Google, a single tap to the same account.
@@ -1246,7 +1246,7 @@ owner's stabilisation brief). A box on the sign-in page, never ticked for the
 person, applies to whichever way they sign in — email, Google or the
 two-step code. A remembered session is signed out after **14 days without
 use** (`SESSION_RULES.rememberedIdleDays`, our figure: the usual practice for
-an explicit opt-in) instead of two hours; everything else stays: the 30-day
+an explicit opt-in) instead of four hours; everything else stays: the 30-day
 absolute lifetime, signing out, "sign out the other devices", immediate end
 on suspension. Remembered sessions are marked in Settings → "where you're
 signed in". On a remembered device, turning on two-step needs a sign-in from

@@ -147,9 +147,13 @@ describe('Google sign-in: whose account it is', () => {
   });
 });
 
-describe('sessions: two hours without activity', () => {
+describe('sessions: the idle window (four hours without activity)', () => {
   beforeEach(async () => {
     await resetTransactionalData();
+  });
+
+  it('is four hours, the owner\'s choice of 6 November 2026', () => {
+    expect(SESSION_RULES.idleTimeoutMinutes).toBe(240);
   });
 
   it('stays open while used, and closes after the idle window', async () => {

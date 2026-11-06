@@ -16,6 +16,8 @@ import { resetTransactionalData } from '../helpers/database';
 const context = { networkHash: null, addressHash: 'remember-test', deviceFingerprint: null, userAgent: 'vitest' };
 const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
+/** An hour past a plain session's idle window (four hours since 6 November 2026). */
+const PAST_PLAIN_IDLE = SESSION_RULES.idleTimeoutMinutes * 60_000 + HOUR;
 
 async function member() {
   const { userId } = await register(
@@ -41,12 +43,12 @@ afterAll(async () => {
 });
 
 describe('remembered sessions', () => {
-  it('signs a plain session out after two hours without use, and keeps a remembered one', async () => {
+  it('signs a plain session out after four hours without use, and keeps a remembered one', async () => {
     const userId = await member();
     const plain = await db().transaction((tx) => createSession(tx, { userId }));
     const kept = await db().transaction((tx) => createSession(tx, { userId, remember: true }));
-    await idle(plain.sessionId, 3 * HOUR);
-    await idle(kept.sessionId, 3 * HOUR);
+    await idle(plain.sessionId, PAST_PLAIN_IDLE);
+    await idle(kept.sessionId, PAST_PLAIN_IDLE);
     expect(await validateSession(db(), plain.token)).toBeNull();
     expect(await validateSession(db(), kept.token)).toMatchObject({ remember: true, user: { userId } });
   });
@@ -83,7 +85,7 @@ describe('remembered sessions', () => {
     const kept = await db().transaction((tx) => createSession(tx, { userId, remember: true }));
     const plain = await db().transaction((tx) => createSession(tx, { userId }));
     await idle(kept.sessionId, DAY);
-    await idle(plain.sessionId, 3 * HOUR);
+    await idle(plain.sessionId, PAST_PLAIN_IDLE);
     const listed = await activeSessions(db(), userId);
     expect(listed.map((s) => s.id)).toEqual([kept.sessionId]);
     expect(listed[0]!.remember).toBe(true);
@@ -93,7 +95,7 @@ describe('remembered sessions', () => {
     const signedIn = new Date();
     expect(needsFreshSignIn({ remember: true, createdAt: signedIn })).toBe(false);
     expect(needsFreshSignIn({ remember: true, createdAt: new Date(Date.now() - (SESSION_RULES.freshSignInMinutes + 1) * 60_000) })).toBe(true);
-    // A plain session already ends after two hours of quiet; it is not asked.
+    // A plain session already ends after four hours of quiet; it is not asked.
     expect(needsFreshSignIn({ remember: false, createdAt: new Date(Date.now() - DAY) })).toBe(false);
   });
 });

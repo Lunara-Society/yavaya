@@ -50,7 +50,7 @@ export function needsFreshSignIn(session: { remember: boolean; createdAt: Date }
   return session.remember && now - session.createdAt.getTime() > SESSION_RULES.freshSignInMinutes * 60_000;
 }
 
-/** How long a session may go unused: two hours, or the remembered window if the member asked for it. */
+/** How long a session may go unused: four hours, or the remembered window if the member asked for it. */
 export function idleWindowMs(remember: boolean): number {
   return remember ? SESSION_RULES.rememberedIdleDays * 86_400_000 : SESSION_RULES.idleTimeoutMinutes * 60_000;
 }
