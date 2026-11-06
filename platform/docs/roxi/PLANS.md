@@ -27,11 +27,15 @@ changes and gets dearer, plans cannot silently start losing money.
 
 | | Free | Pro | Max |
 | --- | --- | --- | --- |
-| Price | $0 | **$5.99 / month** | **$14.99 / month** |
+| Name | Te ayudo | Te acompaño | Lo hacemos realidad |
+| Price | $0 | **$4.99 / month** | **$12.99 / month** |
 | Credits each month | 1,500 | 4,000 | 10,000 |
 | ≈ written answers / voice minutes | 60 / 10 | 160 / 26 | 400 / 66 |
 | Goals at once | 1 | 3 | 3 |
 | Reminders | 5, one-off | 30, repeating | 100, repeating |
+| Watches ("avisame cuando…") | 2 | 10 | 25 |
+| Missions at once | — | 5 | 20 |
+| Time capsules | — | 10 | 50 |
 | Connected tools | — | 3 (Google) | 10 (Google, MCP, API) |
 | Family circle | — | — | up to 6 (coming) |
 
@@ -39,8 +43,11 @@ changes and gets dearer, plans cannot silently start losing money.
 most the plan's credits can cost, so a member who uses every credit still
 does not cost Yavaya money:
 
-- Pro: $5.99 → about $5.51 after fees, against at most $4.00 of credits.
-- Max: $14.99 → about $14.24 after fees, against at most $10.00.
+- Pro: $4.99 → about $4.54 after fees, against at most $4.00 of credits.
+- Max: $12.99 → about $12.30 after fees, against at most $10.00.
+
+The prices are the ones the owner suggested on 6 November 2026 (they replace
+the first proposal of $5.99 and $14.99); both still pass the rule.
 
 `tests/integration/roxi-plans.test.ts` holds the prices to that rule. Most
 members use well under their allowance, which is the margin.
@@ -72,35 +79,51 @@ latest purchase.
 
 ## Skills, by plan
 
-Numbers are the proposal's. "Live" means it works today; "coming" is shown as
-coming on `/roxi`, never as included (`src/config/roxi-skills.ts`).
+The owner's ideas 1–50. "Live" means it works today; "coming" is shown as
+coming on `/roxi`, never as included (`src/config/roxi-skills.ts`; the plan of
+each is `ROXI_SKILL_PLANS` in `business-rules.ts`). Basic bookkeeping stays
+free, as the proposal asks.
 
-| # | Skill | Plan | State |
-| --- | --- | --- | --- |
-| — | Search Yavaya, drafts for every form | Free | live |
-| 1 | Tus metas conmigo (1 goal Free, 3 Pro/Max) | Free | live |
-| 3 | Organizá mi día (a checklist) | Free | live |
-| 5 | No se me olvida (reminders; repeating on Pro/Max) | Free | live |
-| 6 | Sorprendeme | Free | live (search + instructions) |
-| 7 | Hoy hice algo bueno (private journal) | Free | live |
-| 8 | Little celebrations | Free | coming — needs confirmed-event triggers |
-| 10 | Gracias por ayudarme (Roxi drafts, the member sends) | Free | live |
-| 11 | Ayudame a resolverlo (safe checks → Servicios request) | Free | live |
-| 14 | Busquemos juntos (lost pet) | Free | coming — the draft exists; WhatsApp image, match and neighbour alerts do not |
-| 16 | Empecemos con lo que tenés | Free | live |
-| 17 | Tenés más habilidades de las que creés | Free | live |
-| 18 | Alguien cerca puede ayudarte | Free | live |
-| 2 | Algo bueno para vos hoy (one opportunity a day) | Pro | coming |
-| 4 | Mi barrio | Pro | coming |
-| 12 | Cuidemos tu dinero (budget search) | Pro | coming — search has no price filter yet |
-| 15 | Vendelo conmigo (follow-ups, comparable prices) | Pro | coming |
-| — | Gmail and Google Calendar | Pro | built; waits on Google (below) |
-| 13 | Ayudá a mi familia (family circle) | Max | coming |
-| — | Mi negocio (the pulpería: am I making money?) | Max | coming |
-| — | MCP servers and APIs of the member's own | Max | live |
+**Free — Te ayudo**
 
-Skill 9 ("teach me something") needs 30 fact-checked lessons a person has
-reviewed; it is not assigned until they exist.
+| Skill | State |
+| --- | --- |
+| Search Yavaya, drafts for every form | live |
+| ¿Qué necesitás hoy? (front door, homepage and /roxi/hoy) | live |
+| Mi mundo: the day and the community pulse (records only, demo excluded) | live |
+| Tus metas, Organizá mi día, No se me olvida (with "después" snooze) | live |
+| Avisame cuando… (2 watches) | live |
+| Mi negocio: the ledger — sales, stock, expenses, fiado; totals in the database | live |
+| Mi camino (records vs what the member told, marked) and milestones | live |
+| Hoy hice algo bueno, Sorprendeme, Gracias, Ayudame a resolverlo | live |
+| Human connection, second chances, camera eyes, share, real-world memory | live (instructions + existing tools) |
+| Empecemos con lo que tenés, habilidades, alguien cerca | live |
+| Trusted contact; little celebrations; lost-pet guard | coming |
+
+**Pro — Te acompaño**
+
+| Skill | State |
+| --- | --- |
+| Algo bueno para vos hoy (one real opportunity a day, or none) | live |
+| Missions with steps; time capsules | live |
+| More goals, reminders (repeating) and 10 watches | live |
+| Gmail and Google Calendar | built; waits on Google (below) |
+| Mi barrio, budget finder, sell with me, anticipation, negotiation coach, knowledge vault, cross-district, store rescue | coming |
+
+**Max — Lo hacemos realidad**
+
+| Skill | State |
+| --- | --- |
+| MCP servers and APIs of the member's own | live |
+| 20 missions, 50 capsules, 25 watches | live |
+| Family circle, business insights, connects the dots, opportunity radar, chain reaction, storykeeper, mission agent, live world, digital twin, multi-agent, life OS | coming |
+
+"Teach me something" needs fact-checked lessons a person has reviewed; it is
+not assigned until they exist.
+
+**Never invented.** Pulse, opportunity and path read only real, non-demo
+records; an empty town says it is empty. The ledger's figures are computed by
+the database in whole cents, per currency, never by the model.
 
 ## Connectors
 

@@ -11,6 +11,9 @@ import { createTranslator } from '@/i18n';
 import { adminTryPlan, cancelPlan, resumePlan, startCreditPurchase, startPlanCheckout } from '@/server/domains/roxi/billing';
 import { addApiConnection, addMcpConnection, refreshMcpTools, removeConnection } from '@/server/domains/roxi/connectors/service';
 import { addItem, cleanBody, deleteAllItems, deleteItem, ITEM_KINDS, REPEATS, updateItem, type ItemKind, type Repeat } from '@/server/domains/roxi/items';
+import { ENTRY_KINDS, recordEntry, voidEntry, type EntryKind } from '@/server/domains/roxi/business';
+import { searchPlaces } from '@/server/domains/geography/places';
+import { isRedirectError } from 'next/dist/client/components/redirect-error';
 
 /*
  * Roxi's pages: plans and credits (/roxi), connections (/roxi/connections)
@@ -239,4 +242,132 @@ export async function forgetAllAction(formData: FormData): Promise<void> {
   if (formData.get('confirm') !== 'yes') redirect('/roxi/memory?error=roxi.memory.error.confirm');
   await deleteAllItems(db(), session.user.userId);
   redirect('/roxi/memory?done=forgotten');
+}
+
+// --- The business ledger --------------------------------------------------------------
+
+export async function recordBusinessAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/negocio');
+  const kind = String(formData.get('kind') ?? '') as EntryKind;
+  if (!(ENTRY_KINDS as readonly string[]).includes(kind)) redirect('/roxi/negocio');
+  const cost = String(formData.get('cost') ?? '').trim();
+  try {
+    await recordEntry(db(), session.user.userId, {
+      kind,
+      amount: String(formData.get('amount') ?? ''),
+      cost: kind === 'sale' && cost ? cost : undefined,
+      currency: String(formData.get('currency') ?? ''),
+      day: String(formData.get('day') ?? '') || new Date().toISOString().slice(0, 10),
+      note: String(formData.get('note') ?? ''),
+    });
+  } catch (error) {
+    failed('/roxi/negocio', error);
+  }
+  redirect('/roxi/negocio?done=saved');
+}
+
+export async function voidBusinessAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/negocio');
+  try {
+    await voidEntry(db(), session.user.userId, String(formData.get('id') ?? ''));
+  } catch (error) {
+    failed('/roxi/negocio', error);
+  }
+  redirect('/roxi/negocio');
+}
+
+// --- Watches, missions, capsules, milestones ----------------------------------------------
+
+export async function addWatchAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  const district = formData.get('district') === 'work' ? 'work' : 'mercadito';
+  const queryText = String(formData.get('query') ?? '').trim();
+  const max = Number(String(formData.get('max') ?? '').replace(',', '.'));
+  const placeText = String(formData.get('place') ?? '').trim();
+  const maxPrice = Number.isFinite(max) && max > 0 && district === 'mercadito' ? max : undefined;
+  const currency = String(formData.get('currency') ?? '').trim().toUpperCase();
+  // A price only compares within one currency: without a valid one the watch would never match, so say so.
+  if (maxPrice !== undefined && !/^[A-Z]{3}$/.test(currency)) redirect('/roxi/memory?error=roxi.business.error.currency#watch');
+  try {
+    let placeCode: string | undefined;
+    let placeName: string | undefined;
+    if (placeText) {
+      const [hit] = await searchPlaces(db(), placeText.slice(0, 80), { locale: session.user.locale ?? 'es', limit: 1 });
+      if (!hit) redirect('/roxi/memory?error=roxi.memory.error.place#watch');
+      placeCode = hit.code;
+      placeName = hit.name;
+    }
+    await addItem(db(), session.user.userId, {
+      kind: 'watch',
+      body: cleanBody({ title: queryText || String(max), district, query: queryText, maxPrice, currency: maxPrice !== undefined ? currency : undefined, placeCode, placeName }),
+    });
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory?done=added#watch');
+}
+
+export async function addMissionAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  const budget = Number(String(formData.get('budget') ?? '').replace(',', '.'));
+  try {
+    await addItem(db(), session.user.userId, {
+      kind: 'mission',
+      body: cleanBody({ title: formData.get('title'), target: Number.isFinite(budget) && budget > 0 ? budget : undefined, steps: String(formData.get('steps') ?? '').split('\n') }),
+    });
+  } catch (error) {
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory?done=added#mission');
+}
+
+export async function stepAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  try {
+    await updateItem(db(), session.user.userId, String(formData.get('id') ?? ''), { step: { index: Number(formData.get('index')), done: formData.get('done') === 'yes' } });
+  } catch (error) {
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory#mission');
+}
+
+export async function snoozeAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  try {
+    await updateItem(db(), session.user.userId, String(formData.get('id') ?? ''), { snoozeHours: Number(formData.get('hours')) || 24 });
+  } catch (error) {
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory?done=saved#reminder');
+}
+
+export async function addCapsuleAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  const opens = String(formData.get('opens') ?? '');
+  try {
+    await addItem(db(), session.user.userId, {
+      kind: 'capsule',
+      body: cleanBody({ title: formData.get('title'), detail: formData.get('detail') }),
+      dueAt: /^\d{4}-\d{2}-\d{2}$/.test(opens) ? new Date(`${opens}T14:00:00Z`) : null,
+    });
+  } catch (error) {
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory?done=added#capsule');
+}
+
+export async function addMilestoneAction(formData: FormData): Promise<void> {
+  const session = await signedIn('/roxi/memory');
+  const when = String(formData.get('when') ?? '');
+  try {
+    await addItem(db(), session.user.userId, {
+      kind: 'milestone',
+      body: cleanBody({ title: formData.get('title'), source: 'member' }),
+      day: /^\d{4}-\d{2}-\d{2}$/.test(when) ? when : String(formData.get('day') ?? '') || new Date().toISOString().slice(0, 10),
+    });
+  } catch (error) {
+    failed('/roxi/memory', error);
+  }
+  redirect('/roxi/memory?done=added#camino');
 }

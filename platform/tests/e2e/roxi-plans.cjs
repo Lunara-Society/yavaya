@@ -42,7 +42,7 @@ const noHorizontalScroll = (page) => page.evaluate(() => document.documentElemen
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await page.goto(`${BASE}/roxi`);
     check((await page.locator('.rx-plan').count()) === 3, 'three plans shown to a visitor');
-    check(/5[.,]99/.test(await page.locator('.rx-plan.is-pro .rx-price').innerText()), 'Pro shows its price');
+    check(/4[.,]99/.test(await page.locator('.rx-plan.is-pro .rx-price').innerText()), 'Pro shows its price');
     check((await page.locator('button:has-text("Elegir")').count()) === 0, 'no buy button while plans cannot be bought');
     check(await noHorizontalScroll(page), 'plans page fits a phone');
     await shot(page, 'plans-visitor-phone');

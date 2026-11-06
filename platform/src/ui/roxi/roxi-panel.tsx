@@ -100,6 +100,9 @@ const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'che
   update_memory: 'preparing',
   connected_tools: 'checking',
   use_connected_tool: 'checking',
+  my_world: 'checking',
+  my_path: 'checking',
+  business: 'checking',
 };
 
 /** Entries this tab keeps (sessionStorage) so closing the panel or reloading does not lose the thread. Photos stay out: they are files, not text. */
@@ -344,6 +347,7 @@ export default function RoxiPanel({
   labels,
   refusals,
   openedBy = 'none',
+  ask,
   onSettings,
   onClose,
 }: {
@@ -352,6 +356,8 @@ export default function RoxiPanel({
   labels: RoxiLabels;
   refusals: Record<string, string>;
   openedBy?: RoxiOpening;
+  /** A request from a button elsewhere on the site ("¿Qué necesitas hoy?"), sent as the member's first message. */
+  ask?: { text: string; id: number } | null;
   onSettings: () => void;
   onClose: () => void;
 }) {
@@ -777,6 +783,15 @@ export default function RoxiPanel({
     }
   }
 
+  // A request handed over by a page ("Necesito ayuda", "Busco trabajo"): sent once, as if typed.
+  const askedId = useRef<number | null>(null);
+  const sendTextRef = useRef<(text: string, fromBox: boolean) => Promise<void>>(async () => undefined);
+  useEffect(() => {
+    if (!ask || askedId.current === ask.id) return;
+    askedId.current = ask.id;
+    void sendTextRef.current(ask.text, false);
+  }, [ask]);
+
   async function sendText(text: string, fromBox: boolean) {
     const said = text.trim();
     if (!said) return;
@@ -1010,11 +1025,30 @@ export default function RoxiPanel({
               ? labels['status.paused']
               : labels.role;
 
+  sendTextRef.current = sendText;
+
+  // "¿Qué necesitas hoy?": the four doors besides selling with a photo (the proposal's front door).
   const suggestions = [
-    { key: 'find', icon: 'search', text: labels['suggest.find'] },
-    { key: 'account', icon: 'coin', text: labels['suggest.account'] },
-    { key: 'how', icon: 'spark', text: labels['suggest.how'] },
+    { key: 'help', icon: 'spark', text: labels['suggest.help'] },
+    { key: 'work', icon: 'search', text: labels['suggest.work'] },
+    { key: 'community', icon: 'search', text: labels['suggest.community'] },
+    { key: 'world', icon: 'coin', text: labels['suggest.world'] },
   ] as const;
+
+  /** The phone's share sheet when there is one; otherwise WhatsApp, with an accurate line and the link. */
+  async function share(card: RoxiResultCard) {
+    const url = new URL(card.url, window.location.origin).toString();
+    const text = labels.share_text.replace('{title}', card.title);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: card.title, text, url });
+        return;
+      }
+    } catch {
+      return;
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, '_blank', 'noopener');
+  }
 
   const photoInput = (
     <>
@@ -1166,6 +1200,10 @@ export default function RoxiPanel({
                             <Icon name="arrow" size={18} />
                           </em>
                         </a>
+                        {/* "Send this to someone" (30): the member chooses who, in their own app. Nothing is sent by Yavaya. */}
+                        <button type="button" className="roxi-share" onClick={() => void share(card)} aria-label={labels.share} title={labels.share}>
+                          <Icon name="up" size={16} />
+                        </button>
                       </li>
                     ))}
                   </ul>

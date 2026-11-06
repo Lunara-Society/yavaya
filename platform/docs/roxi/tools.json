@@ -383,7 +383,7 @@
   {
     "type": "client",
     "name": "remember",
-    "description": "Saves ONE thing for the member — only after they said yes to saving it (ask first: '¿Querés que lo guarde?'). kind: goal (something they are working towards; optional target amount and progress), task (something to do today; the day defaults to their today), reminder (needs due: when, as a local date-time like 2026-11-14T08:00; optional repeat weekly/monthly/yearly, which needs Pro or Max; optional action: what you could help with when it comes, e.g. 'buscar dónde venden comida para perro'), moment (a good thing they did, private), fact (a personal detail they asked you to remember, like a birthday). The panel shows the member what was saved and where to see or delete it. Plan limits apply: an error with a limit means the plan's limit was reached — say so plainly and mention /roxi only if they ask how to get more.",
+    "description": "Saves ONE thing for the member — only after they said yes to saving it (ask first: '¿Querés que lo guarde?'). kind: goal (something they are working towards; optional target amount and progress), task (something to do today; day defaults to their today), reminder (needs due: local date-time like 2026-11-14T08:00; optional repeat weekly/monthly/yearly, Pro or Max; optional action: what you could help with when it comes), moment (a good thing they did, private), fact (a personal detail they asked you to remember, like a birthday — never passwords, PINs or card numbers), watch ('avisame cuando…': query words, optional place, optional max_price with currency; Roxi sends one notice per NEW Mercadito listing that matches — never invent that one exists), mission (Pro or Max: a bigger aim broken into steps, one per line or separated by |), capsule (Pro or Max: a message to their future self; needs due at least one day ahead; its words stay hidden until then), milestone (something that happened in their life they want on Mi camino; day defaults to today). The panel shows the member what was saved and where to see or delete it. Plan limits apply: an error with a limit or needs_pro means the plan does not allow it — say so plainly and mention /roxi only if they ask how to get more.",
     "expects_response": true,
     "response_timeout_secs": 20,
     "parameters": {
@@ -396,7 +396,11 @@
             "task",
             "reminder",
             "moment",
-            "fact"
+            "fact",
+            "watch",
+            "mission",
+            "capsule",
+            "milestone"
           ],
           "description": "What kind of thing to save."
         },
@@ -418,7 +422,7 @@
         },
         "due": {
           "type": "string",
-          "description": "Reminder only: local date-time, e.g. 2026-11-14T08:00."
+          "description": "Reminder or capsule: local date-time, e.g. 2026-11-14T08:00."
         },
         "repeat": {
           "type": "string",
@@ -436,7 +440,35 @@
         },
         "day": {
           "type": "string",
-          "description": "Task only, optional: YYYY-MM-DD; defaults to today."
+          "description": "Task or milestone, optional: YYYY-MM-DD; defaults to today."
+        },
+        "query": {
+          "type": "string",
+          "description": "Watch only: the words to look for, e.g. \"bicicleta\" or \"cocinera\"."
+        },
+        "place": {
+          "type": "string",
+          "description": "Watch only, optional: the town or department to watch in."
+        },
+        "max_price": {
+          "type": "number",
+          "description": "Watch only, optional: the most they want to pay."
+        },
+        "currency": {
+          "type": "string",
+          "description": "Watch only, with max_price: three letters, e.g. NIO or USD."
+        },
+        "district": {
+          "type": "string",
+          "enum": [
+            "mercadito",
+            "work"
+          ],
+          "description": "Watch only, optional: mercadito (listings, default) or work (job offers)."
+        },
+        "steps": {
+          "type": "string",
+          "description": "Mission only: the steps, one per line or separated by |."
         }
       },
       "required": [
@@ -448,7 +480,7 @@
   {
     "type": "client",
     "name": "update_memory",
-    "description": "Changes something Roxi keeps, by the id my_memory returned: action done (mark a task, reminder or goal done; done=false to undo), update (new title, detail or goal progress), delete (only when the member asks to remove it).",
+    "description": "Changes something Roxi keeps, by the id my_memory returned: action done (mark a task, reminder, goal or mission done; done=false to undo), update (new title, detail or goal progress), step (tick a mission step: index from 0, done true/false; the mission completes when every step is done), snooze (put a reminder off by hours, e.g. 24 for tomorrow — when the member says 'después' or 'mañana'), delete (only when the member asks to remove it). A capsule cannot be changed before it opens.",
     "expects_response": true,
     "response_timeout_secs": 20,
     "parameters": {
@@ -459,7 +491,9 @@
           "enum": [
             "done",
             "update",
-            "delete"
+            "delete",
+            "step",
+            "snooze"
           ],
           "description": "What to do."
         },
@@ -482,11 +516,115 @@
         "progress": {
           "type": "number",
           "description": "For update of a goal: the new progress amount."
+        },
+        "index": {
+          "type": "number",
+          "description": "For step: which step, counting from 0."
+        },
+        "hours": {
+          "type": "number",
+          "description": "For snooze: how many hours to put the reminder off (1 to 720)."
         }
       },
       "required": [
         "action",
         "id"
+      ]
+    }
+  },
+  {
+    "type": "client",
+    "name": "my_world",
+    "description": "The member's world today, from records only: their tasks and reminders, what is happening in their community (new Mercadito listings in 24 h, open job offers, open help requests, open Servicios requests, lost animals still missing — counts plus the newest of each; widened to the department when their town is quiet), their goals, today's business sales if they keep a ledger, and on Pro or Max one real opportunity (or none). Use it for '¿qué hay hoy?', '¿qué pasa en mi comunidad?', or the front door. If a count is zero or empty is true, say nothing is published — never invent activity.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "place": {
+          "type": "string",
+          "description": "Optional: another town to ask about; default is the member's own."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "type": "client",
+    "name": "my_path",
+    "description": "Mi camino: the member's path on Yavaya, oldest first — events Yavaya recorded (joined, first listing, first sale marked, work profile, first application, store approved) and milestones and completed goals the member saved. Each step has source 'yavaya' (recorded) or 'member' (they told you): say which — never present what the member said as verified.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "type": "client",
+    "name": "business",
+    "description": "The member's business ledger (free on every plan). action record: save ONE entry after repeating the amount back and hearing yes ('¿Anoto 1,800 córdobas de venta?'); kind sale (optional cost: what those goods cost them), stock (stock bought), expense, owed_to_me (fiado), paid_to_me, i_owe, i_paid. action void: cancel an entry by id (it stays in the history). action summary: totals for period day/week/month, per currency, computed by the database. action recent: the latest entries with ids. Never add up amounts yourself — read the totals. Sales are money in; gross profit is only for sales with a known cost and is an estimate; the cash difference is sales minus stock minus expenses and is NOT profit.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "record",
+            "void",
+            "summary",
+            "recent"
+          ],
+          "description": "What to do."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "sale",
+            "stock",
+            "expense",
+            "owed_to_me",
+            "paid_to_me",
+            "i_owe",
+            "i_paid"
+          ],
+          "description": "For record: what kind of entry."
+        },
+        "amount": {
+          "type": "number",
+          "description": "For record: the amount, as the member confirmed it."
+        },
+        "cost": {
+          "type": "number",
+          "description": "For record of a sale, optional: what the goods sold cost them."
+        },
+        "currency": {
+          "type": "string",
+          "description": "For record: three letters, e.g. NIO, USD, HNL. Ask if unclear."
+        },
+        "note": {
+          "type": "string",
+          "description": "For record, optional: what it was, e.g. \"gaseosas\"."
+        },
+        "id": {
+          "type": "string",
+          "description": "For void: the entry id from recent."
+        },
+        "period": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ],
+          "description": "For summary: default day."
+        }
+      },
+      "required": [
+        "action"
       ]
     }
   },

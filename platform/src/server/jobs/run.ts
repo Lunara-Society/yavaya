@@ -22,6 +22,7 @@ import { tripsUpkeep } from '@/server/domains/go/trips';
 import { purgeSiteStats } from '@/server/domains/stats/service';
 import { meterOpenConversations, plansUpkeep } from '@/server/domains/roxi/billing';
 import { deliverDueReminders } from '@/server/domains/roxi/items';
+import { runWatches, sendDailyOpportunities } from '@/server/domains/roxi/world';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -177,9 +178,11 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     const meter = await meterOpenConversations(db());
     const plans = await plansUpkeep(db());
     const reminders = await deliverDueReminders(db());
-    if (meter.metered + meter.unmetered + plans.renewed + plans.ended + plans.replaced + reminders.sent === 0) return { summary: 'no Roxi upkeep needed' };
+    const watches = await runWatches(db());
+    const daily = await sendDailyOpportunities(db());
+    if (meter.metered + meter.unmetered + plans.renewed + plans.ended + plans.replaced + reminders.sent + watches.sent + daily.sent === 0) return { summary: 'no Roxi upkeep needed' };
     return {
-      summary: `metered ${meter.metered} conversation(s) (${meter.waiting} waiting, ${meter.unmetered} never reported); ${plans.renewed} plan(s) renewed, ${plans.ended} ended, ${plans.replaced} replaced subscription(s) cancelled; ${reminders.sent} reminder(s) sent`,
+      summary: `metered ${meter.metered} conversation(s) (${meter.waiting} waiting, ${meter.unmetered} never reported); ${plans.renewed} plan(s) renewed, ${plans.ended} ended, ${plans.replaced} replaced subscription(s) cancelled; ${reminders.sent} reminder(s) and capsule(s) sent; ${watches.sent} watch match(es) from ${watches.checked} watch(es); ${daily.sent} daily opportunit(ies) for ${daily.members} member(s)`,
     };
   },
 

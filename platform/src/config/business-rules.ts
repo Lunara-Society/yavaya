@@ -925,12 +925,20 @@ export type RoxiPlan = {
   connectorKinds: ReadonlyArray<'google' | 'mcp' | 'api'>;
   /** People in a family circle, including the owner (0: none). */
   familyCircle: number;
+  /** Things Roxi watches for (price memory, 26): new Mercadito listings or job offers that match. */
+  watches: number;
+  /** Multi-step missions at once (42): a goal with its steps and budget. */
+  missions: number;
+  /** Time capsules waiting to open (32). */
+  capsules: number;
 };
 
 export const ROXI_PLANS: Readonly<Record<RoxiPlanKey, RoxiPlan>> = {
-  free: { key: 'free', priceMinor: 0, currency: 'USD', monthlyCredits: 1_500, goals: 1, reminders: 5, recurringReminders: false, connections: 0, connectorKinds: [], familyCircle: 0 },
-  pro: { key: 'pro', priceMinor: 599, currency: 'USD', monthlyCredits: 4_000, goals: 3, reminders: 30, recurringReminders: true, connections: 3, connectorKinds: ['google'], familyCircle: 0 },
-  max: { key: 'max', priceMinor: 1_499, currency: 'USD', monthlyCredits: 10_000, goals: 3, reminders: 100, recurringReminders: true, connections: 10, connectorKinds: ['google', 'mcp', 'api'], familyCircle: 6 },
+  // Prices: the owner's suggested starting point of 6 November 2026 ($4.99 / $12.99). They still cover
+  // the most each plan's credits can cost after card fees (tests/integration/roxi-plans.test.ts).
+  free: { key: 'free', priceMinor: 0, currency: 'USD', monthlyCredits: 1_500, goals: 1, reminders: 5, recurringReminders: false, connections: 0, connectorKinds: [], familyCircle: 0, watches: 2, missions: 0, capsules: 0 },
+  pro: { key: 'pro', priceMinor: 499, currency: 'USD', monthlyCredits: 4_000, goals: 3, reminders: 30, recurringReminders: true, connections: 3, connectorKinds: ['google'], familyCircle: 0, watches: 10, missions: 5, capsules: 10 },
+  max: { key: 'max', priceMinor: 1_299, currency: 'USD', monthlyCredits: 10_000, goals: 3, reminders: 100, recurringReminders: true, connections: 10, connectorKinds: ['google', 'mcp', 'api'], familyCircle: 6, watches: 25, missions: 20, capsules: 50 },
 };
 
 /** Extra credits, for any member on any plan. Usable for ROXI_CREDIT_RULES.purchasedCreditMonths. */
@@ -946,9 +954,14 @@ export const ROXI_CREDIT_PACKS: ReadonlyArray<{ key: string; credits: number; pr
  * without money, a lost animal, community help — stays free on purpose.
  */
 export const ROXI_SKILL_PLANS = {
-  // Free: what Roxi already does, and help that must never sit behind a payment.
+  // Free: "Te ayudo." What Roxi already does, and help that must never sit behind a payment.
   search: 'free',
   drafts: 'free',
+  front_door: 'free', // "¿Qué necesitas hoy?" and voice-to-everything (22)
+  goals: 'free', // 1 (one goal on Free, three on Pro and Max)
+  day_plan: 'free', // 3
+  reminders: 'free', // 5 (five on Free, more and repeating on Pro and Max)
+  promise_keeper: 'free', // 24 (a commitment is a reminder that asks how it went)
   surprise: 'free', // 6
   good_moments: 'free', // 7
   celebrations: 'free', // 8
@@ -958,19 +971,43 @@ export const ROXI_SKILL_PLANS = {
   start_with_nothing: 'free', // 16
   skill_discovery: 'free', // 17
   help_match: 'free', // 18
-  goals: 'free', // 1 (one goal on Free, three on Pro and Max)
-  reminders: 'free', // 5 (five on Free, more and repeating on Pro and Max)
-  day_plan: 'free', // 3
-  // Pro
+  life_map: 'free', // 19
+  community_pulse: 'free', // 20
+  business_ledger: 'free', // 21 (basic bookkeeping stays free, as the proposal asks)
+  human_connection: 'free', // 23
+  price_memory: 'free', // 26 (two watches on Free, more on Pro and Max)
+  trusted_contact: 'free', // 28
+  share: 'free', // 30
+  real_world_memory: 'free', // 35
+  camera_eyes: 'free', // 37 (from photos)
+  second_chance: 'free', // 39
+  personal_world: 'free', // 40 (three cards)
+  // Pro: "Te acompaño."
   daily_opportunity: 'pro', // 2
   neighbourhood: 'pro', // 4
   budget_finder: 'pro', // 12
   sell_with_me: 'pro', // 15 (the follow-ups and price comparison; the draft itself stays free)
   connectors_google: 'pro',
-  // Max
+  time_capsule: 'pro', // 32
+  anticipation: 'pro', // 41
+  missions: 'pro', // 42
+  negotiation_coach: 'pro', // 43
+  knowledge_vault: 'pro', // 44
+  cross_district: 'pro', // 45
+  store_rescue: 'pro', // 29
+  // Max: "Lo hacemos realidad."
   family_circle: 'max', // 13
-  business_insights: 'max', // the pulpería: "am I actually making money?"
+  business_insights: 'max', // 33 (restock, trends)
   connectors_custom: 'max', // MCP servers and APIs of the member's own
+  connects_dots: 'max', // 31
+  opportunity_radar: 'max', // 34
+  chain_reaction: 'max', // 36
+  storykeeper: 'max', // 38
+  mission_agent: 'max', // 46
+  live_world: 'max', // 47
+  digital_twin: 'max', // 48
+  multi_agent: 'max', // 49
+  life_os: 'max', // 50
 } as const satisfies Record<string, RoxiPlanKey>;
 
 export type RoxiSkill = keyof typeof ROXI_SKILL_PLANS;

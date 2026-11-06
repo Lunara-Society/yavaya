@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import type { RoxiLabels, RoxiPresenceLabels } from './labels';
 import type { RoxiMember, RoxiOpening } from './roxi-panel';
 import { RoxiPresence } from './presence';
+import { ROXI_ASK_EVENT } from './ask';
 import { RoxiWelcomeNote, type RoxiWelcome } from './welcome-note';
 
 const RoxiPanel = dynamic(() => import('./roxi-panel'), { ssr: false });
@@ -43,6 +44,7 @@ export function RoxiRoot() {
   const [opening, setOpening] = useState<RoxiOpening>('none');
   const [settings, setSettings] = useState(false);
   const [welcome, setWelcome] = useState<RoxiWelcome | null>(null);
+  const [ask, setAsk] = useState<{ text: string; id: number } | null>(null);
   const quiet = QUIET.test(pathname);
 
   useEffect(() => {
@@ -65,6 +67,19 @@ export function RoxiRoot() {
     if (quiet) setOpen(false);
   }, [quiet]);
 
+  // Any page can open Roxi with a request already said: window.dispatchEvent(new CustomEvent(ROXI_ASK_EVENT, { detail: { text } })).
+  useEffect(() => {
+    const onAsk = (event: Event) => {
+      const text = (event as CustomEvent<{ text?: unknown }>).detail?.text;
+      setWelcome(null);
+      setOpening('none');
+      setOpen(true);
+      if (typeof text === 'string' && text.trim()) setAsk({ text: text.trim().slice(0, 300), id: Date.now() });
+    };
+    window.addEventListener(ROXI_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ROXI_ASK_EVENT, onAsk);
+  }, []);
+
   if (!session?.enabled || quiet) return null;
 
   const show = (how: RoxiOpening) => {
@@ -82,6 +97,7 @@ export function RoxiRoot() {
           labels={session.labels}
           refusals={session.refusals}
           openedBy={opening}
+          ask={ask}
           onSettings={() => setSettings(true)}
           onClose={() => {
             setOpen(false);

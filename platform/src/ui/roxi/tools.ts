@@ -366,7 +366,7 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
      * line saying what was saved, with the link to see or delete it.
      */
     async remember(parameters) {
-      const kind = oneOf(['goal', 'reminder', 'task', 'moment', 'fact'], parameters.kind);
+      const kind = oneOf(['goal', 'reminder', 'task', 'moment', 'fact', 'watch', 'mission', 'capsule', 'milestone'], parameters.kind);
       if (!kind) return reply({ ok: false, error: 'unknown_kind' });
       const due = text(parameters.due, 40);
       const { ok, body } = await postJson('/api/roxi/memory', {
@@ -380,7 +380,15 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         repeat: oneOf(['none', 'weekly', 'monthly', 'yearly'], parameters.repeat) || 'none',
         // A time without an offset is the member's local time.
         due: due ? (/[zZ]|[+-]\d\d:?\d\d$/.test(due) ? due : new Date(due).toISOString()) : undefined,
-        day: kind === 'task' ? text(parameters.day, 10) || localDay() : undefined,
+        day: kind === 'task' || kind === 'milestone' ? text(parameters.day, 10) || localDay() : undefined,
+        // Watches: what, where, and up to what price.
+        district: oneOf(['mercadito', 'work'], parameters.district) || undefined,
+        query: text(parameters.query, 80) || undefined,
+        max_price: typeof parameters.max_price === 'number' ? parameters.max_price : Number(text(parameters.max_price, 14)) || undefined,
+        currency: text(parameters.currency, 3) || undefined,
+        place: text(parameters.place, 80) || undefined,
+        // Missions: steps, one per line or separated by |.
+        steps: text(parameters.steps, 4000) || undefined,
       });
       const result = body as { ok?: boolean; saved?: { id: string; title: string }; error?: string; limit?: number } | null;
       if (ok && result?.ok && result.saved) ctx.saved?.(result.saved.title, `/roxi/memory#item-${result.saved.id}`);
@@ -389,7 +397,7 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
 
     /** Marks done, changes or deletes something Roxi keeps, by the id my_memory gave. */
     async update_memory(parameters) {
-      const action = oneOf(['done', 'update', 'delete'], parameters.action);
+      const action = oneOf(['done', 'update', 'delete', 'step', 'snooze'], parameters.action);
       if (!action) return reply({ ok: false, error: 'unknown_action' });
       const { body } = await postJson('/api/roxi/memory', {
         action,
@@ -398,7 +406,44 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         title: text(parameters.title, 160) || undefined,
         detail: text(parameters.detail, 600) || undefined,
         progress: typeof parameters.progress === 'number' ? parameters.progress : undefined,
+        index: typeof parameters.index === 'number' ? parameters.index : Number(parameters.index),
+        hours: typeof parameters.hours === 'number' ? parameters.hours : Number(parameters.hours) || undefined,
       });
+      return reply(body ?? { ok: false, error: 'failed' });
+    },
+
+    /** The member's day, their community today, and (Pro, Max) one real opportunity. `place` asks about another town. */
+    async my_world(parameters) {
+      const place = text(parameters.place, 80);
+      const { ok, status, body } = await getJson(`/api/roxi/world?day=${localDay()}${place ? `&place=${encodeURIComponent(place)}` : ''}`);
+      if (!ok) return reply({ ok: false, error: status === 429 ? 'too_many_lookups' : status === 401 ? 'signed_out' : 'failed' });
+      return reply(body);
+    },
+
+    /** Mi camino: what Yavaya recorded and the milestones the member saved, each marked as which. */
+    async my_path() {
+      const { ok, status, body } = await getJson('/api/roxi/path');
+      if (!ok) return reply({ ok: false, error: status === 429 ? 'too_many_lookups' : status === 401 ? 'signed_out' : 'failed' });
+      return reply(body);
+    },
+
+    /** The business ledger: record (after the member confirmed the amount), void, summary, recent. */
+    async business(parameters) {
+      const action = oneOf(['record', 'void', 'summary', 'recent'], parameters.action);
+      if (!action) return reply({ ok: false, error: 'unknown_action' });
+      const { body } = await postJson('/api/roxi/business', {
+        action,
+        day: localDay(),
+        kind: text(parameters.kind, 20),
+        amount: typeof parameters.amount === 'number' ? parameters.amount : text(parameters.amount, 20),
+        cost: typeof parameters.cost === 'number' ? parameters.cost : text(parameters.cost, 20) || undefined,
+        currency: text(parameters.currency, 3),
+        note: text(parameters.note, 200) || undefined,
+        id: text(parameters.id, 40) || undefined,
+        period: oneOf(['day', 'week', 'month'], parameters.period) || 'day',
+      });
+      const result = body as { ok?: boolean; saved?: { kind: string; amount: number; currency: string } } | null;
+      if (result?.ok && result.saved) ctx.saved?.(`${result.saved.currency} ${result.saved.amount.toLocaleString()}`, '/roxi/negocio');
       return reply(body ?? { ok: false, error: 'failed' });
     },
 

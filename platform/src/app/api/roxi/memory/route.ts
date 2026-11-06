@@ -2,6 +2,8 @@ import { db } from '@/server/db/client';
 import { sameOrigin } from '@/app/api/go/upload';
 import { addItem, cleanBody, deleteItem, ITEM_KINDS, itemsAvailable, memoryForRoxi, REPEATS, updateItem, type ItemKind, type Repeat } from '@/server/domains/roxi/items';
 import { DomainError } from '@/server/errors';
+import { getTranslator } from '@/i18n/server';
+import { searchPlaces } from '@/server/domains/geography/places';
 import { json, member } from '../shared';
 
 export const dynamic = 'force-dynamic';
@@ -38,12 +40,38 @@ export async function POST(request: Request) {
         if (!(ITEM_KINDS as readonly string[]).includes(kind)) return json({ ok: false, error: 'unknown_kind' });
         const repeat = (REPEATS as readonly string[]).includes(String(body.repeat)) ? (String(body.repeat) as Repeat) : 'none';
         const due = typeof body.due === 'string' ? new Date(body.due) : null;
+        // A watch's place is resolved to a place Yavaya knows, the way a listing's is.
+        let placeCode: string | undefined;
+        let placeName: string | undefined;
+        if (kind === 'watch' && typeof body.place === 'string' && body.place.trim()) {
+          const { locale } = await getTranslator();
+          const [hit] = await searchPlaces(db(), body.place.trim().slice(0, 80), { locale, limit: 1 });
+          if (!hit) return json({ ok: false, error: 'place_not_found', asked: body.place });
+          placeCode = hit.code;
+          placeName = hit.name;
+        }
+        const steps = Array.isArray(body.steps) ? body.steps : typeof body.steps === 'string' ? body.steps.split(/\n|\|/) : undefined;
+        const title = body.title ?? (kind === 'watch' ? body.query : undefined);
         const item = await addItem(db(), userId, {
           kind,
-          body: cleanBody({ title: body.title, detail: body.detail, target: body.target, progress: body.progress, action: body.action_hint }),
+          body: cleanBody({
+            title,
+            detail: body.detail,
+            target: body.target,
+            progress: body.progress,
+            action: body.action_hint,
+            steps,
+            district: body.district ?? (kind === 'watch' ? 'mercadito' : undefined),
+            query: body.query,
+            maxPrice: typeof body.max_price === 'number' ? body.max_price : undefined,
+            currency: body.currency,
+            placeCode,
+            placeName,
+            source: kind === 'milestone' ? 'member' : undefined,
+          }),
           dueAt: due,
           repeat,
-          day: typeof body.day === 'string' ? body.day : null,
+          day: typeof body.day === 'string' ? body.day : kind === 'milestone' ? new Date().toISOString().slice(0, 10) : null,
         });
         return json({ ok: true, saved: { id: item.id, kind: item.kind, title: item.title } });
       }
@@ -52,6 +80,12 @@ export async function POST(request: Request) {
         return json({ ok: true });
       case 'update':
         await updateItem(db(), userId, String(body.id ?? ''), { body: { title: body.title ?? undefined, detail: body.detail ?? undefined, progress: body.progress ?? undefined, target: body.target ?? undefined } });
+        return json({ ok: true });
+      case 'step':
+        await updateItem(db(), userId, String(body.id ?? ''), { step: { index: Number(body.index), done: body.done !== false } });
+        return json({ ok: true });
+      case 'snooze':
+        await updateItem(db(), userId, String(body.id ?? ''), { snoozeHours: Number(body.hours) || 24 });
         return json({ ok: true });
       case 'delete':
         await deleteItem(db(), userId, String(body.id ?? ''));

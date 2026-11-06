@@ -137,3 +137,31 @@ export const roxiItems = pgTable(
   },
   (table) => [index('roxi_items_user_idx').on(table.userId, table.kind), index('roxi_items_due_idx').on(table.dueAt)],
 );
+
+/**
+ * The small-business ledger Roxi keeps for a member (ideas 21 and 33): sales,
+ * stock bought, other expenses, and money owed either way. Amounts are in
+ * clear so totals are plain arithmetic in the database, never a model's
+ * guess; the note (who, what) is sealed. A correction voids an entry and
+ * keeps it in the history.
+ */
+export const roxiBusinessEntries = pgTable(
+  'roxi_business_entries',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    /** 'sale' | 'stock' | 'expense' | 'owed_to_me' | 'paid_to_me' | 'i_owe' | 'i_paid'. */
+    kind: text('kind').notNull(),
+    amountMinor: integer('amount_minor').notNull(),
+    /** For a sale, what the goods sold cost, when the member knows it. */
+    costMinor: integer('cost_minor'),
+    currency: text('currency').notNull(),
+    occurredOn: text('occurred_on').notNull(),
+    noteSealed: text('note_sealed'),
+    voidedAt: timestamp('voided_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('roxi_business_entries_user_idx').on(table.userId, table.occurredOn)],
+);

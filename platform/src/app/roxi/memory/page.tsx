@@ -10,7 +10,8 @@ import { ROXI_PLANS } from '@/config/business-rules';
 import { currentPlan } from '@/server/domains/roxi/credits';
 import { itemsAvailable, listItems, type ItemView } from '@/server/domains/roxi/items';
 import { LocalTimeFields } from '@/ui/roxi/local-time';
-import { addItemAction, deleteItemAction, forgetAllAction, progressItemAction, toggleItemAction } from '../actions';
+import { addCapsuleAction, addItemAction, addMilestoneAction, addMissionAction, addWatchAction, deleteItemAction, forgetAllAction, progressItemAction, snoozeAction, stepAction, toggleItemAction } from '../actions';
+import { lifePath, memberClock } from '@/server/domains/roxi/world';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getTranslator();
@@ -31,6 +32,7 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const available = itemsAvailable();
   const plan = (await currentPlan(db(), userId)).plan;
   const limits = ROXI_PLANS[plan];
+  const { currency: homeCurrency } = await memberClock(db(), userId);
   const items = available ? await listItems(db(), userId) : [];
   const of = (kind: ItemView['kind']) => items.filter((item) => item.kind === kind);
   const goals = of('goal');
@@ -39,6 +41,11 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const tasks = of('task').filter((task) => !task.done || (task.day && recentDays.has(task.day)));
   const moments = of('moment').sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   const facts = of('fact');
+  const watches = of('watch');
+  const missions = of('mission');
+  const capsules = of('capsule');
+  const path = available ? await lifePath(db(), userId) : [];
+  const pathYears = [...new Set(path.map((entry) => entry.day.slice(0, 4)))];
   const errorKey = query.error && /^(roxi\.[a-z_.]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
   const when = (date: Date) => date.toLocaleString(locale, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
@@ -164,6 +171,13 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
                       {reminder.repeat !== 'none' ? ` · ${t(`roxi.memory.repeat.${reminder.repeat}` as MessageKey)}` : ''}
                       {reminder.action ? ` · ${reminder.action}` : ''}
                     </p>
+                    {!reminder.done ? (
+                      <form action={snoozeAction} className="rx-inline">
+                        <input type="hidden" name="id" value={reminder.id} />
+                        <input type="hidden" name="hours" value="24" />
+                        <button type="submit" className="rx-line">{t('roxi.memory.snooze')}</button>
+                      </form>
+                    ) : null}
                   </div>
                   {remove(reminder)}
                 </li>
@@ -243,6 +257,179 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
               <label>
                 <span>{t('roxi.memory.fact_title')}</span>
                 <input name="title" required maxLength={160} placeholder={t('roxi.memory.fact_hint')} />
+              </label>
+              <button type="submit" className="rx-line">{t('roxi.memory.add')}</button>
+            </form>
+          </section>
+
+          <section className="rx-section" id="watch">
+            <h2>{t('roxi.memory.watches')}</h2>
+            <p className="rx-small">{t('roxi.memory.watches_lead', { n: limits.watches })}</p>
+            <ul className="rx-items">
+              {watches.map((watch) => (
+                <li key={watch.id} id={`item-${watch.id}`}>
+                  <span className="rx-dot" aria-hidden="true">◎</span>
+                  <div className="rx-item-body">
+                    <p className="rx-item-title">{watch.query || t('roxi.memory.watch_any')}</p>
+                    <p className="rx-small">
+                      {t(watch.district === 'work' ? 'roxi.memory.watch_work' : 'roxi.memory.watch_mercadito')}
+                      {watch.maxPrice ? ` · ${t('roxi.memory.watch_max', { amount: `${watch.currency ?? ''} ${watch.maxPrice.toLocaleString(locale)}` })}` : ''}
+                      {watch.placeName ? ` · ${watch.placeName}` : ''}
+                    </p>
+                  </div>
+                  {remove(watch)}
+                </li>
+              ))}
+            </ul>
+            <form action={addWatchAction} className="rx-form rx-add">
+              <label>
+                <span>{t('roxi.memory.watch_query')}</span>
+                <input name="query" maxLength={80} placeholder={t('roxi.memory.watch_hint')} />
+              </label>
+              <div className="rx-form-row">
+                <label>
+                  <span>{t('roxi.memory.watch_where')}</span>
+                  <select name="district" defaultValue="mercadito">
+                    <option value="mercadito">{t('roxi.memory.watch_mercadito')}</option>
+                    <option value="work">{t('roxi.memory.watch_work')}</option>
+                  </select>
+                </label>
+                <label>
+                  <span>{t('roxi.memory.watch_price')}</span>
+                  <input name="max" inputMode="decimal" maxLength={14} />
+                </label>
+                <label>
+                  <span>{t('roxi.business.field.currency')}</span>
+                  <input name="currency" defaultValue={homeCurrency ?? ''} maxLength={3} />
+                </label>
+                <label>
+                  <span>{t('roxi.memory.watch_place')}</span>
+                  <input name="place" maxLength={80} />
+                </label>
+              </div>
+              <button type="submit" className="rx-line">{t('roxi.memory.add')}</button>
+            </form>
+          </section>
+
+          <section className="rx-section" id="mission">
+            <h2>{t('roxi.memory.missions')}</h2>
+            <p className="rx-small">{limits.missions === 0 ? t('roxi.memory.needs_pro') : t('roxi.memory.missions_lead', { n: limits.missions })}</p>
+            <ul className="rx-items">
+              {missions.map((mission) => (
+                <li key={mission.id} id={`item-${mission.id}`} className={mission.done ? 'is-done' : undefined}>
+                  <span className="rx-dot" aria-hidden="true">➤</span>
+                  <div className="rx-item-body">
+                    <p className="rx-item-title">{mission.title}</p>
+                    {mission.target ? <p className="rx-small">{t('roxi.memory.budget', { amount: mission.target.toLocaleString(locale) })}</p> : null}
+                    <ol className="rx-steps">
+                      {(mission.steps ?? []).map((step, index) => (
+                        <li key={index}>
+                          <form action={stepAction} className="rx-inline">
+                            <input type="hidden" name="id" value={mission.id} />
+                            <input type="hidden" name="index" value={index} />
+                            <input type="hidden" name="done" value={step.done ? 'no' : 'yes'} />
+                            <button type="submit" className={`rx-tick${step.done ? ' is-done' : ''}`} aria-pressed={step.done} aria-label={step.text}>
+                              {step.done ? '✓' : ''}
+                            </button>
+                            <span className={step.done ? 'rx-struck' : undefined}>{step.text}</span>
+                          </form>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                  {remove(mission)}
+                </li>
+              ))}
+            </ul>
+            {limits.missions > 0 ? (
+              <form action={addMissionAction} className="rx-form rx-add">
+                <label>
+                  <span>{t('roxi.memory.mission_title')}</span>
+                  <input name="title" required maxLength={160} placeholder={t('roxi.memory.mission_hint')} />
+                </label>
+                <label>
+                  <span>{t('roxi.memory.mission_budget')}</span>
+                  <input name="budget" inputMode="decimal" maxLength={14} />
+                </label>
+                <label className="rx-wide">
+                  <span>{t('roxi.memory.mission_steps')}</span>
+                  <textarea name="steps" rows={4} maxLength={3000} placeholder={t('roxi.memory.mission_steps_hint')} />
+                </label>
+                <button type="submit" className="rx-line">{t('roxi.memory.add')}</button>
+              </form>
+            ) : null}
+          </section>
+
+          <section className="rx-section" id="capsule">
+            <h2>{t('roxi.memory.capsules')}</h2>
+            <p className="rx-small">{limits.capsules === 0 ? t('roxi.memory.needs_pro') : t('roxi.memory.capsules_lead')}</p>
+            <ul className="rx-items">
+              {capsules.map((capsule) => (
+                <li key={capsule.id} id={`item-${capsule.id}`}>
+                  <span className="rx-dot" aria-hidden="true">✉</span>
+                  <div className="rx-item-body">
+                    {capsule.sealedUntil ? (
+                      <p className="rx-item-title">{t('roxi.memory.capsule_sealed', { date: capsule.sealedUntil.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }) })}</p>
+                    ) : (
+                      <>
+                        <p className="rx-item-title">{capsule.title}</p>
+                        {capsule.detail ? <p className="rx-small">{capsule.detail}</p> : null}
+                      </>
+                    )}
+                  </div>
+                  {remove(capsule)}
+                </li>
+              ))}
+            </ul>
+            {limits.capsules > 0 ? (
+              <form action={addCapsuleAction} className="rx-form rx-add">
+                <label>
+                  <span>{t('roxi.memory.capsule_title')}</span>
+                  <input name="title" required maxLength={160} />
+                </label>
+                <label className="rx-wide">
+                  <span>{t('roxi.memory.capsule_detail')}</span>
+                  <textarea name="detail" rows={3} maxLength={600} />
+                </label>
+                <label>
+                  <span>{t('roxi.memory.capsule_opens')}</span>
+                  <input name="opens" type="date" required />
+                </label>
+                <button type="submit" className="rx-line">{t('roxi.memory.add')}</button>
+              </form>
+            ) : null}
+          </section>
+
+          <section className="rx-section" id="camino">
+            <h2>{t('roxi.memory.path')}</h2>
+            <p className="rx-small">{t('roxi.memory.path_lead')}</p>
+            {pathYears.map((year) => (
+              <div key={year} className="rx-year">
+                <h3>{year}</h3>
+                <ul className="rx-path">
+                  {path
+                    .filter((entry) => entry.day.startsWith(year))
+                    .map((entry, index) => (
+                      <li key={`${entry.day}-${index}`} className={`is-${entry.source}`}>
+                        <span className="rx-path-day">{new Date(`${entry.day}T12:00:00Z`).toLocaleDateString(locale, { day: 'numeric', month: 'short' })}</span>
+                        <span>
+                          {entry.key && entry.key !== 'goal_done' ? t(`roxi.path.${entry.key}` as MessageKey) : entry.key === 'goal_done' ? t('roxi.path.goal_done', { title: entry.text }) : entry.text}
+                          <span className="rx-tag">{t(entry.source === 'yavaya' ? 'roxi.path.source_yavaya' : 'roxi.path.source_member')}</span>
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
+            <form action={addMilestoneAction} className="rx-form rx-add">
+              <LocalTimeFields />
+              <label>
+                <span>{t('roxi.memory.milestone_title')}</span>
+                <input name="title" required maxLength={160} placeholder={t('roxi.memory.milestone_hint')} />
+              </label>
+              <label>
+                <span>{t('roxi.memory.milestone_when')}</span>
+                <input name="when" type="date" />
               </label>
               <button type="submit" className="rx-line">{t('roxi.memory.add')}</button>
             </form>

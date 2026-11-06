@@ -16,6 +16,12 @@ const KEYS = [
   'suggest.find',
   'suggest.account',
   'suggest.how',
+  'suggest.help',
+  'suggest.work',
+  'suggest.community',
+  'suggest.world',
+  'share',
+  'share_text',
   'sell_caption',
   'thinking',
   'talk',
@@ -89,7 +95,7 @@ const KEYS = [
 export type RoxiLabels = Record<(typeof KEYS)[number], string>;
 
 /** Labels whose placeholder the panel fills in itself. */
-const KEPT_PLACEHOLDERS: Partial<Record<(typeof KEYS)[number], string>> = { hello: 'name', waited: 'seconds', saved: 'title', confirm_title: 'connection' };
+const KEPT_PLACEHOLDERS: Partial<Record<(typeof KEYS)[number], string>> = { hello: 'name', waited: 'seconds', saved: 'title', confirm_title: 'connection', share_text: 'title' };
 
 export function roxiLabels(t: Translator): RoxiLabels {
   const labels = {} as RoxiLabels;

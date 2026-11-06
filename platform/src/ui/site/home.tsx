@@ -5,6 +5,7 @@ import { BalconyScene, HomeCardScene, SanctuaryEmblem, ValleyScene } from './art
 import { PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon } from './icons';
 import { LocationBar } from './location-bar';
+import { FrontDoor } from '@/ui/roxi/front-door';
 import type { locationBarProps } from './location-props';
 
 /**
@@ -123,6 +124,24 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
               <Arrow />
             </button>
           </form>
+          {/*
+           * "¿Qué necesitas hoy?" (the Roxi proposal of 6 November 2026): for a
+           * signed-in member, five doors that open Roxi with the request already
+           * said. A visitor sees the design exactly as drawn.
+           */}
+          {signedIn ? (
+            <FrontDoor
+              variant="hero"
+              title={t('roxi.door.title')}
+              doors={[
+                { key: 'help', label: t('roxi.door.help'), ask: t('roxi.door.help_ask'), href: '/services/new' },
+                { key: 'sell', label: t('roxi.door.sell'), ask: t('roxi.door.sell_ask'), href: '/mercadito/publish' },
+                { key: 'work', label: t('roxi.door.work'), ask: t('roxi.door.work_ask'), href: '/work' },
+                { key: 'community', label: t('roxi.door.community'), ask: t('roxi.door.community_ask'), href: '/community' },
+                { key: 'talk', label: t('roxi.door.talk'), ask: '', href: '/roxi/hoy' },
+              ]}
+            />
+          ) : null}
           {/* The ribbon's line, which the rest of the site shows under its header: what is open, one click from the whole answer. */}
           <p className="hx-status" role="note">
             <span className="hx-status-dot" aria-hidden="true" />
