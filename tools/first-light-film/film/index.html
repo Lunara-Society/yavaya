@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=1920, height=1080">
+<title>Yavaya — La Primera Luz (película maestra)</title>
+<script src="../lib/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Fraunces";src:url(../assets/fraunces.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:"Jakarta";src:url(../assets/jakarta.woff2) format("woff2");font-weight:200 800;font-display:block}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;background:#000;overflow:hidden}
+:root{--ob:#07060a;--ink:#f6f0e3;--ink2:rgba(246,240,227,.84);--ink3:rgba(246,240,227,.66);--gold:#e2bf63;--gold-hi:#f7e3a1;
+  --metal:linear-gradient(180deg,#fff3c9 0%,#f0d27a 38%,#c99a35 72%,#8f6519 100%);--serif:"Fraunces",Georgia,serif;--sans:"Jakarta",system-ui,sans-serif}
+#main{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--ob);font-family:var(--sans);color:var(--ink)}
+.fill{position:absolute;inset:0}
+
+/* Atmosphere */
+#sky{background:radial-gradient(130% 70% at 50% 0%,#1a0f2b 0%,#0b0812 46%,#07060a 75%)}
+#stars i{position:absolute;border-radius:50%;background:#fff6dc;opacity:0}
+#horizon{position:absolute;left:-2%;right:-2%;top:-34%;bottom:-2%;overflow:hidden}
+#horizon img{width:100%;height:100%;object-fit:cover;object-position:50% 72%}
+#sun{position:absolute;left:960px;top:690px;width:1500px;height:625px;background:radial-gradient(closest-side,rgba(255,214,128,.55),rgba(242,168,70,.22) 38%,rgba(160,80,120,.08) 62%,transparent 100%);mix-blend-mode:screen}
+.mist{position:absolute;left:-10%;right:-10%;filter:blur(18px)}
+#mist-a{height:18%;bottom:8%;background:radial-gradient(50% 50% at 50% 50%,rgba(255,226,170,.16),transparent 70%)}
+#mist-b{height:14%;bottom:16%;background:radial-gradient(45% 50% at 40% 50%,rgba(214,190,255,.1),transparent 70%)}
+#veil{background:var(--ob)}
+#shade{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(180deg,rgba(7,6,10,0) 0%,rgba(7,6,10,.45) 45%,rgba(7,6,10,.82) 78%,#07060a 100%)}
+
+/* The Guardian: the approved artwork in its four layers, with its two light maps */
+.guardian{position:absolute;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 9%,#000 91%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 7%,#000 82%,rgba(0,0,0,.45) 92%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 9%,#000 91%,transparent 100%),linear-gradient(180deg,transparent 0%,#000 7%,#000 82%,rgba(0,0,0,.45) 92%,transparent 100%);
+  mask-composite:intersect}
+#g{left:640px;top:16px;width:640px;height:640px}
+.guardian img{position:absolute;inset:0;width:100%;height:100%}
+.wl{transform-origin:41% 31%}.wr{transform-origin:61% 31%}.tail{transform-origin:52% 62%}
+.aura{position:absolute;inset:6% 14% 22%;border-radius:50%;background:radial-gradient(closest-side,rgba(247,210,120,.3),rgba(169,120,255,.08) 60%,transparent 100%);filter:blur(12px)}
+.glint{position:absolute;inset:0;background:url(../assets/guardian-glint-gold-1240.webp) center/100% 100% no-repeat;mix-blend-mode:plus-lighter;opacity:.2}
+.violet{position:absolute;inset:0;background:url(../assets/guardian-glint-violet-1240.webp) center/100% 100% no-repeat;mix-blend-mode:plus-lighter;opacity:.15}
+.sweep{position:absolute;inset:0;overflow:hidden;mix-blend-mode:plus-lighter;opacity:.85;
+  -webkit-mask:url(../assets/guardian-glint-gold-1240.webp) center/100% 100% no-repeat;mask:url(../assets/guardian-glint-gold-1240.webp) center/100% 100% no-repeat}
+.band{position:absolute;left:-50%;top:-50%;width:200%;height:200%;background:linear-gradient(200deg,transparent 41%,rgb(255,240,197) 50%,transparent 59%)}
+.eye{position:absolute;left:45.3%;top:18.7%;width:4.4%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,246,214,.95) 0%,rgba(255,196,92,.45) 38%,transparent 70%);mix-blend-mode:screen;opacity:.45}
+
+/* Words */
+.eyebrow{display:inline-flex;align-items:center;gap:18px;font:700 17px/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;color:var(--gold-hi)}
+.eyebrow .rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow .rule.r{transform:scaleX(-1)}
+#hero-text{position:absolute;left:0;right:0;top:668px;display:grid;justify-items:center;text-align:center}
+#hero-text h1{margin-top:16px;font:600 84px/1.02 var(--serif);letter-spacing:-.02em;text-shadow:0 2px 30px rgba(0,0,0,.55)}
+#hero-text h1 span{display:block}
+.gilt{font-style:italic;background:var(--metal);background-size:100% 220%;background-position:0% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+#lead{margin-top:18px;max-width:47ch;font:500 25px/1.5 var(--sans);color:var(--ink2)}
+
+/* The seven doors */
+#doors{opacity:0}
+#doors-head{position:absolute;left:0;right:0;top:92px;display:grid;justify-items:center;text-align:center}
+#doors-head h2{margin-top:16px;font:600 62px/1.05 var(--serif);letter-spacing:-.02em}
+#doors-head p{margin-top:12px;font:500 24px/1.4 var(--sans);color:var(--ink2)}
+#row{position:absolute;left:89px;top:330px;width:1742px;display:flex;gap:22px}
+.door{position:relative;width:230px;flex:none}
+.frame{position:relative;width:230px;height:345px;border-radius:50% 50% 16px 16px / 33.333% 33.333% 16px 16px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.95);transform-origin:50% 100%}
+.frame img{width:100%;height:100%;object-fit:cover}
+.frame .dim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,6,10,0) 50%,rgba(7,6,10,.7) 100%)}
+.frame svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.inlay{fill:none;stroke:rgba(226,191,99,.55);stroke-width:1.5}
+.light{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:.16 1;stroke-dashoffset:.16;opacity:0}
+.note{position:absolute;top:16px;left:50%;transform:translateX(-50%);padding:4px 9px;border-radius:999px;background:rgba(7,6,10,.62);font:700 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:rgba(246,240,227,.88);white-space:nowrap}
+.label{margin-top:20px;text-align:center}
+.label b{display:inline-flex;align-items:center;gap:9px;font:600 27px/1 var(--serif);letter-spacing:-.01em}
+.label b i{width:9px;height:9px;border-radius:50%}
+.label span{display:block;margin:9px auto 0;max-width:200px;font:500 15px/1.4 var(--sans);color:var(--ink3)}
+
+/* Through Mercadito's door */
+#portal{opacity:0}
+#portal img{position:absolute;left:0;top:-1087px;width:1920px;height:2892px;transform-origin:0 0}
+#portal .dim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,6,10,0) 45%,rgba(7,6,10,.78) 100%);opacity:0}
+#portal-text{position:absolute;left:120px;bottom:110px;opacity:0}
+#portal-text h3{font:600 96px/1 var(--serif);letter-spacing:-.02em;text-shadow:0 2px 30px rgba(0,0,0,.5)}
+#portal-text p{margin-top:14px;font:500 30px/1.4 var(--sans);color:var(--ink2)}
+#portal-note{position:absolute;top:40px;left:48px;padding:7px 13px;border-radius:999px;background:rgba(7,6,10,.6);font:700 13px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:rgba(246,240,227,.9);opacity:0}
+
+/* End card */
+#end{opacity:0;background:radial-gradient(70% 60% at 50% 40%,#1a1022 0%,#0b0812 55%,#07060a 100%)}
+#g2{left:780px;top:58px;width:360px;height:360px}
+#word{position:absolute;left:0;right:0;top:432px;text-align:center;font:600 132px/1 var(--serif);letter-spacing:.06em;background:var(--metal);-webkit-background-clip:text;background-clip:text;color:transparent}
+#tagline{position:absolute;left:0;right:0;top:584px;text-align:center;font:700 19px/1 var(--sans);letter-spacing:.34em;text-transform:uppercase;color:var(--ink3)}
+#end-eyebrow{position:absolute;left:0;right:0;top:648px;display:flex;justify-content:center}
+#roxi{position:absolute;left:50%;top:726px;transform:translateX(-50%);display:flex;align-items:center;gap:18px;padding:14px 30px 14px 16px;border-radius:999px;border:1px solid rgba(180,154,255,.35);background:rgba(18,12,28,.7)}
+#roxi strong{font:600 26px/1 var(--serif)}
+#roxi span{display:block;margin-top:6px;font:500 17px/1 var(--sans);color:var(--ink3)}
+.orb{position:relative;width:62px;height:62px;flex:none;perspective:200px}
+.orb i{position:absolute;display:block}
+.orb .halo{inset:-12px;border-radius:50%;background:radial-gradient(closest-side,rgba(247,210,120,.35),transparent 70%)}
+.orb .core{inset:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6d6 0%,#f0d27a 30%,#b98a2c 70%,#6b4a12 100%);box-shadow:0 0 22px rgba(247,210,120,.55)}
+.orb .iris{inset:28%;border-radius:50%;background:radial-gradient(circle,rgba(180,154,255,.9),rgba(107,63,168,.2) 70%,transparent);mix-blend-mode:screen}
+.orb .ra{inset:2px;border-radius:50%;border:1.5px solid rgba(247,227,161,.7);transform:rotateX(70deg)}
+.orb .rb{inset:4px;border-radius:50%;border:1.5px solid rgba(180,154,255,.7);transform:rotateY(66deg)}
+#url{position:absolute;left:0;right:0;top:880px;text-align:center;font:600 34px/1 var(--sans);letter-spacing:.08em;color:var(--gold-hi)}
+#black{background:#000;opacity:0}
+</style></head>
+<body>
+<div id="main" data-composition-id="first-light-master" data-width="1920" data-height="1080" data-start="0" data-duration="24">
+  <div id="sky" class="fill"></div>
+  <div id="stars" class="fill"></div>
+  <div id="horizon"><img src="../assets/horizon-2560.webp" alt=""></div>
+  <div id="sun"></div>
+  <div id="mist-a" class="mist"></div>
+  <div id="mist-b" class="mist"></div>
+  <div id="veil" class="fill"></div>
+
+  <div id="g" class="guardian">
+    <i class="aura" id="aura"></i>
+    <img class="wl" id="wl" src="../assets/guardian-wing-l-1240.webp" alt="">
+    <img class="wr" id="wr" src="../assets/guardian-wing-r-1240.webp" alt="">
+    <img class="tail" id="tail" src="../assets/guardian-tail-1240.webp" alt="">
+    <img id="body" src="../assets/guardian-body-1240.webp" alt="">
+    <i class="glint" id="glint"></i>
+    <i class="violet" id="violet"></i>
+    <i class="sweep"><i class="band" id="band"></i></i>
+    <i class="eye" id="eye"></i>
+  </div>
+  <div id="shade"></div>
+  <div id="hero-text">
+    <p class="eyebrow" id="eyebrow"><i class="rule"></i>La Primera Luz<i class="rule r"></i></p>
+    <h1><span id="l1">Un lugar para todo</span><span id="l2">lo que <em class="gilt" id="gold">nos une.</em></span></h1>
+    <p id="lead">Compra, vende, encuentra servicios, trabajo, descubre oportunidades y conecta con tu comunidad.</p>
+  </div>
+
+  <div id="doors" class="fill">
+    <div id="doors-head">
+      <p class="eyebrow"><i class="rule"></i>Los siete distritos<i class="rule r"></i></p>
+      <h2>Todo lo que necesitas.</h2>
+      <p>Siete distritos, siete puertas. Una sola comunidad.</p>
+    </div>
+    <div id="row"></div>
+  </div>
+
+  <div id="portal" class="fill">
+    <img id="portal-img" src="../assets/door-mercadito-960.webp" alt="">
+    <i class="dim" id="portal-dim"></i>
+    <div id="portal-text"><h3>Mercadito</h3><p>Compra y vende en tu comunidad.</p></div>
+    <p id="portal-note">Ilustración</p>
+  </div>
+
+  <div id="end" class="fill">
+    <div id="g2" class="guardian">
+      <i class="aura"></i>
+      <img class="wl" id="wl2" src="../assets/guardian-wing-l-1240.webp" alt="">
+      <img class="wr" id="wr2" src="../assets/guardian-wing-r-1240.webp" alt="">
+      <img class="tail" src="../assets/guardian-tail-1240.webp" alt="">
+      <img src="../assets/guardian-body-1240.webp" alt="">
+      <i class="glint" style="opacity:.35"></i>
+    </div>
+    <p id="word">YAVAYA</p>
+    <p id="tagline">Centroamérica · en un solo lugar</p>
+    <div id="end-eyebrow"><p class="eyebrow"><i class="rule"></i>La Primera Luz<i class="rule r"></i></p></div>
+    <div id="roxi">
+      <span class="orb" id="orb"><i class="halo"></i><i class="ra" id="ra"></i><i class="rb" id="rb"></i><i class="core"><i class="iris"></i></i></span>
+      <div><strong>Roxi</strong><span>La asistente de Yavaya</span></div>
+    </div>
+    <p id="url">yavaya.lat</p>
+  </div>
+  <div id="black" class="fill"></div>
+</div>
+<script>
+(function () {
+  // A seeded generator, so every render draws the same sky.
+  let seed = 20261106;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+
+  const stars = document.getElementById('stars');
+  const starList = [];
+  for (let i = 0; i < 110; i++) {
+    const s = document.createElement('i');
+    const size = 1 + rnd() * 2.2;
+    s.style.cssText = `left:${(rnd() * 1920).toFixed(0)}px;top:${(rnd() * 560).toFixed(0)}px;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px`;
+    s.dataset.o = (0.35 + rnd() * 0.6).toFixed(2);
+    stars.appendChild(s);
+    starList.push(s);
+  }
+
+  const DOORS = [
+    ['mercadito', 'Mercadito', 'Compra y vende en tu comunidad.', '#e9b949', true],
+    ['services', 'Servicios', 'Encuentra ayuda cuando la necesitas.', '#4cb5f0', false],
+    ['work', 'Trabajo', 'Oportunidades reales sin cobros.', '#ec5d7c', false],
+    ['yavayago', 'YavayaGo', 'Pide y entrega localmente.', '#2fc6c4', false],
+    ['community', 'Comunidad', 'Aquí nos apoyamos.', '#b48cff', true],
+    ['sanctuary', 'Santuario', 'Fe, palabras y esperanza.', '#f2c46b', false],
+    ['animals', 'Animales', 'Adopta, ayuda y reporta.', '#7fd36a', false],
+  ];
+  const row = document.getElementById('row');
+  const doorEls = [];
+  for (const [id, name, line, acc, people] of DOORS) {
+    const d = document.createElement('div');
+    d.className = 'door';
+    d.innerHTML = `<div class="frame"><img src="../assets/door-${id}-960.webp" alt=""><i class="dim"></i>` +
+      `<svg viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden="true"><path class="inlay" vector-effect="non-scaling-stroke" d="M1 149 V50 A49 49 0 0 1 99 50 V149"/>` +
+      `<path class="light" pathLength="1" vector-effect="non-scaling-stroke" stroke="${acc}" style="filter:drop-shadow(0 0 5px ${acc})" d="M1 149 V50 A49 49 0 0 1 99 50 V149"/></svg>` +
+      (people ? '<span class="note">Ilustración</span>' : '') +
+      `</div><div class="label"><b><i style="background:${acc};box-shadow:0 0 12px ${acc}"></i>${name}</b><span>${line}</span></div>`;
+    row.appendChild(d);
+    doorEls.push(d);
+  }
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.out' } });
+
+  // 0–3 s: night, stars arriving and breathing.
+  starList.forEach((s) => {
+    const at = 0.1 + rnd() * 1.4;
+    tl.to(s, { opacity: +s.dataset.o, duration: 1.1, ease: 'sine.inOut' }, at);
+    tl.to(s, { opacity: +s.dataset.o * 0.3, duration: 0.8 + rnd() * 1.1, ease: 'sine.inOut', repeat: 5, yoyo: true }, at + 1.1);
+  });
+  tl.to('#stars', { opacity: 0.2, duration: 3.5, ease: 'sine.inOut' }, 3.2);
+
+  // 1–5.5 s: first light. The night lifts, the sun rises behind the volcanoes, the land comes forward.
+  gsap.set('#sun', { xPercent: -50, yPercent: -50 });
+  tl.fromTo('#veil', { opacity: 1 }, { opacity: 0.12, duration: 4.2, ease: 'sine.inOut' }, 1.0);
+  tl.fromTo('#sun', { opacity: 0, scale: 0.55, y: 60 }, { opacity: 1, scale: 1, y: 0, duration: 4.4, ease: 'power2.out' }, 1.4);
+  tl.fromTo('#horizon img', { scale: 1.14, yPercent: 1.5 }, { scale: 1.03, yPercent: 0, duration: 24, ease: 'none' }, 0);
+  tl.fromTo('.mist', { opacity: 0 }, { opacity: 1, duration: 4, ease: 'sine.inOut' }, 2.4);
+  tl.fromTo('#mist-a', { xPercent: -3 }, { xPercent: 3, duration: 20, ease: 'sine.inOut' }, 0);
+  tl.fromTo('#mist-b', { xPercent: 3 }, { xPercent: -3, duration: 20, ease: 'sine.inOut' }, 0);
+
+  // 3–7.5 s: the Guardian takes the light.
+  gsap.set('#band', { xPercent: 19.7, yPercent: -54.2 });
+  gsap.set('#eye', { xPercent: -50, yPercent: -50 });
+  tl.fromTo('#g', { opacity: 0, y: 34, scale: 0.97, filter: 'brightness(0.35)' }, { opacity: 1, y: 0, scale: 1, filter: 'brightness(1)', duration: 3.2, ease: 'power2.out' }, 3.0);
+  tl.fromTo('#aura', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 3, ease: 'sine.out' }, 3.4);
+  tl.to('#band', { xPercent: -19.7, yPercent: 54.2, duration: 1.7, ease: 'power1.inOut' }, 5.0);
+  tl.to('#eye', { opacity: 1, scale: 1.8, duration: 0.45, ease: 'power2.out' }, 6.35);
+  tl.to('#eye', { opacity: 0.55, scale: 1, duration: 0.9, ease: 'power2.inOut' }, 6.8);
+  // 6.6 s: the wings lift.
+  tl.to('#wl', { rotation: 3.2, duration: 0.6, ease: 'power2.out' }, 6.6).to('#wl', { rotation: 0.4, duration: 1.0, ease: 'power2.inOut' }, 7.2);
+  tl.to('#wr', { rotation: -3.2, duration: 0.6, ease: 'power2.out' }, 6.6).to('#wr', { rotation: -0.4, duration: 1.0, ease: 'power2.inOut' }, 7.2);
+  tl.to('#aura', { scale: 1.12, duration: 0.5 }, 6.6).to('#aura', { scale: 1, duration: 1.1, ease: 'sine.inOut' }, 7.1);
+  tl.to('#glint', { opacity: 0.55, duration: 0.5 }, 6.6).to('#glint', { opacity: 0.22, duration: 1.4, ease: 'sine.inOut' }, 7.1);
+  // Breathing until it lifts away.
+  tl.to('#wl', { rotation: 1.3, duration: 1.75, ease: 'sine.inOut', repeat: 1, yoyo: true }, 8.2);
+  tl.to('#wr', { rotation: -1.3, duration: 1.75, ease: 'sine.inOut', repeat: 1, yoyo: true }, 8.2);
+  tl.to('#tail', { rotation: 0.7, duration: 1.6, ease: 'sine.inOut', repeat: 1, yoyo: true }, 8.0);
+  tl.to('#violet', { opacity: 0.42, duration: 2, ease: 'sine.inOut', repeat: 1, yoyo: true }, 7.4);
+
+  // 7.8–11 s: the words.
+  tl.from('#eyebrow', { opacity: 0, letterSpacing: '0.62em', duration: 1.3, ease: 'power2.out' }, 7.8);
+  tl.from('#l1', { opacity: 0, y: 28, duration: 1.1, ease: 'power3.out' }, 8.15);
+  tl.from('#l2', { opacity: 0, y: 28, duration: 1.1, ease: 'power3.out' }, 8.45);
+  tl.to('#gold', { backgroundPosition: '0% 0%', duration: 2.3, ease: 'power2.out' }, 8.7);
+  tl.from('#lead', { opacity: 0, y: 14, duration: 1.0, ease: 'power2.out' }, 9.9);
+
+  // 11.6–12.6 s: the hero lifts away; the land darkens for the doors.
+  tl.to('#g', { y: -150, opacity: 0, duration: 1.0, ease: 'power2.in' }, 11.6);
+  tl.to('#hero-text', { y: -110, opacity: 0, duration: 0.9, ease: 'power2.in' }, 11.7);
+  tl.to('#veil', { opacity: 0.6, duration: 1.2, ease: 'sine.inOut' }, 11.6);
+  tl.to('#shade', { opacity: 0.4, duration: 1.2 }, 11.6);
+
+  // 12–16 s: seven doors rise, each lit as it arrives.
+  tl.set('#doors', { opacity: 1 }, 11.95);
+  tl.from('#doors-head > *', { opacity: 0, y: 18, duration: 0.9, stagger: 0.15, ease: 'power2.out' }, 12.0);
+  doorEls.forEach((d, i) => {
+    const at = 12.4 + i * 0.45;
+    tl.from(d, { opacity: 0, y: 96, duration: 1.0, ease: 'power3.out' }, at);
+    const light = d.querySelector('.light');
+    tl.fromTo(light, { strokeDashoffset: 0.16 }, { strokeDashoffset: -1.02, duration: 1.3, ease: 'power1.inOut' }, at + 0.2);
+    tl.fromTo(light, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none' }, at + 0.2);
+    tl.to(light, { opacity: 0, duration: 0.25, ease: 'none' }, at + 1.25);
+  });
+
+  // 16–17.4 s: Mercadito is chosen. The others step back; light runs round its arch.
+  const merc = doorEls[0];
+  const mercFrame = merc.querySelector('.frame');
+  const mercLight = merc.querySelector('.light');
+  tl.to(doorEls.slice(1), { opacity: 0.32, duration: 0.8, ease: 'sine.inOut' }, 16.0);
+  tl.to('#doors-head', { opacity: 0.4, duration: 0.8 }, 16.0);
+  tl.to(mercFrame, { scale: 1.06, boxShadow: '0 0 70px rgba(233,185,73,0.55)', duration: 0.9, ease: 'power2.out' }, 16.0);
+  tl.fromTo(mercLight, { strokeDashoffset: 0.16 }, { strokeDashoffset: -1.02, duration: 1.3, ease: 'power1.inOut' }, 16.05);
+  tl.fromTo(mercLight, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'none' }, 16.05);
+
+  // 17.4–18.5 s: through the door. Its picture grows from the arch to the whole frame.
+  // The arch at that moment (scaled 1.06 from its foot): left 82.1, top 309.3, 243.8 × 365.7.
+  // The opening is drawn each frame from one number, so the arch keeps its rounded top as it grows.
+  const portal = document.getElementById('portal');
+  const opening = { k: 0 };
+  const lerp = (from, to, k) => (from + (to - from) * k).toFixed(2);
+  const drawOpening = () => {
+    const k = opening.k;
+    const rx = lerp(121.9, 0, k), foot = lerp(17, 0, k);
+    const shape = `inset(${lerp(309.3, 0, k)}px ${lerp(1594.1, 0, k)}px ${lerp(405, 0, k)}px ${lerp(82.1, 0, k)}px round ${rx}px ${rx}px ${foot}px ${foot}px / ${rx}px ${rx}px ${foot}px ${foot}px)`;
+    portal.style.clipPath = shape;
+    portal.style.webkitClipPath = shape;
+  };
+  drawOpening();
+  tl.set('#portal', { opacity: 1 }, 17.4);
+  tl.fromTo('#portal-img', { x: 82.1, y: 1395.7, scale: 0.127 }, { x: 0, y: 0, scale: 1, duration: 1.05, ease: 'power3.inOut' }, 17.4);
+  tl.fromTo(opening, { k: 0 }, { k: 1, duration: 1.05, ease: 'power3.inOut', onUpdate: drawOpening, onStart: drawOpening }, 17.4);
+  tl.to('#portal-img', { scale: 1.04, duration: 2.0, ease: 'sine.out', transformOrigin: '50% 50%' }, 18.45);
+  tl.to('#portal-dim', { opacity: 1, duration: 0.8 }, 18.2);
+  // The picture has people in it: its "Ilustración" note travels with it, uncovered as the opening grows.
+  tl.set('#portal-note', { opacity: 1 }, 17.4);
+  tl.fromTo('#portal-text', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 18.35);
+
+  // 19.4–24 s: the end card.
+  tl.to('#end', { opacity: 1, duration: 0.9, ease: 'sine.inOut' }, 19.4);
+  tl.fromTo('#g2', { opacity: 0, y: 24, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 1.4, ease: 'power2.out' }, 19.7);
+  tl.to('#wl2', { rotation: 1.3, duration: 1.8, ease: 'sine.inOut', repeat: 1, yoyo: true }, 20.0);
+  tl.to('#wr2', { rotation: -1.3, duration: 1.8, ease: 'sine.inOut', repeat: 1, yoyo: true }, 20.0);
+  tl.fromTo('#word', { opacity: 0, letterSpacing: '0.2em' }, { opacity: 1, letterSpacing: '0.06em', duration: 1.4, ease: 'power3.out' }, 20.0);
+  tl.fromTo('#tagline', { opacity: 0 }, { opacity: 1, duration: 0.9 }, 20.4);
+  tl.fromTo('#end-eyebrow', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.9 }, 20.6);
+  tl.fromTo('#roxi', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, 20.9);
+  tl.fromTo('#ra', { rotationZ: 0 }, { rotationZ: 260, duration: 3.1, ease: 'none' }, 20.9);
+  tl.fromTo('#rb', { rotationZ: 0 }, { rotationZ: -190, duration: 3.1, ease: 'none' }, 20.9);
+  tl.fromTo('#url', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.9 }, 21.3);
+  tl.to('#black', { opacity: 1, duration: 1.0, ease: 'sine.in' }, 23.0);
+  tl.set({}, {}, 24);
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body></html>

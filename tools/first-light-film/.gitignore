@@ -1,0 +1,6 @@
+lib/
+assets/
+seg/
+stills/
+*.mp4
+*.wav

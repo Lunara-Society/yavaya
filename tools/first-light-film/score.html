@@ -1,0 +1,141 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>First Light score</title></head><body>
+<script>
+/*
+ * The film's sound, rendered offline with the page's own synthesis (ui/first-light/sound.ts):
+ * the same cues at the moments the picture gives them, over a slow pad that follows the dawn
+ * (A, then D for the doors, E through the door, home to A for the name). Nothing is sampled.
+ */
+const RATE = 48000, LENGTH = 24;
+const DOOR_NOTES = [440, 493.88, 554.37, 659.25, 739.99, 880, 987.77];
+
+async function renderScore() {
+  const ctx = new OfflineAudioContext(2, RATE * LENGTH, RATE);
+  const master = ctx.createGain();
+  master.gain.setValueAtTime(0.55, 0);
+  master.gain.setValueAtTime(0.55, 22.6);
+  master.gain.linearRampToValueAtTime(0.0001, 24);
+  const limiter = ctx.createDynamicsCompressor();
+  limiter.threshold.value = -14; limiter.ratio.value = 6;
+  master.connect(limiter).connect(ctx.destination);
+  // The page's small room, a little larger here.
+  let s = 7;
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const impulse = ctx.createBuffer(2, Math.floor(RATE * 2.6), RATE);
+  for (let c = 0; c < 2; c++) {
+    const d = impulse.getChannelData(c);
+    for (let i = 0; i < d.length; i++) d[i] = (rnd() * 2 - 1) * Math.pow(1 - i / d.length, 3.0);
+  }
+  const room = ctx.createConvolver(); room.buffer = impulse;
+  const wet = ctx.createGain(); wet.gain.value = 0.3;
+  room.connect(wet).connect(master);
+
+  function tone(at, freq, peak, decay, type = 'sine', attack = 0.006, roomSend = 0.5, pan = 0) {
+    const osc = ctx.createOscillator(), gain = ctx.createGain(), p = ctx.createStereoPanner();
+    osc.type = type; osc.frequency.setValueAtTime(freq, at); p.pan.value = pan;
+    gain.gain.setValueAtTime(0.0001, at);
+    gain.gain.exponentialRampToValueAtTime(peak, at + attack);
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + attack + decay);
+    osc.connect(gain).connect(p).connect(master);
+    if (roomSend > 0) { const send = ctx.createGain(); send.gain.value = roomSend; p.connect(send).connect(room); }
+    osc.start(at); osc.stop(at + attack + decay + 0.05);
+  }
+  function air(at, duration, peak, from = 320, to = 2400, panFrom = -0.45, panTo = 0.45) {
+    const buffer = ctx.createBuffer(1, Math.floor(RATE * duration), RATE);
+    const d = buffer.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = rnd() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buffer;
+    const band = ctx.createBiquadFilter(); band.type = 'bandpass'; band.Q.value = 0.9;
+    band.frequency.setValueAtTime(from, at); band.frequency.exponentialRampToValueAtTime(to, at + duration * 0.8);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, at);
+    gain.gain.exponentialRampToValueAtTime(peak, at + duration * 0.35);
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+    const p = ctx.createStereoPanner();
+    p.pan.setValueAtTime(panFrom, at); p.pan.linearRampToValueAtTime(panTo, at + duration);
+    src.connect(band).connect(gain).connect(p).connect(master);
+    const send = ctx.createGain(); send.gain.value = 0.4; p.connect(send).connect(room);
+    src.start(at); src.stop(at + duration + 0.02);
+  }
+  // The page's cues, as sound.ts writes them.
+  const cue = {
+    door(t, pitch) { const f = DOOR_NOTES[pitch % 7]; const pan = -0.6 + pitch * 0.2; tone(t, f, 0.09, 0.9, 'sine', 0.006, 0.5, pan); tone(t, f * 2, 0.025, 0.5, 'sine', 0.006, 0.5, pan); tone(t, f / 2, 0.035, 0.8, 'triangle', 0.01, 0.2, pan); },
+    transition(t) { air(t, 0.55, 0.06); tone(t, 98, 0.045, 0.55, 'sine', 0.18, 0); },
+    success(t) { tone(t, 1046.5, 0.07, 0.3); tone(t + 0.07, 1567.98, 0.06, 0.4); },
+    roxi(t) { tone(t, 880, 0.05, 0.25); tone(t + 0.055, 1108.73, 0.05, 0.25); tone(t + 0.11, 1318.51, 0.05, 0.35); tone(t + 0.11, 2637.02, 0.012, 0.4); },
+    guardian(t) {
+      tone(t, 146.83, 0.06, 1.6, 'sine', 0.35, 0.6); tone(t, 220, 0.045, 1.5, 'triangle', 0.4, 0.6);
+      [1174.66, 1479.98, 1760, 2349.32].forEach((f, i) => tone(t + 0.12 + i * 0.11, f * (1 + (i % 2 ? 0.002 : -0.002)), 0.03, 1.1, 'sine', 0.01, 0.9, -0.3 + i * 0.2));
+    },
+  };
+
+  // The pad: chords that cross-fade, through one filter that opens with the dawn.
+  const padFilter = ctx.createBiquadFilter(); padFilter.type = 'lowpass'; padFilter.Q.value = 0.7;
+  padFilter.frequency.setValueAtTime(260, 0);
+  padFilter.frequency.exponentialRampToValueAtTime(2200, 8);
+  padFilter.frequency.setValueAtTime(2200, 11.6);
+  padFilter.frequency.exponentialRampToValueAtTime(1500, 13);
+  padFilter.frequency.exponentialRampToValueAtTime(2600, 18.4);
+  padFilter.frequency.exponentialRampToValueAtTime(1800, 23.5);
+  const padGain = ctx.createGain(); padGain.gain.value = 1;
+  padFilter.connect(padGain).connect(master);
+  const padSend = ctx.createGain(); padSend.gain.value = 0.6; padGain.connect(padSend).connect(room);
+  function chord(notes, from, to, level, fadeIn = 1.4, fadeOut = 1.4) {
+    notes.forEach((f, n) => {
+      for (const cents of [-5, 5]) {
+        const osc = ctx.createOscillator(), g = ctx.createGain(), p = ctx.createStereoPanner();
+        osc.type = n === 0 ? 'triangle' : 'sine';
+        osc.frequency.value = f; osc.detune.value = cents;
+        p.pan.value = cents < 0 ? -0.35 : 0.35;
+        g.gain.setValueAtTime(0.0001, from);
+        g.gain.exponentialRampToValueAtTime(level, from + fadeIn);
+        g.gain.setValueAtTime(level, Math.max(from + fadeIn, to - fadeOut));
+        g.gain.exponentialRampToValueAtTime(0.0001, to);
+        osc.connect(g).connect(p).connect(padFilter);
+        osc.start(from); osc.stop(to + 0.05);
+      }
+    });
+  }
+  chord([110, 164.81, 220, 277.18, 329.63], 0.3, 12.4, 0.022, 4.2, 1.2);   // A: night into dawn
+  chord([146.83, 220, 293.66, 369.99], 11.6, 18.0, 0.022, 1.2, 1.0);       // D: the doors
+  chord([164.81, 246.94, 329.63, 415.3], 17.3, 20.0, 0.022, 0.6, 1.0);     // E: through the door
+  chord([110, 164.81, 220, 277.18, 329.63, 440], 19.3, 24, 0.024, 1.2, 2.2); // A: the name
+
+  // A low swell as the Guardian takes the light.
+  tone(3.0, 55, 0.08, 3.4, 'sine', 1.4, 0.2);
+  tone(3.0, 110, 0.04, 3.0, 'sine', 1.6, 0.4);
+  // Stars: tiny, far away.
+  [0.5, 0.9, 1.35, 1.8, 2.3, 2.75].forEach((t, i) => tone(t, [2637.02, 3135.96, 2959.96, 3520, 2793.83, 3322.44][i], 0.009, 0.9, 'sine', 0.01, 0.9, -0.7 + i * 0.28));
+  // The light passing through the feathers, and the eye catching the sun.
+  air(5.0, 1.7, 0.025, 1800, 6000, 0.5, -0.5);
+  tone(6.35, 2637.02, 0.02, 1.2, 'sine', 0.01, 0.9, -0.1);
+  cue.guardian(6.6);
+  cue.success(8.75);
+  air(11.6, 0.95, 0.04, 400, 2600, -0.2, 0.2);
+  for (let i = 0; i < 7; i++) cue.door(12.4 + i * 0.45, i);
+  cue.door(16.0, 0);
+  tone(16.1, 1760, 0.018, 1.2, 'sine', 0.2, 0.9, -0.6);
+  cue.transition(17.4);
+  tone(19.3, 55, 0.07, 3.6, 'sine', 1.0, 0.2);
+  cue.roxi(20.9);
+
+  const out = await ctx.startRendering();
+  // 16-bit PCM WAV.
+  const frames = out.length, ch = 2, bytes = 44 + frames * ch * 2;
+  const buf = new ArrayBuffer(bytes), v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, bytes - 8, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true); v.setUint32(24, RATE, true);
+  v.setUint32(28, RATE * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true);
+  str(36, 'data'); v.setUint32(40, frames * ch * 2, true);
+  const L = out.getChannelData(0), R = out.getChannelData(1);
+  let o = 44, peak = 0;
+  for (let i = 0; i < frames; i++) {
+    for (const x of [L[i], R[i]]) { const c = Math.max(-1, Math.min(1, x)); peak = Math.max(peak, Math.abs(c)); v.setInt16(o, c < 0 ? c * 0x8000 : c * 0x7fff, true); o += 2; }
+  }
+  let bin = '';
+  const u8 = new Uint8Array(buf);
+  for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return { wav: btoa(bin), peak };
+}
+</script></body></html>

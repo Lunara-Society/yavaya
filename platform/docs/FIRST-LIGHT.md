@@ -173,27 +173,33 @@ Guardian's moment.
 ## Performance
 
 The targets are the field ones: LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1 at the
-75th percentile, which only real visits can show. What the lab shows
-(production build, 5.9 kB of page JavaScript, 122 kB first load with the
+75th percentile, which only real visits can show. The site already records
+them: every page reports its vitals from real browsers to `/api/metrics`,
+and Admin → Visitas shows each page's share of good and poor results, by
+device. Read `/first-light` there before it replaces the home page.
+
+What the lab shows (5.9 kB of page JavaScript, 122 kB first load with the
 shared framework; the budget check passes):
 
-| Lighthouse 12, mobile, local server, median of 3 | First Light | current home page |
+| Lighthouse 12, mobile, yavaya.lat, 6 November 2026, median of 3 | First Light | current home page |
 | --- | --- | --- |
-| Performance | 86 | 88 |
-| Largest paint (simulated slow 4G) | 4.0 s | 3.7 s |
-| Largest paint (as observed, unthrottled) | 0.29 s | 0.27 s |
-| Total blocking time | 46 ms | 50 ms |
-| Layout shift | 0.004 | 0.025 |
+| Performance | 91 | 96 |
+| Largest paint (simulated slow 4G) | 3.2 s | 2.6 s |
+| Largest paint (as observed) | 0.58 s | 0.60 s |
+| Total blocking time | 126 ms | 128 ms |
+| Layout shift | 0 | 0 |
 | Accessibility | 100 | 100 |
 
-(Accessibility was 98 on both until the footer's column titles became `h2`:
-as `h4` they skipped two heading levels after each page's `h2`s.)
+(Accessibility was 98 on both pages until the footer's column titles became
+`h2`: as `h4` they skipped two heading levels after each page's `h2`s.)
 
 The largest paint is the horizon (the biggest picture on screen), which
-loads with high priority and is painted at first paint; the simulated figure
-counts every file the page asks for before then, framework included, over a
-slow 4G line. The layout reserves every picture's box, so nothing shifts
-when it arrives.
+loads with high priority and is painted at first paint. The simulated figure
+counts every file the page asks for before then over a slow 4G line, and
+here that includes the four Guardian layers (about 145 KB on a phone) beside
+the horizon: that is why it is over 2.5 s while the home page, with one
+photograph, is at it. As observed, both paint in about 0.6 s. The layout
+reserves every picture's box, so nothing shifts when it arrives.
 
 Three choices keep the scene cheap once it runs, each measured: the full
 tier switches on only after the page has loaded (switching it on earlier
@@ -220,6 +226,13 @@ errors, and that the current home page is unchanged. Given a member (see
 it also checks Roxi's states against a stand-in for her agent: idle,
 understanding while a question waits, a problem when the connection drops,
 called back from the page when tucked away, idle again when closed.
+
+## The master film
+
+`tools/first-light-film/` (at the repository root) is the page as a
+24-second film, made from the same pictures, words, timings and sounds — the
+reference for the page's motion. Its README has the beats and how to render
+it.
 
 ## Not yet built
 

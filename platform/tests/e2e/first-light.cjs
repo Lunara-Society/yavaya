@@ -51,7 +51,10 @@ const COUNT_AUDIO = () => {
     const errors = [];
     page.on('pageerror', (error) => errors.push(String(error)));
     page.on('console', (message) => {
-      if (message.type() === 'error') errors.push(message.text());
+      // Google's sign-in (One Tap, where it is configured) reports through the console that a browser
+      // with no Google session has no accounts to offer; that is Google's script and Chrome's FedCM, not this page.
+      const fromGoogleSignIn = /accounts\.google\.com/.test(message.location().url ?? '') || /GSI_LOGGER|FedCM|identity provider|accounts list is empty/i.test(message.text());
+      if (message.type() === 'error' && !fromGoogleSignIn) errors.push(message.text());
     });
     const response = await page.goto(`${BASE}/first-light`, { waitUntil: 'networkidle' });
     check(response && response.status() === 200, 'the preview answers 200');
