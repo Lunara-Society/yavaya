@@ -19,6 +19,7 @@ import { LIVE_FEED_RULES } from '@/config/business-rules';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { allLooks, LOOK_KEYS } from '@/server/domains/platform/looks';
 import { setLookAction } from './actions';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -69,7 +70,8 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
     return relative.format(Math.round(minutes / 1440), 'day');
   };
   const tick = health?.latest.find((j) => j.job === 'tick') ?? null;
-  const fmt = (d: Date) => new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+  const adminZone = await viewerTimeZone(userId);
+  const fmt = (d: Date) => zonedFormat(intlLocale(locale), adminZone, { dateStyle: 'medium', timeStyle: 'short' }).format(d);
   const now = Date.now();
   const hours = (d: Date | null) => (d ? Math.floor((now - d.getTime()) / 3_600_000) : 0);
   const sorted = [...queues].sort((a, b) => b.count - a.count || hours(b.oldestAt) - hours(a.oldestAt));

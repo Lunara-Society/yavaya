@@ -8,6 +8,7 @@ import { ErrorNote, VioletaShell, when } from '@/ui/violeta/parts';
 import { VIOLETA_METADATA } from '@/app/violeta/meta';
 import { resolveReportAction } from '@/app/violeta/actions';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { viewerTimeZone } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -21,6 +22,7 @@ export default async function VioletaGuardian({ searchParams }: { searchParams: 
   const query = await searchParams;
   const { t, locale, userId } = await shellContext();
   if (!userId) redirect(await signInPath());
+  const zone = await viewerTimeZone(userId);
   if (!(await hasPermission(db(), userId, 'safe_space.review'))) redirect('/account');
   const reports = safeSpaceAvailable() ? await reviewQueue(db(), { userId, status: 'active' }) : [];
   return (
@@ -35,7 +37,7 @@ export default async function VioletaGuardian({ searchParams }: { searchParams: 
           {reports.map((report) => (
             <li key={report.id} className="card vt-case">
               <p className="sv-kicker">
-                {t(`violeta.report.category.${report.category}` as MessageKey)} · {t(report.source === 'room' ? 'violeta.guardian.in_room' : 'violeta.guardian.in_private')} · {when(report.createdAt, locale)}
+                {t(`violeta.report.category.${report.category}` as MessageKey)} · {t(report.source === 'room' ? 'violeta.guardian.in_room' : 'violeta.guardian.in_private')} · {when(report.createdAt, locale, zone)}
               </p>
               <p>
                 <strong>{report.reportedHandle ?? t('violeta.guardian.left')}</strong> {report.reportedKind === 'professional' ? `· ${t('violeta.guardian.professional')}` : ''}{' '}

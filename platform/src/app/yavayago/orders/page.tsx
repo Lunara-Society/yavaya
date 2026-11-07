@@ -7,6 +7,7 @@ import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { money } from '@/ui/go/format';
 import { customerOrders } from '@/server/domains/go/service';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -16,7 +17,7 @@ export default async function MyOrders() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect('/login?next=/yavayago/orders');
   const orders = await customerOrders(db(), userId);
-  const when = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
+  const when = zonedFormat(locale, await viewerTimeZone(userId), { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="yavayago" tone="yavayago">

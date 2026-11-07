@@ -1,4 +1,5 @@
 import 'server-only';
+import { instantToWallTime } from '@/server/time/zoned';
 import { and, asc, eq, inArray, isNull, lte, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { roxiItems } from '@/server/db/schema';
@@ -169,7 +170,7 @@ export async function addItem(executor: Executor, userId: string, item: NewItem)
   if (!(ITEM_KINDS as readonly string[]).includes(item.kind)) throw errors.validation('roxi.memory.error.kind');
   const plan = ROXI_PLANS[(await currentPlan(executor, userId)).plan];
   const repeat = item.repeat ?? 'none';
-  if (item.kind === 'goal' && (await activeCount(executor, userId, 'goal')) >= plan.goals) throw errors.conflict('roxi.memory.error.goals', { limit: plan.goals });
+  if (item.kind === 'goal' && (await activeCount(executor, userId, 'goal')) >= plan.goals) throw errors.conflict(plan.goals === 1 ? 'roxi.memory.error.goals_one' : 'roxi.memory.error.goals', { limit: plan.goals });
   if (item.kind === 'reminder') {
     if (!item.dueAt || Number.isNaN(item.dueAt.getTime())) throw errors.validation('roxi.memory.error.when');
     if (repeat !== 'none' && !plan.recurringReminders) throw errors.conflict('roxi.memory.error.repeat');
@@ -314,7 +315,7 @@ export async function deliverDueReminders(executor: Executor, now = new Date()):
  * reminders and remembered facts, when she asks (the `my_memory` tool) —
  * compact, for a model to read.
  */
-export async function memoryForRoxi(executor: Executor, userId: string, today: string): Promise<Record<string, unknown>> {
+export async function memoryForRoxi(executor: Executor, userId: string, today: string, timeZone: string): Promise<Record<string, unknown>> {
   const items = await listItems(executor, userId);
   const soon = Date.now() + 14 * 86_400_000;
   return {
@@ -322,7 +323,9 @@ export async function memoryForRoxi(executor: Executor, userId: string, today: s
     today: items.filter((item) => item.kind === 'task' && item.day === today).map(({ id, title, done }) => ({ id, title, done })),
     reminders: items
       .filter((item) => item.kind === 'reminder' && !item.done && item.dueAt && item.dueAt.getTime() < soon)
-      .map(({ id, title, dueAt, repeat, action }) => ({ id, title, due: dueAt!.toISOString(), repeat, action })),
+      // On the member's wall clock, with the zone named: a bare UTC instant is how Roxi read
+      // 14:00Z back as "2 p.m." and promised a fix that changed nothing.
+      .map(({ id, title, dueAt, repeat, action }) => ({ id, title, due_local: instantToWallTime(dueAt!, timeZone), repeat, action })),
     remembered: items.filter((item) => item.kind === 'fact').map(({ id, title }) => ({ id, title })),
     moments: items.filter((item) => item.kind === 'moment').length,
     missions: items
@@ -332,5 +335,6 @@ export async function memoryForRoxi(executor: Executor, userId: string, today: s
     // A capsule's words are not read before it opens — not even by Roxi.
     capsules: items.filter((item) => item.kind === 'capsule').map(({ id, title, sealedUntil, dueAt }) => (sealedUntil ? { id, opens: sealedUntil.toISOString().slice(0, 10) } : { id, opened: dueAt?.toISOString().slice(0, 10), title })),
     milestones_saved: items.filter((item) => item.kind === 'milestone').length,
+    time_zone: timeZone,
   };
 }

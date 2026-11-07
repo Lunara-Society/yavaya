@@ -66,9 +66,16 @@ export function Who({ t, handle, kind, profession, online }: { t: Translator; ha
   );
 }
 
-export function when(date: Date, locale: string, now = new Date()): string {
-  const sameDay = date.toDateString() === now.toDateString();
-  return new Intl.DateTimeFormat(intlLocale(locale), sameDay ? { timeStyle: 'short' } : { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+/** A message's time in the reader's own zone (server/time/viewer.ts), never the server's UTC. */
+export function when(date: Date, locale: string, timeZone: string, now = new Date()): string {
+  const day = (d: Date) => d.toLocaleDateString('en-CA', { timeZone });
+  let format: Intl.DateTimeFormat;
+  try {
+    format = new Intl.DateTimeFormat(intlLocale(locale), { ...(day(date) === day(now) ? { timeStyle: 'short' } : { dateStyle: 'medium', timeStyle: 'short' }), timeZone });
+  } catch {
+    format = new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' });
+  }
+  return format.format(date);
 }
 
 export function ErrorNote({ t, error }: { t: Translator; error?: string }) {

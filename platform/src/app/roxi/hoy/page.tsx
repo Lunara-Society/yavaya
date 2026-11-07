@@ -83,7 +83,7 @@ export default async function RoxiWorldPage() {
             ))}
             {reminders.map((reminder) => (
               <li key={reminder.id}>
-                {reminder.title} · {inMemberZone(reminder.dueAt!, locale, timeZone, { weekday: 'short', hour: '2-digit', minute: '2-digit' })}
+                {reminder.title} · {inMemberZone(reminder.dueAt!, locale, timeZone, { weekday: 'short', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })}
               </li>
             ))}
           </ul>

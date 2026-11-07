@@ -8,6 +8,7 @@ import { VIOLETA_METADATA } from '../meta';
 import { violetaPage } from '../guard';
 import { ReportForm } from '../report';
 import { deleteMessageAction, postRoomAction, startThreadAction } from '../actions';
+import { viewerTimeZone } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -16,6 +17,7 @@ export const metadata = VIOLETA_METADATA;
 export default async function Room({ searchParams }: { searchParams: Promise<{ error?: string; reported?: string; welcome?: string }> }) {
   const query = await searchParams;
   const { t, locale, userId } = await shellContext();
+  const zone = await viewerTimeZone(userId);
   const { member, unread, guardian } = await violetaPage(userId);
   const [messages, here, pros] = await Promise.all([roomMessages(db(), member), whoIsHere(db()), professionals(db())]);
   const isWoman = member.kind === 'member';
@@ -43,7 +45,7 @@ export default async function Room({ searchParams }: { searchParams: Promise<{ e
                 <p className="vt-msg-head">
                   <Who t={t} handle={m.handle} kind={m.kind} profession={m.profession} />
                   {m.talkedBefore && !m.mine ? <span className="vt-known">{t('violeta.room.talked_before')}</span> : null}
-                  <span className="vt-time">{when(m.createdAt, locale)}</span>
+                  <span className="vt-time">{when(m.createdAt, locale, zone)}</span>
                 </p>
                 <p className="vt-text">{m.text ?? t('violeta.unreadable')}</p>
                 <div className="vt-msg-actions">

@@ -25,6 +25,12 @@
  * when the page returns to view, one write at a time, a retry, and a status
  * line that follows the write. Its labels already come from the server and
  * its gallery already loads on demand; nothing lighter does the same job.
+ *
+ * 7 November 2026, 137 → 138 KB: about 0.1 KB in two shared pieces, both
+ * fixes from the owner's error report: Roxi's button re-reads its labels when
+ * the member changes language (it kept Spanish on English pages), and Enter
+ * in a town box no longer sends a half-filled form. The heaviest page sits at
+ * 137.0; the extra kilobyte is headroom, not a licence.
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -32,7 +38,7 @@ import { gzipSync } from 'node:zlib';
 
 const BUDGET = {
   /** Compressed JavaScript any one page loads on arrival. */
-  pageJsKb: 137,
+  pageJsKb: 138,
   /** Compressed CSS any one page loads on arrival. */
   cssKb: 60,
 };

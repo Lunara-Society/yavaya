@@ -73,6 +73,10 @@ const LEGACY_PATHS: Record<string, string> = {
   'mercadito/nuevo': '/mercadito/publish',
   'mercadito/vender': '/mercadito/publish',
   'community/post': '/community/new',
+  // The guide's address is Spanish (/guia); the English guess found nothing (report of 7 November 2026).
+  guide: '/guia',
+  'roxi/conexiones': '/roxi/connections',
+  'roxi/memoria': '/roxi/memory',
   'index.html': '/',
   'mercadito.html': '/mercadito',
   'yavayago.html': '/yavayago',

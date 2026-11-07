@@ -25,6 +25,7 @@ import {
   signOutAction,
 } from './actions';
 import { loginHref } from '@/server/auth/return-path';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 // The tab's title in the member's language, like the page under it.
 export async function generateMetadata(): Promise<Metadata> {
@@ -57,7 +58,7 @@ export default async function SettingsPage() {
         quote.freeLeft > 0 || quote.cost !== null ? { ...quote, balance } : null,
       )
     : null;
-  const when = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
+  const when = zonedFormat(locale, await viewerTimeZone(session?.user.userId), { dateStyle: 'medium', timeStyle: 'short' });
 
   const preferenceFor = (category: string, channel: string): boolean =>
     notificationPrefs.find((row) => row.category === category && row.channel === channel)?.enabled ??

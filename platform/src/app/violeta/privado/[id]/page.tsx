@@ -11,6 +11,7 @@ import { VIOLETA_METADATA } from '../../meta';
 import { violetaPage } from '../../guard';
 import { ReportForm } from '../../report';
 import { blockAction, deleteMessageAction, sendThreadAction } from '../../actions';
+import { viewerTimeZone } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -22,6 +23,7 @@ export default async function PrivateThread({ params, searchParams }: { params: 
   const [{ id }, query] = await Promise.all([params, searchParams]);
   if (!UUID.test(id)) notFound();
   const { t, locale, userId } = await shellContext();
+  const zone = await viewerTimeZone(userId);
   const { member, guardian } = await violetaPage(userId);
   let thread;
   try {
@@ -56,7 +58,7 @@ export default async function PrivateThread({ params, searchParams }: { params: 
             <li key={m.id} className={`vt-msg${m.kind === 'professional' ? ' pro' : ''}${m.mine ? ' mine' : ''}`}>
               <p className="vt-msg-head">
                 <Who t={t} handle={m.handle} kind={m.kind} profession={m.profession} />
-                <span className="vt-time">{when(m.createdAt, locale)}</span>
+                <span className="vt-time">{when(m.createdAt, locale, zone)}</span>
               </p>
               <p className="vt-text">{m.text ?? t('violeta.unreadable')}</p>
               <div className="vt-msg-actions">

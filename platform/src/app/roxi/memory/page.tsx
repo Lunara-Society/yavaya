@@ -37,7 +37,9 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const items = available ? await listItems(db(), userId) : [];
   const of = (kind: ItemView['kind']) => items.filter((item) => item.kind === kind);
   const goals = of('goal');
-  const reminders = of('reminder');
+  // A reminder that has come and gone retires after two days, as tasks do: Friday's
+  // "Regar las plantas" was still listed a week later (report of 7 November 2026).
+  const reminders = of('reminder').filter((reminder) => !reminder.done || (reminder.dueAt && reminder.dueAt.getTime() > Date.now() - 2 * 86_400_000));
   const recentDays = new Set(Array.from({ length: 4 }, (_, back) => memberDay(new Date(Date.now() - back * 86_400_000), timeZone)));
   const tasks = of('task').filter((task) => !task.done || (task.day && recentDays.has(task.day)));
   const moments = of('moment').sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -48,7 +50,7 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
   const path = available ? await lifePath(db(), userId) : [];
   const pathYears = [...new Set(path.map((entry) => entry.day.slice(0, 4)))];
   const errorKey = query.error && /^(roxi\.[a-z_.]+|error\.[a-z_.]+)$/.test(query.error) ? (query.error as MessageKey) : null;
-  const when = (date: Date) => inMemberZone(date, locale, timeZone, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const when = (date: Date) => inMemberZone(date, locale, timeZone, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
 
   const remove = (item: ItemView) => (
     <form action={deleteItemAction}>
@@ -86,7 +88,7 @@ export default async function RoxiMemoryPage({ searchParams }: { searchParams: P
         <>
           <section className="rx-section" id="goal">
             <h2>{t('roxi.memory.goals')}</h2>
-            <p className="rx-small">{t('roxi.memory.goals_lead', { n: limits.goals })}</p>
+            <p className="rx-small">{limits.goals === 1 ? t('roxi.memory.goals_lead_one') : t('roxi.memory.goals_lead', { n: limits.goals })}</p>
             <ul className="rx-items">
               {goals.map((goal) => {
                 const share = goal.target ? Math.min(100, Math.round(((goal.progress ?? 0) / goal.target) * 100)) : null;

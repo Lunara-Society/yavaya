@@ -89,7 +89,7 @@ const DOUBLE_SEND_MS = 8_000;
  * What the wait says while one of Roxi's tools runs. Only real stages: a
  * label is shown because that tool is running, never on a timer.
  */
-const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'checking' | 'opening'> = {
+const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'checking' | 'opening' | 'saving'> = {
   search_yavaya: 'searching',
   prepare_listing: 'preparing',
   prepare_post: 'preparing',
@@ -98,13 +98,14 @@ const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'che
   open_page: 'opening',
   open_result: 'opening',
   my_memory: 'checking',
-  remember: 'preparing',
-  update_memory: 'preparing',
+  // Keeping something for the member is not preparing a post (report of 7 November 2026).
+  remember: 'saving',
+  update_memory: 'saving',
+  business: 'saving',
   connected_tools: 'checking',
   use_connected_tool: 'checking',
   my_world: 'checking',
   my_path: 'checking',
-  business: 'checking',
 };
 
 /** Entries this tab keeps (sessionStorage) so closing the panel or reloading does not lose the thread. Photos stay out: they are files, not text. */

@@ -7,6 +7,7 @@ import { VioletaShell, when, Who } from '@/ui/violeta/parts';
 import { LiveRefresh } from '@/ui/violeta/client';
 import { VIOLETA_METADATA } from '../meta';
 import { violetaPage } from '../guard';
+import { viewerTimeZone } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata = VIOLETA_METADATA;
@@ -14,6 +15,7 @@ export const metadata = VIOLETA_METADATA;
 /** Her private conversations: the names she knows, and who is here now. */
 export default async function PrivateList() {
   const { t, locale, userId } = await shellContext();
+  const zone = await viewerTimeZone(userId);
   const { member, unread, guardian } = await violetaPage(userId);
   const threads = await myThreads(db(), member);
   return (
@@ -29,7 +31,7 @@ export default async function PrivateList() {
               <Link href={`/violeta/privado/${thread.id}`} className={thread.unread && !thread.blocked ? 'vt-thread unread' : 'vt-thread'}>
                 <Who t={t} handle={thread.other.handle} kind={thread.other.kind} profession={thread.other.profession} online={thread.other.online} />
                 <span className="vt-time">
-                  {thread.blocked ? t('violeta.private.closed') : thread.unread ? t('violeta.private.new') : thread.lastMessageAt ? when(thread.lastMessageAt, locale) : t('violeta.private.no_messages')}
+                  {thread.blocked ? t('violeta.private.closed') : thread.unread ? t('violeta.private.new') : thread.lastMessageAt ? when(thread.lastMessageAt, locale, zone) : t('violeta.private.no_messages')}
                 </span>
               </Link>
             </li>

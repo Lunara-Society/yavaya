@@ -132,7 +132,7 @@ describe('What Roxi keeps', () => {
     expect(stored?.bodySealed).not.toContain('moto');
     expect((await listItems(db(), userId, 'goal'))[0]?.title).toBe('Comprar una moto');
     // Free keeps one goal.
-    await expect(addItem(db(), userId, { kind: 'goal', body: cleanBody({ title: 'Otra meta' }) })).rejects.toMatchObject({ messageKey: 'roxi.memory.error.goals' });
+    await expect(addItem(db(), userId, { kind: 'goal', body: cleanBody({ title: 'Otra meta' }) })).rejects.toMatchObject({ messageKey: 'roxi.memory.error.goals_one' });
     // Repeating reminders are Pro and Max.
     await expect(addItem(db(), userId, { kind: 'reminder', body: cleanBody({ title: 'Pagar la luz' }), dueAt: dec, repeat: 'monthly' })).rejects.toMatchObject({ messageKey: 'roxi.memory.error.repeat' });
     await updateItem(db(), userId, goal.id, { body: { progress: 5_000 } });
@@ -162,7 +162,7 @@ describe('What Roxi keeps', () => {
     const [after] = await listItems(db(), userId, 'reminder');
     expect(after?.id).toBe(reminder.id);
     expect(after?.dueAt?.getTime()).toBe(nextDue(due, 'weekly')!.getTime());
-    expect((await memoryForRoxi(db(), userId, new Date().toISOString().slice(0, 10))).reminders).toHaveLength(1);
+    expect((await memoryForRoxi(db(), userId, new Date().toISOString().slice(0, 10), 'America/Managua')).reminders).toHaveLength(1);
   });
 });
 

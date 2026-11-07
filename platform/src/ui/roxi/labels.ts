@@ -42,6 +42,7 @@ const KEYS = [
   'status.paused',
   'activity.searching',
   'activity.preparing',
+  'activity.saving',
   'activity.filling',
   'activity.checking',
   'activity.opening',

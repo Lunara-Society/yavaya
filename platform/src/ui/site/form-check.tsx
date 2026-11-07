@@ -134,8 +134,11 @@ export function FormCheck({ labels }: { labels: FormCheckLabels }) {
           else holderOf(field).setAttribute('data-check-error', messageFor(field));
         }
         const left = form.querySelectorAll('[aria-invalid="true"]').length;
-        if (left === 0) form.removeAttribute('data-check-summary');
-        else form.setAttribute('data-check-summary', summaryFor(left));
+        if (left === 0) {
+          form.removeAttribute('data-check-summary');
+          // Nothing left to say: the announcement must not outlive the problem it described.
+          setAnnounce('');
+        } else form.setAttribute('data-check-summary', summaryFor(left));
       });
     };
 

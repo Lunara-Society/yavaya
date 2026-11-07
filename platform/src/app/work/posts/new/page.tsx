@@ -18,7 +18,10 @@ import { RoxiPrefill } from '@/ui/roxi/prefill';
 import { KeepTyped } from '@/ui/components/keep-typed';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await siteContext();
+  return { title: t('work.form.title_job'), robots: { index: false } };
+}
 
 const LIMITS = {
   min: WORK_RULES.titleMinLength,

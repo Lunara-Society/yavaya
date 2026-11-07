@@ -378,8 +378,9 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         progress: typeof parameters.progress === 'number' ? parameters.progress : undefined,
         action_hint: text(parameters.action, 200),
         repeat: oneOf(['none', 'weekly', 'monthly', 'yearly'], parameters.repeat) || 'none',
-        // A time without an offset is the member's local time.
-        due: due ? (/[zZ]|[+-]\d\d:?\d\d$/.test(due) ? due : new Date(due).toISOString()) : undefined,
+        // Sent as Roxi wrote it. A time without a zone is the member's Yavaya time, and the
+        // server decides what that means (server/time/zoned.ts) — never this browser's clock.
+        due: due || undefined,
         day: kind === 'task' || kind === 'milestone' ? text(parameters.day, 10) || localDay() : undefined,
         // Watches: what, where, and up to what price.
         district: oneOf(['mercadito', 'work'], parameters.district) || undefined,
@@ -408,6 +409,8 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         progress: typeof parameters.progress === 'number' ? parameters.progress : undefined,
         index: typeof parameters.index === 'number' ? parameters.index : Number(parameters.index),
         hours: typeof parameters.hours === 'number' ? parameters.hours : Number(parameters.hours) || undefined,
+        // A reminder's new time, in place: no more deleting it and saving it again.
+        due: text(parameters.due, 40) || undefined,
       });
       return reply(body ?? { ok: false, error: 'failed' });
     },

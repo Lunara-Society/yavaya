@@ -13,6 +13,7 @@ import { tripForCustomer } from '@/server/domains/go/trips';
 import { siteUrl } from '@/server/seo';
 import { cancelTripAction, chooseOfferAction } from '../actions';
 import { mapLabels } from '../../labels';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -77,7 +78,7 @@ export default async function TripPage({ params, searchParams }: { params: Promi
         {trip.status === 'open' ? (
           <section>
             <h2 className="go-menu-h">{t('go.trip.offers_title')}</h2>
-            <p className="muted">{t('go.trip.offers_lead', { fare: money(trip.offeredFareMinor, trip.currency), time: new Intl.DateTimeFormat(locale, { timeStyle: 'short' }).format(trip.expiresAt) })}</p>
+            <p className="muted">{t('go.trip.offers_lead', { fare: money(trip.offeredFareMinor, trip.currency), time: zonedFormat(locale, await viewerTimeZone(userId), { timeStyle: 'short' }).format(trip.expiresAt) })}</p>
             {offers.length === 0 ? <p className="go-waiting">{t('go.trip.no_offers_yet')}</p> : null}
             <ul className="go-offers">
               {offers.map((offer) => (

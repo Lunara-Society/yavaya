@@ -11,6 +11,7 @@ import { APPOINTABLE_ROLES, recentTeamChanges, searchMembers, staffList } from '
 import { formatDate, intlLocale } from '@/ui/mercadito/format';
 import { appointAction, removeAppointmentAction } from '../actions';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -25,7 +26,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   const actor = session ? { userId, status: session.user.status } : null;
   const q = (query.q ?? '').slice(0, 100);
   const [staff, results, changes] = await Promise.all([staffList(db(), actor), q ? searchMembers(db(), actor, q) : Promise.resolve([]), recentTeamChanges(db(), actor)]);
-  const when = new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: 'medium', timeStyle: 'short' });
+  const when = zonedFormat(intlLocale(locale), await viewerTimeZone(userId), { dateStyle: 'medium', timeStyle: 'short' });
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
 
   return (

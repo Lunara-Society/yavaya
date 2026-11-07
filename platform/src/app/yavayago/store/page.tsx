@@ -18,12 +18,17 @@ import { FeatureOffer } from '@/ui/promotion/feature-offer';
 import { menuItemAvailableAction, menuItemRemoveAction, menuItemUpdateAction, storeAnswerAction, storeCancelAction, storeFeatureAction, storeOpenAction, storeReadyAction } from '../actions';
 import { mapLabels } from '../labels';
 import { PlacePicker } from '@/ui/components/place-picker';
+import { KeepTyped } from '@/ui/components/keep-typed';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { ImageLink } from '@/ui/components/image-link';
 import { imageLinkLabels } from '@/ui/components/image-link-labels';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await siteContext();
+  return { title: t('go.store.apply_title'), robots: { index: false } };
+}
 
 /**
  * For a store: apply, then take orders. New orders arrive at the top and the
@@ -50,7 +55,7 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
   const orderLink = store ? `${siteUrl()}/yavayago/stores/${store.id}` : '';
   const autoReply = store ? t('go.link.auto_reply', { store: store.name, link: orderLink }) : '';
   const error = query.error && /^[a-z_.]+$/.test(query.error) ? query.error : null;
-  const when = new Intl.DateTimeFormat(locale, { timeStyle: 'short' });
+  const when = zonedFormat(locale, await viewerTimeZone(userId), { timeStyle: 'short' });
   const groups = {
     placed: orders.filter((o) => o.status === 'placed'),
     preparing: orders.filter((o) => o.status === 'accepted' || o.status === 'ready'),
@@ -125,6 +130,8 @@ export default async function StoreDashboard({ searchParams }: { searchParams: P
 
   const DetailsForm = () => (
     <form className="mk-form" method="post" action="/api/go/store" encType="multipart/form-data" id="details">
+      {/* What was typed comes back if the form is returned with an error, as on the other long forms. */}
+      <KeepTyped form="go_store" />
       <label>
         <span>{t('go.form.name')}</span>
         <input name="name" required minLength={2} maxLength={80} defaultValue={store?.name} />

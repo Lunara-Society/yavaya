@@ -12,6 +12,7 @@ import { orderForCustomer } from '@/server/domains/go/service';
 import { GO_RULES } from '@/config/business-rules';
 import { customerCancelAction } from '../../actions';
 import { mapLabels } from '../../labels';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -125,7 +126,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {order.recipientName ? t('go.order.recipient_cash_note') : t('go.order.cash_note')}
             {order.payingWithMinor ? ` ${t('go.order.paying_with', { amount: money(order.payingWithMinor, order.currency) })}` : ''}
           </p>
-          <p className="hint muted">{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(order.placedAt)}</p>
+          <p className="hint muted">{zonedFormat(locale, await viewerTimeZone(userId), { dateStyle: 'medium', timeStyle: 'short' }).format(order.placedAt)}</p>
         </section>
 
         {order.status === 'placed' ? (

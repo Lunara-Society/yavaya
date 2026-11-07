@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
-import { packageSavingPercent, SITE_STATS_RULES, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
+import { GO_PLAN_RULES, packageSavingPercent, ROXI_CREDIT_PACKS, ROXI_PLANS, SITE_STATS_RULES, TOKEN_PACKAGES, TOKEN_RULES } from '@/config/business-rules';
 import { TokenPack } from '@/ui/tokens/pack';
 import { fillTokenRow, type TokenFacts } from '@/ui/tokens/facts';
 import { DistrictScene } from './art';
@@ -695,6 +695,18 @@ export function TokensBody({ c, film, facts }: { c: SiteContent; film?: ReactNod
   );
 }
 
+/** Prices on the pricing page come from the rules, never typed into the text: a retuned plan cannot leave this page behind. */
+const dollars = (cents: number) => `$${(cents / 100).toFixed(cents % 100 === 0 ? 0 : 2)}`;
+const PRICE_FACTS: Record<string, string> = {
+  roxi_pro: dollars(ROXI_PLANS.pro.priceMinor),
+  roxi_max: dollars(ROXI_PLANS.max.priceMinor),
+  roxi_pack: dollars(Math.min(...ROXI_CREDIT_PACKS.map((pack) => pack.priceMinor))),
+  go_plan: dollars(GO_PLAN_RULES.planPriceUsdCents),
+  go_free: String(GO_PLAN_RULES.freeOrdersPerMonth),
+  go_founding: String(GO_PLAN_RULES.foundingMonths),
+};
+const fillPrice = (cell: string) => cell.replace(/\{(\w+)\}/g, (match, key: string) => PRICE_FACTS[key] ?? match);
+
 export function PricingBody({ c }: { c: SiteContent }) {
   const p = c.pages.pricing;
   return (
@@ -717,7 +729,7 @@ export function PricingBody({ c }: { c: SiteContent }) {
       <section className="section alt">
         <div className="wrap">
           <SectionHead {...p.paidHead} />
-          <Table head={p.paidTable.head} rows={p.paidTable.rows} />
+          <Table head={p.paidTable.head} rows={p.paidTable.rows.map((row) => row.map(fillPrice))} />
           <div className="mt">
             <Note text={p.paidNote} />
           </div>

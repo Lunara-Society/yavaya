@@ -95,7 +95,7 @@ describe('missions, capsules and promises', () => {
     const [sealed] = await listItems(db(), userId, 'capsule');
     expect(sealed?.title).toBe('');
     expect(sealed?.sealedUntil?.getTime()).toBe(opens.getTime());
-    expect(JSON.stringify(await memoryForRoxi(db(), userId, '2026-11-06'))).not.toContain('Ánimo');
+    expect(JSON.stringify(await memoryForRoxi(db(), userId, '2026-11-06', 'America/Managua'))).not.toContain('Ánimo');
     await expect(updateItem(db(), userId, capsule.id, { body: { title: 'otro' } })).rejects.toMatchObject({ messageKey: 'roxi.memory.error.capsule_sealed' });
     await expect(addItem(db(), userId, { kind: 'capsule', body: cleanBody({ title: 'mañana mismo' }), dueAt: new Date(Date.now() + 3_600_000) })).rejects.toMatchObject({ messageKey: 'roxi.memory.error.capsule_when' });
   });

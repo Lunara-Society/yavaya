@@ -302,16 +302,19 @@ export function PlacePicker({
             } else if (event.key === 'ArrowUp') {
               event.preventDefault();
               setActive((index) => Math.max(index - 1, 0));
-            } else if (event.key === 'Enter' && open) {
-              if (active >= 0 && active < options.length) {
+            } else if (event.key === 'Enter') {
+              if (open && active >= 0 && active < options.length) {
                 event.preventDefault();
                 choose(options[active] ?? null);
-              } else if (query && searching) {
+              } else if (open && query && searching) {
                 // Not a half-typed place sent with the form: the best match is chosen once it arrives.
                 event.preventDefault();
                 enterWhenFound.current = query;
               } else {
                 setOpen(false);
+                // Enter in a town box is choosing a town, not sending the form: in the store form it sent
+                // everything half-filled and came back with the other fields empty (report of 7 November 2026).
+                if (!autoSubmit) event.preventDefault();
               }
             } else if (event.key === 'Escape') {
               setOpen(false);

@@ -9,6 +9,7 @@ import { Icon } from '@/ui/site/icons';
 import { listNotifications } from '@/server/domains/notifications/service';
 import { markAllReadAction } from './actions';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { viewerTimeZone, zonedFormat } from '@/server/time/viewer';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,14 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const CATEGORY_ICON = { community: 'community', mercadito: 'mercadito', services: 'services', work: 'work', sanctuary: 'sanctuary', animals: 'animals', moderation: 'flag', account: 'id' } as const;
 
-function when(date: Date, locale: string): string {
-  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'es', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
-}
 
 export default async function NotificationsPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect(await signInPath());
   const items = await listNotifications(db(), userId);
+  // In the member's own zone: the server runs in UTC, and the 8:00 light read "2:00 PM".
+  const fmt = zonedFormat(locale === 'en' ? 'en-US' : 'es', await viewerTimeZone(userId), { dateStyle: 'medium', timeStyle: 'short' });
+  const when = (date: Date) => fmt.format(date);
   const unread = items.filter((item) => !item.read).length;
 
   return (
@@ -63,7 +64,7 @@ export default async function NotificationsPage() {
                   <span className="nt-text">
                     <span className="nt-title">{t(item.titleKey as MessageKey, item.params)}</span>
                     {item.bodyKey ? <span className="nt-body">{t(item.bodyKey as MessageKey, item.params)}</span> : null}
-                    <span className="nt-when">{when(item.createdAt, locale)}</span>
+                    <span className="nt-when">{when(item.createdAt)}</span>
                   </span>
                   {!item.read ? <span className="nt-dot" aria-label={t('notifications.unread')} /> : null}
                 </a>

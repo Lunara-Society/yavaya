@@ -53,7 +53,10 @@ export default async function RoxiConnectionsPage({ searchParams }: { searchPara
         <h1 className="rx-title">{t('roxi.connect.title')}</h1>
         <p className="rx-lead">{t('roxi.connect.lead')}</p>
         <p className="rx-small">
-          {t('roxi.connect.count', { n: connections.length, limit: limits.connections, plan: t(`roxi.plan.${plan}` as MessageKey) })}
+          {/* "0 de 0 conectadas" said nothing: a plan without connections says so. */}
+          {limits.connections === 0
+            ? t('roxi.connect.count_none', { plan: t(`roxi.plan.${plan}` as MessageKey) })
+            : t('roxi.connect.count', { n: connections.length, limit: limits.connections, plan: t(`roxi.plan.${plan}` as MessageKey) })}
         </p>
       </section>
 

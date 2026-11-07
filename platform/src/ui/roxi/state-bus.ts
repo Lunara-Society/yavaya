@@ -13,7 +13,7 @@
  * a window event, so a component that mounts late can read the current state
  * and then follow it.
  */
-export type RoxiActivity = 'searching' | 'preparing' | 'filling' | 'checking' | 'opening';
+export type RoxiActivity = 'searching' | 'preparing' | 'filling' | 'checking' | 'opening' | 'saving';
 
 export type RoxiRaw = {
   /** A signed-in member with an agent configured, on a page where Roxi is offered. */

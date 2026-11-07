@@ -38,6 +38,9 @@ const QUIET = /^\/(violeta|login|register|verify|reset|apelacion|auth)(\/|$)/;
  * member allowed: a welcome voice note for its one recipient, the check-in
  * and the simulated call (presence.tsx), and her settings.
  */
+/** The language the widget last asked its labels for (one tab, one widget). */
+let askedFor = '';
+
 export function RoxiRoot() {
   const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
@@ -67,6 +70,24 @@ export function RoxiRoot() {
   useEffect(() => {
     if (quiet) setOpen(false);
   }, [quiet]);
+
+  /*
+   * The labels came in the language of the first page. When the member
+   * changes language (settings, the language menu) the page's <html lang>
+   * changes but this component, in the root layout, stays — and kept saying
+   * "Tu asistente de Yavaya" on English pages. On the next page, a different
+   * language asks again, keeping an open conversation open.
+   */
+  useEffect(() => {
+    const lang = document.documentElement.lang;
+    // Once per language: if the answer still differs, asking again would only loop.
+    if (!session?.enabled || !lang || lang === session.locale || askedFor === lang) return;
+    askedFor = lang;
+    fetch('/api/roxi/session', { credentials: 'same-origin' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: Session | null) => body?.enabled && setSession(body))
+      .catch(() => undefined);
+  }, [pathname, session]);
 
   // Whether she is here at all, for the presence shown elsewhere on the page (state-bus.ts).
   const available = Boolean(session?.enabled) && !quiet;
