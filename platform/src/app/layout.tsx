@@ -5,6 +5,7 @@ import { themeAttributeAt } from '@/config/preferences';
 import { ThemeKeeper } from '@/ui/site/theme-keeper';
 import { RoxiRoot } from '@/ui/roxi/roxi-root';
 import { FormCheck, type FormCheckLabels } from '@/ui/site/form-check';
+import { ClientErrors } from '@/ui/components/client-errors';
 import { createTranslator } from '@/i18n';
 import { db } from '@/server/db/client';
 import { lookEnabled } from '@/server/domains/platform/looks';
@@ -120,6 +121,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ThemeKeeper chosen={theme} />
         {/* Every form that will not send says why, field by field (src/ui/site/form-check.tsx). */}
         <FormCheck labels={formCheck} />
+        {/* Errors in this browser reach the team, through Yavaya's own server (src/ui/components/client-errors.tsx). */}
+        <ClientErrors />
         {children}
         {/* Roxi, the assistant: here rather than in a page so a conversation survives navigation. */}
         <RoxiRoot />

@@ -41,6 +41,12 @@ export default function ErrorBoundary({
 }) {
   const [texts, setTexts] = useState<ErrorTexts | null>(null);
 
+  // An error with a digest came from the server, which has already reported it
+  // (src/instrumentation.ts). One without was thrown here, in the browser.
+  useEffect(() => {
+    if (!error.digest) void import('@/ui/components/client-error-report').then((m) => m.reportClientError(error, 'boundary')).catch(() => undefined);
+  }, [error]);
+
   useEffect(() => {
     const written = writtenTexts();
     if (written) {

@@ -1532,6 +1532,51 @@ nothing in the library is cut from it.
 
 ---
 
+## Error reports — `SENTRY_DSN` (set up 7 November 2026)
+
+Errors go to Sentry: organisation `yavaya`, project `yavaya-web`
+(https://yavaya.sentry.io). Set `SENTRY_DSN` on **both** Railway services, the
+website and the scheduler; without it nothing is initialised and nothing is
+sent. `SENTRY_ENVIRONMENT` is optional (default: Railway's environment name).
+The release on each report is the deployed commit (`RAILWAY_GIT_COMMIT_SHA`).
+
+What is reported:
+
+- **Server errors** — any page, Server Action or route that throws
+  (`src/instrumentation.ts`, Next's `onRequestError`). The report carries
+  the same digest the member sees on the error page as "referencia", so a
+  screenshot finds its report.
+- **Scheduler** — a job that throws, or one that finishes reporting failure
+  (`src/server/observability/jobs.ts`), tagged with the job's name.
+- **Browser errors** — the error boundary, plus a small inline listener for
+  errors no boundary sees (`src/ui/components/client-errors.tsx`). Browsers
+  send them to `/api/client-errors`, which forwards them from the server: no
+  Sentry SDK in pages, no connection from members' browsers to Sentry, nothing
+  added to the size budget.
+
+What is not: the edge middleware; performance traces, profiles and session
+replays (all off: `tracesSampleRate: 0`); and anything from Espacio Violeta,
+which is dropped before sending.
+
+What a report may carry is decided in one place,
+`src/server/observability/scrub.ts`, tested in
+`tests/unit/error-reporting.test.ts`: no cookies, no headers beyond the
+browser's name, no request bodies, no query strings, no user, no IP (browser
+reports are sent as `node` events because Sentry infers the sender's IP for
+`javascript` ones), no local variables, no console breadcrumbs; email
+addresses, Postgres's echoed values and key-like strings are replaced in
+messages. The privacy page lists Sentry among the providers.
+
+Server code is built unminified (`serverMinification: false`) so stack
+traces name real functions without uploading source maps. Uploading them
+(which needs a `SENTRY_AUTH_TOKEN` at build time and `withSentryConfig`) is not
+done; browser stacks therefore point into minified chunks, and the page path
+on each report is the more useful clue.
+
+Open: alert rules (who is told, and how, when a new issue appears) are not
+configured — by default Sentry emails the organisation's members about new
+issues.
+
 ## Visit statistics — nothing to configure
 
 Yavaya counts its own visits (`src/server/domains/stats`, the owner reads them

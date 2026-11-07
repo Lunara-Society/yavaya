@@ -577,6 +577,18 @@ Someone determined can still inflate counts by hand within the limits. That
 distorts a statistic and nothing else: no decision, payment or reputation
 reads these tables.
 
+## Error reports
+
+Errors are reported to Sentry from the server only; see CONFIGURATION.md,
+"Error reports". The rules for what a report may contain live in
+`src/server/observability/scrub.ts` and apply to every report, including the
+browser reports `/api/client-errors` forwards. That endpoint is public: it
+accepts only same-origin posts, at most 10 per network per minute (counted in
+memory, by the network's keyed hash), cuts and scrubs every field, stores
+nothing and always answers an empty 204. Its worst case is noise in Sentry,
+never data written to Yavaya. The DSN is a send-only key; it is not exposed to
+browsers anyway.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a

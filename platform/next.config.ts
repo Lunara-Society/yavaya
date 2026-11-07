@@ -120,6 +120,10 @@ const nextConfig: NextConfig = {
     // Server Actions are the primary mutation surface; keep the body limit tight
     // so upload paths must go through the dedicated, validated media pipeline.
     serverActions: { bodySizeLimit: '1mb' },
+    // Server code only, never what browsers download: unminified, an error
+    // report's stack names the real function and file (src/instrumentation.ts)
+    // instead of `e (page.js:1:701)`, without uploading source maps anywhere.
+    serverMinification: false,
   },
   images: {
     formats: ['image/avif', 'image/webp'],

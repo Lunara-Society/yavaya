@@ -1046,6 +1046,7 @@ export const siteEs = {
             '**Stripe** procesa los pagos cuando compras tokens: recibe el monto, una referencia de la compra y los datos que escribes en su página de pago. Yavaya no recibe los datos de tu tarjeta.',
             '**Railway** aloja la plataforma, su base de datos y las fotos de Mercadito (Estados Unidos).',
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
+            '**Sentry** (Estados Unidos) recibe los errores técnicos de la plataforma, para que el equipo sepa qué falló y dónde: el tipo de error, la página y el tipo de navegador. No recibe tu nombre, tu correo, tu YAY ID, tu dirección IP, tus cookies ni lo que escribes, y nada del Espacio Violeta.',
             '**ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',
           ],
         },

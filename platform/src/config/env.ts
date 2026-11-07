@@ -167,6 +167,16 @@ const serverSchema = z.object({
    */
   ELEVENLABS_API_KEY: z.preprocess((value) => (value === '' ? undefined : value), z.string().min(20).optional()),
 
+  /**
+   * Optional. Where server errors are reported (Sentry). Read directly by
+   * src/server/observability/sentry.ts, which must work even when this schema
+   * fails; listed here so it is documented with everything else. A value that
+   * is not a DSN is ignored rather than fatal.
+   */
+  SENTRY_DSN: z.string().optional(),
+  /** Optional. Overrides the environment name on reports (default: Railway's environment name). */
+  SENTRY_ENVIRONMENT: z.string().optional(),
+
   // ---------------------------------------------------------------------------
   // Unconfigured integrations. Absent => the capability reports itself disabled.
   // ---------------------------------------------------------------------------

@@ -1033,6 +1033,7 @@ export const siteEn: SiteContent = {
             '**Stripe** processes payments when you buy tokens: it receives the amount, a purchase reference and the details you enter on its payment page. Yavaya does not receive your card details.',
             '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
+            '**Sentry** (United States) receives the platform\'s technical errors, so the team knows what failed and where: the kind of error, the page and the type of browser. It does not receive your name, your email, your YAY ID, your IP address, your cookies or what you type, and nothing from Espacio Violeta.',
             '**ElevenLabs**, and the **OpenAI** and **Google** language models it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
           ],
         },

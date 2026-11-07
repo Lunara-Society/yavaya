@@ -23,6 +23,7 @@ import { purgeSiteStats } from '@/server/domains/stats/service';
 import { meterOpenConversations, plansUpkeep } from '@/server/domains/roxi/billing';
 import { deliverDueReminders } from '@/server/domains/roxi/items';
 import { runWatches, sendDailyOpportunities } from '@/server/domains/roxi/world';
+import { flushJobReporting, reportJobError, reportJobFailure, startJobReporting } from '@/server/observability/jobs';
 
 /**
  * Entry point for Yavaya's scheduled work.
@@ -223,11 +224,13 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
       try {
         const outcome = await JOBS[name]!();
         failed ||= Boolean(outcome.failed);
+        if (outcome.failed) reportJobFailure(name, outcome.summary);
         lines.push(`${name}: ${outcome.summary}`);
         // Quiet skips are not worth a row every fifteen minutes; work done and failures are.
         if (outcome.failed || !/^no |: 0 |^(closed|purged|deleted|asked|announced|sent|granted) 0\b/.test(outcome.summary)) await recordJobRun(db(), name, !outcome.failed, outcome.summary, startedAt);
       } catch (error) {
         failed = true;
+        reportJobError(name, error);
         const message = error instanceof Error ? error.message : String(error);
         lines.push(`${name}: FAILED ${message}`);
         await recordJobRun(db(), name, false, `FAILED ${message}`, startedAt);
@@ -255,8 +258,11 @@ async function main(): Promise<void> {
     return;
   }
 
+  await startJobReporting();
   const startedAt = Date.now();
   const outcome = await JOBS[name]!();
+  // The tick reports each of its jobs itself; any other job reports its own failure here.
+  if (outcome.failed && name !== 'tick') reportJobFailure(name, outcome.summary);
   const elapsed = Date.now() - startedAt;
 
   const line = `[${new Date().toISOString()}] ${name}: ${outcome.summary} (${elapsed}ms)`;
@@ -274,9 +280,11 @@ main()
   .catch((error) => {
     // eslint-disable-next-line no-console
     console.error(`[${new Date().toISOString()}] job failed:`, error);
+    reportJobError(process.argv[2] ?? 'unknown', error);
     process.exitCode = 1;
   })
   .finally(async () => {
+    await flushJobReporting();
     // Without this the pool keeps the process alive and the scheduler's slot
     // never frees.
     await closeDb();
