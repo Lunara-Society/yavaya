@@ -1016,6 +1016,17 @@ export const siteEn: SiteContent = {
           ],
         },
         {
+          id: 'whatsapp',
+          title: 'If you write to Yavaya on WhatsApp',
+          text: 'Messages you send to Yavaya\'s WhatsApp number (+505 5836 5522) reach a private team inbox inside Yavaya, as well as the phone.',
+          list: [
+            'We keep your number, your WhatsApp profile name and your text messages, with the team\'s replies. The name and the texts are stored **encrypted**. Photos, voice notes and documents are not downloaded: only the fact that you sent one is noted.',
+            'Only Yavaya staff allowed to handle WhatsApp see them. They are not linked to your Yavaya account, if you have one.',
+            'A person answers you. Yavaya sends no automatic or bulk WhatsApp messages.',
+            'There is no fixed deletion period yet: they are kept until the team deletes the conversation, and you can ask us to delete it by writing to the same number.',
+          ],
+        },
+        {
           id: 'visitas',
           title: 'Visit statistics',
           text: 'To know whether Yavaya is reaching people and loads fast on their phones, we count visits with our own system, with no third party. **It uses no cookies and stores no IP address or identifier of any kind**, and it cannot tell one person from another.',
@@ -1037,6 +1048,7 @@ export const siteEn: SiteContent = {
             '**Stripe** processes payments when you buy tokens: it receives the amount, a purchase reference and the details you enter on its payment page. Yavaya does not receive your card details.',
             '**Railway** hosts the platform, its database and Mercadito photos (United States).',
             '**Resend** sends verification emails: it receives your email address and the message content.',
+            '**WhatsApp** (by Meta) and **Dualhook**, which connects Yavaya\'s number, carry the messages you send to that number to the team inbox.',
             '**Sentry** (United States) receives the platform\'s technical errors, so the team knows what failed and where: the kind of error, the page and the type of browser. It does not receive your name, your email, your YAY ID, your IP address, your cookies or what you type, and nothing from Espacio Violeta.',
             '**ElevenLabs**, and the **OpenAI** and **Google** language models it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
           ],

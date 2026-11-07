@@ -58,6 +58,8 @@ export async function resetTransactionalData(): Promise<void> {
       go_drivers,
       go_stores,
       safe_space_thread_messages,
+      whatsapp_messages,
+      whatsapp_contacts,
       safe_space_threads,
       safe_space_room_messages,
       safe_space_members,

@@ -589,6 +589,20 @@ nothing and always answers an empty 204. Its worst case is noise in Sentry,
 never data written to Yavaya. The DSN is a send-only key; it is not exposed to
 browsers anyway.
 
+## WhatsApp team inbox
+
+`/api/whatsapp/webhook/<key>` is public by necessity, so the key in the path is
+compared in constant time and a wrong one answers the same 404 as a missing
+route; the Meta signature is also checked when `WHATSAPP_APP_SECRET` is set
+(through Dualhook it may not be ours to hold). Bodies are capped at 512 KB and
+read strictly: anything malformed is skipped, unknown message types are kept
+only as "unsupported", and media are never fetched. Names and texts are sealed
+with `WHATSAPP_KEY` (rotatable; `reseal.ts` covers both tables). Every read and
+write of the inbox goes through `requirePermission(…, 'whatsapp.inbox')` in
+the service, not only the page. Replies are audited without their content. The
+middleware exempts only this path from the preview gate, as it does for the
+payment notifications.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a

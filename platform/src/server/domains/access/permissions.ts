@@ -47,6 +47,7 @@ export const PERMISSIONS = {
   'work.moderate': 'work',
   'work.review': 'work',
   'safe_space.review': 'community',
+  'whatsapp.inbox': 'support',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',
@@ -154,7 +155,7 @@ export const SYSTEM_ROLES: Record<
   support: {
     name: 'Support',
     description: 'Reads accounts and tickets to help users; changes nothing.',
-    permissions: ['users.read', 'reputation.read', 'moderation.queue.read', 'tokens.read_any'],
+    permissions: ['users.read', 'reputation.read', 'moderation.queue.read', 'tokens.read_any', 'whatsapp.inbox'],
   },
   member: {
     name: 'Member',

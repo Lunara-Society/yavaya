@@ -44,7 +44,7 @@ export default async function AccountPage() {
     return relative.format(Math.round(minutes / 1440), 'day');
   };
 
-  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian, workReviewer, ops] = await Promise.all([
+  const [shield, balance, activity, moderator, admin, sanctuaryReviewer, servicesReviewer, animalsReviewer, workModerator, guardian, workReviewer, ops, whatsappStaff] = await Promise.all([
     buildTrustShield(db(), userId),
     getBalance(db(), userId),
     recentActivity(db(), { limit: 20, week: true, locale }),
@@ -57,6 +57,7 @@ export default async function AccountPage() {
     hasPermission(db(), userId, 'safe_space.review'),
     hasPermission(db(), userId, 'work.review'),
     canSeeOps(db(), userId),
+    hasPermission(db(), userId, 'whatsapp.inbox'),
   ]);
   // Shown only to those who hold the permission; the page checks it again.
   const profileShortcut = { href: `/members/${member.yayId}`, labelKey: 'profile.mine' as MessageKey, glyph: '◉' };
@@ -80,6 +81,7 @@ export default async function AccountPage() {
   if (servicesReviewer) shortcuts.push({ href: '/admin/services', labelKey: 'nav.admin_services' as MessageKey, glyph: '⚑' });
   if (workModerator || workReviewer) shortcuts.push({ href: '/admin/work', labelKey: 'nav.admin_work' as MessageKey, glyph: '⚑' });
   if (guardian) shortcuts.push({ href: '/admin/violeta', labelKey: 'nav.admin_violeta' as MessageKey, glyph: '⚑' });
+  if (whatsappStaff) shortcuts.push({ href: '/admin/whatsapp', labelKey: 'nav.admin_whatsapp' as MessageKey, glyph: '✉' });
   if (animalsReviewer) shortcuts.push({ href: '/admin/animals', labelKey: 'nav.admin_animals' as MessageKey, glyph: '⚑' });
 
   if (!shield) redirect(await signInPath());

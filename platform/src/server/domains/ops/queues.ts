@@ -28,7 +28,8 @@ export type QueueKey =
   | 'safe_space_reports'
   | 'go_stores'
   | 'go_drivers'
-  | 'sanction_appeals';
+  | 'sanction_appeals'
+  | 'whatsapp_unread';
 
 export type QueueStatus = { key: QueueKey; href: string; permission: PermissionKey; count: number; oldestAt: Date | null };
 
@@ -55,6 +56,8 @@ QUEUES.push(
   { key: 'go_stores', href: '/admin/yavayago#stores', permission: 'stores.review', query: pending('go_stores', 'pending') },
   { key: 'go_drivers', href: '/admin/yavayago#drivers', permission: 'drivers.review', query: pending('go_drivers', 'pending') },
   { key: 'safe_space_reports', href: '/admin/violeta', permission: 'safe_space.review', query: pending('safe_space_reports', 'open', 'status', 'created_at') },
+  // Conversations on Yavaya's WhatsApp with messages nobody has opened yet.
+  { key: 'whatsapp_unread', href: '/admin/whatsapp', permission: 'whatsapp.inbox', query: sql`select count(*)::int as n, min(last_message_at) as oldest from whatsapp_contacts where unread > 0` },
   // Appeals on a sanction still in force; one whose sanction ended is closed by `lift`.
   {
     key: 'sanction_appeals',

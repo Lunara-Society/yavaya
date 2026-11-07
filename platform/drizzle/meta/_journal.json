@@ -281,6 +281,13 @@
       "when": 1793924529008,
       "tag": "0039_roxi_business",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1794083761794,
+      "tag": "0040_jazzy_zeigeist",
+      "breakpoints": true
     }
   ]
 }

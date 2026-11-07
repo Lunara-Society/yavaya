@@ -13,6 +13,7 @@ import { billingReadiness } from '@/server/domains/roxi/billing';
 import { itemsAvailable } from '@/server/domains/roxi/items';
 import { connectorsAvailable } from '@/server/domains/roxi/connectors/service';
 import { googleConnectorAvailable } from '@/server/domains/roxi/connectors/google';
+import { whatsappAvailability } from '@/server/domains/whatsapp/service';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -143,6 +144,20 @@ export function integrationCapabilities(): Capability[] {
       state: roxi.available && connectorsAvailable() ? 'REAL' : 'REQUIRES_CONFIGURATION',
       group: 'integration',
       blockedBy: connectorsAvailable() ? undefined : 'Set ROXI_KEY: connector secrets are sealed with it and are never stored without it.',
+    },
+    {
+      key: 'whatsapp_inbox',
+      nameKey: 'capability.whatsapp_inbox.name',
+      detailKey: 'capability.whatsapp_inbox.detail',
+      // Measured: REAL once the webhook can be verified and messages sealed. Replies from the inbox are
+      // a further step (a Cloud API token); without it the team answers from the phone app.
+      state: whatsappAvailability().receive ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: whatsappAvailability().receive
+        ? whatsappAvailability().reply
+          ? undefined
+          : 'Receiving works. Replying from the inbox also needs WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID; until then the team replies from the WhatsApp Business app.'
+        : `Set ${whatsappAvailability().missing.join(', ')}, then give Dualhook the webhook address and verify token (CONFIGURATION.md, "WhatsApp").`,
     },
     {
       key: 'kyc',

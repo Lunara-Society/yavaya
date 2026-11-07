@@ -41,6 +41,16 @@ const GROUPS: Array<{ name: string; current: (env: ServerEnv) => string | undefi
       { table: 'safe_space_reports', id: 'id', column: 'note_sealed', purpose: 'safe-space.report' },
     ],
   },
+  {
+    name: 'whatsapp',
+    current: (env) => env.WHATSAPP_KEY,
+    previous: (env) => env.WHATSAPP_KEY_PREVIOUS,
+    names: 'WHATSAPP_KEY',
+    targets: [
+      { table: 'whatsapp_contacts', id: 'wa_id', column: 'name_sealed', purpose: 'whatsapp.message' },
+      { table: 'whatsapp_messages', id: 'id', column: 'body_sealed', purpose: 'whatsapp.message' },
+    ],
+  },
 ];
 
 export type ResealReport = { target: string; resealed: number; alreadyCurrent: number; unreadable: number };

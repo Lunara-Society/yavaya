@@ -1577,6 +1577,56 @@ Open: alert rules (who is told, and how, when a new issue appears) are not
 configured — by default Sentry emails the organisation's members about new
 issues.
 
+## WhatsApp team inbox — `WHATSAPP_*` (built 7 November 2026)
+
+Messages people send to Yavaya's WhatsApp number (+505 5836 5522) reach a
+private team inbox at `/admin/whatsapp`, for staff holding `whatsapp.inbox`
+(the `support` role; `admin` has every permission). The number is connected to
+Meta's Cloud API through **Dualhook**, in coexistence mode: the WhatsApp
+Business app keeps working on the phone, and what the team writes from the
+phone comes back as an "echo" and shows in the inbox too.
+
+Railway variables (website only, not the scheduler):
+
+| Variable | Needed for | Notes |
+| --- | --- | --- |
+| `WHATSAPP_WEBHOOK_KEY` | receiving | 24+ random characters; part of the webhook address |
+| `WHATSAPP_VERIFY_TOKEN` | receiving | 16+ random characters; Meta's handshake token |
+| `WHATSAPP_KEY` | receiving | 32+ characters; seals names and message text (`WHATSAPP_KEY_PREVIOUS` while rotating) |
+| `WHATSAPP_APP_SECRET` | optional | when set, `X-Hub-Signature-256` is checked; through Dualhook the Meta app may not be Yavaya's, so the unguessable address is the guard |
+| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | replying from the inbox | without them the inbox says to reply from the phone, and shows no reply box |
+
+In Dualhook, a connection with:
+
+- **Webhook URL**: `https://yavaya.lat/api/whatsapp/webhook/<WHATSAPP_WEBHOOK_KEY>`
+- **Verify Token**: the value of `WHATSAPP_VERIFY_TOKEN`
+
+A wrong key in the address answers 404, like an address that does not exist.
+The handshake answers the challenge only for the right token (403 otherwise).
+Deliveries are stored once each (by WhatsApp's message id), so Meta's retries
+are harmless; a delivery that failed to store answers 500 and Meta sends it
+again.
+
+What is kept: the number, the WhatsApp profile name and the text of each
+message, both directions, with delivery status. Name and text are sealed.
+Photos, voice notes, video and documents are **not downloaded** — only their
+kind (and a caption, if any) is kept. Reactions, locations, buttons and list
+replies keep their short label. Nothing is linked to a Yavaya account.
+
+What is never done: automatic replies, bulk sends, templates or marketing.
+A reply leaves only when a person writes it, and only within WhatsApp's 24
+hours after the person's last message (`WHATSAPP_RULES.replyWindowHours`:
+WhatsApp's rule, not Yavaya's). Every reply and every deleted conversation is
+audited (who and when, never the text).
+
+**Open (owner decision):** how long conversations are kept. Today they stay
+until someone on the team deletes them; the privacy page says so, and that a
+person can ask for deletion by writing to the same number. Also open: whether
+to hold the Cloud API token so replies can be sent from the inbox.
+
+The status page measures this: `REAL` once the three receiving variables are
+set, with a note while replying from the inbox is not turned on.
+
 ## Visit statistics — nothing to configure
 
 Yavaya counts its own visits (`src/server/domains/stats`, the owner reads them

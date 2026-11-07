@@ -91,6 +91,21 @@ const serverSchema = z.object({
   // moments. Without it those features are unavailable, never stored in clear.
   ROXI_KEY: z.string().optional(),
   ROXI_KEY_PREVIOUS: z.string().optional(),
+  /*
+   * The WhatsApp team inbox (CONFIGURATION.md, "WhatsApp"). Receiving needs
+   * the first three: the secret part of the webhook address, the token Meta's
+   * handshake repeats, and the key names and messages are sealed with.
+   * Answering from the inbox also needs a Cloud API token and the number's id;
+   * without them the team answers from the WhatsApp Business app.
+   */
+  WHATSAPP_WEBHOOK_KEY: z.string().optional(),
+  WHATSAPP_VERIFY_TOKEN: z.string().optional(),
+  WHATSAPP_KEY: z.string().optional(),
+  WHATSAPP_KEY_PREVIOUS: z.string().optional(),
+  /** Optional: the Meta app secret; with it every delivery's signature is checked. */
+  WHATSAPP_APP_SECRET: z.string().optional(),
+  WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+  WHATSAPP_PHONE_NUMBER_ID: z.string().regex(/^\d+$/).optional(),
   // "enabled" once the Google Cloud project behind GOOGLE_CLIENT_ID has the
   // Gmail and Calendar APIs on, their scopes on the consent screen, and
   // /api/roxi/connectors/google/callback as a redirect address.

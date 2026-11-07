@@ -17,7 +17,7 @@ const PREVIEW_PARAM = 'key';
  */
 const PREVIEW_EXEMPT = ['/api/health', '/robots.txt', '/sitemap.xml'];
 /** Payment providers' notifications: they cannot hold a cookie either, and carry their own signature. */
-const PREVIEW_EXEMPT_PATTERN = /^\/api\/payments\/[a-z0-9]+\/notify$/;
+const PREVIEW_EXEMPT_PATTERN = /^\/api\/(payments\/[a-z0-9]+\/notify|whatsapp\/webhook\/[^/]+)$/;
 
 export function middleware(request: NextRequest): NextResponse {
   const www = wwwToApex(request);

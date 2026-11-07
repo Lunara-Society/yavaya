@@ -28,3 +28,4 @@ export * from './go';
 export * from './referrals';
 export * from './stats';
 export * from './roxi';
+export * from './whatsapp';

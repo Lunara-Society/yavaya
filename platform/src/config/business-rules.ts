@@ -502,6 +502,21 @@ export const OPS_RULES = {
 } as const;
 
 /** Espacio Violeta: the protected space for women. See config/safe-space.ts. */
+/**
+ * The WhatsApp team inbox (domains/whatsapp). The reply window and the
+ * message length are WhatsApp's own rules, not Yavaya's: a business may write
+ * freely only within 24 hours of the person's last message, up to 4,096
+ * characters. How long conversations are kept is NOT decided: until the owner
+ * sets it (CONFIGURATION.md, "WhatsApp"), they stay until the team deletes
+ * them, and the privacy page says exactly that.
+ */
+export const WHATSAPP_RULES = {
+  replyWindowHours: 24,
+  replyMaxLength: 4096,
+  inboxListSize: 200,
+  conversationSize: 300,
+} as const;
+
 export const SAFE_SPACE_RULES = {
   messageMaxLength: 2000,
   reportNoteMaxLength: 1000,
