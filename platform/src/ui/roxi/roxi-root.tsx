@@ -74,6 +74,24 @@ export function RoxiRoot() {
     publishRoxiState({ available, open: available && open });
   }, [available, open]);
 
+  /*
+   * The panel (and with it the voice library) is fetched once the page is idle,
+   * not on the first tap. On an iPhone, sound may only start from a tap, and the
+   * library unlocks it by listening for taps from the moment it loads: loaded
+   * by the tap on "Hablar con Roxi" itself, it arrived too late, and Roxi was
+   * heard by nobody while she heard the member perfectly well.
+   */
+  useEffect(() => {
+    if (!available) return;
+    const warm = () => void import('./roxi-panel').catch(() => undefined);
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(warm, { timeout: 4000 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const timer = setTimeout(warm, 2500);
+    return () => clearTimeout(timer);
+  }, [available]);
+
   // Any page can open Roxi with a request already said: window.dispatchEvent(new CustomEvent(ROXI_ASK_EVENT, { detail: { text } })).
   useEffect(() => {
     const onAsk = (event: Event) => {
