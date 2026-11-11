@@ -43,7 +43,7 @@ export const BOARD_DISTRICTS = {
     slug: 'negocios',
     subdistricts: ['suppliers', 'wholesale', 'equipment', 'premises', 'business_services', 'partners', 'franchises'],
     notice: 'board.notice.negocios',
-    doors: ['/roxi/negocio', '/mercadito', '/yavayago'],
+    doors: ['/mi-negocio', '/roxi/negocio', '/mercadito', '/yavayago'],
   },
   campo: {
     slug: 'campo',

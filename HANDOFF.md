@@ -78,7 +78,9 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **The card** (11 Nov): every member has `/members/<YAY ID>/tarjeta` with their Trust Shield, a QR code to their profile, a WhatsApp share button and a print view. It shows only what any visitor may see. Linked from the profile page.
 - **Phone verification by WhatsApp** (11 Nov): a button on `/account/phone` opens WhatsApp with a one-time code; the number that sends it to Yavaya becomes the member's verified phone and the chat is tied to their account. Not yet tried with a real phone.
 - **"Avísame"** in the six new districts (11 Nov): a saved search that notifies when a matching post is published.
-- **Still not built from the owner's directive:** requests by WhatsApp routed to providers, Mi negocio (catalogue and orders into WhatsApp), the Living World.
+- **Mi negocio** (11 Nov): `/mi-negocio` joins a member's store and its link with QR, today's accounts from Roxi's ledger, their open posts per district and their card. It adds no new data.
+- **The phone page is reachable again:** its shortcut on `/account` was hidden while SMS is unconfigured; it now shows when WhatsApp verification is available.
+- **Still not built from the owner's directive:** requests by WhatsApp routed to providers, orders sent into a store's WhatsApp, the Living World.
 
 ## Roxi on the site
 - **Agent:** ElevenLabs `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya"), with plans Free, Pro and Max and credits metered from ElevenLabs costs.

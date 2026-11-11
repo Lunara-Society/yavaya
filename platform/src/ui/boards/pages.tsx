@@ -33,6 +33,7 @@ const DOOR_LABEL: Record<string, MessageKey> = {
   '/yavayago': 'district.yavayago.name',
   '/yavayago/viajes': 'board.door.trips',
   '/roxi/negocio': 'board.door.ledger',
+  '/mi-negocio': 'negocio.title',
   '/violeta': 'nav.violeta',
 };
 

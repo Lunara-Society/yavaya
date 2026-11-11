@@ -15,6 +15,7 @@ import { recentActivity } from '@/server/domains/notifications/activity';
 import { LIVE_FEED_RULES, NEW_USER_RULES } from '@/config/business-rules';
 import type { MessageKey } from '@/i18n';
 import { canVerifyPhones } from '@/server/domains/identity/phone/verifier';
+import { whatsappAvailability } from '@/server/domains/whatsapp/service';
 import { signInPath } from '@/server/auth/sign-in-path';
 
 // The tab's title in the member's language, like the page under it.
@@ -64,7 +65,9 @@ export default async function AccountPage() {
   const studioShortcut = { href: '/account/profile', labelKey: 'profile.customize' as MessageKey, glyph: '✎' };
   // Phone verification is deferred (owner's decision, 20 October 2026): no
   // shortcut to a page where nothing can be verified.
-  const available = SHORTCUTS.filter((shortcut) => shortcut.href !== '/account/phone' || canVerifyPhones());
+  // A phone can be verified by a typed code (when an SMS provider is set) or by sending a code from WhatsApp.
+  const phoneCheck = canVerifyPhones() || whatsappAvailability().receive;
+  const available = SHORTCUTS.filter((shortcut) => shortcut.href !== '/account/phone' || phoneCheck);
   const shortcuts = moderator
     ? [
         profileShortcut,
@@ -164,7 +167,7 @@ export default async function AccountPage() {
 
       {/* Offered only when a code would really be sent; otherwise the
           shortcut below leads to a page that says why it cannot be done. */}
-      {shield.emailVerified && !shield.phoneVerified && canVerifyPhones() ? (
+      {shield.emailVerified && !shield.phoneVerified && phoneCheck ? (
         <Link
           href="/account/phone"
           className="mt-4 flex min-h-touch items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
@@ -228,6 +231,7 @@ export default async function AccountPage() {
 }
 
 const SHORTCUTS: Array<{ href: string; labelKey: MessageKey; glyph: string }> = [
+  { href: '/mi-negocio', labelKey: 'negocio.title', glyph: '▣' },
   { href: '/mercadito/mine', labelKey: 'mercadito.mine.title', glyph: '▦' },
   { href: '/services/mine', labelKey: 'services.board.mine', glyph: '⚒' },
   { href: '/work/mine', labelKey: 'work.board.mine', glyph: '▤' },
