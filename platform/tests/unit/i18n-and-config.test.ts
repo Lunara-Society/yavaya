@@ -100,8 +100,8 @@ describe('reputation rules', () => {
 });
 
 describe('district registry', () => {
-  it('registers the seven districts with unique slugs and layouts', () => {
-    expect([...DISTRICT_KEYS]).toEqual(['mercadito', 'services', 'works', 'yavayago', 'community', 'sanctuary', 'animals']);
+  it('registers the thirteen districts with unique slugs and layouts', () => {
+    expect([...DISTRICT_KEYS]).toEqual(['mercadito', 'services', 'works', 'yavayago', 'community', 'sanctuary', 'animals', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo']);
     const slugs = districtList.map((district) => district.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
 
@@ -120,7 +120,7 @@ describe('district registry', () => {
     // A district joins this list in the same change that builds it — with
     // its pages, its service and its tests. Marking one available without
     // that is exactly what the capability register exists to prevent.
-    const built = new Set(['mercadito', 'services', 'works', 'community', 'sanctuary', 'animals', 'yavayago']);
+    const built = new Set(['mercadito', 'services', 'works', 'community', 'sanctuary', 'animals', 'yavayago', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo']);
     for (const district of districtList) {
       if (district.status === 'available' && !built.has(district.key)) {
         throw new Error(`${district.key} is marked available but is not built`);

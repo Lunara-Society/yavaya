@@ -7,6 +7,8 @@ import type { LanguagePreference, ThemePreference } from '@/server/preferences';
 import { QuickControls } from '@/ui/components/quick-controls';
 import { Alive } from './alive';
 import { DISTRICT_IDS, PAGE_PATHS, type PageId } from './blocks';
+import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS } from '@/config/boards';
+import type { MessageKey } from '@/i18n';
 import { NightScene } from './art';
 import { BrandMark } from './brand-mark';
 import { Icon, TokenCoin } from './icons';
@@ -98,6 +100,8 @@ export async function SiteShell({
     { id: 'about', label: t('home.nav.about') },
     { id: 'help', label: c.nav.help },
   ];
+  // The six board districts follow the first seven in the districts group; their names come from the dictionary.
+  const boardLinks = BOARD_DISTRICT_KEYS.map((key) => ({ href: `/${BOARD_DISTRICTS[key].slug}`, label: t(`district.${key}.name` as MessageKey) }));
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],
     [c.ui.menu.platform, ['trust', 'reputation', 'tokens', 'pricing', 'transparency']],
@@ -204,6 +208,7 @@ export async function SiteShell({
                         {c.nav[id]}
                       </Link>
                     ))}
+                    {g === 0 ? boardLinks.map((link) => <Link key={link.href} href={link.href}>{link.label}</Link>) : null}
                   </div>
                 ))}
               </div>
@@ -263,7 +268,7 @@ export async function SiteShell({
                 </a>
               </p>
             </div>
-            {groups.map(([label, ids]) => (
+            {groups.map(([label, ids], g) => (
               <div key={label}>
                 <h2 className="foot-h">{label}</h2>
                 <ul>
@@ -272,6 +277,13 @@ export async function SiteShell({
                       <Link href={PAGE_PATHS[id]}>{c.nav[id]}</Link>
                     </li>
                   ))}
+                  {g === 0
+                    ? boardLinks.map((link) => (
+                        <li key={link.href}>
+                          <Link href={link.href}>{link.label}</Link>
+                        </li>
+                      ))
+                    : null}
                 </ul>
               </div>
             ))}

@@ -38,6 +38,7 @@ domain service, never by reaching into another domain's tables.
 | `notifications` | preferences, notifications, live activity | emit an event for demo content |
 | `payments` | transactions, provider adapters, webhooks | trust a browser |
 | `platform` | settings, flags, districts, demo register | hide what is or isn't built |
+| `boards` | posts in the six board districts (Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo): what a member offers or looks for, by subdistrict; their reports and removal | take part in a deal, hold money, or vouch for a licence |
 | `stats` | daily visit and speed counts, the visit-to-first-action funnel | store anything that tells one visitor from another |
 
 ## The invariants

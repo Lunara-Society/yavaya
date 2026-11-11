@@ -1686,6 +1686,52 @@ to hold the Cloud API token so replies can be sent from the inbox.
 The status page measures this: `REAL` once the three receiving variables are
 set, with a note while replying from the inbox is not turned on.
 
+## Board districts — Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo (built 11 November 2026)
+
+Six districts built at the owner's request on one shared engine
+(`src/server/domains/boards`, pages in `src/ui/boards`, routes `/hogar`,
+`/movilidad`, `/salud`, `/aprender`, `/negocios`, `/campo`). A member publishes
+what they offer or look for, in a subdistrict and a place. Anyone reads an open
+post; a signed-in member is shown the WhatsApp number the author put on their
+own profile, and a link to the author's profile. Posts are reported like
+Mercadito's, and moderators decide them at `/admin/distritos`
+(`moderation.queue.read`, `moderation.content.remove`). Publishing is free and
+no billable action is declared. Nothing is configured by environment variable.
+
+**Yavaya's own choices, not a specification** (retune or replace):
+
+| What | Where | Today |
+| --- | --- | --- |
+| The subdistricts of each district | `src/config/boards.ts` and the `board.sub.*` keys | 7 or 8 per district, 44 in all |
+| How long a post stays open | `BOARD_RULES.openDays` | 60 days |
+| Open posts one member may hold per district | `BOARD_RULES.maxOpenPerDistrict` | 10 |
+| Title, description and price lengths | `BOARD_RULES` | 6–90, 20–2000, up to 60 characters |
+| The warning shown in each district | `board.notice.*` keys | one per district |
+
+`BOARD_RULES` is read from the file; it is not yet mirrored into
+`system_settings`, so retuning needs a deploy.
+
+**Not built, and the pages do not pretend otherwise:**
+
+- **Photos.** Posts are text only. Housing and vehicles want photos; that means
+  wiring the media service and its screening, as Mercadito does.
+- **Filtering by place.** A post shows its place and the search matches its
+  words, but there is no "near me" or place filter yet.
+- **A colour world, emblem and photograph per district** (CLAUDE.md, "Adding a
+  district", steps 3 and 5). The six share the site's night and day and differ
+  by an accent line and by how their list is arranged (`app/boards.css`). They
+  are not in `DISTRICT_IDS`, so they have no gate with a photograph on the home
+  page; they are in the menu, the footer and a section of `/districts`.
+- **Live activity, Roxi's look-ups, saved searches and reputation events** do
+  not know these posts yet.
+- **Closing on expiry.** A post past its time stops being shown; no job flips
+  its status, so its author sees it as "Vencida" from the date alone.
+- **Licences in Salud y Bienestar.** Nothing here is verified, and the page
+  says so. Reviewed licences exist only in Servicios.
+- **Trabajo, Servicios and YavayaGo overlap** with some subdistricts (farm
+  work, workshops, shared rides). Each district links to its neighbours; no
+  post is copied between them.
+
 ## Visit statistics — nothing to configure
 
 Yavaya counts its own visits (`src/server/domains/stats`, the owner reads them

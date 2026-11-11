@@ -14,7 +14,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 138 KB)
-  - At last count 650 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
+  - At last count 660 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -67,6 +67,14 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Older tool, `whatsapp-bridge`** (Oct 16): an MCP connector for sending templates and outreach (`tools/whatsapp-bridge`).
   - Dualhook's single webhook now points at yavaya-web, so the bridge **no longer receives** inbound messages. Its reading tools are stale.
   - Read conversations in the inbox instead. Its sending may still work with its own `DUALHOOK_API_KEY`.
+
+## Six new districts (built 11 November, owner's request)
+- **Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo**, each with 7 or 8 subdistricts, at `/hogar`, `/movilidad`, `/salud`, `/aprender`, `/negocios`, `/campo`.
+  - One shared engine: `platform/src/server/domains/boards`, pages `platform/src/ui/boards`, table `board_posts` (migration 0042).
+  - A member publishes "Ofrezco" or "Busco" for free; anyone reads; members see the author's WhatsApp; reports go to `/admin/distritos`.
+  - The owner said empty districts are fine: members will fill them.
+- **Not built:** photos, a place filter, a colour world and photograph per district, Roxi look-ups in them. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
+- **Still not built from the owner's directive:** linking a WhatsApp number to an account, the shareable card with QR, requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
 
 ## Roxi on the site
 - **Agent:** ElevenLabs `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya"), with plans Free, Pro and Max and credits metered from ElevenLabs costs.

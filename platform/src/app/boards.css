@@ -1,0 +1,88 @@
+/*
+ * The six board districts: Hogar, Movilidad, Salud y Bienestar, Aprender,
+ * Negocios, Campo. One set of pages; each district arranges the same posts
+ * its own way, keyed on data-board. --bd is the district's accent and is used
+ * only for rules, edges and marks, never for text, so the text keeps the
+ * contrast of the shared night and day worlds.
+ */
+.bd { --bd: #c9a24b; padding-bottom: 56px; }
+.bd[data-board='hogar'] { --bd: #c8643c; }
+.bd[data-board='movilidad'] { --bd: #5b84b1; }
+.bd[data-board='salud'] { --bd: #3fae8f; }
+.bd[data-board='aprender'] { --bd: #d99a2b; }
+.bd[data-board='negocios'] { --bd: #8a8f98; }
+.bd[data-board='campo'] { --bd: #8a9a3c; }
+
+.bd-hero { padding: 40px 0 28px; border-bottom: 3px solid var(--bd); background: linear-gradient(180deg, color-mix(in srgb, var(--bd) 14%, transparent), transparent); }
+.bd-hero h1 { margin: 6px 0 10px; font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.05; }
+.bd-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 24px; }
+/* The subdistricts scroll sideways on a phone; without this the row would widen the whole page. */
+.bd-rail, .bd-main, .bd-side { min-width: 0; }
+@media (min-width: 900px) { .bd-layout { grid-template-columns: 240px minmax(0, 1fr) 260px; align-items: start; } }
+.bd-column { max-width: 720px; padding: 32px var(--gutter) 0; }
+
+.bd-rail-title { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; margin: 0 0 10px; }
+.bd-subs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+.bd-subs a { display: flex; justify-content: space-between; gap: 10px; white-space: nowrap; padding: 9px 12px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--bd) 40%, transparent); text-decoration: none; color: inherit; }
+.bd-subs a[aria-current='true'] { border-color: var(--bd); background: color-mix(in srgb, var(--bd) 18%, transparent); font-weight: 700; }
+@media (min-width: 900px) { .bd-subs { flex-direction: column; overflow: visible; } .bd-subs a { white-space: normal; } }
+.bd-count { font-variant-numeric: tabular-nums; opacity: 0.75; }
+
+.bd-search { display: flex; gap: 8px; margin-bottom: 12px; }
+.bd-search input { flex: 1; min-width: 0; padding: 11px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); background: transparent; color: inherit; font: inherit; }
+.bd-kinds { display: flex; gap: 8px; margin-bottom: 16px; }
+.bd-kinds a { padding: 6px 14px; border-radius: 999px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); text-decoration: none; color: inherit; }
+.bd-kinds a[aria-current='true'] { border-color: var(--bd); background: color-mix(in srgb, var(--bd) 18%, transparent); font-weight: 700; }
+
+.bd-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bd-post-link { display: grid; gap: 4px; padding: 14px 16px; border-radius: 14px; border: 1px solid color-mix(in srgb, currentColor 16%, transparent); border-left: 4px solid var(--bd); text-decoration: none; color: inherit; }
+.bd-post-link:hover, .bd-post-link:focus-visible { border-color: var(--bd); }
+.bd-post[data-kind='request'] .bd-post-link { border-left-style: dashed; }
+.bd-post-kind { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; margin: 0; }
+.bd-post-title { font-size: 1.05rem; }
+.bd-post-price, .bd-price { font-weight: 700; font-variant-numeric: tabular-nums; }
+.bd-post-meta { font-size: 0.88rem; opacity: 0.8; }
+
+.bd-notice { padding: 12px 14px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--bd) 70%, transparent); font-size: 0.92rem; }
+.bd-ok { padding: 12px 16px; border-radius: 12px; border: 1px solid var(--bd); background: color-mix(in srgb, var(--bd) 14%, transparent); }
+.bd-doors { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.bd-body p { white-space: pre-line; }
+.bd-box { margin: 20px 0; padding: 16px; }
+.bd-report { margin-top: 24px; }
+.bd-report summary { cursor: pointer; opacity: 0.85; }
+
+/* Each district's own arrangement of the list. */
+/* Hogar, an address ledger: one row per home, the price set apart on the right. */
+@media (min-width: 640px) {
+  .bd[data-board='hogar'] .bd-post-link { grid-template-columns: 1fr auto; column-gap: 16px; }
+  .bd[data-board='hogar'] .bd-post-kind, .bd[data-board='hogar'] .bd-post-meta { grid-column: 1 / -1; }
+  .bd[data-board='hogar'] .bd-post-price { grid-row: 2; grid-column: 2; align-self: center; }
+}
+/* Movilidad, route lines: posts hang from one line, like stops. */
+.bd[data-board='movilidad'] .bd-list { gap: 0; border-left: 3px solid var(--bd); margin-left: 8px; }
+.bd[data-board='movilidad'] .bd-post-link { border: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 14%, transparent); border-radius: 0; position: relative; padding-left: 22px; }
+.bd[data-board='movilidad'] .bd-post-link::before { content: ''; position: absolute; left: -8px; top: 20px; width: 13px; height: 13px; border-radius: 50%; background: var(--bd); }
+/* Salud, a care directory: calm, wide cards in one column with room to read. */
+.bd[data-board='salud'] .bd-post-link { padding: 20px; border-left-width: 1px; border-top: 4px solid var(--bd); border-radius: 18px; }
+/* Aprender, course shelves: two and three to a shelf. */
+@media (min-width: 640px) { .bd[data-board='aprender'] .bd-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bd[data-board='aprender'] .bd-post-link { height: 100%; border-left-width: 1px; border-bottom: 4px solid var(--bd); }
+/* Negocios, a trade counter: dense rows, as on a price list. */
+.bd[data-board='negocios'] .bd-list { gap: 0; border-top: 2px solid var(--bd); }
+.bd[data-board='negocios'] .bd-post-link { border: 0; border-bottom: 1px solid color-mix(in srgb, currentColor 16%, transparent); border-radius: 0; padding: 10px 4px; }
+/* Campo, a harvest board: the price leads, as chalked on a market board. */
+.bd[data-board='campo'] .bd-post-link { border-left-width: 1px; border-radius: 6px; outline: 2px solid color-mix(in srgb, var(--bd) 35%, transparent); outline-offset: -5px; padding: 18px; }
+.bd[data-board='campo'] .bd-post-price { order: -1; font-size: 1.2rem; }
+
+/* The six, listed on the districts page. */
+.bd-more { margin-top: 16px; }
+.bd-more > li { --bd: #c9a24b; }
+.bd-more > [data-more='hogar'] { --bd: #c8643c; }
+.bd-more > [data-more='movilidad'] { --bd: #5b84b1; }
+.bd-more > [data-more='salud'] { --bd: #3fae8f; }
+.bd-more > [data-more='aprender'] { --bd: #d99a2b; }
+.bd-more > [data-more='negocios'] { --bd: #8a8f98; }
+.bd-more > [data-more='campo'] { --bd: #8a9a3c; }
+.bd-more .bd-post-link { height: 100%; }
+@media (min-width: 640px) { .bd-more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .bd-more { grid-template-columns: repeat(3, minmax(0, 1fr)); } }

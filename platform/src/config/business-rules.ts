@@ -537,6 +537,24 @@ export const WHATSAPP_RULES = {
   roxiLookupsPerAnswer: 3,
 } as const;
 
+/**
+ * The board districts (Hogar, Movilidad, Salud y Bienestar, Aprender,
+ * Negocios, Campo). Yavaya's own defaults, chosen when they were built in
+ * November 2026, not rules from a specification: a post stays open this many
+ * days, and a member may hold this many open posts in one district at a time,
+ * which is room for a small business and not for a flood.
+ */
+export const BOARD_RULES = {
+  titleMinLength: 6,
+  titleMaxLength: 90,
+  bodyMinLength: 20,
+  bodyMaxLength: 2000,
+  priceMaxLength: 60,
+  openDays: 60,
+  maxOpenPerDistrict: 10,
+  pageSize: 20,
+} as const;
+
 export const SAFE_SPACE_RULES = {
   messageMaxLength: 2000,
   reportNoteMaxLength: 1000,

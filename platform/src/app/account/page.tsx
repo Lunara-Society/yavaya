@@ -72,6 +72,7 @@ export default async function AccountPage() {
         ...available,
         { href: '/admin/mercadito', labelKey: 'nav.moderation' as MessageKey, glyph: '⚑' },
         { href: '/admin/community', labelKey: 'nav.moderation_community' as MessageKey, glyph: '⚑' },
+        { href: '/admin/distritos', labelKey: 'nav.moderation_boards' as MessageKey, glyph: '⚑' },
         { href: '/admin/profiles', labelKey: 'nav.moderation_profiles' as MessageKey, glyph: '⚑' },
       ]
     : [profileShortcut, studioShortcut, ...available];

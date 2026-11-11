@@ -95,3 +95,14 @@ LOOKS_ADMIN=/tmp/plans.json BASE=http://localhost:3100 node tests/e2e/first-ligh
 The switch checks leave both switches on, as they found them. Against the
 live site, run it without `LOOKS_ADMIN` and without a member: it then only
 reads pages.
+
+## Board districts — `boards.cjs`
+
+A member publishes in Hogar; a visitor sees the post but no contact; a second
+member finds it, gets the WhatsApp button and reports it; a moderator removes
+it and it is gone.
+
+```bash
+npx tsx --conditions=react-server tests/e2e/boards-setup.ts > /tmp/boards.json
+node tests/e2e/boards.cjs /tmp/boards.json http://127.0.0.1:3000
+```

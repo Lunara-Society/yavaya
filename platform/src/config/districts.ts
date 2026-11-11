@@ -11,7 +11,7 @@
  */
 
 /**
- * Seven districts, each answering one question a person already asks in their
+ * Thirteen districts. The first seven each answer one question a person already asks in their
  * own words. Order is the order shown everywhere.
  *
  * Impact was folded into Community (as "Causes") and the Tavern taken off the
@@ -27,6 +27,12 @@ export const DISTRICT_KEYS = [
   'community',
   'sanctuary',
   'animals',
+  'hogar',
+  'movilidad',
+  'salud',
+  'aprender',
+  'negocios',
+  'campo',
 ] as const;
 
 export type DistrictKey = (typeof DISTRICT_KEYS)[number];
@@ -62,7 +68,14 @@ export type DistrictTheme = {
     | 'professional-directory'
     | 'calm-column'
     | 'organic-profile'
-    | 'sacred-nave';
+    | 'sacred-nave'
+    // The six board districts (config/boards.ts): one engine, each with its own arrangement of the same posts.
+    | 'address-ledger'
+    | 'route-lines'
+    | 'care-directory'
+    | 'course-shelves'
+    | 'trade-counter'
+    | 'harvest-board';
 };
 
 export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
@@ -129,6 +142,66 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     phase: 1,
     status: 'available',
     theme: { accent: 'forest', tokenSet: 'district-animals', layout: 'organic-profile' },
+  },
+  hogar: {
+    key: 'hogar',
+    slug: 'hogar',
+    nameKey: 'district.hogar.name',
+    taglineKey: 'district.hogar.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'terracotta', tokenSet: 'district-hogar', layout: 'address-ledger' },
+  },
+  movilidad: {
+    key: 'movilidad',
+    slug: 'movilidad',
+    nameKey: 'district.movilidad.name',
+    taglineKey: 'district.movilidad.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'steel', tokenSet: 'district-movilidad', layout: 'route-lines' },
+  },
+  salud: {
+    key: 'salud',
+    slug: 'salud',
+    nameKey: 'district.salud.name',
+    taglineKey: 'district.salud.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'mint', tokenSet: 'district-salud', layout: 'care-directory' },
+  },
+  aprender: {
+    key: 'aprender',
+    slug: 'aprender',
+    nameKey: 'district.aprender.name',
+    taglineKey: 'district.aprender.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'amber', tokenSet: 'district-aprender', layout: 'course-shelves' },
+  },
+  negocios: {
+    key: 'negocios',
+    slug: 'negocios',
+    nameKey: 'district.negocios.name',
+    taglineKey: 'district.negocios.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'graphite', tokenSet: 'district-negocios', layout: 'trade-counter' },
+  },
+  campo: {
+    key: 'campo',
+    slug: 'campo',
+    nameKey: 'district.campo.name',
+    taglineKey: 'district.campo.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'olive', tokenSet: 'district-campo', layout: 'harvest-board' },
   },
 };
 

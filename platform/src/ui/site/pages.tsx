@@ -34,7 +34,7 @@ import { Md, Paras } from './md';
 
 type Cta = { href: string; label: string };
 
-export function DistrictsBody({ c }: { c: SiteContent }) {
+export function DistrictsBody({ c, more }: { c: SiteContent; more?: ReactNode }) {
   const p = c.pages.districts;
   return (
     <>
@@ -57,6 +57,7 @@ export function DistrictsBody({ c }: { c: SiteContent }) {
           </div>
         </div>
       </section>
+      {more}
       <section className="section alt">
         <div className="wrap narrow">
           <SectionHead {...p.layer} />
