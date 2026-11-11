@@ -103,7 +103,7 @@ export async function startCreditPurchase(
 /** Stops the renewal. The plan runs to the end of what was paid. */
 export async function cancelPlan(database: Database, userId: string): Promise<void> {
   const state = await currentPlan(database, userId);
-  if (state.plan === 'free') throw errors.conflict('roxi.plans.error.no_plan');
+  if (state.plan === 'free' || state.source === 'house') throw errors.conflict('roxi.plans.error.no_plan');
   if (state.source === 'payment' && state.providerSubscriptionId) {
     const stripe = stripeProvider();
     if (!stripe) throw new DomainError('integration_unconfigured', 'roxi.plans.error.unavailable');

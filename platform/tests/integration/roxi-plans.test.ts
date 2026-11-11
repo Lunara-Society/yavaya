@@ -5,7 +5,8 @@ import { listNotifications } from '@/server/domains/notifications/service';
 import { roxiCreditLedger, roxiItems, roxiSubscriptions, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { ROXI_CREDIT_RULES, ROXI_PLANS, planAllows } from '@/config/business-rules';
-import { canStart, creditView, creditsForCost, currentPlan, grantPurchasedCredits, periodKey, setPlan, spendCredits } from '@/server/domains/roxi/credits';
+import { canStart, creditView, creditsForCost, currentPlan, grantPurchasedCredits, isHouseAccount, periodKey, setPlan, spendCredits } from '@/server/domains/roxi/credits';
+import { grantRole } from '@/server/domains/access/authorize';
 import { addItem, cleanBody, deleteAllItems, deliverDueReminders, listItems, memoryForRoxi, nextDue, updateItem } from '@/server/domains/roxi/items';
 import { confirmationToken, confirmationValid } from '@/server/domains/roxi/connectors/service';
 import { checkUrl, isPublicAddress, UnsafeAddressError } from '@/server/domains/roxi/connectors/safe-http';
@@ -13,10 +14,10 @@ import { resetTransactionalData } from '../helpers/database';
 
 const context = { networkHash: null, addressHash: 'roxi-plans-test', deviceFingerprint: null, userAgent: 'vitest' };
 
-async function member() {
+async function member(email = `rx-${crypto.randomUUID()}@example.com`) {
   const { userId } = await register(
     db(),
-    { email: `rx-${crypto.randomUUID()}@example.com`, password: 'a-sufficiently-long-passphrase', displayName: 'Vecina', locale: 'es', acceptedTerms: true },
+    { email, password: 'a-sufficiently-long-passphrase', displayName: 'Vecina', locale: 'es', acceptedTerms: true },
     context,
   );
   await db().update(users).set({ status: 'active' }).where(eq(users.id, userId));
@@ -185,5 +186,34 @@ describe('Roxi connectors: safety', () => {
     expect(confirmationValid(token, 'user-1', 'conn-1', 'gmail_draft', args)).toBe(false);
     expect(confirmationValid(token, 'user-1', 'conn-1', 'gmail_send', args, Date.now() + 10 * 60_000)).toBe(false);
     expect(confirmationValid(undefined, 'user-1', 'conn-1', 'gmail_send', args)).toBe(false);
+  });
+});
+
+describe("Yavaya's own account", () => {
+  it('has Max with no payment and no credit limit, and only that one account', async () => {
+    const house = await member('yavayago@gmail.com');
+    // The address alone is not enough: it must also be the administrator.
+    expect(await isHouseAccount(db(), house)).toBe(false);
+    expect((await currentPlan(db(), house, nov)).plan).toBe('free');
+    await db().transaction((tx) => grantRole(tx, { userId: house, roleKey: 'admin', grantedBy: null }));
+    expect(await isHouseAccount(db(), house)).toBe(true);
+
+    const view = await creditView(db(), house, nov);
+    expect(view.plan).toMatchObject({ plan: 'max', source: 'house', status: 'active' });
+    expect(view.unlimited).toBe(true);
+    const spent = await spendCredits(db(), { userId: house, credits: 1_000_000, reason: 'conversation', reference: 'conv_house', now: nov });
+    expect(spent.recorded).toBe(false);
+    expect(canStart(spent.view)).toBe(true);
+
+    // Another administrator keeps the normal limits.
+    const otherAdmin = await member();
+    await db().transaction((tx) => grantRole(tx, { userId: otherAdmin, roleKey: 'admin', grantedBy: null }));
+    expect(await isHouseAccount(db(), otherAdmin)).toBe(false);
+    const other = await creditView(db(), otherAdmin, nov);
+    expect(other.plan.plan).toBe('free');
+    expect(other.unlimited).toBe(false);
+    const used = await spendCredits(db(), { userId: otherAdmin, credits: 1_000_000, reason: 'conversation', reference: 'conv_admin', now: nov });
+    expect(used.recorded).toBe(true);
+    expect(canStart(used.view)).toBe(false);
   });
 });

@@ -3804,6 +3804,8 @@ export const es = {
   'roxi.plans.eyebrow': 'Roxi',
   'roxi.plans.lead': 'Roxi siempre es gratis para lo esencial. Pro y Max le dan más tiempo, más memoria y la conectan con las herramientas que ya usas.',
   'roxi.plans.your_plan': 'Tu plan:',
+  'roxi.plans.house_tag': 'Cuenta de Yavaya',
+  'roxi.plans.house': 'Esta es la cuenta de Yavaya: Roxi Max sin pago y sin límite de créditos. Ninguna otra cuenta lo tiene.',
   'roxi.plans.admin_trial': 'prueba de administración',
   'roxi.plans.credits_left': 'Te quedan {n} créditos',
   'roxi.plans.used': 'Usaste {used} de {total} créditos',

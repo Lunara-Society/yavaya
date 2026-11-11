@@ -3777,6 +3777,8 @@ export const en: Dictionary = {
   'roxi.plans.eyebrow': 'Roxi',
   'roxi.plans.lead': 'The essentials with Roxi are always free. Pro and Max give her more time and more memory, and connect her to the tools you already use.',
   'roxi.plans.your_plan': 'Your plan:',
+  'roxi.plans.house_tag': 'Yavaya\'s account',
+  'roxi.plans.house': 'This is Yavaya\'s own account: Roxi Max with no payment and no credit limit. No other account has it.',
   'roxi.plans.admin_trial': 'admin trial',
   'roxi.plans.credits_left': '{n} credits left',
   'roxi.plans.used': 'You used {used} of {total} credits',

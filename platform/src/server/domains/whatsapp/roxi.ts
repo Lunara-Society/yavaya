@@ -22,7 +22,8 @@ import { sendText, whatsappAvailability } from './service';
  * assistant, never as a person. She never writes first: only an answer to a
  * message, inside WhatsApp's 24 hours. She stays out of a conversation:
  *
- * - when the owner has her switched off (`whatsapp.roxi` flag, off by default);
+ * - when the owner has her switched off (`whatsapp.roxi` flag; until it is first
+ *   used, WHATSAPP_ROXI_DEFAULT decides, and unset means off);
  * - for a while after a person on the team wrote in it (from the phone or the inbox);
  * - when someone paused her for that conversation;
  * - after she handed it to the team, until someone lets her back in.
@@ -61,7 +62,7 @@ export function roxiWhatsappReady(): { ready: boolean; missing: string[] } {
 }
 
 export async function roxiWhatsappOn(executor: Executor): Promise<boolean> {
-  return roxiWhatsappReady().ready && (await isFlagEnabled(executor, FLAG, false));
+  return roxiWhatsappReady().ready && (await isFlagEnabled(executor, FLAG, serverEnv().WHATSAPP_ROXI_DEFAULT === 'on'));
 }
 
 /** The owner's switch. Turning it on is refused while something she needs is missing. */
@@ -72,7 +73,7 @@ export async function setRoxiWhatsapp(executor: Executor, actor: AuthContext | n
 }
 
 export async function roxiWhatsappSwitch(executor: Executor): Promise<boolean> {
-  return isFlagEnabled(executor, FLAG, false);
+  return isFlagEnabled(executor, FLAG, serverEnv().WHATSAPP_ROXI_DEFAULT === 'on');
 }
 
 // --- Asking Roxi --------------------------------------------------------------------

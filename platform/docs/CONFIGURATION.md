@@ -1371,6 +1371,16 @@ open a conversation, 2 credits per connector call, purchased credits valid
 and a one-month first period for a plan whose exact Stripe period is read at
 the first renewal.
 
+### Yavaya's own account (owner decision, 11 November 2026)
+
+One account, and only one, has Roxi Max with no payment and no credit limit:
+the bootstrap administrator, the account at `PRIMARY_ADMIN_EMAIL` that also
+holds the admin role (`isHouseAccount` in `src/server/domains/roxi/credits.ts`,
+the same definition as Roxi's "owner" welcome). Its conversations are never
+charged credits; the plans page shows "Cuenta de Yavaya". Every other account,
+other administrators included, keeps the normal plans and limits. Max's own
+limits (goals, reminders, connections) still apply to it.
+
 ## Roxi — `ROXI_AGENT_ID`, `ELEVENLABS_API_KEY`
 
 Roxi, the assistant, is an ElevenLabs agent (`docs/roxi/README.md` has the
@@ -1596,6 +1606,7 @@ Railway variables (website only, not the scheduler):
 | `WHATSAPP_APP_SECRET` | optional | when set, `X-Hub-Signature-256` is checked; through Dualhook the Meta app may not be Yavaya's, so the unguessable address is the guard |
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | replying from the inbox, and Roxi | through Dualhook: the connection's `dh_live_` key and its phone number id (1270050959528964); without them the inbox says to reply from the phone, and shows no reply box |
 | `WHATSAPP_API_BASE` | replying through Dualhook | `https://api.dualhook.com/v25.0` (Dualhook's Runtime API, same requests as Meta's Graph API); default is Meta's Graph API. Only those two hosts are accepted |
+| `WHATSAPP_ROXI_DEFAULT` | Roxi on WhatsApp | `on` (set 11 November 2026, owner's request): she answers until someone turns her off in the inbox; once the inbox button is used, it wins |
 | `WHATSAPP_ROXI_AGENT_ID` | Roxi on WhatsApp | the text-only ElevenLabs agent "Roxi · WhatsApp", `agent_8501m7446b15fcp98e8jwnbqwyv0`; also needs `ELEVENLABS_API_KEY` (already set for the site's Roxi) |
 
 In Dualhook, a connection with:

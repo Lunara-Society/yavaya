@@ -22,10 +22,12 @@ export async function GET() {
     ...account,
     roxi: {
       plan: credits.plan.plan,
-      renews: credits.plan.status === 'active' ? credits.plan.periodEnd?.toISOString().slice(0, 10) : null,
+      // Yavaya's own account: Max with no payment and no credit limit.
+      unlimited: credits.unlimited,
+      renews: credits.plan.status === 'active' && !credits.unlimited ? credits.plan.periodEnd?.toISOString().slice(0, 10) : null,
       ends: credits.plan.status === 'canceling' ? credits.plan.periodEnd?.toISOString().slice(0, 10) : null,
       credits_counted: meteringOn(),
-      credits_left: meteringOn() ? credits.available : null,
+      credits_left: meteringOn() && !credits.unlimited ? credits.available : null,
       monthly_credits: plan.monthlyCredits,
       goals: plan.goals,
       reminders: plan.reminders,

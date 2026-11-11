@@ -116,6 +116,12 @@ const serverSchema = z.object({
     (value) => (value === '' ? undefined : value),
     z.string().regex(/^https:\/\/(graph\.facebook\.com|api\.dualhook\.com)\/v\d+\.\d+$/).optional(),
   ),
+  /**
+   * "on": Roxi answers on WhatsApp until someone turns her off in the inbox
+   * (the owner asked for this on 11 November 2026). Unset or "off": she waits
+   * for the inbox button. The button, once used, always wins.
+   */
+  WHATSAPP_ROXI_DEFAULT: z.enum(['on', 'off']).optional(),
   /** The text-only ElevenLabs agent that answers on WhatsApp (separate from the site's Roxi). */
   WHATSAPP_ROXI_AGENT_ID: z.preprocess((value) => (value === '' ? undefined : value), z.string().regex(/^agent_[a-z0-9]+$/).optional()),
   // "enabled" once the Google Cloud project behind GOOGLE_CLIENT_ID has the

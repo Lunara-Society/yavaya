@@ -78,8 +78,11 @@ export default async function RoxiPlansPage({ searchParams }: { searchParams: Pr
             <p>
               <span className="rx-mine-label">{t('roxi.plans.your_plan')}</span> <strong>{t(`roxi.plan.${credits.plan.plan}` as MessageKey)}</strong>
               {credits.plan.source === 'admin' ? <span className="rx-tag">{t('roxi.plans.admin_trial')}</span> : null}
+              {credits.unlimited ? <span className="rx-tag">{t('roxi.plans.house_tag')}</span> : null}
             </p>
-            {counting ? (
+            {credits.unlimited ? (
+              <p className="rx-small">{t('roxi.plans.house')}</p>
+            ) : counting ? (
               <>
                 <p className="rx-mine-n">
                   {t('roxi.plans.credits_left', { n: credits.available.toLocaleString(locale) })}

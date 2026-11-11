@@ -1,7 +1,10 @@
 import 'server-only';
 import { and, eq, gte, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
-import { roxiCreditAccounts, roxiCreditLedger, roxiSubscriptions } from '@/server/db/schema';
+import { roxiCreditAccounts, roxiCreditLedger, roxiSubscriptions, users } from '@/server/db/schema';
+import { isAdmin } from '@/server/domains/access/authorize';
+import { canonicalEmail } from '@/server/domains/identity/normalize';
+import { operationalEnv } from '@/config/env';
 import { ROXI_CREDIT_RULES, ROXI_PLANS, type RoxiPlanKey } from '@/config/business-rules';
 
 /**
@@ -23,7 +26,8 @@ export type PlanState = {
   plan: RoxiPlanKey;
   /** 'free' when there is no paid plan in force. */
   status: 'free' | 'active' | 'canceling';
-  source: 'payment' | 'admin' | null;
+  /** 'house': Yavaya's own account (see isHouseAccount), Max without payment and without a credit limit. */
+  source: 'payment' | 'admin' | 'house' | null;
   periodStart: Date | null;
   periodEnd: Date | null;
   providerSubscriptionId: string | null;
@@ -31,8 +35,28 @@ export type PlanState = {
 
 const FREE: PlanState = { plan: 'free', status: 'free', source: null, periodStart: null, periodEnd: null, providerSubscriptionId: null };
 
+/**
+ * Yavaya's own account: the bootstrap administrator, the one account at
+ * PRIMARY_ADMIN_EMAIL that also holds the admin role (the same definition as
+ * Roxi's "owner" welcome). The owner decided (11 November 2026) that this one
+ * account has Roxi Max with no payment and no credit limit. No other account,
+ * administrator or not, ever gets it: everyone else keeps their plan's limits.
+ */
+export async function isHouseAccount(executor: Executor, userId: string): Promise<boolean> {
+  const [person] = await executor.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+  if (!person || canonicalEmail(person.email) !== canonicalEmail(operationalEnv().PRIMARY_ADMIN_EMAIL)) return false;
+  return isAdmin(executor, userId);
+}
+
+function monthStart(now: Date): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
 /** The plan in force at `now`. A paid plan whose period has run out counts as Free until its renewal is confirmed. */
 export async function currentPlan(executor: Executor, userId: string, now = new Date()): Promise<PlanState> {
+  if (await isHouseAccount(executor, userId)) {
+    return { plan: 'max', status: 'active', source: 'house', periodStart: monthStart(now), periodEnd: nextMonthStart(now), providerSubscriptionId: null };
+  }
   const [row] = await executor.select().from(roxiSubscriptions).where(eq(roxiSubscriptions.userId, userId)).limit(1);
   if (!row || row.status === 'ended' || row.periodEnd <= now || !(row.plan === 'pro' || row.plan === 'max')) return FREE;
   return {
@@ -61,6 +85,8 @@ export type CreditView = {
   available: number;
   /** When the plan credits are next refilled. */
   refillsAt: Date;
+  /** Yavaya's own account: nothing is counted against it. */
+  unlimited: boolean;
 };
 
 function nextMonthStart(now: Date): Date {
@@ -140,6 +166,7 @@ function view(account: Account, state: PlanState, now: Date): CreditView {
     purchasedExpiresAt: account.purchasedCredits > 0 ? account.purchasedExpiresAt : null,
     available: Math.max(0, account.planCredits) + account.purchasedCredits,
     refillsAt: state.periodEnd ?? nextMonthStart(now),
+    unlimited: state.source === 'house',
   };
 }
 
@@ -154,7 +181,7 @@ export async function creditView(executor: Executor, userId: string, now = new D
 
 /** Whether a new conversation may open: at least ROXI_CREDIT_RULES.minimumToStart credits. */
 export function canStart(credits: CreditView): boolean {
-  return credits.available >= ROXI_CREDIT_RULES.minimumToStart;
+  return credits.unlimited || credits.available >= ROXI_CREDIT_RULES.minimumToStart;
 }
 
 /**
@@ -168,6 +195,8 @@ export async function spendCredits(executor: Executor, params: { userId: string;
   return executor.transaction(async (tx) => {
     const state = await currentPlan(tx, params.userId, now);
     const account = await settle(tx, params.userId, state, now);
+    // Yavaya's own account is never charged credits.
+    if (state.source === 'house') return { recorded: false, view: view(account, state, now) };
     const credits = Math.max(0, Math.ceil(params.credits));
     const fromPlan = Math.min(credits, Math.max(0, account.planCredits));
     const fromPurchased = Math.min(credits - fromPlan, account.purchasedCredits);
