@@ -302,6 +302,13 @@
       "when": 1794378284223,
       "tag": "0042_true_dragon_lord",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1794398502539,
+      "tag": "0043_organic_paper_doll",
+      "breakpoints": true
     }
   ]
 }

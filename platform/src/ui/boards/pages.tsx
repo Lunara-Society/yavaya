@@ -12,8 +12,12 @@ import { PlacePicker } from '@/ui/components/place-picker';
 import { placePickerLabels } from '@/ui/components/place-labels';
 import { loginHref } from '@/server/auth/return-path';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
+import { WidenedNote } from '@/ui/site/widened-note';
 import { BOARD_REPORT_CATEGORIES, getBoardPost, listBoardPosts, myBoardPosts, subdistrictCounts, type BoardPostView } from '@/server/domains/boards/service';
-import { closeBoardPostAction, createBoardPostAction, reportBoardPostAction } from '@/app/boards/actions';
+import { closeBoardPostAction, reportBoardPostAction } from '@/app/boards/actions';
+import { mediaStorage } from '@/server/domains/media/storage';
+import { MEDIA_RULES } from '@/config/business-rules';
 
 /**
  * The pages of the six board districts. One set of pages, six districts:
@@ -39,6 +43,8 @@ const LIMITS: Record<string, Record<string, number>> = {
   'board.error.body': { min: BOARD_RULES.bodyMinLength, max: BOARD_RULES.bodyMaxLength },
   'board.error.price': { max: BOARD_RULES.priceMaxLength },
   'board.error.too_many_open': { max: BOARD_RULES.maxOpenPerDistrict },
+  'board.error.photo_count': { max: BOARD_RULES.maxPhotos },
+  'media.error.too_large': { maxMegabytes: MEDIA_RULES.maxUploadBytes / 1024 / 1024 },
 };
 
 const safeKey = (value: string | undefined) => (value && /^[a-z_.]+$/.test(value) ? value : null);
@@ -49,7 +55,11 @@ function PostRow({ post, base, t, locale, own }: { post: BoardPostView; base: st
   const state = post.status === 'open' && post.expired ? 'expired' : post.status;
   return (
     <li className="bd-post" data-kind={post.kind}>
-      <Link href={`${base}/${post.id}`} className="bd-post-link">
+      <Link href={`${base}/${post.id}`} className="bd-post-link" data-photo={post.photoIds[0] ? '' : undefined}>
+        {post.photoIds[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element -- served already sized from /media
+          <img className="bd-thumb" src={`/media/${post.photoIds[0]}`} alt="" loading="lazy" decoding="async" />
+        ) : null}
         <span className="bd-post-kind">{t(`board.kind.${post.kind}` as MessageKey)}</span>
         <strong className="bd-post-title">{post.title}</strong>
         {post.priceText ? <span className="bd-post-price">{post.priceText}</span> : null}
@@ -67,7 +77,7 @@ export async function boardTitle(district: BoardDistrict): Promise<{ title: stri
   return { title: t(DISTRICTS[district].nameKey as MessageKey), description: t(DISTRICTS[district].taglineKey as MessageKey) };
 }
 
-export async function BoardHome({ district, searchParams }: { district: BoardDistrict; searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string }> }) {
+export async function BoardHome({ district, searchParams }: { district: BoardDistrict; searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const def = BOARD_DISTRICTS[district];
@@ -79,18 +89,23 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
   const mine = params.mine === '1' && userId;
   if (params.mine === '1' && !userId) redirect(loginHref(`${base}?mine=1`));
 
-  const [feed, counts, own] = await Promise.all([
-    mine ? null : listBoardPosts(db(), { district, subdistrict, kind, query, viewerId: userId, page, locale }),
+  // The list follows the place in the header's location bar unless this page's own picker says otherwise;
+  // when that place has nothing yet, it widens to its department and country, and says so.
+  const { code: placeCode, link: placeLink } = await browsePlace(params.place, locale);
+  const [found, counts, own] = await Promise.all([
+    mine ? null : widenWhenEmpty(placeCode, page, locale, (code) => listBoardPosts(db(), { district, subdistrict, kind, query, placeCode: code, viewerId: userId, page, locale })),
     subdistrictCounts(db(), district),
     mine ? myBoardPosts(db(), { district, userId: userId!, locale }) : null,
   ]);
-  const href = (next: { sub?: string; kind?: string; q?: string; page?: number }) => {
+  const feed = found?.result ?? null;
+  const href = (given: { sub?: string; kind?: string; q?: string; page?: number }) => {
+    const next = { ...given, place: placeLink };
     const search = new URLSearchParams();
     for (const [key, value] of Object.entries(next)) if (value && !(key === 'page' && value === 1)) search.set(key, String(value));
     const text = search.toString();
     return text ? `${base}?${text}` : base;
   };
-  const filtered = Boolean(subdistrict || kind || query);
+  const filtered = Boolean(subdistrict || kind || query || placeCode);
   const publish = userId ? `${base}/new${subdistrict ? `?sub=${subdistrict}` : ''}` : loginHref(`${base}/new`);
 
   return (
@@ -158,7 +173,14 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
                   <button className="btn btn-line" type="submit">
                     {t('board.search')}
                   </button>
+                  <details className="bd-place" open={Boolean(placeCode)}>
+                    <summary>
+                      {t('mercadito.browse.place_label')}: {placeCode ? t('mercadito.browse.place_chosen') : t('mercadito.browse.all_places')}
+                    </summary>
+                    <PlacePicker name="place" value="code" labels={placePickerLabels(t, { any: true })} initial={placeLink} anyValue={ANY_PLACE} />
+                  </details>
                 </form>
+                <WidenedNote t={t} chosen={found!.chosen} widenedTo={found!.widenedTo} />
                 <nav className="bd-kinds" aria-label={t('board.form.kind')}>
                   <Link href={href({ sub: subdistrict, q: query })} aria-current={kind ? undefined : 'true'}>
                     {t('board.kind.all')}
@@ -237,7 +259,8 @@ export async function BoardNew({ district, searchParams }: { district: BoardDist
           <h1 className="h-md">{t('board.form.title')}</h1>
           <p className="muted">{t('board.form.free')}</p>
           {error ? <p className="mk-error">{t(error as MessageKey, LIMITS[error] ?? {})}</p> : null}
-          <form action={createBoardPostAction} className="mk-form" style={{ marginTop: 18 }}>
+          {/* Posted to a route handler, not a Server Action: photos do not fit the action body limit. A plain form, so it works without JavaScript. */}
+          <form action="/api/boards/posts" method="post" encType="multipart/form-data" className="mk-form" style={{ marginTop: 18 }}>
             <input type="hidden" name="district" value={district} />
             <label>
               {t('board.form.kind')}
@@ -283,6 +306,14 @@ export async function BoardNew({ district, searchParams }: { district: BoardDist
               {t('board.form.location')}
               <PlacePicker name="locationId" labels={placePickerLabels(t)} required />
             </label>
+            {/* Offered only while image storage is configured: no control that leads nowhere. */}
+            {mediaStorage() ? (
+              <label>
+                {t('board.form.photos')}
+                <span className="hint">{t('board.form.photos_hint', { max: BOARD_RULES.maxPhotos })}</span>
+                <input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple />
+              </label>
+            ) : null}
             <p className="hint">{t('board.form.whatsapp_hint')}</p>
             <p className="bd-notice">{t(def.notice as MessageKey)}</p>
             <button className="btn btn-gold" type="submit">
@@ -328,6 +359,14 @@ export async function BoardPost({ district, params, searchParams }: { district: 
             {post.placeName} · {formatDate(post.createdAt, locale)} ·{' '}
             {state === 'open' ? t('board.post.until', { date: formatDate(post.expiresAt, locale) }) : t(`board.status.${state}` as MessageKey)}
           </p>
+          {post.photoIds.length > 0 ? (
+            <div className="bd-photos">
+              {post.photoIds.map((id) => (
+                // eslint-disable-next-line @next/next/no-img-element -- served already sized from /media
+                <img key={id} src={`/media/${id}`} alt="" loading="lazy" decoding="async" />
+              ))}
+            </div>
+          ) : null}
           <div className="bd-body">
             {post.body.split(/\n{2,}/).map((paragraph, index) => (
               <p key={index}>{paragraph}</p>

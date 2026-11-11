@@ -4428,11 +4428,15 @@ export const es = {
   "board.mod.note": "Nota interna (opcional)",
   "board.mod.dismiss": "Dejar la publicación",
   "board.mod.remove": "Retirar la publicación",
+  "board.form.photos": "Fotos (opcional)",
+  "board.form.photos_hint": "Hasta {max} fotos. No muestres tu dirección ni documentos.",
+  "board.error.photo_count": "Puedes subir hasta {max} fotos.",
+  "board.error.upload": "No pudimos guardar las fotos. Inténtalo de nuevo.",
   "board.more.title": "Más distritos",
   "board.more.lead": "Seis distritos más, cada uno con sus subdistritos. Publica gratis lo que ofreces o lo que buscas.",
   "nav.moderation_boards": "Moderación · Distritos nuevos",
   "capability.board_districts.name": "Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios y Campo",
-  "capability.board_districts.detail": "Seis distritos con sus subdistritos: cualquier miembro publica gratis lo que ofrece o busca, con lugar, contacto por WhatsApp para miembros, reportes y moderación. Solo texto por ahora: aún sin fotos.",
+  "capability.board_districts.detail": "Seis distritos con sus subdistritos: cualquier miembro publica gratis lo que ofrece o busca, con lugar, contacto por WhatsApp para miembros, fotos opcionales, reportes y moderación.",
   // The Identity Studio's designs: generated, see tools/identity-assets/build.mjs.
   ...identityAssetsEs,
 } as const;

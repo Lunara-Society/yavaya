@@ -2,7 +2,7 @@ import 'server-only';
 import { and, desc, eq, gt, ilike, inArray, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Executor } from '@/server/db/client';
-import { boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
+import { boardPostPhotos, boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
 import { BOARD_RULES } from '@/config/business-rules';
 import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS, BOARD_KINDS, isSubdistrict, type BoardDistrict, type BoardKind } from '@/config/boards';
 import { DomainError, errors } from '@/server/errors';
@@ -11,6 +11,8 @@ import { requirePermission, type AuthContext } from '@/server/domains/access/aut
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
 import { notify } from '@/server/domains/notifications/service';
+import { subtreeIds } from '@/server/domains/geography/service';
+import { insertMediaRows, markRemoved, type StoredImage } from '@/server/domains/media/service';
 
 /**
  * The board districts: Hogar, Movilidad, Salud y Bienestar, Aprender,
@@ -31,6 +33,9 @@ export const BOARD_REPORT_CATEGORIES = ['scam', 'fraud', 'fake_listing', 'spam',
 export type BoardReportCategory = (typeof BOARD_REPORT_CATEGORIES)[number];
 
 const SUBJECT = 'board_post';
+
+/** The media purpose of a post's photos: public, like Mercadito's, because the post is. */
+export const BOARD_PHOTO_PURPOSE = 'board_photo';
 
 const clean = (min: number, max: number, key: string) =>
   z
@@ -65,9 +70,11 @@ async function activeMember(executor: Executor, userId: string): Promise<void> {
 /** Open and still inside its time: what the public pages show. */
 const live = () => and(eq(boardPosts.status, 'open'), gt(boardPosts.expiresAt, sql`now()`));
 
-export async function createBoardPost(tx: Executor, params: { authorUserId: string; input: BoardInput; audit?: AuditContext }): Promise<string> {
+export async function createBoardPost(tx: Executor, params: { authorUserId: string; input: BoardInput; images?: StoredImage[]; audit?: AuditContext }): Promise<string> {
   await activeMember(tx, params.authorUserId);
   const { input } = params;
+  const images = params.images ?? [];
+  if (images.length > BOARD_RULES.maxPhotos) throw errors.validation('board.error.photo_count');
   const [place] = await tx.select({ active: locations.isActive }).from(locations).where(eq(locations.id, input.locationId)).limit(1);
   if (!place?.active) throw errors.validation('board.error.location');
 
@@ -94,6 +101,10 @@ export async function createBoardPost(tx: Executor, params: { authorUserId: stri
     })
     .returning({ id: boardPosts.id });
   const postId = post!.id;
+  if (images.length > 0) {
+    await insertMediaRows(tx, { ownerUserId: params.authorUserId, purpose: BOARD_PHOTO_PURPOSE, images });
+    await tx.insert(boardPostPhotos).values(images.map((image, position) => ({ postId, mediaId: image.id, position })));
+  }
   await recordAudit(tx, {
     actorType: 'user',
     actorUserId: params.authorUserId,
@@ -103,7 +114,7 @@ export async function createBoardPost(tx: Executor, params: { authorUserId: stri
     district: input.district,
     ipHash: params.audit?.ipHash ?? null,
     userAgentHash: params.audit?.userAgentHash ?? null,
-    metadata: { subdistrict: input.subdistrict, kind: input.kind },
+    metadata: { subdistrict: input.subdistrict, kind: input.kind, photos: images.length },
   });
   return postId;
 }
@@ -122,6 +133,8 @@ export type BoardPostView = {
   expired: boolean;
   author: { displayName: string; yayId: string };
   isAuthor: boolean;
+  /** Media ids of its photos, in order; served at /media/<id>. */
+  photoIds: string[];
   createdAt: Date;
   expiresAt: Date;
 };
@@ -142,6 +155,7 @@ const columns = {
   authorYayId: users.yayId,
   placeName: locations.name,
   placeNames: locations.names,
+  photoIds: sql<string[]>`coalesce((select array_agg(p.media_id order by p.position) from board_post_photos p join media m on m.id = p.media_id and m.status = 'active' where p.post_id = ${boardPosts.id}), '{}')`,
 };
 
 function view(row: Record<keyof typeof columns, unknown>, viewerId: string | null, locale: string): BoardPostView {
@@ -158,6 +172,7 @@ function view(row: Record<keyof typeof columns, unknown>, viewerId: string | nul
     expired: (row.expiresAt as Date).getTime() <= Date.now(),
     author: { displayName: row.authorName as string, yayId: formatYayId(row.authorYayId as string) },
     isAuthor: viewerId !== null && row.authorUserId === viewerId,
+    photoIds: (row.photoIds as string[] | null) ?? [],
     createdAt: row.createdAt as Date,
     expiresAt: row.expiresAt as Date,
   };
@@ -168,7 +183,7 @@ const escapeLike = (value: string) => value.replace(/[\\%_]/g, (char) => `\\${ch
 /** A district's open posts, newest first. Public: no viewer is needed to read. */
 export async function listBoardPosts(
   executor: Executor,
-  params: { district: BoardDistrict; subdistrict?: string; kind?: BoardKind; query?: string; locationIds?: string[] | null; viewerId?: string | null; page?: number; locale: string },
+  params: { district: BoardDistrict; subdistrict?: string; kind?: BoardKind; query?: string; placeCode?: string; viewerId?: string | null; page?: number; locale: string },
 ): Promise<{ items: BoardPostView[]; hasMore: boolean; page: number }> {
   const page = Math.max(1, Math.min(params.page ?? 1, 200));
   const size = BOARD_RULES.pageSize;
@@ -180,9 +195,11 @@ export async function listBoardPosts(
     const pattern = `%${escapeLike(query)}%`;
     conditions.push(or(ilike(boardPosts.title, pattern), ilike(boardPosts.body, pattern)));
   }
-  if (params.locationIds) {
-    if (params.locationIds.length === 0) return { items: [], hasMore: false, page };
-    conditions.push(inArray(boardPosts.locationId, params.locationIds));
+  if (params.placeCode) {
+    // A place includes everything inside it: a department shows its towns' posts.
+    const ids = await subtreeIds(executor, params.placeCode);
+    if (ids.length === 0) return { items: [], hasMore: false, page };
+    conditions.push(inArray(boardPosts.locationId, ids));
   }
   const rows = await executor
     .select(columns)
@@ -243,6 +260,12 @@ export async function getBoardPost(
   return { ...post, contact: params.viewerId && !post.isAuthor ? { whatsapp: row.whatsapp ?? null } : null };
 }
 
+/** Takes a post's photos off the public route when the post itself leaves it. */
+async function retirePhotos(tx: Executor, postId: string): Promise<void> {
+  const rows = await tx.select({ mediaId: boardPostPhotos.mediaId }).from(boardPostPhotos).where(eq(boardPostPhotos.postId, postId));
+  await markRemoved(tx, rows.map((row) => row.mediaId));
+}
+
 export async function closeBoardPost(tx: Executor, params: { postId: string; authorUserId: string; audit?: AuditContext }): Promise<void> {
   const [post] = await tx
     .select({ status: boardPosts.status, authorUserId: boardPosts.authorUserId, district: boardPosts.district })
@@ -253,6 +276,7 @@ export async function closeBoardPost(tx: Executor, params: { postId: string; aut
   if (!post || post.authorUserId !== params.authorUserId) throw errors.notFound(SUBJECT);
   if (post.status !== 'open') throw errors.conflict('board.error.closed');
   await tx.update(boardPosts).set({ status: 'closed', closedAt: new Date(), updatedAt: new Date() }).where(eq(boardPosts.id, params.postId));
+  await retirePhotos(tx, params.postId);
   await recordAudit(tx, {
     actorType: 'user',
     actorUserId: params.authorUserId,
@@ -398,6 +422,7 @@ export async function resolveBoardTicket(tx: Executor, params: { actor: AuthCont
 
   if (params.decision === 'remove') {
     await tx.update(boardPosts).set({ status: 'removed', removedBy: actor.userId, closedAt: new Date(), updatedAt: new Date() }).where(eq(boardPosts.id, post.id));
+    await retirePhotos(tx, post.id);
   }
   const removed = params.decision === 'remove';
   await tx

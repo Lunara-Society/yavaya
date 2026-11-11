@@ -24,6 +24,8 @@ import { SERVICE_CATEGORY_KEYS, type ServiceCategoryKey } from '@/config/service
 import { GO_CATEGORIES } from '@/config/go';
 import { SPECIES } from '@/config/animals';
 import { WORK_FIELDS } from '@/config/work';
+import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS, BOARD_KINDS, isBoardDistrict } from '@/config/boards';
+import { listBoardPosts } from '@/server/domains/boards/service';
 
 /**
  * Roxi, the assistant members talk to.
@@ -38,7 +40,7 @@ import { WORK_FIELDS } from '@/config/work';
  * conversation needs a few results it can talk about, not a catalogue.
  */
 
-export const ROXI_SCOPES = ['mercadito', 'yavayago', 'work', 'animals', 'sanctuary', 'services'] as const;
+export const ROXI_SCOPES = ['mercadito', 'yavayago', 'work', 'animals', 'sanctuary', 'services', ...BOARD_DISTRICT_KEYS] as const;
 export type RoxiScope = (typeof ROXI_SCOPES)[number];
 
 /** How many results one look-up returns: what a person can take in by ear. */
@@ -126,6 +128,26 @@ export async function roxiSearch(
     more: more || items.length > RESULTS,
   });
 
+  // The six board districts share one engine: `category` is a subdistrict, or 'offer' / 'request'.
+  if (isBoardDistrict(params.scope)) {
+    const district = params.scope;
+    const result = await listBoardPosts(executor, {
+      district,
+      subdistrict: params.category,
+      kind: pick(BOARD_KINDS, params.category),
+      query,
+      placeCode: place?.code,
+      locale,
+    });
+    return done(
+      result.items.map((post) => ({
+        title: post.title,
+        detail: [t(`board.kind.${post.kind}` as MessageKey), post.priceText, t(`board.sub.${district}.${post.subdistrict}` as MessageKey), post.placeName].filter(Boolean).join(' · '),
+        url: `/${BOARD_DISTRICTS[district].slug}/${post.id}`,
+      })),
+      result.hasMore,
+    );
+  }
   switch (params.scope) {
     case 'mercadito': {
       const result = await browseListings(executor, {

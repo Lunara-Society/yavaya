@@ -28,7 +28,9 @@
 @media (min-width: 900px) { .bd-subs { flex-direction: column; overflow: visible; } .bd-subs a { white-space: normal; } }
 .bd-count { font-variant-numeric: tabular-nums; opacity: 0.75; }
 
-.bd-search { display: flex; gap: 8px; margin-bottom: 12px; }
+.bd-search { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.bd-place { flex-basis: 100%; }
+.bd-place summary { cursor: pointer; opacity: 0.85; padding: 4px 0; }
 .bd-search input { flex: 1; min-width: 0; padding: 11px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); background: transparent; color: inherit; font: inherit; }
 .bd-kinds { display: flex; gap: 8px; margin-bottom: 16px; }
 .bd-kinds a { padding: 6px 14px; border-radius: 999px; border: 1px solid color-mix(in srgb, currentColor 25%, transparent); text-decoration: none; color: inherit; }
@@ -86,3 +88,11 @@
 .bd-more .bd-post-link { height: 100%; }
 @media (min-width: 640px) { .bd-more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1000px) { .bd-more { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Photos: a small picture beside a post in the list, and the full set on its page. */
+.bd-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; float: right; margin-left: 12px; grid-row: 1 / span 4; grid-column: 2; }
+.bd-post-link[data-photo] { grid-template-columns: minmax(0, 1fr) auto; }
+.bd-post-link[data-photo] > :not(.bd-thumb) { grid-column: 1; }
+.bd-photos { display: grid; gap: 10px; margin: 16px 0; }
+.bd-photos img { width: 100%; height: auto; border-radius: 14px; }
+@media (min-width: 640px) { .bd-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -3,6 +3,7 @@ import type { Executor } from '@/server/db/client';
 import { serverEnv } from '@/config/env';
 import { createTranslator } from '@/i18n';
 import { roxiSearch, type RoxiScope } from '@/server/domains/roxi/service';
+import { BOARD_DISTRICT_KEYS } from '@/config/boards';
 
 /**
  * What Roxi may look up for someone writing on WhatsApp.
@@ -16,7 +17,7 @@ import { roxiSearch, type RoxiScope } from '@/server/domains/roxi/service';
  * way to the page, and every fact in it comes from the database: Roxi is told
  * to say she found nothing when the list is empty.
  */
-export const WHATSAPP_LOOKUP_SCOPES = ['mercadito', 'yavayago', 'work', 'animals', 'sanctuary'] as const satisfies readonly RoxiScope[];
+export const WHATSAPP_LOOKUP_SCOPES = ['mercadito', 'yavayago', 'work', 'animals', 'sanctuary', ...BOARD_DISTRICT_KEYS] as const satisfies readonly RoxiScope[];
 export type WhatsappLookupScope = (typeof WHATSAPP_LOOKUP_SCOPES)[number];
 
 export type Lookup = (parameters: Record<string, unknown>) => Promise<string>;

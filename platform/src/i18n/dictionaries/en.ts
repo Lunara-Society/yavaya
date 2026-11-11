@@ -4401,11 +4401,15 @@ export const en: Dictionary = {
   "board.mod.note": "Internal note (optional)",
   "board.mod.dismiss": "Leave the post",
   "board.mod.remove": "Remove the post",
+  "board.form.photos": "Photos (optional)",
+  "board.form.photos_hint": "Up to {max} photos. Do not show your address or documents.",
+  "board.error.photo_count": "You can upload up to {max} photos.",
+  "board.error.upload": "We could not save the photos. Please try again.",
   "board.more.title": "More districts",
   "board.more.lead": "Six more districts, each with its subdistricts. Publish for free what you offer or what you are looking for.",
   "nav.moderation_boards": "Moderation · New districts",
   "capability.board_districts.name": "Home, Mobility, Health and Wellness, Learn, Business and Countryside",
-  "capability.board_districts.detail": "Six districts with their subdistricts: any member publishes for free what they offer or are looking for, with a place, WhatsApp contact for members, reports and moderation. Text only for now: no photos yet.",
+  "capability.board_districts.detail": "Six districts with their subdistricts: any member publishes for free what they offer or are looking for, with a place, WhatsApp contact for members, optional photos, reports and moderation.",
   // The Identity Studio's designs: generated, see tools/identity-assets/build.mjs.
   ...identityAssetsEn,
 };

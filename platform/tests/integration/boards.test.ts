@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { eq, ne, and, notLike } from 'drizzle-orm';
+import sharp from 'sharp';
 import { closeDb, db } from '@/server/db/client';
 import { auditEvents, boardPosts, locations, userProfiles, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
@@ -19,6 +20,9 @@ import {
   subdistrictCounts,
 } from '@/server/domains/boards/service';
 import { resetTransactionalData } from '../helpers/database';
+import { whatsappLookup } from '@/server/domains/whatsapp/lookup';
+import { readActiveImage, storeImages } from '@/server/domains/media/service';
+import { useMediaStorageForTests, type MediaStorage } from '@/server/domains/media/storage';
 
 /**
  * The six board districts: a member publishes what they offer or look for in
@@ -28,6 +32,25 @@ import { resetTransactionalData } from '../helpers/database';
 
 const context = { networkHash: null, addressHash: 'boards-test', deviceFingerprint: null, userAgent: 'vitest' };
 let placeId = '';
+let placeCode = '';
+let elsewhere = { id: '', code: '' };
+
+/** In-memory object store: the S3 adapter's contract, without a network. */
+class MemoryStorage implements MediaStorage {
+  readonly key = 'memory';
+  readonly objects = new Map<string, Buffer>();
+  async put(key: string, body: Buffer) {
+    this.objects.set(key, body);
+  }
+  async get(key: string) {
+    return this.objects.get(key) ?? null;
+  }
+  async delete(key: string) {
+    this.objects.delete(key);
+  }
+}
+const storage = new MemoryStorage();
+const jpeg = (seed: number) => sharp({ create: { width: 64 + seed, height: 48, channels: 3, background: { r: seed, g: 90, b: 140 } } }).jpeg().toBuffer();
 
 async function person(options: { role?: 'moderator'; status?: 'active' | 'pending_verification' } = {}) {
   const { userId } = await register(
@@ -56,8 +79,19 @@ const input = (overrides: Record<string, string> = {}) =>
 const publish = (authorUserId: string, overrides: Record<string, string> = {}) => db().transaction((tx) => createBoardPost(tx, { authorUserId, input: input(overrides) }));
 
 beforeAll(async () => {
-  const [place] = await db().select({ id: locations.id }).from(locations).where(eq(locations.level, 'city')).orderBy(locations.code).limit(1);
+  useMediaStorageForTests(storage);
+  const [place] = await db().select({ id: locations.id, code: locations.code }).from(locations).where(eq(locations.level, 'city')).orderBy(locations.code).limit(1);
   placeId = place!.id;
+  placeCode = place!.code;
+  // A city in another country: outside the first one's department and country alike.
+  const country = placeCode.split('.').slice(0, 2).join('.');
+  const [other] = await db()
+    .select({ id: locations.id, code: locations.code })
+    .from(locations)
+    .where(and(eq(locations.level, 'city'), ne(locations.id, placeId), notLike(locations.code, `${country}.%`)))
+    .orderBy(locations.code)
+    .limit(1);
+  elsewhere = other!;
 });
 
 beforeEach(async () => {
@@ -65,6 +99,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  useMediaStorageForTests(null);
   await closeDb();
 });
 
@@ -150,6 +185,53 @@ describe('browsing', () => {
     expect(await getBoardPost(db(), { postId, viewerId: null, locale: 'es' })).toBeNull();
     expect(await getBoardPost(db(), { postId, viewerId: author.userId, locale: 'es' })).toMatchObject({ expired: true });
     expect(await myBoardPosts(db(), { district: 'hogar', userId: author.userId, locale: 'es' })).toHaveLength(1);
+  });
+});
+
+describe('places and photos', () => {
+  it('filters by place, and a wider place includes the towns inside it', async () => {
+    const author = await person();
+    await publish(author.userId);
+    await publish(author.userId, { locationId: elsewhere.id, title: 'Casa en otra ciudad lejana' });
+    const here = await listBoardPosts(db(), { district: 'hogar', placeCode, locale: 'es' });
+    expect(here.items.map((p) => p.title)).toEqual(['Casa de dos cuartos en alquiler']);
+    const country = placeCode.split('.').slice(0, 2).join('.');
+    expect((await listBoardPosts(db(), { district: 'hogar', placeCode: country, locale: 'es' })).items).toHaveLength(1);
+    expect((await listBoardPosts(db(), { district: 'hogar', placeCode: elsewhere.code, locale: 'es' })).items.map((p) => p.title)).toEqual(['Casa en otra ciudad lejana']);
+    expect((await listBoardPosts(db(), { district: 'hogar', placeCode: 'zz.nowhere', locale: 'es' })).items).toHaveLength(0);
+  });
+
+  it('keeps a post\u2019s photos in order, serves them while it is open, and stops when it is closed', async () => {
+    const author = await person();
+    const images = await storeImages({ ownerUserId: author.userId, purpose: 'board_photo', files: [await jpeg(1), await jpeg(2)] });
+    const postId = await db().transaction((tx) => createBoardPost(tx, { authorUserId: author.userId, input: input(), images }));
+    const post = await getBoardPost(db(), { postId, viewerId: null, locale: 'es' });
+    expect(post?.photoIds).toEqual(images.map((image) => image.id));
+    expect((await listBoardPosts(db(), { district: 'hogar', locale: 'es' })).items[0]?.photoIds).toHaveLength(2);
+    expect(await readActiveImage(db(), images[0]!.id)).not.toBeNull();
+
+    await db().transaction((tx) => closeBoardPost(tx, { postId, authorUserId: author.userId }));
+    expect(await readActiveImage(db(), images[0]!.id)).toBeNull();
+    expect((await getBoardPost(db(), { postId, viewerId: author.userId, locale: 'es' }))?.photoIds).toEqual([]);
+  });
+
+  it('refuses more photos than the limit', async () => {
+    const author = await person();
+    const files = await Promise.all(Array.from({ length: BOARD_RULES.maxPhotos + 1 }, (_, i) => jpeg(i + 1)));
+    const images = await storeImages({ ownerUserId: author.userId, purpose: 'board_photo', files });
+    await expect(db().transaction((tx) => createBoardPost(tx, { authorUserId: author.userId, input: input(), images }))).rejects.toMatchObject({ messageKey: 'board.error.photo_count' });
+  });
+});
+
+describe('Roxi', () => {
+  it('can look a post up for someone on WhatsApp, with its link', async () => {
+    const author = await person();
+    const postId = await publish(author.userId);
+    const found = JSON.parse(await whatsappLookup(db(), { scope: 'hogar', query: 'cuartos', category: 'rentals' }));
+    expect(found.found).toBe(1);
+    expect(found.results[0].link).toMatch(new RegExp(`/hogar/${postId}$`));
+    expect(found.results[0].detail).toContain('C$ 5,500 al mes');
+    expect(JSON.parse(await whatsappLookup(db(), { scope: 'campo' })).found).toBe(0);
   });
 });
 

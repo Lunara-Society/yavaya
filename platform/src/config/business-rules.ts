@@ -552,6 +552,8 @@ export const BOARD_RULES = {
   priceMaxLength: 60,
   openDays: 60,
   maxOpenPerDistrict: 10,
+  /** Photos are optional; this many at most. */
+  maxPhotos: 4,
   pageSize: 20,
 } as const;
 

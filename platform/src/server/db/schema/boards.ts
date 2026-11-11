@@ -1,4 +1,5 @@
-import { index, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { index, pgTable, smallint, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { media } from './media';
 import { users } from './identity';
 import { locations } from './geography';
 
@@ -42,4 +43,19 @@ export const boardPosts = pgTable(
     index('board_posts_sub_idx').on(table.district, table.subdistrict, table.status),
     index('board_posts_author_idx').on(table.authorUserId, table.createdAt),
   ],
+);
+
+/** A post's photos, in the order their author chose. A photo belongs to one post. */
+export const boardPostPhotos = pgTable(
+  'board_post_photos',
+  {
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => boardPosts.id, { onDelete: 'cascade' }),
+    mediaId: uuid('media_id')
+      .notNull()
+      .references(() => media.id, { onDelete: 'cascade' }),
+    position: smallint('position').notNull(),
+  },
+  (table) => [uniqueIndex('board_post_photos_media_key').on(table.mediaId), uniqueIndex('board_post_photos_position_key').on(table.postId, table.position)],
 );

@@ -90,6 +90,7 @@ export async function resetTransactionalData(): Promise<void> {
       community_supports,
       community_replies,
       community_posts,
+      board_post_photos,
       board_posts,
       mercadito_saved_searches,
       mercadito_listing_photos,

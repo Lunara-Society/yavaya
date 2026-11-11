@@ -1713,17 +1713,26 @@ no billable action is declared. Nothing is configured by environment variable.
 
 **Not built, and the pages do not pretend otherwise:**
 
-- **Photos.** Posts are text only. Housing and vehicles want photos; that means
-  wiring the media service and its screening, as Mercadito does.
-- **Filtering by place.** A post shows its place and the search matches its
-  words, but there is no "near me" or place filter yet.
+- **Photos are optional and unscreened.** Up to 4 per post
+  (`BOARD_RULES.maxPhotos`, Yavaya's own default), stored like Mercadito's and
+  taken off the public route when the post is closed or removed. Mercadito's
+  checks for photos reused across sellers are not applied here. The upload path
+  was tested at the service level; the form's file field appears only when
+  image storage is configured, so it has not been exercised in a local browser.
+- **Place.** The list follows the place in the header's location bar or the
+  page's own picker, includes everything inside that place, and widens to the
+  department and country when the place has nothing yet.
 - **A colour world, emblem and photograph per district** (CLAUDE.md, "Adding a
   district", steps 3 and 5). The six share the site's night and day and differ
   by an accent line and by how their list is arranged (`app/boards.css`). They
   are not in `DISTRICT_IDS`, so they have no gate with a photograph on the home
   page; they are in the menu, the footer and a section of `/districts`.
-- **Live activity, Roxi's look-ups, saved searches and reputation events** do
-  not know these posts yet.
+- **Roxi** can search the six districts in code (`roxiSearch`, and the WhatsApp
+  look-up), but the two ElevenLabs tools (`search_yavaya`,
+  `search_yavaya_public`) still list only the first districts in their `scope`
+  parameter: add the six keys there for her to use them.
+- **Live activity, saved searches and reputation events** do not know these
+  posts yet.
 - **Closing on expiry.** A post past its time stops being shown; no job flips
   its status, so its author sees it as "Vencida" from the date alone.
 - **Licences in Salud y Bienestar.** Nothing here is verified, and the page

@@ -11,9 +11,7 @@ import { BOARD_DISTRICTS, isBoardDistrict } from '@/config/boards';
 import {
   BOARD_DECISIONS,
   BOARD_REPORT_CATEGORIES,
-  boardInputSchema,
   closeBoardPost,
-  createBoardPost,
   reportBoardPost,
   resolveBoardTicket,
   type BoardDecision,
@@ -39,37 +37,6 @@ function errorKey(error: unknown): string {
 
 function home(district: string): string {
   return isBoardDistrict(district) ? `/${BOARD_DISTRICTS[district].slug}` : '/districts';
-}
-
-export async function createBoardPostAction(formData: FormData): Promise<void> {
-  const session = await currentSession();
-  if (!session) redirect(await signInPath());
-  const district = String(formData.get('district') ?? '');
-  const base = home(district);
-  const parsed = boardInputSchema.safeParse({
-    district,
-    subdistrict: String(formData.get('subdistrict') ?? ''),
-    kind: String(formData.get('kind') ?? ''),
-    title: String(formData.get('title') ?? ''),
-    body: String(formData.get('body') ?? ''),
-    priceText: String(formData.get('priceText') ?? ''),
-    locationId: String(formData.get('locationId') ?? ''),
-  });
-  if (!parsed.success) redirect(`${base}/new?error=${encodeURIComponent(parsed.error.issues[0]?.message ?? 'error.validation_failed')}`);
-
-  const monitored = session.user.monitoredUntil > new Date();
-  const limit = await consumeRateLimit(db(), monitored ? RATE_LIMITS.publishMonitored : RATE_LIMITS.publishStandard, `board:${session.user.userId}`);
-  if (!limit.allowed) redirect(`${base}/new?error=board.error.rate_limited`);
-
-  let postId: string;
-  try {
-    const audit = await auditContext();
-    postId = await db().transaction((tx) => createBoardPost(tx, { authorUserId: session.user.userId, input: parsed.data, audit }));
-  } catch (error) {
-    redirect(`${base}/new?error=${encodeURIComponent(errorKey(error))}`);
-  }
-  revalidatePath(base);
-  redirect(`${base}/${postId}`);
 }
 
 export async function closeBoardPostAction(formData: FormData): Promise<void> {

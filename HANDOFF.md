@@ -14,7 +14,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 138 KB)
-  - At last count 660 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
+  - At last count 664 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -73,7 +73,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - One shared engine: `platform/src/server/domains/boards`, pages `platform/src/ui/boards`, table `board_posts` (migration 0042).
   - A member publishes "Ofrezco" or "Busco" for free; anyone reads; members see the author's WhatsApp; reports go to `/admin/distritos`.
   - The owner said empty districts are fine: members will fill them.
-- **Not built:** photos, a place filter, a colour world and photograph per district, Roxi look-ups in them. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
+- **Added the same day:** optional photos (up to 4), filtering by place, and Roxi search in code (the two ElevenLabs tools need the six keys in `scope`).
+- **Not built:** a colour world and photograph per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
 - **Still not built from the owner's directive:** linking a WhatsApp number to an account, the shareable card with QR, requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
 
 ## Roxi on the site

@@ -10,14 +10,20 @@
       "properties": {
         "scope": {
           "type": "string",
-          "description": "Which district to search. mercadito = things for sale (Mercadito). yavayago = stores that deliver (YavayaGo). work = job and project offers (Trabajo). animals = animals for adoption from verified rescuers (Animales). sanctuary = verified churches with their next service (Santuario). services = open requests on the Servicios board, people asking for help that a provider can answer (not a list of providers).",
+          "description": "Which district to search. mercadito = things for sale (Mercadito). yavayago = stores that deliver (YavayaGo). work = job and project offers (Trabajo). animals = animals for adoption from verified rescuers (Animales). sanctuary = verified churches with their next service (Santuario). services = open requests on the Servicios board, people asking for help that a provider can answer (not a list of providers). hogar = housing, rooms, moving and household things (Hogar). movilidad = shared rides, routes, freight, vehicles and workshops (Movilidad). salud = clinics, pharmacies, care and wellness (Salud y Bienestar; nothing there is verified by Yavaya). aprender = courses, trades, tutoring and scholarships (Aprender). negocios = suppliers, wholesale, equipment and premises (Negocios). campo = harvests, buyers, livestock, supplies and farm work (Campo).",
           "enum": [
             "mercadito",
             "yavayago",
             "work",
             "animals",
             "sanctuary",
-            "services"
+            "services",
+            "hogar",
+            "movilidad",
+            "salud",
+            "aprender",
+            "negocios",
+            "campo"
           ]
         },
         "query": {
@@ -26,7 +32,7 @@
         },
         "category": {
           "type": "string",
-          "description": "Optional. Narrow to one category, using these exact values. mercadito: vehicles, real_estate, electronics, services, fashion, home, sports, classifieds. yavayago: food, groceries, pharmacy, bakery, drinks, essentials, local. work: technology, design, marketing, writing, finance, administration, sales, construction, creative, education, health, hospitality, agriculture, transport, other. animals: dog, cat, other. services: home_repairs, cleaning_garden, vehicles, technology, mental_health, health_care, children_lessons, legal_paperwork, beauty, events. sanctuary: none."
+          "description": "Optional. Narrow to one category, using these exact values. mercadito: vehicles, real_estate, electronics, services, fashion, home, sports, classifieds. yavayago: food, groceries, pharmacy, bakery, drinks, essentials, local. work: technology, design, marketing, writing, finance, administration, sales, construction, creative, education, health, hospitality, agriculture, transport, other. animals: dog, cat, other. services: home_repairs, cleaning_garden, vehicles, technology, mental_health, health_care, children_lessons, legal_paperwork, beauty, events. sanctuary: none. For hogar, movilidad, salud, aprender, negocios and campo: 'offer' for what people offer or 'request' for what people are looking for."
         },
         "place": {
           "type": "string",
