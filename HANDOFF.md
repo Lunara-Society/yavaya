@@ -73,7 +73,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - One shared engine: `platform/src/server/domains/boards`, pages `platform/src/ui/boards`, table `board_posts` (migration 0042).
   - A member publishes "Ofrezco" or "Busco" for free; anyone reads; members see the author's WhatsApp; reports go to `/admin/distritos`.
   - The owner said empty districts are fine: members will fill them.
-- **Added the same day:** optional photos (up to 4), filtering by place, and Roxi search in code (the two ElevenLabs tools need the six keys in `scope`).
+- **Added the same day:** optional photos (up to 4), filtering by place, and Roxi's search on the site and on WhatsApp (both ElevenLabs tools updated; not yet seen in a live conversation).
 - **Not built:** a colour world and photograph per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
 - **Still not built from the owner's directive:** linking a WhatsApp number to an account, the shareable card with QR, requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
 

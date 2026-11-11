@@ -1727,10 +1727,9 @@ no billable action is declared. Nothing is configured by environment variable.
   by an accent line and by how their list is arranged (`app/boards.css`). They
   are not in `DISTRICT_IDS`, so they have no gate with a photograph on the home
   page; they are in the menu, the footer and a section of `/districts`.
-- **Roxi** can search the six districts in code (`roxiSearch`, and the WhatsApp
-  look-up), but the two ElevenLabs tools (`search_yavaya`,
-  `search_yavaya_public`) still list only the first districts in their `scope`
-  parameter: add the six keys there for her to use them.
+- **Roxi** can search the six districts, on the site and on WhatsApp: the two
+  ElevenLabs tools (`search_yavaya`, `search_yavaya_public`) list them in
+  `scope` since 11 November 2026. Not yet seen in a live conversation.
 - **Live activity, saved searches and reputation events** do not know these
   posts yet.
 - **Closing on expiry.** A post past its time stops being shown; no job flips
