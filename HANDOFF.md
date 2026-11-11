@@ -75,7 +75,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - The owner said empty districts are fine: members will fill them.
 - **Added the same day:** optional photos (up to 4), filtering by place, and Roxi's search on the site and on WhatsApp (both ElevenLabs tools updated; not yet seen in a live conversation).
 - **Not built:** a colour world and photograph per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
-- **Still not built from the owner's directive:** linking a WhatsApp number to an account, the shareable card with QR, requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
+- **The card** (11 Nov): every member has `/members/<YAY ID>/tarjeta` with their Trust Shield, a QR code to their profile, a WhatsApp share button and a print view. It shows only what any visitor may see. Linked from the profile page.
+- **Still not built from the owner's directive:** linking a WhatsApp number to an account, requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
 
 ## Roxi on the site
 - **Agent:** ElevenLabs `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya"), with plans Free, Pro and Max and credits metered from ElevenLabs costs.

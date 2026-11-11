@@ -282,6 +282,13 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    key: 'member_card',
+    nameKey: 'capability.member_card.name',
+    detailKey: 'capability.member_card.detail',
+    state: 'REAL',
+    group: 'platform',
+  },
+  {
     key: 'board_districts',
     nameKey: 'capability.board_districts.name',
     detailKey: 'capability.board_districts.detail',

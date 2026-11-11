@@ -84,13 +84,17 @@ export default async function MemberProfilePage({ params, searchParams }: PagePr
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member}>
-      {isOwner ? (
-        <div className="wrap idp-bar">
+      {/* The card is the profile made to be passed on: the owner shares their own, anyone can share someone else's. */}
+      <div className="wrap idp-bar">
+        {isOwner ? (
           <Link className="btn btn-gold" href="/account/profile">
             {t('profile.customize')}
           </Link>
-        </div>
-      ) : null}
+        ) : null}
+        <Link className="btn btn-line" href={`/members/${formatYayId(profile.yayDigits)}/tarjeta`}>
+          {t('card.open')}
+        </Link>
+      </div>
       <ProfileCanvas
         config={config}
         person={{
