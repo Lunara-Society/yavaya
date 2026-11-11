@@ -14,7 +14,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 138 KB)
-  - At last count 671 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
+  - At last count 675 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -113,7 +113,12 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - the video `uploadDate` time zone;
   - Roxi in the sitemap;
   - keeping the login page out of search.
-- **Roxi on Chrome Android:** option 1 or 2 still unanswered. Place labels (#19) need screenshots from the owner.
+- **Roxi's voice in Chrome on Android** (11 Nov, investigated and fixed in code; not yet confirmed on the owner's phone):
+  - Evidence: ElevenLabs recorded `total_audio_input_seconds: 0` for the failing Chrome sessions (greeting sent, no microphone audio ever arrived); Firefox sessions were heard.
+  - Cause found in a browser reproduction: when Chrome never lets the client's 16 kHz audio graph start, the client's start hangs (no error, greeting never connected to the speaker, nothing captured).
+  - Fix (`platform/src/ui/roxi/voice-health.ts`): a stuck start is given up after 3 s, its socket, microphone and audio closed and reported to Sentry ("Roxi voice: …"), and the call reopened on Firefox's audio path (the phone's own rate, resampled in JavaScript); the browser remembers it. A call open but sending no frames for 4 s does the same. One start at a time; no extra microphone pre-check once allowed; a tap resumes held audio; "No me llega tu voz" when nothing works.
+  - Verify: after the owner tries Chrome, read the new conversation in ElevenLabs (`asr_usage.total_audio_input_seconds` above 0) and look for "Roxi voice" issues in Sentry.
+- Place labels (#19) need screenshots from the owner.
 - **Still open from October:**
   - The brand tagline with Mexico open.
   - Mexican legal text (LFPDPPP).

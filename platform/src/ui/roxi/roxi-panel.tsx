@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Conversation, type DisconnectionDetails } from '@elevenlabs/client';
+import { describeHealth, guardedVoiceStart, microphoneAlreadyAllowed, VoiceStartTimeout, outputSuspended, rememberedNativeRate, rememberNativeRate, resumeAudio, watchVoice, withNativeRateCapture, type VoiceProblem } from './voice-health';
+import { reportClientError } from '@/ui/components/client-error-report';
 import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
 import { languageOf } from './language';
@@ -149,6 +151,23 @@ function lastPending(entries: readonly Entry[]): Said | undefined {
 }
 
 type MicProblem = 'blocked' | 'missing' | 'busy';
+
+/**
+ * How long a voice conversation may run without one frame of the member's
+ * voice leaving the browser before the panel acts (voice-health.ts). In the
+ * tests frames start within a tenth of a second of the connection; four
+ * seconds leaves room for a slow phone without making the member wait long.
+ */
+const VOICE_CHECK_MS = 4000;
+
+/**
+ * How long a voice start may take before it is given up and tried on the
+ * other audio path. The client itself waits 3 seconds on Android for the
+ * phone to switch its audio mode; the rest is the connection. The native-rate
+ * path may first download the resampler (2 MB, once), so it waits longer.
+ */
+const VOICE_START_MS = 15_000;
+const VOICE_START_NATIVE_MS = 30_000;
 
 /**
  * Whether the microphone can be used, asked before a voice conversation
@@ -416,6 +435,18 @@ export default function RoxiPanel({
   const greetingNext = useRef(false);
   // The panel itself closed a stalled conversation: its disconnection is expected, and says nothing more.
   const abandoning = useRef(false);
+  // A voice start in progress, from the tap until the conversation is open: a second tap meanwhile must not open a second one.
+  const starting = useRef(false);
+  // The panel is replacing a voice conversation that carried no sound with one on the other audio path: its end says nothing.
+  const restarting = useRef(false);
+  // The check that the member's voice really leaves the browser (voice-health.ts), for the conversation now open.
+  const watcher = useRef<{ stop: () => void } | null>(null);
+  // Why the member could not be heard, when even the second audio path carried nothing.
+  const [voiceIssue, setVoiceIssue] = useState<VoiceProblem | null>(null);
+  // Roxi is speaking but the browser holds her audio: a tap starts it.
+  const [outputHeld, setOutputHeld] = useState(false);
+  // False once the panel has closed: a voice start that was given up must not open a new call for a panel nobody sees.
+  const mounted = useRef(true);
   // Answers up to this id are not read aloud: they were there before (restored, or before reading was turned on).
   const spokenUpTo = useRef(0);
   // A page change during an answer, told to Roxi once that answer has arrived.
@@ -571,6 +602,8 @@ export default function RoxiPanel({
 
   useEffect(
     () => () => {
+      mounted.current = false;
+      watcher.current?.stop();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       void conversation.current?.endSession();
       for (const entry of entriesRef.current) if (entry.kind === 'photo') URL.revokeObjectURL(entry.url);
@@ -647,9 +680,10 @@ export default function RoxiPanel({
       .slice(0, 3000);
 
   /** Opens a conversation. Voice is only asked for once the microphone has answered (see talk). */
-  async function start(wanted: Mode, opening?: (live: Conversation) => Promise<void> | void) {
-    if (phase === 'connecting') return;
+  async function start(wanted: Mode, opening?: (live: Conversation) => Promise<void> | void, voice: { nativeRate?: boolean; recovering?: boolean } = {}) {
+    if (phase === 'connecting' && !voice.recovering) return;
     setPhase('connecting');
+    const nativeRate = wanted === 'voice' && (voice.nativeRate ?? rememberedNativeRate());
     try {
       const response = await fetch('/api/roxi/start', { method: 'POST', credentials: 'same-origin' });
       const body = (await response.json().catch(() => null)) as {
@@ -669,8 +703,8 @@ export default function RoxiPanel({
       const previous = recap();
       const prefs = readPrefs();
       // Only a voice conversation begun with nothing said opens with her greeting (the welcome already said hello in writing).
-      greetingNext.current = wanted === 'voice' && !opening && !previous;
-      const live = await Conversation.startSession({
+      greetingNext.current = wanted === 'voice' && !opening && !previous && !voice.recovering;
+      const open = () => withNativeRateCapture(nativeRate, () => Conversation.startSession({
         ...(body.signedUrl ? { signedUrl: body.signedUrl } : { agentId: body.agentId! }),
         connectionType: 'websocket',
         textOnly: wanted === 'text',
@@ -679,7 +713,8 @@ export default function RoxiPanel({
           agent: {
             language: locale === 'en' ? 'en' : 'es',
             // Opened by writing or with a photo: Roxi answers that, instead of greeting first.
-            ...(opening || previous ? { firstMessage: '' } : {}),
+            // Opened again on the other audio path after a silent start: she already greeted, so she waits.
+            ...(opening || previous || voice.recovering ? { firstMessage: '' } : {}),
           },
           // Only a speed the member chose travels; the agent allows this one override.
           ...(wanted === 'voice' && prefs.speed !== 'normal' ? { tts: { speed: SPEED_VALUE[prefs.speed] } } : {}),
@@ -722,9 +757,23 @@ export default function RoxiPanel({
             { id: nextId.current++, kind: 'roxi', text: tidyText(said), ...(greeting ? { greeting: true } : {}) },
           ]);
         },
-        onModeChange: ({ mode: now }) => setSpeaking(now === 'speaking'),
+        onModeChange: ({ mode: now }) => {
+          setSpeaking(now === 'speaking');
+          if (now === 'speaking') setOutputHeld(outputSuspended(conversation.current));
+        },
         onCanSendFeedbackChange: ({ canSendFeedback }) => setCanFeedback(canSendFeedback),
         onDisconnect: (details) => {
+          watcher.current?.stop();
+          watcher.current = null;
+          setOutputHeld(false);
+          if (restarting.current) {
+            // The panel ended a conversation that carried no sound to open it again on the other audio path.
+            restarting.current = false;
+            const ended = liveId.current;
+            liveId.current = null;
+            if (ended) void fetch('/api/roxi/usage', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ conversationId: ended }) }).catch(() => undefined);
+            return;
+          }
           conversation.current = null;
           // Credits are counted from what the conversation really cost; the server reads it from ElevenLabs.
           const ended = liveId.current;
@@ -768,7 +817,9 @@ export default function RoxiPanel({
             setWaiting(false);
           }
         },
-      });
+      }));
+      // A voice start is given a deadline (voice-health.ts): when the browser never lets its audio run, the client's start never settles.
+      const live = wanted === 'voice' ? await guardedVoiceStart(nativeRate ? VOICE_START_NATIVE_MS : VOICE_START_MS, open, (late) => void late.endSession()) : await open();
       conversation.current = live;
       try {
         liveId.current = live.getId();
@@ -778,8 +829,52 @@ export default function RoxiPanel({
       setMode(wanted);
       setMuted(false);
       setPhase('live');
+      if (wanted === 'voice') {
+        setVoiceIssue(null);
+        watcher.current?.stop();
+        watcher.current = watchVoice(live, {
+          nativeRate,
+          deadlineMs: VOICE_CHECK_MS,
+          onHealthy: () => {
+            // The Firefox path carried her voice where the first did not: this browser starts there from now on.
+            if (nativeRate && voice.recovering) rememberNativeRate();
+          },
+          onProblem: (problem, health) => {
+            reportClientError(new Error(describeHealth(problem, health, nativeRate ? 'native_rate' : 'first')), 'error');
+            if (conversation.current !== live) return;
+            if (!nativeRate) {
+              // Nothing left the browser on Chrome's own path: open it again on Firefox's, quietly.
+              restarting.current = true;
+              conversation.current = null;
+              void live.endSession().finally(() => {
+                if (mounted.current) void start('voice', undefined, { nativeRate: true, recovering: true });
+              });
+              return;
+            }
+            // Neither path carried the member's voice. Said plainly, and the call is closed so it costs nothing more.
+            setVoiceIssue(problem);
+            conversation.current = null;
+            void live.endSession();
+            add({ kind: 'note', text: labels.voice_unheard });
+          },
+        });
+      }
       await opening?.(live);
-    } catch {
+    } catch (error) {
+      if (error instanceof VoiceStartTimeout) {
+        reportClientError(error, 'error');
+        if (!mounted.current) return;
+        if (!nativeRate) {
+          // Chrome's own audio path never started: try Firefox's, which records at the phone's own rate.
+          void start('voice', opening, { nativeRate: true, recovering: true });
+          return;
+        }
+        setVoiceIssue('no_frames');
+        add({ kind: 'note', text: labels.voice_unheard });
+        setWaiting(false);
+        setPhase(entries.length > 0 ? 'ended' : 'idle');
+        return;
+      }
       add({ kind: 'note', text: labels.connect_error });
       setWaiting(false);
       setPhase(entries.length > 0 ? 'ended' : 'idle');
@@ -930,8 +1025,19 @@ export default function RoxiPanel({
    * brought back into view, or moved down to where the conversation now is.
    */
   async function talk() {
-    if (phase === 'connecting' || waitingRef.current) return;
-    const problem = await micProblem();
+    if (phase === 'connecting' || waitingRef.current || starting.current) return;
+    starting.current = true;
+    try {
+      await talkNow();
+    } finally {
+      starting.current = false;
+    }
+  }
+
+  async function talkNow() {
+    setVoiceIssue(null);
+    // Already allowed: opening and closing the microphone once more only makes Android switch its audio mode twice.
+    const problem = (await microphoneAlreadyAllowed()) ? null : await micProblem();
     if (problem) {
       setMicIssue(problem);
       const text = labels[`mic_${problem}`];
@@ -1041,7 +1147,9 @@ export default function RoxiPanel({
   // The wait names the stage only when a tool is actually running; otherwise she is thinking.
   const waitLabel = activity ? labels[`activity.${activity}`] : slow ? labels.still_working : labels.thinking;
   const status =
-    phase === 'connecting'
+    voiceIssue
+      ? labels['status.unheard']
+      : phase === 'connecting'
       ? labels['status.connecting']
       : waiting
         ? waitLabel
@@ -1133,7 +1241,21 @@ export default function RoxiPanel({
   return (
     <>
       <div className="roxi-scrim" onClick={() => setAside(true)} aria-hidden="true" />
-      <section className="roxi-panel" ref={panel} role="dialog" aria-label={labels.name} data-phase={phase} data-mode={mode} data-voice={voice || undefined} data-welcome={welcome || undefined}>
+      <section
+        className="roxi-panel"
+        ref={panel}
+        role="dialog"
+        aria-label={labels.name}
+        data-phase={phase}
+        data-mode={mode}
+        data-voice={voice || undefined}
+        data-welcome={welcome || undefined}
+        // Any tap in the panel may start audio a browser held back; Chrome and Safari allow it only from a tap.
+        onPointerDown={() => {
+          resumeAudio(conversation.current);
+          if (outputHeld) setOutputHeld(false);
+        }}
+      >
         <header className="roxi-head">
           <span className="roxi-grip" aria-hidden="true" />
           <RoxiOrb state={orbState} level={level} className="roxi-head-orb" />
@@ -1143,6 +1265,11 @@ export default function RoxiPanel({
               <span className="roxi-dot" aria-hidden="true" />
               {status}
             </span>
+            {outputHeld ? (
+              <button type="button" className="roxi-chip is-primary" onClick={() => resumeAudio(conversation.current)}>
+                {labels.tap_to_hear}
+              </button>
+            ) : null}
           </div>
           <div className="roxi-actions">
             <button type="button" className="roxi-icon" onClick={onSettings} aria-label={labels.settings}>

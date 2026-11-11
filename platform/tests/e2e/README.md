@@ -106,3 +106,28 @@ it and it is gone.
 npx tsx --conditions=react-server tests/e2e/boards-setup.ts > /tmp/boards.json
 node tests/e2e/boards.cjs /tmp/boards.json http://127.0.0.1:3000
 ```
+
+## Roxi's voice in Chrome — `roxi-voice/`
+
+Why: on 11 November 2026 a member's Samsung phone never got heard in Chrome
+(ElevenLabs received 0 seconds of microphone audio) while Firefox worked.
+`src/ui/roxi/voice-health.ts` gives a stuck voice start 3 seconds, closes
+what it opened, reports it, and starts again on Firefox's audio path
+(the device's own rate, resampled in JavaScript).
+
+This runs twenty starts healthy and twenty with the 16 kHz path broken, in
+Chromium posing as Android Chrome, against a local stand-in for ElevenLabs.
+It needs the `ws` package, which is not a dependency of this repository:
+
+```bash
+mkdir -p /tmp/voice && (cd /tmp/voice && npm init -y >/dev/null && npm i ws@8.18.0)
+cd tests/e2e/roxi-voice
+npx esbuild entry.js --bundle --format=iife --outfile=bundle.js \
+  --alias:@elevenlabs/client=../../../node_modules/@elevenlabs/client/dist/platform/web/index.js
+NODE_PATH=/tmp/voice/node_modules node server.mjs 3412 &
+node run.cjs
+```
+
+It cannot reproduce a real phone's audio hardware: it proves the fallback
+and the cleanup, not the phone. The real check is ElevenLabs' record of the
+conversation (`asr_usage.total_audio_input_seconds` above 0).
