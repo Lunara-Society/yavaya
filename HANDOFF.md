@@ -74,7 +74,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - A member publishes "Ofrezco" or "Busco" for free; anyone reads; members see the author's WhatsApp; reports go to `/admin/distritos`.
   - The owner said empty districts are fine: members will fill them.
 - **Added the same day:** optional photos (up to 4), filtering by place, and Roxi's search on the site and on WhatsApp (both ElevenLabs tools updated; not yet seen in a live conversation).
-- **Not built:** a colour world and photograph per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
+- **Home cards** (11 Nov): the six are on the home page (both designs) with a mark, a colour and a generated illustrative photograph each, also used in their page headers.
+- **Not built:** a full colour world and plaque per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
 - **The card** (11 Nov): every member has `/members/<YAY ID>/tarjeta` with their Trust Shield, a QR code to their profile, a WhatsApp share button and a print view. It shows only what any visitor may see. Linked from the profile page.
 - **Phone verification by WhatsApp** (11 Nov): a button on `/account/phone` opens WhatsApp with a one-time code; the number that sends it to Yavaya becomes the member's verified phone and the chat is tied to their account. Not yet tried with a real phone.
 - **"Avísame"** in the six new districts (11 Nov): a saved search that notifies when a matching post is published.

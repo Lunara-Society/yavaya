@@ -118,6 +118,9 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
     <SiteShell c={c} t={t} language={language} theme={theme} member={member}>
       <div className="bd" data-board={district} data-layout={DISTRICTS[district].theme.layout}>
         <section className="bd-hero">
+          {/* The district's illustrative scene, the same one as on its home card. */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+          <img className="bd-hero-photo" src={`/art/home-card-${district}-960.webp`} srcSet={`/art/home-card-${district}-640.webp 640w, /art/home-card-${district}-960.webp 960w`} sizes="100vw" width={960} height={540} alt="" decoding="async" />
           <div className="wrap">
             <p className="eyebrow">{t('nav.districts' as MessageKey)}</p>
             <h1>{t(DISTRICTS[district].nameKey as MessageKey)}</h1>

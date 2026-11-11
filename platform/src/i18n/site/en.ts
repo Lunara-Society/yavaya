@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals are open.',
+      text: 'All thirteen districts are open: from Mercadito and Work to Home, Health and Countryside.',
       link: 'What works today',
     },
     states: {

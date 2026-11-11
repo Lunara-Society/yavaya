@@ -6,7 +6,7 @@ import { PAGE_PATHS, districtState, type DistrictId } from '@/ui/site/blocks';
 import { Icon } from '@/ui/site/icons';
 import { LocationBar } from '@/ui/site/location-bar';
 import type { locationBarProps } from '@/ui/site/location-props';
-import { DistrictMark, Glyph, heroDoors } from '@/ui/site/home';
+import { BoardHomeCards, DistrictMark, Glyph, heroDoors } from '@/ui/site/home';
 import { FrontDoor } from '@/ui/roxi/front-door';
 import type { RoxiVisual } from '@/ui/roxi/state-bus';
 import {
@@ -225,6 +225,10 @@ export function FirstLightBody({ c, t, signedIn, location, preview = false, guar
                 </li>
               );
             })}
+          </ul>
+          {/* The six board districts, below the seven doors, as the cards the other home design uses. */}
+          <ul className="hx-cards fl-more-cards">
+            <BoardHomeCards t={t} />
           </ul>
         </div>
       </section>

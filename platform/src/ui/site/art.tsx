@@ -392,6 +392,17 @@ export function HomeCardScene({ id, sizes, eager }: { id: DistrictId; sizes: str
   );
 }
 
+/** The home card of a board district (Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo): an illustrative scene like the first seven, 16:9. */
+export function BoardCardScene({ id, sizes }: { id: string; sizes: string }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+      <img className="hx-card-photo" src={`/art/home-card-${id}-640.webp`} srcSet={srcSet(`home-card-${id}`, HOME_CARD_WIDTHS)} sizes={sizes} width={960} height={540} alt="" loading="lazy" decoding="async" />
+      <ArtNote />
+    </>
+  );
+}
+
 /** The home page's last picture, behind its closing words: the town's lights in the valley at night, flowers at either edge. A place; never the first thing loaded. */
 export function ValleyScene({ className }: { className?: string }) {
   return (

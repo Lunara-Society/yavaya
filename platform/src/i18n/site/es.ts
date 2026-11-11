@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales ya están abiertos.',
+      text: 'Los trece distritos ya están abiertos: de Mercadito y Trabajo a Hogar, Salud y Campo.',
       link: 'Qué funciona hoy',
     },
     states: {

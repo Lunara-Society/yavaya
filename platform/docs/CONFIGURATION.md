@@ -1742,11 +1742,14 @@ no billable action is declared. Nothing is configured by environment variable.
 - **Place.** The list follows the place in the header's location bar or the
   page's own picker, includes everything inside that place, and widens to the
   department and country when the place has nothing yet.
-- **A colour world, emblem and photograph per district** (CLAUDE.md, "Adding a
-  district", steps 3 and 5). The six share the site's night and day and differ
-  by an accent line and by how their list is arranged (`app/boards.css`). They
-  are not in `DISTRICT_IDS`, so they have no gate with a photograph on the home
-  page; they are in the menu, the footer and a section of `/districts`.
+- **Home cards and photographs** (11 November 2026): each of the six has a card
+  on both home designs, a drawn mark, a colour and an illustrative photograph
+  (`public/art/home-card-<district>-{400,640,960}.webp`), also used behind its
+  own page's title. The photographs were generated for Yavaya with ElevenLabs'
+  image tool, like the site's other scenes, and carry the same "Ilustración"
+  note. Still not built: a full colour world in `worlds.css` and a plaque in
+  `ui/site/rotulo.tsx` (CLAUDE.md, "Adding a district", steps 3 and 5); the six
+  are not in `DISTRICT_IDS`.
 - **Roxi** can search the six districts, on the site and on WhatsApp: the two
   ElevenLabs tools (`search_yavaya`, `search_yavaya_public`) list them in
   `scope` since 11 November 2026. Not yet seen in a live conversation.

@@ -245,6 +245,12 @@
 .hx-card-community { --a: #a77bff; --deep: #150935; --focus: 54% 26%; --em-fill: linear-gradient(145deg, #7b46f2, #4a1fb8); --em-ink: #fff; --arrow: #fff; }
 .hx-card-sanctuary { --a: #ecb862; --deep: #24150a; --focus: 50% 34%; --arrow: #fff; }
 .hx-card-animals { --a: #79d35e; --deep: #0a1f0e; --focus: 46% 30%; --em-fill: radial-gradient(circle at 35% 30%, #3f9334, #1c5a1b 75%); --em-ink: #f8dba8; --arrow: #fff; }
+.hx-card-hogar { --a: #f08a5d; --deep: #2a1008; --focus: 60% 30%; --em-ink: #ffc9b0; --arrow: #fff; }
+.hx-card-movilidad { --a: #5aa2e6; --deep: #06162c; --focus: 40% 30%; --em-ink: #c4e0ff; --arrow: #fff; }
+.hx-card-salud { --a: #3fd0a6; --deep: #05231c; --focus: 50% 28%; --em-ink: #c8f6e8; --arrow: #fff; }
+.hx-card-aprender { --a: #f0b33a; --deep: #2a1a04; --focus: 60% 30%; --em-ink: #ffe2a3; --arrow: #fff; }
+.hx-card-negocios { --a: #c2c8d2; --deep: #14181f; --focus: 42% 30%; --em-ink: #eef1f5; --arrow: #fff; }
+.hx-card-campo { --a: #a9c24a; --deep: #18200a; --focus: 62% 30%; --em-ink: #e4f0b4; --arrow: #fff; }
 
 @media (min-width: 700px) {
   .hx-cards { gap: 14px; }
@@ -254,7 +260,7 @@
   .hx-d-head { padding-top: 10px; }
   .hx-cards { grid-template-columns: repeat(12, minmax(0, 1fr)); }
   .hx-card, .hx-card.is-wide { grid-column: span 3; }
-  .hx-card.hx-card-mercadito, .hx-card.hx-card-services, .hx-card.hx-card-work { grid-column: span 4; }
+  .hx-card.hx-card-mercadito, .hx-card.hx-card-services, .hx-card.hx-card-work, .hx-card.hx-card-more { grid-column: span 4; }
   .hx-card-sanctuary { order: 0; }
   .hx-card-link, .hx-card.is-wide .hx-card-link, .hx-card:not(.is-wide) .hx-card-link { min-height: 0; height: clamp(194px, 14.6vw, 222px); }
   .hx-card-mercadito .hx-card-link, .hx-card-services .hx-card-link, .hx-card-work .hx-card-link { height: clamp(172px, 12.8vw, 196px); }
@@ -305,3 +311,6 @@
   .top.is-home, .top.is-home::after, .hx-card-link, .hx-card-link::after, .hx-arrow, .hx-pill { transition: none; }
   .hx-card-link:hover, .hx-card-link:hover .hx-arrow { transform: none; }
 }
+
+/* The six board districts under the First Light's seven doors. */
+.fl-more-cards { margin-top: clamp(20px, 3vw, 36px); }

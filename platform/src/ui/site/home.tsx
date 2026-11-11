@@ -1,7 +1,8 @@
+import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS, type BoardDistrict } from '@/config/boards';
 import Link from 'next/link';
 import type { MessageKey, Translator } from '@/i18n';
 import type { SiteContent } from '@/i18n/site';
-import { BalconyScene, HomeCardScene, SanctuaryEmblem, ValleyScene } from './art';
+import { BalconyScene, HomeCardScene, SanctuaryEmblem, ValleyScene, BoardCardScene } from './art';
 import { PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon } from './icons';
 import { LocationBar } from './location-bar';
@@ -81,6 +82,43 @@ const GLYPHS: Record<Exclude<DistrictId, 'sanctuary'>, string> = {
   animals:
     '<g fill="currentColor" stroke="none"><ellipse cx="6.4" cy="10.6" rx="2" ry="2.5"/><ellipse cx="9.9" cy="6.4" rx="2" ry="2.6"/><ellipse cx="14.1" cy="6.4" rx="2" ry="2.6"/><ellipse cx="17.6" cy="10.6" rx="2" ry="2.5"/><path d="M12 11.4c-3 0-5.6 3.9-5.6 6.3 0 1.6 1.2 2.4 2.6 2.4 1.2 0 1.9-.6 3-.6s1.8.6 3 .6c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.6-6.3-5.6-6.3z"/></g>',
 };
+
+/** The marks of the six board districts, drawn like the others: a house, a bus, a heart with a cross, an open book, a shopfront, a sprout. */
+const BOARD_GLYPHS: Record<BoardDistrict, string> = {
+  hogar: '<path d="M4 11.2 12 4.6l8 6.6"/><path d="M6.2 9.8v9.4h11.6V9.8"/><path d="M10.2 19.2v-5h3.6v5"/>',
+  movilidad: '<rect x="4.5" y="5" width="15" height="11.5" rx="2.2"/><path d="M4.5 11.5h15"/><path d="M8 8.2h8"/><circle cx="8.2" cy="18.6" r="1.5"/><circle cx="15.8" cy="18.6" r="1.5"/>',
+  salud: '<path d="M12 20s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.4C19 15.7 12 20 12 20z"/><path d="M12 10.6v4.2M9.9 12.7h4.2"/>',
+  aprender: '<path d="M12 6.8c-2-1.5-4.6-1.9-7.5-1.6v12.4c2.9-.3 5.5.1 7.5 1.6 2-1.5 4.6-1.9 7.5-1.6V5.2c-2.9-.3-5.5.1-7.5 1.6z"/><path d="M12 6.8v12.4"/>',
+  negocios: '<path d="M4.2 9.6 5.6 5h12.8l1.4 4.6"/><path d="M4.2 9.6a2.6 2.6 0 0 0 5.2 0 2.6 2.6 0 0 0 5.2 0 2.6 2.6 0 0 0 5.2 0"/><path d="M5.6 12v7h12.8v-7"/><path d="M10 19v-4h4v4"/>',
+  campo: '<path d="M12 20v-8"/><path d="M12 12c0-3.4-2.4-5.6-6.4-5.6 0 3.6 2.4 5.6 6.4 5.6z"/><path d="M12 14.4c0-2.9 2.2-4.8 5.8-4.8 0 3-2.2 4.8-5.8 4.8z"/><path d="M7 20h10"/>',
+};
+
+/** The six board districts as home cards, drawn as the first seven are: a picture, a mark, a name and one line. Shared with the First Light home. */
+export function BoardHomeCards({ t }: { t: Translator }) {
+  return (
+    <>
+      {BOARD_DISTRICT_KEYS.map((key) => (
+              <li key={key} className={`hx-card hx-card-more hx-card-${key}`}>
+                <Link className="hx-card-link" href={`/${BOARD_DISTRICTS[key].slug}`}>
+                  <span className="hx-card-art">
+                    <BoardCardScene id={key} sizes="(min-width: 1440px) 420px, (min-width: 1000px) 33vw, 50vw" />
+                  </span>
+                  <span className="hx-emblem" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: BOARD_GLYPHS[key] }} />
+                  </span>
+                  <span className="hx-card-text">
+                    <span className="hx-card-name">{t(`district.${key}.name` as MessageKey)}</span>
+                    <span className="hx-card-line">{t(`home.card.${key}` as MessageKey)}</span>
+                  </span>
+                  <span className="hx-arrow" aria-hidden="true">
+                    <Arrow />
+                  </span>
+                </Link>
+              </li>
+            ))}
+    </>
+  );
+}
 
 export function Glyph({ id }: { id: Exclude<DistrictId, 'sanctuary'> }) {
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" dangerouslySetInnerHTML={{ __html: GLYPHS[id] }} />;
@@ -207,6 +245,7 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
                 </li>
               );
             })}
+            <BoardHomeCards t={t} />
           </ul>
         </div>
       </section>
