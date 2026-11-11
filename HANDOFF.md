@@ -14,7 +14,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 138 KB)
-  - At last count 643 tests, all passing.
+  - At last count 650 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -56,8 +56,11 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - She is quiet for 12 hours after the team writes in a chat. Each chat has pause and resume buttons, and the inbox has a switch for everyone.
   - She never writes first, never answers after 24 hours, and gives at most 6 answers per chat per hour.
   - Code: `platform/src/server/domains/whatsapp/{service,roxi}.ts`.
-- **Not yet confirmed:** a live Roxi reply sent and received. The owner was about to send a test message on 11 Nov.
-  - Check the Railway http logs for POSTs to the webhook path, then check the inbox.
+- **Replies went out on 11 Nov** (Railway logs: five inbound messages, each followed by a send through Dualhook and Meta's receipts). Nobody has yet confirmed the reply text in the inbox.
+- **Roxi can look things up on WhatsApp** (11 Nov, commit 4992a5f).
+  - The agent has a client tool `search_yavaya_public` (ElevenLabs tool `tool_5701m74b6zh3f0dbdk12nx77tm7w`); the server answers it in `platform/src/server/domains/whatsapp/lookup.ts`.
+  - She sees only what a signed-out visitor sees: Mercadito, YavayaGo, Trabajo, Animales, Santuario. The Servicios board is refused.
+  - Her instructions gained a section "Looking up what is published".
 - **Meta health on 11 Nov:**
   - Display name not yet approved and business not verified, so sending is "LIMITED".
   - This affects only conversations Yavaya starts; replies are fine.
