@@ -14,7 +14,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 138 KB)
-  - At last count 668 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
+  - At last count 671 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -77,7 +77,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Not built:** a colour world and photograph per district, photo screening. The full list is in `platform/docs/CONFIGURATION.md`, "Board districts".
 - **The card** (11 Nov): every member has `/members/<YAY ID>/tarjeta` with their Trust Shield, a QR code to their profile, a WhatsApp share button and a print view. It shows only what any visitor may see. Linked from the profile page.
 - **Phone verification by WhatsApp** (11 Nov): a button on `/account/phone` opens WhatsApp with a one-time code; the number that sends it to Yavaya becomes the member's verified phone and the chat is tied to their account. Not yet tried with a real phone.
-- **Still not built from the owner's directive:** requests by WhatsApp routed to providers, "Avísame" beyond Mercadito, Mi negocio (catalogue and orders into WhatsApp), the Living World.
+- **"Avísame"** in the six new districts (11 Nov): a saved search that notifies when a matching post is published.
+- **Still not built from the owner's directive:** requests by WhatsApp routed to providers, Mi negocio (catalogue and orders into WhatsApp), the Living World.
 
 ## Roxi on the site
 - **Agent:** ElevenLabs `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya"), with plans Free, Pro and Max and credits metered from ElevenLabs costs.

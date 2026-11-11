@@ -52,6 +52,10 @@ async function signedIn(browser, member) {
     const reader = await signedIn(browser, who.reader);
     await reader.goto(`${BASE}/hogar?q=${encodeURIComponent(TITLE)}`);
     check(await reader.getByText(TITLE).isVisible(), 'a member finds it by its words');
+    await reader.goto(`${BASE}/hogar?sub=rentals`);
+    await Promise.all([reader.waitForURL(/mine=1&saved=1/), reader.click('form.bd-alert-save button[type="submit"]')]);
+    await reader.locator('.bd-alerts li').first().waitFor({ timeout: 10000 }).catch(() => {});
+    check((await reader.locator('.bd-alerts li').count()) === 1, 'a member saves the search as an alert and sees it under their alerts');
     await reader.goto(postUrl);
     check(((await reader.locator('.bd a[href^="https://wa.me/"]').first().getAttribute('href')) ?? '').startsWith('https://wa.me/50588881234'), 'a signed-in member gets the author’s WhatsApp');
     await reader.locator('details.bd-report summary').click();

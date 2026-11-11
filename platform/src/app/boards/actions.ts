@@ -7,11 +7,13 @@ import { currentSession, requestContext, userAgentHash } from '@/server/auth/con
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { isDomainError } from '@/server/errors';
 import { signInPath } from '@/server/auth/sign-in-path';
-import { BOARD_DISTRICTS, isBoardDistrict } from '@/config/boards';
+import { BOARD_DISTRICTS, BOARD_KINDS, isBoardDistrict, type BoardKind } from '@/config/boards';
 import {
   BOARD_DECISIONS,
   BOARD_REPORT_CATEGORIES,
   closeBoardPost,
+  deleteBoardAlert,
+  saveBoardAlert,
   reportBoardPost,
   resolveBoardTicket,
   type BoardDecision,
@@ -87,4 +89,42 @@ export async function resolveBoardTicketAction(formData: FormData): Promise<void
   );
   revalidatePath('/admin/distritos');
   redirect('/admin/distritos');
+}
+
+/** "Avísame": keeps the filters the member is looking at as an alert. */
+export async function saveBoardAlertAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect(await signInPath());
+  const district = String(formData.get('district') ?? '');
+  if (!isBoardDistrict(district)) redirect('/districts');
+  const base = home(district);
+  const kind = String(formData.get('kind') ?? '');
+  try {
+    await db().transaction((tx) =>
+      saveBoardAlert(tx, {
+        userId: session.user.userId,
+        filters: {
+          district,
+          subdistrict: String(formData.get('sub') ?? '') || null,
+          kind: (BOARD_KINDS as readonly string[]).includes(kind) ? (kind as BoardKind) : null,
+          query: String(formData.get('q') ?? '') || null,
+          placeCode: String(formData.get('place') ?? '') || null,
+        },
+      }),
+    );
+  } catch (error) {
+    redirect(`${base}?mine=1&error=${encodeURIComponent(errorKey(error))}`);
+  }
+  revalidatePath(base);
+  redirect(`${base}?mine=1&saved=1`);
+}
+
+export async function deleteBoardAlertAction(formData: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect(await signInPath());
+  const id = String(formData.get('alertId') ?? '');
+  const base = home(String(formData.get('district') ?? ''));
+  if (UUID.test(id)) await db().transaction((tx) => deleteBoardAlert(tx, { userId: session.user.userId, id }));
+  revalidatePath(base);
+  redirect(`${base}?mine=1`);
 }

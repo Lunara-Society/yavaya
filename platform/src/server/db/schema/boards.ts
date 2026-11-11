@@ -59,3 +59,28 @@ export const boardPostPhotos = pgTable(
   },
   (table) => [uniqueIndex('board_post_photos_media_key').on(table.mediaId), uniqueIndex('board_post_photos_position_key').on(table.postId, table.position)],
 );
+
+/**
+ * "Avísame": a member's standing search in a board district. When a post that
+ * matches is published, they are told (once a day per alert at most).
+ * `lastSeenAt` is when they last opened it, so "3 nuevas" counts posts really
+ * published since then.
+ */
+export const boardAlerts = pgTable(
+  'board_alerts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    district: text('district').notNull(),
+    subdistrict: text('subdistrict'),
+    kind: text('kind'),
+    query: text('query'),
+    /** A place code; the alert covers everything inside that place. */
+    placeCode: text('place_code'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('board_alerts_user_idx').on(table.userId, table.district), index('board_alerts_district_idx').on(table.district)],
+);

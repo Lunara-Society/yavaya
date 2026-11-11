@@ -316,6 +316,13 @@
       "when": 1794400103169,
       "tag": "0044_wooden_texas_twister",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1794401028555,
+      "tag": "0045_lumpy_the_fallen",
+      "breakpoints": true
     }
   ]
 }

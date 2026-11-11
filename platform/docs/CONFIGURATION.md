@@ -1750,8 +1750,12 @@ no billable action is declared. Nothing is configured by environment variable.
 - **Roxi** can search the six districts, on the site and on WhatsApp: the two
   ElevenLabs tools (`search_yavaya`, `search_yavaya_public`) list them in
   `scope` since 11 November 2026. Not yet seen in a live conversation.
-- **Live activity, saved searches and reputation events** do not know these
-  posts yet.
+- **"Avísame"** (11 November 2026): a member keeps the filters on screen as an
+  alert (up to 5 per district, `BOARD_RULES.maxAlertsPerDistrict`, Yavaya's own
+  default) and gets a notification, in the new `districts` category, when a
+  matching post is published: once a day per alert, never for their own post.
+  It arrives in the bell and the daily email summary, not on WhatsApp.
+- **Live activity and reputation events** do not know these posts yet.
 - **Closing on expiry.** A post past its time stops being shown; no job flips
   its status, so its author sees it as "Vencida" from the date alone.
 - **Licences in Salud y Bienestar.** Nothing here is verified, and the page

@@ -554,6 +554,8 @@ export const BOARD_RULES = {
   maxOpenPerDistrict: 10,
   /** Photos are optional; this many at most. */
   maxPhotos: 4,
+  /** "Avísame" alerts one member may keep per district. */
+  maxAlertsPerDistrict: 5,
   pageSize: 20,
 } as const;
 

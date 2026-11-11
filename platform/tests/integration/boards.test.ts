@@ -2,13 +2,18 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq, ne, and, notLike } from 'drizzle-orm';
 import sharp from 'sharp';
 import { closeDb, db } from '@/server/db/client';
-import { auditEvents, boardPosts, locations, userProfiles, users } from '@/server/db/schema';
+import { auditEvents, boardPosts, locations, notifications, userProfiles, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS } from '@/config/boards';
 import { BOARD_RULES } from '@/config/business-rules';
 import {
+  alertHref,
   boardInputSchema,
+  deleteBoardAlert,
+  markBoardAlertSeen,
+  myBoardAlerts,
+  saveBoardAlert,
   boardQueue,
   closeBoardPost,
   createBoardPost,
@@ -220,6 +225,59 @@ describe('places and photos', () => {
     const files = await Promise.all(Array.from({ length: BOARD_RULES.maxPhotos + 1 }, (_, i) => jpeg(i + 1)));
     const images = await storeImages({ ownerUserId: author.userId, purpose: 'board_photo', files });
     await expect(db().transaction((tx) => createBoardPost(tx, { authorUserId: author.userId, input: input(), images }))).rejects.toMatchObject({ messageKey: 'board.error.photo_count' });
+  });
+});
+
+describe('Avísame', () => {
+  const filters = (over: Record<string, string | null> = {}) => ({ district: 'hogar' as const, subdistrict: 'rentals', kind: null, query: null, placeCode: null, ...over });
+  const told = (userId: string) => db().select().from(notifications).where(eq(notifications.userId, userId));
+
+  it('tells the member whose alert a new post matches, once a day, and never its author', async () => {
+    const author = await person();
+    const watcher = await person();
+    const other = await person();
+    const id = await db().transaction((tx) => saveBoardAlert(tx, { userId: watcher.userId, filters: filters() }));
+    await db().transaction((tx) => saveBoardAlert(tx, { userId: other.userId, filters: filters({ subdistrict: 'moving' }) }));
+    await db().transaction((tx) => saveBoardAlert(tx, { userId: author.userId, filters: filters() }));
+
+    await publish(author.userId);
+    const first = await told(watcher.userId);
+    expect(first).toHaveLength(1);
+    expect(first[0]).toMatchObject({ category: 'districts', titleKey: 'notify.board.alert_match' });
+    expect(first[0]?.href).toBe(alertHref({ ...filters(), id }));
+    expect(await told(other.userId)).toHaveLength(0);
+    expect(await told(author.userId)).toHaveLength(0);
+
+    await publish(author.userId, { title: 'Otra casa en alquiler hoy' });
+    expect(await told(watcher.userId)).toHaveLength(1);
+  });
+
+  it('matches words and place, counts what is new since the alert was opened, and can be removed', async () => {
+    const author = await person();
+    const watcher = await person();
+    const country = placeCode.split('.').slice(0, 2).join('.');
+    const id = await db().transaction((tx) => saveBoardAlert(tx, { userId: watcher.userId, filters: filters({ subdistrict: null, query: 'patio', placeCode: country }) }));
+    // The same filters again are the same alert.
+    expect(await db().transaction((tx) => saveBoardAlert(tx, { userId: watcher.userId, filters: filters({ subdistrict: null, query: 'patio', placeCode: country }) }))).toBe(id);
+
+    await publish(author.userId);
+    await publish(author.userId, { title: 'Casa sin jardín en otra parte', body: 'Dos cuartos y sala amplia, cerca del mercado central.' });
+    await publish(author.userId, { locationId: elsewhere.id, title: 'Casa con patio en otro país' });
+    const [alert] = await myBoardAlerts(db(), { userId: watcher.userId, district: 'hogar' });
+    expect(alert).toMatchObject({ id, query: 'patio', newCount: 1 });
+
+    await markBoardAlertSeen(db(), { userId: watcher.userId, id });
+    expect((await myBoardAlerts(db(), { userId: watcher.userId, district: 'hogar' }))[0]?.newCount).toBe(0);
+    await db().transaction((tx) => deleteBoardAlert(tx, { userId: author.userId, id }));
+    expect(await myBoardAlerts(db(), { userId: watcher.userId, district: 'hogar' })).toHaveLength(1);
+    await db().transaction((tx) => deleteBoardAlert(tx, { userId: watcher.userId, id }));
+    expect(await myBoardAlerts(db(), { userId: watcher.userId, district: 'hogar' })).toHaveLength(0);
+  });
+
+  it('keeps a member to the limit per district', async () => {
+    const watcher = await person();
+    for (let i = 0; i < BOARD_RULES.maxAlertsPerDistrict; i += 1) await db().transaction((tx) => saveBoardAlert(tx, { userId: watcher.userId, filters: filters({ query: `casa ${i}` }) }));
+    await expect(db().transaction((tx) => saveBoardAlert(tx, { userId: watcher.userId, filters: filters({ query: 'una más' }) }))).rejects.toMatchObject({ messageKey: 'board.error.too_many_alerts' });
   });
 });
 

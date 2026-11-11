@@ -14,8 +14,8 @@ import { loginHref } from '@/server/auth/return-path';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
-import { BOARD_REPORT_CATEGORIES, getBoardPost, listBoardPosts, myBoardPosts, subdistrictCounts, type BoardPostView } from '@/server/domains/boards/service';
-import { closeBoardPostAction, reportBoardPostAction } from '@/app/boards/actions';
+import { alertHref, BOARD_REPORT_CATEGORIES, getBoardPost, listBoardPosts, markBoardAlertSeen, myBoardAlerts, myBoardPosts, subdistrictCounts, type BoardPostView } from '@/server/domains/boards/service';
+import { closeBoardPostAction, deleteBoardAlertAction, reportBoardPostAction, saveBoardAlertAction } from '@/app/boards/actions';
 import { mediaStorage } from '@/server/domains/media/storage';
 import { MEDIA_RULES } from '@/config/business-rules';
 
@@ -44,6 +44,7 @@ const LIMITS: Record<string, Record<string, number>> = {
   'board.error.price': { max: BOARD_RULES.priceMaxLength },
   'board.error.too_many_open': { max: BOARD_RULES.maxOpenPerDistrict },
   'board.error.photo_count': { max: BOARD_RULES.maxPhotos },
+  'board.error.too_many_alerts': { max: BOARD_RULES.maxAlertsPerDistrict },
   'media.error.too_large': { maxMegabytes: MEDIA_RULES.maxUploadBytes / 1024 / 1024 },
 };
 
@@ -77,7 +78,7 @@ export async function boardTitle(district: BoardDistrict): Promise<{ title: stri
   return { title: t(DISTRICTS[district].nameKey as MessageKey), description: t(DISTRICTS[district].taglineKey as MessageKey) };
 }
 
-export async function BoardHome({ district, searchParams }: { district: BoardDistrict; searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string }> }) {
+export async function BoardHome({ district, searchParams }: { district: BoardDistrict; searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string; alert?: string; saved?: string; error?: string }> }) {
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const def = BOARD_DISTRICTS[district];
@@ -92,6 +93,10 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
   // The list follows the place in the header's location bar unless this page's own picker says otherwise;
   // when that place has nothing yet, it widens to its department and country, and says so.
   const { code: placeCode, link: placeLink } = await browsePlace(params.place, locale);
+  // Arriving from an alert: what it had matched is no longer new.
+  if (userId && params.alert && /^[0-9a-f-]{36}$/i.test(params.alert)) await markBoardAlertSeen(db(), { userId, id: params.alert });
+  const alerts = mine ? await myBoardAlerts(db(), { userId: userId!, district }) : null;
+  const error = safeKey(params.error);
   const [found, counts, own] = await Promise.all([
     mine ? null : widenWhenEmpty(placeCode, page, locale, (code) => listBoardPosts(db(), { district, subdistrict, kind, query, placeCode: code, viewerId: userId, page, locale })),
     subdistrictCounts(db(), district),
@@ -149,6 +154,8 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
             {mine ? (
               <>
                 <h2 className="h-md">{t('board.mine')}</h2>
+                {error ? <p className="mk-error">{t(error as MessageKey, LIMITS[error] ?? {})}</p> : null}
+                {params.saved === '1' ? <p className="bd-ok">{t('board.alert.saved')}</p> : null}
                 {own!.length === 0 ? (
                   <div className="mk-empty">
                     <p>{t('board.mine_empty')}</p>
@@ -160,6 +167,36 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
                   <ul className="bd-list">
                     {own!.map((post) => (
                       <PostRow key={post.id} post={post} base={base} t={t} locale={locale} own />
+                    ))}
+                  </ul>
+                )}
+                <h2 className="h-md bd-alerts-title">{t('board.alert.title')}</h2>
+                {alerts!.length === 0 ? (
+                  <p className="muted">{t('board.alert.empty')}</p>
+                ) : (
+                  <ul className="bd-alerts">
+                    {alerts!.map((alert) => (
+                      <li key={alert.id}>
+                        <span className="bd-alert-what">
+                          {[alert.query ? `«${alert.query}»` : null, alert.subdistrict ? t(sub(district, alert.subdistrict)) : null, alert.kind ? t(`board.kind.${alert.kind}` as MessageKey) : null]
+                            .filter(Boolean)
+                            .join(' · ') || t('board.alert.everything')}
+                          {alert.placeCode ? '' : ` · ${t('board.alert.anywhere')}`}
+                          {alert.newCount > 0 ? <strong className="bd-count"> · {t('board.alert.new', { count: alert.newCount })}</strong> : null}
+                        </span>
+                        <span className="btn-row">
+                          <Link className="btn btn-line" href={alertHref(alert)}>
+                            {t('board.alert.open')}
+                          </Link>
+                          <form action={deleteBoardAlertAction}>
+                            <input type="hidden" name="district" value={district} />
+                            <input type="hidden" name="alertId" value={alert.id} />
+                            <button className="btn btn-line" type="submit">
+                              {t('board.alert.delete')}
+                            </button>
+                          </form>
+                        </span>
+                      </li>
                     ))}
                   </ul>
                 )}
@@ -205,6 +242,20 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
                     ))}
                   </ul>
                 )}
+                {/* "Avísame": the filters on screen, kept as an alert. For members; a visitor is sent to sign in by the action. */}
+                {userId ? (
+                  <form action={saveBoardAlertAction} className="bd-alert-save">
+                    <input type="hidden" name="district" value={district} />
+                    <input type="hidden" name="sub" value={subdistrict ?? ''} />
+                    <input type="hidden" name="kind" value={kind ?? ''} />
+                    <input type="hidden" name="q" value={query ?? ''} />
+                    <input type="hidden" name="place" value={placeCode ?? ''} />
+                    <button className="btn btn-line" type="submit">
+                      {t('board.alert.save')}
+                    </button>
+                    <span className="hint">{t('board.alert.save_hint')}</span>
+                  </form>
+                ) : null}
                 {feed!.page > 1 || feed!.hasMore ? (
                   <nav className="mk-pager">
                     {feed!.page > 1 ? (

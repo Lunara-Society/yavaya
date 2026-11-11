@@ -1,8 +1,8 @@
 import 'server-only';
-import { and, desc, eq, gt, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, ilike, inArray, ne, or, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Executor } from '@/server/db/client';
-import { boardPostPhotos, boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
+import { boardAlerts, boardPostPhotos, boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
 import { BOARD_RULES } from '@/config/business-rules';
 import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS, BOARD_KINDS, isSubdistrict, type BoardDistrict, type BoardKind } from '@/config/boards';
 import { DomainError, errors } from '@/server/errors';
@@ -10,7 +10,7 @@ import { recordAudit } from '@/server/domains/audit/service';
 import { requirePermission, type AuthContext } from '@/server/domains/access/authorize';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 import { OPEN_TICKET_STATUSES, openTicketFor } from '@/server/domains/moderation/tickets';
-import { notify } from '@/server/domains/notifications/service';
+import { dayKey, notify } from '@/server/domains/notifications/service';
 import { subtreeIds } from '@/server/domains/geography/service';
 import { insertMediaRows, markRemoved, type StoredImage } from '@/server/domains/media/service';
 
@@ -116,7 +116,113 @@ export async function createBoardPost(tx: Executor, params: { authorUserId: stri
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: { subdistrict: input.subdistrict, kind: input.kind, photos: images.length },
   });
+  await notifyAlertMatches(tx, { postId, authorUserId: params.authorUserId });
   return postId;
+}
+
+// --- "Avísame" ---------------------------------------------------------------------
+
+export type BoardAlertFilters = { district: BoardDistrict; subdistrict: string | null; kind: BoardKind | null; query: string | null; placeCode: string | null };
+export type BoardAlert = BoardAlertFilters & { id: string; newCount: number };
+
+/** The address of a district list with an alert's filters, so opening the alert shows what it watches. */
+export function alertHref(alert: BoardAlertFilters & { id?: string }): string {
+  const search = new URLSearchParams();
+  if (alert.subdistrict) search.set('sub', alert.subdistrict);
+  if (alert.kind) search.set('kind', alert.kind);
+  if (alert.query) search.set('q', alert.query);
+  // An alert without a place watches everywhere, whatever the header's place says.
+  search.set('place', alert.placeCode ?? 'all');
+  if (alert.id) search.set('alert', alert.id);
+  return `/${BOARD_DISTRICTS[alert.district].slug}?${search.toString()}`;
+}
+
+/** Tells the members whose alert a new post matches: never its author, and once a day per alert. */
+async function notifyAlertMatches(tx: Executor, params: { postId: string; authorUserId: string }): Promise<void> {
+  const escaped = sql`replace(replace(replace(${boardAlerts.query}, '\\', '\\\\'), '%', '\\%'), '_', '\\_')`;
+  const matches = await tx
+    .select({ id: boardAlerts.id, userId: boardAlerts.userId, district: boardAlerts.district, subdistrict: boardAlerts.subdistrict, kind: boardAlerts.kind, query: boardAlerts.query, placeCode: boardAlerts.placeCode })
+    .from(boardAlerts)
+    .innerJoin(boardPosts, eq(boardPosts.id, params.postId))
+    .innerJoin(locations, eq(locations.id, boardPosts.locationId))
+    .where(
+      and(
+        ne(boardAlerts.userId, params.authorUserId),
+        eq(boardAlerts.district, boardPosts.district),
+        sql`(${boardAlerts.subdistrict} is null or ${boardAlerts.subdistrict} = ${boardPosts.subdistrict})`,
+        sql`(${boardAlerts.kind} is null or ${boardAlerts.kind} = ${boardPosts.kind})`,
+        sql`(${boardAlerts.placeCode} is null or ${locations.code} = ${boardAlerts.placeCode} or ${boardAlerts.placeCode} = any(${locations.path}))`,
+        sql`(${boardAlerts.query} is null or ${boardPosts.title} ilike '%' || ${escaped} || '%' or ${boardPosts.body} ilike '%' || ${escaped} || '%')`,
+      ),
+    )
+    .limit(500);
+  const day = dayKey();
+  await notify(
+    tx,
+    matches.map((alert) => ({
+      userId: alert.userId,
+      category: 'districts' as const,
+      type: 'board.alert_match',
+      titleKey: 'notify.board.alert_match',
+      href: alertHref({ ...alert, district: alert.district as BoardDistrict, kind: alert.kind as BoardKind | null }),
+      dedupeKey: `board.alert:${alert.id}:${day}`,
+      subjectId: params.postId,
+    })),
+  );
+}
+
+/** Saves an alert for the filters a member is looking at. The same filters twice is one alert. */
+export async function saveBoardAlert(tx: Executor, params: { userId: string; filters: BoardAlertFilters }): Promise<string> {
+  await activeMember(tx, params.userId);
+  const f = params.filters;
+  const filters: BoardAlertFilters = {
+    district: f.district,
+    subdistrict: f.subdistrict && isSubdistrict(f.district, f.subdistrict) ? f.subdistrict : null,
+    kind: f.kind && (BOARD_KINDS as readonly string[]).includes(f.kind) ? f.kind : null,
+    query: f.query?.trim().slice(0, 80) || null,
+    placeCode: f.placeCode && /^[a-z0-9._-]{2,80}$/.test(f.placeCode) ? f.placeCode : null,
+  };
+  const existing = await tx.select().from(boardAlerts).where(and(eq(boardAlerts.userId, params.userId), eq(boardAlerts.district, filters.district)));
+  const same = existing.find((a) => a.subdistrict === filters.subdistrict && a.kind === filters.kind && a.query === filters.query && a.placeCode === filters.placeCode);
+  if (same) return same.id;
+  if (existing.length >= BOARD_RULES.maxAlertsPerDistrict) throw new DomainError('conflict', 'board.error.too_many_alerts');
+  const [row] = await tx.insert(boardAlerts).values({ userId: params.userId, ...filters }).returning({ id: boardAlerts.id });
+  return row!.id;
+}
+
+export async function deleteBoardAlert(tx: Executor, params: { userId: string; id: string }): Promise<void> {
+  await tx.delete(boardAlerts).where(and(eq(boardAlerts.id, params.id), eq(boardAlerts.userId, params.userId)));
+}
+
+/** Opening an alert: what it matched until now is no longer new. */
+export async function markBoardAlertSeen(executor: Executor, params: { userId: string; id: string }): Promise<void> {
+  await executor.update(boardAlerts).set({ lastSeenAt: new Date() }).where(and(eq(boardAlerts.id, params.id), eq(boardAlerts.userId, params.userId)));
+}
+
+/** A member's alerts in a district, each with how many open posts matched since they last opened it. */
+export async function myBoardAlerts(executor: Executor, params: { userId: string; district: BoardDistrict }): Promise<BoardAlert[]> {
+  const escaped = sql`replace(replace(replace(${boardAlerts.query}, '\\', '\\\\'), '%', '\\%'), '_', '\\_')`;
+  const rows = await executor
+    .select({
+      id: boardAlerts.id,
+      subdistrict: boardAlerts.subdistrict,
+      kind: boardAlerts.kind,
+      query: boardAlerts.query,
+      placeCode: boardAlerts.placeCode,
+      newCount: sql<number>`(
+        select count(*)::int from board_posts p join locations l on l.id = p.location_id
+        where p.district = ${boardAlerts.district} and p.status = 'open' and p.expires_at > now()
+          and p.created_at > ${boardAlerts.lastSeenAt} and p.author_user_id <> ${boardAlerts.userId}
+          and (${boardAlerts.subdistrict} is null or p.subdistrict = ${boardAlerts.subdistrict})
+          and (${boardAlerts.kind} is null or p.kind = ${boardAlerts.kind})
+          and (${boardAlerts.placeCode} is null or l.code = ${boardAlerts.placeCode} or ${boardAlerts.placeCode} = any(l.path))
+          and (${boardAlerts.query} is null or p.title ilike '%' || ${escaped} || '%' or p.body ilike '%' || ${escaped} || '%')
+      )`,
+    })
+    .from(boardAlerts)
+    .where(and(eq(boardAlerts.userId, params.userId), eq(boardAlerts.district, params.district)))
+    .orderBy(desc(boardAlerts.createdAt));
+  return rows.map((row) => ({ ...row, district: params.district, kind: row.kind as BoardKind | null }));
 }
 
 export type BoardPostView = {

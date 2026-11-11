@@ -7,6 +7,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return boardTitle('salud');
 }
 
-export default function Page({ searchParams }: { searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string }> }) {
+export default function Page({ searchParams }: { searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string; alert?: string; saved?: string; error?: string }> }) {
   return <BoardHome district="salud" searchParams={searchParams} />;
 }

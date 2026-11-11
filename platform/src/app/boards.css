@@ -96,3 +96,9 @@
 .bd-photos { display: grid; gap: 10px; margin: 16px 0; }
 .bd-photos img { width: 100%; height: auto; border-radius: 14px; }
 @media (min-width: 640px) { .bd-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* "Avísame": the save control under a list, and a member's alerts. */
+.bd-alert-save { display: grid; gap: 6px; margin: 18px 0; padding: 14px; border-radius: 14px; border: 1px dashed color-mix(in srgb, var(--bd) 70%, transparent); justify-items: start; }
+.bd-alerts-title { margin-top: 32px; }
+.bd-alerts { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bd-alerts li { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
