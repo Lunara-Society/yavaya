@@ -34,6 +34,7 @@ import { listingQueue, reportListing, resolveListingTicket } from '@/server/doma
 import { listingInputSchema, parsePriceToMinor, normalizeWhatsapp } from '@/server/domains/mercadito/rules';
 import { MERCADITO_RULES, REPUTATION_RULES } from '@/config/business-rules';
 import { resetTransactionalData } from '../helpers/database';
+import { whatsappLookup } from '@/server/domains/whatsapp/lookup';
 
 /** In-memory object store: the S3 adapter's contract, without a network. */
 class MemoryStorage implements MediaStorage {
@@ -715,5 +716,26 @@ describe('the media storage capability', () => {
     expect(await state(full)).toBe('REAL');
     expect(await state({ ...full, MEDIA_S3_SECRET_ACCESS_KEY: undefined })).toBe('REQUIRES_CONFIGURATION');
     expect(await state({ ...full, MEDIA_STORAGE_PROVIDER: 'unconfigured' })).toBe('REQUIRES_CONFIGURATION');
+  });
+});
+
+describe('what Roxi can look up for someone on WhatsApp', () => {
+  it('finds a published listing as a visitor would, with a full link, and says so when there is nothing', async () => {
+    const seller = await createMember({ ageDays: 30 });
+    const { listingId } = await publish(seller, 7, { title: 'Refrigeradora de dos puertas' });
+
+    const found = JSON.parse(await whatsappLookup(db(), { scope: 'mercadito', q: 'refrigeradora' }));
+    expect(found.found).toBe(1);
+    expect(found.results[0].title).toBe('Refrigeradora de dos puertas');
+    expect(found.results[0].link).toMatch(new RegExp(`^https?://[^/]+/mercadito/${listingId}$`));
+
+    const nothing = JSON.parse(await whatsappLookup(db(), { scope: 'mercadito', q: 'helicóptero' }));
+    expect(nothing).toMatchObject({ found: 0, results: [] });
+  });
+
+  it('refuses the members-only service board and anything it does not know', async () => {
+    for (const scope of ['services', 'admin', '', undefined]) {
+      expect(JSON.parse(await whatsappLookup(db(), { scope }))).toMatchObject({ error: 'unknown_scope' });
+    }
   });
 });

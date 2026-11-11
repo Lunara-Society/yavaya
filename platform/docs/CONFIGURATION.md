@@ -1663,6 +1663,21 @@ specified rules: retune them there if they feel wrong in practice.
 
 Photos and voice notes are not opened: Roxi is told only that one was sent.
 
+**Looking things up (built 11 November 2026).** When the WhatsApp agent has a
+client tool named `search_yavaya_public` (parameters `scope`, `query`, `category`,
+`place`), Roxi can look up what is published and answer with real results and
+their links. The server answers the tool call itself
+(`src/server/domains/whatsapp/lookup.ts`): the person on WhatsApp is not signed
+in, so the look-up returns exactly what a visitor to the public pages sees, in
+Mercadito, YavayaGo, Trabajo, Animales and Santuario. The service board is
+refused: requests say where someone lives, and are for members. An empty result
+comes back as `found: 0`, and her instructions tell her to say she found
+nothing rather than describe something. Without the tool on the agent, nothing
+changes: she answers from her instructions as before. An answer is held 1.5
+seconds before it is sent, in case a look-up follows her first words, and she
+may look up at most 3 times for one answer (`WHATSAPP_RULES.roxiSettleMs`,
+`roxiLookupsPerAnswer`; Yavaya's own defaults).
+
 **Open (owner decision):** how long conversations are kept. Today they stay
 until someone on the team deletes them; the privacy page says so, and that a
 person can ask for deletion by writing to the same number. Also open: whether

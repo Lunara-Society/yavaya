@@ -524,12 +524,17 @@ export const WHATSAPP_RULES = {
    *   messages sent in a row get one answer;
    * - she reads at most this many earlier messages for context;
    * - at most this many answers per conversation per hour, a brake against
-   *   loops with another automated number.
+   *   loops with another automated number;
+   * - an answer is held this long before it is sent, in case she looks
+   *   something up right after speaking, and she may look up at most this
+   *   many times for one answer.
    */
   roxiPauseAfterTeamHours: 12,
   roxiWaitSeconds: 6,
   roxiContextMessages: 20,
   roxiMaxAnswersPerHour: 6,
+  roxiSettleMs: 1500,
+  roxiLookupsPerAnswer: 3,
 } as const;
 
 export const SAFE_SPACE_RULES = {

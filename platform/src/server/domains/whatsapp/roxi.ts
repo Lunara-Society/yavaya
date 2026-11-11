@@ -13,6 +13,7 @@ import { roxiPlatformStatus } from '@/server/domains/roxi/status';
 import { createTranslator } from '@/i18n';
 import { errors } from '@/server/errors';
 import { sendText, whatsappAvailability } from './service';
+import { whatsappLookup, type Lookup } from './lookup';
 
 /**
  * Roxi answering on Yavaya's WhatsApp.
@@ -78,27 +79,53 @@ export async function roxiWhatsappSwitch(executor: Executor): Promise<boolean> {
 
 // --- Asking Roxi --------------------------------------------------------------------
 
-export type AskRoxi = (input: { customerName: string; conversation: string; message: string }) => Promise<string | null>;
+export type AskRoxi = (input: { customerName: string; conversation: string; message: string; lookup?: Lookup }) => Promise<string | null>;
+
+/** The little of a WebSocket the conversation needs, so a test can stand in for ElevenLabs. */
+export type RoxiSocket = {
+  send(data: string): void;
+  close(): void;
+  addEventListener(type: 'open' | 'message' | 'error' | 'close', listener: (event: { data?: unknown }) => void): void;
+};
+
+/** The name of the agent's look-up tool, as configured on the WhatsApp agent at ElevenLabs. */
+export const LOOKUP_TOOL = 'search_yavaya_public';
+
+type AgentEvent = {
+  type?: string;
+  ping_event?: { event_id?: number };
+  agent_response_event?: { agent_response?: unknown };
+  client_tool_call?: { tool_name?: unknown; tool_call_id?: unknown; parameters?: unknown };
+};
 
 /**
- * One text-only conversation with the WhatsApp agent over ElevenLabs'
- * WebSocket: the earlier messages go in as context, the newest as the
- * person's message, and the first complete answer is kept. Any failure or a
- * slow answer gives null, and then nothing is sent.
+ * One exchange on an open socket: the earlier messages go in as context, the
+ * newest as the person's message, and her answer comes back.
+ *
+ * She may look something up first (the agent's `search_yavaya_public` tool, answered
+ * here with what a visitor to the public pages would see). An answer is
+ * therefore not taken the instant it arrives: it is held for a moment, and if
+ * a look-up follows, the words before it ("déjame buscar") are dropped and the
+ * answer after the result is the one kept. Any failure or a slow answer gives
+ * null, and then nothing is sent.
  */
-export const askRoxiOverWebSocket: AskRoxi = async ({ customerName, conversation, message }) => {
-  const agentId = serverEnv().WHATSAPP_ROXI_AGENT_ID;
-  if (!agentId) return null;
-  const url = await signedConversationUrl(agentId).catch(() => null);
-  if (!url) return null;
+export function converse(
+  socket: RoxiSocket,
+  input: Parameters<AskRoxi>[0],
+  options: { timeoutMs?: number; settleMs?: number } = {},
+): Promise<string | null> {
+  const settleMs = options.settleMs ?? WHATSAPP_RULES.roxiSettleMs;
   return new Promise<string | null>((resolve) => {
     let finished = false;
     let asked = false;
-    const socket = new WebSocket(url);
+    let lookups = 0;
+    let pending = 0;
+    let held: ReturnType<typeof setTimeout> | null = null;
     const finish = (answer: string | null) => {
       if (finished) return;
       finished = true;
       clearTimeout(timer);
+      if (held) clearTimeout(held);
       try {
         socket.close();
       } catch {
@@ -106,40 +133,76 @@ export const askRoxiOverWebSocket: AskRoxi = async ({ customerName, conversation
       }
       resolve(answer);
     };
-    const timer = setTimeout(() => finish(null), 45_000);
+    const timer = setTimeout(() => finish(null), options.timeoutMs ?? 45_000);
+    const send = (payload: unknown) => {
+      try {
+        socket.send(JSON.stringify(payload));
+      } catch {
+        finish(null);
+      }
+    };
     socket.addEventListener('open', () => {
-      socket.send(
-        JSON.stringify({
-          type: 'conversation_initiation_client_data',
-          conversation_config_override: { conversation: { text_only: true } },
-          dynamic_variables: {
-            customer_name: customerName,
-            conversation: conversation || '(no earlier messages)',
-            platform_status: roxiPlatformStatus(createTranslator('es')),
-          },
-        }),
-      );
+      send({
+        type: 'conversation_initiation_client_data',
+        conversation_config_override: { conversation: { text_only: true } },
+        dynamic_variables: {
+          customer_name: input.customerName,
+          conversation: input.conversation || '(no earlier messages)',
+          platform_status: roxiPlatformStatus(createTranslator('es')),
+        },
+      });
     });
     socket.addEventListener('message', (event) => {
-      let data: { type?: string; ping_event?: { event_id?: number }; agent_response_event?: { agent_response?: unknown } };
+      let data: AgentEvent;
       try {
-        data = JSON.parse(String(event.data));
+        data = JSON.parse(String(event.data)) as AgentEvent;
       } catch {
         return;
       }
       if (data.type === 'conversation_initiation_metadata' && !asked) {
         asked = true;
-        socket.send(JSON.stringify({ type: 'user_message', text: message }));
+        send({ type: 'user_message', text: input.message });
       } else if (data.type === 'ping') {
-        socket.send(JSON.stringify({ type: 'pong', event_id: data.ping_event?.event_id }));
+        send({ type: 'pong', event_id: data.ping_event?.event_id });
+      } else if (data.type === 'client_tool_call') {
+        const call = data.client_tool_call;
+        const id = typeof call?.tool_call_id === 'string' ? call.tool_call_id : null;
+        if (!id) return;
+        // Whatever she said before looking is not the answer.
+        if (held) clearTimeout(held);
+        held = null;
+        const reply = (result: string, isError: boolean) => send({ type: 'client_tool_result', tool_call_id: id, result, is_error: isError });
+        if (call?.tool_name !== LOOKUP_TOOL || !input.lookup) return reply(JSON.stringify({ error: 'unknown_tool' }), true);
+        lookups += 1;
+        if (lookups > WHATSAPP_RULES.roxiLookupsPerAnswer) return reply(JSON.stringify({ error: 'too_many_lookups' }), true);
+        const parameters = call.parameters && typeof call.parameters === 'object' ? (call.parameters as Record<string, unknown>) : {};
+        pending += 1;
+        void input
+          .lookup(parameters)
+          .catch(() => JSON.stringify({ error: 'lookup_failed' }))
+          .then((result) => {
+            pending -= 1;
+            if (!finished) reply(result, false);
+          });
       } else if (data.type === 'agent_response') {
         const answer = data.agent_response_event?.agent_response;
-        if (asked && typeof answer === 'string' && answer.trim()) finish(answer);
+        if (!asked || typeof answer !== 'string' || !answer.trim() || pending > 0) return;
+        if (held) clearTimeout(held);
+        held = setTimeout(() => finish(answer), settleMs);
       }
     });
     socket.addEventListener('error', () => finish(null));
     socket.addEventListener('close', () => finish(null));
   });
+}
+
+/** One text-only conversation with the WhatsApp agent over ElevenLabs' WebSocket. */
+export const askRoxiOverWebSocket: AskRoxi = async (input) => {
+  const agentId = serverEnv().WHATSAPP_ROXI_AGENT_ID;
+  if (!agentId) return null;
+  const url = await signedConversationUrl(agentId).catch(() => null);
+  if (!url) return null;
+  return converse(new WebSocket(url) as unknown as RoxiSocket, input);
 };
 
 // --- Answering -------------------------------------------------------------------------
@@ -214,6 +277,7 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
     customerName: open(contact.nameSealed) ?? '',
     conversation: context.join('\n'),
     message: latest.join('\n'),
+    lookup: (parameters) => whatsappLookup(executor, parameters),
   });
   if (!raw) return 'no_answer';
   const handover = raw.includes(HANDOVER);
