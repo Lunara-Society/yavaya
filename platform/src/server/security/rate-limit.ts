@@ -31,6 +31,9 @@ export const RATE_LIMITS = {
   login: { bucket: 'login', limit: 8, windowSeconds: 15 * 60 },
   register: { bucket: 'register', limit: 5, windowSeconds: 60 * 60 },
   verifyCode: { bucket: 'verify_code', limit: 10, windowSeconds: 15 * 60 },
+  /** Codes a member asks for to verify by WhatsApp, and codes one WhatsApp number may try: a guess is one in a hundred million. */
+  whatsappLinkStart: { bucket: 'whatsapp_link_start', limit: 10, windowSeconds: 60 * 60 },
+  whatsappLinkAttempt: { bucket: 'whatsapp_link_attempt', limit: 5, windowSeconds: 60 * 60 },
   /** Reset links asked for, per network and per address: a mailbox is not a target. */
   passwordResetNetwork: { bucket: 'password_reset_network', limit: 5, windowSeconds: 60 * 60 },
   passwordResetAddress: { bucket: 'password_reset_address', limit: 3, windowSeconds: 60 * 60 },

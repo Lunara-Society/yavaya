@@ -11,6 +11,9 @@ import { isPlausibleE164 } from '@/server/domains/identity/normalize';
 import { confirmPhoneVerification, startPhoneVerification } from '@/server/domains/identity/phone/service';
 import { setWhatsapp } from '@/server/domains/mercadito/service';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { startWhatsappLink } from '@/server/domains/identity/phone/whatsapp-link';
+import { whatsappAvailability } from '@/server/domains/whatsapp/service';
+import { siteContext } from '@/ui/site/context';
 
 /**
  * Phone verification: plain forms that work without JavaScript. Every result
@@ -89,4 +92,25 @@ export async function useVerifiedForWhatsappAction(): Promise<void> {
   await db().transaction((tx) => setWhatsapp(tx, { userId: session.user.userId, phoneE164: account.phone, audit }));
   revalidatePath('/mercadito', 'layout');
   redirect('/account/phone?whatsapp=1');
+}
+
+/**
+ * Verifying by WhatsApp: gives the member a one-time code and opens WhatsApp
+ * with it already written to Yavaya's number. The code is never shown on a
+ * page or kept in an address of ours: it goes straight into the message the
+ * member sends, and the number that delivers it becomes their verified phone.
+ */
+export async function verifyByWhatsappAction(): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect(await signInPath());
+  if (!whatsappAvailability().receive) redirect('/account/phone?error=unavailable');
+  let code: string;
+  try {
+    ({ code } = await startWhatsappLink(db(), { userId: session.user.userId }));
+  } catch (error) {
+    if (isDomainError(error) && error.code === 'rate_limited') redirect('/account/phone?error=rate_limited');
+    throw error;
+  }
+  const { c, t } = await siteContext();
+  redirect(`${c.ui.footer.whatsappHref}?text=${encodeURIComponent(t('phone.whatsapp.message', { code }))}`);
 }

@@ -13,7 +13,9 @@ import {
   confirmPhoneCodeAction,
   sendPhoneCodeAction,
   useVerifiedForWhatsappAction,
+  verifyByWhatsappAction,
 } from "./actions";
+import { whatsappAvailability } from "@/server/domains/whatsapp/service";
 import { signInPath } from "@/server/auth/sign-in-path";
 
 export const dynamic = "force-dynamic";
@@ -113,6 +115,20 @@ export default async function PhonePage({
             ) : null}
             {query.whatsapp === "1" ? (
               <p className="mk-banner">{t("phone.whatsapp_updated")}</p>
+            ) : null}
+            {/* Verifying by sending a code from WhatsApp: offered only while Yavaya's number is receiving. */}
+            {whatsappAvailability().receive ? (
+              <div className="ph-note">
+                <p>
+                  <strong>{t("phone.whatsapp.title")}</strong>
+                </p>
+                <p className="muted">{t("phone.whatsapp.lead")}</p>
+                <form action={verifyByWhatsappAction}>
+                  <button className="btn btn-gold" type="submit">
+                    {t(verified ? "phone.whatsapp.again" : "phone.whatsapp.button")}
+                  </button>
+                </form>
+              </div>
             ) : null}
             {whatsappDiffers ? (
               <div className="ph-note">

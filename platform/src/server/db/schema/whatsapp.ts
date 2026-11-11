@@ -17,6 +17,8 @@ export const whatsappContacts = pgTable(
   'whatsapp_contacts',
   {
     waId: text('wa_id').primaryKey(),
+    /** The member who verified this number by sending their code from it (identity/phone/whatsapp-link.ts); null for anyone else. */
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
     /** The profile name WhatsApp sends, sealed. */
     nameSealed: text('name_sealed'),
     /** Their last message to Yavaya: free-form replies are allowed for 24 hours after it. */

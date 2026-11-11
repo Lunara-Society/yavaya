@@ -341,6 +341,26 @@ export async function sendReply(executor: Executor, actor: AuthContext | null, w
 }
 
 /** Deletes a conversation and everything in it (a person asked, or it is not needed). Audited. */
+/**
+ * A message Yavaya itself sends in answer to something the person just did
+ * (confirming that their number was verified): sent, stored and shown in the
+ * inbox like any reply, but it is not the team stepping in, so Roxi is not
+ * paused by it. Only inside the 24 hours after the person's own message.
+ */
+export async function sendSystemText(executor: Executor, waId: string, text: string, fetcher: typeof fetch = fetch): Promise<boolean> {
+  const [current] = keys();
+  if (!current || !whatsappAvailability().reply) return false;
+  const waMessageId = await sendText(waId, text, fetcher);
+  if (!waMessageId) return false;
+  const sentAt = new Date();
+  await executor
+    .insert(whatsappMessages)
+    .values({ waMessageId, waId, direction: 'out', kind: 'text', bodySealed: seal(current, PURPOSE, text), status: 'sent', sentAt })
+    .onConflictDoNothing({ target: whatsappMessages.waMessageId });
+  await executor.update(whatsappContacts).set({ lastMessageAt: sentAt }).where(eq(whatsappContacts.waId, waId));
+  return true;
+}
+
 export async function deleteConversation(executor: Executor, actor: AuthContext | null, waId: string): Promise<void> {
   const who = await requirePermission(executor, actor, 'whatsapp.inbox');
   const removed = await executor.delete(whatsappContacts).where(eq(whatsappContacts.waId, waId)).returning({ waId: whatsappContacts.waId });

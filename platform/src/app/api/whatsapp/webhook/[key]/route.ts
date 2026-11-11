@@ -1,7 +1,9 @@
 import { after } from 'next/server';
 import { db } from '@/server/db/client';
 import { answerWithRoxi } from '@/server/domains/whatsapp/roxi';
-import { ingestDelivery, parseDelivery, signatureAccepted, verifyHandshake, webhookKeyMatches } from '@/server/domains/whatsapp/service';
+import { ingestDelivery, parseDelivery, sendSystemText, signatureAccepted, verifyHandshake, webhookKeyMatches, type ParsedDelivery } from '@/server/domains/whatsapp/service';
+import { confirmWhatsappLink } from '@/server/domains/identity/phone/whatsapp-link';
+import { createTranslator } from '@/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,14 +41,34 @@ export async function POST(request: Request, { params }: { params: Promise<{ key
     // Not something Meta sends; answered 200 so it is not retried forever.
     return new Response(null, { status: 200 });
   }
-  const { newInbound } = await ingestDelivery(db(), parseDelivery(payload));
+  const delivery = parseDelivery(payload);
+  const { newInbound } = await ingestDelivery(db(), delivery);
   // Roxi answers after Meta has its 200, never holding the delivery open while she thinks.
   if (newInbound.length > 0) {
     after(async () => {
       for (const waId of newInbound) {
+        // A member sending their verification code is answered by Yavaya itself, not by Roxi.
+        const linked = await confirmCodes(waId, delivery).catch((error: unknown) => {
+          console.error('whatsapp.link', error instanceof Error ? error.message : 'failed');
+          return false;
+        });
+        if (linked) continue;
         await answerWithRoxi(db(), waId).catch((error: unknown) => console.error('whatsapp.roxi', error instanceof Error ? error.message : 'failed'));
       }
     });
   }
   return new Response(null, { status: 200 });
+}
+
+/** Tries each new text from this number as a verification code; says so in the chat when one links the number. */
+async function confirmCodes(waId: string, delivery: ParsedDelivery): Promise<boolean> {
+  for (const message of delivery.messages) {
+    if (message.waId !== waId || message.direction !== 'in' || !message.text) continue;
+    const result = await confirmWhatsappLink(db(), { waId, text: message.text });
+    if (result.linked) {
+      await sendSystemText(db(), waId, createTranslator('es')('phone.whatsapp.linked'));
+      return true;
+    }
+  }
+  return false;
 }

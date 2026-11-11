@@ -1632,6 +1632,26 @@ hours after the person's last message (`WHATSAPP_RULES.replyWindowHours`:
 WhatsApp's rule, not Yavaya's). Every reply and every deleted conversation is
 audited (who and when, never the text).
 
+### Verifying a phone by WhatsApp (built 11 November 2026)
+
+A member can verify their phone without SMS. On `/account/phone` a button
+gives them a one-time, eight-digit code and opens WhatsApp with it already
+written to Yavaya's number; when that message arrives, the number that sent it
+becomes the member's verified phone, the conversation is tied to their account
+(`whatsapp_contacts.user_id`), and Yavaya answers in the chat that it is done.
+Roxi does not answer that message. Code: `identity/phone/whatsapp-link.ts`,
+hooked into the webhook route.
+
+The button shows only while the number is receiving (the three receiving
+variables above). The confirmation message also needs the sending variables;
+without them the number is still verified, silently. A wrong, expired or
+unknown code is treated as an ordinary message and nothing is said about it.
+One WhatsApp number may try 5 codes an hour and a member may ask for 10 an
+hour (`RATE_LIMITS.whatsappLinkAttempt`, `whatsappLinkStart`); the code lives
+10 minutes (`VERIFICATION_RULES.phoneCodeTtlMinutes`). These limits are
+Yavaya's own defaults. The confirmation is sent in Spanish whatever the
+member's language.
+
 ### Roxi on WhatsApp (built 11 November 2026)
 
 When the owner switches her on in the inbox (`whatsapp.roxi` permission, admin

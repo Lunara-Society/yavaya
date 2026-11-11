@@ -1,5 +1,5 @@
 import 'server-only';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, ne, sql } from 'drizzle-orm';
 import type { Database, Executor } from '@/server/db/client';
 import { users, verificationChallenges } from '@/server/db/schema';
 import { VERIFICATION_RULES } from '@/config/business-rules';
@@ -10,6 +10,7 @@ import { recordAudit } from '@/server/domains/audit/service';
 import { applyRule } from '@/server/domains/reputation/service';
 import { recordPhoneSignal } from '../risk';
 import { phoneVerifier } from './verifier';
+import { WHATSAPP_TARGET } from './whatsapp-link';
 
 /**
  * Phone verification.
@@ -170,6 +171,8 @@ export async function confirmPhoneVerification(
         eq(verificationChallenges.userId, params.userId),
         eq(verificationChallenges.kind, 'phone'),
         eq(verificationChallenges.status, 'pending'),
+        // A code meant to be sent from WhatsApp proves nothing when typed here: it names no number.
+        ne(verificationChallenges.target, WHATSAPP_TARGET),
       ),
     )
     .orderBy(desc(verificationChallenges.createdAt))
