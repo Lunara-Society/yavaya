@@ -48,6 +48,8 @@ export const PERMISSIONS = {
   'work.review': 'work',
   'safe_space.review': 'community',
   'whatsapp.inbox': 'support',
+  /** Turning Roxi's WhatsApp answers on or off for everyone: the owner's call, so admin only. */
+  'whatsapp.roxi': 'platform',
 
   // Platform ----------------------------------------------------------------
   'districts.manage': 'platform',

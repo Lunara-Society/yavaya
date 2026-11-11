@@ -6,7 +6,8 @@ import { db } from '@/server/db/client';
 import { currentSession } from '@/server/auth/context';
 import { isDomainError } from '@/server/errors';
 import { signInPath } from '@/server/auth/sign-in-path';
-import { deleteConversation, sendReply } from '@/server/domains/whatsapp/service';
+import { deleteConversation, sendReply, setRoxiInConversation } from '@/server/domains/whatsapp/service';
+import { setRoxiWhatsapp } from '@/server/domains/whatsapp/roxi';
 
 const WA_ID = /^\d{6,20}$/;
 
@@ -47,4 +48,32 @@ export async function deleteConversationAction(formData: FormData): Promise<void
   }
   revalidatePath('/admin/whatsapp');
   redirect('/admin/whatsapp?deleted=1');
+}
+
+/** Lets Roxi answer in this conversation again, or keeps her out of it. */
+export async function roxiConversationAction(formData: FormData): Promise<void> {
+  const actor = await staff();
+  const waId = String(formData.get('waId') ?? '');
+  if (!WA_ID.test(waId)) redirect('/admin/whatsapp');
+  const on = formData.get('on') === '1';
+  try {
+    await db().transaction((tx) => setRoxiInConversation(tx, actor, waId, on));
+  } catch (error) {
+    failed(`/admin/whatsapp?c=${waId}`, error);
+  }
+  revalidatePath('/admin/whatsapp');
+  redirect(`/admin/whatsapp?c=${waId}`);
+}
+
+/** The owner's switch for Roxi on WhatsApp. */
+export async function roxiSwitchAction(formData: FormData): Promise<void> {
+  const actor = await staff();
+  const on = formData.get('on') === '1';
+  try {
+    await db().transaction((tx) => setRoxiWhatsapp(tx, actor, on));
+  } catch (error) {
+    failed('/admin/whatsapp', error);
+  }
+  revalidatePath('/admin/whatsapp');
+  redirect(`/admin/whatsapp?roxi=${on ? 'on' : 'off'}`);
 }

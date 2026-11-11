@@ -603,6 +603,15 @@ the service, not only the page. Replies are audited without their content. The
 middleware exempts only this path from the preview gate, as it does for the
 payment notifications.
 
+Roxi's WhatsApp answers run on the server only, after the delivery has been
+acknowledged. The ElevenLabs agent requires signed conversations (only the
+server, holding `ELEVENLABS_API_KEY`, can start one). Everything a person
+writes reaches her as the user's message, never as instructions, and her own
+instructions keep her to Yavaya topics, forbid asking for secrets, and send
+anything sensitive to the team. Replies go only to Meta's Graph API or
+Dualhook's Runtime API: `WHATSAPP_API_BASE` accepts no other host. An hourly
+cap per conversation stops a loop with another automated number.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a

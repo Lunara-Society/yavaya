@@ -1022,7 +1022,8 @@ export const siteEn: SiteContent = {
           list: [
             'We keep your number, your WhatsApp profile name and your text messages, with the team\'s replies. The name and the texts are stored **encrypted**. Photos, voice notes and documents are not downloaded: only the fact that you sent one is noted.',
             'Only Yavaya staff allowed to handle WhatsApp see them. They are not linked to your Yavaya account, if you have one.',
-            'A person answers you. Yavaya sends no automatic or bulk WhatsApp messages.',
+            'You may be answered by **Roxi**, Yavaya\'s AI assistant: she says so, talks only about Yavaya and only answers what you write, within the following 24 hours. The team reads the conversations and can reply at any time; if you ask for a person, Roxi passes the conversation to the team. Yavaya sends no bulk or advertising WhatsApp messages.',
+            'For Roxi to answer, the messages in that conversation and your profile name go through **ElevenLabs** and its language model, as in conversations with Roxi on the site, and the text is kept there for 30 days.',
             'There is no fixed deletion period yet: they are kept until the team deletes the conversation, and you can ask us to delete it by writing to the same number.',
           ],
         },
@@ -1050,7 +1051,7 @@ export const siteEn: SiteContent = {
             '**Resend** sends verification emails: it receives your email address and the message content.',
             '**WhatsApp** (by Meta) and **Dualhook**, which connects Yavaya\'s number, carry the messages you send to that number to the team inbox.',
             '**Sentry** (United States) receives the platform\'s technical errors, so the team knows what failed and where: the kind of error, the page and the type of browser. It does not receive your name, your email, your YAY ID, your IP address, your cookies or what you type, and nothing from Espacio Violeta.',
-            '**ElevenLabs**, and the **OpenAI** and **Google** language models it uses, handle conversations with Roxi: they receive what is said in them (see «If you talk to Roxi»).',
+            '**ElevenLabs**, and the **OpenAI** and **Google** language models it uses, handle conversations with Roxi, on the site and on WhatsApp: they receive what is said in them (see «If you talk to Roxi» and «If you write to Yavaya on WhatsApp»).',
           ],
         },
         {

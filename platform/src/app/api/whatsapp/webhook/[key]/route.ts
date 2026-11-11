@@ -1,4 +1,6 @@
+import { after } from 'next/server';
 import { db } from '@/server/db/client';
+import { answerWithRoxi } from '@/server/domains/whatsapp/roxi';
 import { ingestDelivery, parseDelivery, signatureAccepted, verifyHandshake, webhookKeyMatches } from '@/server/domains/whatsapp/service';
 
 export const dynamic = 'force-dynamic';
@@ -37,6 +39,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ key
     // Not something Meta sends; answered 200 so it is not retried forever.
     return new Response(null, { status: 200 });
   }
-  await ingestDelivery(db(), parseDelivery(payload));
+  const { newInbound } = await ingestDelivery(db(), parseDelivery(payload));
+  // Roxi answers after Meta has its 200, never holding the delivery open while she thinks.
+  if (newInbound.length > 0) {
+    after(async () => {
+      for (const waId of newInbound) {
+        await answerWithRoxi(db(), waId).catch((error: unknown) => console.error('whatsapp.roxi', error instanceof Error ? error.message : 'failed'));
+      }
+    });
+  }
   return new Response(null, { status: 200 });
 }

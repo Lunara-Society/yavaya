@@ -19,13 +19,17 @@ import {
   whatsappAvailability,
 } from '@/server/domains/whatsapp/service';
 import { resetTransactionalData } from '../helpers/database';
+import { answerWithRoxi, setRoxiWhatsapp, type AskRoxi } from '@/server/domains/whatsapp/roxi';
+import { setRoxiInConversation } from '@/server/domains/whatsapp/service';
+import { clearSettingsCache } from '@/server/domains/platform/settings';
+import { featureFlags } from '@/server/db/schema';
 
 /**
  * The WhatsApp team inbox: what Meta delivers is read strictly, stored once,
  * sealed, and shown only to staff holding `whatsapp.inbox`.
  */
 
-const VARS = ['WHATSAPP_WEBHOOK_KEY', 'WHATSAPP_VERIFY_TOKEN', 'WHATSAPP_KEY', 'WHATSAPP_KEY_PREVIOUS', 'WHATSAPP_APP_SECRET', 'WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_PHONE_NUMBER_ID'] as const;
+const VARS = ['WHATSAPP_WEBHOOK_KEY', 'WHATSAPP_VERIFY_TOKEN', 'WHATSAPP_KEY', 'WHATSAPP_KEY_PREVIOUS', 'WHATSAPP_APP_SECRET', 'WHATSAPP_ACCESS_TOKEN', 'WHATSAPP_PHONE_NUMBER_ID', 'WHATSAPP_API_BASE', 'WHATSAPP_ROXI_AGENT_ID', 'ELEVENLABS_API_KEY'] as const;
 const saved = Object.fromEntries(VARS.map((key) => [key, process.env[key]]));
 const WEBHOOK_KEY = 'a-webhook-key-that-is-long-enough-01';
 const VERIFY = 'verify-token-long-enough-02';
@@ -39,7 +43,7 @@ function configure(values: Partial<Record<(typeof VARS)[number], string>>) {
 
 const context = { networkHash: null, addressHash: 'whatsapp-test', deviceFingerprint: null, userAgent: 'vitest' };
 
-async function person(role?: 'support' | 'moderator') {
+async function person(role?: 'support' | 'moderator' | 'admin') {
   const { userId } = await register(
     db(),
     { email: `wa-${crypto.randomUUID()}@example.com`, password: 'a-sufficiently-long-passphrase', displayName: 'Equipo', locale: 'es', acceptedTerms: true },
@@ -74,6 +78,8 @@ function inbound(id: string, text: string, from = '50588881234', at = now) {
 
 beforeEach(async () => {
   await resetTransactionalData();
+  await db().delete(featureFlags).where(eq(featureFlags.key, 'whatsapp.roxi'));
+  clearSettingsCache();
   configure({ WHATSAPP_WEBHOOK_KEY: WEBHOOK_KEY, WHATSAPP_VERIFY_TOKEN: VERIFY, WHATSAPP_KEY: SEAL });
 });
 afterEach(() => configure(saved as Record<string, string>));
@@ -158,8 +164,8 @@ describe('reading deliveries', () => {
 describe('storing and the inbox', () => {
   it('stores each message once, sealed, and counts it unread', async () => {
     const delivery = parseDelivery(inbound('wamid.1', 'Hola, quiero vender en Yavaya'));
-    expect(await ingestDelivery(db(), delivery)).toEqual({ stored: 1 });
-    expect(await ingestDelivery(db(), delivery)).toEqual({ stored: 0 });
+    expect(await ingestDelivery(db(), delivery)).toEqual({ stored: 1, newInbound: ['50588881234'] });
+    expect(await ingestDelivery(db(), delivery)).toEqual({ stored: 0, newInbound: [] });
 
     const [message] = await db().select().from(whatsappMessages);
     expect(message?.bodySealed).toBeTruthy();
@@ -241,5 +247,144 @@ describe('storing and the inbox', () => {
     const fetcher = (async () => new Response('{"error":{}}', { status: 400 })) as unknown as typeof fetch;
     await expect(db().transaction((tx) => sendReply(tx, staff, '50588881234', 'Hola', fetcher))).rejects.toMatchObject({ messageKey: 'whatsapp.error.send_failed' });
     expect(await db().select().from(whatsappMessages).where(eq(whatsappMessages.direction, 'out'))).toEqual([]);
+  });
+});
+
+describe('Roxi on WhatsApp', () => {
+  const READY = {
+    WHATSAPP_WEBHOOK_KEY: WEBHOOK_KEY,
+    WHATSAPP_VERIFY_TOKEN: VERIFY,
+    WHATSAPP_KEY: SEAL,
+    WHATSAPP_ACCESS_TOKEN: 'dh_live_test',
+    WHATSAPP_PHONE_NUMBER_ID: '1270050959528964',
+    WHATSAPP_API_BASE: 'https://api.dualhook.com/v25.0',
+    WHATSAPP_ROXI_AGENT_ID: 'agent_test1',
+    ELEVENLABS_API_KEY: 'an-elevenlabs-key-long-enough',
+  };
+  const noWait = async () => {};
+  let sent: Array<{ url: string; body: { to: string; text: { body: string } } }> = [];
+  const fetcher = (async (url: string, init: RequestInit) => {
+    sent.push({ url, body: JSON.parse(String(init.body)) });
+    return new Response(JSON.stringify({ messages: [{ id: `wamid.roxi.${sent.length}` }] }), { status: 200 });
+  }) as unknown as typeof fetch;
+
+  async function switchedOn() {
+    configure(READY);
+    const admin = await person('admin');
+    await db().transaction((tx) => setRoxiWhatsapp(tx, admin, true));
+    clearSettingsCache();
+    return admin;
+  }
+
+  beforeEach(() => {
+    sent = [];
+  });
+
+  it('stays silent while switched off, which is the default', async () => {
+    configure(READY);
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r0', '¿Qué es Yavaya?')));
+    let asked = false;
+    const ask: AskRoxi = async () => {
+      asked = true;
+      return 'Hola';
+    };
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('off');
+    expect(asked).toBe(false);
+    expect(sent).toEqual([]);
+  });
+
+  it('only an admin can switch her on, and not while something she needs is missing', async () => {
+    configure(READY);
+    const support = await person('support');
+    await expect(db().transaction((tx) => setRoxiWhatsapp(tx, support, true))).rejects.toMatchObject({ code: 'forbidden' });
+    configure({ ...READY, WHATSAPP_ROXI_AGENT_ID: '' });
+    const admin = await person('admin');
+    await expect(db().transaction((tx) => setRoxiWhatsapp(tx, admin, true))).rejects.toMatchObject({ messageKey: 'whatsapp.error.roxi_not_ready' });
+  });
+
+  it('answers once through Dualhook, with the earlier messages as context, and marks the answer as hers', async () => {
+    await switchedOn();
+    const at = Math.floor(Date.now() / 1000);
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r1', 'Hola', '50588881234', at - 60)));
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r2', '¿Cuánto cuesta publicar?', '50588881234', at)));
+    const seen: Array<Parameters<AskRoxi>[0]> = [];
+    const ask: AskRoxi = async (input) => {
+      seen.push(input);
+      return 'Hola, soy Roxi, la asistente de Yavaya. Publicar en Mercadito tiene publicaciones gratis.';
+    };
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('answered');
+    expect(seen[0]).toMatchObject({ customerName: 'María', conversation: '', message: 'Hola\n¿Cuánto cuesta publicar?' });
+    expect(sent[0]?.url).toBe('https://api.dualhook.com/v25.0/1270050959528964/messages');
+    expect(sent[0]?.body.to).toBe('50588881234');
+
+    // The same messages are not answered twice.
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('already_answered');
+    expect(sent).toHaveLength(1);
+
+    const staff = await person('support');
+    const opened = await openConversation(db(), staff, '50588881234');
+    expect(opened?.messages.at(-1)).toMatchObject({ direction: 'out', byRoxi: true, fromInbox: false });
+    const audits = await db().select().from(auditEvents).where(eq(auditEvents.action, 'whatsapp.roxi_reply'));
+    expect(audits).toHaveLength(1);
+
+    // A new message later: the earlier exchange is now context.
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r3', 'Gracias', '50588881234', at + 30)));
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('answered');
+    expect(seen[1]?.conversation).toContain('Cliente: ¿Cuánto cuesta publicar?');
+    expect(seen[1]?.conversation).toContain('Yavaya: Hola, soy Roxi');
+    expect(seen[1]?.message).toBe('Gracias');
+  });
+
+  it('hands over to the team: the marker is never sent, and she stays out until let back in', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.h1', 'Me cobraron dos veces')));
+    const ask: AskRoxi = async () => 'Lo paso al equipo de Yavaya; una persona te responde aquí. [[EQUIPO]]';
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('handed_over');
+    expect(sent[0]?.body.text.body).toBe('Lo paso al equipo de Yavaya; una persona te responde aquí.');
+    const [contact] = await db().select().from(whatsappContacts);
+    expect(contact?.needsTeam).toBe(true);
+
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.h2', '¿Hola?')));
+    expect(await answerWithRoxi(db(), '50588881234', { ask, fetcher, wait: noWait })).toBe('paused');
+
+    const staff = await person('support');
+    await db().transaction((tx) => setRoxiInConversation(tx, staff, '50588881234', true));
+    expect(await answerWithRoxi(db(), '50588881234', { ask: async () => 'Hola de nuevo', fetcher, wait: noWait })).toBe('answered');
+  });
+
+  it('steps back when the team writes from the phone', async () => {
+    await switchedOn();
+    const at = Math.floor(Date.now() / 1000);
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.p1', 'Hola', '50588881234', at - 10)));
+    await ingestDelivery(
+      db(),
+      parseDelivery({
+        entry: [{ changes: [{ field: 'smb_message_echoes', value: { message_echoes: [{ id: 'wamid.echo', from: '50558365522', to: '50588881234', timestamp: String(at), type: 'text', text: { body: 'Hola, soy del equipo' } }] } }] }],
+      }),
+    );
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.p2', 'Perfecto', '50588881234', at + 5)));
+    expect(await answerWithRoxi(db(), '50588881234', { ask: async () => 'x', fetcher, wait: noWait })).toBe('paused');
+    expect(sent).toEqual([]);
+  });
+
+  it('never answers outside the 24 hours, nor more than the hourly brake allows', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.w1', 'Hola', '50577770000', Math.floor(Date.now() / 1000) - 25 * 3600)));
+    expect(await answerWithRoxi(db(), '50577770000', { ask: async () => 'x', fetcher, wait: noWait })).toBe('window_closed');
+
+    const at = Math.floor(Date.now() / 1000);
+    let answered = 0;
+    for (let i = 0; i < 8; i += 1) {
+      await ingestDelivery(db(), parseDelivery(inbound(`wamid.l${i}`, `mensaje ${i}`, '50566660000', at + i)));
+      if ((await answerWithRoxi(db(), '50566660000', { ask: async () => `respuesta ${i}`, fetcher, wait: noWait })) === 'answered') answered += 1;
+    }
+    expect(answered).toBe(6);
+  });
+
+  it('sends nothing when she gives no answer', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.n1', 'Hola')));
+    expect(await answerWithRoxi(db(), '50588881234', { ask: async () => null, fetcher, wait: noWait })).toBe('no_answer');
+    expect(sent).toEqual([]);
   });
 });

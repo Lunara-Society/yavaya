@@ -32,6 +32,34 @@ function keys(): Array<string | null> {
   return [usableKey(env.WHATSAPP_KEY), usableKey(env.WHATSAPP_KEY_PREVIOUS)];
 }
 
+/** What a conversation looks like after a person on the team writes in it. */
+function teamTookOver() {
+  return { roxiPausedUntil: new Date(Date.now() + WHATSAPP_RULES.roxiPauseAfterTeamHours * 3_600_000), needsTeam: false };
+}
+
+/** Where replies go: Meta's Graph API, or Dualhook's Runtime API (same requests, a dh_live_ key). */
+function apiBase(): string {
+  return serverEnv().WHATSAPP_API_BASE ?? 'https://graph.facebook.com/v21.0';
+}
+
+/**
+ * Sends one text message and returns WhatsApp's id for it, or null when it was
+ * not accepted. Nothing is stored here: callers store what was sent.
+ */
+export async function sendText(waId: string, body: string, fetcher: typeof fetch = fetch): Promise<string | null> {
+  const env = serverEnv();
+  const response = await fetcher(`${apiBase()}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`, 'content-type': 'application/json' },
+    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: waId, type: 'text', text: { body, preview_url: false } }),
+    signal: AbortSignal.timeout(15_000),
+  }).catch(() => null);
+  if (!response) return null;
+  const result = (await response.json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null;
+  const id = result?.messages?.[0]?.id;
+  return response.ok && typeof id === 'string' && id.length > 0 ? id : null;
+}
+
 export function whatsappAvailability(): { receive: boolean; reply: boolean; missing: string[] } {
   const env = serverEnv();
   const missing = [
@@ -155,10 +183,11 @@ export function parseDelivery(payload: unknown): ParsedDelivery {
 }
 
 /** Stores a delivery. Idempotent: Meta repeats deliveries, and each message is kept once. */
-export async function ingestDelivery(executor: Executor, delivery: ParsedDelivery): Promise<{ stored: number }> {
+export async function ingestDelivery(executor: Executor, delivery: ParsedDelivery): Promise<{ stored: number; newInbound: string[] }> {
   const [current] = keys();
-  if (!current) return { stored: 0 };
+  if (!current) return { stored: 0, newInbound: [] };
   let stored = 0;
+  const newInbound = new Set<string>();
   for (const message of delivery.messages) {
     const name = delivery.names.get(message.waId);
     // Inside a raw `sql` fragment the driver does not convert a Date, so it goes as text, cast.
@@ -195,14 +224,19 @@ export async function ingestDelivery(executor: Executor, delivery: ParsedDeliver
     if (inserted.length > 0) {
       stored += 1;
       if (message.direction === 'in') {
+        newInbound.add(message.waId);
         await executor.update(whatsappContacts).set({ unread: sql`${whatsappContacts.unread} + 1` }).where(eq(whatsappContacts.waId, message.waId));
+      } else {
+        // The team wrote from the phone: Roxi steps back in this conversation for a while.
+        // (Roxi's own messages are stored when sent, so if one ever echoed back it would not land here.)
+        await executor.update(whatsappContacts).set(teamTookOver()).where(eq(whatsappContacts.waId, message.waId));
       }
     }
   }
   for (const status of delivery.statuses) {
     await executor.update(whatsappMessages).set({ status: status.status }).where(and(eq(whatsappMessages.waMessageId, status.waMessageId), eq(whatsappMessages.direction, 'out')));
   }
-  return { stored };
+  return { stored, newInbound: [...newInbound] };
 }
 
 // --- The inbox ----------------------------------------------------------------------
@@ -216,13 +250,20 @@ function open(sealed: string | null): string | null {
   }
 }
 
-export type InboxContact = { waId: string; name: string | null; lastMessageAt: Date; unread: number };
-export type InboxMessage = { id: string; direction: 'in' | 'out'; kind: string; text: string | null; status: string | null; sentAt: Date; fromInbox: boolean };
+export type InboxContact = { waId: string; name: string | null; lastMessageAt: Date; unread: number; needsTeam: boolean; roxiPausedUntil: Date | null };
+export type InboxMessage = { id: string; direction: 'in' | 'out'; kind: string; text: string | null; status: string | null; sentAt: Date; fromInbox: boolean; byRoxi: boolean };
 
 export async function listInbox(executor: Executor, actor: AuthContext | null): Promise<InboxContact[]> {
   await requirePermission(executor, actor, 'whatsapp.inbox');
   const rows = await executor.select().from(whatsappContacts).orderBy(desc(whatsappContacts.lastMessageAt)).limit(WHATSAPP_RULES.inboxListSize);
-  return rows.map((row) => ({ waId: row.waId, name: open(row.nameSealed), lastMessageAt: row.lastMessageAt, unread: row.unread }));
+  return rows.map((row) => ({
+    waId: row.waId,
+    name: open(row.nameSealed),
+    lastMessageAt: row.lastMessageAt,
+    unread: row.unread,
+    needsTeam: row.needsTeam,
+    roxiPausedUntil: row.roxiPausedUntil && row.roxiPausedUntil > new Date() ? row.roxiPausedUntil : null,
+  }));
 }
 
 /** One conversation, oldest first; opening it marks it read. */
@@ -243,7 +284,14 @@ export async function openConversation(
     .limit(WHATSAPP_RULES.conversationSize);
   const windowEnds = row.lastInboundAt ? new Date(row.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000) : null;
   return {
-    contact: { waId: row.waId, name: open(row.nameSealed), lastMessageAt: row.lastMessageAt, unread: 0 },
+    contact: {
+      waId: row.waId,
+      name: open(row.nameSealed),
+      lastMessageAt: row.lastMessageAt,
+      unread: 0,
+      needsTeam: row.needsTeam,
+      roxiPausedUntil: row.roxiPausedUntil && row.roxiPausedUntil > new Date() ? row.roxiPausedUntil : null,
+    },
     messages: messages.reverse().map((m) => ({
       id: m.id,
       direction: m.direction === 'out' ? 'out' : 'in',
@@ -252,6 +300,7 @@ export async function openConversation(
       status: m.status,
       sentAt: m.sentAt,
       fromInbox: m.sentBy !== null,
+      byRoxi: m.byRoxi,
     })),
     canReplyUntil: windowEnds && windowEnds > new Date() ? windowEnds : null,
   };
@@ -264,7 +313,6 @@ export async function openConversation(
  */
 export async function sendReply(executor: Executor, actor: AuthContext | null, waId: string, text: string, fetcher: typeof fetch = fetch): Promise<void> {
   const who = await requirePermission(executor, actor, 'whatsapp.inbox');
-  const env = serverEnv();
   if (!whatsappAvailability().reply) throw errors.conflict('whatsapp.error.reply_unavailable');
   const body = text.trim().slice(0, WHATSAPP_RULES.replyMaxLength);
   if (!body) throw errors.validation('whatsapp.error.empty');
@@ -273,14 +321,8 @@ export async function sendReply(executor: Executor, actor: AuthContext | null, w
   if (!contact.lastInboundAt || contact.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000 < Date.now()) {
     throw errors.conflict('whatsapp.error.window_closed');
   }
-  const response = await fetcher(`https://graph.facebook.com/v21.0/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
-    method: 'POST',
-    headers: { authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: waId, type: 'text', text: { body, preview_url: false } }),
-  });
-  const result = (await response.json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null;
-  const waMessageId = result?.messages?.[0]?.id;
-  if (!response.ok || !waMessageId) throw errors.conflict('whatsapp.error.send_failed');
+  const waMessageId = await sendText(waId, body, fetcher);
+  if (!waMessageId) throw errors.conflict('whatsapp.error.send_failed');
   const [current] = keys();
   const now = new Date();
   await executor.insert(whatsappMessages).values({
@@ -293,7 +335,7 @@ export async function sendReply(executor: Executor, actor: AuthContext | null, w
     sentBy: who.userId,
     sentAt: now,
   }).onConflictDoNothing({ target: whatsappMessages.waMessageId });
-  await executor.update(whatsappContacts).set({ lastMessageAt: now }).where(eq(whatsappContacts.waId, waId));
+  await executor.update(whatsappContacts).set({ lastMessageAt: now, ...teamTookOver() }).where(eq(whatsappContacts.waId, waId));
   // The audit says who answered whom and when, never what was written.
   await recordAudit(executor, { actorType: 'admin', actorUserId: who.userId, action: 'whatsapp.reply', subjectType: 'whatsapp_contact', subjectId: waId });
 }
@@ -310,4 +352,25 @@ export async function deleteConversation(executor: Executor, actor: AuthContext 
 export async function unreadConversations(executor: Executor): Promise<number> {
   const [row] = await executor.select({ n: sql<number>`count(*)::int` }).from(whatsappContacts).where(sql`${whatsappContacts.unread} > 0`);
   return row?.n ?? 0;
+}
+
+/**
+ * Stops Roxi answering in one conversation (for the usual pause after the team
+ * writes), or lets her answer again. Audited: who decided and when.
+ */
+export async function setRoxiInConversation(executor: Executor, actor: AuthContext | null, waId: string, on: boolean): Promise<void> {
+  const who = await requirePermission(executor, actor, 'whatsapp.inbox');
+  const changed = await executor
+    .update(whatsappContacts)
+    .set(on ? { roxiPausedUntil: null, needsTeam: false } : teamTookOver())
+    .where(eq(whatsappContacts.waId, waId))
+    .returning({ waId: whatsappContacts.waId });
+  if (changed.length === 0) throw errors.notFound('whatsapp_contact');
+  await recordAudit(executor, {
+    actorType: 'admin',
+    actorUserId: who.userId,
+    action: on ? 'whatsapp.roxi_resumed' : 'whatsapp.roxi_paused',
+    subjectType: 'whatsapp_contact',
+    subjectId: waId,
+  });
 }

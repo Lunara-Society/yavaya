@@ -1035,7 +1035,8 @@ export const siteEs = {
           list: [
             'Guardamos tu número, el nombre de tu perfil de WhatsApp y tus mensajes de texto, con las respuestas del equipo. El nombre y los textos se guardan **cifrados**. Las fotos, audios y documentos no se descargan: solo queda anotado que enviaste uno.',
             'Solo los ve el personal de Yavaya con permiso para atender WhatsApp. No se unen a tu cuenta de Yavaya, si tienes una.',
-            'Te responde una persona. Yavaya no envía mensajes automáticos ni masivos por WhatsApp.',
+            'Puede responderte **Roxi**, la asistente de Yavaya con inteligencia artificial: se presenta como tal, habla solo de Yavaya y solo responde a lo que escribes, dentro de las 24 horas siguientes. El equipo lee las conversaciones y puede responder cuando quiera; si pides hablar con una persona, Roxi le pasa la conversación al equipo. Yavaya no envía mensajes masivos ni de publicidad por WhatsApp.',
+            'Para que Roxi responda, los mensajes de esa conversación y el nombre de tu perfil pasan por **ElevenLabs** y su modelo de lenguaje, como en las conversaciones con Roxi en el sitio, y el texto se guarda allí 30 días.',
             'Todavía no hay un plazo fijo para borrarlos: se guardan hasta que el equipo borra la conversación, y puedes pedir que la borremos escribiendo al mismo número.',
           ],
         },
@@ -1063,7 +1064,7 @@ export const siteEs = {
             '**Resend** envía los correos de verificación: recibe tu correo electrónico y el contenido del mensaje.',
             '**WhatsApp** (de Meta) y **Dualhook**, que conecta el número de Yavaya, transportan los mensajes que envías a ese número hasta la bandeja del equipo.',
             '**Sentry** (Estados Unidos) recibe los errores técnicos de la plataforma, para que el equipo sepa qué falló y dónde: el tipo de error, la página y el tipo de navegador. No recibe tu nombre, tu correo, tu YAY ID, tu dirección IP, tus cookies ni lo que escribes, y nada del Espacio Violeta.',
-            '**ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi: reciben lo que se dice en ellas (ver «Si hablas con Roxi»).',
+            '**ElevenLabs**, y los modelos de lenguaje de **OpenAI** y **Google** que usa, atienden las conversaciones con Roxi, en el sitio y en WhatsApp: reciben lo que se dice en ellas (ver «Si hablas con Roxi» y «Si escribes al WhatsApp de Yavaya»).',
           ],
         },
         {

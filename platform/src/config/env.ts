@@ -106,6 +106,18 @@ const serverSchema = z.object({
   WHATSAPP_APP_SECRET: z.string().optional(),
   WHATSAPP_ACCESS_TOKEN: z.string().optional(),
   WHATSAPP_PHONE_NUMBER_ID: z.string().regex(/^\d+$/).optional(),
+  /**
+   * Where replies are sent. Meta's Graph API by default; through Dualhook it is
+   * Dualhook's Runtime API, which takes the same requests with a dh_live_ key
+   * as WHATSAPP_ACCESS_TOKEN. Only these two hosts are accepted, so a typo can
+   * never send the team's messages (and the key) somewhere else.
+   */
+  WHATSAPP_API_BASE: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.string().regex(/^https:\/\/(graph\.facebook\.com|api\.dualhook\.com)\/v\d+\.\d+$/).optional(),
+  ),
+  /** The text-only ElevenLabs agent that answers on WhatsApp (separate from the site's Roxi). */
+  WHATSAPP_ROXI_AGENT_ID: z.preprocess((value) => (value === '' ? undefined : value), z.string().regex(/^agent_[a-z0-9]+$/).optional()),
   // "enabled" once the Google Cloud project behind GOOGLE_CLIENT_ID has the
   // Gmail and Calendar APIs on, their scopes on the consent screen, and
   // /api/roxi/connectors/google/callback as a redirect address.

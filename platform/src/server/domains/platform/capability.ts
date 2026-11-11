@@ -14,6 +14,7 @@ import { itemsAvailable } from '@/server/domains/roxi/items';
 import { connectorsAvailable } from '@/server/domains/roxi/connectors/service';
 import { googleConnectorAvailable } from '@/server/domains/roxi/connectors/google';
 import { whatsappAvailability } from '@/server/domains/whatsapp/service';
+import { roxiWhatsappReady } from '@/server/domains/whatsapp/roxi';
 
 /**
  * Email is the one capability with a genuine MOCK state: the console provider
@@ -158,6 +159,16 @@ export function integrationCapabilities(): Capability[] {
           ? undefined
           : 'Receiving works. Replying from the inbox also needs WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID; until then the team replies from the WhatsApp Business app.'
         : `Set ${whatsappAvailability().missing.join(', ')}, then give Dualhook the webhook address and verify token (CONFIGURATION.md, "WhatsApp").`,
+    },
+    {
+      key: 'whatsapp_roxi',
+      nameKey: 'capability.whatsapp_roxi.name',
+      detailKey: 'capability.whatsapp_roxi.detail',
+      // Measured: REAL once she can actually answer (sending works, her agent and the
+      // ElevenLabs key are set). Whether she does is the owner's switch in the inbox.
+      state: roxiWhatsappReady().ready ? 'REAL' : 'REQUIRES_CONFIGURATION',
+      group: 'integration',
+      blockedBy: roxiWhatsappReady().ready ? undefined : `Set ${roxiWhatsappReady().missing.join(', ')} (CONFIGURATION.md, "WhatsApp").`,
     },
     {
       key: 'kyc',

@@ -1,4 +1,4 @@
-import { index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 
 /**
@@ -23,6 +23,12 @@ export const whatsappContacts = pgTable(
     lastInboundAt: timestamp('last_inbound_at', { withTimezone: true }),
     lastMessageAt: timestamp('last_message_at', { withTimezone: true }).notNull(),
     unread: integer('unread').notNull().default(0),
+    /** Roxi stays quiet here until then: the team wrote, or someone paused her for this conversation. */
+    roxiPausedUntil: timestamp('roxi_paused_until', { withTimezone: true }),
+    /** Roxi handed this conversation to the team; she stays out of it until someone resumes her. */
+    needsTeam: boolean('needs_team').notNull().default(false),
+    /** The newest message from the person that Roxi has taken to answer (so it is answered once). */
+    roxiAnsweredThrough: timestamp('roxi_answered_through', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index('whatsapp_contacts_last_idx').on(table.lastMessageAt)],
@@ -47,6 +53,8 @@ export const whatsappMessages = pgTable(
     status: text('status'),
     /** For 'out' from the inbox: the team member who sent it. Null for the phone app. */
     sentBy: uuid('sent_by').references(() => users.id, { onDelete: 'set null' }),
+    /** For 'out': written by Roxi, not by a person. */
+    byRoxi: boolean('by_roxi').notNull().default(false),
     sentAt: timestamp('sent_at', { withTimezone: true }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },

@@ -288,6 +288,13 @@
       "when": 1794083761794,
       "tag": "0040_jazzy_zeigeist",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1794361285472,
+      "tag": "0041_romantic_whiplash",
+      "breakpoints": true
     }
   ]
 }

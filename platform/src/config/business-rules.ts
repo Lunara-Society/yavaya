@@ -515,6 +515,21 @@ export const WHATSAPP_RULES = {
   replyMaxLength: 4096,
   inboxListSize: 200,
   conversationSize: 300,
+  /**
+   * Roxi on WhatsApp. These are Yavaya's own defaults, chosen when the feature
+   * was built (CONFIGURATION.md, "WhatsApp"), not rules from a specification:
+   * - after the team writes in a conversation (from the phone or the inbox),
+   *   Roxi stays quiet in it for this long, so she never talks over a person;
+   * - she waits this long after a message before answering, so several
+   *   messages sent in a row get one answer;
+   * - she reads at most this many earlier messages for context;
+   * - at most this many answers per conversation per hour, a brake against
+   *   loops with another automated number.
+   */
+  roxiPauseAfterTeamHours: 12,
+  roxiWaitSeconds: 6,
+  roxiContextMessages: 20,
+  roxiMaxAnswersPerHour: 6,
 } as const;
 
 export const SAFE_SPACE_RULES = {

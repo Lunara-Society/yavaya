@@ -1594,7 +1594,9 @@ Railway variables (website only, not the scheduler):
 | `WHATSAPP_VERIFY_TOKEN` | receiving | 16+ random characters; Meta's handshake token |
 | `WHATSAPP_KEY` | receiving | 32+ characters; seals names and message text (`WHATSAPP_KEY_PREVIOUS` while rotating) |
 | `WHATSAPP_APP_SECRET` | optional | when set, `X-Hub-Signature-256` is checked; through Dualhook the Meta app may not be Yavaya's, so the unguessable address is the guard |
-| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | replying from the inbox | without them the inbox says to reply from the phone, and shows no reply box |
+| `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | replying from the inbox, and Roxi | through Dualhook: the connection's `dh_live_` key and its phone number id (1270050959528964); without them the inbox says to reply from the phone, and shows no reply box |
+| `WHATSAPP_API_BASE` | replying through Dualhook | `https://api.dualhook.com/v25.0` (Dualhook's Runtime API, same requests as Meta's Graph API); default is Meta's Graph API. Only those two hosts are accepted |
+| `WHATSAPP_ROXI_AGENT_ID` | Roxi on WhatsApp | the text-only ElevenLabs agent "Roxi · WhatsApp", `agent_8501m7446b15fcp98e8jwnbqwyv0`; also needs `ELEVENLABS_API_KEY` (already set for the site's Roxi) |
 
 In Dualhook, a connection with:
 
@@ -1618,6 +1620,37 @@ A reply leaves only when a person writes it, and only within WhatsApp's 24
 hours after the person's last message (`WHATSAPP_RULES.replyWindowHours`:
 WhatsApp's rule, not Yavaya's). Every reply and every deleted conversation is
 audited (who and when, never the text).
+
+### Roxi on WhatsApp (built 11 November 2026)
+
+When the owner switches her on in the inbox (`whatsapp.roxi` permission, admin
+only; off by default), Roxi answers new messages as Yavaya's assistant. She is
+a separate ElevenLabs agent, "Roxi · WhatsApp", text only, with the same model
+and Yavaya knowledge base as the site's Roxi but her own instructions: she
+introduces herself as an AI assistant, talks only about Yavaya, never asks for
+payment details or passwords, and hands to the team (ending her reply with a
+marker the server strips) anything about payments, refunds, complaints, a
+member's own account, danger, or a person asked for. The agent only accepts
+signed conversations, so only Yavaya's server can use it; transcripts are kept
+30 days at ElevenLabs, as the privacy page says.
+
+How it runs (`src/server/domains/whatsapp/roxi.ts`): after a delivery is
+stored and Meta has its 200, the server waits a few seconds, takes the
+person's newest messages (with up to 20 earlier ones as context), asks the
+agent over its WebSocket, and sends the answer through Dualhook. She never
+writes first and never outside the 24 hours. She stays out of a conversation
+for 12 hours after anyone on the team writes in it (phone or inbox), when
+someone pauses her there, and after she hands it over until someone lets her
+back in (buttons in the conversation). A handed-over conversation is marked
+"Para el equipo" and unread. At most 6 answers per conversation per hour.
+Every answer and handover is audited without its text; her messages show as
+"Roxi" in the inbox.
+
+The 12 hours, the few seconds' wait, 20 messages of context and 6 per hour are
+Yavaya's own defaults chosen when building it (`WHATSAPP_RULES`), not
+specified rules: retune them there if they feel wrong in practice.
+
+Photos and voice notes are not opened: Roxi is told only that one was sent.
 
 **Open (owner decision):** how long conversations are kept. Today they stay
 until someone on the team deletes them; the privacy page says so, and that a
