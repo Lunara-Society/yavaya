@@ -13,7 +13,7 @@
  *
  * Never used in Espacio Violeta: it is not loaded there at all.
  */
-export type Cue = 'enable' | 'door' | 'transition' | 'success' | 'roxi' | 'roxi-done' | 'guardian' | 'status';
+export type Cue = 'enable' | 'door' | 'transition' | 'success' | 'roxi' | 'roxi-done' | 'guardian' | 'status' | 'portal';
 
 export const SOUND_KEY = 'yavaya.sound';
 export const SOUND_EVENT = 'yavaya:sound';
@@ -28,6 +28,7 @@ export const COOLDOWN_MS: Record<Cue, number> = {
   'roxi-done': 900,
   guardian: 8000,
   status: 1500,
+  portal: 250,
 };
 export const MAX_VOICES = 3;
 
@@ -182,6 +183,41 @@ class SoundEngine {
     return at + duration;
   }
 
+  /**
+   * A bright sweep upward with a glassy ring after it: the district cards'
+   * sound (the owner, 12 November 2026: sharper, more of the future, and loud
+   * enough to hear without turning the phone all the way up). The other cues
+   * peak near a tenth of full scale, which a phone's small speaker at half
+   * volume does not carry; this one peaks at about half, in the range such a
+   * speaker is loudest in. The limiter after the master keeps it from clipping.
+   */
+  private sweep(ctx: AudioContext, at: number, from: number, to: number, peak: number): number {
+    const length = 0.5;
+    const voice = (type: OscillatorType, a: number, b: number, level: number, glide: number, decay: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(a, at);
+      osc.frequency.exponentialRampToValueAtTime(b, at + glide);
+      gain.gain.setValueAtTime(0.0001, at);
+      gain.gain.exponentialRampToValueAtTime(level, at + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, at + decay);
+      osc.connect(gain).connect(this.master!);
+      if (this.room) {
+        const send = ctx.createGain();
+        send.gain.value = 0.35;
+        gain.connect(send).connect(this.room);
+      }
+      osc.start(at);
+      osc.stop(at + decay + 0.05);
+    };
+    voice('triangle', from, to, peak, 0.11, 0.22);
+    voice('square', from * 2, to * 2, peak * 0.12, 0.09, 0.12);
+    voice('sine', to, to * 1.005, peak * 0.55, 0.3, length);
+    voice('sine', to * 1.5, to * 1.5, peak * 0.22, 0.3, length * 0.8);
+    return at + length;
+  }
+
   /** Writes one cue into the graph and returns its length in seconds. */
   private render(cue: Cue, ctx: AudioContext, t: number, pitch: number): number {
     let end = t;
@@ -192,6 +228,12 @@ class SoundEngine {
       case 'door': {
         const f = DOOR_NOTES[((pitch % DOOR_NOTES.length) + DOOR_NOTES.length) % DOOR_NOTES.length] ?? 440;
         end = Math.max(this.tone(ctx, t, f, 0.09, 0.9), this.tone(ctx, t, f * 2, 0.025, 0.5), this.tone(ctx, t, f / 2, 0.035, 0.8, 'triangle', 0.01, 0.2));
+        break;
+      }
+      case 'portal': {
+        // Each district on its own note of the same scale, two octaves up where a phone speaker is clearest.
+        const f = (DOOR_NOTES[((pitch % DOOR_NOTES.length) + DOOR_NOTES.length) % DOOR_NOTES.length] ?? 440) * 2;
+        end = this.sweep(ctx, t, f, f * 2, 0.5);
         break;
       }
       case 'transition':

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Conversation, type DisconnectionDetails } from '@elevenlabs/client';
-import { describeHealth, guardedVoiceStart, microphoneAlreadyAllowed, VoiceStartTimeout, outputSuspended, rememberedNativeRate, rememberNativeRate, resumeAudio, watchVoice, withNativeRateCapture, type VoiceProblem } from './voice-health';
+import { describeHealth, guardedVoiceStart, microphoneAlreadyAllowed, VoiceStartTimeout, outputSuspended, rememberedNativeRate, rememberNativeRate, resumeAudio, watchVoice, withNativeRateCapture, type VoiceProblem, boostVoice } from './voice-health';
 import { reportClientError } from '@/ui/components/client-error-report';
 import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
@@ -831,6 +831,7 @@ export default function RoxiPanel({
       setPhase('live');
       if (wanted === 'voice') {
         setVoiceIssue(null);
+        boostVoice(live);
         watcher.current?.stop();
         watcher.current = watchVoice(live, {
           nativeRate,

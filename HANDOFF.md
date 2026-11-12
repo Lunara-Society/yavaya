@@ -107,6 +107,15 @@ cards with nothing added. Full account in `platform/docs/DISTRICTS-3D.md`.
   light no longer follows the scroll; pictures ease after it). Still open:
   a 3D Guardian (needs the owner's decision on how), and the owner's
   confirmation that the flicker is gone.
+- After the owner's second look (12 November): the card-opening transition
+  twitched, so it now animates only transform and opacity (the first version
+  used clip-path); the card sound is a new, sharper and much louder cue
+  (`portal`); and Roxi's voice is raised 2.6x with a limiter (`boostVoice`,
+  `ui/roxi/voice-health.ts`) because Android plays a page's sound at call
+  level while the microphone is open. None of the three is confirmed on the
+  phone yet. Sentry YAVAYA-WEB-9 (11 Nov, one event) shows a Chrome voice
+  start with both audio contexts suspended and no microphone frames: the
+  Chrome voice problem is still open.
 - **Not verified on a real phone**: smoothness, battery and the direction of
   the tilt. The owner should look at it on their phone; the switch is the way
   back. Blender 4.5 LTS has to be reinstalled in a new session to re-render.

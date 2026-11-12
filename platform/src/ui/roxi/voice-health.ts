@@ -29,7 +29,7 @@ type InputLike = {
   addListener?: (listener: (event: MessageEvent) => void) => void;
   removeListener?: (listener: (event: MessageEvent) => void) => void;
 };
-type OutputLike = { context?: AudioContext };
+type OutputLike = { context?: AudioContext; gain?: GainNode; analyser?: AnalyserNode; setVolume?: (volume: number) => void };
 
 export type VoiceHealth = {
   /** Frames of microphone audio handed to the connection since the conversation opened. */
@@ -160,6 +160,44 @@ export function resumeAudio(live: Conversation | null): void {
   const { input, output } = parts(live);
   for (const context of [input?.context, output?.context]) {
     if (context && context.state === 'suspended') void context.resume().catch(() => undefined);
+  }
+}
+
+/** How much louder than the client plays it. Speech from the voice service peaks well under full scale, and a limiter follows. */
+const VOICE_BOOST = 2.6;
+
+/**
+ * Makes Roxi's voice louder. On the owner's phone she could only be heard
+ * with the volume all the way up (12 November 2026): while the microphone is
+ * open, Android plays a page's sound as it plays a telephone call, which is
+ * much quieter than music at the same setting. A page cannot change that
+ * routing, but it can send a stronger signal: the client's own gain is raised
+ * past the 1 its public setting stops at, with a limiter after it so that the
+ * loud parts are held rather than clipped. Read defensively: if the client's
+ * insides are not as expected, nothing is changed and she plays as before.
+ */
+export function boostVoice(live: Conversation): void {
+  const { output } = parts(live);
+  const context = output?.context;
+  if (!output || !context || !output.gain || !output.analyser || typeof output.setVolume !== 'function') return;
+  try {
+    const limiter = context.createDynamicsCompressor();
+    limiter.threshold.value = -14;
+    limiter.knee.value = 8;
+    limiter.ratio.value = 12;
+    limiter.attack.value = 0.003;
+    limiter.release.value = 0.18;
+    output.gain.disconnect();
+    output.gain.connect(limiter);
+    limiter.connect(output.analyser);
+    output.setVolume(VOICE_BOOST);
+  } catch {
+    // Left half-wired would be silence: put the client's own connection back.
+    try {
+      output.gain.connect(output.analyser);
+    } catch {
+      // nothing more to try
+    }
   }
 }
 
