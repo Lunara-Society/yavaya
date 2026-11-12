@@ -418,6 +418,13 @@ October 2026, the district pages as they were, the first Guardian and the
 seal come back. See
 [`FIRST-LIGHT.md`](FIRST-LIGHT.md).
 
+A fifth switch, **"Distritos en 3D"** (12 November 2026, the owner's request),
+gives the classic home page's district cards depth on devices that can afford
+it; off, the classic cards exactly as they were. Its depth maps are estimated
+by a model and its medallions rendered in Blender from the districts' own
+marks: decoration, like the rest of the imagery. Not yet confirmed on a real
+phone. See [`DISTRICTS-3D.md`](DISTRICTS-3D.md).
+
 **The First Light's pictures** (the home page since 6 November 2026;
 [`FIRST-LIGHT.md`](FIRST-LIGHT.md)) are in `public/first-light/`, with the
 worlds behind the doors (`world-<district>-*`: the door pictures widened and

@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { BOARD_DISTRICT_KEYS } from '@/config/boards';
 import { GUIDE_KEYS, guideFiles } from '@/config/guide';
 import {
   DISTRICT_WIDTHS,
@@ -61,6 +62,12 @@ describe('published image sizes', () => {
       ...HOME_SANCTUARY_EMBLEM_WIDTHS.map((w) => `art/home-sanctuary-emblem-${w}.webp`),
     ];
     expect(missing(files)).toEqual([]);
+  });
+
+  it('has a depth map and a medallion for every district card of the home page (the "Distritos en 3D" look)', () => {
+    // ui/depth asks for these by the district's key; a card without them keeps its flat photograph and drawn mark.
+    const cards = [...DISTRICT_IDS, ...BOARD_DISTRICT_KEYS];
+    expect(missing(cards.flatMap((id) => [`art/depth/home-card-${id}.webp`, `art/depth/medal-${id}.webp`]))).toEqual([]);
   });
 
   it('has every width of the sun of the logo', () => {

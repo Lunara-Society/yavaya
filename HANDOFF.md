@@ -1,4 +1,4 @@
-# Handoff: state of Yavaya work (updated November 11, 2026)
+# Handoff: state of Yavaya work (updated November 12, 2026)
 
 **A new chat reads this first.** There are no secrets here: they live in Railway
 variables. Then read `platform/docs/ARCHITECTURE.md`, `platform/docs/SECURITY.md`
@@ -82,6 +82,27 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Mi negocio** (11 Nov): `/mi-negocio` joins a member's store and its link with QR, today's accounts from Roxi's ledger, their open posts per district and their card. It adds no new data.
 - **The phone page is reachable again:** its shortcut on `/account` was hidden while SMS is unconfigured; it now shows when WhatsApp verification is available.
 - **Still not built from the owner's directive:** requests by WhatsApp routed to providers, orders sent into a store's WhatsApp, the Living World.
+
+## Distritos en 3D (built 12 November, owner's request)
+
+The owner asked to start the Living World small: the home page's district
+cards in 3D, with the classic look one switch away. Built as a fifth look,
+**Admin → Diseño del sitio → Distritos en 3D**, on by default; off, the classic
+cards with nothing added. Full account in `platform/docs/DISTRICTS-3D.md`.
+
+- Photographs with real depth (depth maps + one small WebGL shader),
+  Blender-rendered gold medallions of each district's own mark, cards that
+  turn toward the mouse, respond to a leaning phone and rise in as you scroll.
+- Loaded after the page has painted and only on capable devices: 6 KB of
+  engine, about 100 KB of pictures fetched card by card. Cheap phones, Data
+  Saver and reduced motion get the classic cards and download nothing. It
+  steps itself down, to classic if need be, when frames are slow.
+- Code: `platform/src/ui/depth/`. Pictures: `platform/public/art/depth/`.
+  Tools to remake them: `tools/depth/`. Browser test:
+  `platform/tests/e2e/depth.cjs` (21 checks, passing in headless Chromium).
+- **Not verified on a real phone**: smoothness, battery and the direction of
+  the tilt. The owner should look at it on their phone; the switch is the way
+  back. Blender 4.5 LTS has to be reinstalled in a new session to re-render.
 
 ## Roxi on the site
 - **Agent:** ElevenLabs `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya"), with plans Free, Pro and Max and credits metered from ElevenLabs costs.

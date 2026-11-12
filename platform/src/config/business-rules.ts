@@ -161,7 +161,8 @@ export const TRUST_BANDS = [
  * How the site looks. Each look is a switch the owner can turn back in
  * Admin → Diseño del sitio, without a deploy (a feature flag; see
  * server/domains/platform/looks.ts). These values only apply while nobody has
- * touched a switch: they are the owner's choice of 6 November 2026.
+ * touched a switch: they are the owner's choice of 6 November 2026, and of
+ * 12 November 2026 for the districts in depth.
  */
 export const SITE_LOOK_RULES = {
   /** The First Light (ui/first-light) as the home page; off, the home page of 31 October 2026. */
@@ -172,6 +173,14 @@ export const SITE_LOOK_RULES = {
   guardian: true,
   /** The owner's new logo (6 November 2026, the Guardian on the YAVAYA pedestal) in the header, icons and share card; off, the seal. */
   logo: true,
+  /**
+   * The district cards of the home page of 31 October 2026 in depth (ui/depth,
+   * docs/DISTRICTS-3D.md): each card tilts, its picture has near and far, and
+   * its mark is a gold medallion. Off, the cards exactly as they were: the
+   * owner asked for the classic cards to stay one switch away. Only a device
+   * that can afford it is given the depth; the rest see the classic cards.
+   */
+  depth: true,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

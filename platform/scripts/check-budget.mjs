@@ -76,8 +76,20 @@ for (const route of Object.keys(pages)) {
   if (total > BUDGET.cssKb) failures.push(`${route}: ${total.toFixed(1)} KB of styles (budget ${BUDGET.cssKb} KB)`);
 }
 
+/*
+ * The districts in depth (ui/depth, docs/DISTRICTS-3D.md) arrive after the
+ * page, on demand, so they are in no page's count above. Held here instead:
+ * the engine with its styles, 6.1 KB when written (12 November 2026).
+ */
+const lazy = JSON.parse(readFileSync(path.join(next, 'react-loadable-manifest.json'), 'utf8'));
+const depth = Object.entries(lazy).find(([key]) => key.includes('ui/depth/gate'))?.[1]?.files ?? [];
+const depthKb = depth.reduce((sum, f) => sum + kb(f), 0);
+if (!depth.length) failures.push('the depth engine was not found among the on-demand chunks');
+if (depth.some((f) => f.endsWith('.css'))) failures.push('the depth engine loads a stylesheet on demand, which adds a loader to every page (ui/depth/styles.ts)');
+if (depthKb > 8) failures.push(`the depth engine: ${depthKb.toFixed(1)} KB (budget 8 KB)`);
+
 if (failures.length) {
   console.error(`Size budget exceeded:\n  ${failures.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`Size budget: heaviest page ${heaviest.route} ${heaviest.kb.toFixed(1)}/${BUDGET.pageJsKb} KB JS; styles ${css.route} ${css.kb.toFixed(1)}/${BUDGET.cssKb} KB.`);
+console.log(`Size budget: heaviest page ${heaviest.route} ${heaviest.kb.toFixed(1)}/${BUDGET.pageJsKb} KB JS; styles ${css.route} ${css.kb.toFixed(1)}/${BUDGET.cssKb} KB; depth engine ${depthKb.toFixed(1)}/8 KB.`);

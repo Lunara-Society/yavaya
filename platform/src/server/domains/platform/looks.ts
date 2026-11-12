@@ -14,7 +14,7 @@ import { isFlagEnabled, setFlag } from './settings';
  * Changing one needs `flags.manage` (administrators), checked here, on the
  * server, inside the transaction that writes the flag and its audit record.
  */
-export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo'] as const;
+export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 const FLAG: Record<LookKey, string> = {
@@ -22,6 +22,7 @@ const FLAG: Record<LookKey, string> = {
   worlds: 'look.district_worlds',
   guardian: 'look.guardian_2',
   logo: 'look.logo_2',
+  depth: 'look.district_depth',
 };
 
 export function isLookKey(value: string): value is LookKey {

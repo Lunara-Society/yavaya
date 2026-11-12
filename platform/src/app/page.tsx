@@ -16,7 +16,8 @@ import { servedCountryNames, siteUrl } from '@/server/seo';
  * Yavaya home: the First Light (ui/first-light, docs/FIRST-LIGHT.md) while the
  * owner's switch says so (Admin → Diseño del sitio), otherwise the owner's
  * design of 31 October 2026 (ui/site/home.tsx). Turning the switch off is the
- * way back, without a deploy; both bodies stay in the tree for that.
+ * way back, without a deploy; both bodies stay in the tree for that. That
+ * design's district cards gain depth while a second switch says so (ui/depth).
  *
  * Deliberately honest: every district card leads into the district itself,
  * one that is not open says so, the search is Mercadito's and labelled as
@@ -26,7 +27,13 @@ import { servedCountryNames, siteUrl } from '@/server/seo';
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, location, firstLight, guardian2] = await Promise.all([servedCountryNames(), locationBarProps(t, locale), lookEnabled(db(), 'home'), lookEnabled(db(), 'guardian')]);
+  const [countries, location, firstLight, guardian2, depth] = await Promise.all([
+    servedCountryNames(),
+    locationBarProps(t, locale),
+    lookEnabled(db(), 'home'),
+    lookEnabled(db(), 'guardian'),
+    lookEnabled(db(), 'depth'),
+  ]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
       <JsonLd
@@ -56,7 +63,7 @@ export default async function HomePage() {
       {firstLight ? (
         <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} guardian={guardian2 ? 'second' : 'first'} />
       ) : (
-        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} />
+        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} depth={depth} />
       )}
     </SiteShell>
   );

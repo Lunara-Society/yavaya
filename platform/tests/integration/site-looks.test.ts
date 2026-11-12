@@ -30,7 +30,7 @@ async function person(admin: boolean) {
 
 describe("The site's looks (Admin → Diseño del sitio)", () => {
   it("are the owner's choice until someone touches a switch", async () => {
-    expect(await allLooks(db())).toEqual({ home: SITE_LOOK_RULES.home, worlds: SITE_LOOK_RULES.worlds, guardian: SITE_LOOK_RULES.guardian, logo: SITE_LOOK_RULES.logo });
+    expect(await allLooks(db())).toEqual({ home: SITE_LOOK_RULES.home, worlds: SITE_LOOK_RULES.worlds, guardian: SITE_LOOK_RULES.guardian, logo: SITE_LOOK_RULES.logo, depth: SITE_LOOK_RULES.depth });
   });
 
   it('can be turned back by an administrator, at once and on the record', async () => {

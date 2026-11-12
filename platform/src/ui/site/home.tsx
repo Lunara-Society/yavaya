@@ -7,6 +7,7 @@ import { PAGE_PATHS, districtState, type DistrictId } from './blocks';
 import { Icon } from './icons';
 import { LocationBar } from './location-bar';
 import { FrontDoor } from '@/ui/roxi/front-door';
+import { DepthGate } from '@/ui/depth/gate';
 import type { locationBarProps } from './location-props';
 
 /**
@@ -46,6 +47,14 @@ type HomeProps = {
   t: Translator;
   signedIn: boolean;
   location: Awaited<ReturnType<typeof locationBarProps>>;
+  /**
+   * The owner's switch "Distritos en 3D" (Admin → Diseño del sitio). On, the
+   * district cards are marked for ui/depth, which gives them near and far on
+   * a device that can afford it; the cards themselves are the same either
+   * way, so off — or on a device that is not given it — this is the page as
+   * it always was.
+   */
+  depth: boolean;
 };
 
 /**
@@ -98,7 +107,7 @@ export function BoardHomeCards({ t }: { t: Translator }) {
   return (
     <>
       {BOARD_DISTRICT_KEYS.map((key) => (
-              <li key={key} className={`hx-card hx-card-more hx-card-${key}`}>
+              <li key={key} className={`hx-card hx-card-more hx-card-${key}`} data-district={key}>
                 <Link className="hx-card-link" href={`/${BOARD_DISTRICTS[key].slug}`}>
                   <span className="hx-card-art">
                     <BoardCardScene id={key} sizes="(min-width: 1440px) 420px, (min-width: 1000px) 33vw, 50vw" />
@@ -152,7 +161,7 @@ function Arrow() {
   );
 }
 
-export function HomeBody({ c, t, signedIn, location }: HomeProps) {
+export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
   return (
     <div className="hx-page">
       <section className="hx-hero" aria-labelledby="hx-title">
@@ -205,7 +214,8 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
         </div>
       </section>
 
-      <section className="hx-districts" id="distritos" aria-labelledby="hx-d-title">
+      <section className="hx-districts" id="distritos" aria-labelledby="hx-d-title" data-depth={depth ? '' : undefined}>
+        {depth ? <DepthGate /> : null}
         <div className="wrap">
           <div className="hx-d-head">
             <div>
@@ -224,7 +234,7 @@ export function HomeBody({ c, t, signedIn, location }: HomeProps) {
               const state = districtState(id);
               return (
                 // The whole card is the way in; its colours are the design's for that district (home.css).
-                <li key={id} className={`hx-card hx-card-${id}${WIDE_ON_PHONE.includes(id) ? ' is-wide' : ''}`}>
+                <li key={id} className={`hx-card hx-card-${id}${WIDE_ON_PHONE.includes(id) ? ' is-wide' : ''}`} data-district={id}>
                   <Link className="hx-card-link" href={PAGE_PATHS[id]}>
                     <span className="hx-card-art">
                       <HomeCardScene id={id} sizes={cardSizes(id)} eager={FIRST_ROW.includes(id)} />
