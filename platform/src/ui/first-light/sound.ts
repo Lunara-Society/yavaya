@@ -184,38 +184,50 @@ class SoundEngine {
   }
 
   /**
-   * A bright sweep upward with a glassy ring after it: the district cards'
-   * sound (the owner, 12 November 2026: sharper, more of the future, and loud
-   * enough to hear without turning the phone all the way up). The other cues
-   * peak near a tenth of full scale, which a phone's small speaker at half
-   * volume does not carry; this one peaks at about half, in the range such a
-   * speaker is loudest in. The limiter after the master keeps it from clipping.
+   * The district cards' sound: four quick notes climbing, clipped like a
+   * machine's, and a clear tone left ringing on the last. The owner asked
+   * first for something sharper and louder (the other cues peak near a tenth
+   * of full scale, which a phone's small speaker at half volume does not
+   * carry), then for something more digital. The square wave is what makes
+   * it sound made rather than struck; the filter keeps it from being harsh,
+   * and the limiter after the master keeps it from clipping.
    */
-  private sweep(ctx: AudioContext, at: number, from: number, to: number, peak: number): number {
-    const length = 0.5;
-    const voice = (type: OscillatorType, a: number, b: number, level: number, glide: number, decay: number) => {
+  private arpeggio(ctx: AudioContext, at: number, root: number, peak: number): number {
+    const soften = ctx.createBiquadFilter();
+    soften.type = 'lowpass';
+    soften.frequency.value = 5200;
+    soften.Q.value = 0.7;
+    soften.connect(this.master!);
+    if (this.room) {
+      const send = ctx.createGain();
+      send.gain.value = 0.3;
+      soften.connect(send).connect(this.room);
+    }
+    const blip = (type: OscillatorType, freq: number, when: number, level: number, decay: number) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = type;
-      osc.frequency.setValueAtTime(a, at);
-      osc.frequency.exponentialRampToValueAtTime(b, at + glide);
-      gain.gain.setValueAtTime(0.0001, at);
-      gain.gain.exponentialRampToValueAtTime(level, at + 0.008);
-      gain.gain.exponentialRampToValueAtTime(0.0001, at + decay);
-      osc.connect(gain).connect(this.master!);
-      if (this.room) {
-        const send = ctx.createGain();
-        send.gain.value = 0.35;
-        gain.connect(send).connect(this.room);
-      }
-      osc.start(at);
-      osc.stop(at + decay + 0.05);
+      osc.frequency.setValueAtTime(freq, when);
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(level, when + 0.004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + decay);
+      osc.connect(gain).connect(soften);
+      osc.start(when);
+      osc.stop(when + decay + 0.05);
     };
-    voice('triangle', from, to, peak, 0.11, 0.22);
-    voice('square', from * 2, to * 2, peak * 0.12, 0.09, 0.12);
-    voice('sine', to, to * 1.005, peak * 0.55, 0.3, length);
-    voice('sine', to * 1.5, to * 1.5, peak * 0.22, 0.3, length * 0.8);
-    return at + length;
+    // Root, fifth, octave, and the fifth above: the same on every card, from that card's own note.
+    const steps = [1, 1.5, 2, 3];
+    const gap = 0.058;
+    steps.forEach((ratio, i) => {
+      const when = at + i * gap;
+      const last = i === steps.length - 1;
+      blip('square', root * ratio, when, peak * 0.32, last ? 0.2 : 0.07);
+      blip('triangle', root * ratio, when, peak, last ? 0.5 : 0.1);
+    });
+    const ring = at + (steps.length - 1) * gap;
+    blip('sine', root * 6, ring, peak * 0.3, 0.55);
+    blip('sine', root * 6.03, ring, peak * 0.2, 0.55);
+    return ring + 0.6;
   }
 
   /** Writes one cue into the graph and returns its length in seconds. */
@@ -231,9 +243,9 @@ class SoundEngine {
         break;
       }
       case 'portal': {
-        // Each district on its own note of the same scale, two octaves up where a phone speaker is clearest.
+        // Each district on its own note of the same scale, an octave up where a phone speaker is clearest.
         const f = (DOOR_NOTES[((pitch % DOOR_NOTES.length) + DOOR_NOTES.length) % DOOR_NOTES.length] ?? 440) * 2;
-        end = this.sweep(ctx, t, f, f * 2, 0.5);
+        end = this.arpeggio(ctx, t, f, 0.45);
         break;
       }
       case 'transition':

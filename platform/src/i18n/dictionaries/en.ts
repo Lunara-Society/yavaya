@@ -2411,6 +2411,8 @@ export const en: Dictionary = {
   'ops.overview.queues': 'To review',
   'ops.overview.visits_link': 'Visits and speed →',
   // --- Admin → Site design: the looks the owner can undo (server/domains/platform/looks.ts) ---
+  'members.new.title': 'New this week',
+  'members.new.empty': 'Nobody has registered in the last seven days.',
   'ops.looks.title': 'Site design',
   'ops.looks.lead': 'Every design change can be undone right here, with one tap and without waiting for anyone. The site shows it in under a minute.',
   'ops.looks.saved': 'Done. The site shows the change in under a minute.',

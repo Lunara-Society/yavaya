@@ -8,7 +8,7 @@ import { SiteShell } from '@/ui/site/site-shell';
 import { currentSession } from '@/server/auth/context';
 import { hasPermission } from '@/server/domains/access/authorize';
 import { SANCTION_RULES } from '@/config/business-rules';
-import { lookUpMember, SANCTION_REASONS } from '@/server/domains/access/sanctions';
+import { lookUpMember, newestMembers, SANCTION_REASONS } from '@/server/domains/access/sanctions';
 import { formatDate } from '@/ui/mercadito/format';
 import { memberAction } from '../actions';
 import { signInPath } from '@/server/auth/sign-in-path';
@@ -29,6 +29,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const session = await currentSession();
   const actor = session ? { userId, status: session.user.status } : null;
   const q = (query.q ?? '').slice(0, 100);
+  const newest = q ? [] : await newestMembers(db(), actor);
   const [found, canSuspend, canBan, canRestore, canResetTwoStep] = await Promise.all([
     q ? lookUpMember(db(), actor, q) : Promise.resolve(null),
     hasPermission(db(), userId, 'users.suspend'),
@@ -163,6 +164,20 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
             )}
           </article>
         ) : null}
+        {/* Who joined this week, when nobody is being looked up. */}
+        {q ? null : (
+          <article className="card" style={{ marginTop: 18 }}>
+            <h2>{t('members.new.title')}</h2>
+            {newest.length === 0 ? <p className="muted">{t('members.new.empty')}</p> : null}
+            <ul className="staff-history">
+              {newest.map((person) => (
+                <li key={person.yayId}>
+                  <Link href={`/admin/members?q=${encodeURIComponent(person.yayId)}`}>{person.displayName}</Link> <span className="muted">· {person.yayId} · {formatDate(person.createdAt, locale)}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        )}
       </div>
     </SiteShell>
   );

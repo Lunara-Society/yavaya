@@ -476,7 +476,7 @@ export function startDepth(root: HTMLElement): () => void {
         sound().play('portal', { force: true, pitch: index % 7 });
       }
       const href = card.link.getAttribute('href');
-      if (href?.startsWith('/')) openInto(card.link, card.photo, new URL(href, window.location.href).pathname);
+      if (href?.startsWith('/')) openInto(card.li, card.link, card.photo, card.key, new URL(href, window.location.href).pathname);
     }) as (event: never) => void);
   });
 
@@ -828,83 +828,157 @@ export function startDepth(root: HTMLElement): () => void {
 }
 
 /**
- * The card's picture becomes the screen while its district loads, then gives
- * way to it.
+ * Entering a district. The card comes forward to the middle of the screen,
+ * parts down the middle like a pair of doors, and behind them the district's
+ * medallion and name stand in its own light; then the view passes through,
+ * and what is on the other side is the district itself.
  *
- * The first version animated a clip-path over a screen-sized picture, and on
- * the owner's phone it twitched: a clip-path is redrawn by the page's own
- * thread on every frame, and that thread is busy fetching and building the
- * district at exactly that moment. This one moves nothing but transform and
- * opacity, which the browser's compositor animates by itself however busy
- * the page is: a copy of the card, the size of the card, scaled up until it
- * covers the screen, over a backdrop that fades in.
+ * Two earlier versions, and why not: a clip-path over a screen-sized picture
+ * twitched on the owner's phone (the page's own thread redraws it each frame,
+ * while that thread is busy building the district); a plain enlargement was
+ * smooth but, in the owner's words, only an image growing. Everything here is
+ * transform and opacity on a handful of small layers, which the browser's
+ * compositor animates by itself however busy the page is.
  *
  * Built outside the page's own tree and styled inline on purpose: it has to
  * outlive the home page, which goes away as the district arrives. It can
- * never stay: it fades when the district is the page, and after four seconds
- * whatever happens.
+ * never stay: it fades when the district is the page and the passage has
+ * played, and after five seconds whatever happens.
  */
-function openInto(link: HTMLElement, picture: HTMLImageElement | null, target: string) {
+function openInto(li: HTMLElement, link: HTMLElement, picture: HTMLImageElement | null, key: string, target: string) {
   const source = picture?.currentSrc || picture?.src;
   if (!picture || !source || !picture.naturalWidth || typeof link.animate !== 'function' || document.querySelector('[data-dz-veil]')) return;
   const box = link.getBoundingClientRect();
   if (box.width < 20 || box.height < 20) return;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const focus = getComputedStyle(picture).objectPosition;
+  const accent = getComputedStyle(li).getPropertyValue('--a').trim() || '#d8b25a';
+  const name = li.querySelector('.hx-card-name')?.textContent ?? '';
+  const make = (tag: string, style: Partial<CSSStyleDeclaration>) => {
+    const element = document.createElement(tag);
+    Object.assign(element.style, style);
+    return element;
+  };
 
-  const veil = document.createElement('div');
+  const veil = make('div', { position: 'fixed', inset: '0', zIndex: '2147483000', pointerEvents: 'none', contain: 'strict', perspective: '1100px' });
   veil.setAttribute('aria-hidden', 'true');
   veil.dataset.dzVeil = '';
-  Object.assign(veil.style, { position: 'fixed', inset: '0', zIndex: '2147483000', pointerEvents: 'none', contain: 'strict' } satisfies Partial<CSSStyleDeclaration>);
-  const backdrop = document.createElement('div');
-  Object.assign(backdrop.style, { position: 'absolute', inset: '0', background: '#07060a', opacity: '0', willChange: 'opacity' } satisfies Partial<CSSStyleDeclaration>);
-  const copy = document.createElement('img');
-  copy.alt = '';
-  copy.decoding = 'sync';
-  copy.src = source;
-  Object.assign(copy.style, {
+  const backdrop = make('div', { position: 'absolute', inset: '0', background: '#07060a', opacity: '0', willChange: 'opacity' });
+  // The frame is the card, where the card is; everything else is inside it and moves with it.
+  const frame = make('div', {
     position: 'absolute',
     left: `${box.left}px`,
     top: `${box.top}px`,
     width: `${box.width}px`,
     height: `${box.height}px`,
-    maxWidth: 'none',
-    objectFit: 'cover',
-    objectPosition: focus,
-    borderRadius: '16px',
-    transformOrigin: '50% 50%',
+    transformStyle: 'preserve-3d',
     willChange: 'transform, opacity',
-    boxShadow: '0 0 0 1px rgba(216, 178, 90, 0.55)',
-  } satisfies Partial<CSSStyleDeclaration>);
-  veil.append(backdrop, copy);
+  });
+  // What the doors open on: the district's own light, its medallion and its name.
+  const beyond = make('div', {
+    position: 'absolute',
+    inset: '0',
+    borderRadius: '16px',
+    display: 'grid',
+    placeItems: 'center',
+    alignContent: 'center',
+    gap: '10px',
+    opacity: '0',
+    backgroundColor: '#07060a',
+    backgroundImage: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${accent} 62%, transparent), transparent 68%)`,
+    boxShadow: `0 0 0 1px ${accent}, 0 0 60px -8px ${accent}`,
+    willChange: 'opacity',
+  });
+  const medal = make('img', { width: `${Math.min(box.height * 0.5, 110)}px`, height: 'auto', willChange: 'transform', filter: 'drop-shadow(0 8px 14px rgba(0, 0, 0, 0.7))' }) as HTMLImageElement;
+  medal.alt = '';
+  medal.src = `/art/depth/medal-${key}.webp`;
+  medal.onerror = () => medal.remove();
+  const title = make('div', { color: '#fff', font: '700 clamp(1.3rem, 6vw, 2rem)/1.1 var(--serif, Georgia, serif)', textShadow: '0 2px 14px rgba(0, 0, 0, 0.75)', willChange: 'transform, opacity' });
+  title.textContent = name;
+  beyond.append(medal, title);
+  // The two doors: each a half of the card's own picture, hinged on its outer edge.
+  const door = (side: 'left' | 'right') => {
+    const leaf = make('div', {
+      position: 'absolute',
+      top: '0',
+      [side]: '0',
+      width: '50%',
+      height: '100%',
+      overflow: 'hidden',
+      borderRadius: side === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
+      transformOrigin: `${side} center`,
+      backfaceVisibility: 'hidden',
+      willChange: 'transform',
+      boxShadow: `inset 0 0 0 1px ${accent}`,
+    });
+    const half = make('img', {
+      position: 'absolute',
+      top: '0',
+      [side]: '0',
+      width: `${box.width}px`,
+      height: `${box.height}px`,
+      maxWidth: 'none',
+      objectFit: 'cover',
+      objectPosition: getComputedStyle(picture).objectPosition,
+    }) as HTMLImageElement;
+    half.alt = '';
+    half.decoding = 'sync';
+    half.src = source;
+    leaf.append(half);
+    return leaf;
+  };
+  const left = door('left');
+  const right = door('right');
+  frame.append(beyond, left, right);
+  veil.append(backdrop, frame);
   document.body.append(veil);
 
-  // Large enough to cover the screen from wherever the card was, and a little more so its rounded corners are off it.
-  const scale = Math.max(vw / box.width, vh / box.height) * 1.12;
+  // 1. Forward: to the middle of the screen, as large as the screen comfortably holds.
+  const scale = Math.min((vw * 0.9) / box.width, (vh * 0.42) / box.height, 2.2);
   const dx = vw / 2 - (box.left + box.width / 2);
   const dy = vh / 2 - (box.top + box.height / 2);
-  const OPEN_MS = 620;
-  const easing = 'cubic-bezier(0.3, 0.0, 0.15, 1)';
-  copy.animate([{ transform: 'translate3d(0, 0, 0) scale(1)' }, { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})` }], { duration: OPEN_MS, easing, fill: 'forwards' });
-  backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: OPEN_MS * 0.7, easing: 'ease-out', fill: 'forwards' });
+  const centred = `translate3d(${dx}px, ${dy}px, 0) scale(${scale})`;
+  const FORWARD = 420;
+  const OPEN = 700;
+  const THROUGH = 520;
+  const glide = 'cubic-bezier(0.3, 0, 0.15, 1)';
+  backdrop.animate([{ opacity: 0 }, { opacity: 0.94 }], { duration: FORWARD, easing: 'ease-out', fill: 'forwards' });
+  frame.animate([{ transform: 'translate3d(0, 0, 0) scale(1)' }, { transform: centred }], { duration: FORWARD, easing: glide, fill: 'forwards' });
+  // 2. Open: the doors swing away from the viewer, and what is behind them comes up.
+  const swing = (leaf: HTMLElement, degrees: number) =>
+    leaf.animate([{ transform: 'rotateY(0deg)', opacity: 1 }, { transform: `rotateY(${degrees}deg)`, opacity: 1, offset: 0.8 }, { transform: `rotateY(${degrees * 1.08}deg)`, opacity: 0 }], {
+      duration: OPEN,
+      delay: FORWARD - 80,
+      easing: 'cubic-bezier(0.5, 0, 0.2, 1)',
+      fill: 'forwards',
+    });
+  swing(left, -96);
+  swing(right, 96);
+  beyond.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: FORWARD - 80, easing: 'ease-out', fill: 'forwards' });
+  medal.animate([{ transform: 'scale(0.55) rotate(-24deg)' }, { transform: 'scale(1.08) rotate(0deg)', offset: 0.7 }, { transform: 'scale(1)' }], { duration: OPEN, delay: FORWARD - 40, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
+  title.animate([{ opacity: 0, transform: 'translate3d(0, 10px, 0)' }, { opacity: 1, transform: 'translate3d(0, 0, 0)' }], { duration: 380, delay: FORWARD + 180, easing: 'ease-out', fill: 'both' });
+  // 3. Through: the view passes into the light.
+  const passed = FORWARD + OPEN + 120;
+  frame.animate([{ transform: centred, opacity: 1 }, { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale * 5})`, opacity: 0 }], { duration: THROUGH, delay: passed, easing: 'cubic-bezier(0.6, 0, 0.9, 0.4)', fill: 'forwards' });
+  backdrop.animate([{ opacity: 0.94 }, { opacity: 1 }], { duration: THROUGH, delay: passed, fill: 'forwards' });
 
   const began = performance.now();
+  const played = passed + THROUGH;
   let leaving = false;
   const leave = () => {
     if (leaving) return;
     leaving = true;
-    const fade = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 520, easing: 'ease-in-out', fill: 'forwards' });
+    const fade = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 480, easing: 'ease-in-out', fill: 'forwards' });
     fade.onfinish = () => veil.remove();
     // Should the animation never finish (a tab put to sleep), the veil still goes.
     window.setTimeout(() => veil.remove(), 1500);
   };
   const wait = () => {
     if (leaving) return;
-    // Not before it has finished opening, and a breath after the district is the page, so its first paint is underneath.
-    if (window.location.pathname === target && performance.now() - began > OPEN_MS + 120) leave();
+    // Not before the passage has played, nor before the district is the page underneath.
+    if (window.location.pathname === target && performance.now() - began > played) leave();
     else window.setTimeout(wait, 60);
   };
   wait();
-  window.setTimeout(leave, 4000);
+  window.setTimeout(leave, 5000);
 }

@@ -1,5 +1,5 @@
 import 'server-only';
-import { and, desc, eq, inArray, isNotNull, isNull, lte, or, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, isNull, lte, or, sql, gte } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { enforcementRecords, sanctionAppeals, sessions, userRoles, users } from '@/server/db/schema';
 import { SANCTION_RULES } from '@/config/business-rules';
@@ -84,6 +84,23 @@ export type MemberRecord = {
 };
 
 /** Finds one member by YAY ID or exact email address. Needs users.read. */
+/**
+ * Who joined in the last `days` days, newest first: the owner asked who the
+ * week's new members were (12 November 2026) and there was nowhere to look.
+ * Name, YAY ID and date only; anything more is one look-up away.
+ */
+export async function newestMembers(executor: Executor, actor: AuthContext | null, days = 7): Promise<Array<{ yayId: string; displayName: string; createdAt: Date }>> {
+  await requirePermission(executor, actor, 'users.read');
+  const since = new Date(Date.now() - days * 86_400_000);
+  const rows = await executor
+    .select({ yayId: users.yayId, displayName: users.displayName, createdAt: users.createdAt })
+    .from(users)
+    .where(gte(users.createdAt, since))
+    .orderBy(desc(users.createdAt))
+    .limit(50);
+  return rows.map((row) => ({ ...row, yayId: formatYayId(row.yayId) }));
+}
+
 export async function lookUpMember(executor: Executor, actor: AuthContext | null, query: string): Promise<MemberRecord | null> {
   await requirePermission(executor, actor, 'users.read');
   const q = query.trim();

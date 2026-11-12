@@ -2437,6 +2437,8 @@ export const es = {
   'ops.overview.queues': 'Por revisar',
   'ops.overview.visits_link': 'Visitas y velocidad →',
   // --- Admin → Diseño del sitio: the looks the owner can undo (server/domains/platform/looks.ts) ---
+  'members.new.title': 'Nuevos esta semana',
+  'members.new.empty': 'Nadie se ha registrado en los últimos siete días.',
   'ops.looks.title': 'Diseño del sitio',
   'ops.looks.lead': 'Cada cambio de diseño se puede deshacer aquí mismo, con un toque y sin esperar a nadie. El sitio lo muestra en menos de un minuto.',
   'ops.looks.saved': 'Listo. El sitio muestra el cambio en menos de un minuto.',
