@@ -99,7 +99,7 @@ export const DEPTH_CSS = [
   `@supports (animation-timeline: view()) {
     ${ON} .hx-card.dz-rise { transform-origin: 50% 100%; animation: dz-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 100%; }
   }`,
-  '@keyframes dz-rise { from { opacity: 0.25; transform: perspective(900px) translate3d(0, 30px, 0) rotateX(-28deg) scale(0.93); } }',
+  '@keyframes dz-rise { from { opacity: 0.6; transform: perspective(900px) translate3d(0, 30px, 0) rotateX(-28deg) scale(0.93); } }',
 
   // Belt and braces: the engine does not start for someone who asked for less
   // motion, and stops if they ask later.

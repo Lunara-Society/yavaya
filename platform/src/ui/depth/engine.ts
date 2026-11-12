@@ -104,6 +104,8 @@ type Card = {
   /** The eye the photograph was last drawn from: a card nothing has moved is not drawn again. */
   drawnX: number;
   drawnY: number;
+  /** Where the scroll puts the eye, eased: null until the card is first drawn, so it starts where it is. */
+  scrollEye: number | null;
 };
 
 const clamp = (value: number, min = -1, max = 1) => Math.min(max, Math.max(min, value));
@@ -190,6 +192,7 @@ export function startDepth(root: HTMLElement): () => void {
       phase: index * 1.7,
       drawnX: 9,
       drawnY: 9,
+      scrollEye: null,
     });
   });
   if (!cards.length) return () => undefined;
@@ -303,6 +306,7 @@ export function startDepth(root: HTMLElement): () => void {
     card.pen = null;
     card.drawnX = 9;
     card.drawnY = 9;
+    card.scrollEye = null;
   };
 
   /** A line of light across the medallion: once, when it arrives and when it is touched. Never on a loop. */
@@ -580,8 +584,21 @@ export function startDepth(root: HTMLElement): () => void {
       const driftX = Math.sin(now / 2600 + card.phase) * AMBIENT_EYE * ambient;
       const driftY = Math.cos(now / 3400 + card.phase) * AMBIENT_EYE * 0.7 * ambient;
       // The eye for everything that is not a real rotation of the card…
-      const flatX = leanX + driftX;
-      const flatY = clamp((viewH / 2 - (top + card.h / 2)) / (viewH / 2)) * SCROLL_EYE + leanY + driftY;
+      /*
+       * The page scrolls on the browser's own thread and this runs on the
+       * page's, a frame or so behind and not always in step. Followed
+       * exactly, that difference shows as a twitch in the picture (the
+       * owner's phone, 12 November 2026); eased, the picture glides after the
+       * scroll instead. And the light on the card does not follow the scroll
+       * at all: a highlight that jumps is a flicker.
+       */
+      const scrolled = clamp((viewH / 2 - (top + card.h / 2)) / (viewH / 2)) * SCROLL_EYE;
+      card.scrollEye = card.scrollEye === null ? scrolled : card.scrollEye + (scrolled - card.scrollEye) * (1 - Math.exp(-step / 260));
+      if (Math.abs(scrolled - card.scrollEye) > 0.002) moving = true;
+      const lightX = leanX + driftX;
+      const lightY = leanY + driftY;
+      const flatX = lightX;
+      const flatY = card.scrollEye + lightY;
       // …and for the photograph, which the rotation does not reach: a card turned toward the pointer is seen from its other side.
       const eyeX = clamp(flatX - card.tiltX * POINTER_EYE, -1.5, 1.5);
       const eyeY = clamp(flatY - card.tiltY * POINTER_EYE, -1.5, 1.5);
@@ -597,10 +614,10 @@ export function startDepth(root: HTMLElement): () => void {
       if (card.glare) {
         // Under the pointer while there is one; otherwise where the eye is, as a reflection would be.
         const pointed = Math.max(card.lift, card.press);
-        const glow = clamp(Math.max(pointed, Math.hypot(leanX, leanY) * 1.4, ambient * 0.35), 0, 1);
+        const glow = clamp(Math.max(pointed, Math.hypot(leanX, leanY) * 1.4), 0, 1);
         card.glow += (glow - card.glow) * ease;
-        put(card.glare, '--gx', ((card.tiltX * pointed + flatX * (1 - pointed) * 0.8) * card.w * 0.5).toFixed(1));
-        put(card.glare, '--gy', ((card.tiltY * pointed + flatY * (1 - pointed) * 0.8) * card.h * 0.5).toFixed(1));
+        put(card.glare, '--gx', ((card.tiltX * pointed + lightX * (1 - pointed) * 0.8) * card.w * 0.5).toFixed(1));
+        put(card.glare, '--gy', ((card.tiltY * pointed + lightY * (1 - pointed) * 0.8) * card.h * 0.5).toFixed(1));
         put(card.glare, '--ga', card.glow.toFixed(3));
       }
       if (renderer && card.pen && card.canvas) {
