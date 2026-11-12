@@ -46,6 +46,20 @@ export function readSoundPreference(): boolean {
   }
 }
 
+/**
+ * For the districts in depth, where the owner asked (12 November 2026) for
+ * sound to be on from the start: on unless this device has said "off". The
+ * cues there still only answer a tap, which is also the only moment a browser
+ * lets a page make a sound.
+ */
+export function soundWanted(): boolean {
+  try {
+    return window.localStorage.getItem(SOUND_KEY) !== 'off';
+  } catch {
+    return true;
+  }
+}
+
 /** A pentatonic scale around A4: each district door has its own note, and any two sound well together. */
 const DOOR_NOTES = [440, 493.88, 554.37, 659.25, 739.99, 880, 987.77];
 

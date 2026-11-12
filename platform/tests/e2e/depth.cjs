@@ -170,8 +170,20 @@ async function open(browser, options, init) {
     await page.mouse.move(5, 5);
     const rested = await page.waitForFunction(() => Math.abs(Number(document.querySelector('li[data-district="services"] .hx-card-link').style.getPropertyValue('--ry'))) < 0.2, null, { timeout: 6000 }).then(() => true, () => false);
     check(rested, 'computer: and comes back to rest');
-    await Promise.all([page.waitForURL((u) => u.pathname === '/services'), page.click('li[data-district="services"] a')]);
-    check(true, 'computer: a click still opens the district');
+    const top = await page.evaluate(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return { hero: Boolean(document.querySelector('canvas.dz-hero')), sound: document.querySelector('[data-dz-sound]')?.hasAttribute('hidden') === false && document.querySelector('.dz-sound')?.getAttribute('aria-pressed') };
+    });
+    check(top.hero, "computer: the home page's first picture has its canvas");
+    check(top.sound === 'true', `computer: the sound switch is shown, and on (${top.sound})`);
+    await toCard(page, 'services');
+    await page.click('li[data-district="services"] a');
+    const veiled = await page.waitForSelector('[data-dz-veil]', { state: 'attached', timeout: 1500 }).then(() => true, () => false);
+    await page.waitForURL((u) => u.pathname === '/services');
+    check(veiled, "computer: a click opens the card's picture into the screen");
+    check(true, 'computer: and still opens the district');
+    const cleared = await page.waitForSelector('[data-dz-veil]', { state: 'detached', timeout: 6000 }).then(() => true, () => false);
+    check(cleared, 'computer: the picture gives way to the district');
     await page.goBack();
     check(await started(page), 'computer: back on the home page, the depth starts again');
     check(errors.length === 0, `computer: no errors in the console (${errors.join(' | ')})`);

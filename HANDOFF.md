@@ -100,6 +100,13 @@ cards with nothing added. Full account in `platform/docs/DISTRICTS-3D.md`.
 - Code: `platform/src/ui/depth/`. Pictures: `platform/public/art/depth/`.
   Tools to remake them: `tools/depth/`. Browser test:
   `platform/tests/e2e/depth.cjs` (21 checks, passing in headless Chromium).
+- Added the same day at the owner's word: the hero picture in depth, a tap
+  that opens the card's picture into the screen, sound on by default with a
+  switch to turn it off, wider spacing, and the medallion in the six board
+  districts' headers. A scroll flicker the owner reported was fixed (the
+  light no longer follows the scroll; pictures ease after it). Still open:
+  a 3D Guardian (needs the owner's decision on how), and the owner's
+  confirmation that the flicker is gone.
 - **Not verified on a real phone**: smoothness, battery and the direction of
   the tilt. The owner should look at it on their phone; the switch is the way
   back. Blender 4.5 LTS has to be reinstalled in a new session to re-render.

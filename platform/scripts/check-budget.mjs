@@ -79,7 +79,8 @@ for (const route of Object.keys(pages)) {
 /*
  * The districts in depth (ui/depth, docs/DISTRICTS-3D.md) arrive after the
  * page, on demand, so they are in no page's count above. Held here instead:
- * the engine with its styles, 6.1 KB when written (12 November 2026).
+ * the engine with its styles, 6.1 KB when written (12 November 2026) and 7.8 KB
+ * with the hero picture, the opening of a card and its sound.
  */
 const lazy = JSON.parse(readFileSync(path.join(next, 'react-loadable-manifest.json'), 'utf8'));
 const depth = Object.entries(lazy).find(([key]) => key.includes('ui/depth/gate'))?.[1]?.files ?? [];

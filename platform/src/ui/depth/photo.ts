@@ -26,6 +26,8 @@ export type Crop = {
   /** `object-position`, as fractions. */
   focusX: number;
   focusY: number;
+  /** The most the nearest and farthest parts shift apart, in CSS pixels; a share of the width (SHIFT) when not given. */
+  reach?: number;
 };
 
 /**
@@ -224,7 +226,7 @@ export function createPhotoRenderer(): PhotoRenderer | null {
       context.bindTexture(context.TEXTURE_2D, entry.depth);
       context.uniform4f(cropAt, crop.width / shownW, crop.height / shownH, -left / shownW, -top / shownH);
       // The same distance on the card in both directions, whatever the picture's shape.
-      const reach = crop.width * SHIFT;
+      const reach = crop.reach ?? crop.width * SHIFT;
       context.uniform2f(eyeAt, (eyeX * reach) / shownW, (eyeY * reach) / shownH);
       context.drawArrays(context.TRIANGLES, 0, 3);
       // WebGL counts rows from the bottom, a 2D canvas from the top.

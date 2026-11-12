@@ -24,6 +24,23 @@ const ON = '[data-depth="on"]';
 export const DEPTH_CSS = [
   // Each card is its own small stage, seen from in front of its own centre.
   `${ON} .hx-card { perspective: 900px; }`,
+  // A little more room between them than the classic design's 12 and 14 pixels:
+  // floating things need air, and their shadows somewhere to fall.
+  `${ON} .hx-cards { gap: 18px; }`,
+  `@media (min-width: 700px) { ${ON} .hx-cards { gap: 22px; } }`,
+
+  // The switch for the cards' sounds, beside "Explorar todos" and drawn like it.
+  `.dz-sound {
+    flex: none; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border-radius: 50%; cursor: pointer;
+    border: 1px solid var(--hx-line); background: rgba(6, 9, 16, 0.45); color: var(--hx-ivory-2);
+  }`,
+  '.dz-sound svg { width: 20px; height: 20px; }',
+  '.dz-sound span { display: none; }',
+  '.dz-sound[aria-pressed="true"] { color: var(--hx-gold); border-color: rgba(216, 178, 90, 0.6); }',
+  '.dz-sound:focus-visible { outline: 2px solid var(--hx-gold-light); outline-offset: 3px; }',
+
+  // The home page's first picture in depth: the canvas lies exactly over the photograph.
+  '.dz-hero { z-index: 0; }',
 
   // The card turns as one object and its parts sit at different depths, so the
   // link may neither clip nor isolate its children (either one flattens them):

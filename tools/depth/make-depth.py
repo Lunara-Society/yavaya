@@ -73,12 +73,15 @@ def main() -> int:
     out_dir.mkdir(exist_ok=True)
     session = ort.InferenceSession(str(model), providers=["CPUExecutionProvider"])
     total = 0
-    for card in CARDS:
-        source = art / f"home-card-{card}-960.webp"
+    # The cards, then the home page's first picture in its two shapes (wide, and the phone's tall crop).
+    pictures = [(f"home-card-{card}-960.webp", f"home-card-{card}.webp") for card in CARDS]
+    pictures += [("home-balcony-960.webp", "home-balcony.webp"), ("home-balcony-tall-640.webp", "home-balcony-tall.webp")]
+    for name, out_name in pictures:
+        source = art / name
         with Image.open(source) as picture:
             depth = estimate(session, picture)
             result = to_map(depth, picture.size)
-        target = out_dir / f"home-card-{card}.webp"
+        target = out_dir / out_name
         result.save(target, "WEBP", quality=72, method=6)
         size = target.stat().st_size
         total += size

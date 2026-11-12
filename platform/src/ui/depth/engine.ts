@@ -1,5 +1,6 @@
 import { createPhotoRenderer, type PhotoRenderer } from './photo';
 import { DEPTH_CSS } from './styles';
+import { sound, soundWanted } from '@/ui/first-light/sound';
 
 /**
  * The districts in depth (docs/DISTRICTS-3D.md): the classic home page's
@@ -23,6 +24,11 @@ import { DEPTH_CSS } from './styles';
  * parts toward it (photo.ts); the medallion, which floats in front, slides
  * away from it; and the light on the card's surface follows it, as your own
  * reflection does in glass.
+ *
+ * Around the cards: the home page's first picture has the same depth; a tap
+ * on a card opens its picture into the screen while the district loads
+ * (openInto), with a note of the district's own (ui/first-light/sound.ts) —
+ * on unless this device has turned sound off, as the owner asked.
  *
  * Three levels, each one a complete page:
  *   2  everything above;
@@ -209,6 +215,52 @@ export function startDepth(root: HTMLElement): () => void {
   if (!renderer) level = 1;
   root.dataset.depth = 'on';
   root.dataset.depthLevel = String(level);
+  // The switch for the sounds only means something while this is running.
+  const soundSwitch = root.querySelector<HTMLElement>('[data-dz-sound]');
+  soundSwitch?.removeAttribute('hidden');
+
+  /*
+   * The home page's first picture: the balcony, the town and the volcano. One
+   * more photograph for the same shader, moved less, since it is wide. A
+   * very large file (a wide, dense screen) is left as it is: as a texture it
+   * would cost the graphics memory of all thirteen cards together.
+   */
+  const stage = document.querySelector<HTMLElement>('.hx-stage-art');
+  const hero = {
+    photo: stage?.querySelector<HTMLImageElement>('img.hx-photo') ?? null,
+    canvas: null as HTMLCanvasElement | null,
+    pen: null as CanvasRenderingContext2D | null,
+    kind: '',
+    y: 0,
+    w: 0,
+    h: 0,
+    aimX: 0,
+    aimY: 0,
+    lookX: 0,
+    lookY: 0,
+    drawnX: 9,
+    drawnY: 9,
+  };
+  const dressHero = () => {
+    const photo = hero.photo;
+    if (!renderer || !stage || !photo || !photo.naturalWidth || photo.naturalWidth > 2600) return;
+    const kind = photo.currentSrc.includes('balcony-tall') ? 'home-balcony-tall' : 'home-balcony';
+    if (hero.canvas && hero.kind === kind) return;
+    // The phone's crop and the wide picture are different files with different depth: start again if the screen changed shape.
+    renderer.release('hero');
+    hero.canvas?.remove();
+    const canvas = document.createElement('canvas');
+    canvas.className = 'dz-photo dz-hero';
+    canvas.setAttribute('aria-hidden', 'true');
+    const pen = canvas.getContext('2d', { alpha: false });
+    if (!pen) return;
+    (photo.closest('picture') ?? photo).after(canvas);
+    hero.canvas = canvas;
+    hero.pen = pen;
+    hero.kind = kind;
+    hero.drawnX = 9;
+    renderer.prepare('hero', photo, `/art/depth/${kind}.webp`);
+  };
 
   // --- Where everything is ------------------------------------------------------
 
@@ -237,6 +289,22 @@ export function startDepth(root: HTMLElement): () => void {
         card.focusY = fy.endsWith('%') ? Number.parseFloat(fy) / 100 : 0.5;
       }
       if (card.canvas) size(card);
+    }
+    if (stage) {
+      hero.w = stage.offsetWidth;
+      hero.h = stage.offsetHeight;
+      hero.y = 0;
+      for (let node: HTMLElement | null = stage; node; node = node.offsetParent as HTMLElement | null) hero.y += node.offsetTop;
+      dressHero();
+      if (hero.canvas) {
+        const width = Math.max(1, Math.round(hero.w * ratio));
+        const height = Math.max(1, Math.round(hero.h * ratio));
+        if (hero.canvas.width !== width || hero.canvas.height !== height) {
+          hero.canvas.width = width;
+          hero.canvas.height = height;
+          hero.drawnX = 9;
+        }
+      }
     }
   };
   const size = (card: Card) => {
@@ -376,6 +444,43 @@ export function startDepth(root: HTMLElement): () => void {
 
   // --- The pointer ---------------------------------------------------------------
 
+  const heroBox = stage?.parentElement ?? null;
+  if (heroBox) {
+    listen(
+      heroBox,
+      'pointermove',
+      ((event: PointerEvent) => {
+        if (event.pointerType === 'touch') return;
+        hero.aimX = clamp((event.pageX / Math.max(1, hero.w)) * 2 - 1);
+        hero.aimY = clamp(((event.pageY - hero.y) / Math.max(1, hero.h)) * 2 - 1);
+        wake();
+      }) as (event: never) => void,
+      { passive: true },
+    );
+    listen(heroBox, 'pointerleave', (() => {
+      hero.aimX = 0;
+      hero.aimY = 0;
+      request();
+    }) as (event: never) => void);
+  }
+
+  /*
+   * A tap on a card. The link does the going, as it always did; this only
+   * answers it: the district's note, and its picture opening into the
+   * screen. A new tab, a modified click or a keyboard's Enter is left alone.
+   */
+  cards.forEach((card, index) => {
+    listen(card.link, 'click', ((event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.detail === 0) return;
+      if (soundWanted()) {
+        sound().play('door', { force: true, pitch: index % 7 });
+        window.setTimeout(() => sound().play('transition', { force: true }), 90);
+      }
+      const href = card.link.getAttribute('href');
+      if (href?.startsWith('/')) openInto(card.link, card.photo, new URL(href, window.location.href).pathname);
+    }) as (event: never) => void);
+  });
+
   for (const card of cards) {
     const aim = (event: PointerEvent) => {
       card.aimX = clamp(((event.pageX - card.x) / Math.max(1, card.w)) * 2 - 1);
@@ -496,6 +601,8 @@ export function startDepth(root: HTMLElement): () => void {
     if (level === 2) {
       level = 1;
       for (const card of cards) undressPhoto(card);
+      hero.canvas?.remove();
+      hero.canvas = null;
       renderer?.dispose();
       renderer = null;
       root.dataset.depthLevel = '1';
@@ -637,6 +744,25 @@ export function startDepth(root: HTMLElement): () => void {
       }
     }
 
+    if (renderer && hero.canvas && hero.pen && hero.y + hero.h - scrollY > 0) {
+      hero.lookX += (hero.aimX - hero.lookX) * ease;
+      hero.lookY += (hero.aimY - hero.lookY) * ease;
+      if (Math.abs(hero.aimX - hero.lookX) + Math.abs(hero.aimY - hero.lookY) > 0.003) moving = true;
+      // Seen from the pointer's side on a computer, from the lean on a phone, and drifting a little while the page is awake.
+      const eyeX = clamp(leanX + hero.lookX * 0.8 + Math.sin(now / 3100) * AMBIENT_EYE * 1.4 * ambient, -1.5, 1.5);
+      const eyeY = clamp(leanY + hero.lookY * 0.5 + Math.cos(now / 4300) * AMBIENT_EYE * ambient, -1.5, 1.5);
+      if (Math.abs(eyeX - hero.drawnX) > 0.0015 || Math.abs(eyeY - hero.drawnY) > 0.0015) {
+        // The stylesheet holds this picture to its top right corner (home.css, .hx-photo).
+        if (renderer.draw('hero', hero.pen, { width: hero.w, height: hero.h, focusX: 1, focusY: 0, reach: Math.min(hero.w * 0.045, 26) }, eyeX, eyeY)) {
+          hero.drawnX = eyeX;
+          hero.drawnY = eyeY;
+          hero.canvas.classList.add('is-on');
+        } else {
+          moving = true;
+        }
+      }
+    }
+
     if (moving || busy || (!resting && sectionNear) || ambient > 0.01) request();
   }
 
@@ -679,6 +805,8 @@ export function startDepth(root: HTMLElement): () => void {
     renderer = null;
     root.dataset.depth = '';
     delete root.dataset.depthLevel;
+    soundSwitch?.setAttribute('hidden', '');
+    hero.canvas?.remove();
     for (const card of cards) {
       card.canvas?.remove();
       card.medal?.remove();
@@ -698,4 +826,74 @@ export function startDepth(root: HTMLElement): () => void {
 
   request();
   return stop;
+}
+
+/**
+ * The card's picture becomes the screen while its district loads, then gives
+ * way to it. Built outside the page's own tree and styled inline on purpose:
+ * it has to outlive the home page, which goes away as the district arrives.
+ * Only clip-path, transform and opacity animate. It can never stay: it leaves
+ * when the district is the page, and after four seconds whatever happens.
+ */
+function openInto(link: HTMLElement, picture: HTMLImageElement | null, target: string) {
+  const source = picture?.currentSrc || picture?.src;
+  if (!picture || !source || !picture.naturalWidth || typeof link.animate !== 'function' || document.querySelector('[data-dz-veil]')) return;
+  const box = link.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const fill = Math.max(vw / picture.naturalWidth, vh / picture.naturalHeight);
+  const inCard = Math.max(box.width / picture.naturalWidth, box.height / picture.naturalHeight);
+  const width = picture.naturalWidth * fill;
+  const height = picture.naturalHeight * fill;
+
+  const veil = document.createElement('div');
+  veil.setAttribute('aria-hidden', 'true');
+  veil.dataset.dzVeil = '';
+  Object.assign(veil.style, { position: 'fixed', inset: '0', zIndex: '2147483000', overflow: 'hidden', background: '#07060a', pointerEvents: 'none' } satisfies Partial<CSSStyleDeclaration>);
+  const image = document.createElement('img');
+  image.alt = '';
+  image.src = source;
+  Object.assign(image.style, {
+    position: 'absolute',
+    left: `${(vw - width) / 2}px`,
+    top: `${(vh - height) / 2}px`,
+    width: `${width}px`,
+    height: `${height}px`,
+    maxWidth: 'none',
+  } satisfies Partial<CSSStyleDeclaration>);
+  const shade = document.createElement('div');
+  Object.assign(shade.style, { position: 'absolute', inset: '0', boxShadow: 'inset 0 0 0 1px rgba(216, 178, 90, 0.5), inset 0 0 140px rgba(7, 6, 10, 0.6)' } satisfies Partial<CSSStyleDeclaration>);
+  veil.append(image, shade);
+  document.body.append(veil);
+
+  const timing: KeyframeAnimationOptions = { duration: 560, easing: 'cubic-bezier(0.22, 0.8, 0.18, 1)', fill: 'forwards' };
+  veil.animate(
+    [{ clipPath: `inset(${box.top}px ${vw - box.right}px ${vh - box.bottom}px ${box.left}px round 16px)` }, { clipPath: 'inset(0px 0px 0px 0px round 0px)' }],
+    timing,
+  );
+  image.animate(
+    [
+      { transform: `translate(${box.left + box.width / 2 - vw / 2}px, ${box.top + box.height / 2 - vh / 2}px) scale(${inCard / fill})` },
+      { transform: 'translate(0px, 0px) scale(1.03)' },
+    ],
+    timing,
+  );
+
+  const began = performance.now();
+  let leaving = false;
+  const leave = () => {
+    if (leaving) return;
+    leaving = true;
+    const fade = veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: 'ease-out', fill: 'forwards' });
+    fade.onfinish = () => veil.remove();
+    // Should the animation never finish (a tab put to sleep), the veil still goes.
+    window.setTimeout(() => veil.remove(), 1200);
+  };
+  const wait = () => {
+    if (leaving) return;
+    if (window.location.pathname === target && performance.now() - began > 560) leave();
+    else window.setTimeout(wait, 60);
+  };
+  wait();
+  window.setTimeout(leave, 4000);
 }

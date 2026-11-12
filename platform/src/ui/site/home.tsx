@@ -8,6 +8,7 @@ import { Icon } from './icons';
 import { LocationBar } from './location-bar';
 import { FrontDoor } from '@/ui/roxi/front-door';
 import { DepthGate } from '@/ui/depth/gate';
+import { SoundToggle } from '@/ui/first-light/sound-toggle';
 import type { locationBarProps } from './location-props';
 
 /**
@@ -228,6 +229,12 @@ export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
             <Link className="hx-pill" href={PAGE_PATHS.districts}>
               {t('home.districts.all')} <Arrow />
             </Link>
+            {/* The cards' sounds can be turned off here. Hidden until the depth is running: a device that is not given it makes no sound to turn off. */}
+            {depth ? (
+              <span hidden data-dz-sound>
+                <SoundToggle className="dz-sound" defaultOn name={t('firstlight.sound.name')} onText={t('firstlight.sound.on')} offText={t('firstlight.sound.off')} />
+              </span>
+            ) : null}
           </div>
           <ul className="hx-cards">
             {CARDS.map((id) => {

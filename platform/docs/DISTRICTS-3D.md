@@ -24,6 +24,26 @@ has its own doors.
 - **Rising into place** as cards scroll in, where the browser has
   scroll-driven animations (Chrome, new Safari).
 
+## Added the same day, at the owner's word
+
+- **The home page's first picture in depth**: the balcony scene, by the same
+  shader, moved less because it is wide. Skipped when the browser chose a
+  file wider than 2600 pixels.
+- **A tap opens the card's picture into the screen** while the district
+  loads (`openInto` in the engine). The link itself does the navigating.
+- **Sound, on by default** (the owner's choice): a tap on a card plays the
+  district's note. Only ever in answer to a tap. A switch beside "Explorar
+  todos" turns it off, and the choice is kept on the device
+  (`soundWanted`, `ui/first-light/sound.ts`). Roxi's and the First Light's
+  sounds are unchanged: off until turned on.
+- **More room between the cards** (18 px on a phone, 22 px wider; the classic
+  design keeps its 12 and 14).
+- **The medallion in each board district's header** (Hogar, Movilidad, Salud,
+  Aprender, Negocios, Campo). The first seven districts keep their plaques.
+
+Not built: a 3D Guardian. The Guardian is the owner's approved artwork, and a
+model of it needs the owner's eye before it replaces anything.
+
 ## Who gets it
 
 Decided on the device (`ui/depth/gate.tsx`, with the First Light's
@@ -44,7 +64,7 @@ too. Software-drawn WebGL is refused where the browser admits to it.
 | --- | --- |
 | Home page JavaScript on arrival | +0.26 KB (the gate) |
 | Home page styles on arrival | none |
-| Engine, with its styles, on demand | 6.1 KB |
+| Engine, with its styles, on demand | 7.8 KB |
 | Depth maps, 13, each fetched as its card comes near | 10 KB in all |
 | Medallions, 13, likewise | 89 KB in all |
 
@@ -63,7 +83,7 @@ depth map or medallion.
 ## What has and has not been verified
 
 Verified in headless Chromium, emulating a phone and a computer
-(`tests/e2e/depth.cjs`, 21 checks): it starts, draws, responds to scroll, lean
+(`tests/e2e/depth.cjs`, 25 checks): it starts, draws, responds to scroll, lean
 and pointer, leaves the links untouched, steps aside for every device it
 should, and produces no console errors.
 

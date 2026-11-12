@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { lookEnabled } from '@/server/domains/platform/looks';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
@@ -122,6 +123,9 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
           {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
           <img className="bd-hero-photo" src={`/art/home-card-${district}-960.webp`} srcSet={`/art/home-card-${district}-640.webp 640w, /art/home-card-${district}-960.webp 960w`} sizes="100vw" width={960} height={540} alt="" decoding="async" />
           <div className="wrap">
+            {/* The same gold medallion that floats on the district's home card (the "Distritos en 3D" look). */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
+            {(await lookEnabled(db(), 'depth')) ? <img className="bd-medal" src={`/art/depth/medal-${district}.webp`} width={160} height={160} alt="" decoding="async" /> : null}
             <p className="eyebrow">{t('nav.districts' as MessageKey)}</p>
             <h1>{t(DISTRICTS[district].nameKey as MessageKey)}</h1>
             <p className="lead">{t(`board.lead.${district}` as MessageKey)}</p>
