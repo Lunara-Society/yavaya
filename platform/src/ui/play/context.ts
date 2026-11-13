@@ -12,7 +12,7 @@ export type Place = 'studio' | 'rush' | 'trials' | 'plaza' | 'shop';
 
 /** A player's progress on the account, as the server last said it (docs/PLAY.md, "Progress"). */
 export type Account = {
-  progress: { xp: number; coins: number; level: number; levelFrom: number; levelTo: number };
+  progress: { xp: number; coins: number; gems: number; level: number; levelFrom: number; levelTo: number };
   /** Earned look options the player owns, as `part:id`. */
   owned: string[];
   achievements: string[];
@@ -53,6 +53,10 @@ export type PlayContext = {
   challenge: Challenge | null;
   /** Where to sign in and come back here. */
   signInHref: string;
+  /** Whether gem packs can be bought here now (Stripe configured). */
+  gemsOnSale: boolean;
+  /** How a gem purchase came back (`?gemas=`), to say so once. */
+  gemsReturn: string | null;
   /** Whether the Pruebas de Maestría are open to this player (the owner's switch). */
   trials: boolean;
   cue(name: Cue): void;

@@ -1846,6 +1846,13 @@ than ten minutes not checked. The achievements and which look each unlocks
 (`config/play-looks.ts`) are ours too. Play Coins are not money and not
 tokens: earned only, never sold. To retune from real players' numbers.
 
+Gems (`PLAY_RULES.gemPacks`, `PLAY_RULES.gems`): the owner asked for
+exclusive looks at $0.30 to $1 and chose packs; the pack sizes and prices
+(100 / 320 / 550 gems for $1 / $3 / $5) and each look's price (30 to 100)
+are ours. Which looks are free, won or sold (`config/play-looks.ts`) is ours
+too, at the owner's proportions (most free, some won, the most exclusive
+sold). A proeza's bar is the course's reference time, ours.
+
 La Ruta del Día is generated from the date (UTC) out of fourteen stretches
 of the five trials (`trials/courses.ts`, `DAILY_PIECES` = 7, ours); the
 Barrio and Diáspora routes are fixed sequences of the same stretches, chosen

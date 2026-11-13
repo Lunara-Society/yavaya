@@ -282,6 +282,13 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'district',
   },
   {
+    key: 'play_gems',
+    nameKey: 'capability.play_gems.name',
+    detailKey: 'capability.play_gems.detail',
+    state: 'REAL',
+    group: 'platform',
+  },
+  {
     key: 'member_card',
     nameKey: 'capability.member_card.name',
     detailKey: 'capability.member_card.detail',

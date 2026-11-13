@@ -58,6 +58,8 @@ export const playProgress = pgTable('play_progress', {
   xp: integer('xp').notNull().default(0),
   /** Play Coins: earned by playing, spent in the game's shop; never money, never tokens. */
   coins: integer('coins').notNull().default(0),
+  /** Gems: bought with money (Stripe, in packs), spent only on looks. Never earned, never converted to coins or tokens. */
+  gems: integer('gems').notNull().default(0),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -77,6 +79,8 @@ export const playRewards = pgTable(
     ref: text('ref').notNull(),
     xp: integer('xp').notNull().default(0),
     coins: integer('coins').notNull().default(0),
+    /** A gem pack bought (reason `gems`, ref the payment's reference), or gems spent on a look (negative). */
+    gems: integer('gems').notNull().default(0),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex('play_rewards_once_idx').on(table.userId, table.reason, table.ref)],

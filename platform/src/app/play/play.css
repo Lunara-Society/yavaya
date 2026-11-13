@@ -157,3 +157,6 @@
 .yp-board-row[data-medal="obsidiana"] .yp-board-medal, .yp-board-row[data-medal="guardian"] .yp-board-medal { color: #c9b8ff; }
 .yp-board-empty, .yp-board-gap { padding: 10px; color: #b9ad98; text-align: center; }
 .yp-board-note { margin: 0; color: #8f846f; font-size: 0.78rem; }
+.yp-thumb { flex: none; width: 40px; height: 40px; object-fit: contain; border-radius: 10px; background: #c68a5f; }
+.yp-shop-gems { color: #9fd8ff; font-weight: 800; }
+.yp-gem-pack { display: flex; align-items: center; gap: 8px; }

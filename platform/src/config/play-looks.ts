@@ -18,21 +18,63 @@
  * guayabera), so a new colourway needs no new geometry.
  */
 
-export const LOOK_PARTS = ['body', 'skin', 'face', 'hair', 'hairColor', 'top', 'bottom', 'shoes', 'accessory'] as const;
+export const LOOK_PARTS = ['body', 'skin', 'face', 'hair', 'hairColor', 'beard', 'paint', 'top', 'print', 'bottom', 'shoes', 'glasses', 'accessory'] as const;
 export type LookPart = (typeof LOOK_PARTS)[number];
 
 export type Look = Record<LookPart, string>;
 
-export type Unlock = 'shop' | 'founder' | AchievementId;
+/**
+ * `shop`: bought with Play Coins (earned by playing; PLAY_RULES.shop).
+ * `gems`: bought with gems, which are bought with money (PLAY_RULES.gems,
+ * PLAY_RULES.gemPacks): the most exclusive looks, never anything that helps
+ * win. `founder`: the first members. An achievement id: won.
+ */
+export type Unlock = 'shop' | 'gems' | 'founder' | AchievementId;
 
-type Option = { id: string; color?: number; accent?: number; shape?: string; unlock?: Unlock };
+/**
+ * `image`: a picture in /play/looks/<part>/<id>.webp (a painted face, a beard,
+ * face paint, glasses, a print), drawn from the owner's own artwork.
+ * `pattern`: a cloth picture tiled over a whole top (/play/looks/pattern/<pattern>.webp).
+ */
+type Option = { id: string; color?: number; accent?: number; shape?: string; unlock?: Unlock; image?: boolean; pattern?: string };
 
 /**
  * Achievements (docs/PLAY.md): each said in both languages as
  * `play.achievement.<id>` and `.line`, checked by the server from verified
  * runs only (server/domains/play/progress.ts).
  */
-export const ACHIEVEMENTS = ['primera_prueba', 'cinco_pruebas', 'sin_caidas', 'obsidiana_todas', 'guardian', 'ruta_primera', 'ruta_7', 'distritos'] as const;
+export const ACHIEVEMENTS = [
+  'primera_prueba',
+  'cinco_pruebas',
+  'sin_caidas',
+  'obsidiana_todas',
+  'guardian',
+  'ruta_primera',
+  'ruta_7',
+  'distritos',
+  // Proezas: a course without one fall, without a checkpoint, at or under its reference time (the test route's own). Meant to be very hard.
+  'proeza_bronce',
+  'proeza_plata',
+  'proeza_oro',
+  'proeza_obsidiana',
+  'proeza_guardian',
+  'proeza_barrio',
+  'proeza_diaspora',
+  'proeza_ruta',
+  'proeza_total',
+] as const;
+
+/** The proezas, by the course they are won on (a day's route counts as `ruta`). */
+export const PROEZAS: Record<string, AchievementId> = {
+  bronce: 'proeza_bronce',
+  plata: 'proeza_plata',
+  oro: 'proeza_oro',
+  obsidiana: 'proeza_obsidiana',
+  guardian: 'proeza_guardian',
+  barrio: 'proeza_barrio',
+  diaspora: 'proeza_diaspora',
+  ruta: 'proeza_ruta',
+};
 export type AchievementId = (typeof ACHIEVEMENTS)[number];
 
 /** Skin tones, from light to deep: the range of the people the site is for. */
@@ -61,9 +103,33 @@ const HAIR_COLOR: Option[] = [
 export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
   body: [{ id: 'esbelto' }, { id: 'fuerte' }],
   skin: SKIN,
-  face: [{ id: 'alegre' }, { id: 'tranquila' }, { id: 'decidido' }, { id: 'picara' }],
+  face: [
+    { id: 'alegre' },
+    { id: 'tranquila' },
+    { id: 'decidido' },
+    { id: 'picara' },
+    // Painted faces, from the owner's artwork: their features over the character's own skin.
+    ...['mirada', 'pecas', 'serena', 'sonrisa', 'radiante', 'delineado', 'ojos_claros', 'firme', 'sereno', 'franco', 'tranquilo'].map((id) => ({ id, image: true })),
+    { id: 'guino', image: true, unlock: 'gems' as const },
+    { id: 'perilla', image: true, unlock: 'gems' as const },
+  ],
   hair: [{ id: 'corto' }, { id: 'rizos' }, { id: 'coleta' }, { id: 'largo' }, { id: 'mono' }],
   hairColor: HAIR_COLOR,
+  beard: [
+    { id: 'ninguna' },
+    ...['sombra', 'completa', 'candado', 'bigote_perilla', 'blanca', 'rubia'].map((id) => ({ id, image: true })),
+    { id: 'charro', image: true, unlock: 'gems' as const },
+    { id: 'pelirroja', image: true, unlock: 'gems' as const },
+  ],
+  paint: [
+    { id: 'ninguna' },
+    ...['tribal', 'olas', 'estrellas'].map((id) => ({ id, image: true })),
+    { id: 'tigre', image: true, unlock: 'proeza_bronce' as const },
+    { id: 'copo', image: true, unlock: 'proeza_plata' as const },
+    { id: 'llamas_doradas', image: true, unlock: 'proeza_oro' as const },
+    { id: 'neon', image: true, unlock: 'proeza_obsidiana' as const },
+    ...['rayos', 'leopardo', 'cerezo', 'gato', 'fuego'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
+  ],
   // `color` is the cloth, `accent` a detail (collar, stripe, cuffs).
   top: [
     { id: 'camiseta', color: 0xd8b25a, accent: 0xf6efe0 },
@@ -75,6 +141,17 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'guayabera_oro', color: 0xe3c271, accent: 0xa87a2c, shape: 'guayabera', unlock: 'shop' },
     { id: 'sudadera_volcan', color: 0x3a1a12, accent: 0xff7a2a, shape: 'sudadera', unlock: 'shop' },
     { id: 'chaqueta_obsidiana', color: 0x221f29, accent: 0xc9a24a, shape: 'chaqueta', unlock: 'obsidiana_todas' },
+    { id: 'camuflaje', color: 0x5a5f5a, accent: 0x2f322f, shape: 'camiseta', pattern: 'camuflaje' },
+    { id: 'tie_dye', color: 0x6a4a7a, accent: 0x2a1f30, shape: 'camiseta', pattern: 'tie_dye', unlock: 'obsidiana_todas' },
+    { id: 'galaxia', color: 0x1d2a5a, accent: 0x0d1430, shape: 'camiseta', pattern: 'galaxia', unlock: 'gems' },
+    { id: 'cuadros', color: 0x8a1f1f, accent: 0x1a1a1a, shape: 'camisa', pattern: 'cuadros', unlock: 'gems' },
+  ],
+  print: [
+    { id: 'ninguno' },
+    ...['lobo', 'atardecer', 'mariposa', 'ola'].map((id) => ({ id, image: true })),
+    { id: 'dragon', image: true, unlock: 'proeza_ruta' as const },
+    { id: 'lobo_dorado', image: true, unlock: 'proeza_total' as const },
+    ...['relampago', 'arbol', 'tribal', 'zarpazo'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
   ],
   bottom: [
     { id: 'jeans', color: 0x2b3a67, accent: 0x3c4f86 },
@@ -88,6 +165,14 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'sandalias', color: 0x8a5a36, accent: 0x5a3a22 },
     { id: 'tenis_rojos', color: 0xd2453a, accent: 0xf2efe6 },
     { id: 'tenis_dorados', color: 0xe3c271, accent: 0xf6efe0, shape: 'tenis', unlock: 'shop' },
+  ],
+  glasses: [
+    { id: 'ninguno' },
+    ...['clasicos', 'aviador', 'redondos', 'transparentes', 'carey'].map((id) => ({ id, image: true })),
+    { id: 'steampunk', image: true, unlock: 'proeza_barrio' as const },
+    { id: 'sol_y_luna', image: true, unlock: 'proeza_diaspora' as const },
+    { id: 'visor', image: true, unlock: 'proeza_guardian' as const },
+    ...['arcoiris', 'persiana', 'neon', 'corazon'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
   ],
   accessory: [
     { id: 'ninguno' },
@@ -107,11 +192,22 @@ export const DEFAULT_LOOK: Look = {
   face: 'alegre',
   hair: 'corto',
   hairColor: 'negro',
+  beard: 'ninguna',
+  paint: 'ninguna',
   top: 'camiseta',
+  print: 'ninguno',
   bottom: 'jeans',
   shoes: 'tenis',
+  glasses: 'ninguno',
   accessory: 'ninguno',
 };
+
+/** Where an option's picture is, if it has one. */
+export function lookImage(part: LookPart, id: string): string | null {
+  const option = LOOK_OPTIONS[part].find((o) => o.id === id);
+  if (option?.pattern) return `/play/looks/pattern/${option.pattern}.webp`;
+  return option?.image ? `/play/looks/${part}/${id}.webp` : null;
+}
 
 export function lookOption(part: LookPart, id: string): Option {
   return LOOK_OPTIONS[part].find((option) => option.id === id) ?? LOOK_OPTIONS[part].find((option) => option.id === DEFAULT_LOOK[part])!;

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookOption, unlockOf, type Look, type LookPart } from '@/config/play-looks';
+import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookImage, lookOption, unlockOf, type Look, type LookPart } from '@/config/play-looks';
 import { PLAY_RULES } from '@/config/business-rules';
 import { buildCharacter, type Emote } from '../character/build';
 import { disposeScene, type Mode } from '../engine/runtime';
@@ -16,7 +16,7 @@ import { el, type PlayContext } from '../context';
  */
 
 /** Parts whose choices are about the head: the camera comes in close for them. */
-const HEAD_PARTS: LookPart[] = ['skin', 'face', 'hair', 'hairColor'];
+const HEAD_PARTS: LookPart[] = ['skin', 'face', 'hair', 'hairColor', 'beard', 'paint', 'glasses'];
 
 export function createStudio(play: PlayContext, options: { first: boolean }): Mode {
   const { runtime, controls, text } = play;
@@ -119,6 +119,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     if (!unlock) return '';
     if (!play.account) return text('play.unlock.signin');
     if (unlock === 'shop') return text('play.unlock.shop', { price: PLAY_RULES.shop[`${which}:${id}`] ?? 0 });
+    if (unlock === 'gems') return text('play.unlock.gems', { price: PLAY_RULES.gems[`${which}:${id}`] ?? 0 });
     if (unlock === 'founder') return text('play.unlock.founder');
     return text('play.unlock.achievement', { name: text(`play.achievement.${unlock}`) });
   };
@@ -129,8 +130,17 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
         const button = el('yp-option', '', 'button');
         if (option.unlock && !have.has(`${part}:${option.id}`)) button.classList.add('is-locked');
         button.setAttribute('aria-pressed', String(look[part] === option.id));
-        const color = swatch(part, option.id);
-        if (color !== null) {
+        const thumb = lookImage(part, option.id);
+        const color = thumb ? null : swatch(part, option.id);
+        if (thumb) {
+          // The option's own picture, fetched only when this tab is opened.
+          const img = document.createElement('img');
+          img.className = 'yp-thumb';
+          img.src = thumb;
+          img.alt = '';
+          img.loading = 'lazy';
+          button.append(img);
+        } else if (color !== null) {
           const dot = el('yp-dot');
           dot.style.background = `#${new THREE.Color(color).getHexString()}`;
           button.append(dot);

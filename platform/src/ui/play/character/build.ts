@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_LOOK, lookOption, shapesOf, type Look } from '@/config/play-looks';
+import { DEFAULT_LOOK, lookImage, lookOption, shapesOf, type Look } from '@/config/play-looks';
 import { FACE_SHELL, faceTextures, type FaceState } from './face';
 
 /**
@@ -19,6 +19,24 @@ import { FACE_SHELL, faceTextures, type FaceState } from './face';
  * and fall, a squash on landing, a cheer and two emotes. Every joint eases
  * toward where it should be, so one pose flows into the next.
  */
+
+/** Pictures from /play/looks, loaded once per page and shared by every character that wears them. */
+const pictureCache = new Map<string, THREE.Texture>();
+function picture(url: string, tiled = false): THREE.Texture {
+  const key = `${url}${tiled ? '#tiled' : ''}`;
+  let texture = pictureCache.get(key);
+  if (!texture) {
+    texture = new THREE.TextureLoader().load(url);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 2;
+    if (tiled) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2, 1.5);
+    }
+    pictureCache.set(key, texture);
+  }
+  return texture;
+}
 
 export type Emote = 'saludo' | 'baile';
 
@@ -178,7 +196,11 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
   let faceMaterial: THREE.MeshBasicMaterial | null = null;
   let face: FaceState = 'normal';
 
+  // Pictures (a pattern, a print, glasses, a beard): fetched once per page and shared; materials made per dressing.
+  let owned: THREE.Material[] = [];
   function dress(given: Look) {
+    owned.forEach((material) => material.dispose());
+    owned = [];
     // Colours from the option itself; shapes from the one it is cut like (a gold guayabera is a guayabera).
     const look = shapesOf(given);
     for (const mesh of worn) mesh.removeFromParent();
@@ -234,7 +256,7 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     wear(skull);
     for (const side of [1, -1]) wear(shape(ball(0.05, 10, 8), skin, head, [side * 0.205, 0.0, 0.0]));
     wear(shape(ball(0.022, 10, 8), new THREE.Color(skin).multiplyScalar(0.97).getHex(), head, [0, -0.04, 0.21], false));
-    faces = faceTextures(look.face, hairColor);
+    faces = faceTextures(given.face, hairColor, { skin, faceImage: lookImage('face', given.face), paintImage: lookImage('paint', given.paint) });
     faceMaterial = new THREE.MeshBasicMaterial({ map: faces[face], transparent: true, depthWrite: false });
     const shell = new THREE.Mesh(
       keep(new THREE.SphereGeometry(0.2175, 28, 20, Math.PI / 2 - FACE_SHELL.phiLength / 2, FACE_SHELL.phiLength, FACE_SHELL.thetaStart, FACE_SHELL.thetaLength)),
@@ -244,6 +266,29 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     shell.renderOrder = 2;
     head.add(shell);
     wear(shell);
+
+    // A beard: a picture on a shell over the lower face (mouth to under the chin), below the face's own.
+    const beardUrl = lookImage('beard', given.beard);
+    if (beardUrl) {
+      const beardMaterial = new THREE.MeshStandardMaterial({ map: picture(beardUrl), transparent: true, depthWrite: false, roughness: 0.9 });
+      owned.push(beardMaterial);
+      const beard = new THREE.Mesh(keep(new THREE.SphereGeometry(0.2205, 28, 14, Math.PI / 2 - 1.1, 2.2, 1.6, 1.15)), beardMaterial);
+      beard.scale.set(1, 1.05, 0.99);
+      beard.renderOrder = 3;
+      head.add(beard);
+      wear(beard);
+    }
+    // Glasses: a picture just in front of the eyes, its sides bent back a little round the head.
+    const glassesUrl = lookImage('glasses', given.glasses);
+    if (glassesUrl) {
+      const glassesMaterial = new THREE.MeshBasicMaterial({ map: picture(glassesUrl), transparent: true, alphaTest: 0.25, side: THREE.DoubleSide });
+      owned.push(glassesMaterial);
+      const lens = new THREE.Mesh(keep(new THREE.CylinderGeometry(0.235, 0.235, 0.09, 24, 1, true, -0.75, 1.5)), glassesMaterial);
+      lens.position.set(0, 0.005, -0.012);
+      lens.renderOrder = 4;
+      head.add(lens);
+      wear(lens);
+    }
 
     // Hair.
     const hair = (geometry: THREE.BufferGeometry, at: [number, number, number], scale?: [number, number, number], rotation?: [number, number, number]) => {
@@ -354,6 +399,33 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
         break;
     }
     if (look.bottom === 'jeans') detail(keep(new THREE.TorusGeometry(0.168 * w, 0.014, 6, 24)), 0x3a2a20, [0, -0.02, 0], [Math.PI / 2, 0, 0]);
+
+    // A patterned top: its cloth picture tiled over the body and the sleeves, wherever the top's own colour is.
+    const patternUrl = lookImage('top', given.top);
+    if (patternUrl) {
+      const map = picture(patternUrl, true);
+      const patterned = new THREE.MeshStandardMaterial({ map, roughness: 0.85 });
+      owned.push(patterned);
+      const plain = paint(cloth);
+      for (const mesh of worn) if ((mesh as THREE.Mesh).material === plain) (mesh as THREE.Mesh).material = patterned;
+    }
+    // A print on the chest: a picture on a patch of the torso's own shape, a hair in front of it.
+    const printUrl = lookImage('print', given.print);
+    if (printUrl) {
+      const patch = [
+        [0.168, 0.16],
+        [0.178, 0.23],
+        [0.193, 0.32],
+        [0.207, 0.4],
+        [0.203, 0.44],
+      ].map(([r, y]) => new THREE.Vector2(r!, y!));
+      const printMaterial = new THREE.MeshStandardMaterial({ map: picture(printUrl), transparent: true, alphaTest: 0.08, roughness: 0.8, polygonOffset: true, polygonOffsetFactor: -2 });
+      owned.push(printMaterial);
+      const chest = new THREE.Mesh(keep(new THREE.LatheGeometry(patch, 12, -0.7, 1.4)), printMaterial);
+      chest.scale.set(w, 1, 0.74 * (sturdy ? 1.08 : 1) + 0.006);
+      spine.add(chest);
+      wear(chest);
+    }
     // The accessory.
     const on = (geometry: THREE.BufferGeometry, color: number, parent: THREE.Object3D, at: [number, number, number], rotation?: [number, number, number], line = true) => {
       const mesh = shape(geometry, color, parent, at, line);
@@ -616,6 +688,7 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
       faceMaterial?.dispose();
       geometries.forEach((geometry) => geometry.dispose());
       materials.forEach((material) => material.dispose());
+      owned.forEach((material) => material.dispose());
       outline.dispose();
     },
   };

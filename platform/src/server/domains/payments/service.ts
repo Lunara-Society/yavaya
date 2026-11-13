@@ -1,11 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { and, eq, inArray, lt } from 'drizzle-orm';
-import type { Database, Executor } from '@/server/db/client';
+import type { Database, Executor, Transaction } from '@/server/db/client';
 import { paymentEvents, paymentTransactions, paymentWebhookEvents } from '@/server/db/schema';
 import { errors } from '@/server/errors';
 import { recordAudit } from '@/server/domains/audit/service';
 import { creditPurchasedTokens } from '@/server/domains/tokens/service';
 import { grantPurchasedCredits, setPlan } from '@/server/domains/roxi/credits';
+import { creditGems } from '@/server/domains/play/progress';
 import type { PaymentProvider } from './provider';
 import { StripeProvider } from './providers/stripe';
 
@@ -61,7 +62,8 @@ export type PaymentDomain =
   | 'marketplace'
   | 'impact_donation'
   | 'roxi_plan'
-  | 'roxi_credits';
+  | 'roxi_credits'
+  | 'play_gems';
 
 export type StartCheckoutInput = {
   domain: PaymentDomain;
@@ -226,6 +228,16 @@ registerFulfiller('roxi_credits', async (tx, transaction) => {
   const credits = Number(transaction.intent.credits);
   if (!transaction.userId || !Number.isInteger(credits) || credits <= 0) throw errors.internal(`roxi credit purchase ${transaction.id} has no valid intent`);
   await grantPurchasedCredits(tx, { userId: transaction.userId, credits, paymentReference: transaction.reference });
+});
+
+/**
+ * Yavaya Play's gems (server/domains/play/gems.ts): the pack's count as priced
+ * when the member paid, keyed by the payment's reference so it lands once.
+ */
+registerFulfiller('play_gems', async (tx, transaction) => {
+  const gems = Number(transaction.intent.gems);
+  if (!transaction.userId || !Number.isInteger(gems) || gems <= 0) throw errors.internal(`gem purchase ${transaction.id} has no valid intent`);
+  await creditGems(tx as Transaction, transaction.userId, gems, transaction.reference);
 });
 
 /**

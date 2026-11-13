@@ -36,6 +36,8 @@ export type PlaySetup = {
   challenge?: Challenge | null;
   /** The sign-in page, coming back to Yavaya Play. */
   signInHref?: string;
+  gemsOnSale?: boolean;
+  gemsReturn?: string | null;
 };
 
 const LOCAL_LOOK = 'yavaya.play.look';
@@ -146,9 +148,11 @@ export function startPlay(host: HTMLElement, setup: PlaySetup): () => void {
     today,
     challenge: setup.challenge ?? null,
     signInHref: setup.signInHref ?? '/auth/login',
+    gemsOnSale: Boolean(setup.gemsOnSale),
+    gemsReturn: setup.gemsReturn ?? null,
   };
 
-  runtime.show(look ? createPlaza(play) : createStudio(play, { first: true }));
+  runtime.show(play.gemsReturn && look ? createShop(play, 'gems') : look ? createPlaza(play) : createStudio(play, { first: true }));
 
   return () => {
     controls.dispose();

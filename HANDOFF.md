@@ -210,4 +210,9 @@ and Diáspora routes, leaderboards (world, country, city), ghosts and
 WhatsApp challenge links, the shop, the Fundador hat, the Plaza menu, and
 anonymous play counts in Admin → Visitas. Not yet: Obsidian Ascent, Dash,
 players' own courses (needs moderation first). All numbers are ours,
-provisional (`docs/CONFIGURATION.md`).
+provisional (`docs/CONFIGURATION.md`). Since then: 59 looks from the owner's
+artwork (painted faces, beards, face paint, glasses, chest prints, patterned
+tops), proezas (no fall, no checkpoint, at the reference time) and gems
+(Stripe packs, looks only). Hair, hats and garments from the artwork wait
+for image-to-3D credits. The exposed Stripe key must be rotated before gems
+are sold for real.

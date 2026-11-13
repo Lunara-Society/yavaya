@@ -190,20 +190,86 @@ function drawFace(context: CanvasRenderingContext2D, style: Style, state: FaceSt
   }
 }
 
-/** The three pictures of one face (cached by the caller per look). */
-export function faceTextures(face: string, browColor: number): Record<FaceState, THREE.CanvasTexture> {
+/** A picture, fetched once and kept: the faces, beards and face paint drawn from the owner's artwork. */
+const pictures = new Map<string, Promise<HTMLImageElement>>();
+export function loadPicture(url: string): Promise<HTMLImageElement> {
+  let found = pictures.get(url);
+  if (!found) {
+    found = new Promise((resolve, reject) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error(url));
+      image.src = url;
+    });
+    // A failed fetch is not kept: the next dressing tries again.
+    found.catch(() => pictures.delete(url));
+    pictures.set(url, found);
+  }
+  return found;
+}
+
+/**
+ * The three pictures of one face (cached by the caller per look).
+ *
+ * A painted face (`faceImage`, the owner's artwork with its skin taken out)
+ * is laid over the character's own skin; it blinks by a lid of that skin
+ * drawn over each eye. Face paint (`paintImage`) goes over either kind.
+ * Pictures arrive after the character is built: until then the face is the
+ * plain drawn one (or empty), and each picture is drawn in when it lands.
+ */
+export function faceTextures(face: string, browColor: number, options: { skin?: number; faceImage?: string | null; paintImage?: string | null } = {}): Record<FaceState, THREE.CanvasTexture> {
   const style = STYLES[face] ?? STYLES.alegre!;
   const brow = `#${new THREE.Color(browColor).multiplyScalar(0.85).getHexString()}`;
+  const skin = `#${new THREE.Color(options.skin ?? 0xc68a5f).getHexString()}`;
+  let painted: HTMLImageElement | null = null;
+  let paint: HTMLImageElement | null = null;
+  const draw = (context: CanvasRenderingContext2D, state: FaceState) => {
+    if (!options.faceImage) drawFace(context, style, state, brow);
+    else {
+      context.clearRect(0, 0, 256, 256);
+      if (painted) {
+        context.drawImage(painted, 0, 0, 256, 256);
+        if (state === 'blink') {
+          // Lids of the character's own skin over both eyes, and the line of the lashes.
+          for (const x of [76, 180]) {
+            context.fillStyle = skin;
+            context.beginPath();
+            context.ellipse(x, 150, 30, 17, 0, 0, Math.PI * 2);
+            context.fill();
+            context.strokeStyle = INK;
+            context.lineWidth = 4;
+            context.beginPath();
+            context.arc(x, 142, 22, Math.PI * 0.2, Math.PI * 0.8);
+            context.stroke();
+          }
+        }
+      }
+    }
+    if (paint) context.drawImage(paint, 0, 0, 256, 256);
+  };
+  const made: Array<[FaceState, CanvasRenderingContext2D | null, THREE.CanvasTexture]> = [];
   const make = (state: FaceState) => {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 256;
     const context = canvas.getContext('2d');
-    if (context) drawFace(context, style, state, brow);
+    if (context) draw(context, state);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 2;
+    made.push([state, context, texture]);
     return texture;
   };
-  return { normal: make('normal'), blink: make('blink'), happy: make('happy') };
+  const textures = { normal: make('normal'), blink: make('blink'), happy: make('happy') };
+  const redraw = () => {
+    for (const [state, context, texture] of made) {
+      if (!context) continue;
+      draw(context, state);
+      texture.needsUpdate = true;
+    }
+  };
+  if (options.faceImage) void loadPicture(options.faceImage).then((image) => ((painted = image), redraw())).catch(() => undefined);
+  if (options.paintImage) void loadPicture(options.paintImage).then((image) => ((paint = image), redraw())).catch(() => undefined);
+  return textures;
 }

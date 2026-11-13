@@ -337,6 +337,13 @@
       "when": 1794595627337,
       "tag": "0047_flashy_mandarin",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1794606756664,
+      "tag": "0048_uneven_warpath",
+      "breakpoints": true
     }
   ]
 }

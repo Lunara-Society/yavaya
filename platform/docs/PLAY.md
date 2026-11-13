@@ -188,6 +188,43 @@ ran at about 24 frames a second with or without the processor slowed four
 times: the drawing, not the game's logic, was the limit there. Real phones
 are measured with `/play?debug`, not claimed.
 
+## Looks from the owner's artwork, proezas and gems (14 November 2026)
+
+The owner sent twenty sheets of artwork (faces, beards, face paint, glasses,
+hair, hats, clothes) and asked for most to be free, some won by very hard
+challenges, and the most exclusive sold for $0.30 to $1. First batch: 59
+items from the sheets, drawn onto the character as pictures
+(`public/play/looks/<part>/<id>.webp`, made by a script from the sheets;
+the script and the cut-outs are not in the repository).
+
+- **New parts:** beard, face paint, glasses, a chest print; and 11 painted
+  faces and 4 patterned tops (camo, tie-dye, galaxy, plaid). A painted face
+  is the artwork's features with its skin taken out, laid on the
+  character's own skin; it blinks with a lid of that skin. A beard is a
+  picture on a shell over the lower face; glasses a picture curved in front
+  of the eyes; a print a patch of the torso's own shape. They are pictures,
+  not modelled 3D, so seen from the side they are flat; from the front, as
+  in the studio, they read as the artwork.
+- **Tiers:** about half free (31), a fifth won (11), a third exclusive (19 for
+  gems). All-ages: revealing outfits, blood, skulls and copied logos from
+  the sheets were left out.
+- **Proezas:** a course with no fall, no checkpoint, and a time at or under
+  its reference: the test route's own time, a route that plays almost
+  perfectly. Each of the five trials, the two districts' routes and any
+  day's route has one; all five trials' together make the Maestro. Checked
+  by the server on the replayed run (`provenAchievements`).
+- **Gems:** the money currency, for looks only. Bought in packs (100 for
+  $1, 320 for $3, 550 for $5) through Stripe's page, the same path as tokens
+  and Roxi's credits (`server/domains/play/gems.ts`, fulfiller `play_gems`),
+  credited only when Stripe confirms, once per payment. One gem is a cent;
+  exclusive looks cost 30 to 100. Never converted to Play Coins or tokens,
+  and Play Coins never buy a gem look. In Stripe's test environment only an
+  administrator can buy.
+- **Not yet:** hair, hats and whole garments from the sheets. Turning a
+  picture into a 3D piece needs paid image-to-3D generation (about 35
+  credits an item on the connected service; the account had 2), and a
+  garment that bends with the body cannot come from one picture at all.
+
 ## Who sees it
 
 The switch is Admin → Diseño del sitio → Yavaya Play (`play.open`, off by

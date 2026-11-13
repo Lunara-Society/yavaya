@@ -19,9 +19,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
   const { provider } = await params;
   const base = serverEnv().APP_URL.replace(/\/$/, '');
   const query = new URL(request.url).searchParams;
-  // Roxi's plans and credits come back to their own page; tokens to theirs.
-  const page = query.get('next') === 'roxi' ? '/roxi' : '/account/tokens';
-  const back = (state: string) => NextResponse.redirect(`${base}${page}?purchase=${state}`, 303);
+  // Roxi's plans and credits come back to their own page, Yavaya Play's gems to the game; tokens to theirs.
+  const next = query.get('next');
+  const page = next === 'roxi' ? '/roxi' : next === 'play' ? '/play' : '/account/tokens';
+  const back = (state: string) => NextResponse.redirect(`${base}${page}?${page === '/play' ? 'gemas' : 'purchase'}=${state}`, 303);
   if (provider !== 'stripe') return new NextResponse(null, { status: 404 });
   const id = query.get('session_id') ?? '';
   if (!/^cs_(live|test)_[A-Za-z0-9]{10,200}$/.test(id)) return back('returned');

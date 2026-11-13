@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { closeDb, db } from '@/server/db/client';
 import { register } from '@/server/domains/identity/service';
-import { board, buyItem, checkRun, keepRun, ownedItems, playProgressOf, shareRun, sharedRun, unownedParts, dayIsOpen } from '@/server/domains/play/progress';
+import { board, buyItem, checkRun, creditGems, keepRun, ownedItems, playProgressOf, shareRun, sharedRun, unownedParts, dayIsOpen } from '@/server/domains/play/progress';
 import { byCourse, countSignal, signalKey, sumSignals } from '@/server/domains/play/signals';
 import { DEFAULT_LOOK } from '@/config/play-looks';
 import { PLAY_RULES } from '@/config/business-rules';
@@ -33,10 +33,10 @@ const bronceRun = () => {
   return { input: encodeRun(run.samples), seconds: run.time };
 };
 
-async function submit(userId: string, course: string, input: string, now = new Date()) {
-  const checked = checkRun(course, input, false, now);
+async function submit(userId: string, course: string, input: string, now = new Date(), noCheckpoints = false) {
+  const checked = checkRun(course, input, noCheckpoints, now);
   if (!checked.ok) return checked;
-  return db().transaction((tx) => keepRun(tx, userId, { course, day: checked.day, input, noCheckpoints: false, seconds: checked.replayed.seconds, medal: checked.replayed.medal!, fails: checked.replayed.fails }));
+  return db().transaction((tx) => keepRun(tx, userId, { course, day: checked.day, input, noCheckpoints, seconds: checked.replayed.seconds, medal: checked.replayed.medal!, fails: checked.replayed.fails }));
 }
 
 describe('Yavaya Play progress', () => {
@@ -129,6 +129,46 @@ describe('Yavaya Play progress', () => {
     expect(await shareRun(db(), b, run.runId!)).toBe(false);
     expect(await shareRun(db(), a, run.runId!)).toBe(true);
     expect((await sharedRun(db(), run.runId!))?.input).toBe(input);
+  });
+
+  it('gives a proeza only for a run with no fall, no checkpoint and the reference time, and its look with it', async () => {
+    const userId = await player();
+    const withCheckpoints = await submit(userId, 'bronce', bronceRun().input);
+    if (!withCheckpoints.ok) throw new Error(withCheckpoints.refused);
+    expect(withCheckpoints.achievements).not.toContain('proeza_bronce');
+    // The test route is the reference itself: a person has to play as well as it does, in one go.
+    const run = fly(bronce, ROUTES.bronce, { noCheckpoints: true });
+    expect(run.time).toBeLessThanOrEqual(bronce.reference);
+    const clean = await submit(userId, 'bronce', encodeRun(run.samples), new Date(), true);
+    if (!clean.ok) throw new Error(clean.refused);
+    expect(clean.achievements).toContain('proeza_bronce');
+    expect(clean.items).toContain('paint:tigre');
+    // A slower run of the same course, with the checkpoints on, is not one.
+    expect(await ownedItems(db(), userId)).toContain('paint:tigre');
+  });
+
+  it('credits a gem pack once per payment, and sells exclusive looks for gems only', async () => {
+    const userId = await player();
+    expect(await db().transaction((tx) => buyItem(tx, userId, 'glasses:neon'))).toEqual({ ok: false, reason: 'gems' });
+    expect(await db().transaction((tx) => creditGems(tx, userId, 100, 'pay_test_1'))).toBe(true);
+    // The same payment confirmed twice (a webhook and the return page): credited once.
+    expect(await db().transaction((tx) => creditGems(tx, userId, 100, 'pay_test_1'))).toBe(false);
+    expect((await playProgressOf(db(), userId)).gems).toBe(100);
+    const bought = await db().transaction((tx) => buyItem(tx, userId, 'glasses:neon'));
+    expect(bought).toMatchObject({ ok: true });
+    expect((await playProgressOf(db(), userId)).gems).toBe(100 - PLAY_RULES.gems['glasses:neon']!);
+    expect(await unownedParts(db(), userId, { ...DEFAULT_LOOK, glasses: 'neon' })).toEqual([]);
+    // Coins never buy a gem look, and gems never buy a coin look.
+    expect(await db().transaction((tx) => buyItem(tx, userId, 'paint:tigre'))).toEqual({ ok: false, reason: 'not_sold' });
+    expect((await playProgressOf(db(), userId)).coins).toBe(0);
+  });
+
+  it('prices every exclusive look between 30 and 100 gems, in packs that cost a cent a gem or less', () => {
+    for (const price of Object.values(PLAY_RULES.gems)) {
+      expect(price).toBeGreaterThanOrEqual(30);
+      expect(price).toBeLessThanOrEqual(100);
+    }
+    for (const pack of PLAY_RULES.gemPacks) expect(pack.priceMinor / pack.gems).toBeLessThanOrEqual(1);
   });
 
   it('levels up as XP grows', () => {

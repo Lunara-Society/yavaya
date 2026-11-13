@@ -1180,4 +1180,37 @@ export const PLAY_RULES = {
     'top:sudadera_volcan': 220,
     'shoes:tenis_dorados': 180,
   } as Record<string, number>,
+  /**
+   * Gems: the money currency of Yavaya Play's most exclusive looks, our
+   * prices (the owner asked for $0.30–$1 an item). One gem is a cent. Sold
+   * in packs, so one card fee covers many items (a card charge per $0.30
+   * item would go mostly to fees). Looks only: nothing that helps win.
+   */
+  gemPacks: [
+    { key: 'gemas_100', gems: 100, priceMinor: 100, currency: 'USD' },
+    { key: 'gemas_320', gems: 320, priceMinor: 300, currency: 'USD' },
+    { key: 'gemas_550', gems: 550, priceMinor: 500, currency: 'USD' },
+  ] as ReadonlyArray<{ key: string; gems: number; priceMinor: number; currency: 'USD' }>,
+  /** Gem prices by `part:id` (config/play-looks.ts marks which are sold for gems). */
+  gems: {
+    'face:guino': 30,
+    'face:perilla': 40,
+    'beard:charro': 50,
+    'beard:pelirroja': 40,
+    'paint:rayos': 40,
+    'paint:leopardo': 40,
+    'paint:cerezo': 50,
+    'paint:gato': 30,
+    'paint:fuego': 60,
+    'glasses:arcoiris': 50,
+    'glasses:persiana': 40,
+    'glasses:neon': 70,
+    'glasses:corazon': 40,
+    'print:relampago': 60,
+    'print:arbol': 50,
+    'print:tribal': 30,
+    'print:zarpazo': 70,
+    'top:galaxia': 90,
+    'top:cuadros': 100,
+  } as Record<string, number>,
 } as const;

@@ -3,7 +3,7 @@ import { and, asc, count, eq, inArray, lt, notInArray, sql } from 'drizzle-orm';
 import type { Executor, Transaction } from '@/server/db/client';
 import { locations, playAchievements, playItems, playProgress, playRewards, playRuns, userProfiles, users } from '@/server/db/schema';
 import { FOUNDER_RULES, PLAY_RULES } from '@/config/business-rules';
-import { ACHIEVEMENTS, earnedItems, lockedParts, unlockOf, type AchievementId, type Look, type LookPart } from '@/config/play-looks';
+import { ACHIEVEMENTS, PROEZAS, earnedItems, lockedParts, unlockOf, type AchievementId, type Look, type LookPart } from '@/config/play-looks';
 import { levelOf } from '@/config/play-levels';
 import { MEDALS, TRIALS, type Medal } from '@/ui/play/trials/data';
 import { DISTRICT_COURSES, courseById, dayOf } from '@/ui/play/trials/courses';
@@ -37,7 +37,7 @@ export type RunOutcome = {
   progress: PlayProgress;
 };
 
-export type PlayProgress = { xp: number; coins: number; level: number; levelFrom: number; levelTo: number };
+export type PlayProgress = { xp: number; coins: number; gems: number; level: number; levelFrom: number; levelTo: number };
 
 const TRIAL_IDS = TRIALS.map((t) => t.id);
 
@@ -60,21 +60,21 @@ export function checkRun(courseId: string, input: string, noCheckpoints: boolean
   return { ok: true as const, course, day, replayed: { ...replayed, medal: replayed.medal } };
 }
 
-function progressOf(row: { xp: number; coins: number } | undefined): PlayProgress {
+function progressOf(row: { xp: number; coins: number; gems?: number } | undefined): PlayProgress {
   const xp = row?.xp ?? 0;
   const level = levelOf(xp);
-  return { xp, coins: row?.coins ?? 0, level: level.level, levelFrom: level.from, levelTo: level.to };
+  return { xp, coins: row?.coins ?? 0, gems: row?.gems ?? 0, level: level.level, levelFrom: level.from, levelTo: level.to };
 }
 
 export async function playProgressOf(executor: Executor, userId: string): Promise<PlayProgress> {
-  const [row] = await executor.select({ xp: playProgress.xp, coins: playProgress.coins }).from(playProgress).where(eq(playProgress.userId, userId)).limit(1);
+  const [row] = await executor.select({ xp: playProgress.xp, coins: playProgress.coins, gems: playProgress.gems }).from(playProgress).where(eq(playProgress.userId, userId)).limit(1);
   return progressOf(row);
 }
 
 /** The totals row, locked for this transaction (made if missing). */
 async function lockProgress(tx: Transaction, userId: string) {
   await tx.insert(playProgress).values({ userId }).onConflictDoNothing();
-  const [row] = await tx.select({ xp: playProgress.xp, coins: playProgress.coins }).from(playProgress).where(eq(playProgress.userId, userId)).for('update');
+  const [row] = await tx.select({ xp: playProgress.xp, coins: playProgress.coins, gems: playProgress.gems }).from(playProgress).where(eq(playProgress.userId, userId)).for('update');
   return row!;
 }
 
@@ -85,7 +85,7 @@ async function reward(tx: Transaction, userId: string, reason: string, ref: stri
 }
 
 /** Which achievements the player's rewards now prove (the rewards are the evidence: each was paid for a verified run). */
-async function provenAchievements(tx: Transaction, userId: string, run: { fails: number }): Promise<AchievementId[]> {
+async function provenAchievements(tx: Transaction, userId: string, run: { fails: number; course: string; seconds: number; noCheckpoints: boolean }): Promise<AchievementId[]> {
   const rows = await tx.select({ reason: playRewards.reason, ref: playRewards.ref }).from(playRewards).where(and(eq(playRewards.userId, userId), inArray(playRewards.reason, ['finish', 'medal', 'daily'])));
   const finished = new Set(rows.filter((r) => r.reason === 'finish').map((r) => r.ref));
   const medals = new Set(rows.filter((r) => r.reason === 'medal').map((r) => r.ref));
@@ -99,6 +99,16 @@ async function provenAchievements(tx: Transaction, userId: string, run: { fails:
   if (days >= 1) proven.push('ruta_primera');
   if (days >= 7) proven.push('ruta_7');
   if (DISTRICT_COURSES.every((c) => finished.has(c.id))) proven.push('distritos');
+  // A proeza: this course with no fall, no checkpoint, at or under its reference (the test route's own time).
+  const course = courseById(run.course);
+  if (course && run.noCheckpoints && run.fails === 0 && run.seconds <= course.reference) {
+    const feat = PROEZAS[course.kind === 'daily' ? 'ruta' : course.id];
+    if (feat) proven.push(feat);
+  }
+  // All five trials' proezas: the master's.
+  const held = new Set((await tx.select({ id: playAchievements.achievement }).from(playAchievements).where(eq(playAchievements.userId, userId))).map((r) => r.id));
+  for (const id of proven) held.add(id);
+  if (TRIAL_IDS.every((id) => held.has(PROEZAS[id]!))) proven.push('proeza_total');
   return proven;
 }
 
@@ -154,7 +164,8 @@ export async function keepRun(
 
   const totals = { xp: before.xp + xp, coins: before.coins + coins };
   await tx.update(playProgress).set({ ...totals, updatedAt: new Date() }).where(eq(playProgress.userId, userId));
-  return { ok: true, runId, seconds: run.seconds, medal: run.medal, fails: run.fails, previousBest: previous?.seconds ?? null, best: isBest, earned: { xp, coins }, achievements: fresh, items, progress: progressOf(totals) };
+  const after = { ...totals, gems: before.gems };
+  return { ok: true, runId, seconds: run.seconds, medal: run.medal, fails: run.fails, previousBest: previous?.seconds ?? null, best: isBest, earned: { xp, coins }, achievements: fresh, items, progress: progressOf(after) };
 }
 
 // --- What a player owns ------------------------------------------------------------------------
@@ -183,22 +194,39 @@ export async function unownedParts(executor: Executor, userId: string, look: Loo
   return locked.filter((item) => !owned.has(item));
 }
 
-export type BuyRefusal = 'not_sold' | 'owned' | 'coins';
+export type BuyRefusal = 'not_sold' | 'owned' | 'coins' | 'gems';
 
 /** Buys a look option with Play Coins. */
 export async function buyItem(tx: Transaction, userId: string, item: string): Promise<{ ok: true; progress: PlayProgress } | { ok: false; reason: BuyRefusal }> {
   const [part, id] = item.split(':') as [LookPart, string];
-  const price = PLAY_RULES.shop[item];
-  if (!price || unlockOf(part, id) !== 'shop') return { ok: false, reason: 'not_sold' };
+  const unlock = unlockOf(part, id);
+  // Two currencies, never mixed: Play Coins (earned) for the shop's looks, gems (bought) for the exclusive ones.
+  const currency = unlock === 'shop' ? 'coins' : unlock === 'gems' ? 'gems' : null;
+  const price = currency === 'coins' ? PLAY_RULES.shop[item] : currency === 'gems' ? PLAY_RULES.gems[item] : undefined;
+  if (!currency || !price) return { ok: false, reason: 'not_sold' };
   const totals = await lockProgress(tx, userId);
   const [have] = await tx.select({ item: playItems.item }).from(playItems).where(and(eq(playItems.userId, userId), eq(playItems.item, item))).limit(1);
   if (have) return { ok: false, reason: 'owned' };
-  if (totals.coins < price) return { ok: false, reason: 'coins' };
-  await reward(tx, userId, 'shop', item, 0, -price);
-  await tx.insert(playItems).values({ userId, item, source: 'shop' });
-  const after = { xp: totals.xp, coins: totals.coins - price };
-  await tx.update(playProgress).set({ coins: after.coins, updatedAt: new Date() }).where(eq(playProgress.userId, userId));
+  if (totals[currency] < price) return { ok: false, reason: currency };
+  if (currency === 'coins') await reward(tx, userId, 'shop', item, 0, -price);
+  else await tx.insert(playRewards).values({ userId, reason: 'gem_shop', ref: item, gems: -price });
+  await tx.insert(playItems).values({ userId, item, source: currency === 'coins' ? 'shop' : 'gems' });
+  const after = { ...totals, [currency]: totals[currency] - price };
+  await tx.update(playProgress).set({ [currency]: after[currency], updatedAt: new Date() }).where(eq(playProgress.userId, userId));
   return { ok: true, progress: progressOf(after) };
+}
+
+/**
+ * A gem pack paid for (the payments fulfiller, server to server, inside the
+ * transaction that marks the payment succeeded). Keyed by the payment's
+ * reference, so the same payment can never be credited twice.
+ */
+export async function creditGems(tx: Transaction, userId: string, gems: number, reference: string): Promise<boolean> {
+  const totals = await lockProgress(tx, userId);
+  const [row] = await tx.insert(playRewards).values({ userId, reason: 'gems', ref: reference, gems }).onConflictDoNothing().returning({ gems: playRewards.gems });
+  if (!row) return false;
+  await tx.update(playProgress).set({ gems: totals.gems + gems, updatedAt: new Date() }).where(eq(playProgress.userId, userId));
+  return true;
 }
 
 export async function achievementsOf(executor: Executor, userId: string): Promise<AchievementId[]> {

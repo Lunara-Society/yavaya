@@ -184,6 +184,7 @@ export const paymentDomainEnum = pgEnum('payment_domain', [
   'impact_donation',
   'roxi_plan',
   'roxi_credits',
+  'play_gems',
 ]);
 
 export const paymentStatusEnum = pgEnum('payment_status', [
