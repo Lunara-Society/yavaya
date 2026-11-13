@@ -225,6 +225,50 @@ the script and the cut-outs are not in the repository).
   credits an item on the connected service; the account had 2), and a
   garment that bends with the body cannot come from one picture at all.
 
+## The Vault (13 November 2026)
+
+Premium looks and collectibles for gems, from the owner's collection sheet
+(`public/play/vault/*.webp`, 68 pieces cut from it; the skull bandana, gas
+mask and rifle were left out, all-ages). Server: `server/domains/play/vault.ts`;
+game: `ui/play/modes/vault.ts` (from the Plaza); admin: `/admin/vault`.
+
+- **Six collections** (Legado Obsidiana, Dinastía Celestial, Reino de Sombra,
+  Ascenso Real, Ascensión Cyber, Orígenes Míticos), each sold whole at a
+  bundle price ($9.99 to $14.99 in gems) to someone who owns none of it yet.
+- **Every product says what it is now:** *Disponible ya* (worn today),
+  *Solo coleccionable* (owned, its art for the character not made yet) or
+  *Modo de juego futuro* (owned, its game mode does not exist yet), and
+  where it will be used. A "more game modes coming soon" note heads the
+  Vault and its Plaza card.
+- **Usable today: two outfits only**, Legado Obsidiana and Reino de Sombra
+  (`top:legado_obsidiana`, `top:reino_sombrio`, unlock `vault`). A product
+  marked available must unlock a look made for the Vault; the server
+  refuses anything else.
+- **Nothing special is free**, and the cheapest special piece costs more
+  than the dearest ordinary exclusive look (a test checks it). Bigger
+  impact, higher price: sprays and plates at the bottom, pets, mounts and
+  legendary armour at the top.
+- **Numbered editions** (500 of each outfit; 250, 200, 100 and 300 of four
+  other pieces) are sold under a lock on the product's row; the next free
+  number is taken in the same transaction, and a unique index on product
+  and number is the last guard. Six buyers racing for three copies get
+  exactly three (test). The stock counter shown is the real count.
+- **Pieces not usable yet** are sold only while the owner's switch is on
+  (Admin → Diseño del sitio → «Bóveda: piezas que aún no se usan», **off**),
+  and only after the disclosure (the owner's text, both languages) is shown
+  and the buyer ticks the acknowledgment; the server checks both again.
+- **Returns (draft terms, for the owner to approve):** until a piece becomes
+  usable it can be returned from the inventory at any time for every gem
+  paid; its number goes back on sale. Gems, not money: the owner decides
+  whether a refund in money is offered if a mode never ships, and what the
+  terms say before the switch is turned on.
+- **When a mode ships**, the admin sets its products to *Disponible ya* with
+  the look they unlock; every owner has it at once, without paying again
+  (`ownedItems` reads the Vault).
+- **Nothing that helps win.** The owner asked for a hidden pay-to-win
+  element; it was not built: it would deceive players, and it contradicts
+  the owner's own brief ("never sell competitive advantages").
+
 ## Who sees it
 
 The switch is Admin → Diseño del sitio → Yavaya Play (`play.open`, off by

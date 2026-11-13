@@ -93,6 +93,8 @@ export function createPlaza(play: PlayContext): Mode {
     ], `is-${course.id}`);
   }
   card(text('play.menu.rush'), text('play.plaza.rush_line'), [[text('play.plaza.play'), () => play.go('rush'), true]]);
+  // The Vault, and the honest word on what is still to come (the owner asked for both on the site).
+  card(text('play.vault.title'), text('play.plaza.vault_line'), [[text('play.plaza.vault_open'), () => play.go('vault'), true]]);
   const foot = el('yp-sheet-foot');
   for (const [key, place] of [['play.plaza.shop', 'shop'], ['play.studio.open', 'studio']] as const) {
     const b = el('yp-ghost', text(key), 'button');

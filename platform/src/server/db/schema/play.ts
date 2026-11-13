@@ -127,3 +127,77 @@ export const playStats = pgTable(
   },
   (table) => [primaryKey({ columns: [table.day, table.key] })],
 );
+
+/**
+ * The Vault (docs/PLAY.md, "The Vault"): premium looks and collectibles,
+ * paid in gems. Its catalogue lives here, not in code, so the owner manages
+ * products, prices, collections, editions and availability from Admin.
+ */
+export const vaultCollections = pgTable('vault_collections', {
+  key: text('key').primaryKey(),
+  nameEs: text('name_es').notNull(),
+  nameEn: text('name_en').notNull(),
+  lineEs: text('line_es').notNull().default(''),
+  lineEn: text('line_en').notNull().default(''),
+  /** The whole collection at once, in gems; null when not sold as a bundle. */
+  bundleGems: integer('bundle_gems'),
+  sort: integer('sort').notNull().default(0),
+  onSale: boolean('on_sale').notNull().default(true),
+});
+
+export const vaultProducts = pgTable(
+  'vault_products',
+  {
+    key: text('key').primaryKey(),
+    collectionKey: text('collection_key').references(() => vaultCollections.key, { onDelete: 'set null' }),
+    category: text('category').notNull(),
+    nameEs: text('name_es').notNull(),
+    nameEn: text('name_en').notNull(),
+    lineEs: text('line_es').notNull().default(''),
+    lineEn: text('line_en').notNull().default(''),
+    /** Its picture, under /play/vault/. */
+    image: text('image').notNull(),
+    priceGems: integer('price_gems').notNull(),
+    /**
+     * `available`: can be worn or used now. `collectible`: owned, not yet usable
+     * (its art for the character is not built). `future`: needs a game mode that
+     * does not exist yet (`mode`).
+     */
+    status: text('status').notNull(),
+    /** The game mode a `future` product waits for (its words are `play.vault.mode.<mode>`). */
+    mode: text('mode'),
+    /** For an `available` look: the option it unlocks, `part:id` (config/play-looks.ts). */
+    lookItem: text('look_item'),
+    /** A numbered edition: only this many will ever be sold. Null: not limited. */
+    editionSize: integer('edition_size'),
+    onSale: boolean('on_sale').notNull().default(true),
+    sort: integer('sort').notNull().default(0),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index('vault_products_collection_idx').on(table.collectionKey)],
+);
+
+/**
+ * What a player owns from the Vault. A numbered edition's number is unique
+ * per product, so two buyers can never hold the same one. A returned
+ * collectible's row is deleted: its number goes back to the stock.
+ */
+export const vaultOwned = pgTable(
+  'vault_owned',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    productKey: text('product_key')
+      .notNull()
+      .references(() => vaultProducts.key, { onDelete: 'restrict' }),
+    editionNumber: integer('edition_number'),
+    priceGems: integer('price_gems').notNull(),
+    /** `item` or `bundle:<collection>`. */
+    via: text('via').notNull(),
+    /** The buyer confirmed the not-yet-usable disclosure (always true for collectibles and future items). */
+    acknowledged: boolean('acknowledged').notNull().default(false),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.productKey] }), uniqueIndex('vault_owned_edition_idx').on(table.productKey, table.editionNumber)],
+);

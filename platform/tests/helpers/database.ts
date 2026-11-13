@@ -103,6 +103,7 @@ export async function resetTransactionalData(): Promise<void> {
       play_achievements,
       play_items,
       play_stats,
+      vault_owned,
       media
     restart identity cascade
   `);

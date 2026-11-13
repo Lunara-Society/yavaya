@@ -27,9 +27,10 @@ export type Look = Record<LookPart, string>;
  * `shop`: bought with Play Coins (earned by playing; PLAY_RULES.shop).
  * `gems`: bought with gems, which are bought with money (PLAY_RULES.gems,
  * PLAY_RULES.gemPacks): the most exclusive looks, never anything that helps
- * win. `founder`: the first members. An achievement id: won.
+ * win. `founder`: the first members. `vault`: from a product of the Vault
+ * (server/domains/play/vault.ts), owned by buying it there. An achievement id: won.
  */
-export type Unlock = 'shop' | 'gems' | 'founder' | AchievementId;
+export type Unlock = 'shop' | 'gems' | 'founder' | 'vault' | AchievementId;
 
 /**
  * `image`: a picture in /play/looks/<part>/<id>.webp (a painted face, a beard,
@@ -145,6 +146,9 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'tie_dye', color: 0x6a4a7a, accent: 0x2a1f30, shape: 'camiseta', pattern: 'tie_dye', unlock: 'obsidiana_todas' },
     { id: 'galaxia', color: 0x1d2a5a, accent: 0x0d1430, shape: 'camiseta', pattern: 'galaxia', unlock: 'gems' },
     { id: 'cuadros', color: 0x8a1f1f, accent: 0x1a1a1a, shape: 'camisa', pattern: 'cuadros', unlock: 'gems' },
+    // The Vault's first wearable editions (Legado Obsidiana, Reino de Sombra).
+    { id: 'legado_obsidiana', color: 0x15131a, accent: 0xd4a843, shape: 'chaqueta', unlock: 'vault' },
+    { id: 'reino_sombrio', color: 0x23123a, accent: 0xa66bff, shape: 'sudadera', unlock: 'vault' },
   ],
   print: [
     { id: 'ninguno' },

@@ -193,6 +193,12 @@ export const SITE_LOOK_RULES = {
    * this switch sees them.
    */
   trials: true,
+  /**
+   * The Vault's collectibles not usable yet (docs/PLAY.md, "The Vault"): not
+   * sold until the owner has approved the refund terms the screens show
+   * (play.vault.terms) and turns this on. The owner asked for exactly that.
+   */
+  vault_collectibles: false,
 } as const;
 
 export const DEMO_CONTENT_RULES = {
@@ -1190,6 +1196,9 @@ export const PLAY_RULES = {
     { key: 'gemas_100', gems: 100, priceMinor: 100, currency: 'USD' },
     { key: 'gemas_320', gems: 320, priceMinor: 300, currency: 'USD' },
     { key: 'gemas_550', gems: 550, priceMinor: 500, currency: 'USD' },
+    // For the Vault's collections ($9.99 to $14.99) and its biggest pieces.
+    { key: 'gemas_1150', gems: 1150, priceMinor: 1000, currency: 'USD' },
+    { key: 'gemas_2400', gems: 2400, priceMinor: 2000, currency: 'USD' },
   ] as ReadonlyArray<{ key: string; gems: number; priceMinor: number; currency: 'USD' }>,
   /** Gem prices by `part:id` (config/play-looks.ts marks which are sold for gems). */
   gems: {
@@ -1211,6 +1220,6 @@ export const PLAY_RULES = {
     'print:tribal': 30,
     'print:zarpazo': 70,
     'top:galaxia': 90,
-    'top:cuadros': 100,
+    'top:cuadros': 90,
   } as Record<string, number>,
 } as const;

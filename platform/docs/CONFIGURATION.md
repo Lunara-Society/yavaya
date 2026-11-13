@@ -1853,6 +1853,13 @@ are ours. Which looks are free, won or sold (`config/play-looks.ts`) is ours
 too, at the owner's proportions (most free, some won, the most exclusive
 sold). A proeza's bar is the course's reference time, ours.
 
+The Vault (`drizzle/0049`, then `/admin/vault`): the owner set the price
+bands and the six collections; each product's price, which pieces are
+numbered and how many, and the bundle prices are ours, within those bands.
+Two new gem packs (1150 for $10, 2400 for $20) are ours. The return terms
+are a draft and **pending the owner**: selling pieces not usable yet stays
+off (`play.vault_collectibles`) until they are approved.
+
 La Ruta del Día is generated from the date (UTC) out of fourteen stretches
 of the five trials (`trials/courses.ts`, `DAILY_PIECES` = 7, ours); the
 Barrio and Diáspora routes are fixed sequences of the same stretches, chosen

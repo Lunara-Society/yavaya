@@ -1,7 +1,7 @@
 import 'server-only';
 import { and, asc, count, eq, inArray, lt, notInArray, sql } from 'drizzle-orm';
 import type { Executor, Transaction } from '@/server/db/client';
-import { locations, playAchievements, playItems, playProgress, playRewards, playRuns, userProfiles, users } from '@/server/db/schema';
+import { locations, playAchievements, playItems, playProgress, playRewards, playRuns, userProfiles, users, vaultOwned, vaultProducts } from '@/server/db/schema';
 import { FOUNDER_RULES, PLAY_RULES } from '@/config/business-rules';
 import { ACHIEVEMENTS, PROEZAS, earnedItems, lockedParts, unlockOf, type AchievementId, type Look, type LookPart } from '@/config/play-looks';
 import { levelOf } from '@/config/play-levels';
@@ -72,7 +72,7 @@ export async function playProgressOf(executor: Executor, userId: string): Promis
 }
 
 /** The totals row, locked for this transaction (made if missing). */
-async function lockProgress(tx: Transaction, userId: string) {
+export async function lockProgress(tx: Transaction, userId: string) {
   await tx.insert(playProgress).values({ userId }).onConflictDoNothing();
   const [row] = await tx.select({ xp: playProgress.xp, coins: playProgress.coins, gems: playProgress.gems }).from(playProgress).where(eq(playProgress.userId, userId)).for('update');
   return row!;
@@ -183,6 +183,9 @@ export async function ownedItems(executor: Executor, userId: string): Promise<st
   const rows = await executor.select({ item: playItems.item }).from(playItems).where(eq(playItems.userId, userId));
   const owned = new Set(rows.map((r) => r.item));
   if (await isFounder(executor, userId)) for (const e of earnedItems().filter((e) => e.unlock === 'founder')) owned.add(e.item);
+  // Looks from the Vault: owned by owning the product, while that product is wearable.
+  const vault = await executor.select({ item: vaultProducts.lookItem, status: vaultProducts.status }).from(vaultOwned).innerJoin(vaultProducts, eq(vaultProducts.key, vaultOwned.productKey)).where(eq(vaultOwned.userId, userId));
+  for (const v of vault) if (v.item && v.status === 'available') owned.add(v.item);
   return [...owned];
 }
 

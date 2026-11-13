@@ -1,0 +1,21 @@
+/* The Vault's admin (app/admin/vault): plain forms, phone first. */
+.va-section { margin-top: 20px; display: grid; gap: 12px; }
+.va-row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px 16px; padding: 10px 0; border-top: 1px solid var(--line); }
+.va-row strong { flex: 1 1 160px; }
+.va label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--text-muted, inherit); }
+.va input:not([type='checkbox']), .va select { font: inherit; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); min-width: 0; }
+.va .va-check { display: flex; align-items: center; gap: 8px; }
+.va-product { border-top: 1px solid var(--line); }
+.va-product summary { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; flex-wrap: wrap; }
+.va-product summary img { border-radius: 10px; background: #0c0a0e; }
+.va-name { font-weight: 600; flex: 1 1 140px; }
+.va-meta { font-size: 0.85rem; opacity: 0.8; }
+.va-badge { font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.va-badge.is-available { color: #2f9e6a; }
+.va-badge.is-collectible { color: #b8912a; }
+.va-badge.is-future { color: #8a5cd6; }
+.va-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 4px 0 16px; }
+.va-form .va-wide { grid-column: 1 / -1; }
+.va-form button { justify-self: start; }
+.va-ok { color: #2f9e6a; }
+.va-error { color: #c0392b; }

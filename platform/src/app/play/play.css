@@ -160,3 +160,55 @@
 .yp-thumb { flex: none; width: 40px; height: 40px; object-fit: contain; border-radius: 10px; background: #c68a5f; }
 .yp-shop-gems { color: #9fd8ff; font-weight: 800; }
 .yp-gem-pack { display: flex; align-items: center; gap: 8px; }
+
+/* The Vault (modes/vault.ts): black, gold and violet; one scrolling sheet, a detail card over it. */
+.yp-sheet.yp-vault { max-height: 88%; grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto; gap: 10px; background: radial-gradient(120% 60% at 100% 0%, rgba(122, 72, 210, 0.28), transparent 60%), linear-gradient(180deg, rgba(14, 12, 18, 0.98), rgba(8, 7, 11, 0.99)); color: #efe6d4; border-top: 1px solid rgba(216, 178, 90, 0.5); }
+.yp-vault .yp-ghost { border-color: rgba(239, 230, 212, 0.3); color: #efe6d4; }
+.yp-vault .yp-sheet-note { color: #b9ad98; margin: 0; }
+.yp-vault .yp-tab { background: rgba(239, 230, 212, 0.08); color: #efe6d4; }
+.yp-vault .yp-tab[aria-pressed="true"] { background: linear-gradient(180deg, #f3d98f, #c9a24a); color: #120e08; }
+.yp-vault-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.yp-vault-brand { display: grid; }
+.yp-vault-kicker { font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: #a98bff; }
+.yp-vault-title { margin: 0; font-family: var(--serif, Georgia, serif); font-size: 1.45rem; background: linear-gradient(180deg, #fbe7a6, #c9a24a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.yp-vault-gems { min-height: 38px; padding: 0 12px; border: 1px solid rgba(216, 178, 90, 0.55); border-radius: 999px; background: rgba(216, 178, 90, 0.1); color: #f3d98f; font: 800 0.85rem/1 var(--sans, system-ui, sans-serif); }
+.yp-vault-headline { margin: 0; font-family: var(--serif, Georgia, serif); font-style: italic; color: #e9dcc0; font-size: 0.98rem; line-height: 1.35; }
+.yp-vault-soon { display: grid; gap: 2px; padding: 8px 12px; border-radius: 14px; border: 1px solid rgba(166, 107, 255, 0.45); background: rgba(102, 62, 180, 0.16); font-size: 0.8rem; line-height: 1.35; color: #d8cdf3; }
+.yp-vault-soon-title { color: #c7b2ff; font-size: 0.85rem; }
+.yp-vault-body { overflow-y: auto; overscroll-behavior: contain; display: grid; gap: 16px; align-content: start; padding-bottom: 6px; }
+.yp-vault-collection { display: grid; gap: 8px; }
+.yp-vault-collection-head { display: flex; align-items: end; justify-content: space-between; gap: 8px; }
+.yp-vault-collection-name { font-family: var(--serif, Georgia, serif); font-size: 1.1rem; color: #f3d98f; }
+.yp-vault-progress { flex: none; font-size: 0.78rem; color: #b9ad98; }
+.yp-vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.yp-vault-card { position: relative; display: grid; gap: 4px; padding: 6px 6px 8px; border: 1px solid rgba(216, 178, 90, 0.28); border-radius: 14px; background: linear-gradient(160deg, rgba(40, 34, 50, 0.95), rgba(16, 14, 20, 0.95)); color: #efe6d4; text-align: left; font: 600 0.78rem/1.2 var(--sans, system-ui, sans-serif); }
+.yp-vault-card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #0c0a0e; }
+.yp-vault-card.is-owned { border-color: rgba(243, 217, 143, 0.9); box-shadow: 0 0 0 1px rgba(243, 217, 143, 0.4) inset; }
+.yp-vault-card .yp-vault-badge { position: absolute; top: 10px; left: 10px; }
+.yp-vault-card-name { min-height: 2.4em; }
+.yp-vault-card-price { color: #f3d98f; font-weight: 800; }
+.yp-vault-card-stock, .yp-vault-stock { font-size: 0.7rem; color: #b9ad98; }
+.yp-vault-badge { display: inline-block; padding: 3px 7px; border-radius: 999px; font: 800 0.58rem/1 var(--sans, system-ui, sans-serif); letter-spacing: 0.06em; text-transform: uppercase; }
+.yp-vault-badge.is-available { background: #1f6f4a; color: #e6fff1; }
+.yp-vault-badge.is-collectible { background: #c9a24a; color: #120e08; }
+.yp-vault-badge.is-future { background: #6b3fc9; color: #f2ebff; }
+.yp-vault-bundle { justify-self: start; min-height: 40px; padding: 0 14px; border: 1px solid rgba(216, 178, 90, 0.6); border-radius: 999px; background: transparent; color: #f3d98f; font: 700 0.82rem/1 var(--sans, system-ui, sans-serif); }
+.yp-vault-detail { position: absolute; inset: 0; z-index: 7; display: grid; align-items: end; background: rgba(4, 3, 6, 0.6); }
+.yp-vault-detail-card { position: relative; display: grid; gap: 10px; max-height: 92%; overflow-y: auto; padding: 16px 16px max(16px, env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; border-top: 1px solid rgba(216, 178, 90, 0.6); background: linear-gradient(180deg, #16121d, #0b090e); color: #efe6d4; }
+.yp-vault-detail-card .yp-icon { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; }
+.yp-vault-detail-img { width: min(56%, 220px); aspect-ratio: 1; justify-self: center; object-fit: cover; border-radius: 18px; background: #0c0a0e; box-shadow: 0 18px 40px -20px rgba(166, 107, 255, 0.7); }
+.yp-vault-detail-title { margin: 0; font-family: var(--serif, Georgia, serif); font-size: 1.35rem; color: #f3d98f; }
+.yp-vault-detail-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.yp-vault-detail-line, .yp-vault-detail-what { margin: 0; color: #cfc3ad; font-size: 0.9rem; line-height: 1.4; }
+.yp-vault-detail-what { color: #d8cdf3; }
+.yp-vault-mine { margin: 0; color: #9fd9a8; font-weight: 800; }
+.yp-vault-disclosure { display: grid; gap: 8px; padding: 12px; border-radius: 14px; border: 1px solid rgba(216, 178, 90, 0.55); background: rgba(216, 178, 90, 0.07); font-size: 0.85rem; line-height: 1.45; }
+.yp-vault-disclosure p { margin: 0; }
+.yp-vault-disclosure-title { color: #f3d98f; letter-spacing: 0.08em; font-size: 0.8rem; }
+.yp-vault-terms { color: #b9ad98; font-size: 0.8rem; }
+.yp-vault-disclosure .yp-check { font-size: 0.85rem; }
+.yp-vault-price { min-height: 52px; border: 0; border-radius: 999px; background: linear-gradient(180deg, #f6dc7c, #c9a24a); color: #120e08; font: 800 1rem/1 var(--sans, system-ui, sans-serif); box-shadow: 0 10px 24px -12px rgba(216, 178, 90, 0.9); }
+.yp-vault-price:disabled { opacity: 0.45; }
+.yp-vault-strip { display: flex; gap: 6px; overflow-x: auto; }
+.yp-vault-strip img { flex: none; width: 64px; height: 64px; object-fit: cover; border-radius: 10px; background: #0c0a0e; }
+.yp-vault .yp-card .yp-thumb { background: #0c0a0e; width: 48px; height: 48px; object-fit: cover; }

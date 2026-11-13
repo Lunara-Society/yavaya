@@ -344,6 +344,13 @@
       "when": 1794606756664,
       "tag": "0048_uneven_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1794608165543,
+      "tag": "0049_burly_bushwacker",
+      "breakpoints": true
     }
   ]
 }

@@ -35,7 +35,7 @@ const check = (ok, what) => {
   check(await page.waitForSelector('.yp-plaza', { timeout: 8000 }).then(() => true, () => false), 'and goes on to the Plaza');
   const cards = await page.$$eval('.yp-card-title', (nodes) => nodes.map((n) => n.textContent));
   check(cards.length >= 4, `with the day's route, the districts' routes and Rush (${cards.join(', ')})`);
-  await page.click('.yp-card:last-child .yp-primary');
+  await page.click('.yp-card:has(.yp-card-title:text-is("Rush")) .yp-primary');
   check(await page.waitForSelector('.yp-hud', { timeout: 8000 }).then(() => true, () => false), 'and Rush opens from it');
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'nothing is wider than the screen');
 

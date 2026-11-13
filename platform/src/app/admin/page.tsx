@@ -125,6 +125,11 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
                 );
               })}
             </ul>
+            <p className="ops-visits-link">
+              <Link className="btn btn-line" href="/admin/vault">
+                {t('ops.vault.link')}
+              </Link>
+            </p>
           </section>
         ) : null}
 

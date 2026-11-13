@@ -215,4 +215,8 @@ artwork (painted faces, beards, face paint, glasses, chest prints, patterned
 tops), proezas (no fall, no checkpoint, at the reference time) and gems
 (Stripe packs, looks only). Hair, hats and garments from the artwork wait
 for image-to-3D credits. The exposed Stripe key must be rotated before gems
-are sold for real.
+are sold for real. The Vault (docs/PLAY.md): 68 premium
+pieces in six collections, numbered editions, honest status badges, the
+owner's disclosure, an inventory with returns, and `/admin/vault`. Only two
+outfits are usable now; selling the rest waits on the owner approving the
+draft return terms (switch off).

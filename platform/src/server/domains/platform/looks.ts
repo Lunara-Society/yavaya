@@ -14,7 +14,7 @@ import { isFlagEnabled, setFlag } from './settings';
  * Changing one needs `flags.manage` (administrators), checked here, on the
  * server, inside the transaction that writes the flag and its audit record.
  */
-export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials'] as const;
+export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials', 'vault_collectibles'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 const FLAG: Record<LookKey, string> = {
@@ -27,6 +27,8 @@ const FLAG: Record<LookKey, string> = {
   play: 'play.open',
   // Whether the Pruebas de Maestría in Yavaya Play are open to players (docs/PLAY.md).
   trials: 'play.trials',
+  // Whether the Vault sells collectibles not usable yet (docs/PLAY.md, "The Vault"): off until the owner approves their refund terms.
+  vault_collectibles: 'play.vault_collectibles',
 };
 
 export function isLookKey(value: string): value is LookKey {

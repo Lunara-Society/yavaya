@@ -8,6 +8,7 @@ import { createShop } from './modes/shop';
 import { createStudio } from './modes/studio';
 import { createTrial } from './modes/trial';
 import { createTrialsMenu } from './modes/trials-menu';
+import { createVault, type VaultData } from './modes/vault';
 import { courseById } from './trials/courses';
 
 /**
@@ -38,6 +39,8 @@ export type PlaySetup = {
   signInHref?: string;
   gemsOnSale?: boolean;
   gemsReturn?: string | null;
+  /** The Vault's catalogue and what this player owns of it (docs/PLAY.md, "The Vault"). */
+  vault?: VaultData | null;
 };
 
 const LOCAL_LOOK = 'yavaya.play.look';
@@ -121,11 +124,12 @@ export function startPlay(host: HTMLElement, setup: PlaySetup): () => void {
       }
       return kept;
     },
-    go(place: Place) {
+    go(place: Place, tab?: 'gems') {
       if (place === 'trials' && setup.trials) runtime.show(createTrialsMenu(play));
       else if (place === 'studio') runtime.show(createStudio(play, { first: false }));
       else if (place === 'rush') runtime.show(createRush(play));
-      else if (place === 'shop') runtime.show(createShop(play));
+      else if (place === 'shop') runtime.show(createShop(play, tab ?? 'shop'));
+      else if (place === 'vault' && setup.vault) runtime.show(createVault(play, setup.vault));
       else runtime.show(createPlaza(play));
     },
     startTrial(id, noCheckpoints) {

@@ -8,7 +8,7 @@ import type { Runtime } from './engine/runtime';
  * player's words and look, and a way to go somewhere else. Activities never
  * reach for each other; they ask `go`.
  */
-export type Place = 'studio' | 'rush' | 'trials' | 'plaza' | 'shop';
+export type Place = 'studio' | 'rush' | 'trials' | 'plaza' | 'shop' | 'vault';
 
 /** A player's progress on the account, as the server last said it (docs/PLAY.md, "Progress"). */
 export type Account = {
@@ -36,7 +36,8 @@ export type PlayContext = {
   /** Keeps a new look: on the account when signed in, on this phone otherwise. Resolves false if it could not be kept. */
   saveLook(look: Look): Promise<boolean>;
   signedIn: boolean;
-  go(place: Place): void;
+  /** `tab` opens the shop on its gem packs (`'gems'`). */
+  go(place: Place, tab?: 'gems'): void;
   /** Starts a Prueba de Maestría (only offered when the trials are open to this player). */
   startTrial(id: string, noCheckpoints: boolean): void;
   /** Starts any course (a trial, the day's route, a district's), with a ghost to race if one is given. */

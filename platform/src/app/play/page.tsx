@@ -12,6 +12,7 @@ import { playLook } from '@/server/domains/play/profile';
 import { achievementsOf, bestsOf, ownedItems, playProgressOf, sharedRun } from '@/server/domains/play/progress';
 import { dayOf } from '@/ui/play/trials/courses';
 import { gemsOnSale } from '@/server/domains/play/gems';
+import { vaultCatalogue } from '@/server/domains/play/vault';
 
 export const dynamic = 'force-dynamic';
 
@@ -59,6 +60,8 @@ export default async function PlayPage({ searchParams }: { searchParams: Promise
   const gemsReturn = ['paid', 'failed', 'returned', 'cancelled'].includes(query.gemas ?? '') ? (query.gemas as string) : null;
   const challenge = typeof reto === 'string' ? await sharedRun(db(), reto) : null;
   const today = dayOf(new Date());
+  // The Vault: its catalogue, what this player owns, and whether pieces not usable yet are on sale (off until the owner approves the terms).
+  const vault = { ...(await vaultCatalogue(db(), locale === 'en' ? 'en' : 'es', userId)), collectiblesOpen: await lookEnabled(db(), 'vault_collectibles') };
   return (
     <main className="yp">
       <header className="yp-top">
@@ -68,7 +71,7 @@ export default async function PlayPage({ searchParams }: { searchParams: Promise
         <strong className="yp-name">{t('play.title')}</strong>
         {preview ? <span className="yp-preview">{t('play.preview')}</span> : <span />}
       </header>
-      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials, account, today, challenge, signInHref: '/login?next=%2Fplay', gemsOnSale: gemsOnSale(), gemsReturn }} />
+      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials, account, today, challenge, signInHref: '/login?next=%2Fplay', gemsOnSale: gemsOnSale(), gemsReturn, vault }} />
     </main>
   );
 }
