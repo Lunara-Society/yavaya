@@ -145,6 +145,8 @@ export function createRush(play: PlayContext): Mode {
   const bestText = el('yp-best');
   hud.append(timeText, coinText, bestText);
   const menu = el('yp-menu', text('play.studio.open'), 'button');
+  const trialsButton = el('yp-menu yp-menu-2', text('play.menu.trials'), 'button');
+  trialsButton.hidden = !play.trials;
   const hint = el('yp-hint', text('play.start'));
   const panel = el('yp-panel');
   panel.hidden = true;
@@ -154,7 +156,7 @@ export function createRush(play: PlayContext): Mode {
   const again = el('yp-again', text('play.again'), 'button');
   const toStudio = el('yp-ghost', text('play.studio.open'), 'button');
   panel.append(panelTitle, panelTime, panelNote, again, toStudio);
-  host.append(hud, menu, hint, panel);
+  host.append(hud, menu, trialsButton, hint, panel);
   controls.show(true);
   controls.offer(null);
 
@@ -179,6 +181,7 @@ export function createRush(play: PlayContext): Mode {
   };
   listen(again, 'click', () => restart());
   listen(menu, 'click', () => play.go('studio'));
+  listen(trialsButton, 'click', () => play.go('trials'));
   listen(toStudio, 'click', () => play.go('studio'));
   const onKey = (event: Event) => {
     if ((event as KeyboardEvent).code === 'KeyR' && !(event as KeyboardEvent).repeat) restart();
@@ -319,6 +322,7 @@ export function createRush(play: PlayContext): Mode {
       off.forEach((undo) => undo());
       hud.remove();
       menu.remove();
+      trialsButton.remove();
       hint.remove();
       panel.remove();
       hero.dispose();

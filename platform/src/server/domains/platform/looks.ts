@@ -14,7 +14,7 @@ import { isFlagEnabled, setFlag } from './settings';
  * Changing one needs `flags.manage` (administrators), checked here, on the
  * server, inside the transaction that writes the flag and its audit record.
  */
-export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play'] as const;
+export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 const FLAG: Record<LookKey, string> = {
@@ -25,6 +25,8 @@ const FLAG: Record<LookKey, string> = {
   depth: 'look.district_depth',
   // Not a look, but the same kind of switch: whether Yavaya Play (/play) is open to the public.
   play: 'play.open',
+  // Whether the Pruebas de Maestría in Yavaya Play are open to players (docs/PLAY.md).
+  trials: 'play.trials',
 };
 
 export function isLookKey(value: string): value is LookKey {

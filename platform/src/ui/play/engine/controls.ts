@@ -23,6 +23,11 @@ export type Controls = {
   /** A jump was pressed within the last moment and has not been used. */
   jumpWaiting(): boolean;
   useJump(): void;
+  /** The same for "Esquivar" (the trials' dodge, roll and slide). */
+  dodgeWaiting(): boolean;
+  useDodge(): void;
+  /** Shows the dodge button (trials only), with its label of the moment. */
+  dodge(label: string | null): void;
   /** Ages the jump buffer; call once per simulation step. */
   tick(dt: number): void;
   /** Where the stick pointed when the thumb left it, and when (performance.now). */
@@ -59,17 +64,25 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
   actButton.type = 'button';
   actButton.className = 'yp-act';
   actButton.hidden = true;
-  host.append(stick, jumpButton, actButton);
+  const dodgeButton = document.createElement('button');
+  dodgeButton.type = 'button';
+  dodgeButton.className = 'yp-dodge';
+  dodgeButton.hidden = true;
+  host.append(stick, jumpButton, actButton, dodgeButton);
 
   const input = { x: 0, z: 0 };
   const keys = new Set<string>();
   let buffered = 0;
+  let dodgeBuffered = 0;
   let released = { x: 0, z: 0, at: -1e9 };
   let enabled = true;
   let action: (() => void) | null = null;
 
   const pressJump = () => {
     if (enabled) buffered = JUMP_BUFFER;
+  };
+  const pressDodge = () => {
+    if (enabled && !dodgeButton.hidden) dodgeBuffered = 0.12;
   };
 
   // --- The stick ---
@@ -154,6 +167,10 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
     pressJump();
   }) as (event: never) => void);
   listen(actButton, 'click', (() => action?.()) as (event: never) => void);
+  listen(dodgeButton, 'pointerdown', ((event: PointerEvent) => {
+    event.stopPropagation();
+    pressDodge();
+  }) as (event: never) => void);
 
   // --- Keys ---
   listen(window, 'keydown', ((event: KeyboardEvent) => {
@@ -165,6 +182,7 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
       pressJump();
     }
     if ((event.code === 'KeyE' || event.code === 'Enter') && action && !actButton.hidden) action();
+    if (event.code === 'ShiftLeft' || event.code === 'ShiftRight' || event.code === 'KeyJ') pressDodge();
   }) as (event: never) => void);
   listen(window, 'keyup', ((event: KeyboardEvent) => keys.delete(event.code)) as (event: never) => void);
   listen(window, 'resize', (() => stickId === -1 && park()) as (event: never) => void);
@@ -191,6 +209,15 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
     },
     tick(dt) {
       buffered -= dt;
+      dodgeBuffered -= dt;
+    },
+    dodgeWaiting: () => dodgeBuffered > 0,
+    useDodge() {
+      dodgeBuffered = 0;
+    },
+    dodge(label) {
+      dodgeButton.hidden = !label;
+      if (label && dodgeButton.textContent !== label) dodgeButton.textContent = label;
     },
     released: () => released,
     offer(label, next) {
@@ -202,6 +229,7 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
       enabled = visible;
       stick.hidden = !visible;
       jumpButton.hidden = !visible;
+      if (!visible) dodgeButton.hidden = true;
       if (!visible) {
         actButton.hidden = true;
         input.x = input.z = 0;
@@ -214,6 +242,7 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
       stick.remove();
       jumpButton.remove();
       actButton.remove();
+      dodgeButton.remove();
     },
   };
 }

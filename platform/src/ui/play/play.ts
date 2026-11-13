@@ -4,6 +4,8 @@ import { createRuntime } from './engine/runtime';
 import { cue, textReader, type PlayContext, type Place } from './context';
 import { createRush } from './modes/rush';
 import { createStudio } from './modes/studio';
+import { createTrial } from './modes/trial';
+import { createTrialsMenu } from './modes/trials-menu';
 
 /**
  * Yavaya Play, started (docs/PLAY.md). Brings up the screen and the thumbs
@@ -21,6 +23,8 @@ export type PlaySetup = {
   /** The account's saved look, or null (none yet, or not signed in). */
   look: unknown;
   signedIn: boolean;
+  /** The Pruebas de Maestría are open to this player (the switch, or the owner's preview). */
+  trials?: boolean;
 };
 
 const LOCAL_LOOK = 'yavaya.play.look';
@@ -83,8 +87,13 @@ export function startPlay(host: HTMLElement, setup: PlaySetup): () => void {
       return kept;
     },
     go(place: Place) {
-      runtime.show(place === 'studio' ? createStudio(play, { first: false }) : createRush(play));
+      if (place === 'trials' && setup.trials) runtime.show(createTrialsMenu(play));
+      else runtime.show(place === 'studio' ? createStudio(play, { first: false }) : createRush(play));
     },
+    startTrial(id, noCheckpoints) {
+      if (setup.trials) runtime.show(createTrial(play, id, { noCheckpoints }));
+    },
+    trials: Boolean(setup.trials),
     cue,
   };
 

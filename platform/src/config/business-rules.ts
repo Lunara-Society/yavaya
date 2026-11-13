@@ -187,6 +187,11 @@ export const SITE_LOOK_RULES = {
    * change this switch can load the page.
    */
   play: false,
+  /**
+   * Pruebas de Maestría (docs/PLAY.md): closed until the owner has played
+   * them; while closed, only someone who may change this switch sees them.
+   */
+  trials: false,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

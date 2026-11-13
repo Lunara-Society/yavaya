@@ -64,6 +64,61 @@ What is **not** there yet, and is not pretended:
   builds on a real Android phone. Frame rates on real phones are measured
   with `/play?debug`, not claimed.
 
+## Phase 3: Pruebas de Maestría (built, behind the owner's switch)
+
+The owner's directive "The Mastery Evolution". Built so far: priorities 1–3
+and 6 (movement, a real learning curve, five tiers, one guardian), with a
+first pass at a more mature look. Not yet: XP, levels, achievements, Play
+Coins and cosmetic rewards on the account (priority 4, the progression
+step, with server checks), the Obsidian Ascent (5), the plaza locations (7).
+
+**The switch.** Admin → Diseño del sitio → Pruebas de Maestría
+(`play.trials`, off by default: `SITE_LOOK_RULES.trials`). While off, only
+someone who may manage flags sees the trials; Yavaya Rush is unchanged
+for everyone.
+
+**The moveset** (`engine/moves.ts`, pure logic). Run 6.5 m/s; running
+straight builds momentum to a sprint, 9.2 m/s, in about a second; a hard
+turn or a stop spends it. One button, "Esquivar", read in context and
+labelled live: running, a slide (low enough for a bar, keeps the speed);
+standing, a roll (untouchable by fire for a quarter second, then a moment
+of recovery); in the air, one dodge per jump (up to two metres more, the
+later the more). Combinations: sprint → jump → air dodge; slide → jump.
+Measured reaches: a run jump about 4.8 m, a sprint 6.8 m, a sprint with a
+late air dodge 8.8 m, a slide jump 7.3 m. Every gap in the trials is sized
+to one of those.
+
+**The trials** (`trials/data.ts`, played by `trials/sim.ts`):
+
+| Tier | Trial | Teaches |
+| --- | --- | --- |
+| I Bronce | Las Gradas del Volcán | jumps, a moving platform, pendulums |
+| II Plata | El Paso Quebrado | slide, roll through fire, a sprint gap, slide → jump |
+| III Oro | El Templo de Obsidiana | gates, a wave of vents, a crumbling bridge, a shortcut that needs an air dodge |
+| IV Obsidiana | La Torre Rota | all of it, upward, on narrow ledges |
+| V Guardián | El Centinela de Obsidiana | a guardian in three phases: light the plates while its arms sweep (jump the low, slide the high), then fire at the corners |
+
+Fairness rules: every hazard runs on a fixed cycle from the start of the
+attempt; every danger glows before it acts; a fall says what happened
+("Te alcanzó el péndulo") and puts the player back at once (a quarter
+second, nothing reloads); ↻ restarts at any time. A trial opens when the
+one before it is beaten.
+
+**Proven completable.** `tests/unit/play-trials.test.ts` plays every trial
+to the end in Node with the moveset alone, with and without checkpoints.
+The route's time is each trial's `reference` (11.9, 13.0, 16.9, 13.3 and
+18.0 s); medals are cut from it (Guardián also needs a run with no
+checkpoint). The multiples are ours and provisional, to be retuned from
+real players' times once those are measured.
+
+**Records** stay on the phone for now, and the screen says so.
+
+**The look.** Volcanic basalt, obsidian with gold trim, a lava river under
+the course, broken colonnades and forest on the banks, a dusk sky, soft
+shadows from one low sun. The character everywhere now has adult
+proportions, physically based materials instead of cel shading, and a
+calmer, smaller-featured face. All generated in code; nothing downloaded.
+
 ## Who sees it
 
 The switch is Admin → Diseño del sitio → Yavaya Play (`play.open`, off by

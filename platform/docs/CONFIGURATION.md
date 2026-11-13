@@ -1828,3 +1828,9 @@ Yavaya Play's character catalogue (`src/config/play-looks.ts`: the parts,
 the choices, their colours, the default look) is ours, chosen for a first
 release, not specified. Saving a character is limited to 120 saves an hour
 per player (`RATE_LIMITS.playSave`), also our own number.
+
+Yavaya Play's Pruebas de Maestría are closed by default
+(`SITE_LOOK_RULES.trials`). Their movement numbers (run, sprint, dodge,
+slide; `engine/moves.ts`), their layouts (`trials/data.ts`) and the medal
+multiples (`medal()`: 1.06×, 1.15×, 1.35×, 1.7×, 2.3× of the measured
+route) are ours, a first tuning, to be revised from real players' times.

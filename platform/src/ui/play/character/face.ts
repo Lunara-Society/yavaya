@@ -27,10 +27,10 @@ type Style = {
 };
 
 const STYLES: Record<string, Style> = {
-  alegre: { eyeY: 146, eyeGap: 54, eye: 'round', brow: 'up', mouth: 'grin', lashes: false },
-  tranquila: { eyeY: 148, eyeGap: 54, eye: 'calm', brow: 'soft', mouth: 'smile', lashes: true },
-  decidido: { eyeY: 148, eyeGap: 54, eye: 'sharp', brow: 'down', mouth: 'smirk', lashes: false },
-  picara: { eyeY: 146, eyeGap: 54, eye: 'sly', brow: 'arch', mouth: 'sly', lashes: true },
+  alegre: { eyeY: 150, eyeGap: 48, eye: 'round', brow: 'up', mouth: 'grin', lashes: false },
+  tranquila: { eyeY: 151, eyeGap: 48, eye: 'calm', brow: 'soft', mouth: 'smile', lashes: true },
+  decidido: { eyeY: 151, eyeGap: 48, eye: 'sharp', brow: 'down', mouth: 'smirk', lashes: false },
+  picara: { eyeY: 150, eyeGap: 48, eye: 'sly', brow: 'arch', mouth: 'sly', lashes: true },
 };
 
 const INK = '#2a1a14';
@@ -46,10 +46,10 @@ function drawFace(context: CanvasRenderingContext2D, style: Style, state: FaceSt
   const y = style.eyeY;
 
   // Cheeks.
-  c.fillStyle = 'rgba(232, 110, 110, 0.28)';
+  c.fillStyle = 'rgba(200, 110, 100, 0.12)';
   for (const x of [left - 8, right + 8]) {
     c.beginPath();
-    c.ellipse(x, y + 42, 17, 10, 0, 0, Math.PI * 2);
+    c.ellipse(x, y + 34, 16, 9, 0, 0, Math.PI * 2);
     c.fill();
   }
 
@@ -65,42 +65,41 @@ function drawFace(context: CanvasRenderingContext2D, style: Style, state: FaceSt
       c.stroke();
       continue;
     }
-    const tall = style.eye === 'round' ? 28 : style.eye === 'sharp' ? 21 : 25;
+    const tall = style.eye === 'round' ? 15 : style.eye === 'sharp' ? 11 : 13;
     c.fillStyle = '#fbf7f0';
     c.beginPath();
-    c.ellipse(x, y, 21, tall, 0, 0, Math.PI * 2);
+    c.ellipse(x, y, 17, tall, 0, 0, Math.PI * 2);
     c.fill();
     // Where they look: a sly glance aside, everyone else ahead.
     const look = style.eye === 'sly' ? 5 : 0;
     c.fillStyle = IRIS;
     c.beginPath();
-    c.ellipse(x + look, y + 3, 15, Math.min(tall - 4, 19), 0, 0, Math.PI * 2);
+    c.ellipse(x + look, y + 1, 10, Math.min(tall - 1, 11), 0, 0, Math.PI * 2);
     c.fill();
     c.fillStyle = '#140c08';
     c.beginPath();
-    c.ellipse(x + look, y + 4, 8, 10, 0, 0, Math.PI * 2);
+    c.ellipse(x + look, y + 1, 5, 6, 0, 0, Math.PI * 2);
     c.fill();
     c.fillStyle = '#ffffff';
     c.beginPath();
-    c.arc(x + look - 5, y - 5, 5.2, 0, Math.PI * 2);
-    c.arc(x + look + 5, y + 9, 2.4, 0, Math.PI * 2);
+    c.arc(x + look - 3, y - 3, 2.6, 0, Math.PI * 2);
     c.fill();
     // Upper lid: heavier for a calm or determined look.
     c.strokeStyle = INK;
     c.lineWidth = style.eye === 'calm' || style.eye === 'sharp' ? 6 : 4;
     c.beginPath();
     const lid = style.eye === 'calm' ? 0.22 : style.eye === 'sharp' ? 0.3 : 0.12;
-    c.ellipse(x, y, 21, tall, 0, Math.PI * (1 + lid), Math.PI * (2 - lid));
+    c.ellipse(x, y, 17, tall, 0, Math.PI * (1 + lid), Math.PI * (2 - lid));
     c.stroke();
     if (style.eye === 'calm' || style.eye === 'sharp') {
       c.fillStyle = 'rgba(0,0,0,0.001)';
       // The lid covers the top of the eye.
       c.save();
       c.beginPath();
-      c.ellipse(x, y, 22, tall + 1, 0, 0, Math.PI * 2);
+      c.ellipse(x, y, 18, tall + 1, 0, 0, Math.PI * 2);
       c.clip();
       c.fillStyle = 'rgba(120, 70, 50, 0.55)';
-      c.fillRect(x - 24, y - tall - 2, 48, tall * (style.eye === 'sharp' ? 0.75 : 0.6));
+      c.fillRect(x - 20, y - tall - 2, 40, tall * (style.eye === 'sharp' ? 0.75 : 0.6));
       c.restore();
     }
     if (style.lashes) {
@@ -116,10 +115,10 @@ function drawFace(context: CanvasRenderingContext2D, style: Style, state: FaceSt
 
   // Brows, in the hair's colour.
   c.strokeStyle = brow;
-  c.lineWidth = 8;
+  c.lineWidth = 5;
   for (const [index, x] of [left, right].entries()) {
     const inner = index === 0 ? 1 : -1;
-    const top = y - 42;
+    const top = y - 28;
     c.beginPath();
     switch (style.brow) {
       case 'up':
@@ -142,30 +141,38 @@ function drawFace(context: CanvasRenderingContext2D, style: Style, state: FaceSt
     c.stroke();
   }
 
+  // A hint of a nose.
+  c.strokeStyle = 'rgba(90, 50, 35, 0.35)';
+  c.lineWidth = 3;
+  c.beginPath();
+  c.moveTo(124, y + 30);
+  c.quadraticCurveTo(128, y + 34, 133, y + 30);
+  c.stroke();
+
   // Mouth.
-  const my = y + 62;
+  const my = y + 52;
   c.strokeStyle = INK;
   c.fillStyle = '#7a2a2a';
-  c.lineWidth = 5;
+  c.lineWidth = 3.5;
   const open = state === 'happy' || style.mouth === 'grin';
   if (open) {
     c.beginPath();
-    c.moveTo(128 - 22, my - 4);
-    c.quadraticCurveTo(128, my - 1, 128 + 22, my - 4);
-    c.quadraticCurveTo(128, my + 30, 128 - 22, my - 4);
+    c.moveTo(128 - 15, my - 4);
+    c.quadraticCurveTo(128, my - 1, 128 + 15, my - 4);
+    c.quadraticCurveTo(128, my + 18, 128 - 15, my - 4);
     c.fill();
     c.stroke();
     c.fillStyle = '#fbf7f0';
-    c.fillRect(128 - 13, my - 3, 26, 5);
+    c.fillRect(128 - 9, my - 3, 18, 4);
     c.fillStyle = '#e07a7a';
     c.beginPath();
-    c.ellipse(128, my + 13, 9, 5, 0, 0, Math.PI * 2);
+    c.ellipse(128, my + 8, 6, 3, 0, 0, Math.PI * 2);
     c.fill();
   } else {
     c.beginPath();
     if (style.mouth === 'smile') {
-      c.moveTo(128 - 16, my);
-      c.quadraticCurveTo(128, my + 12, 128 + 16, my);
+      c.moveTo(128 - 12, my);
+      c.quadraticCurveTo(128, my + 7, 128 + 12, my);
     } else if (style.mouth === 'smirk') {
       c.moveTo(128 - 14, my + 3);
       c.quadraticCurveTo(128 + 4, my + 6, 128 + 17, my - 4);

@@ -1,5 +1,5 @@
 import type { Look } from '@/config/play-looks';
-import { sound, soundWanted } from '@/ui/first-light/sound';
+import { sound, soundWanted, type Cue } from '@/ui/first-light/sound';
 import type { Controls } from './engine/controls';
 import type { Runtime } from './engine/runtime';
 
@@ -8,7 +8,7 @@ import type { Runtime } from './engine/runtime';
  * player's words and look, and a way to go somewhere else. Activities never
  * reach for each other; they ask `go`.
  */
-export type Place = 'studio' | 'rush';
+export type Place = 'studio' | 'rush' | 'trials';
 
 export type PlayContext = {
   runtime: Runtime;
@@ -19,7 +19,11 @@ export type PlayContext = {
   saveLook(look: Look): Promise<boolean>;
   signedIn: boolean;
   go(place: Place): void;
-  cue(name: 'success' | 'portal' | 'door'): void;
+  /** Starts a Prueba de Maestría (only offered when the trials are open to this player). */
+  startTrial(id: 'bronce' | 'plata' | 'oro' | 'obsidiana' | 'guardian', noCheckpoints: boolean): void;
+  /** Whether the Pruebas de Maestría are open to this player (the owner's switch). */
+  trials: boolean;
+  cue(name: Cue): void;
 };
 
 /** The `play.*` texts, as the page hands them over, read with `{placeholders}`. */
@@ -31,7 +35,7 @@ export function textReader(texts: Record<string, string>) {
   };
 }
 
-export function cue(name: 'success' | 'portal' | 'door') {
+export function cue(name: Cue) {
   if (soundWanted()) sound().play(name, { force: true });
 }
 

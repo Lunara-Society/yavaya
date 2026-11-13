@@ -31,6 +31,11 @@ export type MotionState = {
   /** 0…1, the finish. */
   cheer: number;
   emote: Emote | null;
+  /** The mastery moveset's actions (engine/moves.ts), and how far through it is (0…1). */
+  action?: 'roll' | 'slide' | 'airdodge' | null;
+  actionK?: number;
+  /** 0…1 of momentum: a sprint leans further and swings harder. */
+  sprint?: number;
 };
 
 export type Character = {
@@ -73,17 +78,21 @@ function outlineMaterial(thickness: number) {
 // --- The character -------------------------------------------------------------------
 
 export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?: boolean } = {}): Character {
-  const outlined = options.outline ?? true;
-  const outline = outlineMaterial(0.012);
-  const materials = new Map<number, THREE.MeshToonMaterial>();
+  // The owner's direction for the trials (December 2026): less toy, more a
+  // young-adult adventurer. Lit like the world (soft, physically based)
+  // rather than cel-shaded, no outline unless asked for.
+  const outlined = options.outline ?? false;
+  const outline = outlineMaterial(0.008);
+  const materials = new Map<number, THREE.MeshStandardMaterial>();
   const paint = (color: number) => {
     let material = materials.get(color);
     if (!material) {
-      material = new THREE.MeshToonMaterial({ color, gradientMap: ramp() });
+      material = new THREE.MeshStandardMaterial({ color, roughness: 0.72, metalness: 0 });
       materials.set(color, material);
     }
     return material;
   };
+  void ramp;
   // Shapes belong to the look that made them: a new look disposes them.
   let geometries: THREE.BufferGeometry[] = [];
   const keep = <T extends THREE.BufferGeometry>(geometry: T) => {
@@ -92,11 +101,17 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
   };
 
   const group = new THREE.Group();
-  // The model is drawn about 1.8 m tall; the game's body is 1.6 m.
-  group.scale.setScalar(0.9);
+  // The model is drawn about 1.9 m tall; the game's body is 1.6 m.
+  group.scale.setScalar(0.85);
+  // A pivot at the middle of the body, for a roll or a spin in the air.
+  const tumble = new THREE.Group();
+  tumble.position.y = 0.55;
+  group.add(tumble);
   const root = new THREE.Group();
-  group.add(root);
-  const HIP_Y = 0.82;
+  root.position.y = -0.55;
+  tumble.add(root);
+  // Adult proportions: long legs, a head about an eighth of the height.
+  const HIP_Y = 0.92;
   const pelvis = new THREE.Group();
   pelvis.position.y = HIP_Y;
   const spine = new THREE.Group();
@@ -142,16 +157,16 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     return pivot;
   };
   // The head a little large for the body: a game character, read at a phone's size.
-  const head = joint(spine, 0, 0.76);
-  head.scale.setScalar(1.14);
+  const head = joint(spine, 0, 0.73);
+  head.scale.set(0.96, 1.0, 0.98);
   const shoulderL = joint(spine, 0.24, 0.44);
   const shoulderR = joint(spine, -0.24, 0.44);
   const elbowL = joint(shoulderL, 0, -0.26);
   const elbowR = joint(shoulderR, 0, -0.26);
   const hipL = joint(pelvis, 0.1, -0.02);
   const hipR = joint(pelvis, -0.1, -0.02);
-  const kneeL = joint(hipL, 0, -0.38);
-  const kneeR = joint(hipR, 0, -0.38);
+  const kneeL = joint(hipL, 0, -0.43);
+  const kneeR = joint(hipR, 0, -0.43);
   /** Every mesh placed by `dress`, on any joint, for clearing. */
   let worn: THREE.Object3D[] = [];
   const wear = (mesh: THREE.Object3D) => {
@@ -286,18 +301,18 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
       [hipL, kneeL],
       [hipR, kneeR],
     ] as const) {
-      wear(shape(taper(0.095 * limb, 0.074 * limb, 0.38), pants, hip));
-      if (shorts) wear(shape(keep(new THREE.CylinderGeometry(0.088 * limb, 0.086 * limb, 0.05, 14)), bottom.accent!, hip, [0, -0.29, 0], false));
-      wear(shape(taper(0.074 * limb, 0.058 * limb, 0.33), shorts ? skin : pants, knee));
-      if (look.bottom === 'jogger') wear(shape(keep(new THREE.CylinderGeometry(0.064 * limb, 0.062 * limb, 0.06, 12)), bottom.accent!, knee, [0, -0.31, 0], false));
-      if (look.bottom === 'jeans') wear(shape(keep(new THREE.CylinderGeometry(0.066 * limb, 0.066 * limb, 0.035, 12)), bottom.accent!, knee, [0, -0.32, 0], false));
+      wear(shape(taper(0.092 * limb, 0.07 * limb, 0.43), pants, hip));
+      if (shorts) wear(shape(keep(new THREE.CylinderGeometry(0.088 * limb, 0.086 * limb, 0.05, 14)), bottom.accent!, hip, [0, -0.33, 0], false));
+      wear(shape(taper(0.07 * limb, 0.054 * limb, 0.38), shorts ? skin : pants, knee));
+      if (look.bottom === 'jogger') wear(shape(keep(new THREE.CylinderGeometry(0.064 * limb, 0.062 * limb, 0.06, 12)), bottom.accent!, knee, [0, -0.36, 0], false));
+      if (look.bottom === 'jeans') wear(shape(keep(new THREE.CylinderGeometry(0.066 * limb, 0.066 * limb, 0.035, 12)), bottom.accent!, knee, [0, -0.37, 0], false));
       // A shoe: a rounded capsule lying forward, a sole under it.
-      const shoe = shape(capsule(0.07, 0.13), shoes.color!, knee, [0, -0.395, 0.05]);
+      const shoe = shape(capsule(0.07, 0.13), shoes.color!, knee, [0, -0.445, 0.05]);
       shoe.rotation.x = Math.PI / 2;
       shoe.scale.set(look.shoes === 'botas' ? 1.08 : 1, 1, look.shoes === 'botas' ? 0.95 : 0.72);
       wear(shoe);
-      if (look.shoes === 'botas') wear(shape(keep(new THREE.CylinderGeometry(0.08, 0.075, 0.14, 12)), shoes.color!, knee, [0, -0.32, 0]));
-      const sole = shape(keep(new THREE.BoxGeometry(0.13, 0.03, 0.27)), shoes.accent!, knee, [0, -0.445, 0.05], false);
+      if (look.shoes === 'botas') wear(shape(keep(new THREE.CylinderGeometry(0.08, 0.075, 0.14, 12)), shoes.color!, knee, [0, -0.37, 0]));
+      const sole = shape(keep(new THREE.BoxGeometry(0.13, 0.03, 0.27)), shoes.accent!, knee, [0, -0.495, 0.05], false);
       wear(sole);
     }
 
@@ -418,7 +433,43 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     let pelvisRoll = 0;
     let rate = 14;
 
-    if (state.cheer > 0) {
+    const k = state.actionK ?? 0;
+    let spin = 0;
+    let roll = 0;
+    if (state.action === 'roll') {
+      // Tucked tight, over once.
+      roll = k * Math.PI * 2;
+      kneeLX = kneeRX = 2.0;
+      legLX = legRX = -1.6;
+      armLX = armRX = -1.4;
+      elbowLX = elbowRX = -1.6;
+      lean = 0.6;
+      headX = 0.4;
+      rate = 30;
+    } else if (state.action === 'slide') {
+      // Leaning back, feet first.
+      lean = -0.95;
+      legLX = -1.35;
+      kneeLX = 0.15;
+      legRX = -0.9;
+      kneeRX = 1.1;
+      armLX = 0.6;
+      armRX = -0.6;
+      armLZ = 0.9;
+      armRZ = -0.9;
+      bob = -0.42;
+      headX = 0.5;
+      rate = 24;
+    } else if (state.action === 'airdodge') {
+      // A quick turn in the air, tucked.
+      spin = k * Math.PI * 2;
+      kneeLX = kneeRX = 1.3;
+      legLX = legRX = -0.9;
+      armLX = armRX = -0.4;
+      armLZ = 1.2;
+      armRZ = -1.2;
+      rate = 30;
+    } else if (state.cheer > 0) {
       const t = clock * 7;
       bob = Math.abs(Math.sin(t * 0.85)) * 0.2 * state.cheer;
       armLX = -2.9;
@@ -470,7 +521,10 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
       elbowLX = elbowRX = -(0.35 + 1.05 * run);
       armLZ = 0.1;
       armRZ = -0.1;
-      lean = 0.06 + 0.18 * run;
+      const sprint = state.sprint ?? 0;
+      lean = 0.06 + 0.18 * run + 0.16 * sprint;
+      armLX *= 1 + 0.35 * sprint;
+      armRX *= 1 + 0.35 * sprint;
       bob = Math.abs(c) * (0.025 + 0.05 * run);
       yaw = s * 0.12 * run;
       headX = -lean * 0.6;
@@ -517,7 +571,9 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
       lean += land * 0.15;
     }
 
-    root.position.y = ease('bob', bob, rate * 1.5, dt);
+    tumble.rotation.x = state.action === 'roll' ? roll : ease('tumble', 0, 20, dt);
+    tumble.rotation.y = state.action === 'airdodge' ? spin : 0;
+    root.position.y = -0.55 + ease('bob', bob, rate * 1.5, dt);
     spine.rotation.x = ease('lean', lean, rate, dt);
     spine.rotation.y = ease('yaw', yaw, rate, dt);
     pelvis.rotation.z = ease('roll', pelvisRoll, rate, dt);

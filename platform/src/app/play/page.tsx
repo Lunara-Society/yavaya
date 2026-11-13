@@ -43,6 +43,8 @@ export default async function PlayPage() {
   // The game's words: every `play.*` text in the visitor's language, and nothing else.
   const texts = Object.fromEntries(Object.entries(getDictionary(locale)).filter(([key]) => key.startsWith('play.')));
   const look = userId ? await playLook(db(), userId) : null;
+  // The Pruebas de Maestría: open to all by their own switch, or to the owner as a preview.
+  const trials = (await lookEnabled(db(), 'trials')) || (userId !== null && (await hasPermission(db(), userId, 'flags.manage')));
   return (
     <main className="yp">
       <header className="yp-top">
@@ -52,7 +54,7 @@ export default async function PlayPage() {
         <strong className="yp-name">{t('play.title')}</strong>
         {preview ? <span className="yp-preview">{t('play.preview')}</span> : <span />}
       </header>
-      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null }} />
+      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials }} />
     </main>
   );
 }
