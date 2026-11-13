@@ -20,7 +20,7 @@ export type PlayContext = {
   signedIn: boolean;
   go(place: Place): void;
   /** Starts a Prueba de Maestría (only offered when the trials are open to this player). */
-  startTrial(id: 'bronce' | 'plata' | 'oro' | 'obsidiana' | 'guardian', noCheckpoints: boolean): void;
+  startTrial(id: string, noCheckpoints: boolean): void;
   /** Whether the Pruebas de Maestría are open to this player (the owner's switch). */
   trials: boolean;
   cue(name: Cue): void;

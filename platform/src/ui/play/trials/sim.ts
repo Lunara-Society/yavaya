@@ -1,6 +1,7 @@
 import { RADIUS, solid, place, type Solid } from '../engine/body';
 import { LOW_HEIGHT, STAND_HEIGHT, mover, stepMover, type MoveEvents, type MoveInput, type Mover } from '../engine/moves';
 import { WARN, type Hazard, type Plat, type Point, type Trial } from './data';
+import { dcos, dhypot, dsin } from '../engine/dmath';
 
 /**
  * A trial, played (docs/PLAY.md): the platforms, the hazards on their
@@ -110,6 +111,8 @@ export class TrialSim {
     p.low = false;
     p.facing = 0;
     for (const s of this.solids) {
+      // A crumbled tile is whole again, at its own height: a course after a fall is the course as it began.
+      if (s.dropped > 0) s.y = s.plat.y;
       s.crumbleAt = null;
       s.dropped = 0;
     }
@@ -144,7 +147,7 @@ export class TrialSim {
   }
 
   pendulumAngle(h: Extract<Hazard, { kind: 'pendulum' }>, time: number) {
-    return Math.sin((time / h.period) * Math.PI * 2 + h.phase) * h.amp;
+    return dsin((time / h.period) * Math.PI * 2 + h.phase) * h.amp;
   }
 
   beamAngle(h: Extract<Hazard, { kind: 'beam' }>, time: number) {
@@ -153,7 +156,7 @@ export class TrialSim {
 
   barPosition(h: Extract<Hazard, { kind: 'bar' }>, time: number) {
     if (!h.move) return { x: h.x, z: h.z };
-    const o = Math.sin((time / h.move.period) * Math.PI * 2 + h.move.phase) * h.move.range;
+    const o = dsin((time / h.move.period) * Math.PI * 2 + h.move.phase) * h.move.range;
     return h.move.axis === 'x' ? { x: h.x + o, z: h.z } : { x: h.x, z: h.z + o };
   }
 
@@ -236,7 +239,7 @@ export class TrialSim {
     const boss = this.trial.boss;
     if (boss && this.phase < boss.phases.length && p.grounded) {
       boss.phases[this.phase]!.plates.forEach((plate, i) => {
-        if (!this.plates[i] && Math.hypot(p.x - plate.x, p.z - plate.z) < 1.1) {
+        if (!this.plates[i] && dhypot(p.x - plate.x, p.z - plate.z) < 1.1) {
           this.plates[i] = true;
           events.plate = i;
         }
@@ -271,23 +274,23 @@ export class TrialSim {
       switch (h.kind) {
         case 'pendulum': {
           const a = this.pendulumAngle(h, time);
-          const bx = h.axis === 'x' ? h.x + Math.sin(a) * h.length : h.x;
-          const bz = h.axis === 'z' ? h.z + Math.sin(a) * h.length : h.z;
-          const by = h.y - Math.cos(a) * h.length;
+          const bx = h.axis === 'x' ? h.x + dsin(a) * h.length : h.x;
+          const bz = h.axis === 'z' ? h.z + dsin(a) * h.length : h.z;
+          const by = h.y - dcos(a) * h.length;
           const dy = by < bottom ? bottom - by : by > top ? by - top : 0;
-          if (Math.hypot(p.x - bx, p.z - bz, dy) < h.r + RADIUS) return 'pendulum';
+          if (dhypot(p.x - bx, p.z - bz, dy) < h.r + RADIUS) return 'pendulum';
           break;
         }
         case 'beam': {
           if (h.y + h.r < bottom || h.y - h.r > top) break;
           const a = this.beamAngle(h, time);
-          const dx = Math.sin(a);
-          const dz = Math.cos(a);
+          const dx = dsin(a);
+          const dz = dcos(a);
           // Distance from the player to the bar (a segment from inner to length along the angle).
           const rx = p.x - h.x;
           const rz = p.z - h.z;
           const along = Math.max(h.inner, Math.min(h.length, rx * dx + rz * dz));
-          if (Math.hypot(rx - dx * along, rz - dz * along) < h.r + RADIUS * 0.8) return 'beam';
+          if (dhypot(rx - dx * along, rz - dz * along) < h.r + RADIUS * 0.8) return 'beam';
           break;
         }
         case 'bar': {
@@ -297,7 +300,7 @@ export class TrialSim {
         }
         case 'vent': {
           if (p.untouchable) break;
-          if (this.ventState(h, time).state === 'on' && Math.hypot(p.x - h.x, p.z - h.z) < h.r + RADIUS * 0.5 && bottom < h.y + 2.6) return 'fire';
+          if (this.ventState(h, time).state === 'on' && dhypot(p.x - h.x, p.z - h.z) < h.r + RADIUS * 0.5 && bottom < h.y + 2.6) return 'fire';
           break;
         }
         case 'curtain': {

@@ -49,8 +49,19 @@ export type Boss = {
   exit: Plat[];
 };
 
+export type TrialId = 'bronce' | 'plata' | 'oro' | 'obsidiana' | 'guardian';
+
+/** What a course is, for the screen: a numbered trial, the day's route, or a district's course. */
+export type CourseKind = 'trial' | 'daily' | 'district';
+/** How it is drawn (modes/trial.ts): the volcano of the trials, a barrio's rooftops, an airport. */
+export type Theme = 'volcan' | 'barrio' | 'diaspora';
+
 export type Trial = {
-  id: 'bronce' | 'plata' | 'oro' | 'obsidiana' | 'guardian';
+  /** A trial's id, `dia-YYYY-MM-DD` for a day's route, or a district course's id (trials/courses.ts). */
+  id: string;
+  kind?: CourseKind;
+  theme?: Theme;
+  /** I to V for the trials; 0 for the other courses. */
   tier: number;
   start: Point;
   platforms: Plat[];
@@ -75,6 +86,7 @@ const P = (kind: Kind, x: number, y: number, z: number, w: number, d: number, h 
 // --- I. Bronce: Las Gradas del Volcán --------------------------------------------------
 const bronce: Trial = {
   id: 'bronce',
+  kind: 'trial',
   tier: 1,
   start: { x: 0, y: 0, z: 2 },
   floor: -6,
@@ -114,6 +126,7 @@ const bronce: Trial = {
 // --- II. Plata: El Paso Quebrado ---------------------------------------------------------
 const plata: Trial = {
   id: 'plata',
+  kind: 'trial',
   tier: 2,
   start: { x: 0, y: 0, z: 2 },
   floor: -6,
@@ -157,6 +170,7 @@ for (let row = 0; row < 4; row += 1) {
 }
 const oro: Trial = {
   id: 'oro',
+  kind: 'trial',
   tier: 3,
   start: { x: 0, y: 0, z: 2 },
   floor: -6,
@@ -206,6 +220,7 @@ const oro: Trial = {
 // --- IV. Obsidiana: La Torre Rota ----------------------------------------------------------
 const obsidiana: Trial = {
   id: 'obsidiana',
+  kind: 'trial',
   tier: 4,
   start: { x: 0, y: 0, z: 2 },
   floor: -8,
@@ -251,6 +266,7 @@ const obsidiana: Trial = {
 const C = { x: 0, z: 22, y: 0 };
 const guardian: Trial = {
   id: 'guardian',
+  kind: 'trial',
   tier: 5,
   start: { x: 0, y: 0, z: 2 },
   floor: -6,

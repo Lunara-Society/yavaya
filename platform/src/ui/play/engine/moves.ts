@@ -1,4 +1,5 @@
 import { GRAVITY, JUMP, RADIUS, type Body, type Solid } from './body';
+import { datan2, dcos, dexp, dhypot, dsin } from './dmath';
 
 /**
  * The mastery moveset (docs/PLAY.md, "Pruebas de Maestría"): the run of
@@ -86,11 +87,11 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
     player.z += player.on.dz;
   }
   const { x: ax, z: az, asked } = frozen ? { x: 0, z: 0, asked: 0 } : input.axis();
-  const speed = Math.hypot(player.vx, player.vz);
+  const speed = dhypot(player.vx, player.vz);
 
   // --- Starting an action ---
   if (!frozen && input.dodgeWaiting() && player.action === null) {
-    const dir = asked > 0.1 ? norm(ax, az) : speed > 0.5 ? norm(player.vx, player.vz) : { x: Math.sin(player.facing), z: Math.cos(player.facing) };
+    const dir = asked > 0.1 ? norm(ax, az) : speed > 0.5 ? norm(player.vx, player.vz) : { x: dsin(player.facing), z: dcos(player.facing) };
     if (player.grounded) {
       // Running (stick held, near a run's speed): a slide. Otherwise: a roll.
       player.action = asked > 0.5 && speed >= RUN * SLIDE_MIN_SPEED ? 'slide' : 'roll';
@@ -127,7 +128,7 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
       player.vz = player.dirZ * DODGE_SPEED;
     } else {
       // Recovery: the body is slowing and steers only a little.
-      const blend = 1 - Math.exp(-6 * dt);
+      const blend = 1 - dexp(-6 * dt);
       player.vx += (ax * RUN - player.vx) * blend;
       player.vz += (az * RUN - player.vz) * blend;
       if (player.actionTime >= DODGE_TIME + DODGE_RECOVER) player.action = null;
@@ -135,8 +136,8 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
   } else if (player.action === 'slide') {
     player.actionTime += dt;
     // The slide keeps its speed, losing a little, and steers only a little.
-    const keep = Math.max(RUN * 0.8, Math.hypot(player.vx, player.vz) - 1.8 * dt);
-    const steer = 1 - Math.exp(-2.5 * dt);
+    const keep = Math.max(RUN * 0.8, dhypot(player.vx, player.vz) - 1.8 * dt);
+    const steer = 1 - dexp(-2.5 * dt);
     if (asked > 0.1) {
       player.dirX += (ax - player.dirX) * steer;
       player.dirZ += (az - player.dirZ) * steer;
@@ -182,21 +183,21 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
     const top = RUN + (SPRINT - RUN) * player.momentum;
     // In the air a speed above the run's (a slide jump, a dodge) is kept while
     // the stick holds the line: the air steers, it does not brake.
-    const aligned = speed > 0.5 && asked > 0.1 ? (ax * player.vx + az * player.vz) / (speed * Math.hypot(ax, az)) : 0;
+    const aligned = speed > 0.5 && asked > 0.1 ? (ax * player.vx + az * player.vz) / (speed * dhypot(ax, az)) : 0;
     const keep = !player.grounded && speed > top && aligned > 0.9 ? speed : top;
     const grip = player.grounded ? (asked > 0.05 ? 16 : 30) : 8;
-    const blend = 1 - Math.exp(-grip * dt);
+    const blend = 1 - dexp(-grip * dt);
     player.vx += (ax * keep - player.vx) * blend;
     player.vz += (az * keep - player.vz) * blend;
   }
   if (asked > 0.1 && player.action !== 'roll' && player.action !== 'slide') {
-    const want = Math.atan2(ax, az);
+    const want = datan2(ax, az);
     let turn = want - player.facing;
     while (turn > Math.PI) turn -= Math.PI * 2;
     while (turn < -Math.PI) turn += Math.PI * 2;
-    player.facing += turn * (1 - Math.exp(-14 * dt));
+    player.facing += turn * (1 - dexp(-14 * dt));
   } else if (player.action === 'roll' || player.action === 'slide') {
-    player.facing = Math.atan2(player.dirX, player.dirZ);
+    player.facing = datan2(player.dirX, player.dirZ);
   }
 
   // --- Jumping ---
@@ -212,7 +213,7 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
     if (player.action === 'slide') {
       // Slide → jump: the jump keeps the slide's speed, and a little more.
       const d = norm(player.vx, player.vz);
-      const s = Math.hypot(player.vx, player.vz) + SLIDE_JUMP_BOOST;
+      const s = dhypot(player.vx, player.vz) + SLIDE_JUMP_BOOST;
       player.vx = d.x * s;
       player.vz = d.z * s;
       player.action = null;
@@ -237,7 +238,7 @@ export function stepMover(player: Mover, solids: Solid[], input: MoveInput, dt: 
 }
 
 function norm(x: number, z: number) {
-  const length = Math.hypot(x, z) || 1;
+  const length = dhypot(x, z) || 1;
   return { x: x / length, z: z / length };
 }
 

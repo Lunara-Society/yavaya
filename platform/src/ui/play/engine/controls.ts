@@ -32,6 +32,12 @@ export type Controls = {
   tick(dt: number): void;
   /** Where the stick pointed when the thumb left it, and when (performance.now). */
   released(): { x: number; z: number; at: number };
+  /**
+   * What happened since the last call: a press of Saltar, of Esquivar, the
+   * stick let go. The trials play from these (trials/run.ts), one sample a
+   * step, so a run can be kept and checked.
+   */
+  take(): { jump: boolean; dodge: boolean; lift: boolean };
   /** Shows the interact button with this label and action, or hides it (null). */
   offer(label: string | null, action?: () => void): void;
   show(visible: boolean): void;
@@ -76,13 +82,18 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
   let dodgeBuffered = 0;
   let released = { x: 0, z: 0, at: -1e9 };
   let enabled = true;
+  const since = { jump: false, dodge: false, lift: false };
   let action: (() => void) | null = null;
 
   const pressJump = () => {
-    if (enabled) buffered = JUMP_BUFFER;
+    if (!enabled) return;
+    buffered = JUMP_BUFFER;
+    since.jump = true;
   };
   const pressDodge = () => {
-    if (enabled && !dodgeButton.hidden) dodgeBuffered = 0.12;
+    if (!enabled || dodgeButton.hidden) return;
+    dodgeBuffered = 0.12;
+    since.dodge = true;
   };
 
   // --- The stick ---
@@ -156,6 +167,7 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
     if (event.pointerId !== stickId) return;
     stickId = -1;
     released = { x: input.x, z: input.z, at: performance.now() };
+    since.lift = true;
     input.x = 0;
     input.z = 0;
     park();
@@ -220,6 +232,11 @@ export function createControls(runtime: Runtime, labels: { jump: string }): Cont
       if (label && dodgeButton.textContent !== label) dodgeButton.textContent = label;
     },
     released: () => released,
+    take() {
+      const out = { ...since };
+      since.jump = since.dodge = since.lift = false;
+      return out;
+    },
     offer(label, next) {
       action = label ? (next ?? null) : null;
       actButton.hidden = !label;

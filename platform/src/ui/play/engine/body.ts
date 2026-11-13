@@ -1,4 +1,5 @@
 import type { Controls } from './controls';
+import { datan2, dexp, dsin } from './dmath';
 
 /**
  * How a player moves among boxes (docs/PLAY.md): gravity, a run, a jump with
@@ -53,7 +54,7 @@ export function place(box: Solid, time: number) {
   let x = box.baseX;
   let z = box.baseZ;
   if (box.move) {
-    const offset = Math.sin((time / box.move.period) * Math.PI * 2 + box.move.phase) * box.move.range;
+    const offset = dsin((time / box.move.period) * Math.PI * 2 + box.move.phase) * box.move.range;
     if (box.move.axis === 'x') x += offset;
     else z += offset;
   }
@@ -87,17 +88,17 @@ export function stepBody(player: Body, solids: Solid[], controls: Controls, dt: 
   // Letting go on the ground stops sooner than starting moves, so a thumb
   // lifted near an edge does not slide off it.
   const grip = player.grounded ? (asked > 0.05 ? 18 : 32) : 9;
-  const blend = 1 - Math.exp(-grip * dt);
+  const blend = 1 - dexp(-grip * dt);
   if (player.grounded || asked > 0.05) {
     player.vx += (ax * options.speed - player.vx) * blend;
     player.vz += (az * options.speed - player.vz) * blend;
   }
   if (asked > 0.1) {
-    const want = Math.atan2(ax, az);
+    const want = datan2(ax, az);
     let turn = want - player.facing;
     while (turn > Math.PI) turn -= Math.PI * 2;
     while (turn < -Math.PI) turn += Math.PI * 2;
-    player.facing += turn * (1 - Math.exp(-14 * dt));
+    player.facing += turn * (1 - dexp(-14 * dt));
   }
 
   // A jump pressed a moment after running off an edge still counts.
