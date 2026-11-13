@@ -51,7 +51,8 @@ const clock = (seconds: number) => {
 export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ antialias: window.devicePixelRatio < 2, powerPreference: 'high-performance' });
-  let ratio = Math.min(window.devicePixelRatio || 1, 2);
+  // 1.5 is sharp on a phone and draws half the pixels of 2 or 3.
+  let ratio = Math.min(window.devicePixelRatio || 1, 1.5);
   renderer.setPixelRatio(ratio);
   renderer.domElement.className = 'yp-canvas';
   host.append(renderer.domElement);
@@ -231,6 +232,10 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   again.textContent = labels.again;
   panel.append(panelTitle, panelTime, panelNote, again);
   host.append(hud, hint, stick, jumpButton, panel);
+  // ?debug on the address shows how the phone is doing: frames a second,
+  // the run asked of the stick, the speed. Numbers only, for a report.
+  const debug = new URLSearchParams(window.location.search).has('debug') ? el('yp-debug') : null;
+  if (debug) host.append(debug);
 
   const readBest = () => {
     try {
@@ -275,15 +280,57 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
     if (event.code === 'Space' || event.code === 'KeyK') releaseJump();
   }) as (event: never) => void);
 
-  // The stick appears where the left thumb lands; anywhere on the right is a jump.
+  // The stick. It waits, always visible, at the bottom left, and a thumb
+  // pressed on its upper part runs forward at once: the owner's runs on a real
+  // phone pressed "forward" on a stick that only appeared under the thumb, so
+  // every press was its centre and the run a crawl. A thumb that lands
+  // elsewhere on the left half brings the stick to it, as before.
+  //
+  // It is a direction, not a throttle: past a small dead middle the player
+  // runs at full speed. A course of jumps needs the run, never a walk.
   let stickId = -1;
-  // Where the stick last pointed, for a thumb that leaves it to press jump.
-  let released = { x: 0, z: 0, at: -1e9 };
   let stickX = 0;
   let stickY = 0;
+  // Where the stick last pointed, for a thumb that leaves it to press jump.
+  let released = { x: 0, z: 0, at: -1e9 };
   const STICK_REACH = 52;
-  const STICK_DEAD = 7;
-  const STICK_FULL = 18;
+  const STICK_DEAD = 9;
+  const STICK_HOME_GRAB = 100;
+  const home = () => {
+    const box = host.getBoundingClientRect();
+    return { x: box.left + 26 + 62, y: box.bottom - 40 - 62 };
+  };
+  const showStickAt = (x: number, y: number) => {
+    const box = host.getBoundingClientRect();
+    stick.style.left = `${x - box.left}px`;
+    stick.style.top = `${y - box.top}px`;
+  };
+  const parkStick = () => {
+    const spot = home();
+    showStickAt(spot.x, spot.y);
+    knob.style.transform = 'translate(-50%, -50%)';
+    stick.classList.remove('is-on');
+  };
+  const steer = (clientX: number, clientY: number) => {
+    let dx = clientX - stickX;
+    let dy = clientY - stickY;
+    const length = Math.hypot(dx, dy);
+    if (length > STICK_REACH) {
+      dx = (dx / length) * STICK_REACH;
+      dy = (dy / length) * STICK_REACH;
+    }
+    knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+    const run = length < STICK_DEAD ? 0 : 1 / length;
+    // Screen-right is −x: the camera looks along +z.
+    input.x = -(clientX - stickX) * run;
+    input.z = -(clientY - stickY) * run;
+    // A thumb is never exactly above the middle. Near enough to straight
+    // ahead (about 20°) is straight ahead, or every run drifts off the side.
+    if (input.z > 0.94) {
+      input.x = 0;
+      input.z = 1;
+    }
+  };
   listen(
     host,
     'pointerdown',
@@ -293,12 +340,17 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
       const box = host.getBoundingClientRect();
       if (event.clientX - box.left < box.width * 0.55 && stickId === -1) {
         stickId = event.pointerId;
-        stickX = event.clientX;
-        stickY = event.clientY;
-        stick.style.left = `${stickX - box.left}px`;
-        stick.style.top = `${stickY - box.top}px`;
+        const spot = home();
+        if (Math.hypot(event.clientX - spot.x, event.clientY - spot.y) < STICK_HOME_GRAB) {
+          stickX = spot.x;
+          stickY = spot.y;
+        } else {
+          stickX = event.clientX;
+          stickY = event.clientY;
+        }
+        showStickAt(stickX, stickY);
         stick.classList.add('is-on');
-        knob.style.transform = 'translate(-50%, -50%)';
+        steer(event.clientX, event.clientY);
       } else if (event.clientX - box.left >= box.width * 0.55) {
         pressJump();
       }
@@ -309,23 +361,7 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
     host,
     'pointermove',
     ((event: PointerEvent) => {
-      if (event.pointerId !== stickId) return;
-      let dx = event.clientX - stickX;
-      let dy = event.clientY - stickY;
-      const length = Math.hypot(dx, dy);
-      if (length > STICK_REACH) {
-        dx = (dx / length) * STICK_REACH;
-        dy = (dy / length) * STICK_REACH;
-      }
-      knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-      // A thumb on a phone moves a little, not to the edge of the ring: the
-      // owner's first runs crawled along at a fraction of the speed, and a
-      // jump from a crawl lands in the water. So past a small dead middle the
-      // stick gives most of the speed at once and all of it a short way out.
-      const push = length < STICK_DEAD ? 0 : Math.min(1, 0.6 + (0.4 * (length - STICK_DEAD)) / STICK_FULL);
-      const scale = length > 0 ? push / length : 0;
-      input.x = -dx * scale;
-      input.z = -dy * scale;
+      if (event.pointerId === stickId) steer(event.clientX, event.clientY);
     }) as (event: never) => void,
     { passive: true },
   );
@@ -335,7 +371,7 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
       released = { x: input.x, z: input.z, at: performance.now() };
       input.x = 0;
       input.z = 0;
-      stick.classList.remove('is-on');
+      parkStick();
     } else {
       releaseJump();
     }
@@ -553,6 +589,8 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   };
   resize();
   listen(window, 'resize', resize as (event: never) => void);
+  listen(window, 'resize', (() => stickId === -1 && parkStick()) as (event: never) => void);
+  parkStick();
 
   // Some browsers magnify a page whatever it asks for (an accessibility
   // setting, an in-app browser). The game then keeps itself inside what can
@@ -589,6 +627,7 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   let last = 0;
   let owed = 0;
   let slow = 0;
+  let fpsAverage = 60;
   let stopped = false;
   respawn();
   host.classList.remove('yp-flash');
@@ -596,7 +635,9 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   const draw = (now: number) => {
     if (stopped) return;
     frame = window.requestAnimationFrame(draw);
-    const dt = Math.min(0.1, last ? (now - last) / 1000 : 0.016);
+    // Up to a quarter of a second is caught up in steps, so a phone drawing few
+    // frames plays the course at its real speed rather than in slow motion.
+    const dt = Math.min(0.25, last ? (now - last) / 1000 : 0.016);
     last = now;
     owed += dt;
     while (owed >= STEP) {
@@ -636,6 +677,10 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
     camera.lookAt(look);
 
     if (started && !finished) timeText.textContent = clock(elapsed);
+    if (debug) {
+      fpsAverage += (1 / Math.max(dt, 0.001) - fpsAverage) * 0.05;
+      debug.textContent = `${fpsAverage.toFixed(0)} fps · x${ratio}\n${Math.hypot(input.x, input.z).toFixed(2)} → ${Math.hypot(player.vx, player.vz).toFixed(1)} m/s`;
+    }
     renderer.render(scene, camera);
 
     // A phone that cannot keep up draws fewer pixels rather than fewer frames.

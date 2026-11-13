@@ -13,8 +13,9 @@ arch. A timer, twenty coins, four checkpoints, a best time.
 
 What is real: the game, on a phone (left thumb steers, the button jumps) and
 with a keyboard (arrows or WASD, space, R to restart). Tuned after the
-owner's first runs on a real phone: the stick gives most of the speed at a
-small push, a tap on the button is a full jump, a jump keeps the run it
+owner's first runs on a real phone: the stick rests, always visible, at the
+bottom left, and a thumb held on its arrow runs at full speed (it is a
+direction, not a throttle; near-forward is forward), a tap on the button is a full jump, a jump keeps the run it
 started with, and one thumb can leave the stick to press jump.
 
 What is **not** there yet, and is not pretended:
@@ -49,7 +50,8 @@ previa". Nothing on the site links to it yet.
 
 ## Checking it
 
-`node tests/e2e/play.cjs http://127.0.0.1:3000` plays the course from start
+`/play?debug` shows frames a second and the speed, for a report from a
+real phone. `node tests/e2e/play.cjs http://127.0.0.1:3000` plays the course from start
 to finish with the keyboard: a fall, a full run, the finish panel, a restart.
 A flawless run is about 20 seconds; a first human run should be about a
 minute. Whether it is *fun* is for a person to say.

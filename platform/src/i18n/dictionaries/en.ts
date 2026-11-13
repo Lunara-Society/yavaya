@@ -2446,7 +2446,7 @@ export const en: Dictionary = {
   'play.time': 'Time',
   'play.best': 'Best',
   'play.coins': 'Coins',
-  'play.start': 'Move your left thumb to run. Tap on the right to jump.',
+  'play.start': 'Put your thumb on the circle’s arrow to run. Tap Jump to jump.',
   'play.finished': 'You made it!',
   'play.record': 'New record',
   'play.again': 'Play again',

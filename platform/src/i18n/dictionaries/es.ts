@@ -2472,7 +2472,7 @@ export const es = {
   'play.time': 'Tiempo',
   'play.best': 'Mejor',
   'play.coins': 'Monedas',
-  'play.start': 'Mueve el pulgar izquierdo para correr. Toca a la derecha para saltar.',
+  'play.start': 'Pon el pulgar sobre la flecha del círculo para correr. Toca Saltar para saltar.',
   'play.finished': '¡Llegaste!',
   'play.record': 'Nuevo récord',
   'play.again': 'Jugar otra vez',
