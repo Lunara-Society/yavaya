@@ -77,6 +77,11 @@ export const RATE_LIMITS = {
   paymentCheckout: { bucket: 'payment_checkout', limit: 10, windowSeconds: 60 * 60 },
   /** Saving a Yavaya Play character: a long session of trying things on, not a script. */
   playSave: { bucket: 'play_save', limit: 120, windowSeconds: 60 * 60 },
+  /** Each run is replayed on the server: enough for a player who finishes often, not for a flood. */
+  playRun: { bucket: 'play_run', limit: 90, windowSeconds: 60 * 60 },
+  playShop: { bucket: 'play_shop', limit: 60, windowSeconds: 60 * 60 },
+  /** Anonymous counts, per address-free key (a random id the page holds). */
+  playSignal: { bucket: 'play_signal', limit: 600, windowSeconds: 60 * 60 },
   safeSpaceThread: { bucket: 'safe_space_thread', limit: SAFE_SPACE_RULES.newThreadsPerDay, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 

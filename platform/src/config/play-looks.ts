@@ -9,8 +9,13 @@
  * Ids are stored in accounts. Never rename or reuse one; retire it by
  * leaving it out of a list, and `parseLook` puts the default in its place.
  *
- * `starter` items are everyone's from the first visit. Items that will be
- * earned arrive with the shop (step 7) and carry a price there, not here.
+ * Most options are everyone's from the first visit. An option with `unlock`
+ * is owned only once it is earned (docs/PLAY.md, "Shop and rewards"):
+ * bought with Play Coins in the shop (`shop`, its price in PLAY_RULES.shop),
+ * won with an achievement (its id), or worn by Yavaya's first members
+ * (`founder`). The server checks ownership before it keeps a look.
+ * `shape` names the option it is cut like (a gold guayabera is shaped as a
+ * guayabera), so a new colourway needs no new geometry.
  */
 
 export const LOOK_PARTS = ['body', 'skin', 'face', 'hair', 'hairColor', 'top', 'bottom', 'shoes', 'accessory'] as const;
@@ -18,7 +23,17 @@ export type LookPart = (typeof LOOK_PARTS)[number];
 
 export type Look = Record<LookPart, string>;
 
-type Option = { id: string; color?: number; accent?: number };
+export type Unlock = 'shop' | 'founder' | AchievementId;
+
+type Option = { id: string; color?: number; accent?: number; shape?: string; unlock?: Unlock };
+
+/**
+ * Achievements (docs/PLAY.md): each said in both languages as
+ * `play.achievement.<id>` and `.line`, checked by the server from verified
+ * runs only (server/domains/play/progress.ts).
+ */
+export const ACHIEVEMENTS = ['primera_prueba', 'cinco_pruebas', 'sin_caidas', 'obsidiana_todas', 'guardian', 'ruta_primera', 'ruta_7', 'distritos'] as const;
+export type AchievementId = (typeof ACHIEVEMENTS)[number];
 
 /** Skin tones, from light to deep: the range of the people the site is for. */
 const SKIN: Option[] = [
@@ -39,6 +54,8 @@ const HAIR_COLOR: Option[] = [
   { id: 'cano', color: 0xcfcac2 },
   { id: 'turquesa', color: 0x2fa3a0 },
   { id: 'rosa', color: 0xd96b9a },
+  { id: 'oro', color: 0xd8b25a, unlock: 'shop' },
+  { id: 'violeta', color: 0x6a4bb8, unlock: 'shop' },
 ];
 
 export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
@@ -55,6 +72,9 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'sudadera', color: 0xc8553d, accent: 0xf2e6d6 },
     { id: 'camisa', color: 0x6f8f4e, accent: 0xe9e2cf },
     { id: 'tirantes', color: 0x8a5ab8, accent: 0xf3d27a },
+    { id: 'guayabera_oro', color: 0xe3c271, accent: 0xa87a2c, shape: 'guayabera', unlock: 'shop' },
+    { id: 'sudadera_volcan', color: 0x3a1a12, accent: 0xff7a2a, shape: 'sudadera', unlock: 'shop' },
+    { id: 'chaqueta_obsidiana', color: 0x221f29, accent: 0xc9a24a, shape: 'chaqueta', unlock: 'obsidiana_todas' },
   ],
   bottom: [
     { id: 'jeans', color: 0x2b3a67, accent: 0x3c4f86 },
@@ -67,6 +87,7 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'botas', color: 0x6b4429, accent: 0x3e2717 },
     { id: 'sandalias', color: 0x8a5a36, accent: 0x5a3a22 },
     { id: 'tenis_rojos', color: 0xd2453a, accent: 0xf2efe6 },
+    { id: 'tenis_dorados', color: 0xe3c271, accent: 0xf6efe0, shape: 'tenis', unlock: 'shop' },
   ],
   accessory: [
     { id: 'ninguno' },
@@ -74,6 +95,9 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'lentes', color: 0x1c1a1e, accent: 0x7fb6c9 },
     { id: 'sombrero', color: 0xe2c98a, accent: 0x6b4429 },
     { id: 'mochila', color: 0xc8553d, accent: 0x6b4429 },
+    { id: 'sombrero_fundador', color: 0x2a2018, accent: 0xd8b25a, shape: 'sombrero', unlock: 'founder' },
+    { id: 'sombrero_guardian', color: 0x221f29, accent: 0xff7a2a, shape: 'sombrero', unlock: 'guardian' },
+    { id: 'gorra_ruta', color: 0xc8553d, accent: 0xd8b25a, shape: 'gorra', unlock: 'ruta_7' },
   ],
 };
 
@@ -107,4 +131,26 @@ export function parseLook(value: unknown): Look | null {
     if (typeof id === 'string' && LOOK_OPTIONS[part].some((option) => option.id === id)) look[part] = id;
   }
   return look;
+}
+
+/** A look with every option replaced by the one it is cut like: what the character builder shapes. */
+export function shapesOf(look: Look): Look {
+  const out = { ...look };
+  for (const part of LOOK_PARTS) out[part] = lookOption(part, look[part]).shape ?? lookOption(part, look[part]).id;
+  return out;
+}
+
+/** What it takes to own an option; undefined for the options everyone has. */
+export function unlockOf(part: LookPart, id: string): Unlock | undefined {
+  return LOOK_OPTIONS[part].find((option) => option.id === id)?.unlock;
+}
+
+/** Every option that has to be earned, as `part:id`. */
+export function earnedItems(): Array<{ item: string; part: LookPart; id: string; unlock: Unlock }> {
+  return LOOK_PARTS.flatMap((part) => LOOK_OPTIONS[part].filter((o) => o.unlock).map((o) => ({ item: `${part}:${o.id}`, part, id: o.id, unlock: o.unlock! })));
+}
+
+/** The parts of a look the player has to own, as `part:id`. */
+export function lockedParts(look: Look): string[] {
+  return LOOK_PARTS.filter((part) => unlockOf(part, look[part])).map((part) => `${part}:${look[part]}`);
 }

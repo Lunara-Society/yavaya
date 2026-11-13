@@ -1834,3 +1834,25 @@ Yavaya Play's Pruebas de Maestría are closed by default
 slide; `engine/moves.ts`), their layouts (`trials/data.ts`) and the medal
 multiples (`medal()`: 1.06×, 1.15×, 1.35×, 1.7×, 2.3× of the measured
 route) are ours, a first tuning, to be revised from real players' times.
+
+Yavaya Play's progress (`PLAY_RULES` in `config/business-rules.ts`) is all
+ours, provisional, not specified by the owner: the XP and Play Coins for a
+first finish (100 XP, 20 coins), for each medal reached for the first time
+(20/5 Bronce up to 160/40 Guardián), for the day's route (60/15, once a
+day), for each achievement (150/40); the level curve (150 × n × (n − 1) / 2
+XP for level n); the shop's prices (120 to 300 coins); the leaderboard's
+length (20); a day's route open three hours past midnight UTC; runs longer
+than ten minutes not checked. The achievements and which look each unlocks
+(`config/play-looks.ts`) are ours too. Play Coins are not money and not
+tokens: earned only, never sold. To retune from real players' numbers.
+
+La Ruta del Día is generated from the date (UTC) out of fourteen stretches
+of the five trials (`trials/courses.ts`, `DAILY_PIECES` = 7, ours); the
+Barrio and Diáspora routes are fixed sequences of the same stretches, chosen
+by us. A day's reference time, for its medals, is the sum of the stretches'
+usual test-route times (measured over two hundred days).
+
+Rate limits, ours: 90 runs checked an hour per player (`RATE_LIMITS.playRun`,
+each is replayed on the server), 60 shop requests an hour, 600 anonymous
+counts an hour per address (`playSignal`; the address is hashed and used
+only for the limit, never stored with a count).

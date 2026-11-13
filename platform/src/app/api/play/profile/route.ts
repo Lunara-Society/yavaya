@@ -3,6 +3,7 @@ import { db } from '@/server/db/client';
 import { currentSession } from '@/server/auth/context';
 import { consumeRateLimit, RATE_LIMITS } from '@/server/security/rate-limit';
 import { exactLook, savePlayLook } from '@/server/domains/play/profile';
+import { unownedParts } from '@/server/domains/play/progress';
 import { sameOrigin } from '@/app/api/go/upload';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,8 @@ export async function PUT(request: Request) {
   const userId = session.user.userId;
   const limit = await consumeRateLimit(db(), RATE_LIMITS.playSave, `play:${userId}`);
   if (!limit.allowed) return NextResponse.json({ error: 'rate_limited' }, { status: 429 });
+  // An earned option (bought, won, a founder's) is kept only on the account that owns it.
+  if ((await unownedParts(db(), userId, look)).length) return NextResponse.json({ error: 'locked' }, { status: 403 });
   await savePlayLook(db(), userId, look);
   return NextResponse.json({ ok: true });
 }

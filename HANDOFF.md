@@ -202,6 +202,12 @@ cards with nothing added. Full account in `platform/docs/DISTRICTS-3D.md`.
 ## Yavaya Play (`/play`)
 
 Behind Admin → Diseño del sitio → Yavaya Play (off: only the owner sees it).
-State, plan and how it is built: `platform/docs/PLAY.md`. Steps 1–2 of the
-approved plan are done (shared engine; character, Character Studio, look
-saved in `play_profiles`). Next: Yavaya Plaza.
+State, plan and how it is built: `platform/docs/PLAY.md`. Done: the shared
+engine; the character and studio; the Pruebas de Maestría; and (14 November
+2026) verified runs (the server replays every run's input), progress on the
+account (XP, levels, achievements, Play Coins), La Ruta del Día, the Barrio
+and Diáspora routes, leaderboards (world, country, city), ghosts and
+WhatsApp challenge links, the shop, the Fundador hat, the Plaza menu, and
+anonymous play counts in Admin → Visitas. Not yet: Obsidian Ascent, Dash,
+players' own courses (needs moderation first). All numbers are ours,
+provisional (`docs/CONFIGURATION.md`).

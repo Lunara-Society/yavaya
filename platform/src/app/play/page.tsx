@@ -9,6 +9,8 @@ import { siteContext } from '@/ui/site/context';
 import { PlayLoader } from '@/ui/play/loader';
 import { getDictionary } from '@/i18n';
 import { playLook } from '@/server/domains/play/profile';
+import { achievementsOf, bestsOf, ownedItems, playProgressOf, sharedRun } from '@/server/domains/play/progress';
+import { dayOf } from '@/ui/play/trials/courses';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +37,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * not exist, except for whoever may change the switch, so the owner can play
  * it before anyone else does.
  */
-export default async function PlayPage() {
+export default async function PlayPage({ searchParams }: { searchParams: Promise<{ reto?: string }> }) {
   const { t, userId, locale } = await siteContext();
   const open = await lookEnabled(db(), 'play');
   const preview = !open && userId !== null && (await hasPermission(db(), userId, 'flags.manage'));
@@ -45,6 +47,14 @@ export default async function PlayPage() {
   const look = userId ? await playLook(db(), userId) : null;
   // The Pruebas de Maestría: open to all by their own switch, or to the owner as a preview.
   const trials = (await lookEnabled(db(), 'trials')) || (userId !== null && (await hasPermission(db(), userId, 'flags.manage')));
+  // The player's progress on the account (docs/PLAY.md, "Progress"), all of it verified runs.
+  const account = userId
+    ? { progress: await playProgressOf(db(), userId), owned: await ownedItems(db(), userId), achievements: await achievementsOf(db(), userId), bests: await bestsOf(db(), userId) }
+    : null;
+  // A challenge link (`?reto=`): the shared run to race, if it is still shared.
+  const reto = (await searchParams).reto;
+  const challenge = typeof reto === 'string' ? await sharedRun(db(), reto) : null;
+  const today = dayOf(new Date());
   return (
     <main className="yp">
       <header className="yp-top">
@@ -54,7 +64,7 @@ export default async function PlayPage() {
         <strong className="yp-name">{t('play.title')}</strong>
         {preview ? <span className="yp-preview">{t('play.preview')}</span> : <span />}
       </header>
-      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials }} />
+      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials, account, today, challenge, signInHref: '/login?next=%2Fplay' }} />
     </main>
   );
 }

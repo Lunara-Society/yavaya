@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { DEFAULT_LOOK, lookOption, type Look } from '@/config/play-looks';
+import { DEFAULT_LOOK, lookOption, shapesOf, type Look } from '@/config/play-looks';
 import { FACE_SHELL, faceTextures, type FaceState } from './face';
 
 /**
@@ -178,7 +178,9 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
   let faceMaterial: THREE.MeshBasicMaterial | null = null;
   let face: FaceState = 'normal';
 
-  function dress(look: Look) {
+  function dress(given: Look) {
+    // Colours from the option itself; shapes from the one it is cut like (a gold guayabera is a guayabera).
+    const look = shapesOf(given);
     for (const mesh of worn) mesh.removeFromParent();
     worn = [];
     faces && Object.values(faces).forEach((texture) => texture.dispose());
@@ -189,12 +191,12 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     const sturdy = look.body === 'fuerte';
     const w = sturdy ? 1.16 : 1;
     const limb = sturdy ? 1.12 : 1;
-    const skin = lookOption('skin', look.skin).color!;
-    const hairColor = lookOption('hairColor', look.hairColor).color!;
-    const top = lookOption('top', look.top);
-    const bottom = lookOption('bottom', look.bottom);
-    const shoes = lookOption('shoes', look.shoes);
-    const accessory = lookOption('accessory', look.accessory);
+    const skin = lookOption('skin', given.skin).color!;
+    const hairColor = lookOption('hairColor', given.hairColor).color!;
+    const top = lookOption('top', given.top);
+    const bottom = lookOption('bottom', given.bottom);
+    const shoes = lookOption('shoes', given.shoes);
+    const accessory = lookOption('accessory', given.accessory);
     const cloth = top.color!;
     const trim = top.accent!;
     const pants = bottom.color!;

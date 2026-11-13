@@ -1139,3 +1139,45 @@ const PLAN_ORDER: Record<RoxiPlanKey, number> = { free: 0, pro: 1, max: 2 };
 export function planAllows(plan: RoxiPlanKey, skill: RoxiSkill): boolean {
   return PLAN_ORDER[plan] >= PLAN_ORDER[ROXI_SKILL_PLANS[skill]];
 }
+
+/**
+ * Yavaya Play's progression (docs/PLAY.md, "Progress"). Every number here is
+ * Yavaya's own provisional default, not the owner's: to be retuned once real
+ * players' numbers are measured (docs/CONFIGURATION.md). XP and Play Coins
+ * are given only for a run the server played again and saw finish. Play
+ * Coins are not money and not tokens: they are earned by playing, spent in
+ * the game's shop on looks, and never bought.
+ */
+export const PLAY_RULES = {
+  /** The first time a course is finished. */
+  firstFinish: { xp: 100, coins: 20 },
+  /** The first time each medal is reached on a course (a better medal pays its own, and those below it it skipped). */
+  medal: {
+    completado: { xp: 0, coins: 0 },
+    bronce: { xp: 20, coins: 5 },
+    plata: { xp: 40, coins: 10 },
+    oro: { xp: 70, coins: 15 },
+    obsidiana: { xp: 110, coins: 25 },
+    guardian: { xp: 160, coins: 40 },
+  },
+  /** La Ruta del Día, finished, once a day. */
+  dailyFinish: { xp: 60, coins: 15 },
+  /** Level n (from 1) needs levelStep × n × (n − 1) / 2 XP in all: 0, 150, 450, 900, … */
+  levelStep: 150,
+  /** A day's route counts for its own day, and for this many hours after (a run begun before midnight UTC). */
+  dailyGraceHours: 3,
+  /** How many players a leaderboard shows. */
+  boardSize: 20,
+  /** A run longer than this is not checked (the replay is work for the server). */
+  maxRunSeconds: 600,
+  /** Each achievement, once. */
+  achievement: { xp: 150, coins: 40 },
+  /** The shop's prices in Play Coins, by `part:id` (config/play-looks.ts marks what is sold). */
+  shop: {
+    'hairColor:oro': 120,
+    'hairColor:violeta': 120,
+    'top:guayabera_oro': 300,
+    'top:sudadera_volcan': 220,
+    'shoes:tenis_dorados': 180,
+  } as Record<string, number>,
+} as const;

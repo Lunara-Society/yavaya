@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { LOOK_OPTIONS, LOOK_PARTS, lookOption, type Look, type LookPart } from '@/config/play-looks';
+import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookOption, unlockOf, type Look, type LookPart } from '@/config/play-looks';
+import { PLAY_RULES } from '@/config/business-rules';
 import { buildCharacter, type Emote } from '../character/build';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { el, type PlayContext } from '../context';
@@ -111,10 +112,22 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
       }),
     );
   };
+  // Earned options (docs/PLAY.md, "Shop and rewards") can be tried on by anyone, and kept by whoever owns them.
+  const owned = () => new Set(play.account?.owned ?? []);
+  const howToGet = (which: LookPart, id: string) => {
+    const unlock = unlockOf(which, id);
+    if (!unlock) return '';
+    if (!play.account) return text('play.unlock.signin');
+    if (unlock === 'shop') return text('play.unlock.shop', { price: PLAY_RULES.shop[`${which}:${id}`] ?? 0 });
+    if (unlock === 'founder') return text('play.unlock.founder');
+    return text('play.unlock.achievement', { name: text(`play.achievement.${unlock}`) });
+  };
   const renderOptions = () => {
+    const have = owned();
     grid.replaceChildren(
       ...LOOK_OPTIONS[part].map((option) => {
         const button = el('yp-option', '', 'button');
+        if (option.unlock && !have.has(`${part}:${option.id}`)) button.classList.add('is-locked');
         button.setAttribute('aria-pressed', String(look[part] === option.id));
         const color = swatch(part, option.id);
         if (color !== null) {
@@ -132,7 +145,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     look = { ...look, [which]: id };
     hero.dress(look);
     renderOptions();
-    note.textContent = '';
+    note.textContent = unlockOf(which, id) && !owned().has(`${which}:${id}`) ? howToGet(which, id) : '';
   };
   renderTabs();
   renderOptions();
@@ -158,8 +171,10 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
   listen(dance, 'click', () => play2('baile'));
   listen(random, 'click', () => {
     const next = { ...look };
+    const have = owned();
     for (const each of LOOK_PARTS) {
-      const choices = LOOK_OPTIONS[each];
+      // A surprise from what the player may wear.
+      const choices = LOOK_OPTIONS[each].filter((o) => !o.unlock || have.has(`${each}:${o.id}`));
       next[each] = choices[Math.floor(Math.random() * choices.length)]!.id;
     }
     look = next;
@@ -167,8 +182,14 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     renderOptions();
     play2('saludo');
   });
-  listen(back, 'click', () => play.go('rush'));
+  listen(back, 'click', () => play.go('plaza'));
   listen(save, 'click', async () => {
+    const missing = lockedParts(look).filter((item) => !owned().has(item));
+    if (missing.length) {
+      const [which, id] = missing[0]!.split(':') as [LookPart, string];
+      note.textContent = text('play.unlock.locked_save', { how: howToGet(which, id) });
+      return;
+    }
     save.disabled = true;
     note.textContent = text('play.studio.saving');
     const kept = await play.saveLook(look);
@@ -181,8 +202,8 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     play.cue('success');
     if (options.first || JSON.stringify(look) !== saved) {
       play2('baile');
-      window.setTimeout(() => play.go('rush'), options.first ? 1400 : 900);
-    } else play.go('rush');
+      window.setTimeout(() => play.go('plaza'), options.first ? 1400 : 900);
+    } else play.go('plaza');
   });
 
   // --- Turning it with a finger ---

@@ -330,6 +330,13 @@
       "when": 1794577276346,
       "tag": "0046_milky_talkback",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1794595627337,
+      "tag": "0047_flashy_mandarin",
+      "breakpoints": true
     }
   ]
 }

@@ -13,11 +13,11 @@ The first release (owner's directive "The next evolution", approved):
 | --- | --- | --- |
 | 1 | One shared engine: screen and clock, thumbs, movement, camera | **Done** |
 | 2 | The character: catalogue, studio, saved look | **Done** |
-| 3 | Yavaya Plaza, the hub (studio, Rush gate, Reward Corner, Adventure Gate, Roxi's lot reserved) | Next |
-| 4 | Rush polish; records on the account | — |
+| 3 | Yavaya Plaza: a menu hub (not a walkable world: faster on a phone) | **Done** |
+| 4 | Records on the account (verified runs) | **Done** |
 | 5 | Discovery: hidden Guardian symbols, a secret garden | — |
-| 6 | Progression: XP, levels, achievements, Play Coins, checked by the server | — |
-| 7 | A small earnable cosmetic shop (no real money) | — |
+| 6 | Progression: XP, levels, achievements, Play Coins, checked by the server | **Done** |
+| 7 | A small earnable cosmetic shop (no real money) | **Done** |
 | 8 | Dash, a short downhill sprint (not a lane runner) | — |
 
 Not in this release: multiplayer, chat, payments, AI calls during play,
@@ -57,9 +57,9 @@ Roxi's House, any paid service.
 
 What is **not** there yet, and is not pretended:
 
-- The best time is kept on the device only. No records on the account, no
-  rankings, no XP, no Play Coins (steps 4 and 6). Coins in a run mean
-  nothing else.
+- Rush's best time is kept on the device only: Rush is not verified yet
+  (its course runs on the older movement, not the replayable one). The
+  coins picked up in a Rush run are not Play Coins.
 - Tested by scripts in an emulated phone; the owner has played earlier
   builds on a real Android phone. Frame rates on real phones are measured
   with `/play?debug`, not claimed.
@@ -112,7 +112,7 @@ The route's time is each trial's `reference` (11.9, 13.0, 16.9, 13.3 and
 checkpoint). The multiples are ours and provisional, to be retuned from
 real players' times once those are measured.
 
-**Records** stay on the phone for now, and the screen says so.
+**Records**: a guest's stay on the phone, and the screen says so; a signed-in player's are verified and kept on the account (below).
 
 **The look.** Volcanic basalt, obsidian with gold trim, a lava river under
 the course, broken colonnades and forest on the banks, a dusk sky, soft
@@ -120,12 +120,80 @@ shadows from one low sun. The character everywhere now has adult
 proportions, physically based materials instead of cel shading, and a
 calmer, smaller-featured face. All generated in code; nothing downloaded.
 
+## Progress, the day's route, challenges (14 November 2026)
+
+The owner's word on the recommendations: "do everything of this, but don't
+make it easier". Nothing was made easier: every new course is built from
+stretches of the five trials at their own difficulty.
+
+**The Plaza** (`modes/plaza.ts`). Where the game opens and comes back to:
+a menu over the gate, not a world to walk (on a phone a good list is faster
+than a walk to a door). The player's level, XP bar and coins, or for a
+guest how to keep them; a challenge, if a link brought one; La Ruta del
+Día; the trials; the Barrio and Diáspora routes; Rush; the shop; the
+character.
+
+**Verified runs** (`trials/run.ts`, `engine/dmath.ts`). The game plays a
+course from the thumbs sampled once a step (120 a second) and keeps those
+samples; that is what it sends, not a time. The server plays the samples
+again on the same course with the same simulation and takes the time it
+sees (`server/domains/play/progress.ts`). A made-up time has no input that
+produces it. For both sides to compute the same numbers the simulation uses
+its own sin, cos, atan2 and exp (browser engines differ in the last bit of
+`Math.sin`; `+ − × ÷` and `sqrt` do not). A run must end on its finish: one
+cut short or padded is refused. Honest limits: a script that plays well is
+indistinguishable from a person who plays well, as in any game.
+
+**Progress on the account.** XP, levels, Play Coins, achievements and
+earned looks, given only for verified runs (`play_rewards`: each reward
+once, by player, reason and reference). Guests keep their records and
+ghosts on the phone, and the screens say so.
+
+**La Ruta del Día** (`trials/courses.ts`). Seven stretches of the trials,
+chosen and mirrored from the date (UTC), the same for everyone, new at
+midnight UTC (runs count until three hours after). Its medals are cut from
+the sum of the stretches' usual times. `tests/unit/play-courses.test.ts`
+crosses every stretch alone, as cut and mirrored, and plays sixty-two days
+end to end; the test route waits for a hazard's window by trying the move
+ahead on a copy of the course.
+
+**Rutas de distrito.** Barrio (rooftops, a cart, shop signs, shutters,
+loose boards) and Diáspora (an airport: belts, barriers, security gates, a
+luggage arm, long jumps): fixed sequences of the same stretches, dressed
+differently (`engine/themes.ts`); no fire in either. Only the look changes.
+
+**Leaderboards.** Per course: the world, the player's country, their city.
+A player is on their city's board only if their profile lets the city be
+shown. Another player's run is never handed out from a board.
+
+**Ghosts and challenges.** A course is raced against a pale copy of the
+player's own best (kept on the phone), or against a friend's: "Retar por
+WhatsApp" shares a kept run as `/play?reto=…`; the friend sees "Reto de
+Ana" in the Plaza and races that run's ghost. Only runs their owner shared
+are given out.
+
+**Shop and rewards.** Looks bought with Play Coins (never money); others
+won (the Chaqueta de obsidiana for Obsidiana on all five trials, the
+Sombrero del Guardián for a Guardián medal, the Gorra de la Ruta for seven
+days' routes) or worn by Yavaya's first members (the Sombrero de Fundador,
+worked out from the order of registration, never stored). Anyone can try a
+look on in the studio; the server keeps it only for its owner.
+
+**What players do** (`server/domains/play/signals.ts`, Admin → Visitas).
+Anonymous counts by day: courses started and finished, and where players
+fall (by stretch between checkpoints). No account, device or address.
+
+**Phones.** In a headless emulation with software drawing, the daily route
+ran at about 24 frames a second with or without the processor slowed four
+times: the drawing, not the game's logic, was the limit there. Real phones
+are measured with `/play?debug`, not claimed.
+
 ## Who sees it
 
 The switch is Admin → Diseño del sitio → Yavaya Play (`play.open`, off by
 default: `SITE_LOOK_RULES.play`). While it is off, `/play` is a 404 for
 everyone except someone who may manage flags, who sees it marked "Vista
-previa". Nothing on the site links to it yet. When open, it is open to
+previa". The home page has a door to it while it is open. When open, it is open to
 everyone, signed in or not (the owner's decision).
 
 ## How it is built

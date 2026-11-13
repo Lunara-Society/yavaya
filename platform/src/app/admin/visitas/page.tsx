@@ -12,6 +12,7 @@ import { siteStats, type VitalSummary } from '@/server/domains/stats/service';
 import { ROXI_HELP_EVENTS, roxiHelpTotals } from '@/server/domains/roxi/help-stats';
 import { METRIC_BANDS, type Metric } from '@/server/domains/stats/rules';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { byCourse, signalTotals } from '@/server/domains/play/signals';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -40,6 +41,9 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
   const stats = await siteStats(db(), { userId, status: session.user.status }, { days });
   const roxi = await roxiHelpTotals(db(), { userId, status: session.user.status }, { days });
   const roxiAny = ROXI_HELP_EVENTS.some((event) => roxi[event] > 0);
+  const play = byCourse(await signalTotals(db(), { userId, status: session.user.status }, days));
+  const courseLabel = (course: string) =>
+    t((course === 'dia' ? 'play.course.name.daily' : course === 'rush' ? 'play.menu.rush' : ['barrio', 'diaspora'].includes(course) ? `play.course.name.${course}` : `play.trials.name.${course}`) as MessageKey);
 
   const intl = intlLocale(locale);
   const n = (value: number) => new Intl.NumberFormat(intl).format(value);
@@ -208,6 +212,37 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
                   <tr key={event}>
                     <td>{t(`stats.roxi.event.${event}` as MessageKey)}</td>
                     <td>{n(roxi[event])}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        <section className="card vs-card" aria-labelledby="vs-play">
+          <h2 id="vs-play">{t('stats.play.title')}</h2>
+          <p className="muted">{t('stats.play.note')}</p>
+          {!play.length ? (
+            <p className="muted mb0">{t('stats.empty')}</p>
+          ) : (
+            <table className="vs-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t('stats.play.col_course')}</th>
+                  <th scope="col">{t('stats.play.col_start')}</th>
+                  <th scope="col">{t('stats.play.col_finish')}</th>
+                  <th scope="col">{t('stats.play.col_falls')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {play.map((row) => (
+                  <tr key={row.course}>
+                    <td>{courseLabel(row.course)}</td>
+                    <td>{n(row.start)}</td>
+                    <td>
+                      {n(row.finish)} <span className="muted">({pct(row.finish, row.start)})</span>
+                    </td>
+                    <td>{row.falls.length ? row.falls.map((count, i) => `${i + 1}: ${n(count)}`).join(' · ') : '—'}</td>
                   </tr>
                 ))}
               </tbody>

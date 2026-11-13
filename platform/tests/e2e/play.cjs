@@ -31,7 +31,12 @@ const check = (ok, what) => {
     await page.click('.yp-option >> nth=1');
     await page.click('.yp-primary');
   }
-  check(await page.waitForSelector('.yp-hud', { timeout: 8000 }).then(() => true, () => false), 'and goes on to the course');
+  // Then the Plaza, the hub: the day's route, the districts' routes, Rush (docs/PLAY.md).
+  check(await page.waitForSelector('.yp-plaza', { timeout: 8000 }).then(() => true, () => false), 'and goes on to the Plaza');
+  const cards = await page.$$eval('.yp-card-title', (nodes) => nodes.map((n) => n.textContent));
+  check(cards.length >= 4, `with the day's route, the districts' routes and Rush (${cards.join(', ')})`);
+  await page.click('.yp-card:last-child .yp-primary');
+  check(await page.waitForSelector('.yp-hud', { timeout: 8000 }).then(() => true, () => false), 'and Rush opens from it');
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'nothing is wider than the screen');
 
   // A fall first: straight off the street into the fountain.

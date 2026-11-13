@@ -97,6 +97,12 @@ export async function resetTransactionalData(): Promise<void> {
       mercadito_listing_photos,
       mercadito_listings,
       play_profiles,
+      play_runs,
+      play_progress,
+      play_rewards,
+      play_achievements,
+      play_items,
+      play_stats,
       media
     restart identity cascade
   `);

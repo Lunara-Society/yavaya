@@ -4,12 +4,17 @@ import { floorUnder } from '../engine/body';
 import { RUN, SPRINT } from '../engine/moves';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { blobShadow, followCamera } from '../engine/scenery';
-import { PALETTE, duskLight, duskSky, stoneMaterial } from '../engine/look';
-import { TRIALS, medal, type Hazard, type Kind, type Trial } from '../trials/data';
+import { PALETTE, duskLight } from '../engine/look';
+import { dressFor } from '../engine/themes';
+import { TRIALS, medal, type Hazard, type Medal } from '../trials/data';
+import { courseById } from '../trials/courses';
 import { TrialSim, type SimSolid } from '../trials/sim';
 import type { MoveInput } from '../engine/moves';
-import { writeRecord } from '../trials/records';
-import { el, type PlayContext } from '../context';
+import { Ghost, MAX_STEPS, StepInput, decodeRun, encodeRun, sampleOf, type Sample } from '../trials/run';
+import { readGhost, writeGhost, writeRecord } from '../trials/records';
+import { openBoard } from '../board';
+import { shareChallenge } from '../share';
+import { el, type Challenge, type PlayContext } from '../context';
 
 /**
  * A Prueba de Maestría, played (docs/PLAY.md): the trial's simulation
@@ -27,10 +32,20 @@ const clock = (seconds: number) => {
   return `${m}:${s.toFixed(2).padStart(5, '0')}`;
 };
 
-export function createTrial(play: PlayContext, id: Trial['id'], options: { noCheckpoints: boolean }): Mode {
+/** The name of any course, for the screen and for a challenge's message. */
+export function courseName(text: PlayContext['text'], id: string): string {
+  const course = courseById(id);
+  if (!course) return id;
+  if (course.kind === 'daily') return text('play.course.name.daily');
+  if (course.kind === 'district') return text(`play.course.name.${id}`);
+  return text(`play.trials.name.${id}`);
+}
+
+export function createTrial(play: PlayContext, id: string, options: { noCheckpoints: boolean; challenge?: Challenge | null }): Mode {
   const { runtime, controls, text } = play;
   const host = runtime.host;
-  const trial = TRIALS.find((t) => t.id === id)!;
+  const trial = courseById(id)!;
+  const kind = trial.kind ?? 'trial';
   const sim = new TrialSim(trial, { noCheckpoints: options.noCheckpoints });
   const shadows = window.devicePixelRatio <= 3 && !/Android [4-7]\b/.test(navigator.userAgent);
   runtime.renderer.shadowMap.enabled = shadows;
@@ -38,19 +53,12 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 500);
-  duskSky(scene);
   const sun = duskLight(scene, shadows);
 
-  // --- Materials, one of each, shared ---
-  const mats: Record<Kind, THREE.MeshStandardMaterial> = {
-    basalt: stoneMaterial(PALETTE.basalt),
-    stone: stoneMaterial(PALETTE.stone),
-    obsidian: stoneMaterial(PALETTE.obsidian, { rough: 0.32, metal: 0.25 }),
-    gold: stoneMaterial(PALETTE.gold, { rough: 0.35, metal: 0.8 }),
-    crumble: stoneMaterial(PALETTE.crumble, { rough: 0.95 }),
-    gate: stoneMaterial(PALETTE.gate, { rough: 0.4, metal: 0.3 }),
-  };
-  const cap = new THREE.MeshStandardMaterial({ color: 0xb8ab99, roughness: 0.8 });
+  // --- The course's dress (engine/themes.ts): materials, what lies below, the scenery ---
+  const dress = dressFor(trial.theme, (trial.tier || 7) * 97 + id.length);
+  const mats = dress.materials;
+  const cap = dress.cap;
   const trim = new THREE.MeshStandardMaterial({ color: PALETTE.gold, roughness: 0.3, metalness: 0.9, emissive: 0x3a2400, emissiveIntensity: 0.4 });
   const ember = new THREE.MeshStandardMaterial({ color: 0x3a1a10, emissive: PALETTE.ember, emissiveIntensity: 1.6, roughness: 0.6 });
   const fire = new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
@@ -82,49 +90,14 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
     meshes.set(s, group);
   }
 
-  // --- A river of lava under the course, dark rock beyond it ---
+  // --- What lies under the course (lava, a street, the apron), and the scenery beyond ---
   const courseEnd = Math.max(...sim.solids.map((s) => s.maxZ));
-  const lavaMat = new THREE.MeshStandardMaterial({ color: 0x1a0603, emissive: 0xff4a10, emissiveIntensity: 0.4, roughness: 1 });
+  const lavaMat = dress.below;
   const lava = new THREE.Mesh(new THREE.PlaneGeometry(26, courseEnd + 40), lavaMat);
   lava.rotation.x = -Math.PI / 2;
   lava.position.set(0, trial.floor + 1.5, courseEnd / 2);
-  const rock = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), stoneMaterial(0x2c2629, { repeat: 60 }));
-  rock.rotation.x = -Math.PI / 2;
-  rock.position.set(0, trial.floor + 1.2, courseEnd / 2);
-  scene.add(lava, rock);
-
-  // --- Ruins, volcanoes and forest: instanced, so a hundred shapes cost a few draws ---
-  const length = Math.max(...sim.solids.map((s) => s.maxZ)) + 10;
-  let seed = trial.tier * 97;
-  const rand = () => {
-    seed = (seed * 16807) % 2147483647;
-    return seed / 2147483647;
-  };
-  // Broken colonnades along both banks: thick drums of stone, none whole.
-  const columnGeo = new THREE.CylinderGeometry(0.85, 0.95, 1, 12);
-  const columns = new THREE.InstancedMesh(columnGeo, mats.stone, 26);
-  const m4 = new THREE.Matrix4();
-  for (let i = 0; i < 26; i += 1) {
-    const side = i % 2 ? 1 : -1;
-    const h = 2 + rand() * 5;
-    m4.compose(new THREE.Vector3(side * (15 + rand() * 4), trial.floor + 1.2 + h / 2, -6 + (i / 26) * (length + 20)), new THREE.Quaternion().setFromEuler(new THREE.Euler((rand() - 0.5) * 0.12, 0, (rand() - 0.5) * 0.12)), new THREE.Vector3(1, h, 1));
-    columns.setMatrixAt(i, m4);
-  }
-  scene.add(columns);
-  const treeGeo = new THREE.ConeGeometry(2.2, 6, 7);
-  const trees = new THREE.InstancedMesh(treeGeo, new THREE.MeshStandardMaterial({ color: 0x1f3a2a, roughness: 1 }), 70);
-  for (let i = 0; i < 70; i += 1) {
-    const side = i % 2 ? 1 : -1;
-    const sz = 0.8 + rand() * 1.4;
-    m4.compose(new THREE.Vector3(side * (24 + rand() * 30), trial.floor + 1.2 + 3 * sz, -10 + rand() * (length + 40)), new THREE.Quaternion(), new THREE.Vector3(sz, sz, sz));
-    trees.setMatrixAt(i, m4);
-  }
-  scene.add(trees);
-  for (const [x, z, r, h] of [[-60, length + 80, 50, 60], [70, length + 120, 60, 70], [0, length + 170, 80, 95]] as const) {
-    const volcano = new THREE.Mesh(new THREE.ConeGeometry(r, h, 24, 1, true), new THREE.MeshStandardMaterial({ color: 0x3a3240, roughness: 1 }));
-    volcano.position.set(x, trial.floor + h / 2 - 2, z);
-    scene.add(volcano);
-  }
+  scene.add(lava);
+  dress.backdrop(scene, courseEnd + 10, trial.floor);
 
   // --- Hazards ---
   type Drawn = { h: Hazard; obj: THREE.Object3D; extra?: THREE.Mesh };
@@ -136,8 +109,15 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
         pivot.position.set(h.x, h.y, h.z);
         const chain = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, h.length, 6), trim);
         chain.position.y = -h.length / 2;
-        const weight = new THREE.Mesh(new THREE.CylinderGeometry(h.r, h.r, 0.28, 24), mats.obsidian);
-        weight.rotation.x = Math.PI / 2;
+        // A stone disc, a shop sign, a suitcase: the course's dress; the danger is the same sphere.
+        const weight =
+          dress.weight === 'disc'
+            ? new THREE.Mesh(new THREE.CylinderGeometry(h.r, h.r, 0.28, 24), mats.obsidian)
+            : dress.weight === 'sign'
+              ? new THREE.Mesh(new THREE.BoxGeometry(h.r * 2.2, h.r * 1.5, 0.12), new THREE.MeshStandardMaterial({ color: 0xe76f51, roughness: 0.7 }))
+              : new THREE.Mesh(new THREE.BoxGeometry(h.r * 1.8, h.r * 1.3, h.r * 0.7), new THREE.MeshStandardMaterial({ color: 0x2f6f8f, roughness: 0.5 }));
+        if (dress.weight === 'disc') weight.rotation.x = Math.PI / 2;
+        else if (h.axis === 'x') weight.rotation.y = Math.PI / 2;
         weight.position.y = -h.length;
         weight.castShadow = true;
         const rim = new THREE.Mesh(new THREE.TorusGeometry(h.r, 0.05, 6, 24), ember);
@@ -271,12 +251,16 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
 
   // --- The screen over it ---
   const hud = el('yp-hud yp-trial-hud');
-  const tierChip = el('yp-tier', `${['I', 'II', 'III', 'IV', 'V'][trial.tier - 1]} · ${text(`play.trials.tier.${trial.id}`)}`);
-  tierChip.dataset.tier = trial.id;
+  const tierChip = el(
+    'yp-tier',
+    kind === 'trial' ? `${['I', 'II', 'III', 'IV', 'V'][trial.tier - 1]} · ${text(`play.trials.tier.${trial.id}`)}` : kind === 'daily' ? text('play.course.daily_chip', { date: play.today.slice(8, 10) + '/' + play.today.slice(5, 7) }) : courseName(text, id),
+  );
+  tierChip.dataset.tier = kind === 'trial' ? trial.id : kind;
   const timeText = el('yp-time', clock(0));
   const failText = el('yp-fails', text('play.trials.fails', { count: 0 }));
   const phaseText = el('yp-phase');
-  hud.append(tierChip, timeText, failText, phaseText);
+  const ghostText = el('yp-phase yp-ghost-line');
+  hud.append(tierChip, timeText, failText, phaseText, ghostText);
   const restartButton = el('yp-icon', '↻', 'button');
   restartButton.setAttribute('aria-label', text('play.trials.restart'));
   const exitButton = el('yp-icon yp-exit', '✕', 'button');
@@ -287,17 +271,27 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
   failNote.hidden = true;
   const panel = el('yp-panel');
   panel.hidden = true;
-  const panelTitle = el('yp-panel-title', text('play.trials.finished'));
+  const panelTitle = el('yp-panel-title', text(kind === 'trial' ? 'play.trials.finished' : 'play.run.finished_course'));
   const panelMedal = el('yp-medal');
   const panelTime = el('yp-panel-time');
   const panelNote = el('yp-panel-note');
+  const panelVerdict = el('yp-panel-note yp-verdict');
+  const panelWins = el('yp-panel-wins');
   const again = el('yp-again', text('play.trials.again'), 'button');
+  const share = el('yp-ghost yp-share', text('play.run.share'), 'button');
+  share.hidden = true;
+  const boardButton = el('yp-ghost', text('play.plaza.board'), 'button');
   const next = el('yp-ghost', text('play.trials.next'), 'button');
-  const list = el('yp-ghost', text('play.trials.list'), 'button');
-  panel.append(panelTitle, panelMedal, panelTime, panelNote, again, next, list);
+  const list = el('yp-ghost', text(kind === 'trial' ? 'play.trials.list' : 'play.run.menu'), 'button');
+  const signIn = el('yp-ghost', text('play.plaza.signin'), 'a');
+  signIn.setAttribute('href', play.signInHref);
+  signIn.hidden = play.signedIn;
+  panel.append(panelTitle, panelMedal, panelTime, panelNote, panelVerdict, panelWins, again, share, boardButton, next, signIn, list);
   host.append(hud, restartButton, exitButton, hint, failNote, panel);
   controls.show(true);
   controls.offer(null);
+  // Presses from before the course began are not part of its run.
+  controls.take();
 
   const off: Array<() => void> = [];
   const listen = (target: EventTarget, type: string, handler: (event: Event) => void) => {
@@ -315,8 +309,41 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
   };
   let failUntil = 0;
 
+  // --- The run, kept as what the thumbs did (trials/run.ts), and a ghost to race ---
+  let input = new StepInput();
+  let samples: Sample[] = [];
+  let recording = true;
+  const failedAt = new Set<number>();
+  const challenge = options.challenge ?? null;
+  const own = challenge ? null : readGhost(id);
+  const ghostRun = challenge ? { samples: decodeRun(challenge.input), seconds: challenge.seconds, noCheckpoints: challenge.noCheckpoints } : own ? { samples: decodeRun(own.input), seconds: own.seconds, noCheckpoints: own.noCheckpoints } : null;
+  const ghost = ghostRun?.samples ? new Ghost(trial, ghostRun.samples, ghostRun.noCheckpoints) : null;
+  const shade = ghost ? buildCharacter(play.look()) : null;
+  if (shade) {
+    // A ghost is a pale copy that passes through everything: it only shows the way and the pace.
+    shade.group.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const material = (mesh.material as THREE.MeshStandardMaterial).clone();
+      material.transparent = true;
+      material.opacity = 0.32;
+      material.depthWrite = false;
+      material.color?.lerp(new THREE.Color(challenge ? 0x9fd8ff : 0xffffff), 0.5);
+      mesh.material = material;
+    });
+    scene.add(shade.group);
+    ghostText.textContent = challenge ? text('play.run.ghost_vs', { name: challenge.name, time: clock(challenge.seconds) }) : text('play.run.ghost_you', { time: clock(ghostRun!.seconds) });
+  }
+  play.signal('start', id);
+
   const restart = () => {
     sim.restart();
+    input = new StepInput();
+    samples = [];
+    recording = true;
+    failedAt.clear();
+    controls.take();
+    ghost?.restart();
     panel.hidden = true;
     failNote.hidden = true;
     braziers.forEach((b) => (b.visible = false));
@@ -325,9 +352,13 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
   };
   listen(restartButton, 'click', restart);
   listen(again, 'click', restart);
-  listen(exitButton, 'click', () => play.go('trials'));
-  listen(list, 'click', () => play.go('trials'));
-  const nextTrial = TRIALS[trial.tier];
+  const back = () => play.go(kind === 'trial' ? 'trials' : 'plaza');
+  listen(exitButton, 'click', back);
+  listen(list, 'click', back);
+  listen(boardButton, 'click', () => openBoard(play, id));
+  let keptRunId: string | null = null;
+  listen(share, 'click', () => keptRunId && void shareChallenge(play, keptRunId, id, lastSeconds));
+  const nextTrial = kind === 'trial' ? TRIALS[trial.tier] : undefined;
   next.hidden = !nextTrial;
   listen(next, 'click', () => nextTrial && play.startTrial(nextTrial.id, options.noCheckpoints));
   listen(window, 'keydown', (event) => {
@@ -340,16 +371,53 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
     plateMeshes.forEach((list, i) => list.forEach((m) => (m.visible = i === sim.phase)));
   };
 
+  let lastSeconds = 0;
   function finish() {
     play.cue('portal');
+    play.signal('finish', id);
     const seconds = sim.time;
-    const earned = medal(trial, seconds, sim.usedCheckpoint);
-    const record = writeRecord(trial.id, seconds, earned);
+    lastSeconds = seconds;
+    const earned: Medal = medal(trial, seconds, sim.usedCheckpoint);
+    const record = writeRecord(trial.id, seconds, earned, play.today);
     panelMedal.textContent = text('play.trials.medal', { medal: text(`play.medal.${earned}`) });
     panelMedal.dataset.medal = earned;
     panelTime.textContent = clock(seconds);
-    panelNote.textContent = [record ? text('play.trials.record') : '', text('play.trials.fails', { count: sim.fails })].filter(Boolean).join(' · ');
+    const versus = challenge ? (seconds < challenge.seconds ? text('play.run.beat', { name: challenge.name }) : text('play.run.not_beat', { gap: (seconds - challenge.seconds).toFixed(2), name: challenge.name })) : '';
+    panelNote.textContent = [versus, record ? text('play.trials.record') : '', text('play.trials.fails', { count: sim.fails })].filter(Boolean).join(' · ');
+    panelWins.replaceChildren();
+    share.hidden = true;
+    keptRunId = null;
     panel.hidden = false;
+    if (!recording) {
+      panelVerdict.textContent = '';
+      return;
+    }
+    const kept = encodeRun(samples);
+    writeGhost(trial.id, seconds, kept, options.noCheckpoints, play.today);
+    if (!play.signedIn) {
+      panelVerdict.textContent = text('play.run.guest');
+      return;
+    }
+    panelVerdict.textContent = text('play.run.checking');
+    void play.submitRun(trial.id, kept, options.noCheckpoints).then((verdict) => {
+      if (!verdict.ok) {
+        panelVerdict.textContent = text(verdict.reason === 'offline' ? 'play.run.offline' : 'play.run.unverified');
+        return;
+      }
+      const before = play.account?.progress.level ?? verdict.progress.level;
+      panelVerdict.textContent = verdict.earned.xp || verdict.earned.coins ? text('play.run.verified', { xp: verdict.earned.xp, coins: verdict.earned.coins }) : text('play.run.verified_plain');
+      const wins: string[] = [];
+      if (verdict.progress.level > before) wins.push(text('play.run.level_up', { level: verdict.progress.level }));
+      for (const a of verdict.achievements) wins.push(text('play.run.achievement', { name: text(`play.achievement.${a}`) }));
+      for (const item of verdict.items) {
+        const [part, option] = item.split(':');
+        wins.push(text('play.run.unlocked', { name: text(`play.look.${part}.${option}`) }));
+      }
+      panelWins.replaceChildren(...wins.map((w) => el('yp-win', w)));
+      if (wins.length) play.cue('success');
+      keptRunId = verdict.runId ?? play.account?.bests[trial.id]?.runId ?? null;
+      share.hidden = !keptRunId;
+    });
   }
 
   // For the browser tests and films: the trial as it stands, to read.
@@ -369,12 +437,33 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
       }
       // A browser test or a film may steer instead of the thumbs (a page script sets __ypPilot); players never do.
       const pilot = (window as unknown as { __ypPilot?: MoveInput }).__ypPilot;
-      const e = sim.step(dt, pilot ?? controls, pilot ? sim.time * 1000 : performance.now());
+      const now = sim.time * 1000;
+      let e: ReturnType<typeof sim.step>;
+      if (pilot) {
+        // Steered by a test or a film: played, but never kept or sent.
+        recording = false;
+        e = sim.step(dt, pilot, now);
+      } else {
+        // The thumbs, as one sample a step: what is played is exactly what is kept (trials/run.ts).
+        const pressed = controls.take();
+        const sample = sampleOf(controls.axis(), pressed.jump, pressed.dodge, pressed.lift);
+        if (samples.length < MAX_STEPS) samples.push(sample);
+        else recording = false;
+        input.feed(sample, now);
+        e = sim.step(dt, input, now);
+      }
+      ghost?.step();
       if (e.jumped) play.cue('door');
       if (e.dodged) play.cue('transition');
       if (e.failed) {
         play.cue('status');
-        failNote.textContent = text(`play.trials.fail.${e.failed}`);
+        const themed = `play.trials.fail.${trial.theme}.${e.failed}`;
+        failNote.textContent = text(text(themed) !== themed ? themed : `play.trials.fail.${e.failed}`);
+        // Where players fall, counted without anything about who (once per stretch per attempt).
+        if (!failedAt.has(sim.checkpoint)) {
+          failedAt.add(sim.checkpoint);
+          play.signal('fail', id, sim.checkpoint);
+        }
         failNote.hidden = false;
         failUntil = sim.time + 1.1;
         host.classList.add('yp-flash-red');
@@ -440,7 +529,15 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
         }
         phaseText.textContent = sim.phase < boss.phases.length ? `${text('play.trials.phase', { n: sim.phase + 1 })} · ${text('play.trials.plates', { lit: sim.plates.filter(Boolean).length, total: sim.plates.length })}` : '';
       }
-      lavaMat.emissiveIntensity = 0.4 + Math.sin(now / 900) * 0.08;
+      if (trial.theme === undefined || trial.theme === 'volcan') lavaMat.emissiveIntensity = 0.4 + Math.sin(now / 900) * 0.08;
+      if (ghost && shade) {
+        const g = ghost.sim.player;
+        shade.group.visible = !ghost.done || ghost.sim.finished;
+        shade.group.position.set(g.x, g.y, g.z);
+        shade.group.rotation.y = g.facing;
+        const gs = Math.hypot(g.vx, g.vz);
+        shade.update(dt, { speed: Math.min(1, gs / RUN), air: !g.grounded, vy: g.vy, cheer: 0, emote: null, action: g.action, actionK: 0.5, sprint: Math.max(0, (gs - RUN) / (SPRINT - RUN)) });
+      }
 
       // The player.
       hero.group.position.set(p.x, p.y, p.z);
@@ -473,6 +570,7 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
       panel.remove();
       controls.dodge(null);
       hero.dispose();
+      shade?.dispose();
       disposeScene(scene);
       runtime.renderer.shadowMap.enabled = false;
     },
