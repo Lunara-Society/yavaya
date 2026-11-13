@@ -226,7 +226,7 @@ export function FirstLightBody({ c, t, signedIn, location, preview = false, guar
               );
             })}
           </ul>
-          {/* The six board districts, below the seven doors, as the cards the other home design uses. */}
+          {/* The board districts, below the seven doors, as the cards the other home design uses. */}
           <ul className="hx-cards fl-more-cards">
             <BoardHomeCards t={t} />
           </ul>

@@ -7,23 +7,7 @@ import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { BOARD_DISTRICTS, BOARD_DISTRICT_KEYS } from '@/config/boards';
 import { BOARD_RULES } from '@/config/business-rules';
-import {
-  alertHref,
-  boardInputSchema,
-  deleteBoardAlert,
-  markBoardAlertSeen,
-  myBoardAlerts,
-  saveBoardAlert,
-  boardQueue,
-  closeBoardPost,
-  createBoardPost,
-  getBoardPost,
-  listBoardPosts,
-  myBoardPosts,
-  reportBoardPost,
-  resolveBoardTicket,
-  subdistrictCounts,
-} from '@/server/domains/boards/service';
+import { alertHref, boardInputSchema, deleteBoardAlert, markBoardAlertSeen, myBoardAlerts, saveBoardAlert, boardQueue, closeBoardPost, createBoardPost, getBoardPost, listBoardPosts, myBoardPosts, reportBoardPost, resolveBoardTicket, subdistrictCounts, nearbyBoardPosts, placePoint } from '@/server/domains/boards/service';
 import { resetTransactionalData } from '../helpers/database';
 import { whatsappLookup } from '@/server/domains/whatsapp/lookup';
 import { readActiveImage, storeImages } from '@/server/domains/media/service';
@@ -342,5 +326,30 @@ describe('closing, reporting and moderation', () => {
     const [item] = await boardQueue(db(), moderator);
     await db().transaction((tx) => resolveBoardTicket(tx, { actor: moderator, ticketId: item!.ticketId, decision: 'dismiss', note: null }));
     expect((await listBoardPosts(db(), { district: 'hogar', locale: 'es' })).items).toHaveLength(1);
+  });
+});
+
+describe('Cerca de mí (nearby posts across the board districts)', () => {
+  beforeEach(async () => {
+    await resetTransactionalData();
+  });
+
+  it('finds open posts of every district near a point, nearest first, and leaves out the far ones', async () => {
+    const author = await person();
+    const here = await placePoint(db(), placeCode);
+    const there = await placePoint(db(), elsewhere.code);
+    expect(here).not.toBeNull();
+    expect(there).not.toBeNull();
+    await publish(author.userId, { district: 'barrio', subdistrict: 'fairs', title: 'Feria del maíz el domingo' });
+    await publish(author.userId, { district: 'diaspora', subdistrict: 'errands', kind: 'request', priceText: '', title: 'Busco quien haga mandados a mi mamá' });
+    await publish(author.userId, { district: 'hogar', locationId: elsewhere.id, title: 'Cuarto amueblado en otro país' });
+
+    const near = await nearbyBoardPosts(db(), { ...here!, radiusKm: 15, locale: 'es', limit: 40 });
+    expect(near.map((post) => post.district).sort()).toEqual(['barrio', 'diaspora']);
+    expect(near.every((post) => post.distanceKm < 1)).toBe(true);
+
+    const wide = await nearbyBoardPosts(db(), { ...here!, radiusKm: 100000, locale: 'es', limit: 40 });
+    expect(wide).toHaveLength(3);
+    expect(wide[wide.length - 1]!.title).toBe('Cuarto amueblado en otro país');
   });
 });

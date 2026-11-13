@@ -26,10 +26,10 @@ import numpy as np
 import onnxruntime as ort
 from PIL import Image, ImageFilter
 
-# The thirteen cards, in the order the home page shows them.
+# The cards, in the order the home page shows them.
 CARDS = [
     "mercadito", "services", "work", "yavayago", "community", "sanctuary", "animals",
-    "hogar", "movilidad", "salud", "aprender", "negocios", "campo",
+    "hogar", "movilidad", "salud", "aprender", "negocios", "campo", "barrio", "diaspora",
 ]
 # What the model was trained on (its preprocessor_config.json).
 SHORT_SIDE = 518

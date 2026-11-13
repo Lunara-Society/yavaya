@@ -41,6 +41,7 @@ export function TrustShieldCard({ shield, t }: { shield: TrustShield; t: Transla
         <div>
           <p className="idcard-name">{shield.displayName}</p>
           <p className="idcard-id">{shield.yayId}</p>
+          {shield.founderNumber ? <p className="idcard-founder">{t('trust.founder_number', { number: shield.founderNumber })}</p> : null}
         </div>
         <figure className="idcard-meter" aria-label={`${t('trust.score')}: ${shield.trustScore}/${REPUTATION_RULES.maximumScore}`}>
           <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">

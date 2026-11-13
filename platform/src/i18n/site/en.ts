@@ -14,7 +14,7 @@ export const siteEn: SiteContent = {
     menu: { districts: 'Districts', platform: 'Platform', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Opening in stages',
-      text: 'All thirteen districts are open: from Mercadito and Work to Home, Health and Countryside.',
+      text: 'All fifteen districts are open: from Mercadito and Work to Home, Neighbourhood and Diaspora.',
       link: 'What works today',
     },
     states: {

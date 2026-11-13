@@ -25,7 +25,7 @@ export const siteEs = {
     menu: { districts: 'Distritos', platform: 'Plataforma', yavaya: 'Yavaya' },
     ribbon: {
       label: 'Abriendo por etapas',
-      text: 'Los trece distritos ya están abiertos: de Mercadito y Trabajo a Hogar, Salud y Campo.',
+      text: 'Los quince distritos ya están abiertos: de Mercadito y Trabajo a Hogar, Barrio y Diáspora.',
       link: 'Qué funciona hoy',
     },
     states: {

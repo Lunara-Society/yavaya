@@ -1,5 +1,5 @@
 /**
- * The six districts built on the shared board (November 2026): Hogar,
+ * The districts built on the shared board (November 2026): Hogar,
  * Movilidad, Salud y Bienestar, Aprender, Negocios and Campo.
  *
  * Each is a place where a member publishes what they offer or what they are
@@ -50,6 +50,19 @@ export const BOARD_DISTRICTS = {
     subdistricts: ['harvest', 'buyers', 'livestock', 'supplies', 'machinery', 'land_lease', 'farm_work', 'farm_transport'],
     notice: 'board.notice.campo',
     doors: ['/mercadito', '/work'],
+  },
+  // 13 November 2026, the owner's word: the neighbourhood's notice board, and help at home arranged by family abroad.
+  barrio: {
+    slug: 'barrio',
+    subdistricts: ['notices', 'utilities', 'events', 'fairs', 'lost_found', 'giveaways', 'neighbour_help', 'groups'],
+    notice: 'board.notice.barrio',
+    doors: ['/community', '/hogar'],
+  },
+  diaspora: {
+    slug: 'diaspora',
+    subdistricts: ['home_repairs', 'errands', 'elder_care', 'medical_visits', 'deliveries', 'paperwork', 'celebrations', 'property_care'],
+    notice: 'board.notice.diaspora',
+    doors: ['/services', '/salud'],
   },
 } as const satisfies Record<string, { slug: string; subdistricts: readonly string[]; notice: string; doors: readonly string[] }>;
 

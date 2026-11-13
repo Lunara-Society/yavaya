@@ -128,7 +128,7 @@ export async function roxiSearch(
     more: more || items.length > RESULTS,
   });
 
-  // The six board districts share one engine: `category` is a subdistrict, or 'offer' / 'request'.
+  // The board districts share one engine: `category` is a subdistrict, or 'offer' / 'request'.
   if (isBoardDistrict(params.scope)) {
     const district = params.scope;
     const result = await listBoardPosts(executor, {

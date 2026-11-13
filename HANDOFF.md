@@ -1,4 +1,4 @@
-# Handoff: state of Yavaya work (updated November 12, 2026)
+# Handoff: state of Yavaya work (updated November 13, 2026)
 
 **A new chat reads this first.** There are no secrets here: they live in Railway
 variables. Then read `platform/docs/ARCHITECTURE.md`, `platform/docs/SECURITY.md`
@@ -82,6 +82,36 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Mi negocio** (11 Nov): `/mi-negocio` joins a member's store and its link with QR, today's accounts from Roxi's ledger, their open posts per district and their card. It adds no new data.
 - **The phone page is reachable again:** its shortcut on `/account` was hidden while SMS is unconfigured; it now shows when WhatsApp verification is available.
 - **Still not built from the owner's directive:** requests by WhatsApp routed to providers, orders sent into a store's WhatsApp, the Living World.
+
+## Built 13 November (owner: "do all that you can now")
+
+From the owner's list of ideas, the ones that could be built without outside
+approvals:
+
+- **Two new board districts: Barrio** (neighbourhood notices, water and power
+  cuts, events, fairs, lost and found, giveaways, neighbours helping) and
+  **Diáspora** (family abroad finding help at home: repairs, errands, elder
+  care, medical visits, paperwork). Same engine as Hogar etc.; photos made
+  with ElevenLabs, medallions in Blender, depth maps; both live Roxi search
+  tools (site and WhatsApp) now include them. Fifteen districts in all.
+- **Cerca de mí** (`/cerca`): open posts of every board district around the
+  visitor, nearest first, at 5, 15 or 50 km (`NEARBY_RULES`). Location is
+  asked only on a tap, rounded to ~1 km and never stored; otherwise the town
+  chosen for the site. Distance is to the town's centre, and the page says so.
+- **Voice dictation** on the description of board posts and Mercadito
+  listings (`ui/components/dictate.tsx`): the browser's own speech
+  recognition; hidden where the browser has none (Firefox). Chrome sends the
+  audio to Google, which the hint says.
+- **Founders**: the first 100 accounts (`FOUNDER_RULES`, Yavaya's default)
+  show "Fundador nº N" on their member card and a founder medal on their
+  profile, worked out from registration order each time, never stored.
+
+Not built, and why: in-site payments with held money (needs the owner's
+business rules and a payment partner), WhatsApp posting by chat (needs Meta
+template approval), the weekly automated video (needs a scheduled session
+with credits; ask), the Living World map (owner asked to wait), and seeding
+real listings (owner: later). Reputation after deals, the member card and
+invite links already existed.
 
 ## Distritos en 3D (built 12 November, owner's request)
 

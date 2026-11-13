@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Dictate } from '@/ui/components/dictate';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { notFound, redirect } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -21,7 +22,7 @@ import { mediaStorage } from '@/server/domains/media/storage';
 import { MEDIA_RULES } from '@/config/business-rules';
 
 /**
- * The pages of the six board districts. One set of pages, six districts:
+ * The pages of the board districts. One set of pages, every board district:
  * `data-board` on the outer element is what gives each its own arrangement
  * (app/boards.css) — an address ledger for Hogar, route lines for Movilidad,
  * a harvest board for Campo, and so on. Every sentence is a dictionary key.
@@ -36,6 +37,9 @@ const DOOR_LABEL: Record<string, MessageKey> = {
   '/roxi/negocio': 'board.door.ledger',
   '/mi-negocio': 'negocio.title',
   '/violeta': 'nav.violeta',
+  '/community': 'district.community.name',
+  '/hogar': 'district.hogar.name',
+  '/salud': 'district.salud.name',
 };
 
 const sub = (district: BoardDistrict, key: string) => `board.sub.${district}.${key}` as MessageKey;
@@ -54,7 +58,7 @@ const safeKey = (value: string | undefined) => (value && /^[a-z_.]+$/.test(value
 
 type T = Awaited<ReturnType<typeof siteContext>>['t'];
 
-function PostRow({ post, base, t, locale, own }: { post: BoardPostView; base: string; t: T; locale: string; own?: boolean }) {
+export function PostRow({ post, base, t, locale, own, extra }: { post: BoardPostView; base: string; t: T; locale: string; own?: boolean; extra?: string }) {
   const state = post.status === 'open' && post.expired ? 'expired' : post.status;
   return (
     <li className="bd-post" data-kind={post.kind}>
@@ -69,6 +73,7 @@ function PostRow({ post, base, t, locale, own }: { post: BoardPostView; base: st
         <span className="bd-post-meta">
           {t(sub(post.district, post.subdistrict))} · {post.placeName} · {formatDate(post.createdAt, locale)}
           {own ? ` · ${t(`board.status.${state}` as MessageKey)}` : ''}
+          {extra ? ` · ${extra}` : ''}
         </span>
       </Link>
     </li>
@@ -356,6 +361,7 @@ export async function BoardNew({ district, searchParams }: { district: BoardDist
               <span className="hint">{t('board.form.body_hint')}</span>
               <textarea name="body" required minLength={BOARD_RULES.bodyMinLength} maxLength={BOARD_RULES.bodyMaxLength} />
             </label>
+            <Dictate target="body" lang={language} labels={{ start: t('dictate.start'), stop: t('dictate.stop'), hint: t('dictate.hint'), failed: t('dictate.failed') }} />
             <label>
               {t('board.form.price')}
               <span className="hint">{t('board.form.price_hint')}</span>

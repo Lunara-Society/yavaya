@@ -1,5 +1,5 @@
 import 'server-only';
-import { and, desc, eq, gt, ilike, inArray, ne, or, sql } from 'drizzle-orm';
+import { and, desc, eq, gt, ilike, inArray, ne, or, sql, isNotNull } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Executor } from '@/server/db/client';
 import { boardAlerts, boardPostPhotos, boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
@@ -317,6 +317,35 @@ export async function listBoardPosts(
     .limit(size + 1)
     .offset((page - 1) * size);
   return { items: rows.slice(0, size).map((row) => view(row, params.viewerId ?? null, params.locale)), hasMore: rows.length > size, page };
+}
+
+/**
+ * Open posts of every board district within `radiusKm` of a point, nearest
+ * first ("Cerca de mí"). A post is where its town is: the distance is to the
+ * town's centre, which is all Yavaya knows of where a post is, and is said as
+ * such on the page. Towns without coordinates are left out rather than guessed.
+ */
+export async function nearbyBoardPosts(
+  executor: Executor,
+  params: { latitude: number; longitude: number; radiusKm: number; viewerId?: string | null; locale: string; limit: number },
+): Promise<Array<BoardPostView & { distanceKm: number }>> {
+  const { latitude: lat, longitude: lng } = params;
+  const distance = sql<number>`(6371 * 2 * asin(sqrt(power(sin(radians(${locations.latitude} - ${lat}) / 2), 2) + cos(radians(${lat})) * cos(radians(${locations.latitude})) * power(sin(radians(${locations.longitude} - ${lng}) / 2), 2))))`;
+  const rows = await executor
+    .select({ ...columns, distanceKm: distance })
+    .from(boardPosts)
+    .innerJoin(users, eq(users.id, boardPosts.authorUserId))
+    .innerJoin(locations, eq(locations.id, boardPosts.locationId))
+    .where(and(live(), isNotNull(locations.latitude), isNotNull(locations.longitude), sql`${distance} <= ${params.radiusKm}`))
+    .orderBy(distance, desc(boardPosts.createdAt))
+    .limit(params.limit);
+  return rows.map((row) => ({ ...view(row, params.viewerId ?? null, params.locale), distanceKm: Number(row.distanceKm) }));
+}
+
+/** Where a place is, when Yavaya knows: the point "Cerca de mí" measures from when the visitor chose a town rather than shared their location. */
+export async function placePoint(executor: Executor, code: string): Promise<{ latitude: number; longitude: number } | null> {
+  const [row] = await executor.select({ latitude: locations.latitude, longitude: locations.longitude }).from(locations).where(eq(locations.code, code)).limit(1);
+  return row?.latitude != null && row.longitude != null ? { latitude: row.latitude, longitude: row.longitude } : null;
 }
 
 /** How many open posts each subdistrict holds, for the district's own navigation. Only real posts are counted. */

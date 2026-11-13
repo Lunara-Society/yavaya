@@ -93,17 +93,20 @@ const GLYPHS: Record<Exclude<DistrictId, 'sanctuary'>, string> = {
     '<g fill="currentColor" stroke="none"><ellipse cx="6.4" cy="10.6" rx="2" ry="2.5"/><ellipse cx="9.9" cy="6.4" rx="2" ry="2.6"/><ellipse cx="14.1" cy="6.4" rx="2" ry="2.6"/><ellipse cx="17.6" cy="10.6" rx="2" ry="2.5"/><path d="M12 11.4c-3 0-5.6 3.9-5.6 6.3 0 1.6 1.2 2.4 2.6 2.4 1.2 0 1.9-.6 3-.6s1.8.6 3 .6c1.4 0 2.6-.8 2.6-2.4 0-2.4-2.6-6.3-5.6-6.3z"/></g>',
 };
 
-/** The marks of the six board districts, drawn like the others: a house, a bus, a heart with a cross, an open book, a shopfront, a sprout. */
+/** The marks of the board districts, drawn like the others: a house, a bus, a heart with a cross, an open book, a shopfront, a sprout, a notice board, two houses joined by a heart. */
 const BOARD_GLYPHS: Record<BoardDistrict, string> = {
   hogar: '<path d="M4 11.2 12 4.6l8 6.6"/><path d="M6.2 9.8v9.4h11.6V9.8"/><path d="M10.2 19.2v-5h3.6v5"/>',
   movilidad: '<rect x="4.5" y="5" width="15" height="11.5" rx="2.2"/><path d="M4.5 11.5h15"/><path d="M8 8.2h8"/><circle cx="8.2" cy="18.6" r="1.5"/><circle cx="15.8" cy="18.6" r="1.5"/>',
   salud: '<path d="M12 20s-7-4.3-7-9.6A3.9 3.9 0 0 1 12 8a3.9 3.9 0 0 1 7 2.4C19 15.7 12 20 12 20z"/><path d="M12 10.6v4.2M9.9 12.7h4.2"/>',
   aprender: '<path d="M12 6.8c-2-1.5-4.6-1.9-7.5-1.6v12.4c2.9-.3 5.5.1 7.5 1.6 2-1.5 4.6-1.9 7.5-1.6V5.2c-2.9-.3-5.5.1-7.5 1.6z"/><path d="M12 6.8v12.4"/>',
   negocios: '<path d="M4.2 9.6 5.6 5h12.8l1.4 4.6"/><path d="M4.2 9.6a2.6 2.6 0 0 0 5.2 0 2.6 2.6 0 0 0 5.2 0 2.6 2.6 0 0 0 5.2 0"/><path d="M5.6 12v7h12.8v-7"/><path d="M10 19v-4h4v4"/>',
+  // A notice board on a post, and a heart over two houses joined by an arc.
+  barrio: '<rect x="4" y="4.5" width="16" height="10" rx="1.6"/><path d="M7.5 8h5M7.5 11h8"/><path d="M8 14.5v5M16 14.5v5"/>',
+  diaspora: '<path d="M3.5 19.5v-5l3-2.6 3 2.6v5z"/><path d="M14.5 19.5v-5l3-2.6 3 2.6v5z"/><path d="M6.5 10.4C7.6 6.6 9.6 4.8 12 4.8s4.4 1.8 5.5 5.6"/><path d="M12 9.6s-1.6-1-1.6-2.2a.9.9 0 0 1 1.6-.6.9.9 0 0 1 1.6.6c0 1.2-1.6 2.2-1.6 2.2z"/>',
   campo: '<path d="M12 20v-8"/><path d="M12 12c0-3.4-2.4-5.6-6.4-5.6 0 3.6 2.4 5.6 6.4 5.6z"/><path d="M12 14.4c0-2.9 2.2-4.8 5.8-4.8 0 3-2.2 4.8-5.8 4.8z"/><path d="M7 20h10"/>',
 };
 
-/** The six board districts as home cards, drawn as the first seven are: a picture, a mark, a name and one line. Shared with the First Light home. */
+/** The board districts as home cards, drawn as the first seven are: a picture, a mark, a name and one line. Shared with the First Light home. */
 export function BoardHomeCards({ t }: { t: Translator }) {
   return (
     <>
@@ -228,6 +231,9 @@ export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
             </div>
             <Link className="hx-pill" href={PAGE_PATHS.districts}>
               {t('home.districts.all')} <Arrow />
+            </Link>
+            <Link className="hx-pill" href="/cerca">
+              {t('nearby.home_link')} <Arrow />
             </Link>
             {/* The cards' sounds can be turned off here. Hidden until the depth is running: a device that is not given it makes no sound to turn off. */}
             {depth ? (

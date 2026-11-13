@@ -100,8 +100,8 @@ describe('reputation rules', () => {
 });
 
 describe('district registry', () => {
-  it('registers the thirteen districts with unique slugs and layouts', () => {
-    expect([...DISTRICT_KEYS]).toEqual(['mercadito', 'services', 'works', 'yavayago', 'community', 'sanctuary', 'animals', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo']);
+  it('registers the fifteen districts with unique slugs and layouts', () => {
+    expect([...DISTRICT_KEYS]).toEqual(['mercadito', 'services', 'works', 'yavayago', 'community', 'sanctuary', 'animals', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo', 'barrio', 'diaspora']);
     const slugs = districtList.map((district) => district.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
 
@@ -120,7 +120,7 @@ describe('district registry', () => {
     // A district joins this list in the same change that builds it — with
     // its pages, its service and its tests. Marking one available without
     // that is exactly what the capability register exists to prevent.
-    const built = new Set(['mercadito', 'services', 'works', 'community', 'sanctuary', 'animals', 'yavayago', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo']);
+    const built = new Set(['mercadito', 'services', 'works', 'community', 'sanctuary', 'animals', 'yavayago', 'hogar', 'movilidad', 'salud', 'aprender', 'negocios', 'campo', 'barrio', 'diaspora']);
     for (const district of districtList) {
       if (district.status === 'available' && !built.has(district.key)) {
         throw new Error(`${district.key} is marked available but is not built`);
@@ -131,5 +131,13 @@ describe('district registry', () => {
       const district = districtList.find((entry) => entry.key === key);
       expect(existsSync(new URL(`../../src/app/${district?.slug}/page.tsx`, import.meta.url)), key).toBe(true);
     }
+  });
+});
+
+describe('board district doors', () => {
+  it('every "also on Yavaya" door of a board district has a label', async () => {
+    const { BOARD_DISTRICTS } = await import('@/config/boards');
+    const source = (await import('node:fs')).readFileSync(require('node:path').join(__dirname, '..', '..', 'src', 'ui', 'boards', 'pages.tsx'), 'utf8');
+    for (const def of Object.values(BOARD_DISTRICTS)) for (const door of def.doors) expect(source).toContain(`'${door}':`);
   });
 });

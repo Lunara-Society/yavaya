@@ -11,7 +11,7 @@
  */
 
 /**
- * Thirteen districts. The first seven each answer one question a person already asks in their
+ * Fifteen districts. The first seven each answer one question a person already asks in their
  * own words. Order is the order shown everywhere.
  *
  * Impact was folded into Community (as "Causes") and the Tavern taken off the
@@ -33,6 +33,8 @@ export const DISTRICT_KEYS = [
   'aprender',
   'negocios',
   'campo',
+  'barrio',
+  'diaspora',
 ] as const;
 
 export type DistrictKey = (typeof DISTRICT_KEYS)[number];
@@ -69,13 +71,15 @@ export type DistrictTheme = {
     | 'calm-column'
     | 'organic-profile'
     | 'sacred-nave'
-    // The six board districts (config/boards.ts): one engine, each with its own arrangement of the same posts.
+    // The board districts (config/boards.ts): one engine, each with its own arrangement of the same posts.
     | 'address-ledger'
     | 'route-lines'
     | 'care-directory'
     | 'course-shelves'
     | 'trade-counter'
-    | 'harvest-board';
+    | 'harvest-board'
+    | 'neighbourhood-board'
+    | 'family-bridge';
 };
 
 export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
@@ -202,6 +206,26 @@ export const DISTRICTS: Record<DistrictKey, DistrictDefinition> = {
     // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
     status: 'available',
     theme: { accent: 'olive', tokenSet: 'district-campo', layout: 'harvest-board' },
+  },
+  barrio: {
+    key: 'barrio',
+    slug: 'barrio',
+    nameKey: 'district.barrio.name',
+    taglineKey: 'district.barrio.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'coral', tokenSet: 'district-barrio', layout: 'neighbourhood-board' },
+  },
+  diaspora: {
+    key: 'diaspora',
+    slug: 'diaspora',
+    nameKey: 'district.diaspora.name',
+    taglineKey: 'district.diaspora.tagline',
+    phase: 3,
+    // Built on the shared board: publishing, browsing by subdistrict, contact, reports and moderation (tests/integration/boards.test.ts).
+    status: 'available',
+    theme: { accent: 'indigo', tokenSet: 'district-diaspora', layout: 'family-bridge' },
   },
 };
 

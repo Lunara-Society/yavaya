@@ -100,7 +100,7 @@ export async function SiteShell({
     { id: 'about', label: t('home.nav.about') },
     { id: 'help', label: c.nav.help },
   ];
-  // The six board districts follow the first seven in the districts group; their names come from the dictionary.
+  // The board districts follow the first seven in the districts group; their names come from the dictionary.
   const boardLinks = BOARD_DISTRICT_KEYS.map((key) => ({ href: `/${BOARD_DISTRICTS[key].slug}`, label: t(`district.${key}.name` as MessageKey) }));
   const groups: Array<[string, PageId[]]> = [
     [c.ui.menu.districts, ['districts', ...DISTRICT_IDS]],

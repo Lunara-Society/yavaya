@@ -568,6 +568,32 @@ export const BOARD_RULES = {
   pageSize: 20,
 } as const;
 
+/**
+ * "Cerca de mí" (app/cerca): open posts of every board district around a
+ * point, nearest first. Yavaya's own defaults (13 November 2026), not the
+ * owner's: a post is placed at its town's centre, so a radius smaller than a
+ * town says nothing, and these are the distances someone would travel for
+ * what the boards hold.
+ */
+export const NEARBY_RULES = {
+  /** The distances offered, in km; the middle one is used until the visitor picks. */
+  radiiKm: [5, 15, 50],
+  defaultRadiusKm: 15,
+  /** Posts shown at most. */
+  limit: 40,
+} as const;
+
+/**
+ * Founders (13 November 2026, the owner's word on a proposal): the first
+ * accounts ever opened on Yavaya wear "Fundador nº N" on their profile and
+ * member card. How many count is Yavaya's own default, not the owner's.
+ * The number is worked out from the order of registration every time it is
+ * shown (trust/shield.ts), never stored, so nobody can be made a founder.
+ */
+export const FOUNDER_RULES = {
+  firstMembers: 100,
+} as const;
+
 export const SAFE_SPACE_RULES = {
   messageMaxLength: 2000,
   reportNoteMaxLength: 1000,

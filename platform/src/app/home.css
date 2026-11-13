@@ -251,6 +251,8 @@
 .hx-card-aprender { --a: #f0b33a; --deep: #2a1a04; --focus: 60% 30%; --em-ink: #ffe2a3; --arrow: #fff; }
 .hx-card-negocios { --a: #c2c8d2; --deep: #14181f; --focus: 42% 30%; --em-ink: #eef1f5; --arrow: #fff; }
 .hx-card-campo { --a: #a9c24a; --deep: #18200a; --focus: 62% 30%; --em-ink: #e4f0b4; --arrow: #fff; }
+.hx-card-barrio { --a: #f2856c; --deep: #2a0e0a; --focus: 50% 32%; --em-ink: #ffd0c4; --arrow: #fff; }
+.hx-card-diaspora { --a: #8f92f5; --deep: #0e0f2c; --focus: 45% 32%; --em-ink: #d8d9ff; --arrow: #fff; }
 
 @media (min-width: 700px) {
   .hx-cards { gap: 14px; }

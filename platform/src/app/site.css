@@ -621,6 +621,7 @@ td strong { color: var(--text); }
 .idcard-main { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 16px 0 12px; }
 .idcard-name { font-family: var(--serif); font-size: 1.55rem; font-weight: 600; line-height: 1.15; margin: 0; }
 .idcard-id { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.18em; color: rgba(248,246,241,0.7); font-size: 0.85rem; margin: 6px 0 0; }
+.idcard-founder { margin: 6px 0 0; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold, #c9a24b); }
 .idcard-meter { position: relative; width: 104px; height: 104px; margin: 0; flex: none; }
 .idcard-meter svg { width: 100%; height: 100%; }
 .idcard-meter circle { fill: none; stroke-width: 6; stroke-linecap: round; }

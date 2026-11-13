@@ -1,7 +1,7 @@
-import { eq } from 'drizzle-orm';
+import { eq, lt, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { reputationScores, users } from '@/server/db/schema';
-import { REPUTATION_RULES, TRUST_BANDS } from '@/config/business-rules';
+import { FOUNDER_RULES, REPUTATION_RULES, TRUST_BANDS } from '@/config/business-rules';
 import { formatYayId } from '@/server/domains/identity/yay-id';
 
 /**
@@ -29,6 +29,11 @@ export type TrustShield = {
   statusKey: string;
   /** Set only for accounts an ordinary user should approach with care. */
   cautionKey: string | null;
+  /**
+   * The account's place among the first accounts ever opened (FOUNDER_RULES),
+   * or null. Derived from the order of registration each time, never stored.
+   */
+  founderNumber: number | null;
 };
 
 export async function buildTrustShield(
@@ -61,6 +66,8 @@ export async function buildTrustShield(
     Math.floor((now.getTime() - row.createdAt.getTime()) / 86_400_000),
   );
   const score = row.score ?? REPUTATION_RULES.initialScore;
+  const [earlier] = await executor.select({ n: sql<number>`count(*)::int` }).from(users).where(lt(users.createdAt, row.createdAt));
+  const place = (earlier?.n ?? 0) + 1;
 
   return {
     yayId: formatYayId(row.yayId),
@@ -73,6 +80,7 @@ export async function buildTrustShield(
     successfulTransactions: row.successfulTransactions ?? 0,
     statusKey: statusKeyFor({ status: row.status, trustState: row.trustState, score }),
     cautionKey: cautionKeyFor({ status: row.status, trustState: row.trustState, accountAgeDays }),
+    founderNumber: place <= FOUNDER_RULES.firstMembers ? place : null,
   };
 }
 

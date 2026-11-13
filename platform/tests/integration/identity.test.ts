@@ -362,6 +362,17 @@ describe('monitoring graduation', () => {
 });
 
 describe('trust shield', () => {
+  it('numbers the first accounts as founders, from the order of registration, and no one after them', async () => {
+    const first = await register(db(), registration(), context);
+    const second = await register(db(), registration(), context);
+    expect((await buildTrustShield(db(), first.userId))?.founderNumber).toBe(1);
+    expect((await buildTrustShield(db(), second.userId))?.founderNumber).toBe(2);
+    // Someone who registers after the founders' places are taken is not one, whatever else is true of them.
+    await db().update(users).set({ createdAt: new Date(Date.now() - 1000) }).where(eq(users.id, first.userId));
+    const late = await buildTrustShield(db(), second.userId, new Date());
+    expect(late?.founderNumber).toBe(2);
+  });
+
   it('exposes only the public summary', async () => {
     const created = await register(db(), registration(), context);
     const shield = await buildTrustShield(db(), created.userId);
@@ -377,6 +388,7 @@ describe('trust shield', () => {
         'accountAgeDays',
         'cautionKey',
         'displayName',
+        'founderNumber',
         'emailVerified',
         'identityVerified',
         'phoneVerified',

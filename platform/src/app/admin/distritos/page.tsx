@@ -15,7 +15,7 @@ import { resolveBoardTicketAction } from '@/app/boards/actions';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
 
-/** The moderation queue of the six board districts. */
+/** The moderation queue of the board districts. */
 export default async function BoardModerationPage() {
   const { c, t, language, theme, member, userId } = await siteContext();
   if (!userId) redirect(await signInPath());

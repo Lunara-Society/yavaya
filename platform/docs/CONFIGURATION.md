@@ -1799,3 +1799,19 @@ actions (`FIRST_ACTIONS` in the stats service): publishing in a district,
 replying in Community, asking for or answering a service, applying for work
 or an adoption, reporting a lost animal, ordering or asking for a trip,
 registering a church. Change it there.
+
+
+## Added 13 November 2026 (Yavaya's own defaults, not the owner's)
+
+| What | Value | Where |
+| --- | --- | --- |
+| Distances offered on Cerca de mí | 5, 15, 50 km (15 first) | `NEARBY_RULES` |
+| Posts shown on Cerca de mí | 40 | `NEARBY_RULES.limit` |
+| Accounts counted as founders | the first 100 ever opened | `FOUNDER_RULES.firstMembers` |
+
+Barrio and Diáspora are board districts like Hogar (`config/boards.ts`); their
+subdistricts and safety notices are Yavaya's wording. Barrio's notice forbids
+naming or picturing people and accusations; Diáspora's tells people not to
+pay in advance to strangers and to have the family confirm the work first.
+Voice dictation uses the browser's speech recognition: Yavaya receives only
+the text the member decides to publish.

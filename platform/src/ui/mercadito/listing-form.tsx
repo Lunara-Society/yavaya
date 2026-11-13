@@ -1,5 +1,6 @@
 'use client';
 
+import { Dictate } from '@/ui/components/dictate';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { PlacePicker, type PlacePickerLabels } from '@/ui/components/place-picker';
 import { ImageLink, type ImageLinkLabels } from '@/ui/components/image-link';
@@ -23,6 +24,11 @@ export type ListingFormLabels = Record<
   | 'titleHint'
   | 'description'
   | 'descriptionHint'
+  | 'dictateStart'
+  | 'dictateStop'
+  | 'dictateHint'
+  | 'dictateFailed'
+  | 'dictateLang'
   | 'price'
   | 'currency'
   | 'category'
@@ -357,6 +363,7 @@ export function ListingForm({
         <span className="hint">{labels.descriptionHint}</span>
         <textarea name="description" required minLength={MERCADITO_RULES.descriptionMinLength} maxLength={MERCADITO_RULES.descriptionMaxLength} defaultValue={initial?.description} disabled={busy} />
       </label>
+      <Dictate target="description" lang={labels.dictateLang} labels={{ start: labels.dictateStart, stop: labels.dictateStop, hint: labels.dictateHint, failed: labels.dictateFailed }} />
 
       <button className="btn btn-gold" type="submit" disabled={busy} aria-busy={busy}>
         {phase === 'preparing' ? labels.preparing : phase === 'submitting' ? labels.submitting : labels.submit}

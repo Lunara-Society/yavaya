@@ -19,6 +19,8 @@ export function Medallions({ shield, t }: { shield: TrustShield; t: Translator }
       labelKey: standingEarned ? (shield.statusKey as MessageKey) : 'trust.status.established',
       earned: standingEarned,
     },
+    // Never "not yet": an account opened after the first ones can never earn it, so it is shown only to founders.
+    ...(shield.founderNumber ? [{ icon: 'star' as IconName, labelKey: 'trust.founder' as MessageKey, earned: true }] : []),
   ];
   return (
     <ul className="medals-row">
