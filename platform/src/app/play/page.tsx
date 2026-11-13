@@ -7,6 +7,8 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { siteContext } from '@/ui/site/context';
 import { PlayLoader } from '@/ui/play/loader';
+import { getDictionary } from '@/i18n';
+import { playLook } from '@/server/domains/play/profile';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,10 +36,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * it before anyone else does.
  */
 export default async function PlayPage() {
-  const { t, userId } = await siteContext();
+  const { t, userId, locale } = await siteContext();
   const open = await lookEnabled(db(), 'play');
   const preview = !open && userId !== null && (await hasPermission(db(), userId, 'flags.manage'));
   if (!open && !preview) notFound();
+  // The game's words: every `play.*` text in the visitor's language, and nothing else.
+  const texts = Object.fromEntries(Object.entries(getDictionary(locale)).filter(([key]) => key.startsWith('play.')));
+  const look = userId ? await playLook(db(), userId) : null;
   return (
     <main className="yp">
       <header className="yp-top">
@@ -47,11 +52,7 @@ export default async function PlayPage() {
         <strong className="yp-name">{t('play.title')}</strong>
         {preview ? <span className="yp-preview">{t('play.preview')}</span> : <span />}
       </header>
-      <PlayLoader
-        loading={t('play.loading')}
-        unsupported={t('play.unsupported')}
-        labels={{ time: t('play.time'), best: t('play.best'), coins: t('play.coins'), start: t('play.start'), finished: t('play.finished'), record: t('play.record'), again: t('play.again'), jump: t('play.jump') }}
-      />
+      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null }} />
     </main>
   );
 }

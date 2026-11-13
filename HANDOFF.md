@@ -198,3 +198,10 @@ cards with nothing added. Full account in `platform/docs/DISTRICTS-3D.md`.
 - **Founding restaurants:** free for 12 months.
 - **Launch city:** Managua.
 - **Payments:** cash on delivery. Tokens are bought only through Stripe.
+
+## Yavaya Play (`/play`)
+
+Behind Admin → Diseño del sitio → Yavaya Play (off: only the owner sees it).
+State, plan and how it is built: `platform/docs/PLAY.md`. Steps 1–2 of the
+approved plan are done (shared engine; character, Character Studio, look
+saved in `play_profiles`). Next: Yavaya Plaza.

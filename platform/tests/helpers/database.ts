@@ -96,6 +96,7 @@ export async function resetTransactionalData(): Promise<void> {
       mercadito_saved_searches,
       mercadito_listing_photos,
       mercadito_listings,
+      play_profiles,
       media
     restart identity cascade
   `);

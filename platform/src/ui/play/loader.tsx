@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { GameLabels } from './game';
+import type { PlaySetup } from './play';
 
 /**
  * Brings the game in after its page has painted. The 3D engine is by far the
  * heaviest thing on Yavaya, so it is fetched here and nowhere else: no other
  * page, and not this one's first paint, pays for it.
  */
-export function PlayLoader({ labels, loading, unsupported }: { labels: GameLabels; loading: string; unsupported: string }) {
+export function PlayLoader({ setup, loading, unsupported }: { setup: PlaySetup; loading: string; unsupported: string }) {
   const host = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'unsupported'>('loading');
 
@@ -22,10 +22,10 @@ export function PlayLoader({ labels, loading, unsupported }: { labels: GameLabel
       setState('unsupported');
       return;
     }
-    import('./game')
-      .then(({ startGame }) => {
+    import('./play')
+      .then(({ startPlay }) => {
         if (gone) return;
-        stop = startGame(node, labels);
+        stop = startPlay(node, setup);
         setState('ready');
       })
       .catch(() => setState('unsupported'));
@@ -33,7 +33,7 @@ export function PlayLoader({ labels, loading, unsupported }: { labels: GameLabel
       gone = true;
       stop?.();
     };
-    // The labels are the server's and do not change while the page is open.
+    // The setup is the server's and does not change while the page is open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

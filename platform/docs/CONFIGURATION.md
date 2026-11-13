@@ -1823,3 +1823,8 @@ in Admin → Diseño del sitio. The owner has said it will be open to everyone,
 signed in or not, once opened. The game's own numbers (speed, jump, course)
 are in `src/ui/play/course.ts` and `game.ts`; they are a first tuning, chosen
 by us, not specified. See `docs/PLAY.md`.
+
+Yavaya Play's character catalogue (`src/config/play-looks.ts`: the parts,
+the choices, their colours, the default look) is ours, chosen for a first
+release, not specified. Saving a character is limited to 120 saves an hour
+per player (`RATE_LIMITS.playSave`), also our own number.

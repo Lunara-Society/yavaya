@@ -1,27 +1,19 @@
+import type { Box as Shape } from './engine/body';
+
 /**
  * Yavaya Rush, course one: "La Calle del Mercado".
  *
  * Plain data, in metres, with +z forward: a street, stepping stones across a
  * fountain pool, swinging market signs, rooftop steps, moving carts and a
- * narrow wall to the finish arch. The engine (game.ts) builds and plays it;
+ * narrow wall to the finish arch. The Rush mode (modes/rush.ts) builds and plays it;
  * a server can read the same numbers to judge whether a submitted time is
  * possible (the shortest honest run is the length over the top speed).
  *
- * Tuned to the jump in game.ts (about 1.7 m high, 5 m long at a run): no gap
- * on the main path is wider than 2.8 m, so a miss is a mistake, not a trap.
+ * Tuned to the jump in engine/body.ts (about 1.7 m high, 5.2 m long at a run).
  */
-export type Box = {
-  /** Centre x, top y, centre z; then width (x), height (y), depth (z). */
-  x: number;
-  y: number;
-  z: number;
-  w: number;
-  h: number;
-  d: number;
-  color: number;
-  /** A platform that slides: along `axis`, `range` metres each way, one cycle every `period` seconds. */
-  move?: { axis: 'x' | 'z'; range: number; period: number; phase: number };
-};
+
+/** A box of the course, with its paint. */
+export type Box = Shape & { color: number };
 
 export const COLORS = {
   stone: 0xd9c9a8,

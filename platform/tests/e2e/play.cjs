@@ -24,6 +24,14 @@ const check = (ok, what) => {
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(`${BASE}/play`, { waitUntil: 'load' });
   check(await page.waitForSelector('.yp-canvas', { timeout: 20000 }).then(() => true, () => false), 'the game loads and draws');
+  // A first visit opens the Character Studio; its main button goes on to the course.
+  const studio = await page.waitForSelector('.yp-sheet', { timeout: 5000 }).then(() => true, () => false);
+  check(studio, 'a first visit opens the Character Studio');
+  if (studio) {
+    await page.click('.yp-option >> nth=1');
+    await page.click('.yp-primary');
+  }
+  check(await page.waitForSelector('.yp-hud', { timeout: 8000 }).then(() => true, () => false), 'and goes on to the course');
   check(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'nothing is wider than the screen');
 
   // A fall first: straight off the street into the fountain.

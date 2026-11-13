@@ -75,6 +75,8 @@ export const RATE_LIMITS = {
   safeSpaceMessage: { bucket: 'safe_space_message', limit: SAFE_SPACE_RULES.messagesPerHour, windowSeconds: 60 * 60 },
   /** Starting a checkout, per member: room for a changed mind, not for card testing. */
   paymentCheckout: { bucket: 'payment_checkout', limit: 10, windowSeconds: 60 * 60 },
+  /** Saving a Yavaya Play character: a long session of trying things on, not a script. */
+  playSave: { bucket: 'play_save', limit: 120, windowSeconds: 60 * 60 },
   safeSpaceThread: { bucket: 'safe_space_thread', limit: SAFE_SPACE_RULES.newThreadsPerDay, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 
