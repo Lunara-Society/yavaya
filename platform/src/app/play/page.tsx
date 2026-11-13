@@ -1,5 +1,5 @@
 import './play.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/server/db/client';
@@ -9,6 +9,14 @@ import { siteContext } from '@/ui/site/context';
 import { PlayLoader } from '@/ui/play/loader';
 
 export const dynamic = 'force-dynamic';
+
+/*
+ * The one page of the site that does not zoom. Everywhere else zoom stays on,
+ * for reading; here a second thumb on the screen is the jump button, and the
+ * first real phone to play it ended up magnified with the timer, the jump
+ * button and half the character off the screen.
+ */
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, maximumScale: 1, userScalable: false, themeColor: '#f6c58f' };
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await siteContext();

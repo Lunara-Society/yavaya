@@ -529,11 +529,40 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
     renderer.setSize(width, height, false);
     camera.aspect = width / Math.max(1, height);
     // A tall phone sees less to the sides: pull back a little.
-    camera.fov = camera.aspect < 0.8 ? 68 : 58;
+    camera.fov = camera.aspect < 0.8 ? 62 : 55;
     camera.updateProjectionMatrix();
   };
   resize();
   listen(window, 'resize', resize as (event: never) => void);
+
+  // Some browsers magnify a page whatever it asks for (an accessibility
+  // setting, an in-app browser). The game then keeps itself inside what can
+  // actually be seen, so the timer and the jump button are never off-screen.
+  const stage = (host.closest('.yp') as HTMLElement | null) ?? host;
+  const view = window.visualViewport;
+  const fit = () => {
+    if (!view) return;
+    const zoomed = view.scale > 1.01;
+    stage.style.left = zoomed ? `${view.offsetLeft}px` : '';
+    stage.style.top = zoomed ? `${view.offsetTop}px` : '';
+    stage.style.width = zoomed ? `${view.width}px` : '';
+    stage.style.height = zoomed ? `${view.height}px` : '';
+    stage.style.right = zoomed ? 'auto' : '';
+    stage.style.bottom = zoomed ? 'auto' : '';
+    resize();
+  };
+  if (view) {
+    listen(view, 'resize', fit as (event: never) => void);
+    listen(view, 'scroll', fit as (event: never) => void);
+    fit();
+  }
+  // Two thumbs are steering and jumping, never a pinch; two quick taps are two jumps, never a zoom.
+  const noZoom = (event: Event) => {
+    if (event.cancelable) event.preventDefault();
+  };
+  listen(stage, 'touchmove', noZoom as (event: never) => void, { passive: false });
+  listen(stage, 'gesturestart', noZoom as (event: never) => void, { passive: false });
+  listen(stage, 'dblclick', noZoom as (event: never) => void);
 
   const eye = new THREE.Vector3(0, 5, -6);
   const look = new THREE.Vector3();
@@ -571,16 +600,20 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
 
     for (const coin of coins) if (!coin.taken) coin.mesh.rotation.z = now / 500;
 
+    // High and looking well down, so that the gaps between things are seen
+    // as gaps: from a low camera every platform ahead hides the hole in front
+    // of it (the owner's first note from a real phone). The character sits in
+    // the lower third, with the course ahead filling the rest.
     const tall = camera.aspect < 0.8;
-    const wantX = player.x * 0.55;
-    const wantY = player.y + (tall ? 5.4 : 4.3);
-    const wantZ = player.z - (tall ? 8.6 : 7.4);
+    const wantX = player.x * 0.7;
+    const wantY = player.y + (tall ? 9.6 : 7.4);
+    const wantZ = player.z - (tall ? 7.2 : 6.6);
     const ease = reduced ? 1 : 1 - Math.exp(-7 * dt);
     eye.x += (wantX - eye.x) * ease;
     eye.y += (wantY - eye.y) * (reduced ? 1 : 1 - Math.exp(-4 * dt));
     eye.z += (wantZ - eye.z) * ease;
     camera.position.copy(eye);
-    look.set(player.x * 0.75, eye.y - (tall ? 4.0 : 3.1), player.z + 3.5);
+    look.set(player.x * 0.85, eye.y - (tall ? 9.0 : 6.9), player.z + (tall ? 5.2 : 4.2));
     camera.lookAt(look);
 
     if (started && !finished) timeText.textContent = clock(elapsed);
