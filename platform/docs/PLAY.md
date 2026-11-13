@@ -12,7 +12,10 @@ to the roofs, two moving carts, a wide wall or a narrow golden one, a finish
 arch. A timer, twenty coins, four checkpoints, a best time.
 
 What is real: the game, on a phone (left thumb steers, the button jumps) and
-with a keyboard (arrows or WASD, space, R to restart).
+with a keyboard (arrows or WASD, space, R to restart). Tuned after the
+owner's first runs on a real phone: the stick gives most of the speed at a
+small push, a tap on the button is a full jump, a jump keeps the run it
+started with, and one thumb can leave the stick to press jump.
 
 What is **not** there yet, and is not pretended:
 
@@ -36,6 +39,9 @@ previa". Nothing on the site links to it yet.
 
 - `course.ts` — the course as plain numbers.
 - `character.ts` — the character, built from simple shapes in code.
+- Every gap is laid out for a jump at a run (about 5.2 m, 1.7 m high): a
+  jump taken anywhere near an edge comes down on the next thing, with the
+  thumb still pushing forward. The script checks the whole course that way.
 - `game.ts` — drawing, movement, collisions (boxes only), camera, controls,
   sounds. A fixed 120 Hz step, so a slow phone plays the same course as a
   fast one. It lowers its own resolution if frames are slow.
@@ -45,5 +51,5 @@ previa". Nothing on the site links to it yet.
 
 `node tests/e2e/play.cjs http://127.0.0.1:3000` plays the course from start
 to finish with the keyboard: a fall, a full run, the finish panel, a restart.
-A flawless run is about 22 seconds; a first human run should be about a
+A flawless run is about 20 seconds; a first human run should be about a
 minute. Whether it is *fun* is for a person to say.

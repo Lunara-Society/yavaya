@@ -100,9 +100,9 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   solids.forEach((solid) => place(solid, 0));
 
   // Water under the stones, and a far ground so a fall is into somewhere.
-  const water = new THREE.Mesh(new THREE.PlaneGeometry(60, 20), new THREE.MeshLambertMaterial({ color: COLORS.water, transparent: true, opacity: 0.9 }));
+  const water = new THREE.Mesh(new THREE.PlaneGeometry(60, 27), new THREE.MeshLambertMaterial({ color: COLORS.water, transparent: true, opacity: 0.9 }));
   water.rotation.x = -Math.PI / 2;
-  water.position.set(0, -1.3, 22);
+  water.position.set(0, -1.3, 25.7);
   scene.add(water);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), flat(0xb98f5e));
   ground.rotation.x = -Math.PI / 2;
@@ -112,7 +112,7 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   // The town on both sides: painted houses with tiled roofs, and the volcano beyond.
   const paints = [0xf2a65a, 0xe86f68, 0x6fb7c9, 0xf3d27a, 0xa9c98a, 0xd98fb8, 0xf5efe0];
   const houses = new THREE.Group();
-  for (let i = 0; i < 26; i += 1) {
+  for (let i = 0; i < 30; i += 1) {
     const side = i % 2 ? 1 : -1;
     const z = (i >> 1) * 9 + 2;
     const w = 5 + ((i * 7) % 3);
@@ -190,7 +190,6 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   let checkpoint = 0;
   let coyote = 0;
   let buffered = 0;
-  let jumpHeld = false;
   let started = false;
   let finished = false;
   let elapsed = 0;
@@ -259,10 +258,8 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   };
   const pressJump = () => {
     buffered = 0.14;
-    jumpHeld = true;
   };
   const releaseJump = () => {
-    jumpHeld = false;
   };
   listen(window, 'keydown', ((event: KeyboardEvent) => {
     if (event.repeat) return;
@@ -280,9 +277,13 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
 
   // The stick appears where the left thumb lands; anywhere on the right is a jump.
   let stickId = -1;
+  // Where the stick last pointed, for a thumb that leaves it to press jump.
+  let released = { x: 0, z: 0, at: -1e9 };
   let stickX = 0;
   let stickY = 0;
   const STICK_REACH = 52;
+  const STICK_DEAD = 7;
+  const STICK_FULL = 18;
   listen(
     host,
     'pointerdown',
@@ -317,9 +318,12 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
         dy = (dy / length) * STICK_REACH;
       }
       knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-      // A small dead middle, so a resting thumb does not creep.
-      const push = Math.max(0, length - 8) / (STICK_REACH - 8);
-      const scale = length > 0 ? Math.min(1, push) / length : 0;
+      // A thumb on a phone moves a little, not to the edge of the ring: the
+      // owner's first runs crawled along at a fraction of the speed, and a
+      // jump from a crawl lands in the water. So past a small dead middle the
+      // stick gives most of the speed at once and all of it a short way out.
+      const push = length < STICK_DEAD ? 0 : Math.min(1, 0.6 + (0.4 * (length - STICK_DEAD)) / STICK_FULL);
+      const scale = length > 0 ? push / length : 0;
       input.x = -dx * scale;
       input.z = -dy * scale;
     }) as (event: never) => void,
@@ -328,6 +332,7 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
   const lift = (event: PointerEvent) => {
     if (event.pointerId === stickId) {
       stickId = -1;
+      released = { x: input.x, z: input.z, at: performance.now() };
       input.x = 0;
       input.z = 0;
       stick.classList.remove('is-on');
@@ -426,11 +431,17 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
       started = true;
       hint.hidden = true;
     }
-    // Quick to answer on the ground, a little looser in the air.
-    const grip = player.grounded ? 18 : 9;
+    // Quick to answer on the ground, a little looser in the air. In the air
+    // with nothing asked the player keeps going: a jump carries its run, as a
+    // real one does, rather than stopping dead when the thumb comes off.
+    // Letting go on the ground stops the player sooner than starting moves
+    // them, so a thumb lifted near an edge does not slide off it.
+    const grip = player.grounded ? (asked > 0.05 ? 18 : 32) : 9;
     const blend = 1 - Math.exp(-grip * dt);
-    player.vx += (ax * SPEED - player.vx) * blend;
-    player.vz += (az * SPEED - player.vz) * blend;
+    if (player.grounded || asked > 0.05) {
+      player.vx += (ax * SPEED - player.vx) * blend;
+      player.vz += (az * SPEED - player.vz) * blend;
+    }
     if (asked > 0.1) {
       const want = Math.atan2(ax, az);
       let turn = want - player.facing;
@@ -439,18 +450,26 @@ export function startGame(host: HTMLElement, labels: GameLabels): () => void {
       player.facing += turn * (1 - Math.exp(-14 * dt));
     }
 
-    coyote = player.grounded ? 0.1 : coyote - dt;
+    // A jump pressed a moment after running off an edge still counts.
+    coyote = player.grounded ? 0.15 : coyote - dt;
     buffered -= dt;
     if (buffered > 0 && coyote > 0) {
       player.vy = JUMP;
+      // Played with one thumb, it leaves the stick to press jump and the run
+      // is already slowing: a jump within a moment of letting go takes the run
+      // it had.
+      if (asked < 0.05 && performance.now() - released.at < 400) {
+        player.vx = released.x * SPEED;
+        player.vz = released.z * SPEED;
+      }
       player.grounded = false;
       player.on = null;
       coyote = 0;
       buffered = 0;
       cue('door');
     }
-    // Letting go early makes a shorter hop.
-    if (!jumpHeld && player.vy > 4) player.vy -= 40 * dt;
+    // Every jump is the whole jump. A shorter hop for a quick release was
+    // here, and on a phone a tap is always a quick release: every jump fell short.
     player.vy -= GRAVITY * dt;
 
     // Carried by a cart.

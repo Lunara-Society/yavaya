@@ -62,11 +62,11 @@ const check = (ok, what) => {
     window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyR' }));
     // Where each jump should come down: [z, x], x null meaning "wherever the cart is".
     const LANDINGS = [
-      [16.6, -1.5], [19.4, 1.0], [22.3, -0.6], [25.1, 1.7], [27.9, -0.9], [31.5, 0],
-      [47.2, 0], [49.6, 0], [52.0, 0], [54.4, 0],
-      [69.6, 'a'], [74.8, 'b'], [79.4, 0], [83.5, 0],
+      [17.9, 0], [23.1, 0.8], [28.3, -0.6], [33.5, 0.7], [38.9, 0],
+      [54.6, 0], [57, 0], [59.4, 0], [61.8, 0],
+      [77.2, 'a'], [82.6, 'b'], [88.1, 0], [90.9, 0],
     ];
-    const STEP_FACES = [46.0, 48.4, 50.8, 53.2];
+    const STEP_FACES = [53.4, 55.8, 58.2, 60.6];
     const t0 = performance.now();
     let lastJump = 0;
     let aimed = null;
@@ -91,7 +91,7 @@ const check = (ok, what) => {
           aimed = landing && landing[0] - s.z < 6 ? landing : null;
         }
         const near = aimed;
-        const targetX = !near ? (s.z >= 86 && s.z < 109 ? -0.9 : 0) : near[1] === 'a' ? a : near[1] === 'b' ? b : near[1];
+        const targetX = !near ? (s.z >= 93.4 && s.z < 116.4 ? -0.9 : 0) : near[1] === 'a' ? a : near[1] === 'b' ? b : near[1];
         let go = true;
         let jump = false;
         let back = false;
@@ -99,7 +99,7 @@ const check = (ok, what) => {
           const edge = s.on ? s.on.maxZ : Infinity;
           const face = STEP_FACES.find((z) => s.z > z - 0.7 && s.z < z);
           if (face) jump = true;
-          else if (near && s.z > edge - 0.45 && s.z < 84) {
+          else if (near && s.z > edge - 0.45 && s.z < 91.4) {
             // At an edge: line up first, and for a cart wait until it is under the jump.
             const cart = typeof near[1] === 'string';
             if (cart && Math.abs(targetX - s.x) > 0.6) go = false;
@@ -107,13 +107,13 @@ const check = (ok, what) => {
           }
           // The signs: wait for each to swing clear of the middle.
           s.signs.forEach((x, i) => {
-            const z = 35.5 + i * 4;
+            const z = 42.9 + i * 4;
             if (s.z > z - 1.8 && s.z < z - 0.8 && Math.abs(x - s.x) < 2.2) go = false;
           });
         } else if (near) {
-          // In the air: stop short of the middle (the player carries a little speed), step back if past it.
-          go = s.z < near[0] - 0.45;
-          back = s.z > near[0] + 0.35;
+          // Like a person: the thumb stays forward in the air. The course has
+          // to catch a running jump, and this checks that it does.
+          go = true;
         }
         hold('ArrowUp', go);
         hold('ArrowDown', back);
