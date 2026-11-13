@@ -181,6 +181,12 @@ export const SITE_LOOK_RULES = {
    * that can afford it is given the depth; the rest see the classic cards.
    */
   depth: true,
+  /**
+   * Yavaya Play (app/play, docs/PLAY.md), a first playable: closed until the
+   * owner has played it and opens it. While closed, only someone who may
+   * change this switch can load the page.
+   */
+  play: false,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

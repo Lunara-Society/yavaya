@@ -24,7 +24,7 @@ type Session =
  * and the sign-in and appeal flows, where someone is not yet (or no longer)
  * a member in good standing.
  */
-const QUIET = /^\/(violeta|login|register|verify|reset|apelacion|auth)(\/|$)/;
+const QUIET = /^\/(violeta|login|register|verify|reset|apelacion|auth|play)(\/|$)/;
 
 /**
  * Lives in the root layout, so a conversation survives moving between pages:

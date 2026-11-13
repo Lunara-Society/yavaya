@@ -1815,3 +1815,11 @@ naming or picturing people and accusations; Diáspora's tells people not to
 pay in advance to strangers and to have the family confirm the work first.
 Voice dictation uses the browser's speech recognition: Yavaya receives only
 the text the member decides to publish.
+
+## Yavaya Play
+
+`SITE_LOOK_RULES.play` is `false`: `/play` is closed until the owner opens it
+in Admin → Diseño del sitio. The owner has said it will be open to everyone,
+signed in or not, once opened. The game's own numbers (speed, jump, course)
+are in `src/ui/play/course.ts` and `game.ts`; they are a first tuning, chosen
+by us, not specified. See `docs/PLAY.md`.
