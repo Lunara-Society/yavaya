@@ -47,6 +47,8 @@ type HomeProps = {
   c: SiteContent;
   t: Translator;
   signedIn: boolean;
+  /** Yavaya Play is open (Admin → Diseño del sitio): the hero carries its door, and the districts a pill. */
+  play?: boolean;
   location: Awaited<ReturnType<typeof locationBarProps>>;
   /**
    * The owner's switch "Distritos en 3D" (Admin → Diseño del sitio). On, the
@@ -165,7 +167,7 @@ function Arrow() {
   );
 }
 
-export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
+export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
   return (
     <div className="hx-page">
       <section className="hx-hero" aria-labelledby="hx-title">
@@ -195,6 +197,24 @@ export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
               <Arrow />
             </button>
           </form>
+          {/* Yavaya Play's door, the owner's request: easy to find, right under the search, only while the game is open. */}
+          {play ? (
+            <Link className="hx-play" href="/play">
+              <span className="hx-play-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" focusable="false">
+                  <path d="M6.5 8h11a4 4 0 0 1 3.9 4.8l-.9 4.4a2.2 2.2 0 0 1-3.8 1L14.5 16h-5l-2.2 2.2a2.2 2.2 0 0 1-3.8-1l-.9-4.4A4 4 0 0 1 6.5 8Z" />
+                  <path d="M8 11v3M6.5 12.5h3M15.5 12h.01M17.5 13.5h.01" />
+                </svg>
+              </span>
+              <span className="hx-play-text">
+                <strong>
+                  {t('home.play.title')} <span className="hx-play-new">{t('home.play.new')}</span>
+                </strong>
+                <span>{t('home.play.line')}</span>
+              </span>
+              <Arrow />
+            </Link>
+          ) : null}
           {/*
            * "¿Qué necesitas hoy?" (the Roxi proposal of 6 November 2026): for a
            * signed-in member, five doors that open Roxi with the request already
@@ -235,6 +255,11 @@ export function HomeBody({ c, t, signedIn, location, depth }: HomeProps) {
             <Link className="hx-pill" href="/cerca">
               {t('nearby.home_link')} <Arrow />
             </Link>
+            {play ? (
+              <Link className="hx-pill" href="/play">
+                {t('home.play.title')} <Arrow />
+              </Link>
+            ) : null}
             {/* The cards' sounds can be turned off here. Hidden until the depth is running: a device that is not given it makes no sound to turn off. */}
             {depth ? (
               <span hidden data-dz-sound>

@@ -27,12 +27,13 @@ import { servedCountryNames, siteUrl } from '@/server/seo';
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, location, firstLight, guardian2, depth] = await Promise.all([
+  const [countries, location, firstLight, guardian2, depth, play] = await Promise.all([
     servedCountryNames(),
     locationBarProps(t, locale),
     lookEnabled(db(), 'home'),
     lookEnabled(db(), 'guardian'),
     lookEnabled(db(), 'depth'),
+    lookEnabled(db(), 'play'),
   ]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
@@ -63,7 +64,7 @@ export default async function HomePage() {
       {firstLight ? (
         <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} guardian={guardian2 ? 'second' : 'first'} />
       ) : (
-        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} depth={depth} />
+        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} depth={depth} play={play} />
       )}
     </SiteShell>
   );

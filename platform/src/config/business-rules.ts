@@ -188,10 +188,11 @@ export const SITE_LOOK_RULES = {
    */
   play: false,
   /**
-   * Pruebas de Maestría (docs/PLAY.md): closed until the owner has played
-   * them; while closed, only someone who may change this switch sees them.
+   * Pruebas de Maestría (docs/PLAY.md): open, the owner's decision of
+   * 13 November 2026 ("publish it live"). Off, only someone who may change
+   * this switch sees them.
    */
-  trials: false,
+  trials: true,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

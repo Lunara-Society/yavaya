@@ -316,3 +316,13 @@
 
 /* The six board districts under the First Light's seven doors. */
 .fl-more-cards { margin-top: clamp(20px, 3vw, 36px); }
+/* Yavaya Play's door in the hero (only while the game is open). */
+.hx-play { display: flex; align-items: center; gap: 12px; max-width: 560px; margin: 14px 0 0; padding: 12px 16px; border: 1px solid rgba(216, 178, 90, 0.7); border-radius: 18px; background: linear-gradient(120deg, rgba(34, 31, 41, 0.92), rgba(58, 40, 24, 0.88)); color: var(--hx-ivory, #f3ecdc); text-decoration: none; box-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.9); }
+.hx-play:hover { border-color: var(--hx-gold); }
+.hx-play:focus-visible { outline: 2px solid var(--hx-gold-light, #f3d98f); outline-offset: 3px; }
+.hx-play-icon { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; background: var(--hx-gold); color: #1c140c; }
+.hx-play-icon svg { width: 26px; height: 26px; }
+.hx-play-text { display: grid; gap: 2px; flex: 1; min-width: 0; font-size: 0.86rem; line-height: 1.3; color: var(--hx-ivory-2); }
+.hx-play-text strong { font-family: var(--serif, Georgia, serif); font-size: 1.08rem; color: #fff; }
+.hx-play-new { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--hx-gold); color: #1c140c; font: 800 0.62rem/1.4 var(--sans, system-ui, sans-serif); letter-spacing: 0.08em; text-transform: uppercase; vertical-align: 2px; }
+.hx-play > svg { flex: none; width: 20px; height: 20px; color: var(--hx-gold); }

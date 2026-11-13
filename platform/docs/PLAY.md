@@ -64,7 +64,7 @@ What is **not** there yet, and is not pretended:
   builds on a real Android phone. Frame rates on real phones are measured
   with `/play?debug`, not claimed.
 
-## Phase 3: Pruebas de Maestría (built, behind the owner's switch)
+## Phase 3: Pruebas de Maestría (live since 13 November 2026)
 
 The owner's directive "The Mastery Evolution". Built so far: priorities 1–3
 and 6 (movement, a real learning curve, five tiers, one guardian), with a
@@ -73,9 +73,10 @@ Coins and cosmetic rewards on the account (priority 4, the progression
 step, with server checks), the Obsidian Ascent (5), the plaza locations (7).
 
 **The switch.** Admin → Diseño del sitio → Pruebas de Maestría
-(`play.trials`, off by default: `SITE_LOOK_RULES.trials`). While off, only
-someone who may manage flags sees the trials; Yavaya Rush is unchanged
-for everyone.
+(`play.trials`, on by default since the owner asked to publish it). Off,
+only someone who may manage flags sees the trials. The home page carries a
+door to Yavaya Play under its search, and a pill beside "Cerca de mí",
+while the game is open.
 
 **The moveset** (`engine/moves.ts`, pure logic). Run 6.5 m/s; running
 straight builds momentum to a sprint, 9.2 m/s, in about a second; a hard

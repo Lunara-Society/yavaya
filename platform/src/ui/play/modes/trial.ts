@@ -7,6 +7,7 @@ import { blobShadow, followCamera } from '../engine/scenery';
 import { PALETTE, duskLight, duskSky, stoneMaterial } from '../engine/look';
 import { TRIALS, medal, type Hazard, type Kind, type Trial } from '../trials/data';
 import { TrialSim, type SimSolid } from '../trials/sim';
+import type { MoveInput } from '../engine/moves';
 import { writeRecord } from '../trials/records';
 import { el, type PlayContext } from '../context';
 
@@ -351,6 +352,8 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
     panel.hidden = false;
   }
 
+  // For the browser tests and films: the trial as it stands, to read.
+  (host as HTMLElement & { ypSim?: TrialSim }).ypSim = sim;
   for (const h of trial.hints) if (h.z <= trial.start.z + 2) showHint(h.key);
   view.snap();
 
@@ -364,7 +367,9 @@ export function createTrial(play: PlayContext, id: Trial['id'], options: { noChe
         controls.tick(dt);
         return;
       }
-      const e = sim.step(dt, controls, performance.now());
+      // A browser test or a film may steer instead of the thumbs (a page script sets __ypPilot); players never do.
+      const pilot = (window as unknown as { __ypPilot?: MoveInput }).__ypPilot;
+      const e = sim.step(dt, pilot ?? controls, pilot ? sim.time * 1000 : performance.now());
       if (e.jumped) play.cue('door');
       if (e.dodged) play.cue('transition');
       if (e.failed) {
