@@ -103,6 +103,17 @@ describe('Roxi for the owner', () => {
     expect(JSON.parse(await saveContactForOwner(db(), '50588889999', { name: 'Suhey', phone: SUHEY }))).toEqual({ error: 'not_allowed' });
   });
 
+  it("answers the owner even in a chat paused for the team or handed over, which a stranger's would not be", async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.p1', OWNER, 'Jefe', 'Hola Roxi')));
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.p2', '50588889999', 'Alguien', 'Hola')));
+    const later = new Date(Date.now() + 3_600_000);
+    await db().update(whatsappContacts).set({ needsTeam: true, roxiPausedUntil: later });
+    const ask: AskRoxi = async () => 'Hola, jefe.';
+    expect(await answerWithRoxi(db(), OWNER, { ask, fetcher, wait: noWait })).toBe('answered');
+    expect(await answerWithRoxi(db(), '50588889999', { ask, fetcher, wait: noWait })).toBe('paused');
+  });
+
   it('sends a voice note in her voice to someone who wrote in the last 24 hours, and keeps it in the inbox as hers', async () => {
     await switchedOn();
     await ingestDelivery(db(), parseDelivery(inbound('wamid.h1', SUHEY, 'Suhey Martínez', 'Hola')));

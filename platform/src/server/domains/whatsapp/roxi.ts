@@ -250,7 +250,9 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
 
   const [contact] = await executor.select().from(whatsappContacts).where(eq(whatsappContacts.waId, waId)).limit(1);
   if (!contact?.lastInboundAt) return 'off';
-  if (quiet(contact)) return 'paused';
+  // The owner's own chat is never paused for the team (they are the team), nor left handed over.
+  const owner = isOwner(waId);
+  if (!owner && quiet(contact)) return 'paused';
   if (contact.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000 < Date.now()) return 'window_closed';
 
   // Claim the newest message from the person, once, by when Yavaya stored it
@@ -269,7 +271,6 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
     .select({ n: sql<number>`count(*)::int` })
     .from(whatsappMessages)
     .where(and(eq(whatsappMessages.waId, waId), eq(whatsappMessages.byRoxi, true), gte(whatsappMessages.sentAt, new Date(Date.now() - 3_600_000))));
-  const owner = isOwner(waId);
   if ((recent?.n ?? 0) >= (owner ? WHATSAPP_RULES.ownerMaxAnswersPerHour : WHATSAPP_RULES.roxiMaxAnswersPerHour)) return 'limit';
 
   const rows = (
@@ -309,7 +310,7 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
 
   // Someone on the team may have stepped in while she was thinking.
   const [now] = await executor.select().from(whatsappContacts).where(eq(whatsappContacts.waId, waId)).limit(1);
-  if (!now || quiet(now)) return 'paused';
+  if (!now || (!owner && quiet(now))) return 'paused';
 
   let waMessageId: string | null = null;
   if (text) {

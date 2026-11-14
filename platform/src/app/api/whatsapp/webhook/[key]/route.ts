@@ -53,7 +53,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ key
           return false;
         });
         if (linked) continue;
-        await answerWithRoxi(db(), waId).catch((error: unknown) => console.error('whatsapp.roxi', error instanceof Error ? error.message : 'failed'));
+        // What she did, without who or what was said: so "nothing happened" can be read in the logs.
+        const outcome = await answerWithRoxi(db(), waId).catch((error: unknown) => {
+          console.error('whatsapp.roxi', error instanceof Error ? error.message : 'failed');
+          return 'error';
+        });
+        console.info(`whatsapp.roxi outcome=${outcome}`);
       }
     });
   }
