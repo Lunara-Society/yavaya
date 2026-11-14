@@ -88,11 +88,11 @@ export type Voice = { audio: Buffer; mime: 'audio/ogg' | 'audio/mpeg' };
  * shows as a voice note; if what comes back is not an Ogg file, MP3, which it
  * shows as an audio message.
  */
-export async function speak(text: string, fetcher: typeof fetch = fetch): Promise<Voice | null> {
+export async function speak(text: string, language: 'es' | 'en', fetcher: typeof fetch = fetch): Promise<Voice | null> {
   const key = serverEnv().ELEVENLABS_API_KEY;
   if (!key) return null;
   const ask = async (format: string) => {
-    const response = await fetcher(`https://api.elevenlabs.io/v1/text-to-speech/${WHATSAPP_RULES.roxiVoiceId}?output_format=${format}`, {
+    const response = await fetcher(`https://api.elevenlabs.io/v1/text-to-speech/${WHATSAPP_RULES.roxiVoices[language]}?output_format=${format}`, {
       method: 'POST',
       headers: { 'xi-api-key': key, 'content-type': 'application/json', accept: 'audio/*' },
       body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }),
@@ -165,7 +165,9 @@ export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, p
     .where(and(eq(whatsappMessages.kind, 'audio'), eq(whatsappMessages.byRoxi, true), eq(whatsappMessages.direction, 'out'), gte(whatsappMessages.sentAt, new Date(Date.now() - 3_600_000))));
   if ((recent?.n ?? 0) >= WHATSAPP_RULES.ownerVoiceNotesPerHour) return JSON.stringify({ error: 'limit' });
 
-  const voice = await speak(message, deps.fetcher);
+  // Roxi's voice for the language she speaks in: Spanish unless the note is in English.
+  const language = parameters.language === 'en' ? 'en' : 'es';
+  const voice = await speak(message, language, deps.fetcher);
   if (!voice) return JSON.stringify({ error: 'voice_failed' });
   // Old notes go as new ones are made: WhatsApp fetches a note within moments.
   await executor.delete(whatsappVoiceNotes).where(lt(whatsappVoiceNotes.createdAt, new Date(Date.now() - WHATSAPP_RULES.voiceNoteKeepHours * 3_600_000)));

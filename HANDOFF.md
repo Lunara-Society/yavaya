@@ -35,6 +35,13 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Audit inside the same transaction.
   - Never print secrets.
 
+## Roxi's voices (owner's setup, 14 November)
+- **Spanish: Cristina** ("Roxi Spanish", ElevenLabs voice `1CeqBeXMOqCleeQjfYfO`). **English: Lara** (`vChnJZ1Cu89g2XXumPfT`).
+- Set the same on both agents: the website's "Roxi · Yavaya" (`agent_6601m5ddjn5deqwr34g8zrx41ap4`) and "Roxi · WhatsApp" (`agent_8501m7446b15fcp98e8jwnbqwyv0`). Each has Cristina as its voice (default language Spanish) and Lara in its English language preset.
+- The website starts each conversation in the visitor's language (`ui/roxi/roxi-panel.tsx`), so English visitors hear Lara.
+- WhatsApp voice notes use the same pair by the note's language (`WHATSAPP_RULES.roxiVoices`).
+- If a voice is changed in ElevenLabs, change it in all three places.
+
 ## WhatsApp: team inbox and Roxi (built 7–11 November, live)
 - **Number:** +505 5836 5522, WhatsApp Business app in coexistence with the official API through **Dualhook**.
   - WABA 1585588379886491, phone_number_id 1270050959528964.

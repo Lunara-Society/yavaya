@@ -10,6 +10,7 @@ import { answerWithRoxi, setRoxiWhatsapp, OWNER_TOOLS, type AskRoxi } from '@/se
 import { saveContactForOwner, sendVoiceForOwner, voiceNote } from '@/server/domains/whatsapp/owner';
 import { clearSettingsCache } from '@/server/domains/platform/settings';
 import { resetTransactionalData } from '../helpers/database';
+import { WHATSAPP_RULES } from '@/config/business-rules';
 
 /**
  * Roxi for the owner: a message from one of the owner's numbers gets her as
@@ -123,6 +124,8 @@ describe('Roxi for the owner', () => {
 
     const tts = calls.find((c) => c.url.includes('text-to-speech'))!;
     expect(tts.body).toMatchObject({ text: said, model_id: 'eleven_multilingual_v2' });
+    // Spanish is said in Roxi's Spanish voice (Cristina), as on her agents.
+    expect(tts.url).toContain(`/text-to-speech/${WHATSAPP_RULES.roxiVoices.es}?`);
     const send = calls.find((c) => c.url.endsWith('/messages'))!;
     expect(send.body).toMatchObject({ to: SUHEY, type: 'audio', audio: { voice: true } });
     // WhatsApp fetches the note from a link that only works with its key.
@@ -157,7 +160,9 @@ describe('Roxi for the owner', () => {
     const [contact] = await db().select().from(whatsappContacts).where(eq(whatsappContacts.waId, SUHEY));
     expect(contact?.nicknameSealed).not.toContain('Mi amor');
     speech = Buffer.from('not an ogg file at all, long enough to be taken for audio by the check in speak()');
-    const result = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'mi amor', message: "I'll be home in 20 minutes." }, { fetcher }));
+    const result = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'mi amor', message: "I'll be home in 20 minutes.", language: 'en' }, { fetcher }));
+    // English is said in Roxi's English voice (Lara).
+    expect(calls.filter((c) => c.url.includes('text-to-speech')).every((c) => c.url.includes(`/text-to-speech/${WHATSAPP_RULES.roxiVoices.en}?`))).toBe(true);
     expect(result).toMatchObject({ ok: true, recipient: 'Mi amor' });
     const send = calls.find((c) => c.url.endsWith('/messages'))!;
     expect(send.body).toMatchObject({ type: 'audio' });

@@ -565,14 +565,16 @@ export const WHATSAPP_RULES = {
   /**
    * The owner's own chat with Roxi (WHATSAPP_OWNER_WA_IDS): more answers an
    * hour than a stranger's, at most this many voice notes sent for them an
-   * hour, each at most this many characters, made in this ElevenLabs voice
-   * (Roxi's, as on her agents) and kept this long for WhatsApp to fetch.
-   * Yavaya's own defaults (November 2026).
+   * hour, each at most this many characters, made in Roxi's ElevenLabs
+   * voice for its language and kept this long for WhatsApp to fetch.
+   * Yavaya's own defaults (November 2026), except the voices: the owner's
+   * choice (14 November 2026), the same as on both Roxi agents (website and
+   * WhatsApp): Cristina, "Roxi Spanish", for Spanish; Lara for English.
    */
   ownerMaxAnswersPerHour: 40,
   ownerVoiceNotesPerHour: 20,
   voiceNoteMaxLength: 600,
-  roxiVoiceId: 'EXAVITQu4vr4xnSDxMaL',
+  roxiVoices: { es: '1CeqBeXMOqCleeQjfYfO', en: 'vChnJZ1Cu89g2XXumPfT' },
   voiceNoteKeepHours: 48,
 } as const;
 
