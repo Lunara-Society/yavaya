@@ -140,8 +140,9 @@ two logins, ten seconds after signing in (`src/server/domains/roxi/welcome.ts`):
 - Browsers refuse sound before the visitor has touched the page. The card
   tries to play; if refused it waits with a play button and says a tap is
   needed. The words are always there under "Leer el mensaje".
-- Recorded with the agent's voice ("Sarah", `eleven_v4`) in Spanish and
-  English; the site language picks one. The transcripts are dictionary keys
+- Recorded with Roxi's voices (`eleven_v4`, re-recorded 14 November 2026):
+  Cristina ("Roxi Spanish") in Spanish, Lara in English; the site language
+  picks one. The transcripts are dictionary keys
   (`roxi.welcome.text.*`) and are kept **out** of Roxi's knowledge, so she
   cannot recite them to anyone else.
 - `tests/integration/roxi-welcome.test.ts` covers who hears what, the delay,
@@ -154,7 +155,7 @@ two logins, ten seconds after signing in (`src/server/domains/roxi/welcome.ts`):
 | Agent | `agent_6601m5ddjn5deqwr34g8zrx41ap4` ("Roxi · Yavaya") |
 | Prompt | `docs/roxi/prompt.md` — the copy on the agent must match it |
 | Model | OpenAI's top conversational model, reasoning low; backups from Google, cascading after 6 s |
-| Voice | "Sarah" (premade, multilingual), until a Latin American voice is added — see below |
+| Voice | Cristina ("Roxi Spanish", `1CeqBeXMOqCleeQjfYfO`) by default; Lara (`vChnJZ1Cu89g2XXumPfT`) in the English language preset. The owner's choice (14 November 2026); the same on the WhatsApp agent and in WhatsApp voice notes |
 | Language | Spanish, switching to English when the member speaks it |
 | Photos | file input on: up to 12 per conversation, 6 kept in memory |
 | Length | 10 minutes per conversation |
