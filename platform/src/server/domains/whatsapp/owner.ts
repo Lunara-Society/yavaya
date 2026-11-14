@@ -165,7 +165,7 @@ export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, p
   await executor.delete(whatsappVoiceNotes).where(lt(whatsappVoiceNotes.createdAt, new Date(Date.now() - WHATSAPP_RULES.voiceNoteKeepHours * 3_600_000)));
   const [note] = await executor.insert(whatsappVoiceNotes).values({ waId: person.waId, mime: voice.mime, audio: voice.audio }).returning({ id: whatsappVoiceNotes.id });
   const link = `${serverEnv().APP_URL.replace(/\/$/, '')}/api/whatsapp/voice/${note!.id}?k=${linkKey(note!.id)}`;
-  const waMessageId = await sendAudio(person.waId, link, voice.mime === 'audio/ogg', deps.fetcher);
+  const waMessageId = await sendAudio(person.waId, link, voice.mime === 'audio/ogg', deps.fetcher, voice);
   if (!waMessageId) return JSON.stringify({ error: 'send_failed', recipient: label(person) });
 
   const [current] = keys();

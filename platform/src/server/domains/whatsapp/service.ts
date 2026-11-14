@@ -60,26 +60,51 @@ export async function sendText(waId: string, body: string, fetcher: typeof fetch
   return response.ok && typeof id === 'string' && id.length > 0 ? id : null;
 }
 
+/** Why WhatsApp (or Dualhook) refused a request, for the log: its error code and words, no numbers. */
+async function refusal(step: string, response: Response | null): Promise<void> {
+  if (!response) return console.warn(`whatsapp.audio ${step} no_response`);
+  const body = (await response.clone().json().catch(() => null)) as { error?: { code?: unknown; message?: unknown; error_data?: { details?: unknown } } } | null;
+  const words = [body?.error?.message, body?.error?.error_data?.details].filter((w) => typeof w === 'string').join(' | ');
+  console.warn(`whatsapp.audio ${step} status=${response.status} code=${String(body?.error?.code ?? '')} ${words.replace(/\d{7,}/g, '#').slice(0, 300)}`);
+}
+
 /**
- * Sends one audio message that WhatsApp fetches from `link`, and returns its id,
- * or null when it was not accepted. `voice` asks for it to arrive as a voice note
- * (Ogg Opus only); if that is refused it is sent once more as a plain audio message.
+ * Sends one audio message and returns WhatsApp's id for it, or null when it was
+ * not accepted. First as a link WhatsApp fetches (asking for a voice note when
+ * the audio is Ogg Opus, then plainly); if that is refused, by uploading the
+ * audio to WhatsApp first and sending its media id, the Cloud API's other way.
+ * Each refusal is logged with WhatsApp's reason.
  */
-export async function sendAudio(waId: string, link: string, voice: boolean, fetcher: typeof fetch = fetch): Promise<string | null> {
+export async function sendAudio(waId: string, link: string, voice: boolean, fetcher: typeof fetch = fetch, file?: { audio: Buffer; mime: string }): Promise<string | null> {
   const env = serverEnv();
-  const post = async (asVoice: boolean) => {
+  const auth = { authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}` };
+  const send = async (step: string, audio: Record<string, unknown>) => {
     const response = await fetcher(`${apiBase()}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
       method: 'POST',
-      headers: { authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: waId, type: 'audio', audio: asVoice ? { link, voice: true } : { link } }),
+      headers: { ...auth, 'content-type': 'application/json' },
+      body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: waId, type: 'audio', audio }),
       signal: AbortSignal.timeout(15_000),
     }).catch(() => null);
-    if (!response) return null;
-    const result = (await response.json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null;
+    const result = response ? ((await response.clone().json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null) : null;
     const id = result?.messages?.[0]?.id;
-    return response.ok && typeof id === 'string' && id.length > 0 ? id : null;
+    if (response?.ok && typeof id === 'string' && id.length > 0) return id;
+    await refusal(step, response);
+    return null;
   };
-  return (await post(voice)) ?? (voice ? post(false) : null);
+  const byLink = (voice ? await send('link_voice', { link, voice: true }) : null) ?? (await send('link', { link }));
+  if (byLink || !file) return byLink;
+  // Upload the file to WhatsApp, then send it by its media id.
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append('type', file.mime);
+  form.append('file', new Blob([new Uint8Array(file.audio)], { type: file.mime }), file.mime === 'audio/ogg' ? 'roxi.ogg' : 'roxi.mp3');
+  const uploaded = await fetcher(`${apiBase()}/${env.WHATSAPP_PHONE_NUMBER_ID}/media`, { method: 'POST', headers: auth, body: form, signal: AbortSignal.timeout(30_000) }).catch(() => null);
+  const media = uploaded ? ((await uploaded.clone().json().catch(() => null)) as { id?: string } | null) : null;
+  if (!uploaded?.ok || typeof media?.id !== 'string') {
+    await refusal('upload', uploaded);
+    return null;
+  }
+  return (voice ? await send('media_voice', { id: media.id, voice: true }) : null) ?? (await send('media', { id: media.id }));
 }
 
 export function whatsappAvailability(): { receive: boolean; reply: boolean; missing: string[] } {

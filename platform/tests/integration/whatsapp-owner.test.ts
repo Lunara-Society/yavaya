@@ -163,4 +163,25 @@ describe('Roxi for the owner', () => {
     expect(send.body).toMatchObject({ type: 'audio' });
     expect((send.body!.audio as { voice?: boolean }).voice).toBeUndefined();
   });
+
+  it('uploads the audio and sends it by its media id when WhatsApp refuses the link', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.u1', SUHEY, 'Suhey', 'Hola')));
+    const seen: string[] = [];
+    const picky = (async (url: string, init: RequestInit) => {
+      if (url.includes('text-to-speech')) return new Response(new Uint8Array(OGG), { status: 200 });
+      if (url.endsWith('/media')) {
+        seen.push('upload');
+        expect(init.body).toBeInstanceOf(FormData);
+        return new Response(JSON.stringify({ id: 'media-123' }), { status: 200 });
+      }
+      const body = JSON.parse(String(init.body)) as { audio: { link?: string; id?: string } };
+      seen.push(body.audio.link ? 'link' : `id:${body.audio.id}`);
+      if (body.audio.link) return new Response(JSON.stringify({ error: { code: 100, message: 'Param audio[link] is not supported' } }), { status: 400 });
+      return new Response(JSON.stringify({ messages: [{ id: 'wamid.media.1' }] }), { status: 200 });
+    }) as unknown as typeof fetch;
+    const result = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: 'Hola Suhey' }, { fetcher: picky }));
+    expect(result).toMatchObject({ ok: true });
+    expect(seen).toEqual(['link', 'link', 'upload', 'id:media-123']);
+  });
 });
