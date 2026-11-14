@@ -69,6 +69,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - WhatsApp's rule: only to someone who wrote to Yavaya's number in the last 24 hours (a voice note cannot be a template). Otherwise she says so.
   - Recipients are found by the name the owner gave them ("guarda a Suhey: +505 …", tool `save_contact`) or their WhatsApp profile name, or a number. Two matches: she asks which.
   - The tools (`send_voice_message`, `save_contact`) are refused by the server for any other number, whatever the model is told. The owner's chat is never handed to the team.
+  - Needs the ElevenLabs API key on Railway to have **Text to Speech** allowed (the owner enabled it on 14 Nov; until then every voice note failed with the reason in the log as `elevenlabs.tts …`). First voice note delivered 14 Nov 03:58 UTC. Each costs about one ElevenLabs credit per character (model `eleven_multilingual_v2`).
+  - Logs: `whatsapp.roxi outcome=…` for every message, `elevenlabs.tts …` and `whatsapp.audio …` with the reason when a voice note fails.
   - The audio is Ogg Opus (shown as a voice note) when ElevenLabs returns Ogg, else MP3 (an audio message); WhatsApp fetches it from `/api/whatsapp/voice/<id>?k=…`, kept 48 h. In the inbox it shows as "(nota de voz)" with what she said.
 - **Older tool, `whatsapp-bridge`** (Oct 16): an MCP connector for sending templates and outreach (`tools/whatsapp-bridge`).
   - Dualhook's single webhook now points at yavaya-web, so the bridge **no longer receives** inbound messages. Its reading tools are stale.
