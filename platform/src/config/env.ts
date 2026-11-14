@@ -122,6 +122,13 @@ const serverSchema = z.object({
    * for the inbox button. The button, once used, always wins.
    */
   WHATSAPP_ROXI_DEFAULT: z.enum(['on', 'off']).optional(),
+  /**
+   * The owner's own WhatsApp numbers (digits only, comma-separated). A message
+   * from one of them is the owner: Roxi takes their requests, and may send a
+   * voice note on their behalf (server/domains/whatsapp/owner.ts). Kept here,
+   * not in the code, because a phone number is personal.
+   */
+  WHATSAPP_OWNER_WA_IDS: z.preprocess((value) => (value === '' ? undefined : value), z.string().regex(/^\d{8,15}(,\d{8,15})*$/).optional()),
   /** The text-only ElevenLabs agent that answers on WhatsApp (separate from the site's Roxi). */
   WHATSAPP_ROXI_AGENT_ID: z.preprocess((value) => (value === '' ? undefined : value), z.string().regex(/^agent_[a-z0-9]+$/).optional()),
   // "enabled" once the Google Cloud project behind GOOGLE_CLIENT_ID has the

@@ -14,6 +14,7 @@ import { createTranslator } from '@/i18n';
 import { errors } from '@/server/errors';
 import { sendText, whatsappAvailability } from './service';
 import { whatsappLookup, type Lookup } from './lookup';
+import { isOwner, saveContactForOwner, sendVoiceForOwner } from './owner';
 
 /**
  * Roxi answering on Yavaya's WhatsApp.
@@ -79,7 +80,16 @@ export async function roxiWhatsappSwitch(executor: Executor): Promise<boolean> {
 
 // --- Asking Roxi --------------------------------------------------------------------
 
-export type AskRoxi = (input: { customerName: string; conversation: string; message: string; lookup?: Lookup }) => Promise<string | null>;
+export type AskRoxi = (input: {
+  customerName: string;
+  conversation: string;
+  message: string;
+  lookup?: Lookup;
+  /** The person is the owner (their number is in WHATSAPP_OWNER_WA_IDS): she is told, and has their tools. */
+  owner?: boolean;
+  /** The owner's tools, by the names configured on the agent; absent for everyone else. */
+  ownerTools?: Record<string, Lookup>;
+}) => Promise<string | null>;
 
 /** The little of a WebSocket the conversation needs, so a test can stand in for ElevenLabs. */
 export type RoxiSocket = {
@@ -90,6 +100,8 @@ export type RoxiSocket = {
 
 /** The name of the agent's look-up tool, as configured on the WhatsApp agent at ElevenLabs. */
 export const LOOKUP_TOOL = 'search_yavaya_public';
+/** The owner's tools, as configured on the WhatsApp agent at ElevenLabs (owner.ts answers them). */
+export const OWNER_TOOLS = { voice: 'send_voice_message', save: 'save_contact' } as const;
 
 type AgentEvent = {
   type?: string;
@@ -149,6 +161,8 @@ export function converse(
           customer_name: input.customerName,
           conversation: input.conversation || '(no earlier messages)',
           platform_status: roxiPlatformStatus(createTranslator('es')),
+          // Decided by the number the message came from, never by what it says.
+          is_owner: input.owner ? 'yes' : 'no',
         },
       });
     });
@@ -172,13 +186,14 @@ export function converse(
         if (held) clearTimeout(held);
         held = null;
         const reply = (result: string, isError: boolean) => send({ type: 'client_tool_result', tool_call_id: id, result, is_error: isError });
-        if (call?.tool_name !== LOOKUP_TOOL || !input.lookup) return reply(JSON.stringify({ error: 'unknown_tool' }), true);
+        const name = typeof call?.tool_name === 'string' ? call.tool_name : '';
+        const tool = name === LOOKUP_TOOL ? input.lookup : input.ownerTools?.[name];
+        if (!tool) return reply(JSON.stringify({ error: name in (input.ownerTools ?? {}) || Object.values(OWNER_TOOLS).includes(name as never) ? 'not_allowed' : 'unknown_tool' }), true);
         lookups += 1;
         if (lookups > WHATSAPP_RULES.roxiLookupsPerAnswer) return reply(JSON.stringify({ error: 'too_many_lookups' }), true);
-        const parameters = call.parameters && typeof call.parameters === 'object' ? (call.parameters as Record<string, unknown>) : {};
+        const parameters = call?.parameters && typeof call.parameters === 'object' ? (call.parameters as Record<string, unknown>) : {};
         pending += 1;
-        void input
-          .lookup(parameters)
+        void tool(parameters)
           .catch(() => JSON.stringify({ error: 'lookup_failed' }))
           .then((result) => {
             pending -= 1;
@@ -254,7 +269,8 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
     .select({ n: sql<number>`count(*)::int` })
     .from(whatsappMessages)
     .where(and(eq(whatsappMessages.waId, waId), eq(whatsappMessages.byRoxi, true), gte(whatsappMessages.sentAt, new Date(Date.now() - 3_600_000))));
-  if ((recent?.n ?? 0) >= WHATSAPP_RULES.roxiMaxAnswersPerHour) return 'limit';
+  const owner = isOwner(waId);
+  if ((recent?.n ?? 0) >= (owner ? WHATSAPP_RULES.ownerMaxAnswersPerHour : WHATSAPP_RULES.roxiMaxAnswersPerHour)) return 'limit';
 
   const rows = (
     await executor
@@ -278,9 +294,17 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
     conversation: context.join('\n'),
     message: latest.join('\n'),
     lookup: (parameters) => whatsappLookup(executor, parameters),
+    owner,
+    ownerTools: owner
+      ? {
+          [OWNER_TOOLS.voice]: (parameters) => sendVoiceForOwner(executor, waId, parameters, { fetcher: deps.fetcher }),
+          [OWNER_TOOLS.save]: (parameters) => saveContactForOwner(executor, waId, parameters),
+        }
+      : undefined,
   });
   if (!raw) return 'no_answer';
-  const handover = raw.includes(HANDOVER);
+  // The owner's own chat is never handed to the team: they are the team.
+  const handover = !owner && raw.includes(HANDOVER);
   const text = raw.split(HANDOVER).join('').trim().slice(0, WHATSAPP_RULES.replyMaxLength);
 
   // Someone on the team may have stepped in while she was thinking.

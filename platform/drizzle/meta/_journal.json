@@ -351,6 +351,13 @@
       "when": 1794608165543,
       "tag": "0049_burly_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1794622461900,
+      "tag": "0050_perpetual_preak",
+      "breakpoints": true
     }
   ]
 }

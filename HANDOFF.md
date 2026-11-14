@@ -64,6 +64,12 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Meta health on 11 Nov:**
   - Display name not yet approved and business not verified, so sending is "LIMITED".
   - This affects only conversations Yavaya starts; replies are fine.
+- **Roxi for the owner** (14 Nov): a message from one of the owner's own numbers (`WHATSAPP_OWNER_WA_IDS` on Railway, not in the code) gets her as the owner's assistant (`platform/src/server/domains/whatsapp/owner.ts`).
+  - She can send a **voice note** on the owner's behalf, in Roxi's voice (ElevenLabs), Spanish or English: "manda un audio a Suhey: llego en 20 minutos". It goes from Yavaya's number and says it is Roxi speaking for the owner.
+  - WhatsApp's rule: only to someone who wrote to Yavaya's number in the last 24 hours (a voice note cannot be a template). Otherwise she says so.
+  - Recipients are found by the name the owner gave them ("guarda a Suhey: +505 …", tool `save_contact`) or their WhatsApp profile name, or a number. Two matches: she asks which.
+  - The tools (`send_voice_message`, `save_contact`) are refused by the server for any other number, whatever the model is told. The owner's chat is never handed to the team.
+  - The audio is Ogg Opus (shown as a voice note) when ElevenLabs returns Ogg, else MP3 (an audio message); WhatsApp fetches it from `/api/whatsapp/voice/<id>?k=…`, kept 48 h. In the inbox it shows as "(nota de voz)" with what she said.
 - **Older tool, `whatsapp-bridge`** (Oct 16): an MCP connector for sending templates and outreach (`tools/whatsapp-bridge`).
   - Dualhook's single webhook now points at yavaya-web, so the bridge **no longer receives** inbound messages. Its reading tools are stale.
   - Read conversations in the inbox instead. Its sending may still work with its own `DUALHOOK_API_KEY`.

@@ -16,8 +16,11 @@ const PREVIEW_PARAM = 'key';
  * cookie, and an unreachable probe means the deploy never goes healthy.
  */
 const PREVIEW_EXEMPT = ['/api/health', '/robots.txt', '/sitemap.xml'];
-/** Payment providers' notifications: they cannot hold a cookie either, and carry their own signature. */
-const PREVIEW_EXEMPT_PATTERN = /^\/api\/(payments\/[a-z0-9]+\/notify|whatsapp\/webhook\/[^/]+)$/;
+/**
+ * Payment providers' notifications: they cannot hold a cookie either, and carry their own signature.
+ * Likewise WhatsApp's servers fetching Roxi's voice notes (each link carries its own key).
+ */
+const PREVIEW_EXEMPT_PATTERN = /^\/api\/(payments\/[a-z0-9]+\/notify|whatsapp\/webhook\/[^/]+|whatsapp\/voice\/[0-9a-f-]+)$/;
 
 export function middleware(request: NextRequest): NextResponse {
   const www = wwwToApex(request);

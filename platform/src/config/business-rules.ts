@@ -562,6 +562,18 @@ export const WHATSAPP_RULES = {
   roxiMaxAnswersPerHour: 6,
   roxiSettleMs: 1500,
   roxiLookupsPerAnswer: 3,
+  /**
+   * The owner's own chat with Roxi (WHATSAPP_OWNER_WA_IDS): more answers an
+   * hour than a stranger's, at most this many voice notes sent for them an
+   * hour, each at most this many characters, made in this ElevenLabs voice
+   * (Roxi's, as on her agents) and kept this long for WhatsApp to fetch.
+   * Yavaya's own defaults (November 2026).
+   */
+  ownerMaxAnswersPerHour: 40,
+  ownerVoiceNotesPerHour: 20,
+  voiceNoteMaxLength: 600,
+  roxiVoiceId: 'EXAVITQu4vr4xnSDxMaL',
+  voiceNoteKeepHours: 48,
 } as const;
 
 /**

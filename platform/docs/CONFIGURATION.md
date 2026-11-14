@@ -1614,6 +1614,7 @@ Railway variables (website only, not the scheduler):
 | `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` | replying from the inbox, and Roxi | through Dualhook: the connection's `dh_live_` key and its phone number id (1270050959528964); without them the inbox says to reply from the phone, and shows no reply box |
 | `WHATSAPP_API_BASE` | replying through Dualhook | `https://api.dualhook.com/v25.0` (Dualhook's Runtime API, same requests as Meta's Graph API); default is Meta's Graph API. Only those two hosts are accepted |
 | `WHATSAPP_ROXI_DEFAULT` | Roxi on WhatsApp | `on` (set 11 November 2026, owner's request): she answers until someone turns her off in the inbox; once the inbox button is used, it wins |
+| `WHATSAPP_OWNER_WA_IDS` | Roxi for the owner | The owner's own WhatsApp numbers, digits only, comma-separated (set 14 November 2026, owner's request). Unset: no one is the owner. Voice notes per hour, length and Roxi's voice are in `WHATSAPP_RULES` (ours) |
 | `WHATSAPP_ROXI_AGENT_ID` | Roxi on WhatsApp | the text-only ElevenLabs agent "Roxi · WhatsApp", `agent_8501m7446b15fcp98e8jwnbqwyv0`; also needs `ELEVENLABS_API_KEY` (already set for the site's Roxi) |
 
 In Dualhook, a connection with:

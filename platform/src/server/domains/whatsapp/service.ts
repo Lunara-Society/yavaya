@@ -60,6 +60,28 @@ export async function sendText(waId: string, body: string, fetcher: typeof fetch
   return response.ok && typeof id === 'string' && id.length > 0 ? id : null;
 }
 
+/**
+ * Sends one audio message that WhatsApp fetches from `link`, and returns its id,
+ * or null when it was not accepted. `voice` asks for it to arrive as a voice note
+ * (Ogg Opus only); if that is refused it is sent once more as a plain audio message.
+ */
+export async function sendAudio(waId: string, link: string, voice: boolean, fetcher: typeof fetch = fetch): Promise<string | null> {
+  const env = serverEnv();
+  const post = async (asVoice: boolean) => {
+    const response = await fetcher(`${apiBase()}/${env.WHATSAPP_PHONE_NUMBER_ID}/messages`, {
+      method: 'POST',
+      headers: { authorization: `Bearer ${env.WHATSAPP_ACCESS_TOKEN}`, 'content-type': 'application/json' },
+      body: JSON.stringify({ messaging_product: 'whatsapp', recipient_type: 'individual', to: waId, type: 'audio', audio: asVoice ? { link, voice: true } : { link } }),
+      signal: AbortSignal.timeout(15_000),
+    }).catch(() => null);
+    if (!response) return null;
+    const result = (await response.json().catch(() => null)) as { messages?: Array<{ id?: string }> } | null;
+    const id = result?.messages?.[0]?.id;
+    return response.ok && typeof id === 'string' && id.length > 0 ? id : null;
+  };
+  return (await post(voice)) ?? (voice ? post(false) : null);
+}
+
 export function whatsappAvailability(): { receive: boolean; reply: boolean; missing: string[] } {
   const env = serverEnv();
   const missing = [

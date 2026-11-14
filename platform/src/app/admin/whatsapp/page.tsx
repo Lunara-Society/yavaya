@@ -93,7 +93,8 @@ export default async function WhatsappInbox({ searchParams }: { searchParams: Pr
             <ul className="wa-thread">
               {selected.messages.map((m) => (
                 <li key={m.id} className={m.direction === 'out' ? 'wa-msg wa-out' : 'wa-msg wa-in'}>
-                  <p>{m.text ?? t(`whatsapp.kind.${m.kind}` as MessageKey)}</p>
+                  {/* A voice note Roxi sent shows what she said, marked as a voice note. */}
+                  <p>{m.text ? (m.kind === 'audio' ? `${t('whatsapp.kind.audio')} ${m.text}` : m.text) : t(`whatsapp.kind.${m.kind}` as MessageKey)}</p>
                   <p className="hint muted">
                     {when.format(m.sentAt)}
                     {m.direction === 'out' ? ` · ${t(m.byRoxi ? 'whatsapp.roxi.by_roxi' : m.fromInbox ? 'whatsapp.inbox.from_inbox' : 'whatsapp.inbox.from_phone')}` : ''}

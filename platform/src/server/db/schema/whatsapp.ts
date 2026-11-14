@@ -1,4 +1,4 @@
-import { boolean, index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, customType, index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 
 /**
@@ -29,6 +29,8 @@ export const whatsappContacts = pgTable(
     roxiPausedUntil: timestamp('roxi_paused_until', { withTimezone: true }),
     /** Roxi handed this conversation to the team; she stays out of it until someone resumes her. */
     needsTeam: boolean('needs_team').notNull().default(false),
+    /** A name the owner gave this person for Roxi ("Suhey"), sealed: what the owner calls them when asking her to send something. */
+    nicknameSealed: text('nickname_sealed'),
     /** The newest message from the person that Roxi has taken to answer (so it is answered once). */
     roxiAnsweredThrough: timestamp('roxi_answered_through', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -62,3 +64,19 @@ export const whatsappMessages = pgTable(
   },
   (table) => [index('whatsapp_messages_contact_idx').on(table.waId, table.sentAt)],
 );
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
+
+/**
+ * A voice note Roxi made for the owner (server/domains/whatsapp/owner.ts),
+ * kept only until WhatsApp has fetched it from /api/whatsapp/voice/<id>:
+ * Meta downloads the audio from a link rather than taking it in the request.
+ * Old ones are deleted as new ones are made.
+ */
+export const whatsappVoiceNotes = pgTable('whatsapp_voice_notes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  waId: text('wa_id').notNull(),
+  mime: text('mime').notNull(),
+  audio: bytea('audio').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});

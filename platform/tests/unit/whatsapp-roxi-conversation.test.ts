@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { converse, LOOKUP_TOOL, type RoxiSocket } from '@/server/domains/whatsapp/roxi';
+import { converse, LOOKUP_TOOL, OWNER_TOOLS, type RoxiSocket } from '@/server/domains/whatsapp/roxi';
 import { WHATSAPP_RULES } from '@/config/business-rules';
 
 /** A stand-in for ElevenLabs' socket: the test plays the agent's side. */
@@ -75,6 +75,31 @@ describe('one exchange with Roxi on WhatsApp', () => {
     expect(s.sent.at(-1)).toMatchObject({ type: 'client_tool_result', tool_call_id: 'call-1', is_error: true });
     s.agent(says('No pude buscar ahora.'));
     expect(await answer).toBe('No pude buscar ahora.');
+  });
+
+  it("tells her who is the owner, and runs the owner's tools only in the owner's conversation", async () => {
+    const stranger = fakeSocket();
+    const answer = converse(stranger.socket, input, fast);
+    stranger.open();
+    expect(stranger.sent[0]).toMatchObject({ dynamic_variables: { is_owner: 'no' } });
+    stranger.agent({ type: 'conversation_initiation_metadata' });
+    stranger.agent(calls('call-1', OWNER_TOOLS.voice, { recipient: 'Suhey', message: 'Hola' }));
+    expect(stranger.sent.at(-1)).toMatchObject({ tool_call_id: 'call-1', is_error: true, result: JSON.stringify({ error: 'not_allowed' }) });
+    stranger.agent(says('No puedo hacer eso.'));
+    expect(await answer).toBe('No puedo hacer eso.');
+
+    const owner = fakeSocket();
+    const sent: Array<Record<string, unknown>> = [];
+    const ownerTools = { [OWNER_TOOLS.voice]: async (p: Record<string, unknown>) => (sent.push(p), JSON.stringify({ ok: true })) };
+    const done = converse(owner.socket, { ...input, owner: true, ownerTools }, fast);
+    owner.open();
+    expect(owner.sent[0]).toMatchObject({ dynamic_variables: { is_owner: 'yes' } });
+    owner.agent({ type: 'conversation_initiation_metadata' });
+    owner.agent(calls('call-2', OWNER_TOOLS.voice, { recipient: 'Suhey', message: 'Hola' }));
+    await tick(20);
+    expect(sent).toEqual([{ recipient: 'Suhey', message: 'Hola' }]);
+    owner.agent(says('Listo, se lo mandé.'));
+    expect(await done).toBe('Listo, se lo mandé.');
   });
 
   it('stops looking up after the configured number of times', async () => {
