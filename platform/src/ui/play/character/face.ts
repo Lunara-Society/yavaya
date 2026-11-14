@@ -16,6 +16,26 @@ export const FACE_SHELL = { phiLength: 1.8, thetaStart: 0.75, thetaLength: 1.35 
 
 export type FaceState = 'normal' | 'blink' | 'happy';
 
+/** Canvas height (0…256 down the face picture) to the angle down the head sphere, as the face shell maps it. */
+export function faceTheta(y: number): number {
+  return FACE_SHELL.thetaStart + (FACE_SHELL.thetaLength * y) / 256;
+}
+
+/*
+ * Where the eyes and the top of the mouth are in a face's picture, so what
+ * is worn over a face (a beard, face paint) can be placed on that face
+ * rather than at one fixed height. The owner's painted faces are drawn
+ * larger than the built-in ones: eyes higher, mouth lower.
+ */
+const PAINTED = { eyeY: 138, mouthTop: 222 };
+export function faceLayout(face: string, painted: boolean): { eyeY: number; mouthTop: number } {
+  if (painted) return PAINTED;
+  const style = STYLES[face] ?? STYLES.alegre!;
+  // The built-in mouth sits right under the nose: a beard's moustache there would hide the nose, so it
+  // lies a little lower, over the top of the mouth, which is drawn over it.
+  return { eyeY: style.eyeY, mouthTop: style.eyeY + 56 };
+}
+
 type Style = {
   /** Eye height in the picture, and their spread from the middle. */
   eyeY: number;
@@ -214,16 +234,16 @@ export function loadPicture(url: string): Promise<HTMLImageElement> {
  *
  * A painted face (`faceImage`, the owner's artwork with its skin taken out)
  * is laid over the character's own skin; it blinks by a lid of that skin
- * drawn over each eye. Face paint (`paintImage`) goes over either kind.
+ * drawn over each eye. Face paint and beards are layers of their own, under
+ * the face (character/build.ts), so the eyes and the mouth stay on top.
  * Pictures arrive after the character is built: until then the face is the
  * plain drawn one (or empty), and each picture is drawn in when it lands.
  */
-export function faceTextures(face: string, browColor: number, options: { skin?: number; faceImage?: string | null; paintImage?: string | null } = {}): Record<FaceState, THREE.CanvasTexture> {
+export function faceTextures(face: string, browColor: number, options: { skin?: number; faceImage?: string | null } = {}): Record<FaceState, THREE.CanvasTexture> {
   const style = STYLES[face] ?? STYLES.alegre!;
   const brow = `#${new THREE.Color(browColor).multiplyScalar(0.85).getHexString()}`;
   const skin = `#${new THREE.Color(options.skin ?? 0xc68a5f).getHexString()}`;
   let painted: HTMLImageElement | null = null;
-  let paint: HTMLImageElement | null = null;
   const draw = (context: CanvasRenderingContext2D, state: FaceState) => {
     if (!options.faceImage) drawFace(context, style, state, brow);
     else {
@@ -235,18 +255,17 @@ export function faceTextures(face: string, browColor: number, options: { skin?: 
           for (const x of [76, 180]) {
             context.fillStyle = skin;
             context.beginPath();
-            context.ellipse(x, 150, 30, 17, 0, 0, Math.PI * 2);
+            context.ellipse(x, PAINTED.eyeY, 30, 17, 0, 0, Math.PI * 2);
             context.fill();
             context.strokeStyle = INK;
             context.lineWidth = 4;
             context.beginPath();
-            context.arc(x, 142, 22, Math.PI * 0.2, Math.PI * 0.8);
+            context.arc(x, PAINTED.eyeY - 8, 22, Math.PI * 0.2, Math.PI * 0.8);
             context.stroke();
           }
         }
       }
     }
-    if (paint) context.drawImage(paint, 0, 0, 256, 256);
   };
   const made: Array<[FaceState, CanvasRenderingContext2D | null, THREE.CanvasTexture]> = [];
   const make = (state: FaceState) => {
@@ -270,6 +289,5 @@ export function faceTextures(face: string, browColor: number, options: { skin?: 
     }
   };
   if (options.faceImage) void loadPicture(options.faceImage).then((image) => ((painted = image), redraw())).catch(() => undefined);
-  if (options.paintImage) void loadPicture(options.paintImage).then((image) => ((paint = image), redraw())).catch(() => undefined);
   return textures;
 }

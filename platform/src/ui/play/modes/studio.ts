@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookImage, lookOption, unlockOf, type Look, type LookPart } from '@/config/play-looks';
+import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookImage, lookOption, unlockOf, withoutClash, type Look, type LookPart } from '@/config/play-looks';
 import { PLAY_RULES } from '@/config/business-rules';
 import { buildCharacter, type Emote } from '../character/build';
 import { disposeScene, type Mode } from '../engine/runtime';
@@ -152,7 +152,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     );
   };
   const choose = (which: LookPart, id: string) => {
-    look = { ...look, [which]: id };
+    look = withoutClash({ ...look, [which]: id }, which);
     hero.dress(look);
     renderOptions();
     note.textContent = unlockOf(which, id) && !owned().has(`${which}:${id}`) ? howToGet(which, id) : '';
@@ -187,7 +187,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
       const choices = LOOK_OPTIONS[each].filter((o) => !o.unlock || have.has(`${each}:${o.id}`));
       next[each] = choices[Math.floor(Math.random() * choices.length)]!.id;
     }
-    look = next;
+    look = withoutClash(next, 'glasses');
     hero.dress(look);
     renderOptions();
     play2('saludo');

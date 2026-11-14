@@ -153,9 +153,10 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
   print: [
     { id: 'ninguno' },
     ...['lobo', 'atardecer', 'mariposa', 'ola'].map((id) => ({ id, image: true })),
-    { id: 'dragon', image: true, unlock: 'proeza_ruta' as const },
+    // The dragon, lightning, tribal and claw prints were taken out (14 November 2026): broken cut-outs, and
+    // the claw read as blood. The Ruta proeza gives the tree instead; no one could have paid for the others.
+    { id: 'arbol', image: true, unlock: 'proeza_ruta' as const },
     { id: 'lobo_dorado', image: true, unlock: 'proeza_total' as const },
-    ...['relampago', 'arbol', 'tribal', 'zarpazo'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
   ],
   bottom: [
     { id: 'jeans', color: 0x2b3a67, accent: 0x3c4f86 },
@@ -248,6 +249,17 @@ export function unlockOf(part: LookPart, id: string): Unlock | undefined {
 /** Every option that has to be earned, as `part:id`. */
 export function earnedItems(): Array<{ item: string; part: LookPart; id: string; unlock: Unlock }> {
   return LOOK_PARTS.flatMap((part) => LOOK_OPTIONS[part].filter((o) => o.unlock).map((o) => ({ item: `${part}:${o.id}`, part, id: o.id, unlock: o.unlock! })));
+}
+
+/**
+ * A look with nothing worn twice in one place: the sunglasses accessory and
+ * a pair of glasses both sit on the eyes, so putting on one takes off the
+ * other. `changed` is the part just chosen (it wins).
+ */
+export function withoutClash(look: Look, changed: LookPart): Look {
+  if (changed === 'glasses' && look.glasses !== DEFAULT_LOOK.glasses && look.accessory === 'lentes') return { ...look, accessory: DEFAULT_LOOK.accessory };
+  if (changed === 'accessory' && look.accessory === 'lentes' && look.glasses !== DEFAULT_LOOK.glasses) return { ...look, glasses: DEFAULT_LOOK.glasses };
+  return look;
 }
 
 /** The parts of a look the player has to own, as `part:id`. */

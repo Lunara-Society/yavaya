@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { DEFAULT_LOOK, lookImage, lookOption, shapesOf, type Look } from '@/config/play-looks';
-import { FACE_SHELL, faceTextures, type FaceState } from './face';
+import { FACE_SHELL, faceLayout, faceTextures, faceTheta, type FaceState } from './face';
 
 /**
  * The Yavaya Play character (docs/PLAY.md): one model for every game, built
@@ -19,6 +19,14 @@ import { FACE_SHELL, faceTextures, type FaceState } from './face';
  * and fall, a squash on landing, a cheer and two emotes. Every joint eases
  * toward where it should be, so one pose flows into the next.
  */
+
+/**
+ * How the owner's beard and paint pictures are laid out (public/play/looks):
+ * a beard picture's moustache ends, and its mouth gap begins, `mouthY` down
+ * its 256 rows; a paint picture is drawn round eyes `PAINT_EYE_Y` down.
+ */
+const BEARD = { phiLength: 2.2, thetaLength: 1.15, mouthY: 74 };
+const PAINT_EYE_Y = 138;
 
 /** Pictures from /play/looks, loaded once per page and shared by every character that wears them. */
 const pictureCache = new Map<string, THREE.Texture>();
@@ -256,23 +264,49 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
     wear(skull);
     for (const side of [1, -1]) wear(shape(ball(0.05, 10, 8), skin, head, [side * 0.205, 0.0, 0.0]));
     wear(shape(ball(0.022, 10, 8), new THREE.Color(skin).multiplyScalar(0.97).getHex(), head, [0, -0.04, 0.21], false));
-    faces = faceTextures(given.face, hairColor, { skin, faceImage: lookImage('face', given.face), paintImage: lookImage('paint', given.paint) });
+    /*
+     * The face in layers, back to front: skin, face paint, beard, then the
+     * face itself (eyes, brows, mouth), then glasses. The eyes and the mouth
+     * are always on top, so paint across the eyes leaves them showing and a
+     * beard frames the mouth instead of covering it. None of the layers write
+     * depth; the order is theirs (renderOrder), the skull hides what is behind.
+     */
+    const faceImage = lookImage('face', given.face);
+    const layout = faceLayout(given.face, Boolean(faceImage));
+    faces = faceTextures(given.face, hairColor, { skin, faceImage });
     faceMaterial = new THREE.MeshBasicMaterial({ map: faces[face], transparent: true, depthWrite: false });
     const shell = new THREE.Mesh(
       keep(new THREE.SphereGeometry(0.2175, 28, 20, Math.PI / 2 - FACE_SHELL.phiLength / 2, FACE_SHELL.phiLength, FACE_SHELL.thetaStart, FACE_SHELL.thetaLength)),
       faceMaterial,
     );
     shell.scale.set(1, 1.05, 0.98);
-    shell.renderOrder = 2;
+    shell.renderOrder = 4;
     head.add(shell);
     wear(shell);
 
-    // A beard: a picture on a shell over the lower face (mouth to under the chin), below the face's own.
+    // Face paint: the owner's pictures are drawn round eyes at PAINT_EYE_Y; moved to this face's eyes.
+    const paintUrl = lookImage('paint', given.paint);
+    if (paintUrl) {
+      const paintMaterial = new THREE.MeshBasicMaterial({ map: picture(paintUrl), transparent: true, depthWrite: false });
+      owned.push(paintMaterial);
+      const shift = faceTheta(layout.eyeY) - faceTheta(PAINT_EYE_Y);
+      const layer = new THREE.Mesh(
+        keep(new THREE.SphereGeometry(0.2172, 28, 20, Math.PI / 2 - FACE_SHELL.phiLength / 2, FACE_SHELL.phiLength, FACE_SHELL.thetaStart + shift, FACE_SHELL.thetaLength)),
+        paintMaterial,
+      );
+      layer.scale.set(1, 1.05, 0.98);
+      layer.renderOrder = 2;
+      head.add(layer);
+      wear(layer);
+    }
+
+    // A beard: a picture on a shell over the lower face, its moustache just above this face's mouth.
     const beardUrl = lookImage('beard', given.beard);
     if (beardUrl) {
       const beardMaterial = new THREE.MeshStandardMaterial({ map: picture(beardUrl), transparent: true, depthWrite: false, roughness: 0.9 });
       owned.push(beardMaterial);
-      const beard = new THREE.Mesh(keep(new THREE.SphereGeometry(0.2205, 28, 14, Math.PI / 2 - 1.1, 2.2, 1.6, 1.15)), beardMaterial);
+      const start = faceTheta(layout.mouthTop) - (BEARD.thetaLength * BEARD.mouthY) / 256;
+      const beard = new THREE.Mesh(keep(new THREE.SphereGeometry(0.2205, 28, 14, Math.PI / 2 - BEARD.phiLength / 2, BEARD.phiLength, start, BEARD.thetaLength)), beardMaterial);
       beard.scale.set(1, 1.05, 0.99);
       beard.renderOrder = 3;
       head.add(beard);
@@ -285,7 +319,7 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
       owned.push(glassesMaterial);
       const lens = new THREE.Mesh(keep(new THREE.CylinderGeometry(0.235, 0.235, 0.09, 24, 1, true, -0.75, 1.5)), glassesMaterial);
       lens.position.set(0, 0.005, -0.012);
-      lens.renderOrder = 4;
+      lens.renderOrder = 5;
       head.add(lens);
       wear(lens);
     }
@@ -440,8 +474,12 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
         on(ball(0.022, 8, 6), accessory.accent!, head, [0, 0.25, -0.02], undefined, false);
         break;
       case 'lentes':
-        for (const side of [1, -1]) on(keep(new THREE.CylinderGeometry(0.056, 0.056, 0.015, 18)), accessory.color!, head, [side * 0.085, 0.0, 0.215], [Math.PI / 2, 0, 0]);
-        on(keep(new THREE.BoxGeometry(0.06, 0.012, 0.012)), accessory.color!, head, [0, 0.015, 0.228], undefined, false);
+        // Round lenses on the eyes (about 0.072 either side, just above the middle of the head), not over the brows.
+        // Never with a pair of glasses: they would sit in the same place (an older saved look may have both).
+        if (glassesUrl) break;
+        // Each lens turned a little outward, with the face's curve.
+        for (const side of [1, -1]) on(keep(new THREE.CylinderGeometry(0.044, 0.044, 0.012, 18)), accessory.color!, head, [side * 0.074, 0.01, 0.212], [Math.PI / 2, 0, -side * 0.33]);
+        on(keep(new THREE.BoxGeometry(0.05, 0.01, 0.01)), accessory.color!, head, [0, 0.016, 0.226], undefined, false);
         break;
       case 'sombrero':
         on(keep(new THREE.CylinderGeometry(0.36, 0.37, 0.022, 28)), accessory.color!, head, [0, 0.14, 0], [-0.08, 0, 0]);

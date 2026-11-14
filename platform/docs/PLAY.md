@@ -205,7 +205,7 @@ the script and the cut-outs are not in the repository).
   of the eyes; a print a patch of the torso's own shape. They are pictures,
   not modelled 3D, so seen from the side they are flat; from the front, as
   in the studio, they read as the artwork.
-- **Tiers:** about half free (31), a fifth won (11), a third exclusive (19 for
+- **Tiers:** about half free (31), a fifth won (11), the rest exclusive (15 for
   gems). All-ages: revealing outfits, blood, skulls and copied logos from
   the sheets were left out.
 - **Proezas:** a course with no fall, no checkpoint, and a time at or under
@@ -224,6 +224,26 @@ the script and the cut-outs are not in the repository).
   picture into a 3D piece needs paid image-to-3D generation (about 35
   credits an item on the connected service; the account had 2), and a
   garment that bends with the body cannot come from one picture at all.
+
+### Fitting them to the face (14 November 2026)
+
+The owner's screenshots showed the first batch close but not right: beards
+on the teeth, paint over the eyes, two pairs of glasses at once. Now:
+
+- **Layers** (`character/build.ts`), back to front: skin, face paint, beard,
+  the face (eyes, brows, mouth), glasses. The eyes and the mouth are always
+  on top, so paint across the eyes leaves them showing and a beard frames
+  the mouth. Each is a shell of its own; their order is `renderOrder`.
+- **Placed per face** (`faceLayout` in `character/face.ts`): a beard's
+  moustache goes just above that face's mouth (a painted face's mouth is
+  lower than a built-in one's), and paint is moved to that face's eyes.
+- **Pictures cleaned:** the skin, pale chin rim and lip lines left in the
+  beards from the artwork, stray specks on two paints, and shirt shards on
+  the prints. Three prints were broken cut-outs (dragon, lightning, tribal)
+  and the claw print read as blood: taken out; the Ruta proeza now gives the
+  tree print (gems could not yet be bought, so no one had paid for them).
+- **Sunglasses vs glasses:** choosing one takes off the other
+  (`withoutClash`); an older saved look with both shows only the glasses.
 
 ## The Vault (13 November 2026)
 
