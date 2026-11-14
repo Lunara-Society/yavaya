@@ -225,6 +225,20 @@ the script and the cut-outs are not in the repository).
   credits an item on the connected service; the account had 2), and a
   garment that bends with the body cannot come from one picture at all.
 
+### The shop as a boutique (14 November 2026)
+
+The owner chose a try-on boutique (`modes/shop.ts`): the character on a lit
+podium in the free part of the screen (above the panel on a phone, left of
+it on a wide screen or a phone showing the "desktop site"), turning slowly
+and by finger. Tapping a look puts it on at once, free; the camera comes in
+close for looks worn on the head and the character turns to show it. One
+button says what can be done: buy (coins or gems), how many are missing,
+how it is won, get gems (the packs, over the boutique), or wear it, which
+keeps the look only if it is owned. Tabs by kind (clothes, face, hair,
+accessories) and the achievements; a tile leads to the Vault. It replaced a
+sheet that ran off the side of a phone in "desktop site" mode, with a gate
+that turned into a black block as the camera circled.
+
 ### Fitting them to the face (14 November 2026)
 
 The owner's screenshots showed the first batch close but not right: beards

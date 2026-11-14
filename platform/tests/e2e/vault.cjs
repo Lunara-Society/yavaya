@@ -3,8 +3,8 @@
  * the Plaza; every product carries its status; a piece not usable yet shows
  * the disclosure and cannot be bought while the owner's switch is off; a
  * wearable outfit is bought for gems, numbered, and appears in the
- * inventory; nothing is wider than the screen; and the admin page lists the
- * products.
+ * inventory; nothing is wider than the screen; the shop tries a look on,
+ * sells it for gems and puts it on; and the admin page lists the products.
  *
  *   npx tsx --conditions=react-server tests/e2e/vault-setup.ts > /tmp/vault.json
  *   VAULT_SETUP=/tmp/vault.json node tests/e2e/vault.cjs [base url]
@@ -71,6 +71,22 @@ const fits = (page) => page.evaluate(() => document.documentElement.scrollWidth 
   await page.click('.yp-vault .yp-tab >> nth=1');
   check((await page.$$('.yp-vault-body .yp-card')).length === 1, 'and it is in the inventory');
   await shot(page, 'vault-inventory');
+
+  // The shop: try a look on, buy it with gems, wear it.
+  await page.goto(`${BASE}/play`, { timeout: 120_000 });
+  await seen(page, '.yp-plaza');
+  await page.click('.yp-sheet-foot .yp-ghost >> nth=0');
+  check(await seen(page, '.yp-bq-grid .yp-bq-tile'), 'the shop opens as a boutique');
+  check(await page.evaluate(() => { const r = document.querySelector('.yp-bq-panel').getBoundingClientRect(); return r.left >= 0 && r.right <= window.innerWidth + 1; }), 'its panel fits the screen');
+  await page.click('.yp-bq-tile[data-item^="paint:"] >> nth=0');
+  check((await page.$$('.yp-bq-tile[data-item^="paint:"][aria-pressed="true"]')).length === 1, 'a look tapped is chosen to try on');
+  const buyLabel = (await page.textContent('.yp-bq-act')) ?? '';
+  check(buyLabel.includes('◆'), `with a buy button in gems (${buyLabel})`);
+  await page.click('.yp-bq-act');
+  check(await page.waitForFunction(() => document.querySelector('.yp-bq-act')?.textContent?.includes('Ponérmelo'), null, { timeout: 15_000 }).then(() => true, () => false), 'it is bought, and can be worn');
+  await page.click('.yp-bq-act');
+  check(await page.waitForFunction(() => document.querySelector('.yp-bq-act')?.textContent?.includes('puesto'), null, { timeout: 15_000 }).then(() => true, () => false), 'and is worn');
+  await shot(page, 'shop-worn');
 
   await page.goto(`${BASE}/admin/vault`, { timeout: 120_000 });
   check((await page.$$('.va-product')).length > 60, 'the admin page lists the products');
