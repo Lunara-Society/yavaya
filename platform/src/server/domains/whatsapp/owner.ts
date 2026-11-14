@@ -98,7 +98,13 @@ export async function speak(text: string, fetcher: typeof fetch = fetch): Promis
       body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }),
       signal: AbortSignal.timeout(30_000),
     }).catch(() => null);
-    if (!response?.ok) return null;
+    if (!response?.ok) {
+      // ElevenLabs says why (missing permission, no credits, unknown voice…): logged, never the key.
+      const body = response ? ((await response.json().catch(() => null)) as { detail?: { status?: unknown; message?: unknown } | string } | null) : null;
+      const detail = typeof body?.detail === 'string' ? body.detail : [body?.detail?.status, body?.detail?.message].filter((w) => typeof w === 'string').join(': ');
+      console.warn(`elevenlabs.tts format=${format} status=${response?.status ?? 'no_response'} ${String(detail).slice(0, 300)}`);
+      return null;
+    }
     const audio = Buffer.from(await response.arrayBuffer());
     return audio.length > 64 ? audio : null;
   };
