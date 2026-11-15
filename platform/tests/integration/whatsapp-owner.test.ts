@@ -123,7 +123,7 @@ describe('Roxi for the owner', () => {
     expect(result).toEqual({ ok: true, recipient: 'Suhey Martínez', said });
 
     const tts = calls.find((c) => c.url.includes('text-to-speech'))!;
-    expect(tts.body).toMatchObject({ text: said, model_id: 'eleven_multilingual_v2' });
+    expect(tts.body).toMatchObject({ text: said, model_id: 'eleven_v4' });
     // Spanish is said in Roxi's Spanish voice (Cristina), as on her agents.
     expect(tts.url).toContain(`/text-to-speech/${WHATSAPP_RULES.roxiVoices.es}?`);
     const send = calls.find((c) => c.url.endsWith('/messages'))!;

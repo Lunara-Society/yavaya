@@ -41,6 +41,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - The website starts each conversation in the visitor's language (`ui/roxi/roxi-panel.tsx`), so English visitors hear Lara.
 - WhatsApp voice notes use the same pair by the note's language (`WHATSAPP_RULES.roxiVoices`).
 - Roxi's private welcome notes (`platform/src/server/assets/roxi-welcome/`, for the community manager and the owner) were re-recorded in these voices (14 Nov); the old voice, Sarah, is no longer used anywhere.
+- **Sounding human (15 Nov, owner: "extremely robotic"):** the website agent speaks with `eleven_v3_conversational`, expressive mode on, stability 0.35, and suggested delivery cues (warmly, excited, curious, laughs softly, reassuring, thoughtful, short pause). Her prompt ("Sound like a person, not a recording", in `docs/roxi/prompt.md`) asks for varied rhythm, pauses, feeling, emphasis and questions that really ask. Cues in brackets are for the voice only: the site's chat hides them (`withoutCues`, `ui/roxi/tidy.ts`) and WhatsApp strips them from written replies. Voice notes use `eleven_v4` with a cue at the start.
 - If a voice is changed in ElevenLabs, change it in all four places (the two agents, `WHATSAPP_RULES.roxiVoices`, and re-record the welcome notes).
 
 ## WhatsApp: team inbox and Roxi (built 7–11 November, live)

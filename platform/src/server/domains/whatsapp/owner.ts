@@ -95,7 +95,9 @@ export async function speak(text: string, language: 'es' | 'en', fetcher: typeof
     const response = await fetcher(`https://api.elevenlabs.io/v1/text-to-speech/${WHATSAPP_RULES.roxiVoices[language]}?output_format=${format}`, {
       method: 'POST',
       headers: { 'xi-api-key': key, 'content-type': 'application/json', accept: 'audio/*' },
-      body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2' }),
+      // eleven_v4: the expressive model, which follows delivery cues ("[warmly]") and
+      // punctuation for pauses and emphasis, so the note sounds spoken, not read.
+      body: JSON.stringify({ text, model_id: 'eleven_v4' }),
       signal: AbortSignal.timeout(30_000),
     }).catch(() => null);
     if (!response?.ok) {
@@ -178,16 +180,18 @@ export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, p
 
   const [current] = keys();
   const sentAt = new Date();
+  // What she said, as the team reads it: the delivery cues were for the voice only.
+  const words = message.replace(/\[[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{2,32}\]\s*/g, '').trim();
   await executor.transaction(async (tx) => {
     // In the inbox as hers, with what she said, so the team can read it.
     await tx
       .insert(whatsappMessages)
-      .values({ waMessageId, waId: person.waId, direction: 'out', kind: 'audio', bodySealed: current ? seal(current, PURPOSE, message) : null, status: 'sent', byRoxi: true, sentAt })
+      .values({ waMessageId, waId: person.waId, direction: 'out', kind: 'audio', bodySealed: current ? seal(current, PURPOSE, words) : null, status: 'sent', byRoxi: true, sentAt })
       .onConflictDoNothing({ target: whatsappMessages.waMessageId });
     await tx.update(whatsappContacts).set({ lastMessageAt: sentAt }).where(eq(whatsappContacts.waId, person.waId));
     await recordAudit(tx, { actorType: 'system', actorUserId: null, action: 'whatsapp.roxi_voice_note', subjectType: 'whatsapp_contact', subjectId: person.waId, metadata: { forOwner: true, format: voice.mime } });
   });
-  return JSON.stringify({ ok: true, recipient: label(person), said: message });
+  return JSON.stringify({ ok: true, recipient: label(person), said: words });
 }
 
 /** Remembers a name for a number ("guarda a Suhey: +505 …"). Refused for anyone but the owner. */

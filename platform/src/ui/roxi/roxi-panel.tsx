@@ -9,7 +9,7 @@ import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
 import { languageOf } from './language';
 import { roxiTools, type RoxiResultCard } from './tools';
-import { tidyText } from './tidy';
+import { tidyText, withoutCues } from './tidy';
 import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE, writePrefs } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
 import { reportPresence } from './presence';
@@ -754,7 +754,7 @@ export default function RoxiPanel({
           // An answer settles whatever was waiting for one.
           setEntries((current) => [
             ...current.map((entry) => (entry.kind === 'you' && entry.pending ? { ...entry, pending: false } : entry)),
-            { id: nextId.current++, kind: 'roxi', text: tidyText(said), ...(greeting ? { greeting: true } : {}) },
+            { id: nextId.current++, kind: 'roxi', text: tidyText(withoutCues(said)), ...(greeting ? { greeting: true } : {}) },
           ]);
         },
         onModeChange: ({ mode: now }) => {

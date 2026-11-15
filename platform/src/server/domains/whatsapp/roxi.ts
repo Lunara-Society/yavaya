@@ -306,7 +306,13 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
   if (!raw) return 'no_answer';
   // The owner's own chat is never handed to the team: they are the team.
   const handover = !owner && raw.includes(HANDOVER);
-  const text = raw.split(HANDOVER).join('').trim().slice(0, WHATSAPP_RULES.replyMaxLength);
+  // Delivery cues ("[warmly]") are for her voice only; a written reply never carries one.
+  const text = raw
+    .split(HANDOVER)
+    .join('')
+    .replace(/\[[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{2,32}\]\s*/g, '')
+    .trim()
+    .slice(0, WHATSAPP_RULES.replyMaxLength);
 
   // Someone on the team may have stepped in while she was thinking.
   const [now] = await executor.select().from(whatsappContacts).where(eq(whatsappContacts.waId, waId)).limit(1);

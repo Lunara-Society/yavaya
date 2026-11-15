@@ -26,3 +26,15 @@ export function tidyField(text: string): string {
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
+
+/**
+ * Roxi's delivery cues, taken out of what is shown. The voice model reads
+ * short bracketed cues ("[warmly]", "[laughs softly]", "[short pause]") as
+ * how to say the next words; they are for the ear, never for the screen. Only
+ * a bracket holding a few plain words is a cue: a bracket with digits or
+ * punctuation in it is left alone.
+ */
+const CUE = /\[[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{2,32}\]\s*/g;
+export function withoutCues(text: string): string {
+  return text.replace(CUE, '').replace(/ {2,}/g, ' ').trim();
+}
