@@ -48,6 +48,20 @@ export const DEFAULT_PREFS: RoxiPrefs = {
 /** Text-to-speech speed for each choice, inside the range the voice accepts (0.7–1.2). */
 export const SPEED_VALUE: Record<RoxiSpeed, number> = { slow: 0.85, normal: 1, fast: 1.15 };
 
+/**
+ * Roxi's Spanish voice (Cristina) speaks quickly by nature: the owner asked
+ * for her a little slower (15 November 2026), as if she were thinking about
+ * what to say next. Spanish conversations run at this share of the speed the
+ * member chose; English (Lara) keeps the member's speed as it is.
+ */
+export const SPANISH_PACE = 0.9;
+
+/** The speed Roxi's voice is asked for, in this conversation's language (the agent accepts 0.7 to 1.2). */
+export function voiceSpeed(speed: RoxiSpeed, language: 'es' | 'en'): number {
+  const value = SPEED_VALUE[speed] * (language === 'es' ? SPANISH_PACE : 1);
+  return Math.round(Math.min(1.2, Math.max(0.7, value)) * 100) / 100;
+}
+
 export const PREFS_KEY = 'roxi.prefs.v1';
 export const LOG_KEY = 'roxi.log.v1';
 export const PRESENCE_KEY = 'roxi.presence.v1';

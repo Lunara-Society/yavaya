@@ -10,7 +10,7 @@ import { RoxiOrb, type OrbState } from './orb';
 import { languageOf } from './language';
 import { roxiTools, type RoxiResultCard } from './tools';
 import { tidyText, withoutCues } from './tidy';
-import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE, writePrefs } from './prefs';
+import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE, voiceSpeed, writePrefs } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
 import { reportPresence } from './presence';
 import { ROXI_ASK_EVENT } from './ask';
@@ -716,8 +716,8 @@ export default function RoxiPanel({
             // Opened again on the other audio path after a silent start: she already greeted, so she waits.
             ...(opening || previous || voice.recovering ? { firstMessage: '' } : {}),
           },
-          // Only a speed the member chose travels; the agent allows this one override.
-          ...(wanted === 'voice' && prefs.speed !== 'normal' ? { tts: { speed: SPEED_VALUE[prefs.speed] } } : {}),
+          // The speed the member chose, a little slower in Spanish (SPANISH_PACE); the agent allows this one override.
+          ...(wanted === 'voice' && voiceSpeed(prefs.speed, locale === 'en' ? 'en' : 'es') !== 1 ? { tts: { speed: voiceSpeed(prefs.speed, locale === 'en' ? 'en' : 'es') } } : {}),
         },
         dynamicVariables: {
           member_name: member.firstName || member.yayId,
