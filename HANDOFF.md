@@ -82,7 +82,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **Verified:** 14 integration tests, the browser flow (24 checks, stand-in agent and bucket), and the old flow (31 checks, unchanged). Not verified with the real agent: ElevenLabs is blocked (below). The website agent's prompt and the `prepare_listing` description now say what to do with the card and the receipt (repo and agent identical; agent version `agtvrsn_2901m7tp1wsef70rzefnzxd15mg2`, previous `agtvrsn_7601m7emkkwmf8ebnxw4wzre69qc` for rollback). The changes only apply when the tool answers `shown: review_card`.
 - **Next:** slice 2, WhatsApp. A verified member sends photos, price and place; Roxi drafts in the chat and sends a one-tap link to the same card/form; she confirms after publishing. It needs Dualhook media download checked first.
 
-## ⚠ ElevenLabs blocked by a failed payment (found 19 November)
+## ElevenLabs blocked by a failed payment (18–19 November, resolved)
+- **Resolved 19 Nov evening:** the owner paid; the agents answer again (checked on both WhatsApp branches). Kept below for the record.
 - From 18 Nov about 16:58 UTC, every conversation with Roxi on WhatsApp fails before she says a word: ElevenLabs closes it with "The AI agent you are trying to reach is not available" (code 3000), and the server logs `whatsapp.roxi outcome=no_answer`. People who wrote in got no answer.
 - Cause, from ElevenLabs itself (19 Nov): "Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage." It blocks everything ElevenLabs does for Yavaya: WhatsApp Roxi, voice notes, the website's voice.
 - Fix (owner only): pay the outstanding invoice in ElevenLabs (subscription / billing). Nothing in Yavaya needs to change. To confirm afterwards: the logs show `whatsapp.roxi outcome=answered` again.
@@ -107,7 +108,8 @@ The owner's brief: keep her Spain accent and identity; make her words feel famil
   - New client tool `get_recipient` (`tool_7801m7szqp20ex6a1tktcy9pdjfq`).
   - `send_voice_message` and `save_contact` gained optional `seconds` / `address_as`. The tools are shared by all branches; the code before this one ignores them.
   - Defaults for the two new variables are on the agent.
-  - The new instructions were made and published on branch `voz-latam-2026-11-19` (`agtbrch_8301m7szqng2ez79tvhanvnr7hcr`), which gets no live traffic.
+  - The new instructions were made on branch `voz-latam-2026-11-19` (`agtbrch_8301m7szqng2ez79tvhanvnr7hcr`), tried there on 19 Nov (seven conversations: vos for Nicaragua, tú for Mexico, usted for a restaurant, English, a stranger claiming to be the owner refused, the 24-hour window, Suhey's 40 s; no Spain-only words, AI said every time), then **merged into main** the same evening (main version `agtvrsn_1201m7tq91d0enytmgv4dyb64n5y`; the branch is kept for the next change).
+  - Suhey's 40 s note, written by the live agent and spoken by Cristina (eleven_v4): 94 words, measured 39.8 s. Sent to the owner to hear; to send it for real, the owner asks Roxi on WhatsApp (Suhey must have written to the number in the last 24 hours).
 - **Rollback:**
   - Agent: main's version before the new instructions is `agtvrsn_8801m7szk433f5d8kben4hp06bvw`, the 15 Nov prompt plus the variable defaults.
   - Code: it works with that prompt too; the new tool is just never called.
