@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { ACHIEVEMENTS, earnedItems, lookImage, lookOption, withoutClash, type Look, type LookPart, type Unlock } from '@/config/play-looks';
 import { PLAY_RULES } from '@/config/business-rules';
-import { buildCharacter, type Emote } from '../character/build';
+import { type Emote } from '../character/build';
+import { makeCharacter } from '../character/make';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { el, type PlayContext } from '../context';
 
@@ -73,7 +74,7 @@ export function createShop(play: PlayContext, first: 'shop' | 'gems' = 'shop'): 
   const turntable = new THREE.Group();
   turntable.rotation.y = -0.3;
   scene.add(turntable);
-  const hero = buildCharacter(wearing);
+  const hero = makeCharacter(wearing);
   turntable.add(hero.group);
 
   // --- The page over it ---

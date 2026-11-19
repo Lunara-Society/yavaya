@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { buildCharacter } from '../character/build';
+import { makeCharacter } from '../character/make';
 import type { Look } from '@/config/play-looks';
 import { PALETTE, duskLight, duskSky, stoneMaterial } from './look';
 import { disposeScene } from './runtime';
@@ -35,7 +35,7 @@ export function menuStage(look: Look) {
   gate.add(lintel, band);
   gate.position.z = -2.4;
   scene.add(gate);
-  const hero = buildCharacter(look);
+  const hero = makeCharacter(look);
   hero.group.rotation.y = 0.3;
   scene.add(hero.group);
 

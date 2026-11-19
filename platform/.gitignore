@@ -18,3 +18,6 @@ npm-debug.log*
 .vscode/
 .idea/
 deploy/
+
+# Genesis source data (CC0, ~400 MB), fetched by scripts/genesis/source.ts at a pinned version
+.genesis-source/

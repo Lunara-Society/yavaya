@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { DEFAULT_LOOK, lookImage, lookOption, shapesOf, type Look } from '@/config/play-looks';
 import { FACE_SHELL, faceLayout, faceTextures, faceTheta, type FaceState } from './face';
+import { createPoser } from './pose';
 
 /**
  * The Yavaya Play character (docs/PLAY.md): one model for every game, built
@@ -66,6 +67,8 @@ export type MotionState = {
 
 export type Character = {
   group: THREE.Group;
+  /** Settles once everything the character is made of has loaded (Genesis loads its files; the drawn one is ready at once). */
+  ready?: Promise<void>;
   update(dt: number, state: MotionState): void;
   /** Puts on another look without rebuilding the joints (the studio). */
   dress(look: Look): void;
@@ -500,23 +503,8 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
 
   dress(initial);
 
-  // --- Animation ---------------------------------------------------------------------
-  /** Where each angle is now; every frame it eases toward where it should be. */
-  const now: Record<string, number> = {};
-  const ease = (key: string, target: number, rate: number, dt: number) => {
-    const current = now[key] ?? target;
-    const value = current + (target - current) * (1 - Math.exp(-rate * dt));
-    now[key] = value;
-    return value;
-  };
-  let clock = 0;
-  let stride = 0;
-  let wasAir = false;
-  let land = 0;
-  let blinkIn = 2 + Math.random() * 3;
-  let emoteTime = 0;
-  let lastEmote: Emote | null = null;
-
+  // --- Animation (character/pose.ts) ----------------------------------------------------
+  const pose = createPoser();
   const setFace = (next: FaceState) => {
     if (next === face || !faces || !faceMaterial) return;
     face = next;
@@ -525,196 +513,29 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
   };
 
   function update(dt: number, state: MotionState = STILL) {
-    clock += dt;
-    const speed = Math.min(1, Math.max(0, state.speed));
-    // Strides come faster as the run gets faster, and the phase only moves with the feet.
-    stride += dt * (6 + speed * 7.5) * Math.min(1, speed * 4);
-    if (wasAir && !state.air) land = 1;
-    wasAir = state.air;
-    land = Math.max(0, land - dt * 4.5);
-    if (state.emote !== lastEmote) emoteTime = 0;
-    lastEmote = state.emote;
-    emoteTime += dt;
-
-    // Pose targets.
-    let lean = 0;
-    let bob = 0;
-    let yaw = 0;
-    let headX = 0;
-    let headY = 0;
-    let armLX = 0, armLZ = 0.12, armRX = 0, armRZ = -0.12, elbowLX = -0.25, elbowRX = -0.25;
-    let legLX = 0, legRX = 0, legLZ = 0, legRZ = 0, kneeLX = 0.05, kneeRX = 0.05;
-    let pelvisRoll = 0;
-    let rate = 14;
-
-    const k = state.actionK ?? 0;
-    let spin = 0;
-    let roll = 0;
-    if (state.action === 'roll') {
-      // Tucked tight, over once.
-      roll = k * Math.PI * 2;
-      kneeLX = kneeRX = 2.0;
-      legLX = legRX = -1.6;
-      armLX = armRX = -1.4;
-      elbowLX = elbowRX = -1.6;
-      lean = 0.6;
-      headX = 0.4;
-      rate = 30;
-    } else if (state.action === 'slide') {
-      // Leaning back, feet first.
-      lean = -0.95;
-      legLX = -1.35;
-      kneeLX = 0.15;
-      legRX = -0.9;
-      kneeRX = 1.1;
-      armLX = 0.6;
-      armRX = -0.6;
-      armLZ = 0.9;
-      armRZ = -0.9;
-      bob = -0.42;
-      headX = 0.5;
-      rate = 24;
-    } else if (state.action === 'airdodge') {
-      // A quick turn in the air, tucked.
-      spin = k * Math.PI * 2;
-      kneeLX = kneeRX = 1.3;
-      legLX = legRX = -0.9;
-      armLX = armRX = -0.4;
-      armLZ = 1.2;
-      armRZ = -1.2;
-      rate = 30;
-    } else if (state.cheer > 0) {
-      const t = clock * 7;
-      bob = Math.abs(Math.sin(t * 0.85)) * 0.2 * state.cheer;
-      armLX = -2.9;
-      armRX = -2.9;
-      armLZ = 0.35 + Math.sin(t) * 0.25;
-      armRZ = -0.35 - Math.sin(t) * 0.25;
-      elbowLX = elbowRX = -0.2;
-      kneeLX = kneeRX = 0.3 * (1 - bob * 4);
-      yaw = Math.sin(clock * 2.6) * 0.5;
-      rate = 12;
-    } else if (state.air) {
-      if (state.vy > 1) {
-        // Rising: one knee up, arms forward and up.
-        legLX = -1.0;
-        kneeLX = 1.3;
-        legRX = 0.35;
-        kneeRX = 0.4;
-        armLX = -2.3;
-        armRX = -1.3;
-        armLZ = 0.3;
-        armRZ = -0.3;
-        elbowLX = elbowRX = -0.5;
-        lean = 0.1;
-      } else {
-        // Falling: arms out for balance, legs reaching for the ground.
-        legLX = -0.45;
-        kneeLX = 0.6;
-        legRX = -0.1;
-        kneeRX = 0.25;
-        armLX = -1.1;
-        armRX = -1.1;
-        armLZ = 0.9;
-        armRZ = -0.9;
-        elbowLX = elbowRX = -0.3;
-        lean = -0.05;
-      }
-      rate = 16;
-    } else if (speed > 0.02) {
-      // Walk and run: thighs and arms swing opposite; the back knee folds; a lean and a bob.
-      const s = Math.sin(stride);
-      const c = Math.cos(stride);
-      const run = Math.min(1, speed * 1.3);
-      legLX = s * (0.45 + 0.5 * run);
-      legRX = -s * (0.45 + 0.5 * run);
-      kneeLX = Math.max(0, -c) * (0.4 + 1.1 * run) + 0.08;
-      kneeRX = Math.max(0, c) * (0.4 + 1.1 * run) + 0.08;
-      armLX = -s * (0.35 + 0.65 * run);
-      armRX = s * (0.35 + 0.65 * run);
-      elbowLX = elbowRX = -(0.35 + 1.05 * run);
-      armLZ = 0.1;
-      armRZ = -0.1;
-      const sprint = state.sprint ?? 0;
-      lean = 0.06 + 0.18 * run + 0.16 * sprint;
-      armLX *= 1 + 0.35 * sprint;
-      armRX *= 1 + 0.35 * sprint;
-      bob = Math.abs(c) * (0.025 + 0.05 * run);
-      yaw = s * 0.12 * run;
-      headX = -lean * 0.6;
-      rate = 20;
-    } else if (state.emote === 'saludo' && emoteTime < 2.4) {
-      armLX = -0.3;
-      armLZ = 2.6 + Math.sin(emoteTime * 11) * 0.35;
-      elbowLX = -0.4;
-      headY = 0.15;
-      headX = -0.08;
-    } else if (state.emote === 'baile' && emoteTime < 3.6) {
-      const t = emoteTime * 6.5;
-      pelvisRoll = Math.sin(t) * 0.14;
-      yaw = Math.sin(t * 0.5) * 0.4;
-      armLX = -1.6 + Math.sin(t) * 1.2;
-      armRX = -1.6 - Math.sin(t) * 1.2;
-      armLZ = 0.4;
-      armRZ = -0.4;
-      elbowLX = elbowRX = -1.2;
-      kneeLX = 0.25 + Math.max(0, Math.sin(t)) * 0.35;
-      kneeRX = 0.25 + Math.max(0, -Math.sin(t)) * 0.35;
-      legLX = -kneeLX * 0.5;
-      legRX = -kneeRX * 0.5;
-      bob = -Math.abs(Math.sin(t)) * 0.05;
-      headY = Math.sin(t) * 0.2;
-    } else {
-      // Idle: breathing, a slow shift of weight, a glance now and then.
-      const breathe = Math.sin(clock * 2.1);
-      armLZ = 0.12 + breathe * 0.02;
-      armRZ = -0.12 - breathe * 0.02;
-      pelvisRoll = Math.sin(clock * 0.7) * 0.035;
-      headY = Math.sin(clock * 0.45) * 0.25 * Math.max(0, Math.sin(clock * 0.21));
-      headX = Math.sin(clock * 0.9) * 0.03;
-      bob = breathe * 0.006;
-      rate = 8;
-    }
-    // Landing: the knees take it.
-    if (land > 0 && !state.air) {
-      bob -= land * 0.1;
-      kneeLX += land * 0.7;
-      kneeRX += land * 0.7;
-      legLX -= land * 0.35;
-      legRX -= land * 0.35;
-      lean += land * 0.15;
-    }
-
-    tumble.rotation.x = state.action === 'roll' ? roll : ease('tumble', 0, 20, dt);
-    tumble.rotation.y = state.action === 'airdodge' ? spin : 0;
-    root.position.y = -0.55 + ease('bob', bob, rate * 1.5, dt);
-    spine.rotation.x = ease('lean', lean, rate, dt);
-    spine.rotation.y = ease('yaw', yaw, rate, dt);
-    pelvis.rotation.z = ease('roll', pelvisRoll, rate, dt);
-    spine.rotation.z = -pelvis.rotation.z * 0.6;
-    head.rotation.x = ease('headX', headX, 10, dt);
-    head.rotation.y = ease('headY', headY, 6, dt);
-    // Arm angles: x swings forward and back (negative is forward), z raises sideways.
-    shoulderL.rotation.x = ease('aLX', armLX, rate, dt);
-    shoulderL.rotation.z = ease('aLZ', armLZ, rate, dt);
-    shoulderR.rotation.x = ease('aRX', armRX, rate, dt);
-    shoulderR.rotation.z = ease('aRZ', armRZ, rate, dt);
-    elbowL.rotation.x = ease('eL', elbowLX, rate, dt);
-    elbowR.rotation.x = ease('eR', elbowRX, rate, dt);
-    hipL.rotation.x = ease('lLX', legLX, rate, dt);
-    hipR.rotation.x = ease('lRX', legRX, rate, dt);
-    hipL.rotation.z = ease('lLZ', legLZ, rate, dt);
-    hipR.rotation.z = ease('lRZ', legRZ, rate, dt);
-    kneeL.rotation.x = ease('kL', kneeLX, rate, dt);
-    kneeR.rotation.x = ease('kR', kneeRX, rate, dt);
-
-    // The face: a blink every few seconds, a grin for a cheer or a dance.
-    blinkIn -= dt;
-    if (state.cheer > 0 || (state.emote === 'baile' && emoteTime < 3.6)) setFace('happy');
-    else if (blinkIn < 0) {
-      setFace('blink');
-      if (blinkIn < -0.12) blinkIn = 2 + Math.random() * 3.5;
-    } else setFace('normal');
+    const p = pose(dt, state);
+    tumble.rotation.x = p.tumbleX;
+    tumble.rotation.y = p.tumbleY;
+    root.position.y = -0.55 + p.bob;
+    spine.rotation.x = p.spineX;
+    spine.rotation.y = p.spineY;
+    pelvis.rotation.z = p.pelvisZ;
+    spine.rotation.z = p.spineZ;
+    head.rotation.x = p.headX;
+    head.rotation.y = p.headY;
+    shoulderL.rotation.x = p.armLX;
+    shoulderL.rotation.z = p.armLZ;
+    shoulderR.rotation.x = p.armRX;
+    shoulderR.rotation.z = p.armRZ;
+    elbowL.rotation.x = p.elbowL;
+    elbowR.rotation.x = p.elbowR;
+    hipL.rotation.x = p.legLX;
+    hipR.rotation.x = p.legRX;
+    hipL.rotation.z = p.legLZ;
+    hipR.rotation.z = p.legRZ;
+    kneeL.rotation.x = p.kneeL;
+    kneeR.rotation.x = p.kneeR;
+    setFace(p.face);
   }
 
   update(1, STILL);

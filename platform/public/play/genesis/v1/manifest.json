@@ -1,0 +1,240 @@
+{
+ "version": 1,
+ "assets": [
+  {
+   "id": "hair.short02",
+   "category": "hair",
+   "file": "hair-short02.glb",
+   "bytes": 470524,
+   "vertices": 2061,
+   "triangles": 3344,
+   "morphs": 30,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.short04",
+   "category": "hair",
+   "file": "hair-short04.glb",
+   "bytes": 481168,
+   "vertices": 991,
+   "triangles": 1050,
+   "morphs": 30,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.long01",
+   "category": "hair",
+   "file": "hair-long01.glb",
+   "bytes": 500284,
+   "vertices": 3314,
+   "triangles": 4108,
+   "morphs": 19,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.ponytail01",
+   "category": "hair",
+   "file": "hair-ponytail01.glb",
+   "bytes": 695644,
+   "vertices": 4049,
+   "triangles": 5352,
+   "morphs": 23,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.braid01",
+   "category": "hair",
+   "file": "hair-braid01.glb",
+   "bytes": 576780,
+   "vertices": 4771,
+   "triangles": 5518,
+   "morphs": 19,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.afro01",
+   "category": "hair",
+   "file": "hair-afro01.glb",
+   "bytes": 1014596,
+   "vertices": 2276,
+   "triangles": 2192,
+   "morphs": 23,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "hair.bob02",
+   "category": "hair",
+   "file": "hair-bob02.glb",
+   "bytes": 462160,
+   "vertices": 1759,
+   "triangles": 2248,
+   "morphs": 49,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "garment.tee",
+   "category": "garment",
+   "file": "garment-tee.glb",
+   "bytes": 89936,
+   "vertices": 968,
+   "triangles": 1728,
+   "hidesBodyVertices": 1505,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "garment.longsleeve",
+   "category": "garment",
+   "file": "garment-longsleeve.glb",
+   "bytes": 112036,
+   "vertices": 1268,
+   "triangles": 2284,
+   "hidesBodyVertices": 2103,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "garment.trousers",
+   "category": "garment",
+   "file": "garment-trousers.glb",
+   "bytes": 92724,
+   "vertices": 1091,
+   "triangles": 1920,
+   "hidesBodyVertices": 1395,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "garment.shorts",
+   "category": "garment",
+   "file": "garment-shorts.glb",
+   "bytes": 51996,
+   "vertices": 525,
+   "triangles": 916,
+   "hidesBodyVertices": 685,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "shoes.sneaker",
+   "category": "shoes",
+   "file": "shoes-sneaker.glb",
+   "bytes": 155812,
+   "vertices": 1744,
+   "triangles": 3064,
+   "hidesBodyVertices": 148,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "shoes.boot",
+   "category": "shoes",
+   "file": "shoes-boot.glb",
+   "bytes": 182204,
+   "vertices": 2542,
+   "triangles": 4128,
+   "hidesBodyVertices": 148,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "shoes.dress",
+   "category": "shoes",
+   "file": "shoes-dress.glb",
+   "bytes": 164816,
+   "vertices": 1904,
+   "triangles": 3320,
+   "hidesBodyVertices": 148,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  },
+  {
+   "id": "core",
+   "category": "base",
+   "file": "core.glb",
+   "bytes": 1773856,
+   "parts": {
+    "body": {
+     "vertices": 14517,
+     "triangles": 26756
+    },
+    "eyes": {
+     "vertices": 1076,
+     "triangles": 2040
+    },
+    "eyebrows": {
+     "vertices": 126,
+     "triangles": 192
+    },
+    "eyelashes": {
+     "vertices": 250,
+     "triangles": 368
+    },
+    "teeth": {
+     "vertices": 4712,
+     "triangles": 7120
+    },
+    "tongue": {
+     "vertices": 264,
+     "triangles": 448
+    }
+   },
+   "morphs": 56,
+   "bones": 45,
+   "source": "MakeHuman (makehumancommunity.org)",
+   "license": "CC0-1.0",
+   "commit": "a8bc2d54ff0ac92e78ff71431b1023eda42bf482",
+   "assetPackSha256": "b542127a8e25547c7c29c19f2d1d2adb9a664c80396ecd694095dbc8028a0107",
+   "validation": "baked"
+  }
+ ]
+}

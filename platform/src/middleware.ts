@@ -172,9 +172,16 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
   const nonce = crypto.randomUUID().replaceAll('-', '');
   const isDevelopment = process.env.NODE_ENV === 'development';
 
+  // Yavaya Play's character files (Genesis, docs/GENESIS.md) are compressed and decoded by a
+  // WebAssembly module: compiling WebAssembly is allowed there and nowhere else. It does not
+  // allow `eval` of scripts.
+  const play = request.nextUrl.pathname.startsWith('/play');
+  const wasm = play ? " 'wasm-unsafe-eval'" : '';
+  // Their textures are unpacked through blob: URLs the page itself makes (GLTFLoader), on /play only.
+  const blobs = play ? ' blob:' : '';
   const csp = [
     `default-src 'self'`,
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDevelopment ? " 'unsafe-eval'" : ''}`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${wasm}${isDevelopment ? " 'unsafe-eval'" : ''}`,
     // Google's sign-in prompt (accounts.google.com/gsi): its script, its
     // stylesheet, the frame it draws in and the calls it makes. Nothing else
     // from Google, and nothing from anyone else.
@@ -186,7 +193,7 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
     // sign-in prompt and Roxi's conversation with ElevenLabs (one API host:
     // the WebSocket and photo uploads). Widening this is a deliberate
     // decision, not a convenience.
-    `connect-src 'self' https://accounts.google.com/gsi/ https://api.elevenlabs.io wss://api.elevenlabs.io`,
+    `connect-src 'self'${blobs} https://accounts.google.com/gsi/ https://api.elevenlabs.io wss://api.elevenlabs.io`,
     // The map library draws in a worker it creates from a blob. Tiles still
     // come only from this origin (see /api/map).
     `worker-src 'self' blob:`,

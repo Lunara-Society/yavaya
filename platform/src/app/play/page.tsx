@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * not exist, except for whoever may change the switch, so the owner can play
  * it before anyone else does.
  */
-export default async function PlayPage({ searchParams }: { searchParams: Promise<{ reto?: string; gemas?: string }> }) {
+export default async function PlayPage({ searchParams }: { searchParams: Promise<{ reto?: string; gemas?: string; genesis?: string }> }) {
   const { t, userId, locale } = await siteContext();
   const open = await lookEnabled(db(), 'play');
   const preview = !open && userId !== null && (await hasPermission(db(), userId, 'flags.manage'));
@@ -49,6 +49,9 @@ export default async function PlayPage({ searchParams }: { searchParams: Promise
   const look = userId ? await playLook(db(), userId) : null;
   // The Pruebas de Maestría: open to all by their own switch, or to the owner as a preview.
   const trials = (await lookEnabled(db(), 'trials')) || (userId !== null && (await hasPermission(db(), userId, 'flags.manage')));
+  // Yavaya Genesis, the anatomical character (docs/GENESIS.md): for everyone by its switch, or the owner's preview at ?genesis=1.
+  const query0 = await searchParams;
+  const genesis = (await lookEnabled(db(), 'genesis')) || (query0.genesis === '1' && userId !== null && (await hasPermission(db(), userId, 'flags.manage')));
   // The player's progress on the account (docs/PLAY.md, "Progress"), all of it verified runs.
   const account = userId
     ? { progress: await playProgressOf(db(), userId), owned: await ownedItems(db(), userId), achievements: await achievementsOf(db(), userId), bests: await bestsOf(db(), userId) }
@@ -71,7 +74,7 @@ export default async function PlayPage({ searchParams }: { searchParams: Promise
         <strong className="yp-name">{t('play.title')}</strong>
         {preview ? <span className="yp-preview">{t('play.preview')}</span> : <span />}
       </header>
-      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials, account, today, challenge, signInHref: '/login?next=%2Fplay', gemsOnSale: gemsOnSale(), gemsReturn, vault }} />
+      <PlayLoader loading={t('play.loading')} unsupported={t('play.unsupported')} setup={{ texts, look, signedIn: userId !== null, trials, genesis, account, today, challenge, signInHref: '/login?next=%2Fplay', gemsOnSale: gemsOnSale(), gemsReturn, vault }} />
     </main>
   );
 }

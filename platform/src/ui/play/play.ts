@@ -1,4 +1,5 @@
 import { parseLook, DEFAULT_LOOK, type Look } from '@/config/play-looks';
+import { setGenesis } from './character/make';
 import { createControls } from './engine/controls';
 import { createRuntime } from './engine/runtime';
 import { cue, textReader, type Account, type Challenge, type PlayContext, type Place, type RunVerdict } from './context';
@@ -29,6 +30,8 @@ export type PlaySetup = {
   signedIn: boolean;
   /** The Pruebas de Maestría are open to this player (the switch, or the owner's preview). */
   trials?: boolean;
+  /** Draw the Genesis character (docs/GENESIS.md) instead of the drawn one: its switch, or the owner's preview. */
+  genesis?: boolean;
   /** The signed-in player's progress on the account; null for a guest. */
   account?: Account | null;
   /** Today in UTC, from the server's clock: which Ruta del Día is today's. */
@@ -77,6 +80,7 @@ async function writeAccount(look: Look): Promise<boolean> {
 }
 
 export function startPlay(host: HTMLElement, setup: PlaySetup): () => void {
+  setGenesis(Boolean(setup.genesis));
   const text = textReader(setup.texts);
   const runtime = createRuntime(host);
   const controls = createControls(runtime, { jump: text('play.jump') });

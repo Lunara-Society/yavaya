@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { buildCharacter } from '../character/build';
+import { makeCharacter } from '../character/make';
 import { CHECKPOINTS, COINS, COLORS, FINISH_Z, PLATFORMS, SIGNS, SPEED } from '../course';
 import { HEIGHT, body, floorUnder, place, solid, stepBody, type Solid } from '../engine/body';
 import { disposeScene, type Mode } from '../engine/runtime';
@@ -124,7 +124,7 @@ export function createRush(play: PlayContext): Mode {
   });
 
   // --- The player ---
-  const hero = buildCharacter(play.look());
+  const hero = makeCharacter(play.look());
   scene.add(hero.group);
   const shadow = blobShadow(scene);
   const player = body(0, 0, 2);

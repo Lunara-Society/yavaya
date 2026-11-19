@@ -46,6 +46,29 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **WhatsApp voice notes, owner-approved style (15 Nov, "absolutely perfect"):** each note starts `[warmly] [slowly]`, then the greeting with "…", a `[short pause]`, the message with thinking beats ("Mira…", "…más o menos"), and a `[cheerful]` close. The model has no speed setting, so the pace comes from these cues and pauses. The rule and an example are in the WhatsApp agent's prompt ("Your boss" → "Voice messages").
 - If a voice is changed in ElevenLabs, change it in all four places (the two agents, `WHATSAPP_RULES.roxiVoices`, and re-record the welcome notes).
 
+## Yavaya Genesis: the new character (19 November, owner's brief)
+- **Diagnosis** (published report): today's character can't be repaired. The head is a sphere with a picture, and beards, paint and hair are separate shapes placed by numbers, so hair crossed the mouth and beards sat on painted teeth. An interim fix is live (long hair's side locks behind the ears).
+- **Owner's decisions (19 Nov):**
+  1. Rebuild on Genesis, using MakeHuman's CC0 anatomical body.
+  2. Stylised realism.
+  3. Paid and earned items get Genesis equivalents of the same standing.
+  4. Fitted clothing made in-house first; no spending without approval.
+- **Built (phase B), behind the switch `play.genesis`, off:**
+  - The owner sees it at `yavaya.lat/play?genesis=1` while signed in; Admin → Diseño del sitio → "Yavaya Genesis" turns it on for everyone.
+  - The character has:
+    - an anatomical body with 30 shape controls;
+    - a 45-bone skeleton that follows the shape;
+    - seven hairstyles, four garments and three shoes;
+    - every move of today's character (`character/pose.ts`, shared).
+  - Every game uses it through `ui/play/character/make.ts`. The Play e2e passes with it on and off.
+  - Pipeline, provenance and runtime notes are in `platform/docs/GENESIS.md`. Files are in `public/play/genesis/v1/` (about 6.9 MB in all, 1.8 MB core); the CC0 sources are fetched by `scripts/genesis/source.ts`.
+- **Next (phases C–G):**
+  - facial hair, scalp shading, blink and smile close-ups;
+  - the Genesis Studio (presets, sliders, face blending) with its own saved record;
+  - more hair and clothing, glasses, accessories, face paint as skin designs;
+  - a light gameplay body;
+  - the inspector, and the validation suite.
+
 ## ⚠ ElevenLabs blocked by a failed payment (found 19 November)
 - From 18 Nov about 16:58 UTC, every conversation with Roxi on WhatsApp fails before she says a word: ElevenLabs closes it with "The AI agent you are trying to reach is not available" (code 3000), and the server logs `whatsapp.roxi outcome=no_answer`. People who wrote in got no answer.
 - Cause, from ElevenLabs itself (19 Nov): "Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage." It blocks everything ElevenLabs does for Yavaya: WhatsApp Roxi, voice notes, the website's voice.

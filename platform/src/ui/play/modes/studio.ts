@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookImage, lookOption, unlockOf, withoutClash, type Look, type LookPart } from '@/config/play-looks';
 import { PLAY_RULES } from '@/config/business-rules';
-import { buildCharacter, type Emote } from '../character/build';
+import { type Emote } from '../character/build';
+import { makeCharacter } from '../character/make';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { el, type PlayContext } from '../context';
 
@@ -67,7 +68,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
   const saved = JSON.stringify(look);
   const turntable = new THREE.Group();
   scene.add(turntable);
-  const hero = buildCharacter(look);
+  const hero = makeCharacter(look);
   turntable.add(hero.group);
   turntable.rotation.y = -0.35;
 

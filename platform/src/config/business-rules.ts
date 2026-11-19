@@ -199,6 +199,13 @@ export const SITE_LOOK_RULES = {
    * (play.vault.terms) and turns this on. The owner asked for exactly that.
    */
   vault_collectibles: false,
+  /**
+   * Yavaya Genesis, the anatomical character (docs/GENESIS.md): off until the
+   * owner has reviewed it (decision of 19 November 2026: "only you see it
+   * until you approve it"). While off, someone who may change this switch
+   * sees it at /play?genesis=1; everyone else keeps the drawn character.
+   */
+  genesis: false,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

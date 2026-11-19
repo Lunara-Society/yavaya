@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { buildCharacter } from '../character/build';
+import { makeCharacter } from '../character/make';
 import { floorUnder } from '../engine/body';
 import { RUN, SPRINT } from '../engine/moves';
 import { disposeScene, type Mode } from '../engine/runtime';
@@ -241,10 +241,14 @@ export function createTrial(play: PlayContext, id: string, options: { noCheckpoi
   scene.add(arch);
 
   // --- The player ---
-  const hero = buildCharacter(play.look());
-  hero.group.traverse((o) => {
-    if ((o as THREE.Mesh).isMesh) o.castShadow = true;
-  });
+  const hero = makeCharacter(play.look());
+  const castShadows = () =>
+    hero.group.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) o.castShadow = true;
+    });
+  castShadows();
+  // A Genesis character's meshes arrive once its files have loaded.
+  void hero.ready?.then(castShadows);
   scene.add(hero.group);
   const shadow = blobShadow(scene);
   const view = followCamera(camera, sim.player);
@@ -318,19 +322,25 @@ export function createTrial(play: PlayContext, id: string, options: { noCheckpoi
   const own = challenge ? null : readGhost(id);
   const ghostRun = challenge ? { samples: decodeRun(challenge.input), seconds: challenge.seconds, noCheckpoints: challenge.noCheckpoints } : own ? { samples: decodeRun(own.input), seconds: own.seconds, noCheckpoints: own.noCheckpoints } : null;
   const ghost = ghostRun?.samples ? new Ghost(trial, ghostRun.samples, ghostRun.noCheckpoints) : null;
-  const shade = ghost ? buildCharacter(play.look()) : null;
+  const shade = ghost ? makeCharacter(play.look()) : null;
   if (shade) {
     // A ghost is a pale copy that passes through everything: it only shows the way and the pace.
-    shade.group.traverse((o) => {
-      const mesh = o as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      const material = (mesh.material as THREE.MeshStandardMaterial).clone();
-      material.transparent = true;
-      material.opacity = 0.32;
-      material.depthWrite = false;
-      material.color?.lerp(new THREE.Color(challenge ? 0x9fd8ff : 0xffffff), 0.5);
-      mesh.material = material;
-    });
+    const pale = new WeakSet<THREE.Object3D>();
+    const fade = () =>
+      shade.group.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh || pale.has(mesh)) return;
+        pale.add(mesh);
+        const material = (mesh.material as THREE.MeshStandardMaterial).clone();
+        material.transparent = true;
+        material.opacity = 0.32;
+        material.depthWrite = false;
+        material.color?.lerp(new THREE.Color(challenge ? 0x9fd8ff : 0xffffff), 0.5);
+        mesh.material = material;
+      });
+    fade();
+    // A Genesis ghost's meshes arrive once its files have loaded.
+    void shade.ready?.then(fade);
     scene.add(shade.group);
     ghostText.textContent = challenge ? text('play.run.ghost_vs', { name: challenge.name, time: clock(challenge.seconds) }) : text('play.run.ghost_you', { time: clock(ghostRun!.seconds) });
   }
