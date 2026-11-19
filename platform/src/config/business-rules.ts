@@ -206,6 +206,15 @@ export const SITE_LOOK_RULES = {
    * sees it at /play?genesis=1; everyone else keeps the drawn character.
    */
   genesis: false,
+  /**
+   * Roxi's listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the
+   * server, the review card in her panel, and the receipt after publishing.
+   * Off until the owner has tried it (Roxi Sovereign, phase I + II, approved
+   * 19 November 2026 as "website first"): while off, someone who may change
+   * this switch gets it and everyone else has Roxi as she was, opening the
+   * form directly.
+   */
+  roxi_review: false,
 } as const;
 
 export const DEMO_CONTENT_RULES = {
@@ -1042,6 +1051,14 @@ export const ROXI_RULES = {
   callCooldownHours: 24,
   /** Default quiet hours (local time, 24 h clock): no check-in and no call. The member can change them. */
   quietHours: { from: 21, to: 7 },
+  /**
+   * Days a listing Roxi drafted waits for the member before it and its photos
+   * are deleted (docs/roxi/FLAGSHIP.md). Not set by the owner: a week covers
+   * "I'll finish it at the weekend" without keeping unpublished photos for
+   * long. Editing the draft gives it the full time again. Flagged in
+   * CONFIGURATION.md; retune as `roxi.draft_keep_days`.
+   */
+  draftKeepDays: 7,
 } as const;
 
 /**

@@ -62,6 +62,32 @@ storage configured: locally, `MEDIA_STORAGE_PROVIDER=s3` and any `MEDIA_S3_*`
 values are enough for it to render (nothing is uploaded). `E2E_SHOTS=<dir>`
 saves screenshots of the panel and the form.
 
+## Roxi's listing flagship — `roxi-flagship.cjs`
+
+The flagship (docs/roxi/FLAGSHIP.md) from a photo to a published listing,
+against the same stand-in agent and a stand-in bucket (`media-stand-in.cjs`,
+in memory), so photos are really stored and served. Twenty-four checks,
+about a minute: the tool answers with the review card and nothing opens; the
+card's title, place and photo; the photo refused signed out and on the
+public route; the card waiting on a second device (a phone); a price changed
+on the card reaching the form, which shows the draft's photo without
+uploading it again; the card pointing to the open form; publishing under the
+draft's id; the receipt (free, how many remain, how to edit or withdraw) and
+the same facts told to Roxi; the draft gone afterwards; the funnel on Admin →
+Visitas.
+
+```bash
+node tests/e2e/media-stand-in.cjs 9333 &
+ROXI_AGENT_ID=agent_localtest MEDIA_STORAGE_PROVIDER=s3 MEDIA_S3_ENDPOINT=http://127.0.0.1:9333 MEDIA_S3_BUCKET=e2e \
+  MEDIA_S3_ACCESS_KEY_ID=e2e MEDIA_S3_SECRET_ACCESS_KEY=e2e MEDIA_S3_FORCE_PATH_STYLE=true npx next start
+npx tsx --conditions=react-server tests/e2e/roxi-flagship-setup.ts > /tmp/flagship.json
+node tests/e2e/roxi-flagship.cjs /tmp/flagship.json
+```
+
+The setup's member is an administrator, so the flagship is on for them while
+its switch is off. `roxi-panel.cjs` uses a plain member, so its listing check
+covers Roxi as she was: the form opened directly.
+
 ## Roxi's plans, memory and connections — `roxi-plans.cjs`
 
 Against a local server started with `ROXI_KEY` and `ROXI_AGENT_ID` set:

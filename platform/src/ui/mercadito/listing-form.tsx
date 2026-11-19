@@ -7,6 +7,8 @@ import { ImageLink, type ImageLinkLabels } from '@/ui/components/image-link';
 import { shrinkImage } from '@/ui/components/shrink-image';
 import { MERCADITO_RULES } from '@/config/business-rules';
 import { RoxiPrefill } from '@/ui/roxi/prefill';
+import { announcePublished } from '@/ui/roxi/receipt';
+import { useRouter } from 'next/navigation';
 
 /**
  * Publish and edit form.
@@ -123,6 +125,7 @@ export function ListingForm({
   maxPhotos,
   prefillNotice,
   presetCategory,
+  draft,
 }: {
   mode: 'create' | 'edit';
   listingId: string;
@@ -146,7 +149,14 @@ export function ListingForm({
   prefillNotice?: string;
   /** A new listing's category chosen before the form opened (a category door in an empty Mercadito). */
   presetCategory?: string;
+  /**
+   * A listing Roxi drafted (docs/roxi/FLAGSHIP.md), its fields and photos in
+   * `initial`. The photos are the draft's, shown through its private route;
+   * `listingId` is the draft's id.
+   */
+  draft?: { id: string; notice: string };
 }) {
+  const router = useRouter();
   const [photos, setPhotos] = useState<Photo[]>(
     () => initial?.photoIds.map((mediaId) => ({ key: mediaId, kind: 'existing' as const, mediaId })) ?? [],
   );
@@ -218,6 +228,10 @@ export function ListingForm({
     form.delete('photos');
     form.set('mode', mode);
     form.set('listingId', listingId);
+    if (draft) {
+      form.set('roxiDraft', draft.id);
+      form.set('assistant', 'roxi');
+    }
 
     setPhase('preparing');
     for (const photo of photos) {
@@ -230,6 +244,12 @@ export function ListingForm({
       const response = await fetch('/api/mercadito/listings', { method: 'POST', body: form });
       const body = (await response.json().catch(() => null)) as { ok: boolean; id?: string; message?: string } | null;
       if (body?.ok && body.id) {
+        if (draft) {
+          // Within the app, so a conversation with Roxi carries on, and she gives the receipt (receipt.ts).
+          announcePublished(body.id);
+          router.push(`/mercadito/${body.id}`);
+          return;
+        }
         window.location.assign(`/mercadito/${body.id}`);
         return;
       }
@@ -244,7 +264,12 @@ export function ListingForm({
 
   return (
     <form className="mk-form" onSubmit={submit} noValidate={false}>
-      {mode === 'create' && prefillNotice ? <RoxiPrefill form="mercadito_listing" notice={prefillNotice} /> : null}
+      {mode === 'create' && prefillNotice && !draft ? <RoxiPrefill form="mercadito_listing" notice={prefillNotice} /> : null}
+      {draft ? (
+        <p className="roxi-prefill-note" role="status">
+          {draft.notice}
+        </p>
+      ) : null}
       {error ? (
         <div className="mk-error" role="alert" tabIndex={-1} ref={errorBox}>
           {error}
@@ -259,7 +284,7 @@ export function ListingForm({
             {photos.map((photo) => (
               <figure key={photo.key}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- local preview or already-processed image */}
-                <img src={photo.kind === 'existing' ? `/media/${photo.mediaId}` : photo.url} alt="" />
+                <img src={photo.kind === 'new' ? photo.url : draft ? `/api/roxi/drafts/photo/${photo.mediaId}` : `/media/${photo.mediaId}`} alt="" />
                 <button type="button" onClick={() => removePhoto(photo.key)} disabled={busy}>
                   {labels.remove}
                 </button>

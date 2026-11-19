@@ -94,12 +94,37 @@ const KEYS = [
   'photo_small',
   'photo_duplicate',
   'settings',
+  'review.title',
+  'review.photos',
+  'review.remove_photo',
+  'review.title_label',
+  'review.price',
+  'review.place',
+  'review.place_missing',
+  'review.description',
+  'review.open',
+  'review.saving',
+  'review.discard',
+  'review.discarded',
+  'review.gone',
+  'review.error',
+  'review.fine',
+  'review.until',
+  'review.in_form',
+  'receipt.title',
+  'receipt.free',
+  'receipt.cost',
+  'receipt.see',
+  'receipt.edit',
+  'receipt.remove',
+  'receipt.mine',
+  'receipt.error',
 ] as const;
 
 export type RoxiLabels = Record<(typeof KEYS)[number], string>;
 
 /** Labels whose placeholder the panel fills in itself. */
-const KEPT_PLACEHOLDERS: Partial<Record<(typeof KEYS)[number], string>> = { hello: 'name', waited: 'seconds', saved: 'title', confirm_title: 'connection', share_text: 'title' };
+const KEPT_PLACEHOLDERS: Partial<Record<(typeof KEYS)[number], string>> = { hello: 'name', waited: 'seconds', saved: 'title', confirm_title: 'connection', share_text: 'title', 'review.until': 'date', 'receipt.free': 'left', 'receipt.cost': 'cost' };
 
 export function roxiLabels(t: Translator): RoxiLabels {
   const labels = {} as RoxiLabels;

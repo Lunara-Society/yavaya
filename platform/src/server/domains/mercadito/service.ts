@@ -3,6 +3,7 @@ import { dayKey, notify } from '@/server/domains/notifications/service';
 import { and, asc, count, desc, eq, gt, inArray, ne, notInArray, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import {
+  auditEvents,
   locations,
   media,
   mercaditoListingPhotos,
@@ -193,6 +194,12 @@ export async function publishListing(
     sellerUserId: string;
     input: ListingInput;
     images: StoredImage[];
+    /**
+     * Photos already stored with rows of their own, placed before `images`:
+     * a Roxi draft's, handed over by claimDraftForPublish in this same
+     * transaction. Their rows are not written again.
+     */
+    attachedImages?: StoredImage[];
     audit?: AuditContext;
     /** Set when Roxi drafted the listing: the member still read it, priced it and sent it. */
     assistedBy?: 'roxi';
@@ -249,7 +256,9 @@ export async function publishListing(
     }
   }
 
-  checkPhotoCount(params.images.length);
+  const attached = params.attachedImages ?? [];
+  const images = [...attached, ...params.images];
+  checkPhotoCount(images.length);
   await resolvePlace(tx, input.locationId, input.currency);
   // Counted before this listing exists: the allowance is "this many open at
   // once", so closing or selling one frees its place for the next.
@@ -259,7 +268,7 @@ export async function publishListing(
     listingId: params.listingId,
     sellerUserId: params.sellerUserId,
     title: input.title,
-    images: params.images,
+    images,
   });
 
   await insertMediaRows(tx, { ownerUserId: params.sellerUserId, purpose: PHOTO_PURPOSE, images: params.images });
@@ -276,7 +285,7 @@ export async function publishListing(
     flags,
   });
   await tx.insert(mercaditoListingPhotos).values(
-    params.images.map((image, position) => ({ listingId: params.listingId, mediaId: image.id, position })),
+    images.map((image, position) => ({ listingId: params.listingId, mediaId: image.id, position })),
   );
 
   // Last of the writes that can fail on the member's side (not enough
@@ -311,7 +320,7 @@ export async function publishListing(
     userAgentHash: params.audit?.userAgentHash ?? null,
     metadata: {
       category: input.category,
-      photos: params.images.length,
+      photos: images.length,
       cost: charge.cost,
       flags,
       ...(params.assistedBy ? { assistedBy: params.assistedBy } : {}),
@@ -320,6 +329,65 @@ export async function publishListing(
   await notifySavedSearchMatches(tx, { listingId: params.listingId, sellerUserId: params.sellerUserId });
 
   return { listingId: params.listingId, deduplicated: false, cost: charge.cost };
+}
+
+/**
+ * What publishing one of the member's own listings came to, for Roxi's
+ * receipt (docs/roxi/FLAGSHIP.md). The cost is read from the record written
+ * in the publish transaction (its audit event), never from what a browser
+ * reports; the allowance is today's, so the receipt can say how many free
+ * listings are left. Someone else's listing, or one never published: null.
+ */
+export async function publishReceipt(
+  executor: Executor,
+  params: { sellerUserId: string; listingId: string },
+): Promise<{
+  id: string;
+  title: string;
+  priceMinor: number;
+  currencyCode: string;
+  status: string;
+  cost: number;
+  assistedByRoxi: boolean;
+  publishedAt: Date;
+  openNow: number;
+  freeOpenListings: number;
+} | null> {
+  const [listing] = await executor
+    .select({
+      id: mercaditoListings.id,
+      title: mercaditoListings.title,
+      priceMinor: mercaditoListings.priceMinor,
+      currencyCode: mercaditoListings.currencyCode,
+      status: mercaditoListings.status,
+      publishedAt: mercaditoListings.publishedAt,
+    })
+    .from(mercaditoListings)
+    .where(and(eq(mercaditoListings.id, params.listingId), eq(mercaditoListings.sellerUserId, params.sellerUserId)))
+    .limit(1);
+  if (!listing) return null;
+  const [event] = await executor
+    .select({ metadata: auditEvents.metadata })
+    .from(auditEvents)
+    .where(
+      and(
+        eq(auditEvents.action, 'mercadito.listing_published'),
+        eq(auditEvents.subjectType, 'mercadito_listing'),
+        eq(auditEvents.subjectId, params.listingId),
+        eq(auditEvents.actorUserId, params.sellerUserId),
+      ),
+    )
+    .limit(1);
+  if (!event) return null;
+  const [{ freeOpenListings }, openNow] = await Promise.all([pricingRules(executor), openListingCount(executor, params.sellerUserId)]);
+  const cost = Number(event.metadata.cost ?? 0);
+  return {
+    ...listing,
+    cost: Number.isFinite(cost) ? cost : 0,
+    assistedByRoxi: event.metadata.assistedBy === 'roxi',
+    openNow,
+    freeOpenListings,
+  };
 }
 
 /**

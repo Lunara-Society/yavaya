@@ -2187,6 +2187,52 @@ a.live-text:hover { text-decoration: underline; }
 .roxi-results span { color: var(--rx-ink-2); font-size: 0.85rem; line-height: 1.4; }
 .roxi-results em { margin-top: auto; align-self: flex-end; color: var(--rx-gold-hi); font-style: normal; display: inline-grid; }
 
+/* The review card and the receipt (docs/roxi/FLAGSHIP.md): a listing Roxi drafted, shown back before anything opens; then what publishing it came to. */
+.roxi-review { align-self: stretch; animation: roxi-rise 0.5s var(--rx-ease) both; }
+.roxi-review .roxi-results-title { margin: 0 0 9px; }
+.roxi-review-card {
+  display: grid; gap: 10px; padding: 14px; border-radius: 20px;
+  background: linear-gradient(180deg, rgba(248, 246, 241, 0.07), rgba(248, 246, 241, 0.02)); border: 1px solid rgba(212, 175, 55, 0.4);
+}
+.roxi-review-photos { list-style: none; margin: 0 -14px; padding: 0 14px 2px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+.roxi-review-photos::-webkit-scrollbar { display: none; }
+.roxi-review-photos li { position: relative; flex: none; }
+.roxi-review-photos img { display: block; width: 92px; height: 92px; border-radius: 14px; object-fit: cover; border: 1px solid var(--rx-hair); }
+.roxi-review-photos button {
+  position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border-radius: 999px; display: grid; place-items: center; cursor: pointer;
+  border: 1px solid var(--rx-hair); background: rgba(10, 12, 20, 0.72); color: var(--rx-ink); font: 700 1rem/1 var(--sans);
+}
+.roxi-review-photos button:hover { color: var(--rx-gold-hi); }
+.roxi-review-field { display: grid; gap: 4px; min-width: 0; }
+.roxi-review-field > span:first-child { color: var(--rx-ink-3); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.roxi-review-field input, .roxi-review-field textarea {
+  width: 100%; min-height: 40px; padding: 8px 11px; border-radius: 12px; font: 500 0.92rem/1.4 var(--sans); color: var(--rx-ink);
+  background: rgba(6, 10, 20, 0.55); border: 1px solid var(--rx-hair); resize: vertical;
+}
+.roxi-review-field input:focus-visible, .roxi-review-field textarea:focus-visible { outline: 2px solid var(--rx-gold-hi); outline-offset: 1px; }
+.roxi-review-field p { margin: 0; color: var(--rx-ink-2); font-size: 0.88rem; line-height: 1.4; }
+.roxi-review-row { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 10px; align-items: start; }
+.roxi-review-price { display: flex; align-items: center; gap: 6px; }
+.roxi-review-price em { font-style: normal; color: var(--rx-gold-hi); font-size: 0.82rem; font-weight: 700; }
+.roxi-review-kind { margin: 0; color: var(--rx-ink-2); font-size: 0.86rem; }
+.roxi-review-error { margin: 0; color: #ffb4a8; font-size: 0.86rem; }
+.roxi-review-fine { margin: 2px 0 0; color: var(--rx-ink-3); font-size: 0.78rem; line-height: 1.45; text-align: center; }
+.roxi-review .roxi-confirm-actions .roxi-retry, .roxi-receipt .roxi-confirm-actions .roxi-retry { margin: 4px 0 0; }
+/* The card's one way forward, in the gold of her talk button. */
+.roxi-retry.is-go { color: #1d1404; border-color: transparent; background: linear-gradient(180deg, #f3da7e, #d4af37 52%, #ae8720); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+.roxi-review-in-form { margin: 0; }
+.roxi-review-in-form strong { font-weight: 650; overflow-wrap: anywhere; }
+.roxi-review-in-form span { color: var(--rx-ink-2); font-size: 0.88rem; line-height: 1.45; }
+.roxi-receipt {
+  align-self: stretch; display: grid; gap: 6px; padding: 14px; border-radius: 20px; animation: roxi-rise 0.5s var(--rx-ease) both;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.14), rgba(212, 175, 55, 0.04)); border: 1px solid rgba(243, 220, 138, 0.42);
+}
+.roxi-receipt p { margin: 0; }
+.roxi-receipt-head { font-weight: 800; color: var(--rx-gold-hi); letter-spacing: 0.02em; }
+.roxi-receipt-what { overflow-wrap: anywhere; }
+.roxi-receipt-cost { color: var(--rx-ink-2); font-size: 0.9rem; }
+.roxi-receipt .roxi-confirm-actions { flex-wrap: wrap; }
+
 /* Controls. */
 .roxi-controls { padding: 8px 16px 0; }
 .roxi-talk {

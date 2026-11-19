@@ -36,6 +36,15 @@ export type ToolContext = {
   confirm?: (summary: { connection: string; tool: string; lines: string[] }) => Promise<boolean>;
   /** A line in the conversation that says what was saved where, with a link to see it. */
   saved?: (text: string, href: string) => void;
+  /**
+   * The listing flagship (docs/roxi/FLAGSHIP.md), when the member has it:
+   * keeps the draft and its photos on the server and shows the review card.
+   * Absent, a listing opens the form in this tab as it always did.
+   */
+  saveDraft?: (
+    fields: Record<string, string>,
+    photos: File[],
+  ) => Promise<{ ok: true; draft: { id: string; photos: unknown[]; place: { label: string } | null } } | { ok: false; error: string; message?: string }>;
 };
 
 /*
@@ -215,8 +224,8 @@ function written(fields: Record<string, string | boolean>): Record<string, strin
   return Object.fromEntries(Object.entries(fields).filter(([, value]) => value !== ''));
 }
 
-function prepare(ctx: ToolContext, form: RoxiForm, path: string, fields: Record<string, string | boolean>, withPhotos: boolean) {
-  const files = withPhotos ? ctx.takePhotos() : [];
+function prepare(ctx: ToolContext, form: RoxiForm, path: string, fields: Record<string, string | boolean>, withPhotos: boolean, taken?: File[]) {
+  const files = taken ?? (withPhotos ? ctx.takePhotos() : []);
   putDraft({ form, fields, files });
   ctx.task?.();
   const [target] = path.split('?');
@@ -269,13 +278,36 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         return reply({ ok: false, error: 'ambiguous_place', options: place.options.map((option) => ({ place_id: option.id, name: option.name, where: option.context })), ask_member: 'which of these places they mean' });
       }
       if (place.kind === 'one') fields.locationId = place.place.id;
-      const prepared = JSON.parse(prepare(ctx, 'mercadito_listing', '/mercadito/publish', fields, true)) as Record<string, unknown>;
-      return reply({
-        ...prepared,
+      const placeNotes = {
         ...(place.kind === 'one' ? { place: `${place.place.name}, ${place.place.context}` } : {}),
         // Said but not found: the member picks it in the form. Roxi must not name a town for them.
         ...(place.kind === 'unknown' ? { place_not_found: place.asked, member_must_choose_place: true } : {}),
-      });
+      };
+
+      // The flagship: kept on the server and shown as a card to review; nothing opens until the member taps it.
+      let taken: File[] | undefined;
+      if (ctx.saveDraft) {
+        taken = ctx.takePhotos();
+        const saved = await ctx.saveDraft(fields, taken);
+        if (saved.ok) {
+          ctx.task?.();
+          return reply({
+            ok: true,
+            shown: 'review_card',
+            draft_id: saved.draft.id,
+            photos_attached: saved.draft.photos.length,
+            ...placeNotes,
+            member_must:
+              'look at the card in the panel: they can change the title, price and description there, then tap "Revisar y publicar" to open the filled-in form and publish it themselves. Nothing is published yet. The draft is kept for a few days, on their other devices too.',
+          });
+        }
+        // Refusals the member should hear; anything else (no storage, the network) opens the form here as before, photos and all.
+        if (saved.error === 'validation_failed' || saved.error === 'too_many' || saved.error === 'too_large') {
+          return reply({ ok: false, error: saved.error, ...(saved.message ? { message: saved.message } : {}) });
+        }
+      }
+      const prepared = JSON.parse(prepare(ctx, 'mercadito_listing', '/mercadito/publish', fields, true, taken)) as Record<string, unknown>;
+      return reply({ ...prepared, ...placeNotes });
     },
 
     async prepare_post(parameters) {

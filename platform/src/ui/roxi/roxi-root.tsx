@@ -9,6 +9,7 @@ import { RoxiPresence } from './presence';
 import { ROXI_ASK_EVENT } from './ask';
 import { RoxiWelcomeNote, type RoxiWelcome } from './welcome-note';
 import { publishRoxiState } from './state-bus';
+import { ROXI_PUBLISHED_EVENT, takePublished } from './receipt';
 
 const RoxiPanel = dynamic(() => import('./roxi-panel'), { ssr: false });
 // Opened from the panel or the check-in, rarely: it loads when asked for, not with every page.
@@ -16,7 +17,17 @@ const RoxiSettingsSheet = dynamic(() => import('./settings-sheet').then((module)
 
 type Session =
   | { enabled: false }
-  | { enabled: true; locale: string; member: RoxiMember; labels: RoxiLabels; refusals: Record<string, string>; presence: RoxiPresenceLabels; welcome: RoxiWelcome | null };
+  | {
+      enabled: true;
+      locale: string;
+      member: RoxiMember;
+      labels: RoxiLabels;
+      refusals: Record<string, string>;
+      presence: RoxiPresenceLabels;
+      welcome: RoxiWelcome | null;
+      /** The listing flagship: drafts on the server, the review card, the receipt (docs/roxi/FLAGSHIP.md). */
+      review?: boolean;
+    };
 
 /**
  * Pages where Roxi is not offered, and where an open conversation ends:
@@ -49,6 +60,7 @@ export function RoxiRoot() {
   const [settings, setSettings] = useState(false);
   const [welcome, setWelcome] = useState<RoxiWelcome | null>(null);
   const [ask, setAsk] = useState<{ text: string; id: number } | null>(null);
+  const [published, setPublished] = useState<{ listingId: string; id: number } | null>(null);
   const quiet = QUIET.test(pathname);
 
   useEffect(() => {
@@ -126,6 +138,27 @@ export function RoxiRoot() {
     return () => window.removeEventListener(ROXI_ASK_EVENT, onAsk);
   }, []);
 
+  /*
+   * A listing Roxi drafted was just published (receipt.ts): she opens with the
+   * receipt, so the member sees what it cost and where it is, and a live
+   * conversation is told the same. Taken from storage too, for a publish that
+   * happened while she was not on the page.
+   */
+  const review = Boolean(session?.enabled && session.review);
+  useEffect(() => {
+    if (!review || quiet) return;
+    const show = () => {
+      const listingId = takePublished();
+      if (!listingId) return;
+      setWelcome(null);
+      setPublished({ listingId, id: Date.now() });
+      setOpen(true);
+    };
+    show();
+    window.addEventListener(ROXI_PUBLISHED_EVENT, show);
+    return () => window.removeEventListener(ROXI_PUBLISHED_EVENT, show);
+  }, [review, quiet, pathname]);
+
   if (!session?.enabled || quiet) return null;
 
   const show = (how: RoxiOpening) => {
@@ -144,6 +177,8 @@ export function RoxiRoot() {
           refusals={session.refusals}
           openedBy={opening}
           ask={ask}
+          review={review}
+          published={published}
           onSettings={() => setSettings(true)}
           onClose={() => {
             setOpen(false);

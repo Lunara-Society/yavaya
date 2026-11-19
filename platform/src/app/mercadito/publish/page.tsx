@@ -16,6 +16,8 @@ import { loginHref } from '@/server/auth/return-path';
 import { formatDate } from '@/ui/mercadito/format';
 import { limitsStanding } from '@/ui/mercadito/limits';
 import type { Translator } from '@/i18n';
+import { getListingDraft, markListingDraftOpened, roxiReviewOn } from '@/server/domains/roxi/drafts';
+import { placeById } from '@/server/domains/geography/places';
 
 export const dynamic = 'force-dynamic';
 
@@ -60,7 +62,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * and said plainly, so the form only appears when submitting it can work.
  * The server checks all of it again; this page is courtesy, not security.
  */
-export default async function PublishPage({ searchParams }: { searchParams: Promise<{ wa?: string; cat?: string }> }) {
+export default async function PublishPage({ searchParams }: { searchParams: Promise<{ wa?: string; cat?: string; draft?: string }> }) {
   const query = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
 
@@ -139,6 +141,17 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
 
   const form = listingFormProps(t, price === 0 ? t('mercadito.form.submit_free') : t('mercadito.form.submit_create', { cost: price }));
 
+  /*
+   * A listing Roxi drafted (docs/roxi/FLAGSHIP.md): the form opens filled in
+   * from the server's copy, photos included, on whatever device the member
+   * is on. The listing gets the draft's id, so publishing it twice publishes
+   * it once. Opening it is the funnel's third step, counted once per draft.
+   */
+  const wantsDraft = typeof query.draft === 'string' && query.draft !== '';
+  const draft = wantsDraft && (await roxiReviewOn(db(), userId)) ? await getListingDraft(db(), { userId, id: query.draft }) : null;
+  if (draft) await db().transaction((tx) => markListingDraftOpened(tx, { userId, id: draft.id }));
+  const draftPlace = draft?.fields.locationId ? await placeById(db(), draft.fields.locationId, locale) : null;
+
   return shell(
     <>
       <Limits t={t} rules={rules} you={you} />
@@ -155,15 +168,35 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
           <noscript>
             <p className="mk-banner">{t('mercadito.form.needs_js')}</p>
           </noscript>
+          {wantsDraft && !draft ? <p className="mk-banner">{t('roxi.draft.gone_notice')}</p> : null}
           {/* A fresh id per visit names this listing before it exists, so a
               retried submission cannot publish (or charge) twice. */}
-          <ListingForm
-            mode="create"
-            listingId={randomUUID()}
-            {...form}
-            prefillNotice={t('roxi.prefill.notice')}
-            presetCategory={(LISTING_CATEGORIES as readonly string[]).includes(query.cat ?? '') ? query.cat : undefined}
-          />
+          {draft ? (
+            <ListingForm
+              mode="create"
+              listingId={draft.id}
+              {...form}
+              initial={{
+                title: draft.fields.title ?? '',
+                description: draft.fields.description ?? '',
+                price: draft.fields.price ?? '',
+                currency: draftPlace?.currencyCode ?? '',
+                category: draft.fields.category ?? '',
+                condition: draft.fields.condition ?? '',
+                locationId: draftPlace?.id ?? '',
+                photoIds: draft.photoIds,
+              }}
+              draft={{ id: draft.id, notice: t('roxi.draft.form_notice') }}
+            />
+          ) : (
+            <ListingForm
+              mode="create"
+              listingId={randomUUID()}
+              {...form}
+              prefillNotice={t('roxi.prefill.notice')}
+              presetCategory={(LISTING_CATEGORIES as readonly string[]).includes(query.cat ?? '') ? query.cat : undefined}
+            />
+          )}
         </>
       )}
     </>,

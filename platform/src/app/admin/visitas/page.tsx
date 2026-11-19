@@ -9,7 +9,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { currentSession } from '@/server/auth/context';
 import { intlLocale } from '@/ui/mercadito/format';
 import { siteStats, type VitalSummary } from '@/server/domains/stats/service';
-import { ROXI_HELP_EVENTS, roxiHelpTotals } from '@/server/domains/roxi/help-stats';
+import { ROXI_FUNNEL_EVENTS, ROXI_HELP_EVENTS, roxiHelpTotals } from '@/server/domains/roxi/help-stats';
 import { METRIC_BANDS, type Metric } from '@/server/domains/stats/rules';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { byCourse, signalTotals } from '@/server/domains/play/signals';
@@ -40,7 +40,11 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
   const days = (PERIODS as readonly number[]).includes(asked) ? asked : 28;
   const stats = await siteStats(db(), { userId, status: session.user.status }, { days });
   const roxi = await roxiHelpTotals(db(), { userId, status: session.user.status }, { days });
-  const roxiAny = ROXI_HELP_EVENTS.some((event) => roxi[event] > 0);
+  // Her initiatives, and apart from them the listing flagship's funnel (docs/roxi/FLAGSHIP.md).
+  const initiatives = ROXI_HELP_EVENTS.filter((event) => !(ROXI_FUNNEL_EVENTS as readonly string[]).includes(event));
+  const roxiAny = initiatives.some((event) => roxi[event] > 0);
+  const funnelStart = roxi[ROXI_FUNNEL_EVENTS[0]];
+  const funnelAny = ROXI_FUNNEL_EVENTS.some((event) => roxi[event] > 0);
   const play = byCourse(await signalTotals(db(), { userId, status: session.user.status }, days));
   const courseLabel = (course: string) =>
     t((course === 'dia' ? 'play.course.name.daily' : course === 'rush' ? 'play.menu.rush' : ['barrio', 'diaspora'].includes(course) ? `play.course.name.${course}` : `play.trials.name.${course}`) as MessageKey);
@@ -208,10 +212,38 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
                 </tr>
               </thead>
               <tbody>
-                {ROXI_HELP_EVENTS.map((event) => (
+                {initiatives.map((event) => (
                   <tr key={event}>
                     <td>{t(`stats.roxi.event.${event}` as MessageKey)}</td>
                     <td>{n(roxi[event])}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        <section className="card vs-card" aria-labelledby="vs-roxi-funnel">
+          <h2 id="vs-roxi-funnel">{t('stats.roxi_funnel.title')}</h2>
+          <p className="muted">{t('stats.roxi_funnel.note')}</p>
+          {!funnelAny ? (
+            <p className="muted mb0">{t('stats.empty')}</p>
+          ) : (
+            <table className="vs-table">
+              <thead>
+                <tr>
+                  <th scope="col">{t('stats.roxi_funnel.col_step')}</th>
+                  <th scope="col">{t('stats.roxi.col_count')}</th>
+                  <th scope="col">{t('stats.roxi_funnel.col_share')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ROXI_FUNNEL_EVENTS.map((event) => (
+                  <tr key={event}>
+                    <td>{t(`stats.roxi.event.${event}` as MessageKey)}</td>
+                    <td>{n(roxi[event])}</td>
+                    {/* Of the first step; a draft can also begin without photos, so a later step may pass 100 %. */}
+                    <td>{funnelStart > 0 ? `${Math.round((roxi[event] / funnelStart) * 100)} %` : '—'}</td>
                   </tr>
                 ))}
               </tbody>

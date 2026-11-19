@@ -69,6 +69,19 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - a light gameplay body;
   - the inspector, and the validation suite.
 
+## Roxi's listing flagship, slice 1: website (19 November, Roxi Sovereign phases I + II)
+- **Owner's decisions (19 Nov):** "Website first, then WhatsApp"; Roxi's visual system is called **Presence** (Genesis stays the Play character). The brief is a consolidation directive, not a replacement: the audit is at https://claude.ai/artifact/BtWJbPDhd8KVNxbdwbuu1z.
+- **Built:**
+  - Roxi's listing drafts are kept on the server with their photos (private until published, deleted after 7 days).
+  - They show as a review card in her panel, editable, waiting on every device.
+  - "Revisar y publicar" opens the filled-in form; the listing gets the draft's id, so it publishes once.
+  - Afterwards, a receipt (free or token cost, how to edit or withdraw), read from the publish record and told to Roxi.
+  - A four-step funnel on Admin → Visitas.
+  - Everything is in `platform/docs/roxi/FLAGSHIP.md`.
+- **Switch:** Admin → Diseño del sitio → "Roxi: borradores, revisión y recibo" (`roxi.review`), **off**. While off, only the owner has it; everyone else keeps Roxi as she was (the form opens directly). Turning it on is the owner's call after trying it.
+- **Verified:** 14 integration tests, the browser flow (24 checks, stand-in agent and bucket), and the old flow (31 checks, unchanged). Not verified with the real agent: ElevenLabs is blocked (below). The website agent's prompt and the `prepare_listing` description now say what to do with the card and the receipt (repo and agent identical; agent version `agtvrsn_2901m7tp1wsef70rzefnzxd15mg2`, previous `agtvrsn_7601m7emkkwmf8ebnxw4wzre69qc` for rollback). The changes only apply when the tool answers `shown: review_card`.
+- **Next:** slice 2, WhatsApp. A verified member sends photos, price and place; Roxi drafts in the chat and sends a one-tap link to the same card/form; she confirms after publishing. It needs Dualhook media download checked first.
+
 ## ⚠ ElevenLabs blocked by a failed payment (found 19 November)
 - From 18 Nov about 16:58 UTC, every conversation with Roxi on WhatsApp fails before she says a word: ElevenLabs closes it with "The AI agent you are trying to reach is not available" (code 3000), and the server logs `whatsapp.roxi outcome=no_answer`. People who wrote in got no answer.
 - Cause, from ElevenLabs itself (19 Nov): "Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage." It blocks everything ElevenLabs does for Yavaya: WhatsApp Roxi, voice notes, the website's voice.

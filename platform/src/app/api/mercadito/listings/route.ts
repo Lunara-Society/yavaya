@@ -9,6 +9,7 @@ import { errors, toClientError } from '@/server/errors';
 import { discardStored, storeImages, type StoredImage } from '@/server/domains/media/service';
 import { PHOTO_PURPOSE, publishListing, updateListing } from '@/server/domains/mercadito/service';
 import { listingInputSchema } from '@/server/domains/mercadito/rules';
+import { claimDraftForPublish } from '@/server/domains/roxi/drafts';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,6 +78,10 @@ export async function POST(request: Request) {
 
   const files = form.getAll('photos').filter((entry): entry is File => entry instanceof File && entry.size > 0);
   const keep = form.getAll('keep').map(String).filter((id) => UUID.test(id));
+  // A listing Roxi drafted (docs/roxi/FLAGSHIP.md) is published under the
+  // draft's own id, and `keep` names the draft photos the member kept.
+  const draftId = mode === 'create' ? String(form.get('roxiDraft') ?? '') : '';
+  if (draftId && draftId !== listingId) return fail(errors.validation('error.validation_failed'));
   if (files.length > MERCADITO_RULES.maxPhotos) {
     return fail(errors.validation('mercadito.error.photo_count', ruleParams()));
   }
@@ -104,16 +109,22 @@ export async function POST(request: Request) {
     });
 
     if (mode === 'create') {
-      const result = await db().transaction((tx) =>
-        publishListing(tx, {
+      let dropped: string[] = [];
+      const result = await db().transaction(async (tx) => {
+        // Inside the publish transaction: a refused publish leaves the draft, photos and all, as it was.
+        const claimed = draftId ? await claimDraftForPublish(tx, { userId, draftId, keepPhotoIds: keep }) : null;
+        dropped = claimed?.dropped ?? [];
+        return publishListing(tx, {
           listingId,
           sellerUserId: userId,
           input: parsed.data,
           images: stored,
+          attachedImages: claimed?.images,
           audit,
-          assistedBy: form.get('assistant') === 'roxi' ? 'roxi' : undefined,
-        }),
-      );
+          assistedBy: draftId || form.get('assistant') === 'roxi' ? 'roxi' : undefined,
+        });
+      });
+      await discardStored(dropped.map((storageKey) => ({ storageKey })));
       // A replayed submission stored a second copy of the photos that the
       // first one already holds; those copies are not referenced by anything.
       if (result.deduplicated) await discardStored(stored);

@@ -128,9 +128,11 @@ export async function markRemoved(tx: Executor, ids: string[]): Promise<void> {
  * Purposes whose images the public route never serves. Identity documents are
  * read through a route that checks the reader's permission; a member's
  * profile photos through one that checks who the member chose to show them
- * to (/api/identity/media — a draft photo is its owner's alone).
+ * to (/api/identity/media — a draft photo is its owner's alone). The photos
+ * of a listing Roxi drafted through /api/roxi/drafts/photo, to their owner
+ * only, until publishing makes them listing photos.
  */
-export const PRIVATE_MEDIA_PURPOSES: readonly string[] = ['go_driver_document', 'identity_avatar', 'identity_cover', 'identity_background'];
+export const PRIVATE_MEDIA_PURPOSES: readonly string[] = ['go_driver_document', 'identity_avatar', 'identity_cover', 'identity_background', 'roxi_draft'];
 
 /** An active image's bytes, for the serving route. Private images only when the caller says the reader may see them. */
 export async function readActiveImage(

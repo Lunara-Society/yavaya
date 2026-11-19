@@ -165,3 +165,43 @@ export const roxiBusinessEntries = pgTable(
   },
   (table) => [index('roxi_business_entries_user_idx').on(table.userId, table.occurredOn)],
 );
+
+/**
+ * A listing Roxi drafted with a member and they have not published yet
+ * (docs/roxi/FLAGSHIP.md): what she wrote, and the photos they sent her.
+ *
+ * Kept on the server so it survives a closed tab and opens on another
+ * device, and so a draft started on WhatsApp can be finished on the site.
+ * One per member and form: a new draft replaces the one before.
+ *
+ * The id is also the id the listing will have, which is what makes
+ * publishing it twice (two tabs, two devices, a retried tap) publish once.
+ *
+ * The words are in clear, like the listing they become; the photos are
+ * private media (purpose `roxi_draft`) served only to their owner until
+ * they are published. A draft goes when it is published, discarded, or
+ * when `expires_at` passes (the `roxi-upkeep` job).
+ */
+export const roxiDrafts = pgTable(
+  'roxi_drafts',
+  {
+    id: uuid('id').primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    /** 'mercadito_listing' today. */
+    form: text('form').notNull(),
+    /** The form's fields by name, as the form takes them (title, description, price, category, condition, locationId). */
+    fields: jsonb('fields').$type<Record<string, string>>().notNull(),
+    /** The draft's photos (media ids), in order. */
+    photoIds: jsonb('photo_ids').$type<string[]>().notNull().default([]),
+    /** 'web' | 'whatsapp': where the draft was made. */
+    source: text('source').notNull().default('web'),
+    /** When the member first opened the filled-in form from it. */
+    openedAt: timestamp('opened_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [uniqueIndex('roxi_drafts_user_form_key').on(table.userId, table.form), index('roxi_drafts_expires_idx').on(table.expiresAt)],
+);

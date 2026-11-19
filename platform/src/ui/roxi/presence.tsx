@@ -38,7 +38,7 @@ export type PresenceEvent =
   | 'call_declined'
   | 'call_missed';
 
-export function reportPresence(event: PresenceEvent | 'prompted_task'): void {
+export function reportPresence(event: PresenceEvent | 'prompted_task' | 'listing_photos'): void {
   void fetch('/api/roxi/presence', {
     method: 'POST',
     credentials: 'same-origin',

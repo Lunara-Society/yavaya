@@ -64,6 +64,8 @@ export const RATE_LIMITS = {
   roxiConversation: { bucket: 'roxi_conversation', limit: 20, windowSeconds: 24 * 60 * 60 },
   /** Searches and look-ups Roxi makes for a member: enough for a busy conversation, not for scraping. */
   roxiLookup: { bucket: 'roxi_lookup', limit: 120, windowSeconds: 60 * 60 },
+  /** Listing drafts Roxi saves with photos (docs/roxi/FLAGSHIP.md): each one stores images, so fewer than look-ups. */
+  roxiDraft: { bucket: 'roxi_draft', limit: 30, windowSeconds: 60 * 60 },
   /** Appeals from a sanction notice, per network: one appeal each, a few tries for typos. */
   appeal: { bucket: 'appeal', limit: 5, windowSeconds: 60 * 60 },
   /** Publishing during the 72-hour monitoring window. */

@@ -4,6 +4,7 @@ import { roxiAvailability, roxiMember } from '@/server/domains/roxi/service';
 import type { MessageKey } from '@/i18n';
 import { pendingWelcome } from '@/server/domains/roxi/welcome';
 import { roxiLabels, roxiPresenceLabels, roxiRefusals, roxiWelcomeLabels } from '@/ui/roxi/labels';
+import { roxiReviewOn } from '@/server/domains/roxi/drafts';
 import { json, member } from '../shared';
 
 export const dynamic = 'force-dynamic';
@@ -33,5 +34,7 @@ export async function GET() {
         labels: roxiWelcomeLabels(t),
       }
     : null;
-  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), refusals: roxiRefusals(), presence: roxiPresenceLabels(t), welcome });
+  // The listing flagship (docs/roxi/FLAGSHIP.md): server drafts, the review card and the receipt. Every route it uses checks again.
+  const review = await roxiReviewOn(db(), session.user.userId);
+  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), refusals: roxiRefusals(), presence: roxiPresenceLabels(t), welcome, review });
 }

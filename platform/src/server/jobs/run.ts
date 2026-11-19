@@ -23,6 +23,8 @@ import { purgeSiteStats } from '@/server/domains/stats/service';
 import { meterOpenConversations, plansUpkeep } from '@/server/domains/roxi/billing';
 import { deliverDueReminders } from '@/server/domains/roxi/items';
 import { runWatches, sendDailyOpportunities } from '@/server/domains/roxi/world';
+import { expireListingDrafts } from '@/server/domains/roxi/drafts';
+import { discardStored } from '@/server/domains/media/service';
 import { flushJobReporting, reportJobError, reportJobFailure, startJobReporting } from '@/server/observability/jobs';
 
 /**
@@ -181,9 +183,12 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     const reminders = await deliverDueReminders(db());
     const watches = await runWatches(db());
     const daily = await sendDailyOpportunities(db());
-    if (meter.metered + meter.unmetered + plans.renewed + plans.ended + plans.replaced + reminders.sent + watches.sent + daily.sent === 0) return { summary: 'no Roxi upkeep needed' };
+    // Listing drafts past their time, photos and all: rows in the transaction, objects once it commits.
+    const drafts = await db().transaction((tx) => expireListingDrafts(tx));
+    if (drafts.dropped.length) await discardStored(drafts.dropped.map((storageKey) => ({ storageKey })));
+    if (meter.metered + meter.unmetered + plans.renewed + plans.ended + plans.replaced + reminders.sent + watches.sent + daily.sent + drafts.expired === 0) return { summary: 'no Roxi upkeep needed' };
     return {
-      summary: `metered ${meter.metered} conversation(s) (${meter.waiting} waiting, ${meter.unmetered} never reported); ${plans.renewed} plan(s) renewed, ${plans.ended} ended, ${plans.replaced} replaced subscription(s) cancelled; ${reminders.sent} reminder(s) and capsule(s) sent; ${watches.sent} watch match(es) from ${watches.checked} watch(es); ${daily.sent} daily opportunit(ies) for ${daily.members} member(s)`,
+      summary: `metered ${meter.metered} conversation(s) (${meter.waiting} waiting, ${meter.unmetered} never reported); ${plans.renewed} plan(s) renewed, ${plans.ended} ended, ${plans.replaced} replaced subscription(s) cancelled; ${reminders.sent} reminder(s) and capsule(s) sent; ${watches.sent} watch match(es) from ${watches.checked} watch(es); ${daily.sent} daily opportunit(ies) for ${daily.members} member(s); ${drafts.expired} listing draft(s) expired`,
     };
   },
 

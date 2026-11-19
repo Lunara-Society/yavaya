@@ -1378,6 +1378,19 @@ open a conversation, 2 credits per connector call, purchased credits valid
 and a one-month first period for a plan whose exact Stripe period is read at
 the first renewal.
 
+### Listing drafts Roxi keeps (docs/roxi/FLAGSHIP.md)
+
+Behind the `roxi.review` switch (Admin → Diseño del sitio, off by default;
+the owner has it while it is off). Needs media storage, like Mercadito:
+without it Roxi falls back to filling the form in the tab. Nothing to set.
+
+Not decided by the owner, chosen as a technical default and flagged here:
+**a draft and its photos are deleted 7 days after it was made or last edited**
+(`ROXI_RULES.draftKeepDays`, retunable as `roxi.draft_keep_days`). A week
+covers "I'll finish it at the weekend" without keeping unpublished photos
+for long. At most 30 drafts with photos per member per hour
+(`RATE_LIMITS.roxiDraft`), since each one stores images.
+
 ### Yavaya's own account (owner decision, 11 November 2026)
 
 One account, and only one, has Roxi Max with no payment and no credit limit:

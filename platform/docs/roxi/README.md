@@ -28,6 +28,10 @@ member's browser ──(voice/text, photos)──► ElevenLabs agent (speech, m
   never holds a Yavaya credential.
 - **Drafts** wait in memory in the tab (`src/ui/roxi/drafts.ts`) until the
   form takes them; `RoxiPrefill` fills the fields and attaches the photos.
+  A **Mercadito listing**, for members with the flagship switch
+  (`roxi.review`), is instead kept on the server with its photos, shown as a
+  review card in the panel, opened as the filled-in form from there, and
+  followed by a receipt once published: [`FLAGSHIP.md`](FLAGSHIP.md).
   Nothing is stored, and the server checks the form like any other. A listing
   published from a draft is marked `assistedBy: 'roxi'` in the audit record.
 - **Live status.** Every conversation starts with the capability register

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Conversation, type DisconnectionDetails } from '@elevenlabs/client';
 import { describeHealth, guardedVoiceStart, microphoneAlreadyAllowed, VoiceStartTimeout, outputSuspended, rememberedNativeRate, rememberNativeRate, resumeAudio, watchVoice, withNativeRateCapture, type VoiceProblem, boostVoice } from './voice-health';
 import { reportClientError } from '@/ui/components/client-error-report';
@@ -15,6 +15,8 @@ import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-q
 import { reportPresence } from './presence';
 import { ROXI_ASK_EVENT } from './ask';
 import { publishRoxiState } from './state-bus';
+import { primeDraft, RoxiReviewCard, type RoxiDraftView } from './review-card';
+import { RoxiReceiptCard, type RoxiReceipt } from './receipt-card';
 
 /**
  * The conversation with Roxi. Loaded only when a member opens it: the
@@ -56,7 +58,11 @@ type Entry =
   | { id: number; kind: 'photo'; url: string }
   /** An action outside Yavaya Roxi wants to take; nothing happens until the member taps Allow. */
   | { id: number; kind: 'confirm'; connection: string; tool: string; lines: string[]; state: 'open' | 'allowed' | 'declined' }
-  | { id: number; kind: 'results'; cards: RoxiResultCard[]; more: boolean };
+  | { id: number; kind: 'results'; cards: RoxiResultCard[]; more: boolean }
+  /** A listing Roxi drafted, shown back for review (review-card.tsx); its content lives on the server. */
+  | { id: number; kind: 'review'; draftId: string }
+  /** The receipt of a listing published from her draft (receipt-card.tsx). */
+  | { id: number; kind: 'receipt'; listingId: string };
 
 /** Something the member or Roxi said. */
 type Said = Extract<Entry, { kind: 'roxi' | 'you' }>;
@@ -124,7 +130,9 @@ function readLog(): KeptEntry[] {
         typeof entry === 'object' &&
         typeof (entry as KeptEntry).id === 'number' &&
         (((['roxi', 'you', 'note'] as const).includes((entry as { kind: 'roxi' }).kind) && typeof (entry as { text?: unknown }).text === 'string') ||
-          ((entry as { kind: string }).kind === 'results' && Array.isArray((entry as { cards?: unknown }).cards))),
+          ((entry as { kind: string }).kind === 'results' && Array.isArray((entry as { cards?: unknown }).cards)) ||
+          ((entry as { kind: string }).kind === 'review' && typeof (entry as { draftId?: unknown }).draftId === 'string') ||
+          ((entry as { kind: string }).kind === 'receipt' && typeof (entry as { listingId?: unknown }).listingId === 'string')),
     );
   } catch {
     return [];
@@ -139,6 +147,18 @@ function writeLog(entries: Entry[]): void {
   } catch {
     // Storage blocked: the conversation lasts as long as the panel.
   }
+}
+
+/**
+ * What Roxi is told when a listing from her draft is published: the facts on
+ * the receipt, from the server's record, so what she confirms is what happened.
+ */
+function receiptForRoxi(receipt: RoxiReceipt): string {
+  const cost =
+    receipt.cost === 0
+      ? `It was free: one of their ${receipt.freeOpenListings} free open listings (${receipt.freeLeft} free left).`
+      : `It cost ${receipt.cost} token(s), charged to their balance.`;
+  return `The member just published the listing "${receipt.title}" (${receipt.price}) from the draft you prepared. It is live at ${receipt.url}. ${cost} They can edit it at ${receipt.editUrl}, and take it down from its own page ("Retirar publicación"). A receipt with these facts is on screen. Confirm it to them in a sentence or two, and say nothing about it that is not here.`;
 }
 
 /** The latest message still waiting for its answer, if any. */
@@ -370,6 +390,8 @@ export default function RoxiPanel({
   refusals,
   openedBy = 'none',
   ask,
+  review = false,
+  published = null,
   onSettings,
   onClose,
 }: {
@@ -380,11 +402,17 @@ export default function RoxiPanel({
   openedBy?: RoxiOpening;
   /** A request from a button elsewhere on the site ("¿Qué necesitas hoy?"), sent as the member's first message. */
   ask?: { text: string; id: number } | null;
+  /** The listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the server, the review card, the receipt. */
+  review?: boolean;
+  /** A listing just published from her draft, for the receipt. */
+  published?: { listingId: string; id: number } | null;
   onSettings: () => void;
   onClose: () => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  // Which draft's form is open, if any (the card then points there). The panel renders only in the browser, so this needs no Suspense.
+  const formDraft = useSearchParams().get('draft');
   const pathRef = useRef(pathname);
   const [phase, setPhase] = useState<Phase>('idle');
   const [mode, setMode] = useState<Mode>('text');
@@ -504,6 +532,42 @@ export default function RoxiPanel({
     prompted.current = false;
     reportPresence('prompted_task');
   }, []);
+
+  /*
+   * The listing flagship (docs/roxi/FLAGSHIP.md). A draft waiting on the
+   * server comes back as its review card wherever the member opens Roxi:
+   * another tab, another device, after closing everything.
+   */
+  useEffect(() => {
+    if (!review) return;
+    let cancelled = false;
+    fetch('/api/roxi/drafts', { credentials: 'same-origin' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body: { ok?: boolean; draft?: RoxiDraftView | null } | null) => {
+        const waiting = body?.ok ? body.draft : null;
+        if (cancelled || !waiting) return;
+        primeDraft(waiting);
+        setEntries((current) =>
+          current.some((entry) => entry.kind === 'review' && entry.draftId === waiting.id) ? current : [...current, { id: nextId.current++, kind: 'review', draftId: waiting.id }],
+        );
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [review]);
+
+  // A listing just published from her draft: the receipt, in view, in place of the draft's card (the listing has the draft's id).
+  useEffect(() => {
+    if (!published) return;
+    setEntries((current) => {
+      const rest = current.filter((entry) => !(entry.kind === 'review' && entry.draftId === published.listingId));
+      return rest.some((entry) => entry.kind === 'receipt' && entry.listingId === published.listingId)
+        ? rest
+        : [...rest, { id: nextId.current++, kind: 'receipt', listingId: published.listingId }];
+    });
+    setAside(false);
+  }, [published]);
 
   // Answering Roxi's simulated call is the tap that starts a voice conversation.
   const answered = useRef(false);
@@ -628,6 +692,31 @@ export default function RoxiPanel({
         stepAside: () => {
           if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
         },
+        // The listing flagship: the draft is kept on the server and shown here for review, instead of opening the form at once.
+        saveDraft: review
+          ? async (fields, files) => {
+              const form = new FormData();
+              form.set('fields', JSON.stringify(fields));
+              for (const file of files) form.append('photos', file, file.name || 'photo.jpg');
+              // The card already on screen is the same listing worked on again: its photos stay and the new ones join them.
+              const onScreen = [...entriesRef.current].reverse().find((entry) => entry.kind === 'review');
+              if (onScreen?.kind === 'review') form.set('continue', onScreen.draftId);
+              try {
+                const response = await fetch('/api/roxi/drafts', { method: 'POST', credentials: 'same-origin', body: form });
+                const body = (await response.json().catch(() => null)) as { ok?: boolean; draft?: RoxiDraftView; error?: string; message?: string } | null;
+                if (!body?.ok || !body.draft) return { ok: false as const, error: body?.error ?? 'failed', message: body?.message };
+                primeDraft(body.draft);
+                // One card per draft: worked on again, its card moves to the end with what it now holds.
+                const saved = body.draft;
+                setEntries((current) => [...current.filter((entry) => !(entry.kind === 'review' && entry.draftId === saved.id)), { id: nextId.current++, kind: 'review', draftId: saved.id }]);
+                // The card is the thing to look at now: the panel stays in view, on a phone too.
+                setAside(false);
+                return { ok: true as const, draft: body.draft };
+              } catch {
+                return { ok: false as const, error: 'network' };
+              }
+            }
+          : undefined,
         saved: (text, href) => add({ kind: 'note', text: labels.saved.replace('{title}', text), link: { href, label: labels.saved_see } }),
         confirm: (summary) =>
           new Promise<boolean>((resolve) => {
@@ -644,7 +733,7 @@ export default function RoxiPanel({
             setEntries((current) => [...current, { id, kind: 'confirm', connection: summary.connection, tool: summary.tool, lines: summary.lines.slice(0, 4), state: 'open' }]);
           }),
       }),
-    [add, router, countPrompted, labels.saved, labels.saved_see],
+    [add, router, countPrompted, labels.saved, labels.saved_see, review],
   );
 
   /*
@@ -673,9 +762,18 @@ export default function RoxiPanel({
   /** What was said before, when switching from writing to voice: a new conversation that remembers. */
   const recap = () =>
     entries
-      .filter((entry): entry is Extract<Entry, { kind: 'roxi' | 'you' }> => (entry.kind === 'roxi' || entry.kind === 'you') && !entry.unanswered && !entry.greeting)
+      .filter(
+        (entry): entry is Extract<Entry, { kind: 'roxi' | 'you' | 'review' | 'receipt' }> =>
+          ((entry.kind === 'roxi' || entry.kind === 'you') && !entry.unanswered && !entry.greeting) || entry.kind === 'review' || entry.kind === 'receipt',
+      )
       .slice(-12)
-      .map((entry) => `${entry.kind === 'you' ? 'Member' : 'Roxi'}: ${entry.text}`)
+      .map((entry) =>
+        entry.kind === 'review'
+          ? 'Panel: Roxi showed the member a listing draft to review (kept on the server until they publish or discard it).'
+          : entry.kind === 'receipt'
+            ? 'Panel: the member published a listing from that draft, and the receipt was shown.'
+            : `${entry.kind === 'you' ? 'Member' : 'Roxi'}: ${entry.text}`,
+      )
       .join('\n')
       .slice(0, 3000);
 
@@ -926,6 +1024,8 @@ export default function RoxiPanel({
       }
       if (look) photoHashes.current.push(look.hash);
       const small = await shrink(file);
+      // The flagship's first step: photos sent to Roxi, counted once per batch a draft has not taken yet.
+      if (review && photos.current.every((photo) => photo.taken)) reportPresence('listing_photos');
       photos.current.push({ file: small, taken: false });
       add({ kind: 'photo', url: URL.createObjectURL(small) });
       for (const hint of look?.hints ?? []) add({ kind: 'note', text: labels[`photo_${hint}`] });
@@ -1142,7 +1242,7 @@ export default function RoxiPanel({
    * suggestions stay, in writing and in voice alike. A note (the microphone,
    * a restored conversation) or Roxi's spoken greeting does not take them away.
    */
-  const started = entries.some((entry) => entry.kind === 'you' || entry.kind === 'photo' || entry.kind === 'results');
+  const started = entries.some((entry) => entry.kind === 'you' || entry.kind === 'photo' || entry.kind === 'results' || entry.kind === 'review' || entry.kind === 'receipt');
   const welcome = !started && !voice;
 
   // The wait names the stage only when a tool is actually running; otherwise she is thinking.
@@ -1368,6 +1468,43 @@ export default function RoxiPanel({
                     ))}
                   </ul>
                 </li>
+              );
+            }
+            if (entry.kind === 'review') {
+              return (
+                <RoxiReviewCard
+                  key={entry.id}
+                  draftId={entry.draftId}
+                  labels={labels}
+                  locale={locale}
+                  // Its form is the page open now: the card points there rather than taking edits the form would not see.
+                  inForm={pathname === '/mercadito/publish' && formDraft === entry.draftId}
+                  onOpen={(opened) => {
+                    router.push(opened.openUrl);
+                    if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
+                  }}
+                  onDiscarded={() => conversation.current?.sendContextualUpdate('The member discarded the listing draft from the review card. Nothing was published.')}
+                />
+              );
+            }
+            if (entry.kind === 'receipt') {
+              return (
+                <RoxiReceiptCard
+                  key={entry.id}
+                  listingId={entry.listingId}
+                  labels={labels}
+                  onLoaded={(receipt) => {
+                    // Only the publish that just happened is news; a receipt restored with the log was told before.
+                    if (published?.listingId === receipt.id) {
+                      conversation.current?.sendContextualUpdate(receiptForRoxi(receipt));
+                      requestAnimationFrame(() => list.current?.lastElementChild?.scrollIntoView({ block: 'end', behavior: 'smooth' }));
+                    }
+                  }}
+                  onGo={(href) => {
+                    router.push(href);
+                    if (window.matchMedia('(max-width: 999px)').matches) setAside(true);
+                  }}
+                />
               );
             }
             // In a voice conversation her latest words are the caption under the orb; not twice.
