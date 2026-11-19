@@ -85,7 +85,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Roxi sees the photos, drafts with the new `draft_listing` tool, and answers with the link to the filled-in form. She confirms in the chat after publishing.
   - Same switch as slice 1.
   - Details in `platform/docs/roxi/FLAGSHIP.md`. Tests: `whatsapp-listing` (8).
-  - Agent: tried on the test branch (four selling conversations); goes to main after the code is deployed.
+  - Agent: tried on the test branch (four selling conversations), then merged into main after the code was deployed (WhatsApp agent version `agtvrsn_1201m7v1ra8deb985t03s1jkaxym`; previous `agtvrsn_1201m7tq91d0enytmgv4dyb64n5y` for rollback). Not yet tried with a real member's photos: the first real sale will show it, and the logs say `whatsapp.roxi outcome=…` for every answer.
 - **Voice notes for everyone (owner, 19 Nov):** "this is how I want Roxi to talk to everyone": the approved style now applies to every recipient, with the feeling set by the purpose (marketing and potential clients, follow-ups, apologies, sensitive news), always calm and truthful. Tried on the test branch: a restaurant pitch, a condolence, a follow-up.
 
 ## ElevenLabs blocked by a failed payment (18–19 November, resolved)
