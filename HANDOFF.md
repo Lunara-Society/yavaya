@@ -46,6 +46,37 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
 - **WhatsApp voice notes, owner-approved style (15 Nov, "absolutely perfect"):** each note starts `[warmly] [slowly]`, then the greeting with "…", a `[short pause]`, the message with thinking beats ("Mira…", "…más o menos"), and a `[cheerful]` close. The model has no speed setting, so the pace comes from these cues and pauses. The rule and an example are in the WhatsApp agent's prompt ("Your boss" → "Voice messages").
 - If a voice is changed in ElevenLabs, change it in all four places (the two agents, `WHATSAPP_RULES.roxiVoices`, and re-record the welcome notes).
 
+## ⚠ ElevenLabs blocked by a failed payment (found 19 November)
+- From 18 Nov about 16:58 UTC, every conversation with Roxi on WhatsApp fails before she says a word: ElevenLabs closes it with "The AI agent you are trying to reach is not available" (code 3000), and the server logs `whatsapp.roxi outcome=no_answer`. People who wrote in got no answer.
+- Cause, from ElevenLabs itself (19 Nov): "Your subscription has a failed or incomplete payment. Complete the latest invoice to continue usage." It blocks everything ElevenLabs does for Yavaya: WhatsApp Roxi, voice notes, the website's voice.
+- Fix (owner only): pay the outstanding invoice in ElevenLabs (subscription / billing). Nothing in Yavaya needs to change. To confirm afterwards: the logs show `whatsapp.roxi outcome=answered` again.
+
+## Roxi's voice and words on WhatsApp, upgraded (19 November, owner's brief)
+The owner's brief: keep her Spain accent and identity; make her words feel familiar across Central America and Mexico; natural rhythm, feeling and occasional thinking beats; facts fixed but sentences her own; control of a note's length; honest that she is an AI. Built in four layers, kept apart so a new country never needs a new voice:
+1. **Voice (unchanged):** Cristina from Spain / Lara, `WHATSAPP_RULES.roxiVoices`, model `eleven_v4`. That model has no speed or style setting, and no `voice_settings` are sent, so the voice's own saved settings stay what the owner approved. Pace comes from the words and cues.
+2. **Language adaptation:** `locations.speech` on each country row (whether vos is common; a few local expressions). The country comes from the number's dialing prefix (`platform/src/server/domains/whatsapp/region.ts`). Every conversation now gets `customer_country` and `customer_speech`, and voice notes get the recipient's via the owner tool `get_recipient`.
+3. **What she says:** her WhatsApp instructions, now kept in the repo as `platform/docs/roxi/whatsapp-prompt.md`. They cover:
+   - Latin American wording (no vosotros; celular, carro…);
+   - tú by default, mirroring usted or vos and keeping it;
+   - for a voice note: look up the person, plan silently (goal, fixed facts, how to address them, feeling, length), then say it in her own words;
+   - feeling that follows the moment;
+   - one or two thinking expressions at most;
+   - "asistente virtual" in the greeting.
+4. **Delivery:** `platform/src/server/domains/whatsapp/voice-delivery.ts`.
+   - No pause or cue at the very start or end, so no dead air.
+   - Length estimated from her measured pace (2.6 words/s on the approved note) and measured from the Ogg file itself.
+   - `send_voice_message` takes `seconds` and `address_as`. A note far off the asked length comes back as `length` with the words to aim for: before any audio if the estimate is off, after if the recording is.
+   - Notes up to 60 s. Log: `whatsapp.voice words= estimated= seconds= asked=`.
+- **ElevenLabs:**
+  - New client tool `get_recipient` (`tool_7801m7szqp20ex6a1tktcy9pdjfq`).
+  - `send_voice_message` and `save_contact` gained optional `seconds` / `address_as`. The tools are shared by all branches; the code before this one ignores them.
+  - Defaults for the two new variables are on the agent.
+  - The new instructions were made and published on branch `voz-latam-2026-11-19` (`agtbrch_8301m7szqng2ez79tvhanvnr7hcr`), which gets no live traffic.
+- **Rollback:**
+  - Agent: main's version before the new instructions is `agtvrsn_8801m7szk433f5d8kben4hp06bvw`, the 15 Nov prompt plus the variable defaults.
+  - Code: it works with that prompt too; the new tool is just never called.
+- **Not done, needs people:** listening tests with native speakers from Spain (accent kept?) and Central America (words natural?).
+
 ## WhatsApp: team inbox and Roxi (built 7–11 November, live)
 - **Number:** +505 5836 5522, WhatsApp Business app in coexistence with the official API through **Dualhook**.
   - WABA 1585588379886491, phone_number_id 1270050959528964.

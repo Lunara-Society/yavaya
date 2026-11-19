@@ -1,3 +1,5 @@
+import type { RegionalSpeech } from '@/server/db/schema/geography';
+
 /**
  * Geographic seed data.
  *
@@ -35,6 +37,8 @@ export type SeedCountry = {
   isoCode: string;
   phonePrefix: string;
   currencyCode: string;
+  /** How people talk there, for Roxi; see `locations.speech`. Absent: neutral Latin American Spanish. */
+  speech?: RegionalSpeech;
   timezone: string;
   supported: boolean;
   states: SeedState[];
@@ -59,6 +63,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'GT',
         phonePrefix: '+502',
         currencyCode: 'GTQ',
+        speech: { voseo: true, expressions: [] },
         timezone: 'America/Guatemala',
         supported: true,
         states: [
@@ -121,6 +126,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'HN',
         phonePrefix: '+504',
         currencyCode: 'HNL',
+        speech: { voseo: true, expressions: [] },
         timezone: 'America/Tegucigalpa',
         supported: true,
         states: [
@@ -163,6 +169,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'SV',
         phonePrefix: '+503',
         currencyCode: 'USD',
+        speech: { voseo: true, expressions: [] },
         timezone: 'America/El_Salvador',
         supported: true,
         states: [
@@ -196,6 +203,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'NI',
         phonePrefix: '+505',
         currencyCode: 'NIO',
+        speech: { voseo: true, expressions: ['¿cómo estás vos?', '¿qué querés?', '¿me podés ayudar?', 'ahorita', 'fijate', 'qué bueno'] },
         timezone: 'America/Managua',
         supported: true,
         states: [
@@ -229,6 +237,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'CR',
         phonePrefix: '+506',
         currencyCode: 'CRC',
+        speech: { voseo: true, expressions: ['pura vida', 'con mucho gusto', 'qué dicha'] },
         timezone: 'America/Costa_Rica',
         supported: true,
         states: [
@@ -253,6 +262,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'PA',
         phonePrefix: '+507',
         currencyCode: 'PAB',
+        speech: { voseo: false, expressions: [] },
         timezone: 'America/Panama',
         supported: true,
         states: [
@@ -283,6 +293,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'BZ',
         phonePrefix: '+501',
         currencyCode: 'BZD',
+        speech: { voseo: false, expressions: [] },
         timezone: 'America/Belize',
         supported: true,
         states: [
@@ -320,6 +331,7 @@ export const GEOGRAPHY_SEED: SeedRegion[] = [
         isoCode: 'MX',
         phonePrefix: '+52',
         currencyCode: 'MXN',
+        speech: { voseo: false, expressions: ['qué padre', 'ahorita', 'platicar', 'con gusto'] },
         timezone: 'America/Mexico_City',
         supported: true,
         states: [

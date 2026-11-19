@@ -27,6 +27,7 @@ import {
   MERCADITO_RULES,
   NAME_RULES,
   SANCTUARY_RULES, GO_RULES, GO_PLAN_RULES, GO_TRIP_RULES, REFERRAL_RULES, WORK_RULES, SITE_STATS_RULES, ROXI_RULES } from '@/config/business-rules';
+import type { RegionalSpeech } from '@/server/db/schema/geography';
 import { districtList } from '@/config/districts';
 import { BILLABLE_ACTIONS } from '@/config/billable-actions';
 import { operationalEnv } from '@/config/env';
@@ -75,6 +76,7 @@ async function seedGeography(database: Database): Promise<void> {
         isoCode: country.isoCode,
         phonePrefix: country.phonePrefix,
         currencyCode: country.currencyCode,
+        speech: country.speech ?? null,
         timezone: country.timezone,
         sortOrder: countryIndex,
         isSupportedMarket: country.supported,
@@ -185,6 +187,7 @@ async function upsertLocation(
     isoCode?: string | null;
     phonePrefix?: string | null;
     currencyCode?: string | null;
+    speech?: RegionalSpeech | null;
     timezone?: string | null;
     latitude?: number | null;
     longitude?: number | null;
@@ -215,6 +218,7 @@ async function upsertLocation(
       isoCode: input.isoCode ?? null,
       phonePrefix: input.phonePrefix ?? null,
       currencyCode: input.currencyCode ?? null,
+      speech: input.speech ?? null,
       timezone: input.timezone ?? null,
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
@@ -232,6 +236,7 @@ async function upsertLocation(
         isoCode: input.isoCode ?? null,
         phonePrefix: input.phonePrefix ?? null,
         currencyCode: input.currencyCode ?? null,
+        speech: input.speech ?? null,
         timezone: input.timezone ?? null,
         latitude: input.latitude ?? null,
         longitude: input.longitude ?? null,

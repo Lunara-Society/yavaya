@@ -102,6 +102,20 @@ describe('one exchange with Roxi on WhatsApp', () => {
     expect(await done).toBe('Listo, se lo mandé.');
   });
 
+  it('tells her where the person is from, for the words she picks; neutral when the number says nothing', async () => {
+    const known = fakeSocket();
+    void converse(known.socket, { ...input, country: { name: 'Nicaragua', speech: { voseo: true, expressions: ['fijate'] } } }, fast);
+    known.open();
+    expect(known.sent[0]).toMatchObject({ dynamic_variables: { customer_country: 'Nicaragua', customer_speech: expect.stringContaining('fijate') } });
+    known.drop();
+
+    const unknown = fakeSocket();
+    void converse(unknown.socket, input, fast);
+    unknown.open();
+    expect(unknown.sent[0]).toMatchObject({ dynamic_variables: { customer_country: 'unknown', customer_speech: expect.stringContaining('neutral Latin American Spanish') } });
+    unknown.drop();
+  });
+
   it('stops looking up after the configured number of times', async () => {
     const s = fakeSocket();
     let ran = 0;

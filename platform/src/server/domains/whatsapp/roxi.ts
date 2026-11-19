@@ -14,7 +14,8 @@ import { createTranslator } from '@/i18n';
 import { errors } from '@/server/errors';
 import { sendText, whatsappAvailability } from './service';
 import { whatsappLookup, type Lookup } from './lookup';
-import { isOwner, saveContactForOwner, sendVoiceForOwner } from './owner';
+import { isOwner, recipientForOwner, saveContactForOwner, sendVoiceForOwner } from './owner';
+import { countryOfNumber, speechNotes, type NumberCountry } from './region';
 
 /**
  * Roxi answering on Yavaya's WhatsApp.
@@ -89,6 +90,8 @@ export type AskRoxi = (input: {
   owner?: boolean;
   /** The owner's tools, by the names configured on the agent; absent for everyone else. */
   ownerTools?: Record<string, Lookup>;
+  /** Where the person's number is from, so her words (never her accent) fit them. */
+  country?: NumberCountry | null;
 }) => Promise<string | null>;
 
 /** The little of a WebSocket the conversation needs, so a test can stand in for ElevenLabs. */
@@ -101,7 +104,7 @@ export type RoxiSocket = {
 /** The name of the agent's look-up tool, as configured on the WhatsApp agent at ElevenLabs. */
 export const LOOKUP_TOOL = 'search_yavaya_public';
 /** The owner's tools, as configured on the WhatsApp agent at ElevenLabs (owner.ts answers them). */
-export const OWNER_TOOLS = { voice: 'send_voice_message', save: 'save_contact' } as const;
+export const OWNER_TOOLS = { recipient: 'get_recipient', voice: 'send_voice_message', save: 'save_contact' } as const;
 
 type AgentEvent = {
   type?: string;
@@ -163,6 +166,9 @@ export function converse(
           platform_status: roxiPlatformStatus(createTranslator('es')),
           // Decided by the number the message came from, never by what it says.
           is_owner: input.owner ? 'yes' : 'no',
+          // From the number's country code too: the words she picks, not how she sounds.
+          customer_country: input.country?.name ?? 'unknown',
+          customer_speech: speechNotes(input.country ?? null),
         },
       });
     });
@@ -292,12 +298,14 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
 
   const raw = await (deps.ask ?? askRoxiOverWebSocket)({
     customerName: open(contact.nameSealed) ?? '',
+    country: await countryOfNumber(executor, waId),
     conversation: context.join('\n'),
     message: latest.join('\n'),
     lookup: (parameters) => whatsappLookup(executor, parameters),
     owner,
     ownerTools: owner
       ? {
+          [OWNER_TOOLS.recipient]: (parameters) => recipientForOwner(executor, waId, parameters),
           [OWNER_TOOLS.voice]: (parameters) => sendVoiceForOwner(executor, waId, parameters, { fetcher: deps.fetcher }),
           [OWNER_TOOLS.save]: (parameters) => saveContactForOwner(executor, waId, parameters),
         }

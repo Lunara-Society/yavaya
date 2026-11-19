@@ -31,6 +31,8 @@ export const whatsappContacts = pgTable(
     needsTeam: boolean('needs_team').notNull().default(false),
     /** A name the owner gave this person for Roxi ("Suhey"), sealed: what the owner calls them when asking her to send something. */
     nicknameSealed: text('nickname_sealed'),
+    /** How Roxi addresses this person in voice notes for the owner (tú, vos or usted): the last one used or set, so she stays consistent. */
+    addressAs: text('address_as'),
     /** The newest message from the person that Roxi has taken to answer (so it is answered once). */
     roxiAnsweredThrough: timestamp('roxi_answered_through', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

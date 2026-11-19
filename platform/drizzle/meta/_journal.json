@@ -358,6 +358,13 @@
       "when": 1794622461900,
       "tag": "0050_perpetual_preak",
       "breakpoints": true
+    },
+    {
+      "idx": 51,
+      "version": "7",
+      "when": 1795093992677,
+      "tag": "0051_smart_wallow",
+      "breakpoints": true
     }
   ]
 }

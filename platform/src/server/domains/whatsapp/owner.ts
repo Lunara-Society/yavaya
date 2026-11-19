@@ -8,6 +8,8 @@ import { WHATSAPP_RULES } from '@/config/business-rules';
 import { seal, unsealAny, usableKey } from '@/server/security/sealed-text';
 import { recordAudit } from '@/server/domains/audit/service';
 import { sendAudio } from './service';
+import { countryOfNumber, speechNotes } from './region';
+import { audioSeconds, estimateSeconds, forSpeech, spokenWords, withoutCues, wordsFor } from './voice-delivery';
 
 /**
  * Roxi for the owner (docs: HANDOFF.md, "WhatsApp"): when the owner writes to
@@ -52,7 +54,16 @@ function plain(value: string): string {
   return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
-type Person = { waId: string; name: string | null; nickname: string | null; lastInboundAt: Date | null };
+type Person = { waId: string; name: string | null; nickname: string | null; lastInboundAt: Date | null; addressAs: Address | null };
+
+/** How Roxi addresses someone in Spanish. Kept per person so every note to them sounds the same. */
+type Address = 'tú' | 'vos' | 'usted';
+
+function address(value: unknown): Address | null {
+  if (typeof value !== 'string') return null;
+  const plainValue = value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+  return plainValue === 'tu' ? 'tú' : plainValue === 'vos' ? 'vos' : plainValue === 'usted' ? 'usted' : null;
+}
 
 /**
  * The people a name or number could mean, among those who have written to
@@ -64,7 +75,7 @@ export async function findPeople(executor: Executor, query: string): Promise<Per
   const rows = await executor.select().from(whatsappContacts);
   const people = rows
     .filter((row) => !isOwner(row.waId))
-    .map((row) => ({ waId: row.waId, name: open(row.nameSealed), nickname: open(row.nicknameSealed), lastInboundAt: row.lastInboundAt }));
+    .map((row) => ({ waId: row.waId, name: open(row.nameSealed), nickname: open(row.nicknameSealed), lastInboundAt: row.lastInboundAt, addressAs: address(row.addressAs) }));
   const digits = query.replace(/\D/g, '');
   if (digits.length >= 7) return people.filter((p) => p.waId === digits || p.waId.endsWith(digits));
   const wanted = plain(query);
@@ -77,6 +88,19 @@ export async function findPeople(executor: Executor, query: string): Promise<Per
 
 function label(p: Person): string {
   return p.nickname ?? p.name ?? `+${p.waId}`;
+}
+
+/** Whether Yavaya's number may send to them now: they wrote to it in the last 24 hours. */
+function windowOpen(p: { lastInboundAt: Date | null }): boolean {
+  return Boolean(p.lastInboundAt && p.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000 >= Date.now());
+}
+
+/** The one person a name or number means, or the answer that tells Roxi why not. */
+async function onePerson(executor: Executor, recipient: string): Promise<{ person: Person } | { answer: string }> {
+  const found = await findPeople(executor, recipient);
+  if (found.length === 0) return { answer: JSON.stringify({ error: 'not_found', recipient }) };
+  if (found.length > 1) return { answer: JSON.stringify({ error: 'ambiguous', candidates: found.slice(0, 5).map(label) }) };
+  return { person: found[0]! };
 }
 
 // --- The voice -------------------------------------------------------------------------
@@ -144,23 +168,49 @@ export async function voiceNote(executor: Executor, id: string, key: string): Pr
 type Deps = { fetcher?: typeof fetch };
 
 /**
+ * Who a voice note is for, before Roxi writes it: so she knows where they are
+ * (and so which words will sound familiar to them), how she addressed them
+ * before, and whether WhatsApp lets Yavaya's number reach them right now.
+ * Refused for anyone but the owner.
+ */
+export async function recipientForOwner(executor: Executor, ownerWaId: string, parameters: Record<string, unknown>): Promise<string> {
+  if (!isOwner(ownerWaId)) return JSON.stringify({ error: 'not_allowed' });
+  const recipient = typeof parameters.recipient === 'string' ? parameters.recipient.trim().slice(0, 80) : '';
+  if (!recipient) return JSON.stringify({ error: 'missing', need: ['recipient'] });
+  const one = await onePerson(executor, recipient);
+  if ('answer' in one) return one.answer;
+  const { person } = one;
+  const country = await countryOfNumber(executor, person.waId);
+  return JSON.stringify({
+    ok: true,
+    recipient: label(person),
+    country: country?.name ?? 'unknown',
+    how_people_talk_there: speechNotes(country),
+    address_as: person.addressAs,
+    can_send_now: windowOpen(person),
+  });
+}
+
+/**
  * Sends `message` as a voice note to the person the owner named. Refused for
  * anyone but the owner. The answer tells Roxi what happened, so she can tell
- * the owner (or ask which person was meant).
+ * the owner (or ask which person was meant, or rewrite the note).
+ *
+ * When the owner asked for a length (`seconds`), the note is checked twice:
+ * its estimate before any audio is made (a rewrite costs nothing then), and
+ * the measured audio after, before it is sent. Either way, a note too far off
+ * comes back to her with the number of words to aim for.
  */
 export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, parameters: Record<string, unknown>, deps: Deps = {}): Promise<string> {
   if (!isOwner(ownerWaId)) return JSON.stringify({ error: 'not_allowed' });
   const recipient = typeof parameters.recipient === 'string' ? parameters.recipient.trim().slice(0, 80) : '';
-  const message = typeof parameters.message === 'string' ? parameters.message.trim().slice(0, WHATSAPP_RULES.voiceNoteMaxLength) : '';
+  const message = typeof parameters.message === 'string' ? forSpeech(parameters.message) : '';
   if (!recipient || !message) return JSON.stringify({ error: 'missing', need: ['recipient', 'message'] });
 
-  const found = await findPeople(executor, recipient);
-  if (found.length === 0) return JSON.stringify({ error: 'not_found', recipient });
-  if (found.length > 1) return JSON.stringify({ error: 'ambiguous', candidates: found.slice(0, 5).map(label) });
-  const person = found[0]!;
-  if (!person.lastInboundAt || person.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000 < Date.now()) {
-    return JSON.stringify({ error: 'window_closed', recipient: label(person) });
-  }
+  const one = await onePerson(executor, recipient);
+  if ('answer' in one) return one.answer;
+  const { person } = one;
+  if (!windowOpen(person)) return JSON.stringify({ error: 'window_closed', recipient: label(person) });
   const [recent] = await executor
     .select({ n: sql<number>`count(*)::int` })
     .from(whatsappMessages)
@@ -169,8 +219,26 @@ export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, p
 
   // Roxi's voice for the language she speaks in: Spanish unless the note is in English.
   const language = parameters.language === 'en' ? 'en' : 'es';
+  const asked = typeof parameters.seconds === 'number' && Number.isFinite(parameters.seconds) && parameters.seconds > 0 ? Math.min(Math.round(parameters.seconds), WHATSAPP_RULES.voiceNoteMaxSeconds) : null;
+  const words = spokenWords(message);
+  const estimated = estimateSeconds(message, language);
+  const lengthAnswer = (extra: Record<string, number>) =>
+    JSON.stringify({ error: 'length', asked_seconds: asked ?? WHATSAPP_RULES.voiceNoteMaxSeconds, words, aim_words: wordsFor(asked ?? WHATSAPP_RULES.voiceNoteMaxSeconds * 0.8, language), ...extra });
+  // Too long is rewritten, never cut: a note cut short would stop mid-sentence.
+  const tooLong = message.length > WHATSAPP_RULES.voiceNoteMaxLength || estimated > WHATSAPP_RULES.voiceNoteMaxSeconds;
+  if (tooLong || (asked && Math.abs(estimated - asked) > asked * WHATSAPP_RULES.voiceNoteEstimateTolerance)) {
+    return lengthAnswer({ estimated_seconds: Math.round(estimated) });
+  }
+
   const voice = await speak(message, language, deps.fetcher);
   if (!voice) return JSON.stringify({ error: 'voice_failed' });
+  const seconds = audioSeconds(voice);
+  // Words, estimate and measured length (never what she said), to keep her pace figures true.
+  console.info(`whatsapp.voice language=${language} words=${words} estimated=${estimated.toFixed(1)} seconds=${seconds?.toFixed(1) ?? 'unknown'} asked=${asked ?? '-'}`);
+  if (asked && seconds !== null && Math.abs(seconds - asked) > asked * WHATSAPP_RULES.voiceNoteMeasuredTolerance) {
+    // Rewritten to fit her measured pace in this note, not the assumed one.
+    return JSON.stringify({ error: 'length', asked_seconds: asked, measured_seconds: Math.round(seconds), words, aim_words: Math.max(1, Math.round((words * asked) / seconds)) });
+  }
   // Old notes go as new ones are made: WhatsApp fetches a note within moments.
   await executor.delete(whatsappVoiceNotes).where(lt(whatsappVoiceNotes.createdAt, new Date(Date.now() - WHATSAPP_RULES.voiceNoteKeepHours * 3_600_000)));
   const [note] = await executor.insert(whatsappVoiceNotes).values({ waId: person.waId, mime: voice.mime, audio: voice.audio }).returning({ id: whatsappVoiceNotes.id });
@@ -181,20 +249,35 @@ export async function sendVoiceForOwner(executor: Executor, ownerWaId: string, p
   const [current] = keys();
   const sentAt = new Date();
   // What she said, as the team reads it: the delivery cues were for the voice only.
-  const words = message.replace(/\[[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{2,32}\]\s*/g, '').trim();
+  const said = withoutCues(message);
+  // How she addressed them, so the next note to them sounds the same (Spanish only).
+  const addressAs = language === 'es' ? address(parameters.address_as) : null;
   await executor.transaction(async (tx) => {
     // In the inbox as hers, with what she said, so the team can read it.
     await tx
       .insert(whatsappMessages)
-      .values({ waMessageId, waId: person.waId, direction: 'out', kind: 'audio', bodySealed: current ? seal(current, PURPOSE, words) : null, status: 'sent', byRoxi: true, sentAt })
+      .values({ waMessageId, waId: person.waId, direction: 'out', kind: 'audio', bodySealed: current ? seal(current, PURPOSE, said) : null, status: 'sent', byRoxi: true, sentAt })
       .onConflictDoNothing({ target: whatsappMessages.waMessageId });
-    await tx.update(whatsappContacts).set({ lastMessageAt: sentAt }).where(eq(whatsappContacts.waId, person.waId));
-    await recordAudit(tx, { actorType: 'system', actorUserId: null, action: 'whatsapp.roxi_voice_note', subjectType: 'whatsapp_contact', subjectId: person.waId, metadata: { forOwner: true, format: voice.mime } });
+    await tx
+      .update(whatsappContacts)
+      .set({ lastMessageAt: sentAt, ...(addressAs ? { addressAs } : {}) })
+      .where(eq(whatsappContacts.waId, person.waId));
+    await recordAudit(tx, {
+      actorType: 'system',
+      actorUserId: null,
+      action: 'whatsapp.roxi_voice_note',
+      subjectType: 'whatsapp_contact',
+      subjectId: person.waId,
+      metadata: { forOwner: true, format: voice.mime, seconds: seconds === null ? null : Math.round(seconds * 10) / 10 },
+    });
   });
-  return JSON.stringify({ ok: true, recipient: label(person), said: words });
+  return JSON.stringify({ ok: true, recipient: label(person), said, ...(seconds === null ? {} : { seconds: Math.round(seconds) }) });
 }
 
-/** Remembers a name for a number ("guarda a Suhey: +505 …"). Refused for anyone but the owner. */
+/**
+ * Remembers a name for a number ("guarda a Suhey: +505 …"), and optionally how
+ * Roxi should address them (tú, vos or usted). Refused for anyone but the owner.
+ */
 export async function saveContactForOwner(executor: Executor, ownerWaId: string, parameters: Record<string, unknown>): Promise<string> {
   if (!isOwner(ownerWaId)) return JSON.stringify({ error: 'not_allowed' });
   const name = typeof parameters.name === 'string' ? parameters.name.trim().slice(0, 60) : '';
@@ -204,11 +287,11 @@ export async function saveContactForOwner(executor: Executor, ownerWaId: string,
   const [current] = keys();
   if (!current) return JSON.stringify({ error: 'not_configured' });
   const nicknameSealed = seal(current, PURPOSE, name);
+  const addressAs = address(parameters.address_as);
   await executor
     .insert(whatsappContacts)
-    .values({ waId, nicknameSealed, lastMessageAt: new Date() })
-    .onConflictDoUpdate({ target: whatsappContacts.waId, set: { nicknameSealed } });
+    .values({ waId, nicknameSealed, addressAs, lastMessageAt: new Date() })
+    .onConflictDoUpdate({ target: whatsappContacts.waId, set: { nicknameSealed, ...(addressAs ? { addressAs } : {}) } });
   const [row] = await executor.select({ lastInboundAt: whatsappContacts.lastInboundAt }).from(whatsappContacts).where(eq(whatsappContacts.waId, waId)).limit(1);
-  const open24 = Boolean(row?.lastInboundAt && row.lastInboundAt.getTime() + WHATSAPP_RULES.replyWindowHours * 3_600_000 >= Date.now());
-  return JSON.stringify({ ok: true, name, can_send_now: open24 });
+  return JSON.stringify({ ok: true, name, can_send_now: windowOpen({ lastInboundAt: row?.lastInboundAt ?? null }) });
 }

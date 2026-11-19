@@ -1706,6 +1706,30 @@ seconds before it is sent, in case a look-up follows her first words, and she
 may look up at most 3 times for one answer (`WHATSAPP_RULES.roxiSettleMs`,
 `roxiLookupsPerAnswer`; Yavaya's own defaults).
 
+**Her words and voice notes, by country (built 19 November 2026, owner's
+brief).** Her voice stays Cristina from Spain; her words adapt to where the
+person is from. The country comes from the number's dialing prefix against the
+country rows (`locations.phone_prefix`), and how people talk there from the
+same row (`locations.speech`: whether vos is common, and a few local
+expressions she may use sparingly). The eight seeded countries carry what the
+owner's brief listed (Nicaragua, Costa Rica, Mexico) and voseo where it is
+common (Guatemala, Honduras, El Salvador, Nicaragua, Costa Rica); a country
+with no notes gets neutral Latin American Spanish. Adding a market means adding
+its row's notes, not code. Before a voice note for the owner she calls
+`get_recipient` (where they are, how she addressed them before, whether the
+24 hours are open), and the form she used (tú, vos, usted) is kept on the
+contact (`whatsapp_contacts.address_as`).
+
+Voice-note length (`WHATSAPP_RULES`, Yavaya's own defaults): at most 60
+seconds and 1,100 characters; her pace in the approved style is taken as 2.6
+spoken words a second (measured on the note the owner approved, 15 November;
+English assumed the same until measured), a `[pause]` as 0.6 s more. When the
+owner asks for a length, a note whose estimate is more than 25% off is sent
+back to her to rewrite before any audio is made, and one whose recording runs
+more than 40% off is sent back after; a note over the limits is sent back,
+never cut. Each note logs `whatsapp.voice words= estimated= seconds= asked=`
+(never its words), so the pace figures can be retuned from real notes.
+
 **Open (owner decision):** how long conversations are kept. Today they stay
 until someone on the team deletes them; the privacy page says so, and that a
 person can ask for deletion by writing to the same number. Also open: whether

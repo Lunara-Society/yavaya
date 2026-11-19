@@ -573,9 +573,28 @@ export const WHATSAPP_RULES = {
    */
   ownerMaxAnswersPerHour: 40,
   ownerVoiceNotesPerHour: 20,
-  voiceNoteMaxLength: 600,
+  voiceNoteMaxLength: 1100,
   roxiVoices: { es: '1CeqBeXMOqCleeQjfYfO', en: 'vChnJZ1Cu89g2XXumPfT' },
   voiceNoteKeepHours: 48,
+  /**
+   * How long a voice note runs (owner's brief, 19 November 2026: "when asked
+   * for a 40-second message, estimate, generate, measure, adjust"). Yavaya's
+   * own defaults, not rules from a specification:
+   * - a note is at most this many seconds (and voiceNoteMaxLength characters);
+   * - Roxi speaks about this many words a second in her unhurried voice-note
+   *   style, measured on the note the owner approved (15 November: 38 words in
+   *   14.3 s, Cristina); English is assumed the same until a note is measured
+   *   (the log line `whatsapp.voice` gives words and seconds for each one);
+   * - a [pause] adds about this much, a [long pause] twice as much;
+   * - when the owner asks for a length, a note whose estimate is further off
+   *   than the first share is rewritten before any audio is made, and one
+   *   whose measured audio is further off than the second is rewritten after.
+   */
+  voiceNoteMaxSeconds: 60,
+  voiceNoteWordsPerSecond: { es: 2.6, en: 2.6 },
+  voiceNotePauseSeconds: 0.6,
+  voiceNoteEstimateTolerance: 0.25,
+  voiceNoteMeasuredTolerance: 0.4,
 } as const;
 
 /**

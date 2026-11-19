@@ -291,6 +291,14 @@ as the `member_preferences` dynamic variable and, in voice, their speed as a
 Edit `docs/roxi/prompt.md`, paste the same text into the agent's system
 prompt, run the tests, commit. The two must not drift.
 
+The WhatsApp agent ("Roxi · WhatsApp") has its own instructions, kept in
+`docs/roxi/whatsapp-prompt.md` the same way (since 19 November 2026). Change
+them on a branch of that agent first (it takes live traffic), try them, then
+put the same text on main. Its tools are client tools the server answers
+(`src/server/domains/whatsapp/roxi.ts`, `OWNER_TOOLS` and `LOOKUP_TOOL`): a
+tool is shared by every branch, so a new parameter must be one the deployed
+code can ignore.
+
 ### Changing the knowledge
 
 After changing site texts, dictionaries or business rules:

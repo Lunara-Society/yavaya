@@ -7,7 +7,7 @@ import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 import { ingestDelivery, parseDelivery } from '@/server/domains/whatsapp/service';
 import { answerWithRoxi, setRoxiWhatsapp, OWNER_TOOLS, type AskRoxi } from '@/server/domains/whatsapp/roxi';
-import { saveContactForOwner, sendVoiceForOwner, voiceNote } from '@/server/domains/whatsapp/owner';
+import { recipientForOwner, saveContactForOwner, sendVoiceForOwner, voiceNote } from '@/server/domains/whatsapp/owner';
 import { clearSettingsCache } from '@/server/domains/platform/settings';
 import { resetTransactionalData } from '../helpers/database';
 import { WHATSAPP_RULES } from '@/config/business-rules';
@@ -50,6 +50,26 @@ function inbound(id: string, from: string, name: string, text: string, at = Math
 
 const OGG = Buffer.concat([Buffer.from('OggS'), Buffer.alloc(200, 1)]);
 const MP3 = Buffer.concat([Buffer.from('ID3'), Buffer.alloc(200, 2)]);
+
+/** A minimal Ogg Opus file that says it runs `seconds` (pages only; no real audio). */
+function oggOf(seconds: number): Buffer {
+  const page = (granule: bigint, body: Buffer) => {
+    const header = Buffer.alloc(27);
+    header.write('OggS', 0, 'latin1');
+    header.writeBigUInt64LE(granule, 6);
+    header[26] = 1;
+    return Buffer.concat([header, Buffer.from([body.length]), body]);
+  };
+  const head = Buffer.alloc(19);
+  head.write('OpusHead', 0, 'latin1');
+  return Buffer.concat([page(0n, head), page(BigInt(Math.round(seconds * 48_000)), Buffer.alloc(100, 1))]);
+}
+
+/** About `words` spoken words of a note, in her style. */
+function noteOf(words: number): string {
+  const filler = Array.from({ length: words - 5 }, (_, i) => (i % 9 === 8 ? 'casa.' : 'palabra'));
+  return `[warmly] Hola, Suhey… soy ${filler.join(' ')} ¡Nos vemos!`;
+}
 let calls: Array<{ url: string; body: Record<string, unknown> | null }> = [];
 let speech: Buffer = OGG;
 const fetcher = (async (url: string, init: RequestInit) => {
@@ -98,10 +118,14 @@ describe('Roxi for the owner', () => {
     await answerWithRoxi(db(), OWNER, { ask, fetcher, wait: noWait });
     expect(seen[0]).toMatchObject({ owner: false, ownerTools: undefined });
     expect(seen[1]?.owner).toBe(true);
-    expect(Object.keys(seen[1]?.ownerTools ?? {}).sort()).toEqual([OWNER_TOOLS.save, OWNER_TOOLS.voice].sort());
+    expect(Object.keys(seen[1]?.ownerTools ?? {}).sort()).toEqual([OWNER_TOOLS.recipient, OWNER_TOOLS.save, OWNER_TOOLS.voice].sort());
+    // Both are told where their number is from (+505), for the words she picks.
+    expect(seen[0]?.country?.name).toBe('Nicaragua');
+    expect(seen[1]?.country?.speech?.voseo).toBe(true);
     // And the tools themselves refuse anyone but the owner, whatever the model asks.
     expect(JSON.parse(await sendVoiceForOwner(db(), '50588889999', { recipient: 'Suhey', message: 'Hola' }, { fetcher }))).toEqual({ error: 'not_allowed' });
     expect(JSON.parse(await saveContactForOwner(db(), '50588889999', { name: 'Suhey', phone: SUHEY }))).toEqual({ error: 'not_allowed' });
+    expect(JSON.parse(await recipientForOwner(db(), '50588889999', { recipient: 'Suhey' }))).toEqual({ error: 'not_allowed' });
   });
 
   it("answers the owner even in a chat paused for the team or handed over, which a stranger's would not be", async () => {
@@ -188,5 +212,64 @@ describe('Roxi for the owner', () => {
     const result = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: 'Hola Suhey' }, { fetcher: picky }));
     expect(result).toMatchObject({ ok: true });
     expect(seen).toEqual(['link', 'link', 'upload', 'id:media-123']);
+  });
+  it('tells her who a note is for before she writes it: where they are, how she addressed them, and whether WhatsApp allows it', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r1', SUHEY, 'Suhey', 'Hola')));
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r2', '5215512345678', 'Carlos', 'Hola')));
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.r3', '34600111222', 'Marta', 'Hola', Math.floor(Date.now() / 1000) - 30 * 3600)));
+
+    const suhey = JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'suhey' }));
+    expect(suhey).toMatchObject({ ok: true, recipient: 'Suhey', country: 'Nicaragua', address_as: null, can_send_now: true });
+    expect(suhey.how_people_talk_there).toContain('vos');
+    // Mexico (+52), the longest prefix that matches, with its own expressions.
+    expect(JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'Carlos' }))).toMatchObject({ country: 'México', how_people_talk_there: expect.stringContaining('qué padre') });
+    // A country Yavaya has no row for: neutral Spanish. And a closed window is said before she writes anything.
+    expect(JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'Marta' }))).toMatchObject({ country: 'unknown', can_send_now: false });
+    expect(JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'Pedro' }))).toMatchObject({ error: 'not_found' });
+
+    // The form of address she used is kept, so the next note to Suhey sounds the same.
+    expect(JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: '[warmly] Hola, Suhey… ¿cómo estás vos?', address_as: 'vos' }, { fetcher }))).toMatchObject({ ok: true });
+    expect(JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'Suhey' }))).toMatchObject({ address_as: 'vos' });
+    // And the owner can set it when saving someone.
+    await saveContactForOwner(db(), OWNER, { name: 'Restaurante El Sol', phone: '+52 1 55 1234 5678', address_as: 'Usted' });
+    expect(JSON.parse(await recipientForOwner(db(), OWNER, { recipient: 'Restaurante El Sol' }))).toMatchObject({ address_as: 'usted' });
+    expect(calls.filter((c) => c.url.includes('text-to-speech'))).toHaveLength(1);
+  });
+
+  it('gives the voice clean text: no dead air at the start or end, and the inbox copy without cues', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.c1', SUHEY, 'Suhey', 'Hola')));
+    const result = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: '[short pause] [warmly] Hola, Suhey… [short pause] Te cuento algo. [cheerful] ¡Nos vemos!… [pause]' }, { fetcher }));
+    expect(calls.find((c) => c.url.includes('text-to-speech'))!.body).toMatchObject({ text: '[warmly] Hola, Suhey… [short pause] Te cuento algo. [cheerful] ¡Nos vemos!' });
+    expect(result).toMatchObject({ ok: true, said: 'Hola, Suhey… Te cuento algo. ¡Nos vemos!' });
+  });
+
+  it('keeps to the length the owner asked for: rewritten before any audio when the estimate is off, and after when the recording is', async () => {
+    await switchedOn();
+    await ingestDelivery(db(), parseDelivery(inbound('wamid.l1', SUHEY, 'Suhey', 'Hola')));
+    const aim = Math.round(40 * WHATSAPP_RULES.voiceNoteWordsPerSecond.es);
+
+    // Far too short for 40 seconds: back to her with the words to aim for, and no credits spent.
+    const short = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: noteOf(20), seconds: 40 }, { fetcher }));
+    expect(short).toMatchObject({ error: 'length', asked_seconds: 40, words: 20, aim_words: aim });
+    expect(calls).toEqual([]);
+
+    // About right on paper, but the recording ran 70 seconds: not sent, and the aim follows her measured pace.
+    speech = oggOf(70);
+    const long = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: noteOf(aim), seconds: 40 }, { fetcher }));
+    expect(long).toMatchObject({ error: 'length', asked_seconds: 40, measured_seconds: 70, aim_words: Math.round((aim * 40) / 70) });
+    expect(calls.some((c) => c.url.endsWith('/messages'))).toBe(false);
+    expect(await db().select().from(whatsappVoiceNotes)).toHaveLength(0);
+
+    // Close enough: sent, with its measured length, which the audit keeps too.
+    speech = oggOf(42.3);
+    expect(JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: noteOf(aim), seconds: 40 }, { fetcher }))).toMatchObject({ ok: true, seconds: 42 });
+    const [audit] = await db().select().from(auditEvents).where(eq(auditEvents.action, 'whatsapp.roxi_voice_note'));
+    expect(audit?.metadata).toMatchObject({ seconds: 42.3 });
+
+    // Unasked, a note may not run past the most a note may be.
+    const tooMuch = JSON.parse(await sendVoiceForOwner(db(), OWNER, { recipient: 'Suhey', message: noteOf(Math.round(WHATSAPP_RULES.voiceNoteMaxSeconds * WHATSAPP_RULES.voiceNoteWordsPerSecond.es * 1.2)) }, { fetcher }));
+    expect(tooMuch).toMatchObject({ error: 'length', asked_seconds: WHATSAPP_RULES.voiceNoteMaxSeconds });
   });
 });

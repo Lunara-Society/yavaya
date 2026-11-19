@@ -13,6 +13,14 @@ import {
 } from 'drizzle-orm/pg-core';
 import { locationLevelEnum } from './enums';
 
+/** How people in a country talk, as Roxi adapts to it: her accent never changes, her words do. */
+export type RegionalSpeech = {
+  /** People commonly say vos (¿cómo estás vos?, ¿qué querés?): she understands it and answers with it only when they use it. */
+  voseo: boolean;
+  /** Local words and expressions she may use, sparingly and only where they fit. Never forced slang. */
+  expressions: string[];
+};
+
 /**
  * Geography.
  *
@@ -57,6 +65,13 @@ export const locations = pgTable(
     /** Dialing prefix for countries, used to validate and normalise phone numbers. */
     phonePrefix: text('phone_prefix'),
     currencyCode: text('currency_code'),
+    /**
+     * How people here talk, for Roxi (WhatsApp, docs: HANDOFF.md "Roxi's
+     * voice"): whether vos is common and local expressions she understands
+     * and may use sparingly. Countries only; null means neutral Latin American
+     * Spanish. On the row, not in code, so a new market brings its own.
+     */
+    speech: jsonb('speech').$type<RegionalSpeech | null>(),
     /**
      * Whether Yavaya operates here. A location may exist for addressing
      * purposes while being closed to new activity.
