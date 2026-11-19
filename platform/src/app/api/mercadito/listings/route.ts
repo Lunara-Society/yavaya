@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 import { db } from '@/server/db/client';
 import { MEDIA_RULES, MERCADITO_RULES } from '@/config/business-rules';
 import { getTranslator } from '@/i18n/server';
@@ -9,7 +9,8 @@ import { errors, toClientError } from '@/server/errors';
 import { discardStored, storeImages, type StoredImage } from '@/server/domains/media/service';
 import { PHOTO_PURPOSE, publishListing, updateListing } from '@/server/domains/mercadito/service';
 import { listingInputSchema } from '@/server/domains/mercadito/rules';
-import { claimDraftForPublish } from '@/server/domains/roxi/drafts';
+import { claimDraftForPublish, type DraftSource } from '@/server/domains/roxi/drafts';
+import { confirmPublishedOnWhatsapp } from '@/server/domains/whatsapp/listing';
 
 export const dynamic = 'force-dynamic';
 
@@ -110,10 +111,12 @@ export async function POST(request: Request) {
 
     if (mode === 'create') {
       let dropped: string[] = [];
+      let source: DraftSource | null = null;
       const result = await db().transaction(async (tx) => {
         // Inside the publish transaction: a refused publish leaves the draft, photos and all, as it was.
         const claimed = draftId ? await claimDraftForPublish(tx, { userId, draftId, keepPhotoIds: keep }) : null;
         dropped = claimed?.dropped ?? [];
+        source = claimed?.source ?? null;
         return publishListing(tx, {
           listingId,
           sellerUserId: userId,
@@ -128,6 +131,16 @@ export async function POST(request: Request) {
       // A replayed submission stored a second copy of the photos that the
       // first one already holds; those copies are not referenced by anything.
       if (result.deduplicated) await discardStored(stored);
+      // Drafted with Roxi on WhatsApp: she confirms it there, after the answer, never holding it up.
+      if (source === 'whatsapp' && !result.deduplicated) {
+        const listingId = result.listingId;
+        after(() =>
+          confirmPublishedOnWhatsapp(db(), { userId, listingId }).catch((error: unknown) => {
+            console.error('whatsapp.listing_confirm', error instanceof Error ? error.message : 'failed');
+            return false;
+          }),
+        );
+      }
       return NextResponse.json({ ok: true, id: result.listingId });
     }
 

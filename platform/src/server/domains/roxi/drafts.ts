@@ -259,7 +259,7 @@ export async function markListingDraftOpened(tx: Executor, params: { userId: str
 export async function claimDraftForPublish(
   tx: Executor,
   params: { userId: string; draftId: string; keepPhotoIds: string[]; now?: Date },
-): Promise<{ images: StoredImage[]; dropped: string[] }> {
+): Promise<{ images: StoredImage[]; dropped: string[]; source: DraftSource | null }> {
   const [row] = UUID.test(params.draftId)
     ? await tx
         .select()
@@ -273,7 +273,7 @@ export async function claimDraftForPublish(
       .from(mercaditoListings)
       .where(and(eq(mercaditoListings.id, params.draftId), eq(mercaditoListings.sellerUserId, params.userId)))
       .limit(1);
-    if (listing) return { images: [], dropped: [] };
+    if (listing) return { images: [], dropped: [], source: null };
     throw errors.conflict('roxi.draft.error.gone');
   }
 
@@ -295,7 +295,7 @@ export async function claimDraftForPublish(
   const dropped = await dropPhotos(tx, params.userId, row.photoIds.filter((id) => !keep.includes(id)));
   await tx.delete(roxiDrafts).where(eq(roxiDrafts.id, row.id));
   await countRoxiHelp(tx, 'listing_published', params.now ?? new Date());
-  return { images, dropped };
+  return { images, dropped, source: row.source === 'whatsapp' ? 'whatsapp' : 'web' };
 }
 
 /** A draft photo, for its owner only. */

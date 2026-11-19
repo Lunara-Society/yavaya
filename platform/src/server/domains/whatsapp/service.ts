@@ -38,7 +38,7 @@ function teamTookOver() {
 }
 
 /** Where replies go: Meta's Graph API, or Dualhook's Runtime API (same requests, a dh_live_ key). */
-function apiBase(): string {
+export function apiBase(): string {
   return serverEnv().WHATSAPP_API_BASE ?? 'https://graph.facebook.com/v21.0';
 }
 
@@ -152,7 +152,16 @@ export function signatureAccepted(rawBody: string, header: string | null): boole
 
 // --- Reading what Meta sends --------------------------------------------------
 
-export type ParsedMessage = { waMessageId: string; waId: string; direction: 'in' | 'out'; kind: string; text: string | null; sentAt: Date };
+export type ParsedMessage = {
+  waMessageId: string;
+  waId: string;
+  direction: 'in' | 'out';
+  kind: string;
+  text: string | null;
+  sentAt: Date;
+  /** An image's media id and type (for a member's listing photos: whatsapp/listing.ts). */
+  media?: { id: string; mime: string };
+};
 export type ParsedStatus = { waMessageId: string; status: string };
 export type ParsedDelivery = { messages: ParsedMessage[]; statuses: ParsedStatus[]; names: Map<string, string> };
 
@@ -192,7 +201,18 @@ function parseMessage(message: Raw, direction: 'in' | 'out'): ParsedMessage | nu
   if (!waMessageId || !waId || !Number.isFinite(seconds)) return null;
   const type = str(message.type, 32) ?? 'other';
   const kind = KINDS.has(type) ? type : 'other';
-  return { waMessageId, waId, direction, kind, text: textOf(message, kind), sentAt: new Date(seconds * 1000) };
+  const image = kind === 'image' ? obj(message.image) : null;
+  const mediaId = image ? str(image.id, 200) : null;
+  const mime = image ? (str(image.mime_type, 64) ?? 'image/jpeg') : null;
+  return {
+    waMessageId,
+    waId,
+    direction,
+    kind,
+    text: textOf(message, kind),
+    sentAt: new Date(seconds * 1000),
+    ...(mediaId && mime && /^[\w.-]+$/.test(mediaId) ? { media: { id: mediaId, mime } } : {}),
+  };
 }
 
 /** Everything useful in one webhook delivery; anything malformed is skipped, never guessed. */
@@ -265,6 +285,8 @@ export async function ingestDelivery(executor: Executor, delivery: ParsedDeliver
         bodySealed: message.text ? seal(current, PURPOSE, message.text) : null,
         status: message.direction === 'out' ? 'sent' : null,
         sentAt: message.sentAt,
+        // Only a person's own photos are ever offered for a listing draft.
+        ...(message.media && message.direction === 'in' ? { mediaId: message.media.id, mediaMime: message.media.mime } : {}),
       })
       .onConflictDoNothing({ target: whatsappMessages.waMessageId })
       .returning({ id: whatsappMessages.id });

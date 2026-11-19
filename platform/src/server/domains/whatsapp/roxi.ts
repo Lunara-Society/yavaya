@@ -16,6 +16,9 @@ import { sendText, whatsappAvailability } from './service';
 import { whatsappLookup, type Lookup } from './lookup';
 import { isOwner, recipientForOwner, saveContactForOwner, sendVoiceForOwner } from './owner';
 import { countryOfNumber, speechNotes, type NumberCountry } from './region';
+import { downloadPhotos, draftListingFromWhatsapp, waitingPhotos, whatsappSeller, type DownloadedPhoto } from './listing';
+import { countRoxiHelp } from '@/server/domains/roxi/help-stats';
+import sharp from 'sharp';
 
 /**
  * Roxi answering on Yavaya's WhatsApp.
@@ -92,6 +95,19 @@ export type AskRoxi = (input: {
   ownerTools?: Record<string, Lookup>;
   /** Where the person's number is from, so her words (never her accent) fit them. */
   country?: NumberCountry | null;
+  /**
+   * Selling from WhatsApp (whatsapp/listing.ts): `linked` says whether the
+   * number is tied to an account with the flagship; `draft` answers her
+   * `draft_listing` tool; `photos` are the member's photos waiting for a
+   * draft, shown to her with the message when `attach` can put them in the
+   * conversation.
+   */
+  selling?: {
+    linked: boolean;
+    draft?: Lookup;
+    photos?: DownloadedPhoto[];
+    attach?: (conversationId: string, photos: DownloadedPhoto[]) => Promise<string[]>;
+  };
 }) => Promise<string | null>;
 
 /** The little of a WebSocket the conversation needs, so a test can stand in for ElevenLabs. */
@@ -105,9 +121,12 @@ export type RoxiSocket = {
 export const LOOKUP_TOOL = 'search_yavaya_public';
 /** The owner's tools, as configured on the WhatsApp agent at ElevenLabs (owner.ts answers them). */
 export const OWNER_TOOLS = { recipient: 'get_recipient', voice: 'send_voice_message', save: 'save_contact' } as const;
+/** A member's listing draft from WhatsApp, as configured on the agent (listing.ts answers it). */
+export const LISTING_TOOL = 'draft_listing';
 
 type AgentEvent = {
   type?: string;
+  conversation_initiation_metadata_event?: { conversation_id?: unknown };
   ping_event?: { event_id?: number };
   agent_response_event?: { agent_response?: unknown };
   client_tool_call?: { tool_name?: unknown; tool_call_id?: unknown; parameters?: unknown };
@@ -169,6 +188,9 @@ export function converse(
           // From the number's country code too: the words she picks, not how she sounds.
           customer_country: input.country?.name ?? 'unknown',
           customer_speech: speechNotes(input.country ?? null),
+          // Selling from WhatsApp: whether this number may (tied to an account), and how many of their photos wait for a draft.
+          member_selling: input.selling?.linked ? 'yes' : 'no',
+          photos_waiting: String(input.selling?.photos?.length ?? 0),
         },
       });
     });
@@ -181,7 +203,21 @@ export function converse(
       }
       if (data.type === 'conversation_initiation_metadata' && !asked) {
         asked = true;
-        send({ type: 'user_message', text: input.message });
+        const photos = input.selling?.photos ?? [];
+        const conversationId = data.conversation_initiation_metadata_event?.conversation_id;
+        if (photos.length === 0 || !input.selling?.attach || typeof conversationId !== 'string') {
+          send({ type: 'user_message', text: input.message });
+          return;
+        }
+        // Her eyes on the member's photos, as on the website. If they cannot go in, she is told they came.
+        void input.selling
+          .attach(conversationId, photos)
+          .catch(() => [] as string[])
+          .then((fileIds) => {
+            if (finished) return;
+            if (fileIds.length === 0) send({ type: 'user_message', text: `${input.message}\n(${photos.length} photo(s) from the member are waiting for a listing; you cannot see them.)` });
+            else send({ type: 'multimodal_message', text: { type: 'user_message', text: input.message }, files: fileIds.map((file_id) => ({ type: 'file_input', file_id })) });
+          });
       } else if (data.type === 'ping') {
         send({ type: 'pong', event_id: data.ping_event?.event_id });
       } else if (data.type === 'client_tool_call') {
@@ -193,7 +229,8 @@ export function converse(
         held = null;
         const reply = (result: string, isError: boolean) => send({ type: 'client_tool_result', tool_call_id: id, result, is_error: isError });
         const name = typeof call?.tool_name === 'string' ? call.tool_name : '';
-        const tool = name === LOOKUP_TOOL ? input.lookup : input.ownerTools?.[name];
+        const tool = name === LOOKUP_TOOL ? input.lookup : name === LISTING_TOOL ? input.selling?.draft : input.ownerTools?.[name];
+        if (!tool && name === LISTING_TOOL) return reply(JSON.stringify({ error: 'not_linked' }), true);
         if (!tool) return reply(JSON.stringify({ error: name in (input.ownerTools ?? {}) || Object.values(OWNER_TOOLS).includes(name as never) ? 'not_allowed' : 'unknown_tool' }), true);
         lookups += 1;
         if (lookups > WHATSAPP_RULES.roxiLookupsPerAnswer) return reply(JSON.stringify({ error: 'too_many_lookups' }), true);
@@ -231,7 +268,35 @@ export const askRoxiOverWebSocket: AskRoxi = async (input) => {
 /** How a message reads in Roxi's context: its words, or what kind of thing it was. */
 function line(direction: string, kind: string, text: string | null): string {
   const who = direction === 'in' ? 'Cliente' : 'Yavaya';
-  return `${who}: ${text ?? `[sent ${kind === 'other' ? 'a message WhatsApp could not show' : `a ${kind}`}]`}`;
+  const what = kind === 'other' ? 'a message WhatsApp could not show' : kind === 'image' ? 'a photo' : `a ${kind}`;
+  return `${who}: ${text ?? `[sent ${what}]`}`;
+}
+
+/**
+ * Puts the member's photos in her conversation, as the website's panel does,
+ * so she can see what they are selling: each one made small (a listing photo
+ * does not need more to be read) and uploaded with Yavaya's ElevenLabs key,
+ * which this agent requires. Returns the file ids that went in.
+ */
+async function attachPhotos(conversationId: string, photos: DownloadedPhoto[], fetcher: typeof fetch = fetch): Promise<string[]> {
+  const key = serverEnv().ELEVENLABS_API_KEY;
+  if (!key) return [];
+  const ids: string[] = [];
+  for (const photo of photos) {
+    const small = await sharp(photo.body).rotate().resize(1280, 1280, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer().catch(() => null);
+    if (!small) continue;
+    const form = new FormData();
+    form.append('file', new Blob([new Uint8Array(small)], { type: 'image/jpeg' }), 'foto.jpg');
+    const response = await fetcher(`https://api.elevenlabs.io/v1/convai/conversations/${encodeURIComponent(conversationId)}/files`, {
+      method: 'POST',
+      headers: { 'xi-api-key': key },
+      body: form,
+      signal: AbortSignal.timeout(20_000),
+    }).catch(() => null);
+    const body = response?.ok ? ((await response.json().catch(() => null)) as { file_id?: unknown } | null) : null;
+    if (typeof body?.file_id === 'string') ids.push(body.file_id);
+  }
+  return ids;
 }
 
 export type RoxiOutcome = 'off' | 'paused' | 'window_closed' | 'already_answered' | 'limit' | 'no_answer' | 'send_failed' | 'answered' | 'handed_over';
@@ -296,12 +361,37 @@ export async function answerWithRoxi(executor: Executor, waId: string, deps: Dep
   const latest = rows.slice(split).map((m) => open(m.bodySealed) ?? line('in', m.kind, null).slice('Cliente: '.length));
   if (latest.length === 0) return 'already_answered';
 
+  // Selling from WhatsApp: a number tied to an account with the flagship, and the photos waiting for a draft.
+  const seller = await whatsappSeller(executor, contact);
+  const waiting = seller ? await waitingPhotos(executor, waId) : [];
+  if (waiting.length > 0) {
+    // The funnel's first step, once per batch: every waiting photo arrived with the messages answered now.
+    const fresh = new Set(rows.slice(split).map((m) => m.id));
+    if (waiting.every((photo) => fresh.has(photo.messageId))) await countRoxiHelp(executor, 'listing_photos');
+  }
+  const photos = waiting.length ? await downloadPhotos(waiting, deps.fetcher) : [];
+  // Each photo goes into one draft: once a draft took them, a second call in the same answer adds none.
+  let unused = photos;
+  const draft = async (parameters: Record<string, unknown>) => {
+    const result = await draftListingFromWhatsapp(executor, { userId: seller!.userId, waId, parameters, photos: unused, fetcher: deps.fetcher });
+    if ((JSON.parse(result) as { ok?: boolean }).ok) unused = [];
+    return result;
+  };
+
   const raw = await (deps.ask ?? askRoxiOverWebSocket)({
     customerName: open(contact.nameSealed) ?? '',
     country: await countryOfNumber(executor, waId),
     conversation: context.join('\n'),
     message: latest.join('\n'),
     lookup: (parameters) => whatsappLookup(executor, parameters),
+    selling: seller
+      ? {
+          linked: true,
+          photos,
+          attach: (conversationId, list) => attachPhotos(conversationId, list, deps.fetcher),
+          draft,
+        }
+      : { linked: false },
     owner,
     ownerTools: owner
       ? {

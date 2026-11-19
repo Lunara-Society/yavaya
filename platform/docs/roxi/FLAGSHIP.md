@@ -3,9 +3,8 @@
 The one workflow the owner's "Roxi Sovereign" brief (19 November 2026,
 phases I and II) asked to perfect first: a member gives Roxi photos, a price
 and a place, by text or voice, and ends with a reviewed, published Mercadito
-listing. The owner chose "website first, then WhatsApp". This page is the
-first slice, the website. The WhatsApp slice (photos sent on WhatsApp, a
-one-tap link to the same review and form) builds on the same drafts.
+listing. The owner chose "website first, then WhatsApp": the website is the first
+slice, WhatsApp (below) the second, on the same drafts.
 
 ## How it works
 
@@ -37,6 +36,43 @@ one-tap link to the same review and form) builds on the same drafts.
 
 The funnel is on Admin → Visitas, "Roxi: de fotos a anuncio publicado":
 anonymous counts per day, each step as a share of the first.
+
+## On WhatsApp (slice 2)
+
+The same draft, started in a WhatsApp chat with Roxi
+(`server/domains/whatsapp/listing.ts`):
+
+1. **Who.** A number tied to a Yavaya account (the member verified their
+   phone by sending their code from it, on yavaya.lat/account/phone) and the
+   flagship switch on for that account. Anyone else who wants to sell is told
+   how to publish on the site, or how to tie their number.
+2. **Photos.** Each photo a person sends keeps its WhatsApp media id
+   (`whatsapp_messages.media_id`, valid 7 days). For a member, the photos not
+   yet in a draft and sent within the reply window (at most six, the newest)
+   are fetched through Yavaya's own connection (Dualhook's Runtime API:
+   `GET /<media id>`, then its content route, with Yavaya's key; images only,
+   at most a listing photo's size) and shown to Roxi in her conversation,
+   uploaded with Yavaya's ElevenLabs key (the agent requires it). If they
+   cannot be shown, she is told they arrived. Counted: `listing_photos`.
+3. **Draft.** Roxi's `draft_listing` tool: the town is found as on the
+   website (only an exact name; she asks when several share it), the photos
+   are stored as the draft's private photos and marked used, and the draft is
+   saved with `source = 'whatsapp'`. Worked on again in the same chat (a new
+   photo, a better title), it keeps its id and adds the photos.
+4. **Link.** She answers with `https://yavaya.lat/mercadito/publish?draft=<id>`.
+   The link opens only for the member, signed in: it carries no sign-in of
+   its own, so a forwarded link opens nothing for anyone else.
+5. **Publish.** The member checks the filled-in form and taps Publicar on the
+   site, exactly as in slice 1 (same id, same single publish, same receipt).
+6. **Confirmation.** After a draft from WhatsApp is published, Roxi confirms
+   it in the chat with the receipt's facts (title, price, free or token cost,
+   the link), from the publish record, only inside WhatsApp's 24-hour reply
+   window (`confirmPublishedOnWhatsapp`).
+
+Nothing is published or charged in the chat. Her instructions are in
+`docs/roxi/whatsapp-prompt.md` ("Selling something from WhatsApp"); the tool
+is `draft_listing` on the WhatsApp agent. Tests:
+`tests/integration/whatsapp-listing.test.ts`.
 
 ## What keeps it honest
 

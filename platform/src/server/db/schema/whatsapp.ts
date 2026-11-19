@@ -53,8 +53,17 @@ export const whatsappMessages = pgTable(
     direction: text('direction').notNull(),
     /** text, image, audio, video, document, sticker, location, contacts, reaction, other. */
     kind: text('kind').notNull(),
-    /** The text, or a media caption, sealed. Media files themselves are not downloaded. */
+    /**
+     * The text, or a media caption, sealed. Media files are not downloaded,
+     * except a member's photos when Roxi drafts a listing from them
+     * (whatsapp/listing.ts), and then into that draft, not here.
+     */
     bodySealed: text('body_sealed'),
+    /** For an inbound image: WhatsApp's media id, valid for 7 days, which Yavaya's key can download. */
+    mediaId: text('media_id'),
+    mediaMime: text('media_mime'),
+    /** When Roxi put this photo into a listing draft, so it goes into one draft only. */
+    mediaUsedAt: timestamp('media_used_at', { withTimezone: true }),
     /** For 'out': sent, delivered, read or failed, as Meta reports it. */
     status: text('status'),
     /** For 'out' from the inbox: the team member who sent it. Null for the phone app. */

@@ -80,7 +80,13 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Everything is in `platform/docs/roxi/FLAGSHIP.md`.
 - **Switch:** Admin → Diseño del sitio → "Roxi: borradores, revisión y recibo" (`roxi.review`), **off**. While off, only the owner has it; everyone else keeps Roxi as she was (the form opens directly). Turning it on is the owner's call after trying it.
 - **Verified:** 14 integration tests, the browser flow (24 checks, stand-in agent and bucket), and the old flow (31 checks, unchanged). Not verified with the real agent: ElevenLabs is blocked (below). The website agent's prompt and the `prepare_listing` description now say what to do with the card and the receipt (repo and agent identical; agent version `agtvrsn_2901m7tp1wsef70rzefnzxd15mg2`, previous `agtvrsn_7601m7emkkwmf8ebnxw4wzre69qc` for rollback). The changes only apply when the tool answers `shown: review_card`.
-- **Next:** slice 2, WhatsApp. A verified member sends photos, price and place; Roxi drafts in the chat and sends a one-tap link to the same card/form; she confirms after publishing. It needs Dualhook media download checked first.
+- **Slice 2, WhatsApp (built 19 Nov evening):**
+  - A member whose number is tied to their account sends photos, price and town. Dualhook's media routes deliver the photos (checked in their docs: `GET /<media id>`, then the content route).
+  - Roxi sees the photos, drafts with the new `draft_listing` tool, and answers with the link to the filled-in form. She confirms in the chat after publishing.
+  - Same switch as slice 1.
+  - Details in `platform/docs/roxi/FLAGSHIP.md`. Tests: `whatsapp-listing` (8).
+  - Agent: tried on the test branch (four selling conversations); goes to main after the code is deployed.
+- **Voice notes for everyone (owner, 19 Nov):** "this is how I want Roxi to talk to everyone": the approved style now applies to every recipient, with the feeling set by the purpose (marketing and potential clients, follow-ups, apologies, sensitive news), always calm and truthful. Tried on the test branch: a restaurant pitch, a condolence, a follow-up.
 
 ## ElevenLabs blocked by a failed payment (18–19 November, resolved)
 - **Resolved 19 Nov evening:** the owner paid; the agents answer again (checked on both WhatsApp branches). Kept below for the record.

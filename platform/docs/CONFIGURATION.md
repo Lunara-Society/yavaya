@@ -1391,6 +1391,12 @@ covers "I'll finish it at the weekend" without keeping unpublished photos
 for long. At most 30 drafts with photos per member per hour
 (`RATE_LIMITS.roxiDraft`), since each one stores images.
 
+Selling from WhatsApp (the flagship's second slice) needs nothing new
+either: the photos come through the same WhatsApp connection
+(`WHATSAPP_ACCESS_TOKEN`, Dualhook's media routes), and Roxi sees them through
+`ELEVENLABS_API_KEY`, which the WhatsApp agent requires for uploads. Without
+that key she is told photos arrived and drafts from them all the same.
+
 ### Yavaya's own account (owner decision, 11 November 2026)
 
 One account, and only one, has Roxi Max with no payment and no credit limit:
