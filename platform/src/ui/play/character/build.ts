@@ -354,7 +354,9 @@ export function buildCharacter(initial: Look = DEFAULT_LOOK, options: { outline?
         break;
       case 'largo':
         hair(capsule(0.17, 0.2), [0, -0.14, -0.1], [1.15, 1.1, 0.5], [0.12, 0, 0]);
-        for (const side of [1, -1]) hair(capsule(0.06, 0.2), [side * 0.18, -0.12, 0.04], undefined, [0, 0, side * 0.08]);
+        // The side locks fall behind the ears (ears at z 0): in front of them, a lock crossed the cheek and
+        // the corner of the mouth seen from the side or three-quarters.
+        for (const side of [1, -1]) hair(capsule(0.06, 0.2), [side * 0.17, -0.12, -0.075], undefined, [0, 0, side * 0.08]);
         break;
       case 'mono':
         hair(ball(0.1, 14, 10), [0, 0.24, -0.1]);
