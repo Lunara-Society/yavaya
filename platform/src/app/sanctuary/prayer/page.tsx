@@ -7,6 +7,7 @@ import { PageScene } from '@/ui/site/art';
 import { PostCard } from '@/ui/community/post-card';
 import { listPosts } from '@/server/domains/community/service';
 import { loginHref } from '@/server/auth/return-path';
+import { lookEnabled } from '@/server/domains/platform/looks';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +26,7 @@ export default async function PrayerWallPage({ searchParams }: { searchParams: P
   const params = await searchParams;
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
-  const feed = userId ? await listPosts(db(), { viewerId: userId, kind: 'prayer', page, locale }) : null;
+  const [feed, candle] = await Promise.all([userId ? listPosts(db(), { viewerId: userId, kind: 'prayer', page, locale }) : Promise.resolve(null), lookEnabled(db(), 'focus')]);
   const href = (to: number) => (to > 1 ? `/sanctuary/prayer?page=${to}` : '/sanctuary/prayer');
 
   return (
@@ -75,7 +76,7 @@ export default async function PrayerWallPage({ searchParams }: { searchParams: P
           <>
             <div className="cm-feed">
               {feed.items.map((post) => (
-                <PostCard key={post.id} post={post} t={t} locale={locale} />
+                <PostCard key={post.id} post={post} t={t} locale={locale} candle={candle} back="prayer" />
               ))}
             </div>
             {feed.page > 1 || feed.hasMore ? (
@@ -94,7 +95,7 @@ export default async function PrayerWallPage({ searchParams }: { searchParams: P
             ) : null}
           </>
         )}
-        <p className="muted center mt">{t('sanctuary.prayer.discreet')}</p>
+        <p className="muted center mt">{t(candle ? 'community.candle.note' : 'sanctuary.prayer.discreet')}</p>
       </div>
     </SiteShell>
   );

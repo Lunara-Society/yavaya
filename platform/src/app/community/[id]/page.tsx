@@ -12,6 +12,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { COMMUNITY_REPORT_CATEGORIES, getPost } from '@/server/domains/community/service';
 import { closePostAction, replyAction, reportPostAction } from '../actions';
 import { signInPath } from '@/server/auth/sign-in-path';
+import { lookEnabled } from '@/server/domains/platform/looks';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false } };
@@ -33,6 +34,8 @@ export default async function CommunityPostPage({ params, searchParams }: Params
   const limits = { min: COMMUNITY_RULES.replyMinLength, max: COMMUNITY_RULES.replyMaxLength };
   // Prayer requests belong to the Sanctuary's wall; the page wears its colours.
   const prayer = post.kind === 'prayer';
+  // A prayer request's candle (docs/DISTRICT-FOCUS.md), while the districts' first screen is on.
+  const candle = prayer && (await lookEnabled(db(), 'focus'));
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current={prayer ? 'sanctuary' : 'community'} tone={prayer ? 'sanctuary' : 'community'}>
@@ -49,7 +52,7 @@ export default async function CommunityPostPage({ params, searchParams }: Params
         ) : null}
         {error ? <p className="mk-error">{t(error as MessageKey, limits)}</p> : null}
 
-        <PostCard post={post} t={t} locale={locale} full />
+        <PostCard post={post} t={t} locale={locale} full candle={candle} />
 
         {post.isAuthor && (post.status === 'open' || post.status === 'resolved') ? (
           <div className="btn-row" style={{ marginTop: 14 }}>

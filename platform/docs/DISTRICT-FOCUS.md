@@ -137,3 +137,15 @@ WhatsApp groups; this is that poster, made in a second.
   poster invites the ransom scam). A closed, reunited or removed notice has no
   poster (404).
 - Not behind the look: it adds a door, it changes nothing that was there.
+
+## The prayer wall's candle
+
+On a prayer request (the prayer wall, `/sanctuary/prayer`, and the request's
+own page), while the look is on, the "I'm with you" gesture becomes a candle:
+**"Estoy orando por ti"**, lit with a warm light once the member has lit it
+("Orando por ti"). Everyone sees how many candles are lit ("3 velas
+encendidas"); the person who asked sees it said to them ("3 personas están
+orando por ti"). It is the same support as before (`community_supports`, one
+per member per request, counted in `support_count`), so every number is real
+and nobody is named. Lighting a candle on the wall now brings the member back
+to the wall, not to Comunidad.

@@ -97,7 +97,9 @@ export async function supportAction(formData: FormData): Promise<void> {
   const session = await currentSession();
   if (!session) redirect(await signInPath());
   const postId = String(formData.get('postId') ?? '');
-  const back = formData.get('back') === 'square' ? '/community' : `/community/${postId}`;
+  // Back to where the gesture was made: the square, the prayer wall, or the post itself.
+  const from = formData.get('back');
+  const back = from === 'square' ? '/community' : from === 'prayer' ? '/sanctuary/prayer' : `/community/${postId}`;
   if (!UUID.test(postId)) redirect('/community');
   try {
     await db().transaction((tx) => toggleSupport(tx, { postId, userId: session.user.userId }));

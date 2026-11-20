@@ -2951,3 +2951,7 @@ h3 { font-size: 1.18rem; }
 
 /* District focus (docs/DISTRICT-FOCUS.md): its styles load with the district pages, ui/site/district-focus.css. */
 
+
+/* A prayer request's candle (ui/community/post-card.tsx, docs/DISTRICT-FOCUS.md): warm light once lit. */
+.cm-candle.on { border-color: rgba(240, 190, 110, 0.7); background: radial-gradient(120% 140% at 20% 50%, rgba(255, 196, 110, 0.32), rgba(255, 196, 110, 0.08)); box-shadow: 0 0 18px rgba(255, 186, 96, 0.28); }
+.cm-candles { color: #d9a85a; font-weight: 700; }
