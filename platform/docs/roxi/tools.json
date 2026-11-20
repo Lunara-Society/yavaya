@@ -203,6 +203,131 @@
   },
   {
     "type": "client",
+    "name": "prepare_board_post",
+    "description": "Prepares a post on one of Yavaya's eight free boards and opens its form on the member's screen, filled in, with the photos the member sent in this conversation attached (up to 4). Nothing is published: the member checks it, chooses anything missing, and taps Publicar themselves. Boards: barrio (the neighbourhood: notices, water/power/internet cuts, events, fairs, lost and found things, giveaways, neighbours helping, groups), hogar (housing, rooms, moving, furniture), movilidad (shared rides, routes, freight, vehicles, parts, workshops), salud (clinics, pharmacies, care, wellness), aprender (courses, trades, tutoring, scholarships), negocios (suppliers, wholesale, equipment, premises), campo (harvests, buyers, livestock, farm supplies and work), diaspora (help at home arranged by family abroad). Use it when the member wants to post on one of these, typically after a photo from a board's camera button (the photo's message names the board). Lost or found animals go to prepare_post lost_pet/found_pet instead, and things for sale with a price usually to prepare_listing (Mercadito). An answer of ambiguous_place lists options: ask which one, then call again with place_id.",
+    "expects_response": true,
+    "response_timeout_secs": 20,
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "district": {
+          "type": "string",
+          "description": "Which board.",
+          "enum": [
+            "hogar",
+            "movilidad",
+            "salud",
+            "aprender",
+            "negocios",
+            "campo",
+            "barrio",
+            "diaspora"
+          ]
+        },
+        "subdistrict": {
+          "type": "string",
+          "description": "The board's section, one of that board's own values. barrio: notices = Avisos del barrio; utilities = Cortes de agua, luz e internet; events = Eventos y actividades; fairs = Ferias y mercados; lost_found = Perdido y encontrado (things, not animals); giveaways = Se regala; neighbour_help = Vecinos que ayudan; groups = Grupos y reuniones. hogar: rentals, rooms, for_sale, land, moving, furniture, household. movilidad: shared_rides, routes, freight, vehicle_rental, vehicles, parts, workshops. salud: clinics, pharmacies, consultations, home_care, mental_health, wellness, blood_donation, medical_equipment. aprender: courses, trades, tutoring, languages, digital_skills, scholarships, materials. negocios: suppliers, wholesale, equipment, premises, business_services, partners, franchises. campo: harvest, buyers, livestock, supplies, machinery, land_lease, farm_work, farm_transport. diaspora: home_repairs, errands, elder_care, medical_visits, deliveries, paperwork, celebrations, property_care. Leave out if unsure: the member chooses it in the form.",
+          "enum": [
+            "rentals",
+            "rooms",
+            "for_sale",
+            "land",
+            "moving",
+            "furniture",
+            "household",
+            "shared_rides",
+            "routes",
+            "freight",
+            "vehicle_rental",
+            "vehicles",
+            "parts",
+            "workshops",
+            "clinics",
+            "pharmacies",
+            "consultations",
+            "home_care",
+            "mental_health",
+            "wellness",
+            "blood_donation",
+            "medical_equipment",
+            "courses",
+            "trades",
+            "tutoring",
+            "languages",
+            "digital_skills",
+            "scholarships",
+            "materials",
+            "suppliers",
+            "wholesale",
+            "equipment",
+            "premises",
+            "business_services",
+            "partners",
+            "franchises",
+            "harvest",
+            "buyers",
+            "livestock",
+            "supplies",
+            "machinery",
+            "land_lease",
+            "farm_work",
+            "farm_transport",
+            "notices",
+            "utilities",
+            "events",
+            "fairs",
+            "lost_found",
+            "giveaways",
+            "neighbour_help",
+            "groups",
+            "home_repairs",
+            "errands",
+            "elder_care",
+            "medical_visits",
+            "deliveries",
+            "paperwork",
+            "celebrations",
+            "property_care"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "description": "offer = Ofrezco (the member offers, gives, announces or reports something); request = Busco (the member is looking for something or someone).",
+          "enum": [
+            "offer",
+            "request"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "description": "Headline, 6 to 90 characters, in the member's language, specific: what, and where in general terms if they said it. Example: 'Corte de agua mañana en el barrio San Judas'."
+        },
+        "body": {
+          "type": "string",
+          "description": "The post, 20 to 2000 characters, in the member's words tidied: what, when, where in general terms, and anything they said that a neighbour needs to know. From a photo, describe only what you can actually see. Never put an exact home address, phone number or document number in it: the form has its own contact options."
+        },
+        "price": {
+          "type": "string",
+          "description": "Optional. ONLY if the member said a price or a fee, in their own words ('C$ 200', 'gratis', 'a convenir'). Never suggest one."
+        },
+        "place": {
+          "type": "string",
+          "description": "Optional. ONLY if the member said where: the town or city as they said it, optionally followed by a comma and the department or country. Never take it from their profile, the photo, or a guess."
+        },
+        "place_id": {
+          "type": "string",
+          "description": "Optional. Only after an ambiguous_place answer: the place_id of the option the member chose. Never invent one."
+        }
+      },
+      "required": [
+        "district",
+        "title",
+        "body"
+      ]
+    }
+  },
+  {
+    "type": "client",
     "name": "prepare_work",
     "description": "Prepares a Trabajo form and opens it on the member's screen, filled in. Nothing is published or saved: the member reviews, completes what only they can say, and taps the button. Forms: job_post (an offer of a job or a project, for a member who is a verified employer; the form itself tells them if they are not yet) and work_profile (the member's own Trabajo profile, which works as their CV when they apply). Write from what the member told you; never invent experience, qualifications, employers, pay or results.",
     "expects_response": true,

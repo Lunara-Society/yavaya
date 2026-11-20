@@ -102,6 +102,7 @@ const TOOL_ACTIVITY: Record<string, 'searching' | 'preparing' | 'filling' | 'che
   search_yavaya: 'searching',
   prepare_listing: 'preparing',
   prepare_post: 'preparing',
+  prepare_board_post: 'preparing',
   prepare_work: 'filling',
   my_account: 'checking',
   open_page: 'opening',

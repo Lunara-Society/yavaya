@@ -179,6 +179,7 @@ they are not in the cascade. Worth retrying if the workspace changes plan.
 | `my_account` | `tool_0701m5ddkf7gfkk97gtr63s6q8np` | `GET /api/roxi/me` |
 | `prepare_listing` | `tool_9901m5ddkrk8fdc9creqg18rvhnv` | opens `/mercadito/publish` |
 | `prepare_post` | `tool_7301m5ddkzpjf1frtx89d7dm5y7k` | opens the matching form |
+| `prepare_board_post` | `tool_7401m7vpnrgjeqqbs3hawbmrr8f0` | opens `/<board>/new` (the eight boards), photos attached |
 | `prepare_work` | `tool_4001m5t33sske15rq3dfxrdn7m6k` | opens `/work/posts/new` or `/work/profile` |
 | `open_page` | `tool_3601m5ddm6w8fs6td388d50p5mzd` | navigates (`ROXI_PAGES`) |
 | `open_result` | `tool_5901m5ddm8s2erabeqjvyq863gfv` | navigates to a search result |

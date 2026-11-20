@@ -157,3 +157,16 @@ node run.cjs
 It cannot reproduce a real phone's audio hardware: it proves the fallback
 and the cleanup, not the phone. The real check is ElevenLabs' record of the
 conversation (`asr_usage.total_audio_input_seconds` above 0).
+
+## A board's camera button — `roxi-board.cjs`
+
+Barrio's "Publicar con una foto" on a phone: the photo reaches Roxi with the
+board named, the stand-in agent answers with `prepare_board_post`, the board's
+form opens filled in with the photo attached, and the member publishes it.
+Same stand-ins and setup as `roxi-flagship.cjs`:
+
+```bash
+npx tsx --conditions=react-server tests/e2e/roxi-flagship-setup.ts > /tmp/board.json
+node tests/e2e/roxi-board.cjs /tmp/board.json
+```
+

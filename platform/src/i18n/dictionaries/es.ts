@@ -2953,6 +2953,8 @@ export const es = {
   'ops.looks.roxi_halo.turn_on': 'Darle a Roxi el Halo',
   'roxi.photo.lost_label': 'Avisar con una foto',
   'roxi.photo.lost_caption': 'Quiero avisar de un animal perdido o encontrado. Esta es su foto.',
+  'roxi.photo.board_label': 'Publicar con una foto',
+  'roxi.photo.board_caption': 'Quiero publicar esto en {district}. Esta es la foto.',
   'home.pulse.today_one': '1 nuevo hoy',
   'home.pulse.today_many': '{count} nuevos hoy',
   'home.pulse.week_one': '1 nuevo esta semana',

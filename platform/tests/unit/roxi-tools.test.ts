@@ -7,8 +7,10 @@ import { SERVICE_CATEGORY_KEYS } from '@/config/services';
 import { SPECIES as SERVER_SPECIES } from '@/config/animals';
 import { ROXI_SCOPES } from '@/server/domains/roxi/service';
 import { EMPLOYMENT_TYPES as SERVER_EMPLOYMENT_TYPES, WORK_FIELDS as SERVER_WORK_FIELDS } from '@/config/work';
-import { WORK_RULES } from '@/config/business-rules';
-import { EMPLOYMENT_TYPES, LISTING_CATEGORIES, MAX_PROFILE_FIELDS, NEIGHBOUR_KINDS, ROXI_PAGES, SERVICE_CATEGORIES, SPECIES, WORK_FIELDS, roxiTools } from '@/ui/roxi/tools';
+import { BOARD_RULES, WORK_RULES } from '@/config/business-rules';
+import { BOARD_DISTRICTS, BOARD_KINDS as SERVER_BOARD_KINDS } from '@/config/boards';
+import { takeDraft } from '@/ui/roxi/drafts';
+import { BOARD_KINDS, BOARD_LIMITS, BOARD_SUBDISTRICTS, EMPLOYMENT_TYPES, LISTING_CATEGORIES, MAX_PROFILE_FIELDS, NEIGHBOUR_KINDS, ROXI_PAGES, SERVICE_CATEGORIES, SPECIES, WORK_FIELDS, roxiTools } from '@/ui/roxi/tools';
 
 /**
  * Roxi's tools exist three times: in the browser (src/ui/roxi/tools.ts), at
@@ -52,6 +54,9 @@ describe('Roxi tools', () => {
     expect(WORK_FIELDS).toEqual([...SERVER_WORK_FIELDS]);
     expect(EMPLOYMENT_TYPES).toEqual([...SERVER_EMPLOYMENT_TYPES]);
     expect(MAX_PROFILE_FIELDS).toBe(WORK_RULES.maxFieldsPerProfile);
+    expect(BOARD_SUBDISTRICTS).toEqual(Object.fromEntries(Object.entries(BOARD_DISTRICTS).map(([key, def]) => [key, [...def.subdistricts]])));
+    expect(BOARD_KINDS).toEqual([...SERVER_BOARD_KINDS]);
+    expect(BOARD_LIMITS).toEqual({ title: BOARD_RULES.titleMaxLength, body: BOARD_RULES.bodyMaxLength, price: BOARD_RULES.priceMaxLength });
   });
 
   it('tells the agent the same values the browser accepts', () => {
@@ -62,6 +67,9 @@ describe('Roxi tools', () => {
     expect(definition('prepare_work').field?.enum).toEqual(WORK_FIELDS);
     expect(definition('prepare_work').employment?.enum).toEqual(EMPLOYMENT_TYPES);
     expect(definition('search_yavaya').scope?.enum).toEqual([...ROXI_SCOPES]);
+    expect(definition('prepare_board_post').district?.enum).toEqual(Object.keys(BOARD_SUBDISTRICTS));
+    expect(definition('prepare_board_post').subdistrict?.enum).toEqual([...new Set(Object.values(BOARD_SUBDISTRICTS).flat())]);
+    expect(definition('prepare_board_post').kind?.enum).toEqual(BOARD_KINDS);
     expect(definition('open_page').page?.enum).toEqual(Object.keys(ROXI_PAGES));
   });
 
@@ -71,5 +79,30 @@ describe('Roxi tools', () => {
       const page = route === '/' ? join(root, 'src', 'app', 'page.tsx') : join(root, 'src', 'app', ...route.slice(1).split('/'), 'page.tsx');
       expect(existsSync(page), `${name} → ${path}`).toBe(true);
     }
+  });
+
+  it('prepares a board post with the photos the member sent, on that board\'s own form', async () => {
+    const opened: string[] = [];
+    const photo = new File(['x'], 'corte.jpg', { type: 'image/jpeg' });
+    const tools = roxiTools({ navigate: (path) => opened.push(path), pathname: () => '/barrio', takePhotos: () => [photo], showResults: () => undefined, stepAside: () => undefined });
+
+    const refused = JSON.parse(await tools.prepare_board_post!({ district: 'mercadito', title: 'Algo', body: 'Algo más largo que veinte letras.' }));
+    expect(refused).toMatchObject({ ok: false, error: 'unknown_district' });
+
+    const answer = JSON.parse(
+      await tools.prepare_board_post!({ district: 'barrio', subdistrict: 'utilities', kind: 'offer', title: 'Corte de agua mañana', body: 'Cortan el agua de ocho a doce en toda la colonia.', price: '' }),
+    );
+    expect(answer).toMatchObject({ ok: true, opened: '/barrio/new', photos_attached: 1 });
+    expect(opened).toEqual(['/barrio/new?sub=utilities']);
+    const draft = takeDraft('board_post');
+    expect(draft?.fields).toEqual({ kind: 'offer', subdistrict: 'utilities', title: 'Corte de agua mañana', body: 'Cortan el agua de ocho a doce en toda la colonia.' });
+    expect(draft?.files).toEqual([photo]);
+  });
+
+  it('leaves a section from another board for the member to choose', async () => {
+    const tools = roxiTools({ navigate: () => undefined, pathname: () => '/', takePhotos: () => [], showResults: () => undefined, stepAside: () => undefined });
+    const answer = JSON.parse(await tools.prepare_board_post!({ district: 'barrio', subdistrict: 'harvest', title: 'Cosecha de maíz', body: 'Tenemos maíz de la cosecha para quien lo necesite.' }));
+    expect(answer).toMatchObject({ ok: true, member_must_choose: 'the section of the board' });
+    expect(takeDraft('board_post')?.fields.subdistrict).toBeUndefined();
   });
 });

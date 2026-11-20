@@ -24,6 +24,8 @@ import { closeBoardPostAction, deleteBoardAlertAction, reportBoardPostAction, sa
 import { mediaStorage } from '@/server/domains/media/storage';
 import { MEDIA_RULES } from '@/config/business-rules';
 import { FirstBlock } from '@/ui/site/first-block';
+import { RoxiPhotoButton } from '@/ui/roxi/photo-button';
+import { RoxiPrefill } from '@/ui/roxi/prefill';
 
 /** The subdistrict each board's "be the first" example belongs to (docs/DISTRICT-FOCUS.md). */
 const FIRST_EXAMPLE_SUB: Record<BoardDistrict, string> = {
@@ -209,6 +211,16 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
               <Link className="btn btn-gold" href={publish}>
                 {t('board.publish')}
               </Link>
+              {/* The camera button (docs/DISTRICT-FOCUS.md): a photo to Roxi, who writes the post with prepare_board_post. */}
+              {focus ? (
+                <RoxiPhotoButton
+                  className="btn btn-line"
+                  label={t('roxi.photo.board_label')}
+                  caption={t('roxi.photo.board_caption', { district: t(DISTRICTS[district].nameKey as MessageKey) })}
+                  selling={false}
+                  fallbackHref={publish}
+                />
+              ) : null}
               {userId ? (
                 <Link className="btn btn-line" href={mine ? base : `${base}?mine=1`}>
                   {mine ? t('board.all') : t('board.mine')}
@@ -411,6 +423,7 @@ export async function BoardNew({ district, searchParams }: { district: BoardDist
           {/* Posted to a route handler, not a Server Action: photos do not fit the action body limit. A plain form, so it works without JavaScript. */}
           <form action="/api/boards/posts" method="post" encType="multipart/form-data" className="mk-form" style={{ marginTop: 18 }}>
             <input type="hidden" name="district" value={district} />
+            <RoxiPrefill form="board_post" notice={t('roxi.prefill.notice')} />
             <label>
               {t('board.form.kind')}
               <select name="kind" required defaultValue="">

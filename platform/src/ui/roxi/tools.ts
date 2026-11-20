@@ -93,6 +93,20 @@ export const WORK_FIELDS = [
   'other',
 ];
 export const EMPLOYMENT_TYPES = ['full_time', 'part_time', 'temporary', 'freelance'];
+/** The board districts and their subdistricts (config/boards.ts), the same for all eight. */
+export const BOARD_SUBDISTRICTS: Record<string, string[]> = {
+  hogar: ['rentals', 'rooms', 'for_sale', 'land', 'moving', 'furniture', 'household'],
+  movilidad: ['shared_rides', 'routes', 'freight', 'vehicle_rental', 'vehicles', 'parts', 'workshops'],
+  salud: ['clinics', 'pharmacies', 'consultations', 'home_care', 'mental_health', 'wellness', 'blood_donation', 'medical_equipment'],
+  aprender: ['courses', 'trades', 'tutoring', 'languages', 'digital_skills', 'scholarships', 'materials'],
+  negocios: ['suppliers', 'wholesale', 'equipment', 'premises', 'business_services', 'partners', 'franchises'],
+  campo: ['harvest', 'buyers', 'livestock', 'supplies', 'machinery', 'land_lease', 'farm_work', 'farm_transport'],
+  barrio: ['notices', 'utilities', 'events', 'fairs', 'lost_found', 'giveaways', 'neighbour_help', 'groups'],
+  diaspora: ['home_repairs', 'errands', 'elder_care', 'medical_visits', 'deliveries', 'paperwork', 'celebrations', 'property_care'],
+};
+export const BOARD_KINDS = ['offer', 'request'];
+/** A board post's title and body (BOARD_RULES), cut here so the form never refuses Roxi's draft for length. */
+export const BOARD_LIMITS = { title: 90, body: 2000, price: 60 };
 /** A Trabajo profile lists at most this many fields (WORK_RULES.maxFieldsPerProfile). */
 export const MAX_PROFILE_FIELDS = 3;
 
@@ -334,6 +348,40 @@ export function roxiTools(ctx: ToolContext): Record<string, (parameters: Record<
         default:
           return reply({ ok: false, error: 'unknown_form' });
       }
+    },
+
+    /**
+     * A post on one of the eight boards (Barrio, Hogar, Movilidad, Salud,
+     * Aprender, Negocios, Campo, Diáspora), with the photos the member sent:
+     * Barrio's camera button ends here. The form opens filled in; the member
+     * checks it and taps Publicar, as on every other form.
+     */
+    async prepare_board_post(parameters) {
+      const district = text(parameters.district, 20);
+      const subdistricts = BOARD_SUBDISTRICTS[district];
+      if (!subdistricts) return reply({ ok: false, error: 'unknown_district', districts: Object.keys(BOARD_SUBDISTRICTS) });
+      const subdistrict = oneOf(subdistricts, parameters.subdistrict);
+      const fields: Record<string, string> = written({
+        kind: oneOf(BOARD_KINDS, parameters.kind),
+        subdistrict,
+        title: tidyField(text(parameters.title, BOARD_LIMITS.title)).replace(/\s+/g, ' '),
+        body: tidyField(text(parameters.body, BOARD_LIMITS.body)),
+        // The price is the member's own words, and only when they said one.
+        priceText: text(parameters.price, BOARD_LIMITS.price),
+      }) as Record<string, string>;
+
+      const place = await findPlace(text(parameters.place, 80), text(parameters.place_id, 40));
+      if (place.kind === 'several') {
+        return reply({ ok: false, error: 'ambiguous_place', options: place.options.map((option) => ({ place_id: option.id, name: option.name, where: option.context })), ask_member: 'which of these places they mean' });
+      }
+      if (place.kind === 'one') fields.locationId = place.place.id;
+      const prepared = JSON.parse(prepare(ctx, 'board_post', `/${district}/new${subdistrict ? `?sub=${subdistrict}` : ''}`, fields, true)) as Record<string, unknown>;
+      return reply({
+        ...prepared,
+        ...(place.kind === 'one' ? { place: `${place.place.name}, ${place.place.context}` } : {}),
+        ...(place.kind === 'unknown' ? { place_not_found: place.asked, member_must_choose_place: true } : {}),
+        ...(subdistrict ? {} : { member_must_choose: 'the section of the board' }),
+      });
     },
 
     async prepare_work(parameters) {
