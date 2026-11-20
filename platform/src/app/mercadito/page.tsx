@@ -21,6 +21,8 @@ import { Rotulo } from '@/ui/site/rotulo';
 import { DistrictWorld } from '@/ui/first-light/district-world';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { FirstBlock } from '@/ui/site/first-block';
+import { RoxiPhotoButton } from '@/ui/roxi/photo-button';
+import { loginHref } from '@/server/auth/return-path';
 
 export const dynamic = 'force-dynamic';
 
@@ -101,6 +103,8 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
               <Link className="btn btn-gold" href="/mercadito/publish">
                 {t('mercadito.browse.publish_free')}
               </Link>
+              {/* Sell with a photo (docs/DISTRICT-FOCUS.md): the photo goes to Roxi, who drafts the listing; without her, the form. */}
+              {focus ? <RoxiPhotoButton className="btn btn-line" label={t('roxi.ui.suggest.sell')} selling fallbackHref={member ? '/mercadito/publish' : loginHref('/mercadito/publish')} /> : null}
             </div>
           </div>
 

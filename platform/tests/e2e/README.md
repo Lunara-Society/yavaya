@@ -84,9 +84,9 @@ npx tsx --conditions=react-server tests/e2e/roxi-flagship-setup.ts > /tmp/flagsh
 node tests/e2e/roxi-flagship.cjs /tmp/flagship.json
 ```
 
-The setup's member is an administrator, so the flagship is on for them while
-its switch is off. `roxi-panel.cjs` uses a plain member, so its listing check
-covers Roxi as she was: the form opened directly.
+The flagship's switch is on by default (20 November 2026); this setup puts it
+back at its default. `roxi-setup.ts` turns it off, so `roxi-panel.cjs`'s
+listing check still covers Roxi as she was: the form opened directly.
 
 ## Roxi's plans, memory and connections — `roxi-plans.cjs`
 

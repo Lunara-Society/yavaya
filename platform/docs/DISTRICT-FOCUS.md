@@ -81,3 +81,22 @@ Tests: `tests/integration/district-pulse.test.ts`.
 
 The photographs' disclosure is said once, above the grid, with the footer's
 own sentence, instead of an "Ilustración" stamp on every card.
+
+## A camera button for Roxi (`ui/roxi/photo-button.tsx`)
+
+- **Mercadito**: "Vender con una foto" beside "Publicar gratis". The member
+  takes or chooses the photo on the page itself (a browser opens its picker
+  only inside a tap), and Roxi opens with it as if it had been sent in her
+  panel (`giveRoxiPhoto` → `roxi:photo`): she drafts the listing, shown as
+  the review card (the flagship, `roxi.review`, on by default since the same
+  day).
+- **Animales**: "Avisar con una foto". The photo goes to Roxi with the
+  sentence "Quiero avisar de un animal perdido o encontrado. Esta es su foto.",
+  so she prepares the lost or found notice (`prepare_post`, with the photo
+  attached).
+- **Barrio has none yet**: Roxi has no tool for board posts, so a camera
+  button there would promise what she cannot do. It needs a new tool on her
+  agent first.
+
+Without Roxi on the page (signed out, or not configured) each button is a
+plain link to the form that does the same by hand, so it never leads nowhere.

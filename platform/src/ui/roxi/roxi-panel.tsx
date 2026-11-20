@@ -391,6 +391,7 @@ export default function RoxiPanel({
   refusals,
   openedBy = 'none',
   ask,
+  photo = null,
   review = false,
   halo = false,
   published = null,
@@ -404,6 +405,8 @@ export default function RoxiPanel({
   openedBy?: RoxiOpening;
   /** A request from a button elsewhere on the site ("¿Qué necesitas hoy?"), sent as the member's first message. */
   ask?: { text: string; id: number } | null;
+  /** A photo chosen on a page's camera button (photo-button.tsx), taken as if picked here. */
+  photo?: { file: File; selling: boolean; caption?: string; id: number } | null;
   /** The listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the server, the review card, the receipt. */
   review?: boolean;
   /** Her face is the Halo (docs/roxi/HALO.md) instead of the gold orb. */
@@ -457,6 +460,8 @@ export default function RoxiPanel({
   const typed = useRef<string[]>([]);
   // A photo picked from "Sell with a photo" says so, instead of the plain caption.
   const sellingPhoto = useRef(false);
+  /** What a page's camera button said the photo is for (Animales: a lost or found animal), sent with it. */
+  const photoCaption = useRef<string | null>(null);
   // Why the microphone could not be used, until it can: the talk button then offers to try again.
   const [micIssue, setMicIssue] = useState<MicProblem | null>(null);
   // Her written answers read aloud by the device's voice, for whoever cannot or would rather not talk.
@@ -987,11 +992,22 @@ export default function RoxiPanel({
   // A request handed over by a page ("Necesito ayuda", "Busco trabajo"): sent once, as if typed.
   const askedId = useRef<number | null>(null);
   const sendTextRef = useRef<(text: string, fromBox: boolean) => Promise<void>>(async () => undefined);
+  const sendPhotoRef = useRef<(file: File | undefined) => Promise<void>>(async () => undefined);
   useEffect(() => {
     if (!ask || askedId.current === ask.id) return;
     askedId.current = ask.id;
     void sendTextRef.current(ask.text, false);
   }, [ask]);
+
+  // A photo handed over by a page's camera button: once, as if it had been picked in the panel.
+  const photoId = useRef(0);
+  useEffect(() => {
+    if (!photo || photoId.current === photo.id) return;
+    photoId.current = photo.id;
+    sellingPhoto.current = photo.selling;
+    photoCaption.current = photo.caption ?? null;
+    void sendPhotoRef.current(photo.file);
+  }, [photo]);
 
   async function sendText(text: string, fromBox: boolean) {
     const said = text.trim();
@@ -1037,7 +1053,8 @@ export default function RoxiPanel({
       const deliver = async (session: Conversation) => {
         try {
           const { fileId } = await session.uploadFile(small);
-          const caption = draft.trim() || (selling ? labels.sell_caption : labels.photo_text);
+          const caption = draft.trim() || photoCaption.current || (selling ? labels.sell_caption : labels.photo_text);
+          photoCaption.current = null;
           typed.current = [...typed.current.slice(-9), caption];
           session.sendMultimodalMessage({ text: caption, fileIds: [fileId] });
           setDraft('');
@@ -1271,6 +1288,7 @@ export default function RoxiPanel({
               : labels.role;
 
   sendTextRef.current = sendText;
+  sendPhotoRef.current = sendPhoto;
 
   // "¿Qué necesitas hoy?": the four doors besides selling with a photo (the proposal's front door).
   const suggestions = [

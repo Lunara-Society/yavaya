@@ -2951,6 +2951,8 @@ export const es = {
   'ops.looks.roxi_halo.off_note': 'La cara de Roxi es la esfera dorada de antes.',
   'ops.looks.roxi_halo.turn_off': 'Volver a la esfera dorada',
   'ops.looks.roxi_halo.turn_on': 'Darle a Roxi el Halo',
+  'roxi.photo.lost_label': 'Avisar con una foto',
+  'roxi.photo.lost_caption': 'Quiero avisar de un animal perdido o encontrado. Esta es su foto.',
   'home.pulse.today_one': '1 nuevo hoy',
   'home.pulse.today_many': '{count} nuevos hoy',
   'home.pulse.week_one': '1 nuevo esta semana',

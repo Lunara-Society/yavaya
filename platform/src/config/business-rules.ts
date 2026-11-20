@@ -209,12 +209,12 @@ export const SITE_LOOK_RULES = {
   /**
    * Roxi's listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the
    * server, the review card in her panel, and the receipt after publishing.
-   * Off until the owner has tried it (Roxi Sovereign, phase I + II, approved
-   * 19 November 2026 as "website first"): while off, someone who may change
-   * this switch gets it and everyone else has Roxi as she was, opening the
-   * form directly.
+   * On for everyone: the owner's decision of 20 November 2026 ("let's do all
+   * that", after the district review recommended switching it on). Off,
+   * someone who may change this switch keeps it and everyone else has Roxi
+   * as she was, opening the form directly.
    */
-  roxi_review: false,
+  roxi_review: true,
   /**
    * Roxi's face (docs/roxi/HALO.md): the Halo, three obsidian arcs around a
    * violet light with a golden heart, in her panel and on her launcher. On:

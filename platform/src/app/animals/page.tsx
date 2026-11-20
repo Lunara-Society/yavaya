@@ -19,6 +19,7 @@ import { loginHref } from '@/server/auth/return-path';
 import { DistrictWorld } from '@/ui/first-light/district-world';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { FirstBlock } from '@/ui/site/first-block';
+import { RoxiPhotoButton } from '@/ui/roxi/photo-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,6 +78,8 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
               <Link className="btn btn-line" href="/animals/lost">
                 {t('animals.lost.title')}
               </Link>
+              {/* A lost or found animal, reported with a photo: Roxi prepares the notice with it; without her, the form. */}
+              {focus ? <RoxiPhotoButton className="btn btn-line" label={t('roxi.photo.lost_label')} caption={t('roxi.photo.lost_caption')} selling={false} fallbackHref={member ? '/animals/lost/new' : loginHref('/animals/lost/new')} /> : null}
             </div>
           </div>
         </div>

@@ -100,9 +100,9 @@ is `draft_listing` on the WhatsApp agent. Tests:
 ## Switch and rollback
 
 Admin → Diseño del sitio → "Roxi: borradores, revisión y recibo de anuncios"
-(`roxi.review`), **off** by default. While it is off, only someone who may
-change switches has the flagship (the owner tries it first); everyone else
-has Roxi as she was: `prepare_listing` opens the filled-in form in the tab,
+(`roxi.review`), **on** by default since 20 November 2026 (the owner's
+decision after the district review). While it is off, only someone who may
+change switches has the flagship; everyone else has Roxi as she was: `prepare_listing` opens the filled-in form in the tab,
 in memory, as before. Every route checks the switch on the server, not only
 the panel.
 

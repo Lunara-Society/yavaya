@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { eq, like, or } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
-import { rateLimitCounters, users } from '@/server/db/schema';
+import { featureFlags, rateLimitCounters, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 
 /**
@@ -29,6 +29,9 @@ async function main() {
   await db()
     .delete(rateLimitCounters)
     .where(or(like(rateLimitCounters.key, 'login:%'), like(rateLimitCounters.key, '%roxi%')));
+  // This test covers Roxi as she was (the form opened directly): the flagship's switch is on by default, so say "off".
+  // roxi-flagship.cjs covers the flagship; its setup removes this row again.
+  await db().insert(featureFlags).values({ key: 'roxi.review', enabled: false }).onConflictDoUpdate({ target: featureFlags.key, set: { enabled: false } });
   console.log(JSON.stringify({ email, password: PASSWORD, userId }));
 }
 

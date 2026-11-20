@@ -104,10 +104,9 @@ async function member(options: { linked?: boolean; admin?: boolean } = {}) {
 }
 
 async function flagshipOn(on: boolean) {
-  if (on) {
-    const owner = await member({ linked: false, admin: true });
-    await db().transaction((tx) => setLook(tx, { actor: { userId: owner, status: 'active' }, key: 'roxi_review', enabled: true }));
-  } else await db().delete(featureFlags).where(eq(featureFlags.key, 'roxi.review'));
+  // Written either way: the switch's default is on, so "off" has to be said.
+  const owner = await member({ linked: false, admin: true });
+  await db().transaction((tx) => setLook(tx, { actor: { userId: owner, status: 'active' }, key: 'roxi_review', enabled: on }));
   clearSettingsCache();
 }
 
@@ -237,6 +236,7 @@ describe('Who gets it, in a real answer', () => {
   });
 
   it('is nobody while the flagship is off for them', async () => {
+    await flagshipOn(false);
     await member();
     await ingestDelivery(db(), parseDelivery(photo('wamid.f1', 'media-f1')));
     const { whatsappSeller } = await import('@/server/domains/whatsapp/listing');

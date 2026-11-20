@@ -286,15 +286,16 @@ describe("Roxi's receipt", () => {
 });
 
 describe('The flagship switch', () => {
-  it('is off for members until the owner turns it on, and the owner always has it', async () => {
+  it('is on for members until the owner turns it off, and the owner always has it', async () => {
     const owner = await member({ admin: true });
     const neighbour = await member();
-    expect(await roxiReviewOn(db(), neighbour)).toBe(false);
+    expect(await roxiReviewOn(db(), neighbour)).toBe(true);
     expect(await roxiReviewOn(db(), owner)).toBe(true);
     try {
-      await db().transaction((tx) => setLook(tx, { actor: { userId: owner, status: 'active' }, key: 'roxi_review', enabled: true }));
+      await db().transaction((tx) => setLook(tx, { actor: { userId: owner, status: 'active' }, key: 'roxi_review', enabled: false }));
       clearSettingsCache();
-      expect(await roxiReviewOn(db(), neighbour)).toBe(true);
+      expect(await roxiReviewOn(db(), neighbour)).toBe(false);
+      expect(await roxiReviewOn(db(), owner)).toBe(true);
     } finally {
       // Switches outlive the per-test reset: left on, every later test and local run would have the flagship.
       await db().delete(featureFlags).where(eq(featureFlags.key, 'roxi.review'));

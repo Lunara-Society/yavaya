@@ -2925,6 +2925,8 @@ export const en: Dictionary = {
   'ops.looks.roxi_halo.off_note': "Roxi's face is the gold sphere she had before.",
   'ops.looks.roxi_halo.turn_off': 'Go back to the gold sphere',
   'ops.looks.roxi_halo.turn_on': 'Give Roxi the Halo',
+  'roxi.photo.lost_label': 'Report with a photo',
+  'roxi.photo.lost_caption': 'I want to report a lost or found animal. This is its photo.',
   'home.pulse.today_one': '1 new today',
   'home.pulse.today_many': '{count} new today',
   'home.pulse.week_one': '1 new this week',

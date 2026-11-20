@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { eq, like, or } from 'drizzle-orm';
 import { closeDb, db } from '@/server/db/client';
-import { rateLimitCounters, users } from '@/server/db/schema';
+import { featureFlags, rateLimitCounters, users } from '@/server/db/schema';
 import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 
@@ -29,6 +29,8 @@ async function main() {
   await db()
     .delete(rateLimitCounters)
     .where(or(like(rateLimitCounters.key, 'login:%'), like(rateLimitCounters.key, '%roxi%')));
+  // The flagship's switch at its default (on), whatever roxi-setup.ts left behind.
+  await db().delete(featureFlags).where(eq(featureFlags.key, 'roxi.review'));
   console.log(JSON.stringify({ email, password: PASSWORD, userId }));
 }
 
