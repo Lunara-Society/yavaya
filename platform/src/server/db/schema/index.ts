@@ -31,3 +31,4 @@ export * from './roxi';
 export * from './whatsapp';
 export * from './boards';
 export * from './play';
+export * from './mirador';

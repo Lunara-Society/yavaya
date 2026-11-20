@@ -296,6 +296,22 @@ export const CAPABILITIES: readonly Capability[] = [
     group: 'platform',
   },
   {
+    key: 'mirador',
+    nameKey: 'capability.mirador.name',
+    detailKey: 'capability.mirador.detail',
+    /*
+     * Built (docs/mirador/README.md): upload in parts, checking and encoding
+     * with ffmpeg, the feed and its six tabs, likes, comments, follows,
+     * saves, shares, reports, blocks and links to listings, stores, services
+     * and posts. It needs the media bucket, so the live state is measured
+     * from media storage (`measured()`); this is the unconfigured case.
+     * Whether members can open it is a separate switch (`mirador.open`).
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'Media storage (MEDIA_STORAGE_PROVIDER=s3 and the MEDIA_S3_* keys) and ffmpeg in the image. Members see it once the owner turns on mirador.open.',
+  },
+  {
     key: 'board_districts',
     nameKey: 'capability.board_districts.name',
     detailKey: 'capability.board_districts.detail',

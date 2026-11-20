@@ -1860,6 +1860,41 @@ pay in advance to strangers and to have the family confirm the work first.
 Voice dictation uses the browser's speech recognition: Yavaya receives only
 the text the member decides to publish.
 
+## Mirador — short videos (built 20 November 2026, closed)
+
+What it is and how it works: `docs/mirador/README.md`.
+
+**Nothing new to configure for what is built.** It uses the media bucket
+(`MEDIA_STORAGE_PROVIDER=s3`, the `MEDIA_S3_*` keys, multipart uploads and
+ranged reads, as the guide videos do) and ffmpeg, which the Dockerfile now
+installs. The capability `mirador` on `/status` is measured from the bucket.
+
+**The owner's switch.** `mirador.open`, Admin → Diseño del sitio, **off**:
+until it is turned on, only someone who may change switches sees Mirador.
+
+**Yavaya's own defaults, not the owner's** (`MIRADOR_RULES`):
+videos of 2 to 90 seconds and up to 250 MB; 10 uploads a day per member;
+captions of 300 characters with up to 8 hashtags; comments of 500 characters,
+30 an hour; unfinished uploads cleared after 6 hours; a video hidden for
+review after 3 different reporters; Para ti's weights (likes 3, saves 4,
+shares 5, comments 2, watched to the end 2, a prior of 20 views, 72-hour
+freshness, ×1.5 near, ×2 followed, ×1.3 chosen topics, ×1.2 same language),
+seen videos pushed back for 7 days, Tendencias over 48 hours from 5 views.
+
+**Decisions open (the owner's):**
+- Prices for Roxi-made videos and Roxi narration (phases 5 and 6, not built):
+  the verified provider costs and a suggestion are in the README. Building
+  them also needs `HEYGEN_API_KEY` (a HeyGen API key with videos and assets
+  scopes) and API credits on HeyGen.
+- Featured videos and business promotion (paid visibility): not built; their
+  price and rules are the owner's.
+- Creator earnings: not built and not to be built before accounting, tax and
+  fraud controls exist.
+- HeyGen's commercial-use terms and a trademark search for "Mirador" before
+  spending on the brand.
+
+---
+
 ## Yavaya Play
 
 `SITE_LOOK_RULES.play` is `false`: `/play` is closed until the owner opens it

@@ -36,6 +36,32 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Audit inside the same transaction.
   - Never print secrets.
 
+## Mirador: short videos (20 November, owner's brief "Yavaya Pulse")
+
+Named Mirador (the lookout over a town; no video or social product uses the
+name — a web search, not a trademark search). Not a 16th district: a window
+over all of them, each video taking the district of what it links to. Full
+doc: `platform/docs/mirador/README.md`.
+
+- **Built and tested, closed:** upload in 8 MB parts, ffmpeg encoding (720p +
+  360p + poster, metadata stripped, never upscaled), the full-screen feed
+  with six tabs (Para ti with transparent ranking, Cerca, Siguiendo, Negocios,
+  Mercadito, Tendencias), likes, comments, follows, saves, shares, reports,
+  blocks, links to the creator's own listing/store/services/post, the creator
+  studio with real numbers, Admin → Moderación de Mirador. 14 integration
+  tests with real video files, 16 browser checks on a phone.
+- **Switch:** `mirador.open` in Admin → Diseño del sitio, off. The owner sees
+  the door ("Mirador" in the header) and can try everything first.
+- **Not built:** Roxi-made videos (HeyGen) and paid narration (ElevenLabs):
+  they need the owner's prices and, for HeyGen, an API key
+  (`HEYGEN_API_KEY`) with credits. Verified costs and a suggestion in the
+  README. Featured videos, business tools and creator earnings are not built.
+- **Production needs:** ffmpeg is now in the Docker image (`apk add`); the
+  scheduler's `mirador-upkeep` retries interrupted processing.
+
+Also today: Roxi's `prepare_board_post` (all eight boards) and the camera
+button on Barrio and the other boards — live, tool on the agent.
+
 ## The district review (20 November, owner: "let's do all that")
 
 After a phone review of every district. Docs: `platform/docs/DISTRICT-FOCUS.md`,

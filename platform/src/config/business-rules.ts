@@ -232,6 +232,56 @@ export const SITE_LOOK_RULES = {
    * that"). Off, the district pages exactly as they were.
    */
   focus: true,
+  /**
+   * Mirador, the short videos (docs/mirador/README.md): closed until the
+   * owner has tried it and opens it. While closed, only someone who may change
+   * this switch sees it (the owner's preview); everyone else gets no door to it.
+   */
+  mirador: false,
+} as const;
+
+/**
+ * Mirador (docs/mirador/README.md). Yavaya's own defaults of 20 November 2026,
+ * not the owner's (CONFIGURATION.md, "Mirador"): short videos, sized so a
+ * mid-range phone on a slow connection can watch and upload them.
+ */
+export const MIRADOR_RULES = {
+  /** A short video: longer files are refused with that reason, not cut. */
+  maxDurationSeconds: 90,
+  minDurationSeconds: 2,
+  /** The member's original file, before Yavaya encodes it. */
+  maxUploadBytes: 250 * 1024 * 1024,
+  /** Each upload part: the bucket needs at least 5 MB for every part but the last. */
+  partBytes: 8 * 1024 * 1024,
+  /** Videos one member may start uploading in a day. */
+  uploadsPerDay: 10,
+  /** An upload never finished is cleared after this long, its parts deleted. */
+  uploadKeepHours: 6,
+  captionMaxLength: 300,
+  maxHashtags: 8,
+  hashtagMaxLength: 30,
+  commentMaxLength: 500,
+  commentsPerHour: 30,
+  /** A video still processing after this long is tried again by the scheduler; after this many tries, it failed. */
+  processingStaleMinutes: 20,
+  processingAttempts: 3,
+  /** Videos sent to the feed at a time: few, so a phone never fetches what it will not watch. */
+  feedPageSize: 6,
+  /** Watched to this share of its length counts as watched to the end. */
+  completionShare: 0.9,
+  /**
+   * For You's weights (docs/mirador/README.md, "How For You ranks"): what a
+   * video earned per view, so a new video with one honest like is not buried
+   * under an old one with many views.
+   */
+  ranking: { like: 3, save: 4, share: 5, comment: 2, completion: 2, priorViews: 20, freshHours: 72, near: 1.5, following: 2, interest: 1.3, language: 1.2 },
+  /** A video seen in the last this-many days is not offered again in For You. */
+  seenDays: 7,
+  /** Tendencias: engagement in this window, from videos with at least this many views. */
+  trendingHours: 48,
+  trendingMinViews: 5,
+  /** Distinct members reporting a video before it is hidden until a moderator looks. */
+  reportsToHide: 3,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

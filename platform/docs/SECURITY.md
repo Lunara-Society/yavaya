@@ -612,6 +612,37 @@ anything sensitive to the team. Replies go only to Meta's Graph API or
 Dualhook's Runtime API: `WHATSAPP_API_BASE` accepts no other host. An hourly
 cap per conversation stops a loop with another automated number.
 
+## Mirador's videos
+
+Members' video files are untrusted input to ffmpeg, a large parser
+(`src/server/domains/mirador/process.ts`):
+
+- **Container allow-list before decoding.** ffprobe must name a phone
+  container (mov/mp4/3gp/matroska/webm); an HLS or concat playlist, which
+  could name network addresses or local files, is refused before ffmpeg
+  plays it. `-protocol_whitelist file,pipe` on every ffprobe and ffmpeg run
+  backs that up.
+- **Bounded runs.** Each run is killed after five minutes; one video at a
+  time per server, two threads; the scheduler gives up after three tries.
+- **Metadata stripped.** `-map_metadata -1` drops GPS position, device and
+  date from what viewers receive; the original is deleted after encoding.
+- **Uploads in parts.** Each part's size is checked against what the upload
+  declared before it reaches the bucket; no request holds more than one part
+  (8 MB). Same-origin required on every write (route handlers have no
+  built-in cross-site check), including view counts.
+- **Who sees what.** A video not published, removed, or hidden by reports is
+  served only to its creator and to moderators (`moderation.queue.read`);
+  everything answers 404 while `mirador.open` is off, except to someone who
+  may change switches. Links may point only at the creator's own live
+  listing, store, provider profile or post, checked on save and on display.
+- **Counting honestly.** Views are deduplicated per viewer per day (a daily
+  hash for visitors who are not signed in), creators' own actions never
+  count, and taps are rate-limited.
+
+Gap: parts go through the application server rather than straight to the
+bucket (signed direct uploads need bucket CORS rules); files are served
+through the application rather than a CDN.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a

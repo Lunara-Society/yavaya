@@ -388,6 +388,12 @@ const NOTIFICATION_ROWS: Array<{
     detailKey: 'settings.notify.roxi_detail',
   },
   {
+    category: 'mirador',
+    channel: 'in_app',
+    labelKey: 'settings.notify.mirador',
+    detailKey: 'settings.notify.mirador_detail',
+  },
+  {
     category: 'moderation',
     channel: 'in_app',
     labelKey: 'settings.notify.moderation',

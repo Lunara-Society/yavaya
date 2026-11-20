@@ -379,6 +379,13 @@
       "when": 1795119737287,
       "tag": "0053_fresh_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 54,
+      "version": "7",
+      "when": 1795153500510,
+      "tag": "0054_mirador",
+      "breakpoints": true
     }
   ]
 }

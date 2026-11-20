@@ -128,6 +128,9 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
             <p className="ops-visits-link">
               <Link className="btn btn-line" href="/admin/vault">
                 {t('ops.vault.link')}
+              </Link>{' '}
+              <Link className="btn btn-line" href="/admin/mirador">
+                {t('mirador.mod.link')}
               </Link>
             </p>
           </section>

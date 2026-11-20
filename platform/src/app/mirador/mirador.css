@@ -1,0 +1,828 @@
+/*
+ * Mirador (docs/mirador/README.md). Always dark: a screen for watching. The
+ * palette is the Halo's (docs/roxi/HALO.md): obsidian, champagne gold, and
+ * violet only where Roxi is involved. No gradients but the one shadow that
+ * keeps white text readable over a bright video.
+ */
+.mf,
+.mu-page,
+.ms-page {
+  --mr-bg: #050407;
+  --mr-raised: #110e16;
+  --mr-line: rgba(244, 235, 216, 0.14);
+  --mr-text: #f4ebd8;
+  --mr-muted: #b9b0a3;
+  --mr-gold: #e2c27a;
+  --mr-gold-strong: #f3d77b;
+  --mr-violet: #a48af0;
+  color: var(--mr-text);
+}
+
+/* --- The feed --------------------------------------------------------------- */
+
+.mf {
+  position: fixed;
+  inset: 0;
+  background: var(--mr-bg);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+.mf-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px;
+  pointer-events: none;
+}
+.mf-top > * {
+  pointer-events: auto;
+}
+.mf-back,
+.mf-upload {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: var(--mr-text);
+  background: rgba(5, 4, 7, 0.45);
+}
+.mf-upload {
+  color: #120d04;
+  background: var(--mr-gold);
+}
+.mf-brand {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  color: var(--mr-gold);
+}
+.mf-tabs {
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  justify-content: safe center;
+}
+.mf-tabs::-webkit-scrollbar {
+  display: none;
+}
+.mf-tabs a {
+  flex: none;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(244, 235, 216, 0.72);
+  text-decoration: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  border-bottom: 2px solid transparent;
+}
+.mf-tabs a[aria-current='page'] {
+  color: var(--mr-text);
+  border-bottom-color: var(--mr-gold);
+}
+
+.mf-scroller {
+  height: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.mf-scroller::-webkit-scrollbar {
+  display: none;
+}
+.mf-scroller:focus-visible {
+  outline: none;
+}
+
+.mf-item {
+  position: relative;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  contain: strict;
+}
+.mf-stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--mr-bg);
+  cursor: pointer;
+}
+.mf-stage video,
+.mf-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* A portrait video fills a portrait phone; a landscape one is shown whole. */
+@media (max-aspect-ratio: 3/4) {
+  .mf-stage[data-fit='cover'] video,
+  .mf-stage[data-fit='cover'] img {
+    object-fit: cover;
+  }
+}
+.mf-play {
+  position: absolute;
+  color: rgba(244, 235, 216, 0.85);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+  pointer-events: none;
+}
+
+.mf-rail {
+  position: absolute;
+  z-index: 3;
+  right: 8px;
+  /* Clear of Roxi's launcher, which sits in the same corner. */
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 150px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.mf-btn {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-width: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mr-text);
+  font: 600 0.78rem/1 var(--font-sans);
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7));
+  cursor: pointer;
+}
+.mf-btn[aria-pressed='true'] {
+  color: var(--mr-gold-strong);
+}
+.mf-btn-small {
+  opacity: 0.9;
+}
+.mf-btn:focus-visible,
+.mf-follow:focus-visible,
+.mf-avatar:focus-visible,
+.mf-action:focus-visible {
+  outline: 2px solid var(--mr-gold);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.mf-creator {
+  position: relative;
+  margin-bottom: 6px;
+}
+.mf-avatar {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 2px solid var(--mr-gold);
+  background: var(--mr-raised);
+  color: var(--mr-gold);
+  font-weight: 700;
+  text-decoration: none;
+}
+.mf-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mf-follow {
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mr-gold);
+  color: #120d04;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mf-info {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 72px;
+  bottom: 0;
+  padding: 48px 14px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  background: linear-gradient(to top, rgba(5, 4, 7, 0.82), rgba(5, 4, 7, 0));
+  pointer-events: none;
+}
+.mf-info a {
+  pointer-events: auto;
+}
+.mf-who {
+  margin: 0 0 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.mf-who a {
+  color: var(--mr-text);
+  text-decoration: none;
+}
+.mf-who span {
+  font-weight: 500;
+  color: var(--mr-muted);
+}
+.mf-ai {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-violet);
+  color: var(--mr-violet) !important;
+  font-size: 0.72rem;
+  font-weight: 700 !important;
+}
+.mf-caption {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  white-space: pre-line;
+}
+.mf-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(17, 14, 22, 0.86);
+  border: 1px solid rgba(226, 194, 122, 0.45);
+  color: var(--mr-text);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.mf-action-what {
+  flex: none;
+  font-weight: 700;
+  color: var(--mr-gold-strong);
+}
+.mf-action-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mf-action-price {
+  flex: none;
+  font-weight: 700;
+}
+
+.mf-empty {
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+.mf-empty h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--mr-gold);
+}
+.mf-empty p {
+  margin: 0 auto;
+  max-width: 32ch;
+  color: var(--mr-muted);
+}
+.mf-cta {
+  justify-self: center;
+  display: inline-block;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mr-gold);
+  color: #120d04;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mf-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.mf-end {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  color: var(--mr-muted);
+  scroll-snap-align: end;
+}
+.mf-saver {
+  position: absolute;
+  z-index: 4;
+  left: 12px;
+  top: calc(env(safe-area-inset-top, 0px) + 58px);
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(5, 4, 7, 0.6);
+  color: var(--mr-muted);
+  font-size: 0.72rem;
+}
+.mf-toast {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 30px);
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--mr-raised);
+  border: 1px solid var(--mr-line);
+}
+
+/* --- Sheets (comments, share, report) ---------------------------------------- */
+
+/* While a sheet is open, Roxi's launcher steps out of the way of its last line and the send button. */
+body:has(.mf-sheet) .roxi-launch {
+  visibility: hidden;
+}
+
+.mf-sheet-back {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(5, 4, 7, 0.5);
+}
+.mf-sheet {
+  width: 100%;
+  max-width: 560px;
+  max-height: 72dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px 18px 0 0;
+  background: var(--mr-raised);
+  border-top: 1px solid var(--mr-line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.mf-sheet:focus {
+  outline: none;
+}
+.mf-sheet header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 8px;
+}
+.mf-sheet h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.mf-sheet header button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--mr-text);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.mf-comments {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 16px 8px;
+  list-style: none;
+}
+.mf-comment {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--mr-line);
+}
+.mf-comment[data-reply] {
+  margin-left: 22px;
+}
+.mf-comment p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.mf-comment a {
+  color: var(--mr-gold);
+  font-weight: 700;
+  text-decoration: none;
+}
+.mf-comment-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px !important;
+  color: var(--mr-muted);
+  font-size: 0.78rem !important;
+}
+.mf-comment-meta button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mr-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.mf-compose {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px 14px;
+  border-top: 1px solid var(--mr-line);
+}
+.mf-compose input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-bg);
+  color: var(--mr-text);
+  font: inherit;
+}
+.mf-compose button[type='submit'],
+.mf-report button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mr-gold);
+  color: #120d04;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mf-compose button:disabled,
+.mf-report button:disabled {
+  opacity: 0.45;
+}
+.mf-replying {
+  flex-basis: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mr-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+}
+.mf-options,
+.mf-report {
+  display: grid;
+  gap: 4px;
+  padding: 4px 16px 18px;
+}
+.mf-options a,
+.mf-options button {
+  display: block;
+  padding: 13px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--mr-line);
+  background: none;
+  color: var(--mr-text);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mf-report label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 0;
+}
+.mf-report textarea {
+  min-height: 72px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-bg);
+  color: var(--mr-text);
+  font: inherit;
+}
+.mf-why {
+  margin: 0;
+  padding-left: 18px;
+}
+.mf-why li {
+  padding: 6px 0;
+}
+.mf-muted {
+  color: var(--mr-muted);
+  padding: 10px 0;
+}
+.mf-error,
+.mu-error {
+  margin: 8px 16px;
+  color: #ffb4a8;
+}
+
+@media (min-width: 900px) {
+  .mf-item {
+    display: grid;
+    place-items: center;
+  }
+  .mf-stage {
+    inset: 0 auto 0 50%;
+    width: min(56.25dvh, 100%);
+    transform: translateX(-50%);
+  }
+  .mf-rail {
+    right: calc(50% - min(28.125dvh, 50%) - 72px);
+  }
+  .mf-info {
+    left: calc(50% - min(28.125dvh, 50%));
+    right: calc(50% - min(28.125dvh, 50%));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-scroller {
+    scroll-behavior: auto;
+  }
+}
+
+/* --- Upload, studio and creator pages (inside the site shell) ---------------- */
+
+.mu-page,
+.ms-page {
+  background: var(--mr-bg);
+  min-height: 70vh;
+  /* Room below the last button for the phone's bottom bar and Roxi's launcher. */
+  padding: 24px 0 140px;
+}
+.mu-page h1,
+.ms-page h1 {
+  font-family: var(--font-serif);
+  color: var(--mr-gold);
+  margin: 0 0 16px;
+}
+.mu-form {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+}
+.mu-pick {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 34px 16px;
+  border: 1px dashed rgba(226, 194, 122, 0.5);
+  border-radius: 16px;
+  color: var(--mr-gold);
+  text-align: center;
+  cursor: pointer;
+}
+.mu-pick small {
+  color: var(--mr-muted);
+}
+.mu-pick input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.mu-pick:focus-within {
+  outline: 2px solid var(--mr-gold);
+  outline-offset: 3px;
+}
+.mu-file {
+  display: grid;
+  gap: 8px;
+}
+.mu-preview {
+  width: 100%;
+  max-height: 46vh;
+  border-radius: 14px;
+  background: #000;
+  object-fit: contain;
+}
+.mu-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--mr-raised);
+  overflow: hidden;
+}
+.mu-progress span {
+  display: block;
+  height: 100%;
+  background: var(--mr-gold);
+  transition: width 0.3s;
+}
+.mu-status {
+  margin: 0;
+  color: var(--mr-muted);
+  font-size: 0.88rem;
+}
+.mu-field {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+.mu-field textarea,
+.mu-field select,
+.mu-field input {
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-raised);
+  color: var(--mr-text);
+  font: inherit;
+  font-weight: 400;
+}
+.mu-field small,
+.mu-rights {
+  color: var(--mr-muted);
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+.mu-tags {
+  color: var(--mr-gold) !important;
+}
+.mu-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mu-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.mu-line {
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-line);
+  background: none;
+  color: var(--mr-text);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mu-done {
+  display: grid;
+  gap: 14px;
+  max-width: 560px;
+}
+
+.ms-head {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.ms-head .mf-avatar {
+  width: 72px;
+  height: 72px;
+  font-size: 1.6rem;
+}
+.ms-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  margin: 0 0 22px;
+}
+.ms-stats div {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--mr-raised);
+  border: 1px solid var(--mr-line);
+}
+.ms-stats dt {
+  color: var(--mr-muted);
+  font-size: 0.78rem;
+}
+.ms-stats dd {
+  margin: 4px 0 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.ms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.ms-grid a,
+.ms-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--mr-raised);
+  color: var(--mr-text);
+  text-decoration: none;
+}
+.ms-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ms-grid .ms-count {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-shadow: 0 1px 3px #000;
+}
+.ms-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+.ms-row {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--mr-raised);
+  border: 1px solid var(--mr-line);
+}
+.ms-row img,
+.ms-row .ms-blank {
+  width: 64px;
+  height: 112px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--mr-bg);
+}
+.ms-row p {
+  margin: 0 0 4px;
+}
+.ms-numbers {
+  color: var(--mr-muted);
+  font-size: 0.82rem;
+}
+.ms-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-line);
+  font-size: 0.75rem;
+  color: var(--mr-muted);
+}
+.ms-badge[data-tone='ok'] {
+  border-color: rgba(226, 194, 122, 0.6);
+  color: var(--mr-gold);
+}
+.ms-badge[data-tone='bad'] {
+  border-color: #ffb4a8;
+  color: #ffb4a8;
+}
+.ms-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.ms-actions button,
+.ms-actions a {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-line);
+  background: none;
+  color: var(--mr-text);
+  font: inherit;
+  font-size: 0.82rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ms-page h2 {
+  font-size: 1.1rem;
+  margin: 26px 0 12px;
+}
+.ms-page .muted {
+  color: var(--mr-muted);
+}

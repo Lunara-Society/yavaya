@@ -51,6 +51,7 @@ describe('scheduled jobs', () => {
       'go-upkeep',
       'graduate-monitored',
       'lift-suspensions',
+      'mirador-upkeep',
       'ops-email',
       'purge-activity',
       'purge-rate-limits',

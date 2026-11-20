@@ -94,7 +94,9 @@ export async function SiteShell({
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
   const locale = await resolveLocale();
-  const [{ place }, location, focus, jar, sent] = await Promise.all([placeChoice(locale), locationBarProps(t, locale), lookEnabled(db(), 'focus'), cookies(), headers()]);
+  const [{ place }, location, focus, jar, sent, miradorOn] = await Promise.all([placeChoice(locale), locationBarProps(t, locale), lookEnabled(db(), 'focus'), cookies(), headers(), lookEnabled(db(), 'mirador')]);
+  // Mirador's door (docs/mirador/README.md): for everyone once it is open; before that, the owner's preview. The page checks again.
+  const mirador = miradorOn || Boolean(member?.owner);
   // Someone saving data, or on a 2G connection (the browser says so: Save-Data, and ECT once the middleware asks), is not sent
   // Google's 100 KB prompt script on every page; the header's Entrar still leads to /login, where Google is one tap away.
   const savingData = sent.get('save-data') === 'on' || /2g/.test(sent.get('ect') ?? '');
@@ -177,6 +179,12 @@ export async function SiteShell({
                   <Link className="chip panel-chip" href="/admin">
                     <Icon name="grid" />
                     <span>{t('nav.panel')}</span>
+                  </Link>
+                ) : null}
+                {mirador ? (
+                  <Link className="chip panel-chip" href="/mirador" aria-label={t('mirador.nav')}>
+                    <Icon name="mirador" />
+                    <span>{t('mirador.nav')}</span>
                   </Link>
                 ) : null}
                 {/* The fastest way to tokens: the balance, always in sight, one tap from the packages. */}
@@ -343,6 +351,11 @@ export async function SiteShell({
           <Link href="/admin">
             <Icon name="grid" />
             <span>{t('nav.panel')}</span>
+          </Link>
+        ) : mirador ? (
+          <Link href="/mirador">
+            <Icon name="mirador" />
+            <span>{t('mirador.nav')}</span>
           </Link>
         ) : (
           <Link href={PAGE_PATHS.trust} aria-current={cur('trust')}>

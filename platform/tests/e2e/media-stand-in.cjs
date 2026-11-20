@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- a plain Node script run outside the build */
 /**
- * A bucket for browser tests that store real photos (roxi-flagship.cjs): the
- * few S3 calls the media service makes (put, get, delete an object, path
+ * A bucket for browser tests that store real photos and videos
+ * (roxi-flagship.cjs, mirador.cjs): the S3 calls the media service makes
+ * (put, get with byte ranges, delete an object, and multipart uploads, path
  * style), kept in memory. Signatures are not checked; nothing leaves this
  * machine. Local tests only.
  *
@@ -13,6 +14,9 @@ const http = require('node:http');
 
 const port = Number(process.argv[2] ?? 9333);
 const objects = new Map();
+/** Multipart uploads in progress: uploadId → { key, type, parts: Map<partNumber, Buffer> }. */
+const uploads = new Map();
+let uploadCounter = 0;
 
 /** The SDK may send a body as aws-chunked: "<hex size>;chunk-signature=…\r\n<bytes>\r\n", ending at size 0. */
 function unchunk(buffer) {
@@ -31,14 +35,54 @@ function unchunk(buffer) {
 
 http
   .createServer((request, response) => {
-    const key = decodeURIComponent(new URL(request.url, 'http://x').pathname);
+    const url = new URL(request.url, 'http://x');
+    const key = decodeURIComponent(url.pathname);
     const chunks = [];
     request.on('data', (chunk) => chunks.push(chunk));
     request.on('end', () => {
-      if (request.method === 'PUT') {
-        const body = Buffer.concat(chunks);
+      const body = () => {
+        const raw = Buffer.concat(chunks);
         const chunked = String(request.headers['content-encoding'] ?? '').includes('aws-chunked') || String(request.headers['x-amz-content-sha256'] ?? '').startsWith('STREAMING');
-        objects.set(key, { body: chunked ? unchunk(body) : body, type: request.headers['content-type'] ?? 'application/octet-stream' });
+        return chunked ? unchunk(raw) : raw;
+      };
+      const uploadId = url.searchParams.get('uploadId');
+      // Multipart: start, parts, complete, abort.
+      if (request.method === 'POST' && url.searchParams.has('uploads')) {
+        const id = `up-${++uploadCounter}`;
+        uploads.set(id, { key, type: request.headers['content-type'] ?? 'application/octet-stream', parts: new Map() });
+        response.writeHead(200, { 'Content-Type': 'application/xml' });
+        return response.end(`<?xml version="1.0"?><InitiateMultipartUploadResult><Bucket>e2e</Bucket><Key>${key}</Key><UploadId>${id}</UploadId></InitiateMultipartUploadResult>`);
+      }
+      if (request.method === 'PUT' && uploadId) {
+        const upload = uploads.get(uploadId);
+        if (!upload) {
+          response.writeHead(404, { 'Content-Type': 'application/xml' });
+          return response.end('<?xml version="1.0"?><Error><Code>NoSuchUpload</Code><Message>missing</Message></Error>');
+        }
+        const n = Number(url.searchParams.get('partNumber'));
+        upload.parts.set(n, body());
+        response.writeHead(200, { ETag: `"part-${n}"` });
+        return response.end();
+      }
+      if (request.method === 'POST' && uploadId) {
+        const upload = uploads.get(uploadId);
+        if (!upload) {
+          response.writeHead(404, { 'Content-Type': 'application/xml' });
+          return response.end('<?xml version="1.0"?><Error><Code>NoSuchUpload</Code><Message>missing</Message></Error>');
+        }
+        const numbers = [...upload.parts.keys()].sort((a, b) => a - b);
+        objects.set(upload.key, { body: Buffer.concat(numbers.map((n) => upload.parts.get(n))), type: upload.type });
+        uploads.delete(uploadId);
+        response.writeHead(200, { 'Content-Type': 'application/xml' });
+        return response.end(`<?xml version="1.0"?><CompleteMultipartUploadResult><Bucket>e2e</Bucket><Key>${key}</Key><ETag>"done"</ETag></CompleteMultipartUploadResult>`);
+      }
+      if (request.method === 'DELETE' && uploadId) {
+        uploads.delete(uploadId);
+        response.writeHead(204);
+        return response.end();
+      }
+      if (request.method === 'PUT') {
+        objects.set(key, { body: body(), type: request.headers['content-type'] ?? 'application/octet-stream' });
         response.writeHead(200, { ETag: '"e2e"' });
         return response.end();
       }
@@ -47,6 +91,19 @@ http
         if (!found) {
           response.writeHead(404, { 'Content-Type': 'application/xml' });
           return response.end('<?xml version="1.0"?><Error><Code>NoSuchKey</Code><Message>missing</Message></Error>');
+        }
+        // One byte range, as a video player asks for.
+        const range = /^bytes=(\d+)-(\d*)$/.exec(String(request.headers.range ?? ''));
+        if (range) {
+          const size = found.body.length;
+          const start = Number(range[1]);
+          if (start >= size) {
+            response.writeHead(416, { 'Content-Range': `bytes */${size}` });
+            return response.end();
+          }
+          const end = Math.min(range[2] ? Number(range[2]) : size - 1, size - 1);
+          response.writeHead(206, { 'Content-Type': found.type, 'Content-Length': end - start + 1, 'Content-Range': `bytes ${start}-${end}/${size}` });
+          return response.end(request.method === 'HEAD' ? undefined : found.body.subarray(start, end + 1));
         }
         response.writeHead(200, { 'Content-Type': found.type, 'Content-Length': found.body.length });
         return response.end(request.method === 'HEAD' ? undefined : found.body);

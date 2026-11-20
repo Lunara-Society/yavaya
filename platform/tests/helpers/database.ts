@@ -104,6 +104,14 @@ export async function resetTransactionalData(): Promise<void> {
       play_items,
       play_stats,
       vault_owned,
+      mirador_views,
+      mirador_comments,
+      mirador_likes,
+      mirador_saves,
+      mirador_follows,
+      mirador_blocks,
+      mirador_preferences,
+      mirador_videos,
       media
     restart identity cascade
   `);

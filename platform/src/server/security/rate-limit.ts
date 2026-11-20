@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
 import { rateLimitCounters } from '@/server/db/schema';
-import { MEDIA_RULES, PROFILE_STUDIO_RULES, SAFE_SPACE_RULES } from '@/config/business-rules';
+import { MEDIA_RULES, PROFILE_STUDIO_RULES, SAFE_SPACE_RULES, MIRADOR_RULES } from '@/config/business-rules';
 
 /**
  * Server-side rate limiting.
@@ -50,6 +50,10 @@ export const RATE_LIMITS = {
    */
   phoneTarget: { bucket: 'phone_target', limit: 5, windowSeconds: 24 * 60 * 60 },
   report: { bucket: 'report', limit: 20, windowSeconds: 60 * 60 },
+  /** Mirador (docs/mirador/README.md): videos started per day, comments per hour, and taps (likes, saves, follows, views) per hour — enough for a long evening of watching, not for a script. */
+  miradorUpload: { bucket: 'mirador_upload', limit: MIRADOR_RULES.uploadsPerDay, windowSeconds: 24 * 60 * 60 },
+  miradorComment: { bucket: 'mirador_comment', limit: MIRADOR_RULES.commentsPerHour, windowSeconds: 60 * 60 },
+  miradorTap: { bucket: 'mirador_tap', limit: 900, windowSeconds: 60 * 60 },
   /** Identity Studio, per member: photos stored, drafts saved, profiles published. */
   identityUpload: { bucket: 'identity_upload', limit: PROFILE_STUDIO_RULES.uploadsPerHour, windowSeconds: 60 * 60 },
   identityDraft: { bucket: 'identity_draft', limit: PROFILE_STUDIO_RULES.draftSavesPerHour, windowSeconds: 60 * 60 },

@@ -24,6 +24,8 @@ import { meterOpenConversations, plansUpkeep } from '@/server/domains/roxi/billi
 import { deliverDueReminders } from '@/server/domains/roxi/items';
 import { runWatches, sendDailyOpportunities } from '@/server/domains/roxi/world';
 import { expireListingDrafts } from '@/server/domains/roxi/drafts';
+import { sweepProcessing } from '@/server/domains/mirador/process';
+import { expireUploads } from '@/server/domains/mirador/upload';
 import { discardStored } from '@/server/domains/media/service';
 import { flushJobReporting, reportJobError, reportJobFailure, startJobReporting } from '@/server/observability/jobs';
 
@@ -192,6 +194,18 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
     };
   },
 
+  /**
+   * Mirador (docs/mirador/README.md): videos whose processing was cut short
+   * (a restart, a crash) are processed again, those out of tries are failed
+   * with their original deleted, and uploads never finished are cleared.
+   */
+  'mirador-upkeep': async () => {
+    const swept = await sweepProcessing(db());
+    const expired = await expireUploads(db());
+    if (swept.processed + swept.failed + expired === 0) return { summary: 'no Mirador upkeep needed' };
+    return { summary: `processed ${swept.processed} video(s), failed ${swept.failed}, cleared ${expired} unfinished upload(s)` };
+  },
+
   /** Days 1 to 6 of the starter tokens, for members verified in the last 7 days. */
   'starter-tokens': async () => {
     const result = await grantDueStarterTokens(db());
@@ -220,7 +234,7 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
    */
   tick: async () => {
     const now = new Date();
-    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'purge-site-stats', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'roxi-upkeep', 'send-digests', 'ops-email'];
+    const names = ['graduate-monitored', 'expire-demo', 'purge-rate-limits', 'purge-sessions', 'deliver-words', 'daily-light', 'adoption-follow-ups', 'expire-lost-found', 'expire-work-posts', 'purge-safe-space', 'lift-suspensions', 'purge-activity', 'purge-site-stats', 'reconcile-payments', 'starter-tokens', 'go-upkeep', 'roxi-upkeep', 'mirador-upkeep', 'send-digests', 'ops-email'];
     if (now.getUTCHours() === 9 && now.getUTCMinutes() < 15) names.push('verify-audit-chain');
     const lines: string[] = [];
     let failed = false;

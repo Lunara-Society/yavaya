@@ -14,7 +14,7 @@ import { isFlagEnabled, setFlag } from './settings';
  * Changing one needs `flags.manage` (administrators), checked here, on the
  * server, inside the transaction that writes the flag and its audit record.
  */
-export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials', 'vault_collectibles', 'genesis', 'roxi_review', 'roxi_halo', 'focus'] as const;
+export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials', 'vault_collectibles', 'genesis', 'roxi_review', 'roxi_halo', 'focus', 'mirador'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 const FLAG: Record<LookKey, string> = {
@@ -37,6 +37,8 @@ const FLAG: Record<LookKey, string> = {
   roxi_halo: 'roxi.halo',
   // The districts' first screen and their 'be the first' blocks (docs/DISTRICT-FOCUS.md); off, the district pages as they were.
   focus: 'look.district_focus',
+  // Not a look: whether Mirador (docs/mirador/README.md) is open to everyone; off, only the owner's preview.
+  mirador: 'mirador.open',
 };
 
 export function isLookKey(value: string): value is LookKey {

@@ -48,6 +48,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
+# ffmpeg and ffprobe: Mirador checks and encodes members' videos with them
+# (src/server/domains/mirador/process.ts). Alpine's package, so the build
+# needs no compiler; it adds tens of megabytes to the image, not hundreds.
+RUN apk add --no-cache ffmpeg
+
 # Never run as root. A container escape should not begin with a free root shell.
 RUN addgroup --system --gid 1001 yavaya \
  && adduser --system --uid 1001 --ingroup yavaya yavaya
