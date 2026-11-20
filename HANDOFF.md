@@ -1,4 +1,4 @@
-# Handoff: state of Yavaya work (updated November 13, 2026)
+# Handoff: state of Yavaya work (updated November 20, 2026)
 
 **A new chat reads this first.** There are no secrets here: they live in Railway
 variables. Then read `platform/docs/ARCHITECTURE.md`, `platform/docs/SECURITY.md`
@@ -13,7 +13,8 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm run typecheck`
   - `npm test` (needs Postgres: `service postgresql start`)
   - `npm run build`
-  - `node scripts/check-budget.mjs` (JS budget 138 KB)
+  - `node scripts/check-budget.mjs` (JS budget 139 KB since 20 Nov; styles 60 KB, the home page at 59.9)
+  - **Watch the Railway deploy after pushing** (`list-deployments`): production builds come out a few bytes heavier than local ones, and on 20 Nov six deploys failed at the budget check unnoticed until checked.
   - At last count 675 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
 - **Commit trailer, and no model names in commits:**
   ```
@@ -34,6 +35,31 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Authorization is checked on the server.
   - Audit inside the same transaction.
   - Never print secrets.
+
+## The district review (20 November, owner: "let's do all that")
+
+After a phone review of every district. Docs: `platform/docs/DISTRICT-FOCUS.md`,
+`platform/docs/roxi/HALO.md`.
+
+- **Roxi's Halo** (`ui/roxi/halo.tsx`): her face is three obsidian arcs around a
+  violet light with a golden heart (no grey, no white, the owner's colours),
+  driven by her real states. Switch `roxi.halo`, on; off = the gold orb.
+  Prototype artifact: claude.ai/artifact/F3L2hAsSE1EYLAd9K9sZnk.
+- **"Distritos: primera pantalla y «sé el primero»"** (`look.district_focus`, on):
+  every district's name and main button in a phone's first screen; one honest
+  "be the first" block with a marked example where a district is empty;
+  sign-in folded into the header; the "Abriendo por etapas" row once (cookie
+  `yv_ribbon`); compact Servicios categories; live counts on the home cards
+  (`districtPulse`); Barrio's board of cuts; the prayer wall's candle.
+- **Not behind a switch:** the "SE BUSCA" poster for lost/found animals
+  (`/animals/lost/<id>/poster`), each district's own WhatsApp preview
+  (`/share/district/<slug>`), film posters loaded near the screen, no Google
+  prompt for Save-Data/2G browsers (decided on the server).
+- **Roxi's listing flagship (`roxi.review`) is on by default now.** Camera
+  buttons on Mercadito ("Vender con una foto") and Animales ("Avisar con una
+  foto") hand the photo to her panel (`ask.ts`, `takeRoxiPhoto`).
+- **Open:** Barrio has no camera button because Roxi has no tool for board
+  posts yet (needs a `prepare_board_post` tool on the website agent).
 
 ## Roxi's voices (owner's setup, 14 November)
 - **Spanish: Cristina** ("Roxi Spanish", ElevenLabs voice `1CeqBeXMOqCleeQjfYfO`). **English: Lara** (`vChnJZ1Cu89g2XXumPfT`).
