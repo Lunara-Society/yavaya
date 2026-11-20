@@ -3,6 +3,8 @@ import './home.css';
 import './first-light/first-light.css';
 import { db } from '@/server/db/client';
 import { lookEnabled } from '@/server/domains/platform/looks';
+import { districtPulse } from '@/server/domains/discovery/pulse';
+import { chosenPlace } from '@/server/place-choice';
 import { FirstLightBody } from '@/ui/first-light/first-light';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
@@ -27,14 +29,18 @@ import { servedCountryNames, siteUrl } from '@/server/seo';
 export default async function HomePage() {
   const { c, t, locale, language, theme, member } = await siteContext();
   const base = siteUrl();
-  const [countries, location, firstLight, guardian2, depth, play] = await Promise.all([
+  const [countries, location, firstLight, guardian2, depth, play, focus, place] = await Promise.all([
     servedCountryNames(),
     locationBarProps(t, locale),
     lookEnabled(db(), 'home'),
     lookEnabled(db(), 'guardian'),
     lookEnabled(db(), 'depth'),
     lookEnabled(db(), 'play'),
+    lookEnabled(db(), 'focus'),
+    chosenPlace(locale),
   ]);
+  // The cards' real activity, near the visitor's chosen place (docs/DISTRICT-FOCUS.md).
+  const pulse = focus && !firstLight ? await districtPulse(db(), { locationCode: place?.code ?? null }) : null;
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="home" home>
       <JsonLd
@@ -64,7 +70,7 @@ export default async function HomePage() {
       {firstLight ? (
         <FirstLightBody c={c} t={t} signedIn={Boolean(member)} location={location} guardian={guardian2 ? 'second' : 'first'} />
       ) : (
-        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} depth={depth} play={play} />
+        <HomeBody c={c} t={t} signedIn={Boolean(member)} location={location} depth={depth} play={play} pulse={pulse} />
       )}
     </SiteShell>
   );

@@ -272,10 +272,14 @@ function startHalo(host: HTMLDivElement, level: MutableRefObject<number>, ids: s
 
   // The drawn Halo: the same arcs in SVG, moved by the same springs.
   let svg: SVGSVGElement | null = null;
+  // Inline, not a stylesheet: a stylesheet in this lazily loaded chunk would add a loader to every page (scripts/check-budget.mjs).
+  const fill = 'position:absolute;inset:0;width:100%;height:100%;display:block';
+  canvas.style.cssText = fill;
   if (gl) host.appendChild(canvas);
   else {
     svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '-1.5 -1.5 3 3');
+    svg.style.cssText = fill;
     const outline = arcOutline(20);
     svg.innerHTML = `<defs>
       <linearGradient id="${ids}o" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#040306"/><stop offset="0.55" stop-color="#0f0a19"/><stop offset="1" stop-color="#211538"/></linearGradient>
@@ -501,5 +505,5 @@ export function RoxiHalo({ level, className }: { level: MutableRefObject<number>
     if (!host.current) return;
     return startHalo(host.current, level, ids);
   }, [level, ids]);
-  return <div ref={host} className={`roxi-halo${className ? ` ${className}` : ''}`} aria-hidden="true" />;
+  return <div ref={host} className={`roxi-halo${className ? ` ${className}` : ''}`} style={{ position: 'relative', display: 'block' }} aria-hidden="true" />;
 }

@@ -326,3 +326,11 @@
 .hx-play-text strong { font-family: var(--serif, Georgia, serif); font-size: 1.08rem; color: #fff; }
 .hx-play-new { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--hx-gold); color: #1c140c; font: 800 0.62rem/1.4 var(--sans, system-ui, sans-serif); letter-spacing: 0.08em; text-transform: uppercase; vertical-align: 2px; }
 .hx-play > svg { flex: none; width: 20px; height: 20px; color: var(--hx-gold); }
+
+/* The cards' real activity (ui/site/home.tsx PulseLine, docs/DISTRICT-FOCUS.md). */
+.hx-pulse { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.01em; color: rgba(246, 238, 221, 0.86); }
+.hx-pulse.is-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #3fbf7f; box-shadow: 0 0 0 3px rgba(63, 191, 127, 0.22); }
+.hx-pulse.is-first { color: #e6cf9c; }
+/* With the activity lines on, the photographs' disclosure is said once above the grid, not stamped on every card. */
+.hx-districts[data-pulse] .hx-cards .art-note { display: none; }
+.hx-art-line { margin: 8px 0 0; font-size: 0.8rem; color: rgba(246, 238, 221, 0.62); max-width: 60ch; }

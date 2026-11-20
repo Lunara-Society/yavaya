@@ -10,6 +10,21 @@ import { FrontDoor } from '@/ui/roxi/front-door';
 import { DepthGate } from '@/ui/depth/gate';
 import { SoundToggle } from '@/ui/first-light/sound-toggle';
 import type { locationBarProps } from './location-props';
+import type { DistrictPulse } from '@/server/domains/discovery/pulse';
+
+/**
+ * A card's line of real activity (docs/DISTRICT-FOCUS.md): what is new today,
+ * or this week, near the visitor when something happened there; "be the
+ * first" only when the district has nothing at all; otherwise nothing.
+ */
+function PulseLine({ t, pulse }: { t: Translator; pulse?: DistrictPulse }) {
+  if (!pulse) return null;
+  const near = pulse.near ? ` · ${t('home.pulse.near')}` : '';
+  if (pulse.today > 0) return <span className="hx-pulse is-live">{t(pulse.today === 1 ? 'home.pulse.today_one' : 'home.pulse.today_many', { count: pulse.today })}{near}</span>;
+  if (pulse.week > 0) return <span className="hx-pulse">{t(pulse.week === 1 ? 'home.pulse.week_one' : 'home.pulse.week_many', { count: pulse.week })}{near}</span>;
+  if (pulse.empty) return <span className="hx-pulse is-first">{t('home.pulse.first')}</span>;
+  return null;
+}
 
 /**
  * The home page, as the owner's design of 31 October 2026 draws it: the old
@@ -44,6 +59,8 @@ export type HomeStarts = {
 };
 
 type HomeProps = {
+  /** Real activity per district for the cards, while the districts' first screen is on (docs/DISTRICT-FOCUS.md); null while it is off. */
+  pulse?: Record<string, DistrictPulse> | null;
   c: SiteContent;
   t: Translator;
   signedIn: boolean;
@@ -109,7 +126,7 @@ const BOARD_GLYPHS: Record<BoardDistrict, string> = {
 };
 
 /** The board districts as home cards, drawn as the first seven are: a picture, a mark, a name and one line. Shared with the First Light home. */
-export function BoardHomeCards({ t }: { t: Translator }) {
+export function BoardHomeCards({ t, pulse }: { t: Translator; pulse?: Record<string, DistrictPulse> | null }) {
   return (
     <>
       {BOARD_DISTRICT_KEYS.map((key) => (
@@ -124,6 +141,7 @@ export function BoardHomeCards({ t }: { t: Translator }) {
                   <span className="hx-card-text">
                     <span className="hx-card-name">{t(`district.${key}.name` as MessageKey)}</span>
                     <span className="hx-card-line">{t(`home.card.${key}` as MessageKey)}</span>
+                    <PulseLine t={t} pulse={pulse?.[key]} />
                   </span>
                   <span className="hx-arrow" aria-hidden="true">
                     <Arrow />
@@ -167,7 +185,7 @@ function Arrow() {
   );
 }
 
-export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
+export function HomeBody({ c, t, signedIn, location, depth, play, pulse }: HomeProps) {
   return (
     <div className="hx-page">
       <section className="hx-hero" aria-labelledby="hx-title">
@@ -238,7 +256,7 @@ export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
         </div>
       </section>
 
-      <section className="hx-districts" id="distritos" aria-labelledby="hx-d-title" data-depth={depth ? '' : undefined}>
+      <section className="hx-districts" id="distritos" aria-labelledby="hx-d-title" data-depth={depth ? '' : undefined} data-pulse={pulse ? '' : undefined}>
         {depth ? <DepthGate /> : null}
         <div className="wrap">
           <div className="hx-d-head">
@@ -248,6 +266,8 @@ export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
                 {t('home.districts.title')}
               </h2>
               <p className="hx-d-sub">{t('home.districts.sub')}</p>
+              {/* One line for every card's photograph, instead of a stamp on each (docs/DISTRICT-FOCUS.md). */}
+              {pulse ? <p className="hx-art-line">{c.ui.footer.imagery}</p> : null}
             </div>
             <Link className="hx-pill" href={PAGE_PATHS.districts}>
               {t('home.districts.all')} <Arrow />
@@ -285,6 +305,7 @@ export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
                       <span className="hx-card-line">{t(`home.card.${id}` as MessageKey)}</span>
                       {/* All seven are open today; one that is not would say so here rather than look open. */}
                       {state === 'live' ? null : <span className={`hx-card-state is-${state}`}>{c.ui.states[state]}</span>}
+                      <PulseLine t={t} pulse={pulse?.[id]} />
                     </span>
                     <span className="hx-arrow" aria-hidden="true">
                       <Arrow />
@@ -293,7 +314,7 @@ export function HomeBody({ c, t, signedIn, location, depth, play }: HomeProps) {
                 </li>
               );
             })}
-            <BoardHomeCards t={t} />
+            <BoardHomeCards t={t} pulse={pulse} />
           </ul>
         </div>
       </section>

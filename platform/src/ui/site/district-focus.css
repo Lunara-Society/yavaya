@@ -5,6 +5,17 @@
  * here applies only while the look is on (data-focus on .site), except the
  * "be the first" block, which only renders while it is.
  */
+@media (max-width: 899px) {
+  /* The way in folds into the header: one Entrar, as on the home page. The row above stays only to say a session ended. */
+  .site[data-focus] .authbar:not(.authbar-ended) { display: none; }
+  .site[data-focus] .top-auth { display: inline-flex; align-items: center; margin-left: 2px; }
+  .site[data-focus] .top-auth .btn-google-icon, .site[data-focus] .top-auth .top-auth-register { display: none; }
+  .site[data-focus] .top-auth-btn { min-height: 38px; padding: 0 14px; font-size: 0.88rem; white-space: nowrap; }
+}
+@media (max-width: 699px) {
+  /* The footer's district list folds to its first link, the page that lists them all. */
+  .site[data-focus] .foot-districts li:nth-child(n + 2) { display: none; }
+}
 @media (max-width: 699px) {
   /* The world behind the door stays a place, but a strip: the district's own hero carries the first screen. */
   .site[data-focus] .dw { height: clamp(84px, 12svh, 118px); }
