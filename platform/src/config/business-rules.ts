@@ -222,6 +222,16 @@ export const SITE_LOOK_RULES = {
    * violet and gold, no grey or white). Off, the gold orb exactly as it was.
    */
   roxi_halo: true,
+  /**
+   * The districts' first screen (docs/DISTRICT-FOCUS.md): on a phone, every
+   * district's name and main button in the first screen (a thinner world
+   * strip, shorter heroes, the sign-in row folded into the header, the
+   * "Abriendo por etapas" row once), one honest "be the first" block with a
+   * marked example where a district is still empty, and compact service
+   * categories. On: the owner's decision of 20 November 2026 ("let's do all
+   * that"). Off, the district pages exactly as they were.
+   */
+  focus: true,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

@@ -17,6 +17,8 @@ import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
 import { DistrictWorld } from '@/ui/first-light/district-world';
+import { lookEnabled } from '@/server/domains/platform/looks';
+import { FirstBlock } from '@/ui/site/first-block';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,10 +37,11 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-  const [{ result: animals, chosen, widenedTo }, certificate, rescuer] = await Promise.all([
+  const [{ result: animals, chosen, widenedTo }, certificate, rescuer, focus] = await Promise.all([
     widenWhenEmpty(place, page, locale, (code) => listAnimals(db(), { locale, species: query.species, size: query.size, placeCode: code, page })),
     userId ? getCertificate(db(), userId) : Promise.resolve(null),
     userId ? getRescuer(db(), userId) : Promise.resolve(null),
+    lookEnabled(db(), 'focus'),
   ]);
   const href = (to: number) => {
     const search = new URLSearchParams();
@@ -150,7 +153,20 @@ export default async function AnimalsHome({ searchParams }: { searchParams: Prom
             </button>
           </form>
           <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
-          {animals.items.length === 0 ? (
+          {animals.items.length === 0 && focus && !query.species && !query.size ? (
+            // Nothing up for adoption anywhere yet: one "be the first" block (docs/DISTRICT-FOCUS.md).
+            <FirstBlock
+              t={t}
+              title={t('first.animals.title')}
+              text={t('first.animals.text')}
+              example={{ icon: 'animals', title: t('first.animals.example_title'), lines: [t('first.animals.example_1'), t('first.animals.example_2'), t('first.animals.example_3')] }}
+              actions={
+                <Link className="btn btn-gold" href={member ? '/animals/rescuer' : loginHref('/animals/rescuer')}>
+                  {t('animals.rescuer.apply')}
+                </Link>
+              }
+            />
+          ) : animals.items.length === 0 ? (
             <div className="sc-empty an-empty">
               <span className="an-empty-icon" aria-hidden="true">
                 <Icon name="heart" />

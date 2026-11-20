@@ -1,0 +1,55 @@
+/*
+ * District focus on the district pages (docs/DISTRICT-FOCUS.md): loaded only
+ * where a district page is (imported by district-world.tsx and
+ * first-block.tsx), so the global sheet stays inside its budget. Everything
+ * here applies only while the look is on (data-focus on .site), except the
+ * "be the first" block, which only renders while it is.
+ */
+@media (max-width: 699px) {
+  /* The world behind the door stays a place, but a strip: the district's own hero carries the first screen. */
+  .site[data-focus] .dw { height: clamp(84px, 12svh, 118px); }
+  .site[data-focus] .sc-hero { min-height: clamp(300px, 44svh, 420px); }
+  .site[data-focus] .sc-hero-in { padding-top: 32px; padding-bottom: 32px; }
+  .site[data-focus] .sc-hero h1 { font-size: clamp(2.6rem, 12vw, 3.4rem); }
+  .site[data-focus] .sq-hero { min-height: clamp(300px, 42svh, 420px); }
+  .site[data-focus] .sq-hero-in { padding-top: 28px; }
+  .site[data-focus] .go-hero { min-height: clamp(330px, 44svh, 440px); }
+  .site[data-focus] .go-hero-in { padding-top: 36px; }
+  /* Animales: the words and the way to adopt first, the framed photograph after them. */
+  .site[data-focus] .an-hero-text { order: -1; }
+  .site[data-focus] .an-hero-in { gap: 18px; }
+  .site[data-focus] .an-hero-photo { width: 78%; justify-self: center; }
+  .site[data-focus] .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
+}
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
+
+/* "Be the first" (ui/site/first-block.tsx): the words and the one way to begin, beside an example that says it is one. */
+.first { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 44px); align-items: center; margin: 8px 0 24px; padding: clamp(20px, 4vw, 36px); border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 24px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 10%, var(--surface)), var(--surface) 62%); }
+.first h2 { margin: 4px 0 8px; font-family: var(--serif); font-size: clamp(1.45rem, 3.4vw, 2rem); line-height: 1.12; }
+.first-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.first-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; padding: 0; list-style: none; }
+.first-chips a { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--text-2); font-size: 0.86rem; font-weight: 600; text-decoration: none; }
+.first-chips a:hover { color: var(--text); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.first-chips svg { width: 16px; height: 16px; }
+.first-example { position: relative; display: grid; gap: 8px; margin: 0; padding: 20px; border: 1px dashed color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.first-example .demo-tag { position: absolute; top: 12px; right: 12px; }
+.first-ico { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.first-ico svg { width: 22px; height: 22px; }
+.first-example strong { font-size: 1.05rem; line-height: 1.3; padding-right: 64px; }
+.first-example ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--text-2); font-size: 0.92rem; }
+.first-example figcaption { color: var(--text-3, var(--text-2)); font-size: 0.78rem; opacity: 0.85; }
+@media (max-width: 760px) { .first { grid-template-columns: minmax(0, 1fr); } }
+
+@media (max-width: 699px) {
+  /* Servicios: the ten kinds of help as compact rows, an icon and two short lines, instead of tall tiles (about a screen instead of two and a half). */
+  .site[data-focus] .sv-tiles { grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 20px; }
+  .site[data-focus] .sv-tiles .sv-cat { grid-template-columns: 40px minmax(0, 1fr); align-items: center; gap: 12px; min-height: 0; padding: 10px 14px; border-radius: 14px; }
+  .site[data-focus] .sv-tiles .sv-icon { width: 40px; height: 40px; border-radius: 12px; }
+  .site[data-focus] .sv-tiles .sv-icon svg { width: 20px; height: 20px; }
+  .site[data-focus] .sv-tiles .sv-cat strong { margin-bottom: 0; font-size: 0.98rem; }
+  .site[data-focus] .sv-tiles .sv-cat > span:not(.sv-icon) { display: grid; min-width: 0; }
+  .site[data-focus] .sv-tiles .sv-cat .muted { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.86rem; }
+}
+/* A district's film: its poster's title sits above the player's controls, in a dark band left for them, instead of under them. */
+.site[data-focus] .gv-media { aspect-ratio: 16 / 10.4; background: #050407; }
+.site[data-focus] .gv-media .gv-video { aspect-ratio: auto; object-fit: contain; object-position: 50% 0; background: #050407; }

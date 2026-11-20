@@ -1,4 +1,5 @@
 import './district-world.css';
+import '@/ui/site/district-focus.css';
 import type { CSSProperties } from 'react';
 import { db } from '@/server/db/client';
 import { lookEnabled } from '@/server/domains/platform/looks';

@@ -16,6 +16,8 @@ import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
 import { loginHref } from '@/server/auth/return-path';
 import { DistrictWorld } from '@/ui/first-light/district-world';
+import { lookEnabled } from '@/server/domains/platform/looks';
+import { FirstBlock } from '@/ui/site/first-block';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,10 +34,13 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
   const field = (WORK_FIELDS as readonly string[]).includes(query.field ?? '') ? query.field : undefined;
   const kind = query.kind === 'job' || query.kind === 'project' ? query.kind : undefined;
   const remote = query.remote === '1';
+  // Someone narrowing the list down sees "nothing with these filters", not the district's first-offer block.
+  const narrowed = Boolean(field || kind || remote);
   const page = Math.max(1, Number.parseInt(query.page ?? '1', 10) || 1);
-  const [{ result: posts, chosen, widenedTo }, profile] = await Promise.all([
+  const [{ result: posts, chosen, widenedTo }, profile, focus] = await Promise.all([
     widenWhenEmpty(place, page, locale, (code) => listPosts(db(), { locale, field, kind, placeCode: code, remoteOnly: remote, page })),
     userId ? getProfile(db(), userId) : Promise.resolve(null),
+    lookEnabled(db(), 'focus'),
   ]);
   const href = (to: number) => {
     const search = new URLSearchParams();
@@ -113,7 +118,20 @@ export default async function WorkBoard({ searchParams }: { searchParams: Promis
       <div className="wrap wk-layout">
         <div className="wk-list">
           <WidenedNote t={t} chosen={chosen} widenedTo={widenedTo} />
-          {posts.items.length === 0 ? (
+          {posts.items.length === 0 && focus && !narrowed ? (
+            // No open offers anywhere yet: one "be the first" block (docs/DISTRICT-FOCUS.md).
+            <FirstBlock
+              t={t}
+              title={t('first.work.title')}
+              text={t('first.work.text')}
+              example={{ icon: 'work', title: t('first.work.example_title'), lines: [t('first.work.example_1'), t('first.work.example_2'), t('first.work.example_3')] }}
+              actions={
+                <Link className="btn btn-gold" href={member ? '/work/posts/new' : loginHref('/work/posts/new')}>
+                  {t('work.board.post')}
+                </Link>
+              }
+            />
+          ) : posts.items.length === 0 ? (
             <div className="sc-empty">
               <p>{t('work.board.empty')}</p>
               <Link className="btn btn-gold" href={member ? '/work/posts/new' : loginHref('/work/posts/new')}>

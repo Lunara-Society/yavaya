@@ -13,6 +13,7 @@ import { Rotulo } from '@/ui/site/rotulo';
 import { listPosts, NEIGHBOUR_KINDS, type PostKind } from '@/server/domains/community/service';
 import { loginHref } from '@/server/auth/return-path';
 import { DistrictWorld } from '@/ui/first-light/district-world';
+import { lookEnabled } from '@/server/domains/platform/looks';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,7 +37,10 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   if (params.kind === 'prayer') redirect('/sanctuary/prayer');
   const kind = (NEIGHBOUR_KINDS as readonly string[]).includes(params.kind ?? '') ? (params.kind as PostKind) : undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
-  const feed = userId ? await listPosts(db(), { viewerId: userId, kind, kinds: NEIGHBOUR_KINDS, page, locale }) : null;
+  const [feed, focus] = await Promise.all([
+    userId ? listPosts(db(), { viewerId: userId, kind, kinds: NEIGHBOUR_KINDS, page, locale }) : Promise.resolve(null),
+    lookEnabled(db(), 'focus'),
+  ]);
   const href = (next: { kind?: string; page?: number }) => {
     const search = new URLSearchParams();
     if (next.kind) search.set('kind', next.kind);
@@ -65,6 +69,13 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
             <div className="btn-row">
               <Link className="btn btn-gold" href="/community/new">
                 {t('community.square.new')}
+              </Link>
+            </div>
+          ) : focus ? (
+            // A visitor's way in, in the first screen (docs/DISTRICT-FOCUS.md): the square is for members.
+            <div className="btn-row">
+              <Link className="btn btn-gold" href={loginHref('/community')}>
+                {t('community.square.sign_in')}
               </Link>
             </div>
           ) : null}

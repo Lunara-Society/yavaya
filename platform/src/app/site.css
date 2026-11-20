@@ -2950,3 +2950,22 @@ h3 { font-size: 1.18rem; }
 .roxi-launch-orb.is-halo::before { display: none; }
 .roxi-launch-orb.is-halo::after { background: radial-gradient(circle, rgba(122, 77, 255, 0.4), transparent 68%); }
 .roxi-launch-halo { position: absolute; inset: -3px; width: calc(100% + 6px); height: calc(100% + 6px); display: block; }
+
+/*
+ * District focus (docs/DISTRICT-FOCUS.md): while the look is on (data-focus
+ * on .site), a district's name and main button are in a phone's first screen.
+ * Off, none of this applies and the pages are exactly as they were.
+ */
+@media (max-width: 899px) {
+  /* The way in folds into the header: one Entrar, as on the home page. The row above stays only to say a session ended. */
+  .site[data-focus] .authbar:not(.authbar-ended) { display: none; }
+  .site[data-focus] .top-auth { display: inline-flex; align-items: center; margin-left: 2px; }
+  .site[data-focus] .top-auth .btn-google-icon, .site[data-focus] .top-auth .top-auth-register { display: none; }
+  .site[data-focus] .top-auth-btn { min-height: 38px; padding: 0 14px; font-size: 0.88rem; white-space: nowrap; }
+}
+@media (max-width: 699px) {
+  /* The footer's district list folds to its first link, the page that lists them all. */
+  .site[data-focus] .foot-districts li:nth-child(n + 2) { display: none; }
+}
+/* The rest of the district focus lives with the district pages: ui/site/district-focus.css. */
+

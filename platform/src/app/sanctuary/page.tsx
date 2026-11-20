@@ -17,6 +17,8 @@ import { currentLightDate, memberTimezone, readDailyKinds } from '@/server/domai
 import { setDailyKindsAction } from './actions';
 import { loginHref } from '@/server/auth/return-path';
 import { DistrictWorld } from '@/ui/first-light/district-world';
+import { lookEnabled } from '@/server/domains/platform/looks';
+import { FirstBlock } from '@/ui/site/first-block';
 
 const KIND_LABEL: Record<DailyKind, MessageKey> = {
   prayer: 'sanctuary.daily.kind.prayer',
@@ -43,17 +45,20 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
   const { code: place, link: placeLink } = await browsePlace(query.place, locale);
   const search = (query.q ?? '').trim().slice(0, 80) || undefined;
 
-  const [words, churches, mine, mineWords, kinds, timezone] = await Promise.all([
+  const [words, churches, mine, mineWords, kinds, timezone, focus] = await Promise.all([
     listDevotionals(db(), { locale, limit: 6 }),
     listChurches(db(), { locale, placeCode: place, query: search }),
     userId ? followedChurches(db(), { userId, locale }) : Promise.resolve([]),
     userId ? listDevotionals(db(), { locale, followedBy: userId, limit: 3 }) : Promise.resolve([]),
     userId ? readDailyKinds(db(), userId) : Promise.resolve([...DAILY_KINDS]),
     userId ? memberTimezone(db(), userId) : Promise.resolve(null),
+    lookEnabled(db(), 'focus'),
   ]);
   const light = dailyLight(currentLightDate(timezone), kinds, locale);
   const yours = new Set(mineWords.map((word) => word.id));
   const others = words.filter((word) => !yours.has(word.id));
+  // Nothing to show yet: no words, no churches, and nobody narrowing the list down.
+  const opening = words.length === 0 && mineWords.length === 0 && churches.length === 0 && !search && !query.place;
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member} current="sanctuary" tone="sanctuary">
@@ -70,6 +75,17 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
           <p className="eyebrow">{t('sanctuary.eyebrow')}</p>
           <h1>{t('sanctuary.title')}</h1>
           <p className="lead">{t('sanctuary.lead')}</p>
+          {/* The district's two doors, in the first screen (docs/DISTRICT-FOCUS.md): asking for prayer, and bringing a church. */}
+          {focus ? (
+            <div className="hero-actions">
+              <Link className="btn btn-gold" href="/sanctuary/prayer">
+                {t('sanctuary.prayer_wall.cta')}
+              </Link>
+              <Link className="btn btn-line" href={member ? '/sanctuary/register' : loginHref('/sanctuary/register')}>
+                {t('sanctuary.register.cta')}
+              </Link>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -108,6 +124,21 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
 
       <div className="wrap sc-page">
         <div className="sc-main">
+          {/* No words and no churches anywhere yet: one "be the first" block instead of two empty boxes (docs/DISTRICT-FOCUS.md). */}
+          {focus && opening ? (
+            <FirstBlock
+              t={t}
+              title={t('first.sanctuary.title')}
+              text={t('first.sanctuary.text')}
+              example={{ icon: 'sanctuary', title: t('first.sanctuary.example_title'), lines: [t('first.sanctuary.example_1'), t('first.sanctuary.example_2'), t('first.sanctuary.example_3')] }}
+              actions={
+                <Link className="btn btn-gold" href={member ? '/sanctuary/register' : loginHref('/sanctuary/register')}>
+                  {t('sanctuary.register.cta')}
+                </Link>
+              }
+            />
+          ) : null}
+          {focus && opening ? null : (
           <section aria-labelledby="today">
             <h2 id="today" className="sc-h">
               {t('sanctuary.today.title')}
@@ -135,7 +166,9 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
               </div>
             )}
           </section>
+          )}
 
+          {focus && opening ? null : (
           <section aria-labelledby="churches" className="sc-section">
             <h2 id="churches" className="sc-h">
               {t('sanctuary.churches.title')}
@@ -169,6 +202,7 @@ export default async function SanctuaryPage({ searchParams }: { searchParams: Pr
               </div>
             )}
           </section>
+          )}
         </div>
 
         <aside className="sc-side">

@@ -20,6 +20,19 @@ import { alertHref, BOARD_REPORT_CATEGORIES, getBoardPost, listBoardPosts, markB
 import { closeBoardPostAction, deleteBoardAlertAction, reportBoardPostAction, saveBoardAlertAction } from '@/app/boards/actions';
 import { mediaStorage } from '@/server/domains/media/storage';
 import { MEDIA_RULES } from '@/config/business-rules';
+import { FirstBlock } from '@/ui/site/first-block';
+
+/** The subdistrict each board's "be the first" example belongs to (docs/DISTRICT-FOCUS.md). */
+const FIRST_EXAMPLE_SUB: Record<BoardDistrict, string> = {
+  hogar: 'rooms',
+  movilidad: 'shared_rides',
+  salud: 'home_care',
+  aprender: 'languages',
+  negocios: 'wholesale',
+  campo: 'harvest',
+  barrio: 'utilities',
+  diaspora: 'medical_visits',
+};
 
 /**
  * The pages of the board districts. One set of pages, every board district:
@@ -118,6 +131,7 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
     return text ? `${base}?${text}` : base;
   };
   const filtered = Boolean(subdistrict || kind || query || placeCode);
+  const focus = await lookEnabled(db(), 'focus');
   const publish = userId ? `${base}/new${subdistrict ? `?sub=${subdistrict}` : ''}` : loginHref(`${base}/new`);
 
   return (
@@ -241,7 +255,20 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
                     </Link>
                   ))}
                 </nav>
-                {feed!.items.length === 0 ? (
+                {feed!.items.length === 0 && focus && !subdistrict && !kind && !query ? (
+                  // Nothing posted anywhere yet (the place widens on its own when empty): one "be the first" block.
+                  <FirstBlock
+                    t={t}
+                    title={t('first.board.title', { district: t(DISTRICTS[district].nameKey as MessageKey) })}
+                    text={t('first.board.text')}
+                    example={{ icon: 'megaphone', title: t(`first.board.example.${district}` as MessageKey), lines: [t(sub(district, FIRST_EXAMPLE_SUB[district])), t('first.board.example_by')] }}
+                    actions={
+                      <Link className="btn btn-gold" href={publish}>
+                        {t('board.publish')}
+                      </Link>
+                    }
+                  />
+                ) : feed!.items.length === 0 ? (
                   <div className="mk-empty">
                     <p>{filtered ? t('board.empty_filtered') : t('board.empty')}</p>
                     <Link className="btn btn-gold" href={publish}>

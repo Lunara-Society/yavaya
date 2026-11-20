@@ -25,6 +25,10 @@ import { AuthBar } from './auth-bar';
 import { GoogleButton } from '@/ui/components/google-button';
 import { GooglePrompt } from '@/ui/components/google-prompt';
 import { SiteMetrics } from '@/ui/components/site-metrics';
+import { cookies } from 'next/headers';
+import { db } from '@/server/db/client';
+import { lookEnabled } from '@/server/domains/platform/looks';
+import { RIBBON_SEEN_COOKIE } from './ribbon';
 
 /**
  * `unread` is the count of unread notifications, shown on the bell;
@@ -90,7 +94,9 @@ export async function SiteShell({
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
   const locale = await resolveLocale();
-  const [{ place }, location] = await Promise.all([placeChoice(locale), locationBarProps(t, locale)]);
+  const [{ place }, location, focus, jar] = await Promise.all([placeChoice(locale), locationBarProps(t, locale), lookEnabled(db(), 'focus'), cookies()]);
+  // The districts' first screen (docs/DISTRICT-FOCUS.md): the "Abriendo por etapas" row once per browser, not on every page.
+  const ribbon = !home && !(focus && jar.get(RIBBON_SEEN_COOKIE)?.value === '1');
   // Signed out with a session cookie still present: the server closed it.
   const ended = !member && Boolean(await readSessionCookie());
   const primary: PageId[] = ['districts', 'trust', 'reputation', 'tokens', 'status'];
@@ -110,7 +116,8 @@ export async function SiteShell({
 
   return (
     // data-tone puts the header, footer and dock in the district's colour world too (worlds.css), not only the page between them.
-    <div className="site" data-district={district} data-tone={tone}>
+    // data-focus turns on the districts' first screen (site.css, "District focus"), while that look is on.
+    <div className="site" data-district={district} data-tone={tone} data-focus={focus ? '' : undefined}>
       <Alive />
       {/* Visit counts and real speed, first-party and without identifiers. The owner's own browsing is left out. */}
       {member?.owner ? null : <SiteMetrics />}
@@ -230,7 +237,7 @@ export async function SiteShell({
         </div>
       </header>
       {/* The home page says the same under its search (home.tsx), where the design leaves room for it. */}
-      {home ? null : (
+      {ribbon ? (
         <div className="ribbon" role="note">
           <div className="wrap">
             <strong>{c.ui.ribbon.label}</strong>
@@ -240,7 +247,7 @@ export async function SiteShell({
             <Link href={PAGE_PATHS.status}>{c.ui.ribbon.link}</Link>
           </div>
         </div>
-      )}
+      ) : null}
 
       <main id="main" className={tone ? `tone-${tone}` : undefined}>
         {children}
@@ -269,7 +276,7 @@ export async function SiteShell({
               </p>
             </div>
             {groups.map(([label, ids], g) => (
-              <div key={label}>
+              <div key={label} className={g === 0 ? 'foot-districts' : undefined}>
                 <h2 className="foot-h">{label}</h2>
                 <ul>
                   {ids.map((id) => (

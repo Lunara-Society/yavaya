@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { RIBBON_SEEN_COOKIE, RIBBON_SEEN_MAX_AGE } from '@/ui/site/ribbon';
 
 /**
  * Edge middleware: preview access gate, then Content-Security-Policy.
@@ -219,6 +220,11 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('content-security-policy', csp);
+
+  // The first page a browser loads shows "Abriendo por etapas"; this remembers it was seen (ui/site/ribbon.ts).
+  if (request.method === 'GET' && request.headers.get('sec-fetch-dest') === 'document' && !request.cookies.has(RIBBON_SEEN_COOKIE)) {
+    response.cookies.set(RIBBON_SEEN_COOKIE, '1', { maxAge: RIBBON_SEEN_MAX_AGE, path: '/', sameSite: 'lax', httpOnly: true, secure: isSecureRequest(request) });
+  }
 
   // While the preview gate is up, keep the unfinished product out of indexes.
   if (process.env.PREVIEW_ACCESS_KEY) {

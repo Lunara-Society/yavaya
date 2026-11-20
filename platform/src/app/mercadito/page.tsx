@@ -19,6 +19,8 @@ import { MERCADITO_RULES } from '@/config/business-rules';
 import { FabWhenAway } from '@/ui/components/fab-when-away';
 import { Rotulo } from '@/ui/site/rotulo';
 import { DistrictWorld } from '@/ui/first-light/district-world';
+import { lookEnabled } from '@/server/domains/platform/looks';
+import { FirstBlock } from '@/ui/site/first-block';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +58,10 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
   const query = params.q?.trim() || undefined;
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
 
-  const { result, chosen, widenedTo } = await widenWhenEmpty(placeCode, page, locale, (code) => browseListings(db(), { query, category, placeCode: code, page, locale }));
+  const [{ result, chosen, widenedTo }, focus] = await Promise.all([
+    widenWhenEmpty(placeCode, page, locale, (code) => browseListings(db(), { query, category, placeCode: code, page, locale })),
+    lookEnabled(db(), 'focus'),
+  ]);
   if (userId && params.saved && /^[0-9a-f-]{36}$/i.test(params.saved)) {
     await markSavedSearchSeen(db(), { userId, id: params.saved });
   }
@@ -163,6 +168,32 @@ export default async function MercaditoPage({ searchParams }: { searchParams: Pr
               </Link>
             </div>
           </div>
+        ) : focus ? (
+          // An empty market, as one "be the first" block (docs/DISTRICT-FOCUS.md): the way to publish, an example, and each kind of goods as a small door.
+          <FirstBlock
+            t={t}
+            eyebrow={t('mercadito.opening.eyebrow')}
+            title={t('first.mercadito.title')}
+            text={t('first.mercadito.text')}
+            example={{ icon: 'ball', title: t('first.mercadito.example_title'), lines: [t('first.mercadito.example_1'), t('first.mercadito.example_2'), t('first.mercadito.example_3')] }}
+            actions={
+              <Link className="btn btn-gold" href="/mercadito/publish">
+                {t('mercadito.browse.publish_free')}
+              </Link>
+            }
+          >
+            <p className="muted mc-opening-fine">{t('mercadito.opening.free', { count: MERCADITO_RULES.freeOpenListings })}</p>
+            <ul className="first-chips" aria-label={t('mercadito.opening.doors_title')}>
+              {LISTING_CATEGORIES.map((key) => (
+                <li key={key}>
+                  <Link href={`/mercadito/publish?cat=${key}`}>
+                    <Icon name={CATEGORY_ICON[key]} />
+                    {t(`mercadito.category.${key}` as MessageKey)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </FirstBlock>
         ) : (
           // An empty market says so — and shows how little it takes to be its first stall.
           <div className="mc-opening">
