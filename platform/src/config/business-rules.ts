@@ -215,6 +215,13 @@ export const SITE_LOOK_RULES = {
    * form directly.
    */
   roxi_review: false,
+  /**
+   * Roxi's face (docs/roxi/HALO.md): the Halo, three obsidian arcs around a
+   * violet light with a golden heart, in her panel and on her launcher. On:
+   * the owner chose it on 20 November 2026 ("do the halo", in obsidian black,
+   * violet and gold, no grey or white). Off, the gold orb exactly as it was.
+   */
+  roxi_halo: true,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

@@ -49,6 +49,8 @@ and the orb (`orb.tsx`); styles in the "Roxi" block of `src/app/site.css`.
 - **Phones:** a sheet from the bottom. When Roxi opens a page or a form she
   shrinks to an island above the dock, showing what she is saying, and the
   member brings her back with a tap.
+- **Her face** is the Halo (HALO.md; `halo.tsx`, and `public/roxi/halo-mark.svg` on the
+  launcher) while the `roxi.halo` look is on, the default. Off:
 - **The orb** is a WebGL shader of liquid gold driven by the live voice level
   and Roxi's state (idle, listening, speaking, thinking). It caps its
   resolution on modest phones, stops when the tab is hidden, draws a still

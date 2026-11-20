@@ -5,6 +5,7 @@ import type { MessageKey } from '@/i18n';
 import { pendingWelcome } from '@/server/domains/roxi/welcome';
 import { roxiLabels, roxiPresenceLabels, roxiRefusals, roxiWelcomeLabels } from '@/ui/roxi/labels';
 import { roxiReviewOn } from '@/server/domains/roxi/drafts';
+import { lookEnabled } from '@/server/domains/platform/looks';
 import { json, member } from '../shared';
 
 export const dynamic = 'force-dynamic';
@@ -36,5 +37,7 @@ export async function GET() {
     : null;
   // The listing flagship (docs/roxi/FLAGSHIP.md): server drafts, the review card and the receipt. Every route it uses checks again.
   const review = await roxiReviewOn(db(), session.user.userId);
-  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), refusals: roxiRefusals(), presence: roxiPresenceLabels(t), welcome, review });
+  // Her face: the Halo, or the gold orb while the owner has that look off.
+  const halo = await lookEnabled(db(), 'roxi_halo');
+  return json({ enabled: true, locale, member: who, labels: roxiLabels(t), refusals: roxiRefusals(), presence: roxiPresenceLabels(t), welcome, review, halo });
 }

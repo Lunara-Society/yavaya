@@ -7,6 +7,7 @@ import { describeHealth, guardedVoiceStart, microphoneAlreadyAllowed, VoiceStart
 import { reportClientError } from '@/ui/components/client-error-report';
 import type { RoxiLabels } from './labels';
 import { RoxiOrb, type OrbState } from './orb';
+import { RoxiHalo } from './halo';
 import { languageOf } from './language';
 import { roxiTools, type RoxiResultCard } from './tools';
 import { tidyText, withoutCues } from './tidy';
@@ -391,6 +392,7 @@ export default function RoxiPanel({
   openedBy = 'none',
   ask,
   review = false,
+  halo = false,
   published = null,
   onSettings,
   onClose,
@@ -404,6 +406,8 @@ export default function RoxiPanel({
   ask?: { text: string; id: number } | null;
   /** The listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the server, the review card, the receipt. */
   review?: boolean;
+  /** Her face is the Halo (docs/roxi/HALO.md) instead of the gold orb. */
+  halo?: boolean;
   /** A listing just published from her draft, for the receipt. */
   published?: { listingId: string; id: number } | null;
   onSettings: () => void;
@@ -1359,7 +1363,7 @@ export default function RoxiPanel({
       >
         <header className="roxi-head">
           <span className="roxi-grip" aria-hidden="true" />
-          <RoxiOrb state={orbState} level={level} className="roxi-head-orb" />
+          {halo ? <RoxiHalo level={level} className="roxi-head-orb" /> : <RoxiOrb state={orbState} level={level} className="roxi-head-orb" />}
           <div className="roxi-title">
             <strong className="roxi-name">{labels.name}</strong>
             <span className="roxi-status" aria-live="polite">

@@ -2942,3 +2942,11 @@ h3 { font-size: 1.18rem; }
 .wa-msg p { margin: 0; }
 .wa-in { justify-self: start; }
 .wa-out { justify-self: end; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+/* Roxi's Halo (ui/roxi/halo.tsx, docs/roxi/HALO.md): the canvas or drawing fills whatever box the panel gives her face. */
+.roxi-halo { position: relative; display: block; }
+.roxi-halo > canvas, .roxi-halo > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* On the launcher the still mark replaces the gold sphere, its ring and its golden glow: obsidian and violet, gold only on the edges. */
+.roxi-launch-orb.is-halo::before { display: none; }
+.roxi-launch-orb.is-halo::after { background: radial-gradient(circle, rgba(122, 77, 255, 0.4), transparent 68%); }
+.roxi-launch-halo { position: absolute; inset: -3px; width: calc(100% + 6px); height: calc(100% + 6px); display: block; }

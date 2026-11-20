@@ -27,6 +27,8 @@ type Session =
       welcome: RoxiWelcome | null;
       /** The listing flagship: drafts on the server, the review card, the receipt (docs/roxi/FLAGSHIP.md). */
       review?: boolean;
+      /** Her face: the Halo (docs/roxi/HALO.md), or the gold orb while that look is off. */
+      halo?: boolean;
     };
 
 /**
@@ -145,6 +147,7 @@ export function RoxiRoot() {
    * happened while she was not on the page.
    */
   const review = Boolean(session?.enabled && session.review);
+  const halo = Boolean(session?.enabled && session.halo);
   useEffect(() => {
     if (!review || quiet) return;
     const show = () => {
@@ -178,6 +181,7 @@ export function RoxiRoot() {
           openedBy={opening}
           ask={ask}
           review={review}
+          halo={halo}
           published={published}
           onSettings={() => setSettings(true)}
           onClose={() => {
@@ -187,8 +191,9 @@ export function RoxiRoot() {
         />
       ) : (
         <button type="button" className="roxi-launch" onClick={() => show('none')} aria-label={session.labels.open}>
-          <span className="roxi-launch-orb" aria-hidden="true">
-            <span className="roxi-sphere" />
+          <span className={`roxi-launch-orb${halo ? ' is-halo' : ''}`} aria-hidden="true">
+            {/* The Halo as an image (public/roxi/halo-mark.svg), so the launcher on every page carries no extra script. */}
+            {halo ? <img className="roxi-launch-halo" src="/roxi/halo-mark.svg" alt="" width={56} height={56} decoding="async" /> : <span className="roxi-sphere" />}
           </span>
           <span className="roxi-launch-text" aria-hidden="true">
             <strong>{session.labels.name}</strong>

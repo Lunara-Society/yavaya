@@ -135,8 +135,9 @@ The brief's twelve systems and six engines map onto modules that already
 exist (the audit of 19 November 2026). Members only ever meet "Roxi"; the
 names below are for us.
 
-- **Presence**: Roxi's visual system, the orb and its states
-  (`ui/roxi/orb.tsx`, `state-bus.ts`). The brief called it Genesis; that
+- **Presence**: Roxi's visual system, her face and its states
+  (`state-bus.ts`): the Halo since 20 November 2026 (`ui/roxi/halo.tsx`,
+  HALO.md), the gold orb (`ui/roxi/orb.tsx`) as its Classic look. The brief called it Genesis; that
   name belongs to the Play character (docs/GENESIS.md), so the owner chose
   "Presence" (19 November 2026). Not to be confused with `ui/roxi/presence.tsx`,
   which is her check-ins and simulated calls (Omnipresence).
