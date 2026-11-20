@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { districtPreview } from '@/ui/site/share-meta';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
@@ -21,7 +22,7 @@ const KIND_ICON: Partial<Record<PostKind, IconName>> = { help_request: 'hands', 
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.districts.community.name, description: c.pages.community.description };
+  return districtPreview('community', c.districts.community.name, c.pages.community.description);
 }
 
 /**

@@ -149,3 +149,13 @@ orando por ti"). It is the same support as before (`community_supports`, one
 per member per request, counted in `support_count`), so every number is real
 and nobody is named. Lighting a candle on the wall now brings the member back
 to the wall, not to Comunidad.
+
+## Each district's own WhatsApp preview
+
+Every district page's link preview is its own card (`app/share/district/[slug]`,
+1200 × 630, `districtPreview` in `ui/site/share-meta.ts`): the district's
+photograph, darkened toward the words, "YAVAYA", its name, its promise and its
+address, with the site's "Ilustración" tag on the photograph. Before, every
+district shared the same Yavaya logo. The photographs are read from
+`public/art` (the deployed image keeps `public` next to the server); an unknown
+district answers 404. Not behind the look: it changes only the preview.

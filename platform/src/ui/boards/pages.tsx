@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import { Dictate } from '@/ui/components/dictate';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { notFound, redirect } from 'next/navigation';
@@ -146,9 +148,9 @@ function CutsBoard({ cuts, base, publish, t }: { cuts: { items: BoardPostView[];
   );
 }
 
-export async function boardTitle(district: BoardDistrict): Promise<{ title: string; description: string }> {
+export async function boardTitle(district: BoardDistrict): Promise<Metadata> {
   const { t } = await siteContext();
-  return { title: t(DISTRICTS[district].nameKey as MessageKey), description: t(DISTRICTS[district].taglineKey as MessageKey) };
+  return districtPreview(BOARD_DISTRICTS[district].slug, t(DISTRICTS[district].nameKey as MessageKey), t(DISTRICTS[district].taglineKey as MessageKey));
 }
 
 export async function BoardHome({ district, searchParams }: { district: BoardDistrict; searchParams: Promise<{ sub?: string; kind?: string; q?: string; page?: string; mine?: string; place?: string; alert?: string; saved?: string; error?: string }> }) {

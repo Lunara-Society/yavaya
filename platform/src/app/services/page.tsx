@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
@@ -18,7 +19,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.districts.services.name, description: c.pages.services.description };
+  return districtPreview('services', c.districts.services.name, c.pages.services.description);
 }
 
 /**

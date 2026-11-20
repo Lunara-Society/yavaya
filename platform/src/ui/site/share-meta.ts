@@ -21,3 +21,18 @@ export function previewMetadata(params: { title: string; description: string; im
     twitter: { card: 'summary_large_image', title: params.title, description, images: [image.url] },
   };
 }
+
+/**
+ * A district's own link preview (docs/DISTRICT-FOCUS.md): its photograph,
+ * name and promise (app/share/district/[slug]) instead of the generic card,
+ * so a district shared on WhatsApp says which door it opens.
+ */
+export function districtPreview(slug: string, title: string, description: string): Metadata {
+  const image = { url: `/share/district/${slug}`, width: 1200, height: 630, alt: title };
+  return {
+    title,
+    description,
+    openGraph: { type: 'website', siteName: 'Yavaya', locale: 'es_LA', alternateLocale: ['en_US'], title, description, images: [image] },
+    twitter: { card: 'summary_large_image', title, description, images: [image.url] },
+  };
+}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
@@ -40,7 +41,7 @@ const CATEGORY_ICON: Record<ListingCategory, IconName> = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.districts.mercadito.name, description: c.pages.mercadito.description };
+  return districtPreview('mercadito', c.districts.mercadito.name, c.pages.mercadito.description);
 }
 
 type Search = { q?: string; cat?: string; place?: string; page?: string; saved?: string };

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
@@ -21,7 +22,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.pages.yavayago.title, description: c.pages.yavayago.description };
+  return districtPreview('yavayago', c.pages.yavayago.title, c.pages.yavayago.description);
 }
 
 const CATEGORY_ICON: Record<(typeof GO_CATEGORIES)[number], IconName> = {

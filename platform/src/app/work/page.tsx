@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
 import type { MessageKey } from '@/i18n';
@@ -23,7 +24,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { c } = await siteContext();
-  return { title: c.districts.work.name, description: c.pages.work.description };
+  return districtPreview('work', c.districts.work.name, c.pages.work.description);
 }
 
 /** The work board. Public: a job nobody sees fills nobody's table. Applying takes an account and a profile. */

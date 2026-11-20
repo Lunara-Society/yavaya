@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { districtPreview } from '@/ui/site/share-meta';
 import Link from 'next/link';
 import { db } from '@/server/db/client';
 import { siteContext } from '@/ui/site/context';
@@ -31,7 +32,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await siteContext();
-  return { title: t('sanctuary.title'), description: t('sanctuary.lead') };
+  return districtPreview('sanctuary', t('sanctuary.title'), t('sanctuary.lead'));
 }
 
 /**
