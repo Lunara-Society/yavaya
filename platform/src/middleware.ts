@@ -220,6 +220,8 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('content-security-policy', csp);
+  // Ask the browser for its effective connection type, so a page can spare a 2G visitor heavy extras (site-shell.tsx).
+  response.headers.set('accept-ch', 'ECT');
 
   // The first page a browser loads shows "Abriendo por etapas"; this remembers it was seen (ui/site/ribbon.ts).
   if (request.method === 'GET' && request.headers.get('sec-fetch-dest') === 'document' && !request.cookies.has(RIBBON_SEEN_COOKIE)) {

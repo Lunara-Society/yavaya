@@ -197,7 +197,8 @@ export function NightScene({ className }: { className?: string }) {
   return (
     <div className={className} aria-hidden="true">
       {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized, served from /public */}
-      <img src="/art/hero-960.webp" srcSet={srcSet('hero', HERO_WIDTHS)} sizes="100vw" width={1600} height={900} alt="" loading="lazy" decoding="async" />
+      {/* A faint picture behind the footer: on a phone the 960 px file is plenty (it was fetching 1600 px for a background). */}
+      <img src="/art/hero-960.webp" srcSet={srcSet('hero', HERO_WIDTHS)} sizes="(max-width: 700px) 50vw, 100vw" width={1600} height={900} alt="" loading="lazy" decoding="async" />
     </div>
   );
 }

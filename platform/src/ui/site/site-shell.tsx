@@ -25,7 +25,7 @@ import { AuthBar } from './auth-bar';
 import { GoogleButton } from '@/ui/components/google-button';
 import { GooglePrompt } from '@/ui/components/google-prompt';
 import { SiteMetrics } from '@/ui/components/site-metrics';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { db } from '@/server/db/client';
 import { lookEnabled } from '@/server/domains/platform/looks';
 import { RIBBON_SEEN_COOKIE } from './ribbon';
@@ -94,7 +94,10 @@ export async function SiteShell({
 }) {
   const cur = (id: PageId) => (id === current ? ('page' as const) : undefined);
   const locale = await resolveLocale();
-  const [{ place }, location, focus, jar] = await Promise.all([placeChoice(locale), locationBarProps(t, locale), lookEnabled(db(), 'focus'), cookies()]);
+  const [{ place }, location, focus, jar, sent] = await Promise.all([placeChoice(locale), locationBarProps(t, locale), lookEnabled(db(), 'focus'), cookies(), headers()]);
+  // Someone saving data, or on a 2G connection (the browser says so: Save-Data, and ECT once the middleware asks), is not sent
+  // Google's 100 KB prompt script on every page; the header's Entrar still leads to /login, where Google is one tap away.
+  const savingData = sent.get('save-data') === 'on' || /2g/.test(sent.get('ect') ?? '');
   // The districts' first screen (docs/DISTRICT-FOCUS.md): the "Abriendo por etapas" row once per browser, not on every page.
   const ribbon = !home && !(focus && jar.get(RIBBON_SEEN_COOKIE)?.value === '1');
   // Signed out with a session cookie still present: the server closed it.
@@ -126,7 +129,7 @@ export async function SiteShell({
       </a>
       {/* On the home page the header carries its own Entrar; the row stays only to say a session has ended. */}
       {!member && authBar && (!home || ended) ? <AuthBar t={t} google={googleSignIn().available} ended={ended} /> : null}
-      {!member && googlePrompt !== 'off' && googleSignIn().available ? <GooglePrompt locale={locale} afterSignOut={googlePrompt === 'after-sign-out'} /> : null}
+      {!member && googlePrompt !== 'off' && !savingData && googleSignIn().available ? <GooglePrompt locale={locale} afterSignOut={googlePrompt === 'after-sign-out'} /> : null}
       {/* A member's header holds more than a visitor's (balance, notices); its phone layout gives way sooner. */}
       <header className={['top', member ? 'is-member' : null, home ? 'is-home' : null].filter(Boolean).join(' ')}>
         {home ? <TopScroll /> : null}

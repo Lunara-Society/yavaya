@@ -159,3 +159,24 @@ address, with the site's "Ilustración" tag on the photograph. Before, every
 district shared the same Yavaya logo. The photographs are read from
 `public/art` (the deployed image keeps `public` next to the server); an unknown
 district answers 404. Not behind the look: it changes only the preview.
+
+## Lighter pages (measured 20 November 2026)
+
+Measured on the live site, compressed as a phone receives it: a district page
+was 640–780 KB (the home page 1.15 MB). About 98 KB of each page's 124 KB of
+script is React and Next.js themselves; the largest single avoidable pieces
+were Google's sign-in prompt (102 KB of script, every page, every signed-out
+visitor) and each district's film poster (60–75 KB, fetched at once though the
+film sits at the bottom). Changed:
+
+- **The film's poster loads only when the film comes near the screen**
+  (`ui/site/guide-video-player.tsx`): a visitor who never scrolls that far
+  never downloads it.
+- **No Google prompt for someone saving data or on 2G**: the shell leaves it
+  out when the browser sends `Save-Data: on` or an `ECT` of 2G (the middleware
+  asks for `ECT` with `Accept-CH`). Decided on the server, so no page carries
+  a single extra byte for it; "Entrar" still leads to /login, where Google is.
+- **The footer's night picture** is fetched at 960 px on phones instead of
+  1600 px: it is a faint background.
+
+Every page stays inside the size budget (`scripts/check-budget.mjs`).

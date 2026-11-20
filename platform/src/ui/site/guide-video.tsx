@@ -3,12 +3,13 @@ import type { Locale, Translator } from '@/i18n';
 import { GUIDE_PUBLISHED, GUIDE_SECONDS, guideDuration, guideFiles, type GuideKey } from '@/config/guide';
 import { siteUrl } from '@/server/seo';
 import { JsonLd } from '@/ui/site/json-ld';
+import { GuideVideoPlayer } from './guide-video-player';
 
 /**
  * A district's own film, at the top of its page, with a line inviting a play.
  *
- * Nothing loads until someone presses play (`preload="none"`): the poster is a
- * small image and the video streams in ranges. Touch screens get the 720p
+ * Nothing loads until someone presses play (`preload="none"`), and the poster
+ * only when the film comes near the screen; the video streams in ranges. Touch screens get the 720p
  * file, which is kinder to a phone's data plan.
  */
 export function GuideVideo({ guideKey, title, t, locale, note }: { guideKey: GuideKey; title: string; t: Translator; locale: Locale; note?: string }) {
@@ -48,14 +49,18 @@ export function GuideVideo({ guideKey, title, t, locale, note }: { guideKey: Gui
  */
 export function GuidePlayer({ guideKey, t, locale, id }: { guideKey: GuideKey; t: Translator; locale: Locale; id?: string }) {
   const files = guideFiles(guideKey);
+  // The poster arrives when the film comes near the screen (guide-video-player.tsx).
   return (
-    <video id={id} className="gv-video" controls preload="none" playsInline poster={files.posterWebp}>
-      <source src={files.sd} type="video/mp4" media="(pointer: coarse)" />
-      <source src={files.hd} type="video/mp4" />
-      <track kind="captions" srcLang="es" label={t('guide.captions')} src={files.captions} />
-      <track kind="subtitles" srcLang="en" label={t('guide.captions_en')} src={files.subtitlesEn} default={locale === 'en'} />
-      {t('guide.unsupported')}
-    </video>
+    <GuideVideoPlayer
+      id={id}
+      poster={files.posterWebp}
+      sd={files.sd}
+      hd={files.hd}
+      captions={files.captions}
+      subtitlesEn={files.subtitlesEn}
+      english={locale === 'en'}
+      labels={{ captions: t('guide.captions'), captionsEn: t('guide.captions_en'), unsupported: t('guide.unsupported') }}
+    />
   );
 }
 
