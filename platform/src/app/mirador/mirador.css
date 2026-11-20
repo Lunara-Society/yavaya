@@ -642,8 +642,15 @@ body:has(.mf-sheet) .roxi-launch {
 }
 .mu-field {
   display: grid;
+  /* One column no wider than the form: an implicit `auto` column grows to its widest child's minimum, and a
+     select's minimum is its longest option, which made the upload page 514–533 px wide on a 360 px phone. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   font-weight: 600;
+}
+.mu-field select {
+  min-width: 0;
+  width: 100%;
 }
 .mu-field textarea,
 .mu-field select,
@@ -939,6 +946,7 @@ body:has(.mf-sheet) .roxi-launch {
 
 .mu-offer {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   min-width: 0;
   margin: 0;
