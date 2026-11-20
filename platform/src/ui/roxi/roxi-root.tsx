@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import type { RoxiLabels, RoxiPresenceLabels } from './labels';
 import type { RoxiMember, RoxiOpening } from './roxi-panel';
 import { RoxiPresence } from './presence';
-import { ROXI_ASK_EVENT, ROXI_PHOTO_EVENT, type RoxiPhotoHandoff } from './ask';
+import { ROXI_ASK_EVENT } from './ask';
 import { RoxiWelcomeNote, type RoxiWelcome } from './welcome-note';
 import { publishRoxiState } from './state-bus';
 import { ROXI_PUBLISHED_EVENT, takePublished } from './receipt';
@@ -62,7 +62,6 @@ export function RoxiRoot() {
   const [settings, setSettings] = useState(false);
   const [welcome, setWelcome] = useState<RoxiWelcome | null>(null);
   const [ask, setAsk] = useState<{ text: string; id: number } | null>(null);
-  const [photo, setPhoto] = useState<(RoxiPhotoHandoff & { id: number }) | null>(null);
   const [published, setPublished] = useState<{ listingId: string; id: number } | null>(null);
   const quiet = QUIET.test(pathname);
 
@@ -128,25 +127,19 @@ export function RoxiRoot() {
     return () => clearTimeout(timer);
   }, [available]);
 
-  // Any page can open Roxi with a request already said (ROXI_ASK_EVENT, { text }), or with a photo chosen on its camera button (ROXI_PHOTO_EVENT, photo-button.tsx).
+  // Any page can open Roxi with a request already said: window.dispatchEvent(new CustomEvent(ROXI_ASK_EVENT, { detail: { text } })).
+  // A page's camera button opens her the same way, with no text; her panel then takes the photo itself (ask.ts, takeRoxiPhoto).
   useEffect(() => {
-    const onOpen = (event: Event) => {
-      const detail = (event as CustomEvent<{ text?: unknown } & Partial<RoxiPhotoHandoff>>).detail;
+    const onAsk = (event: Event) => {
+      const text = (event as CustomEvent<{ text?: unknown }>).detail?.text;
       setWelcome(null);
       setOpening('none');
       setOpen(true);
-      if (event.type === ROXI_PHOTO_EVENT) {
-        if (detail?.file) setPhoto({ file: detail.file, selling: Boolean(detail.selling), caption: detail.caption, id: Date.now() });
-      } else if (typeof detail?.text === 'string' && detail.text.trim()) setAsk({ text: detail.text.trim().slice(0, 300), id: Date.now() });
+      if (typeof text === 'string' && text.trim()) setAsk({ text: text.trim().slice(0, 300), id: Date.now() });
     };
-    window.addEventListener(ROXI_ASK_EVENT, onOpen);
-    window.addEventListener(ROXI_PHOTO_EVENT, onOpen);
-    return () => {
-      window.removeEventListener(ROXI_ASK_EVENT, onOpen);
-      window.removeEventListener(ROXI_PHOTO_EVENT, onOpen);
-    };
+    window.addEventListener(ROXI_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(ROXI_ASK_EVENT, onAsk);
   }, []);
-
 
   /*
    * A listing Roxi drafted was just published (receipt.ts): she opens with the
@@ -188,7 +181,6 @@ export function RoxiRoot() {
           refusals={session.refusals}
           openedBy={opening}
           ask={ask}
-          photo={photo}
           review={review}
           halo={halo}
           published={published}

@@ -6,15 +6,30 @@ export function askRoxi(text: string): void {
 }
 
 /**
- * The event a page dispatches to hand Roxi a photo the member just chose on
- * that page (photo-button.tsx): she opens and takes it as if it had been
- * picked in her panel. The file is chosen on the page itself, inside the tap,
- * because a browser opens its file picker only from a tap.
+ * A photo the member just chose on a page's camera button (photo-button.tsx),
+ * waiting for Roxi's panel. The button opens her with the ask event (no
+ * text), which her root already listens for, and the panel takes the photo
+ * when it opens, or at once through ROXI_PHOTO_EVENT if it is already open.
+ * Kept here rather than passed through her root, because the root is on every
+ * page and every byte there is paid on every page (scripts/check-budget.mjs).
+ * The file is chosen on the page itself, inside the tap, because a browser
+ * opens its file picker only from a tap.
  */
 export const ROXI_PHOTO_EVENT = 'roxi:photo';
 
 export type RoxiPhotoHandoff = { file: File; selling: boolean; caption?: string };
 
+let waiting: RoxiPhotoHandoff | null = null;
+
 export function giveRoxiPhoto(handoff: RoxiPhotoHandoff): void {
-  window.dispatchEvent(new CustomEvent<RoxiPhotoHandoff>(ROXI_PHOTO_EVENT, { detail: handoff }));
+  waiting = handoff;
+  askRoxi('');
+  window.dispatchEvent(new Event(ROXI_PHOTO_EVENT));
+}
+
+/** The photo waiting for the panel, once: taking it clears it. */
+export function takeRoxiPhoto(): RoxiPhotoHandoff | null {
+  const handoff = waiting;
+  waiting = null;
+  return handoff;
 }

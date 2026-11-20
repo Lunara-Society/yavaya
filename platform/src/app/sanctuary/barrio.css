@@ -46,3 +46,7 @@
 @supports (animation-timeline: view()) {
   .site[data-tone="sanctuary"] :is(.sc-word, .sc-church, .cm-feed > *) { animation: sc-kindle linear both; animation-timeline: view(); animation-range: entry 0% entry 75%; }
 }
+
+/* A prayer request's candle (ui/community/post-card.tsx, docs/DISTRICT-FOCUS.md): warm light once lit. Here, not in site.css, because only this district's pages show it. */
+.cm-candle.on { border-color: rgba(240, 190, 110, 0.7); background: radial-gradient(120% 140% at 20% 50%, rgba(255, 196, 110, 0.32), rgba(255, 196, 110, 0.08)); box-shadow: 0 0 18px rgba(255, 186, 96, 0.28); }
+.cm-candles { color: #d9a85a; font-weight: 700; }

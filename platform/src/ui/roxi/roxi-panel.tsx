@@ -14,7 +14,7 @@ import { tidyText, withoutCues } from './tidy';
 import { LOG_KEY, preferencesForRoxi, readPrefs, SPEED_VALUE, voiceSpeed, writePrefs } from './prefs';
 import { differenceHash, luminance, photoHints, type PhotoHint } from './photo-quality';
 import { reportPresence } from './presence';
-import { ROXI_ASK_EVENT } from './ask';
+import { ROXI_ASK_EVENT, ROXI_PHOTO_EVENT, takeRoxiPhoto } from './ask';
 import { publishRoxiState } from './state-bus';
 import { primeDraft, RoxiReviewCard, type RoxiDraftView } from './review-card';
 import { RoxiReceiptCard, type RoxiReceipt } from './receipt-card';
@@ -391,7 +391,6 @@ export default function RoxiPanel({
   refusals,
   openedBy = 'none',
   ask,
-  photo = null,
   review = false,
   halo = false,
   published = null,
@@ -405,8 +404,6 @@ export default function RoxiPanel({
   openedBy?: RoxiOpening;
   /** A request from a button elsewhere on the site ("¿Qué necesitas hoy?"), sent as the member's first message. */
   ask?: { text: string; id: number } | null;
-  /** A photo chosen on a page's camera button (photo-button.tsx), taken as if picked here. */
-  photo?: { file: File; selling: boolean; caption?: string; id: number } | null;
   /** The listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the server, the review card, the receipt. */
   review?: boolean;
   /** Her face is the Halo (docs/roxi/HALO.md) instead of the gold orb. */
@@ -999,15 +996,19 @@ export default function RoxiPanel({
     void sendTextRef.current(ask.text, false);
   }, [ask]);
 
-  // A photo handed over by a page's camera button: once, as if it had been picked in the panel.
-  const photoId = useRef(0);
+  // A photo handed over by a page's camera button (ask.ts): taken when the panel opens, or at once if it is open; as if picked here.
   useEffect(() => {
-    if (!photo || photoId.current === photo.id) return;
-    photoId.current = photo.id;
-    sellingPhoto.current = photo.selling;
-    photoCaption.current = photo.caption ?? null;
-    void sendPhotoRef.current(photo.file);
-  }, [photo]);
+    const take = () => {
+      const handoff = takeRoxiPhoto();
+      if (!handoff) return;
+      sellingPhoto.current = handoff.selling;
+      photoCaption.current = handoff.caption ?? null;
+      void sendPhotoRef.current(handoff.file);
+    };
+    take();
+    window.addEventListener(ROXI_PHOTO_EVENT, take);
+    return () => window.removeEventListener(ROXI_PHOTO_EVENT, take);
+  }, []);
 
   async function sendText(text: string, fromBox: boolean) {
     const said = text.trim();

@@ -31,6 +31,15 @@
  * the member changes language (it kept Spanish on English pages), and Enter
  * in a town box no longer sends a half-filled form. The heaviest page sits at
  * 137.0; the extra kilobyte is headroom, not a licence.
+ *
+ * 20 November 2026, 138 → 139 KB: the heaviest page (/account/profile) reached
+ * 137.95 KB here and a few bytes over 138 in the production build, which
+ * inlines its own settings, so six deploys in a row stopped at this check.
+ * What grew in the code every page shares: Roxi's launcher showing the Halo,
+ * her new face (the owner's choice). The camera buttons' photo handoff was
+ * moved out of that shared code into her panel, and the launcher's image lost
+ * its redundant attributes, before raising anything. Headroom again, not a
+ * licence.
  */
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -38,7 +47,7 @@ import { gzipSync } from 'node:zlib';
 
 const BUDGET = {
   /** Compressed JavaScript any one page loads on arrival. */
-  pageJsKb: 138,
+  pageJsKb: 139,
   /** Compressed CSS any one page loads on arrival. */
   cssKb: 60,
 };
