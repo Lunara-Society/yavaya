@@ -226,7 +226,9 @@
   background: linear-gradient(to top, rgba(5, 4, 7, 0.82), rgba(5, 4, 7, 0));
   pointer-events: none;
 }
-.mf-info a {
+/* Taps go to the video except on what can be pressed: links, and the offer's button. */
+.mf-info a,
+.mf-info button {
   pointer-events: auto;
 }
 .mf-who {
@@ -825,4 +827,272 @@ body:has(.mf-sheet) .roxi-launch {
 }
 .ms-page .muted {
   color: var(--mr-muted);
+}
+
+/* --- Offers (docs/mirador/README.md, "Offers") ------------------------------- */
+
+.mf-offer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  margin-top: 10px;
+  padding: 8px 8px 8px 12px;
+  border-radius: 14px;
+  background: rgba(17, 14, 22, 0.88);
+  border: 1px solid rgba(226, 194, 122, 0.45);
+}
+.mf-offer-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+.mf-offer-title {
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mf-offer-deal {
+  color: var(--mr-gold-strong);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.mf-offer-meta {
+  color: var(--mr-muted);
+  font-size: 0.78rem;
+}
+.mf-want {
+  flex: none;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mr-gold);
+  color: #120d04;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mf-want.is-mine {
+  background: none;
+  border: 1px solid rgba(226, 194, 122, 0.6);
+  color: var(--mr-gold);
+}
+.mf-want:focus-visible,
+.mf-wa:focus-visible {
+  outline: 2px solid var(--mr-gold-strong);
+  outline-offset: 2px;
+}
+.mf-report p {
+  margin: 0;
+}
+.mf-notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 194, 122, 0.35);
+  background: rgba(226, 194, 122, 0.07);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+.mf-report .mf-qty {
+  justify-content: space-between;
+}
+.mf-qty span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mf-report .mf-qty button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--mr-line);
+  background: var(--mr-raised);
+  color: var(--mr-text);
+  font-size: 1.25rem;
+}
+.mf-qty output {
+  min-width: 2.5ch;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.mf-wa {
+  display: block;
+  padding: 11px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 194, 122, 0.6);
+  color: var(--mr-gold);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+.mf video::cue {
+  background: rgba(5, 4, 7, 0.72);
+  color: #f4ebd8;
+  font-family: var(--font-sans);
+}
+
+.mu-offer {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--mr-line);
+}
+.mu-offer legend {
+  padding: 0 6px;
+  color: var(--mr-gold);
+  font-weight: 700;
+}
+.mu-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mu-kind {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--mr-line);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.mu-kind input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.mu-kind[data-on] {
+  border-color: var(--mr-gold);
+  background: var(--mr-gold);
+  color: #120d04;
+  font-weight: 700;
+}
+.mu-kind:focus-within {
+  outline: 2px solid var(--mr-gold);
+  outline-offset: 2px;
+}
+.mu-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+.mu-rules {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 194, 122, 0.35);
+  background: rgba(226, 194, 122, 0.06);
+}
+.mu-rules p {
+  margin: 0;
+  color: var(--mr-muted);
+  font-size: 0.86rem;
+}
+.mu-rules .mu-check {
+  align-items: flex-start;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.mu-rules .mu-check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+}
+.mu-note {
+  margin: 0;
+  color: var(--mr-muted);
+  font-size: 0.84rem;
+}
+.mu-photos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.mu-photos img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #000;
+}
+
+/* --- The studio's offers, requests and voice ---------------------------------- */
+
+.ms-offer,
+.ms-voice {
+  min-width: 0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--mr-line);
+}
+.ms-offer-summary {
+  color: var(--mr-gold);
+  font-size: 0.86rem;
+}
+.ms-voice-state {
+  margin: 10px 0 0 !important;
+  color: var(--mr-muted);
+  font-size: 0.86rem;
+}
+/* The voice is Roxi's, so this is where Mirador's violet appears. */
+.ms-voice-state[data-tone='ok'] {
+  color: var(--mr-violet);
+}
+.ms-voice-state[data-tone='bad'] {
+  color: #ffb4a8;
+}
+.ms-voice .mf-cta {
+  background: var(--mr-violet);
+  color: #0c0814;
+}
+.ms-voice-price {
+  margin: 0;
+  font-weight: 700;
+}
+.ms-page h3 {
+  margin: 18px 0 10px;
+  color: var(--mr-muted);
+  font-size: 0.95rem;
+}
+.ms-request {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--mr-raised);
+  border: 1px solid var(--mr-line);
+}
+.ms-request[data-status='pending'] {
+  border-color: rgba(226, 194, 122, 0.5);
+}
+.ms-request p {
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+}
+.ms-request-note {
+  color: var(--mr-muted);
+  font-style: italic;
+}
+.ms-pickup {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(226, 194, 122, 0.08);
+}
+.ms-actions .is-yes {
+  border-color: var(--mr-gold);
+  background: var(--mr-gold);
+  color: #120d04;
+  font-weight: 700;
+}
+.ms-actions button:disabled {
+  opacity: 0.45;
 }

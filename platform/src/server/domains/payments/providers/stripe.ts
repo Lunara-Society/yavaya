@@ -58,7 +58,13 @@ export class StripeProvider implements PaymentProvider {
   readonly key = 'stripe';
 
   private secret(): string | null {
-    return serverEnv().STRIPE_SECRET_KEY ?? null;
+    try {
+      return serverEnv().STRIPE_SECRET_KEY ?? null;
+    } catch {
+      // The scheduler may run without the web application's secrets (docs/DEPLOYMENT.md):
+      // then Stripe is simply unavailable to it, and what needed Stripe waits for a tick that has them.
+      return null;
+    }
   }
 
   availability(): ProviderAvailability {

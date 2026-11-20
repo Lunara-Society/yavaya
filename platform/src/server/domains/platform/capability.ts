@@ -241,9 +241,13 @@ export function allCapabilities(): Capability[] {
  * works — both are wrong, so it follows the measured email state.
  */
 function measured(capability: Capability): Capability {
-  if (capability.key === 'mercadito' || capability.key === 'identity_photos' || capability.key === 'mirador') {
+  if (capability.key === 'mercadito' || capability.key === 'identity_photos' || capability.key === 'mirador' || capability.key === 'mirador_offers') {
     const media = mediaStorageAvailability();
     return media.available ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
+  }
+  if (capability.key === 'mirador_voice') {
+    // The same test as the studio's button (mirador/voice.ts, voiceAvailable).
+    return mediaStorageAvailability().available && Boolean(serverEnv().ELEVENLABS_API_KEY) ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;
   }
   if (capability.key === 'two_step') {
     return twoStepAvailable() ? { ...capability, state: 'REAL', blockedBy: undefined } : capability;

@@ -15,7 +15,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 139 KB since 20 Nov; styles 60 KB, the home page at 59.9)
   - **Watch the Railway deploy after pushing** (`list-deployments`): production builds come out a few bytes heavier than local ones, and on 20 Nov six deploys failed at the budget check unnoticed until checked.
-  - At last count 675 tests. One fails on a machine without the web secrets in the shell (`jobs.test.ts`, "runs without the web application secrets": `roxi-upkeep` reads `serverEnv()`); it failed before 11 Nov's changes too, and production is unaffected because the scheduler has the secrets.
+  - At last count 840 tests, all passing. (`jobs.test.ts`, "runs without the web application secrets", used to fail because `roxi-upkeep` read `serverEnv()`; fixed 20 Nov: metering and Stripe read as unavailable when the scheduler has no web secrets, as mail already did.)
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -52,10 +52,25 @@ doc: `platform/docs/mirador/README.md`.
   tests with real video files, 16 browser checks on a phone.
 - **Switch:** `mirador.open` in Admin → Diseño del sitio, off. The owner sees
   the door ("Mirador" in the header) and can try everything first.
-- **Not built:** Roxi-made videos (HeyGen) and paid narration (ElevenLabs):
-  they need the owner's prices and, for HeyGen, an API key
-  (`HEYGEN_API_KEY`) with credits. Verified costs and a suggestion in the
-  README. Featured videos, business tools and creator earnings are not built.
+- **Added the same day (owner: "anyone can record a video or take a photo
+  and sell it… leftovers… food for homeless"), built and tested, still
+  behind the switch:**
+  - *Photos → video*, free: up to 4 photos become a portrait video closed by
+    the end card (made once with Blender + HyperFrames, `tools/mirador-endcard/`).
+  - *Offers* on any video: sell (price), give away, pay what you like, or
+    "Para comedores" (only approved Santuario churches can ask). "Lo quiero"
+    sends a request; the creator accepts in the studio ("Pedidos"); pickup
+    spot shown only after acceptance; payment in person. Food: ingredients,
+    confirmed rules, 24 h at most. 5 open offers per member. New *Regalos* tab.
+  - *Voiceover in Roxi's voice* (ElevenLabs, the app's own key): 1 token up
+    to 450 characters, 2 tokens up to 1,350 — priced by the owner's
+    delegation (cost ≤ $0.036 / $0.108, margin > 80%). Captions, one per
+    video, refund once if it fails. Admin → Moderación de Mirador shows
+    totals and ElevenLabs cost to token-economy readers.
+  - 9 more integration tests, 17 more browser checks (`mirador-offers.cjs`).
+- **Not built:** Roxi-made videos (HeyGen): the app has no `HEYGEN_API_KEY`
+  (the owner's HeyGen is connected to the assistant, not to Yavaya). Featured
+  videos, business tools and creator earnings are not built.
 - **Production needs:** ffmpeg is now in the Docker image (`apk add`); the
   scheduler's `mirador-upkeep` retries interrupted processing.
 

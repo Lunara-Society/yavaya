@@ -639,9 +639,28 @@ Members' video files are untrusted input to ffmpeg, a large parser
   hash for visitors who are not signed in), creators' own actions never
   count, and taps are rate-limited.
 
+- **Photos.** Read by sharp with a pixel cap (50 megapixels), turned
+  upright and re-encoded, which drops EXIF — GPS position and phone included
+  — before anything is stored; ffmpeg reads only those re-encoded files.
+- **Offers.** The pickup spot and time are returned only to a member whose
+  request was accepted (`outgoingRequests`); the public feed carries the
+  area, never the spot (checked by `tests/e2e/mirador-offers.cjs`). A creator
+  sees requesters by name, never their phone; the creator's WhatsApp is shown
+  only if they already share it on listings, and only to signed-in members.
+  Quantities move under a row lock, so two acceptances cannot promise the
+  same nacatamal twice. "Para comedores" is checked on the server against an
+  approved Santuario church, not against anything the client sends.
+- **Voiceover.** Charged in the transaction that records the job, refunded
+  once by a separate idempotency key; a scheduler started without the web
+  secrets leaves charged jobs alone rather than burning their tries. The
+  script is cleaned of control characters and sent to ElevenLabs as text
+  only; what comes back is decoded by ffmpeg like any other upload.
+
 Gap: parts go through the application server rather than straight to the
 bucket (signed direct uploads need bucket CORS rules); files are served
-through the application rather than a CDN.
+through the application rather than a CDN. Food offered between neighbours
+is not inspected by anyone: the rules the cook confirms and the notice
+viewers see are the protection, and moderation acts on reports.
 
 ## Known gaps
 

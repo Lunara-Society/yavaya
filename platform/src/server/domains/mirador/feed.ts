@@ -4,6 +4,7 @@ import type { Executor } from '@/server/db/client';
 import { locations, miradorBlocks, miradorFollows, miradorLikes, miradorPreferences, miradorSaves, miradorVideos, userProfiles, users } from '@/server/db/schema';
 import { MIRADOR_RULES } from '@/config/business-rules';
 import { linkFor, linkViews, type LinkView } from './links';
+import { offerViews, type OfferView } from './offers';
 
 /**
  * What Mirador shows (docs/mirador/README.md, "Discovery").
@@ -26,7 +27,7 @@ import { linkFor, linkViews, type LinkView } from './links';
  * The weights are MIRADOR_RULES.ranking; with no data yet, Para ti is simply
  * the newest videos, nearest first — which is the truth.
  */
-export const FEED_TABS = ['para_ti', 'cerca', 'siguiendo', 'negocios', 'mercadito', 'tendencias'] as const;
+export const FEED_TABS = ['para_ti', 'cerca', 'siguiendo', 'negocios', 'mercadito', 'regalos', 'tendencias'] as const;
 export type FeedTab = (typeof FEED_TABS)[number];
 
 export function isFeedTab(value: unknown): value is FeedTab {
@@ -51,12 +52,20 @@ export type FeedVideo = {
   following: boolean;
   own: boolean;
   link: LinkView | null;
+  /** What the video offers, if anything ("Lo quiero"). */
+  offer: OfferView | null;
+  /** Captions of its narration (WebVTT), when it has one. */
+  captions: string | null;
   publishedAt: string;
   /** Why it is in Para ti, for "¿Por qué veo esto?": keys under `mirador.why.*`. */
   why: string[];
 };
 
-export const mediaUrls = (id: string) => ({ high: `/mirador/media/${id}/720.mp4`, low: `/mirador/media/${id}/360.mp4`, poster: `/mirador/media/${id}/poster.webp` });
+/** The files' addresses; the version changes when the files do (a narration), so no phone plays a cached old one. */
+export const mediaUrls = (id: string, version = 1) => {
+  const v = version > 1 ? `?v=${version}` : '';
+  return { high: `/mirador/media/${id}/720.mp4${v}`, low: `/mirador/media/${id}/360.mp4${v}`, poster: `/mirador/media/${id}/poster.webp${v}` };
+};
 
 /** Inside the chosen place, or anywhere: a place's own code or any place under it. */
 function within(column: SQL | typeof miradorVideos.locationId, code: string): SQL {
@@ -122,7 +131,16 @@ export async function feedPage(
       );
       break;
     case 'mercadito':
-      conditions.push(sql`${miradorVideos.linkType} = 'mercadito_listing' and exists (select 1 from mercadito_listings l where l.id = ${miradorVideos.linkId} and l.seller_user_id = ${miradorVideos.creatorUserId} and l.status in ('published', 'reserved'))`);
+      // A listing still for sale, or an offer on the video itself: sold, or for whatever the other person wants to give.
+      conditions.push(
+        sql`((${miradorVideos.linkType} = 'mercadito_listing' and exists (select 1 from mercadito_listings l where l.id = ${miradorVideos.linkId} and l.seller_user_id = ${miradorVideos.creatorUserId} and l.status in ('published', 'reserved')))
+          or exists (select 1 from mirador_offers o where o.video_id = ${miradorVideos.id} and o.status = 'open' and o.available_until > ${now.toISOString()} and o.kind in ('sale', 'contribution')))`,
+      );
+      break;
+    case 'regalos':
+      // Given away, or for soup kitchens; the ones ending soonest first, so nothing is left to spoil.
+      conditions.push(sql`exists (select 1 from mirador_offers o where o.video_id = ${miradorVideos.id} and o.status = 'open' and o.available_until > ${now.toISOString()} and o.remaining > 0 and o.kind in ('free', 'donation'))`);
+      order = [sql`(select o.available_until from mirador_offers o where o.video_id = ${miradorVideos.id}) asc`, sql`${miradorVideos.publishedAt} desc`];
       break;
     case 'tendencias': {
       const from = new Date(now.getTime() - MIRADOR_RULES.trendingHours * 3_600_000);
@@ -180,7 +198,7 @@ export async function videosByIds(executor: Executor, params: { ids: string[]; v
     .where(params.includeHidden ? inArray(miradorVideos.id, params.ids) : and(inArray(miradorVideos.id, params.ids), visible));
 
   const viewer = params.viewerId;
-  const [liked, saved, follows, links] = await Promise.all([
+  const [liked, saved, follows, links, offers] = await Promise.all([
     viewer ? executor.select({ id: miradorLikes.videoId }).from(miradorLikes).where(and(eq(miradorLikes.userId, viewer), inArray(miradorLikes.videoId, params.ids))) : [],
     viewer ? executor.select({ id: miradorSaves.videoId }).from(miradorSaves).where(and(eq(miradorSaves.userId, viewer), inArray(miradorSaves.videoId, params.ids))) : [],
     viewer
@@ -190,6 +208,7 @@ export async function videosByIds(executor: Executor, params: { ids: string[]; v
           .where(and(eq(miradorFollows.followerUserId, viewer), inArray(miradorFollows.creatorUserId, rows.map((row) => row.video.creatorUserId))))
       : [],
     linkViews(executor, rows.map((row) => ({ creatorUserId: row.video.creatorUserId, type: row.video.linkType, id: row.video.linkId }))),
+    offerViews(executor, { videoIds: rows.map((row) => row.video.id), viewerId: viewer }),
   ]);
   const likedSet = new Set(liked.map((row) => row.id));
   const savedSet = new Set(saved.map((row) => row.id));
@@ -208,13 +227,15 @@ export async function videosByIds(executor: Executor, params: { ids: string[]; v
         durationMs: video.durationMs ?? 0,
         width: video.width ?? 0,
         height: video.height ?? 0,
-        media: mediaUrls(video.id),
+        media: mediaUrls(video.id, video.version),
         counts: { likes: video.likes, comments: video.comments, saves: video.saves, shares: video.shares, views: video.views },
         liked: likedSet.has(video.id),
         saved: savedSet.has(video.id),
         following: followSet.has(video.creatorUserId),
         own: viewer === video.creatorUserId,
         link: linkFor(links, video),
+        offer: offers.get(video.id) ?? null,
+        captions: video.captionsKey ? `/mirador/media/${video.id}/captions.vtt?v=${video.version}` : null,
         publishedAt: (video.publishedAt ?? video.createdAt).toISOString(),
         why: [],
       } satisfies FeedVideo,

@@ -25,13 +25,16 @@ export type FeedLabels = Record<
   | 'like' | 'unlike' | 'comments' | 'save' | 'unsave' | 'share' | 'more' | 'follow' | 'following' | 'sound_on' | 'sound_off' | 'play' | 'pause'
   | 'ai' | 'why_title' | 'why_none' | 'report' | 'block' | 'blocked' | 'close' | 'send' | 'reply' | 'comment_placeholder' | 'no_comments' | 'remove'
   | 'sign_in' | 'copied' | 'copy_link' | 'whatsapp' | 'report_title' | 'report_sent' | 'report_note' | 'loading' | 'error' | 'empty_title' | 'empty_text'
-  | 'upload' | 'back' | 'needs_place' | 'choose_place' | 'views' | 'end' | 'data_saver' | 'brand',
+  | 'upload' | 'back' | 'needs_place' | 'choose_place' | 'views' | 'end' | 'data_saver' | 'brand'
+  | 'want' | 'want_title' | 'want_quantity' | 'want_note' | 'want_send' | 'want_sent' | 'want_pending' | 'want_accepted' | 'want_whatsapp' | 'want_whatsapp_message' | 'want_less' | 'want_more'
+  | 'offer_left' | 'offer_sold_out' | 'offer_closed' | 'offer_until' | 'offer_free' | 'offer_contribution' | 'offer_donation' | 'offer_food_notice' | 'offer_pay_note' | 'offer_ingredients' | 'captions',
   string
 > & {
   tabs: Record<string, string>;
   why: Record<string, string>;
   action: Record<string, string>;
   reportCategories: Record<string, string>;
+  errors: Record<string, string>;
   districts: Record<string, string>;
 };
 
@@ -50,7 +53,7 @@ type Props = {
   locale: string;
 };
 
-type Sheet = { kind: 'comments' | 'share' | 'more' | 'report' | 'why'; video: FeedVideo } | null;
+type Sheet = { kind: 'comments' | 'share' | 'more' | 'report' | 'why' | 'want'; video: FeedVideo } | null;
 
 const compact = (n: number, locale: string) => new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
 
@@ -320,6 +323,7 @@ export function MiradorFeed(props: Props) {
                     muted={muted}
                     preload={isActive ? 'auto' : 'metadata'}
                     autoPlay={false}
+                    crossOrigin={video.captions ? 'anonymous' : undefined}
                     onTimeUpdate={(event) => {
                       const w = watch.current;
                       if (!w || w.id !== video.id) return;
@@ -331,7 +335,10 @@ export function MiradorFeed(props: Props) {
                       }
                       w.last = t;
                     }}
-                  />
+                  >
+                    {/* The narration's captions, shown by default: a muted feed is read, not heard. */}
+                    {video.captions ? <track kind="captions" src={video.captions} srcLang={locale} label={labels.captions} default /> : null}
+                  </video>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element -- a poster from the media route, sized by the encoder
                   <img src={video.media.poster} alt="" loading="lazy" decoding="async" />
@@ -407,7 +414,8 @@ export function MiradorFeed(props: Props) {
                   {video.source === 'ai' ? <span className="mf-ai">{labels.ai}</span> : null}
                 </p>
                 {video.caption ? <p className="mf-caption">{video.caption}</p> : null}
-                {video.link ? (
+                {video.offer ? <OfferChip video={video} labels={labels} locale={locale} onWant={() => (props.signedIn ? setSheet({ kind: 'want', video }) : (window.location.href = props.loginHref))} /> : null}
+                {video.link && !video.offer ? (
                   <a
                     className="mf-action"
                     href={video.link.url}
@@ -534,7 +542,7 @@ function SheetView(props: {
   const roots = (comments ?? []).filter((c) => !c.parentId);
   const replies = (id: string) => (comments ?? []).filter((c) => c.parentId === id);
   const title =
-    sheet.kind === 'comments' ? labels.comments : sheet.kind === 'share' ? labels.share : sheet.kind === 'report' ? labels.report_title : sheet.kind === 'why' ? labels.why_title : labels.more;
+    sheet.kind === 'comments' ? labels.comments : sheet.kind === 'share' ? labels.share : sheet.kind === 'report' ? labels.report_title : sheet.kind === 'why' ? labels.why_title : sheet.kind === 'want' ? labels.want_title : labels.more;
 
   const line = (c: Comment) => (
     <li key={c.id} className="mf-comment" data-reply={c.parentId ? '' : undefined}>
@@ -651,6 +659,8 @@ function SheetView(props: {
           </div>
         ) : null}
 
+        {sheet.kind === 'want' && video.offer ? <WantForm video={video} labels={labels} locale={props.locale} close={props.close} flash={props.flash} update={props.update} /> : null}
+
         {sheet.kind === 'report' ? (
           <form
             className="mf-report"
@@ -675,3 +685,105 @@ function SheetView(props: {
     </div>
   );
 }
+
+/** What a video offers, under its caption: the deal, how many are left, until when, and "Lo quiero". */
+function OfferChip({ video, labels, locale, onWant }: { video: FeedVideo; labels: FeedLabels; locale: string; onWant: () => void }) {
+  const offer = video.offer!;
+  const until = new Date(offer.until).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
+  const sameDay = new Date(offer.until).toDateString() === new Date().toDateString();
+  const deal =
+    offer.kind === 'sale' && offer.price ? formatPrice(offer.price.minor, offer.price.currency, locale) : offer.kind === 'free' ? labels.offer_free : offer.kind === 'contribution' ? labels.offer_contribution : labels.offer_donation;
+  const soldOut = offer.open && offer.remaining === 0;
+  return (
+    <div className="mf-offer" data-kind={offer.kind}>
+      <div className="mf-offer-text">
+        <span className="mf-offer-title">{offer.title}</span>
+        <span className="mf-offer-deal">
+          {deal}
+          {offer.unit ? ` / ${offer.unit}` : ''}
+        </span>
+        <span className="mf-offer-meta">
+          {!offer.open ? labels.offer_closed : soldOut ? labels.offer_sold_out : `${labels.offer_left.replace('{count}', String(offer.remaining))} · ${labels.offer_until.replace('{time}', sameDay ? until : new Date(offer.until).toLocaleDateString(locale, { weekday: 'short', hour: 'numeric' }))}`}
+        </span>
+      </div>
+      {video.own ? null : offer.mine ? (
+        <button type="button" className="mf-want is-mine" onClick={onWant}>
+          {offer.mine.status === 'accepted' ? labels.want_accepted : labels.want_pending}
+        </button>
+      ) : offer.open && offer.remaining > 0 ? (
+        <button type="button" className="mf-want" onClick={onWant}>
+          {labels.want}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+/** "Lo quiero": how many, a word for the creator, the food notice, and the creator's WhatsApp if they share it. */
+function WantForm({ video, labels, locale, close, flash, update }: { video: FeedVideo; labels: FeedLabels; locale: string; close: () => void; flash: (text: string) => void; update: (id: string, change: (video: FeedVideo) => FeedVideo) => void }) {
+  const offer = video.offer!;
+  const [quantity, setQuantity] = useState(offer.mine?.quantity ?? 1);
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const url = typeof window === 'undefined' ? '' : `${window.location.origin}/mirador/v/${video.id}`;
+  const whatsapp = offer.whatsapp ? `https://wa.me/${offer.whatsapp.replace(/^\+/, '')}?text=${encodeURIComponent(labels.want_whatsapp_message.replace('{title}', offer.title).replace('{count}', String(quantity)).replace('{url}', url))}` : null;
+  async function send() {
+    setBusy(true);
+    setError(null);
+    const result = await post(`/api/mirador/videos/${video.id}/want`, { quantity, note });
+    setBusy(false);
+    if (!result.ok) {
+      const message = typeof result.body?.error === 'string' ? labels.errors[result.body.error] : undefined;
+      const details = (result.body?.details ?? {}) as Record<string, unknown>;
+      return setError(message ? message.replace(/\{(\w+)\}/g, (all, key: string) => (key in details ? String(details[key]) : all)) : labels.error);
+    }
+    update(video.id, (v) => ({ ...v, offer: v.offer ? { ...v.offer, mine: { id: String(result.body?.id), status: 'pending', quantity } } : v.offer }));
+    flash(labels.want_sent.replace('{name}', video.creator.name));
+    close();
+  }
+  return (
+    <form
+      className="mf-report"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void send();
+      }}
+    >
+      <p>
+        <strong>{offer.title}</strong>
+        {offer.price && offer.kind === 'sale' ? ` · ${formatPrice(offer.price.minor, offer.price.currency, locale)}` : ''}
+      </p>
+      {offer.ingredients ? (
+        <p className="mf-muted">
+          {labels.offer_ingredients}: {offer.ingredients}
+        </p>
+      ) : null}
+      {offer.food ? <p className="mf-notice">{labels.offer_food_notice}</p> : null}
+      {offer.kind === 'sale' || offer.kind === 'contribution' ? <p className="mf-muted">{labels.offer_pay_note}</p> : null}
+      <label className="mf-qty">
+        {labels.want_quantity}
+        <span>
+          <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label={labels.want_less}>
+            −
+          </button>
+          <output aria-live="polite">{quantity}</output>
+          <button type="button" onClick={() => setQuantity((q) => Math.min(offer.remaining || 1, q + 1))} aria-label={labels.want_more}>
+            +
+          </button>
+        </span>
+      </label>
+      <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={200} placeholder={labels.want_note} aria-label={labels.want_note} />
+      <button type="submit" disabled={busy || offer.mine?.status === 'accepted'}>
+        {labels.want_send}
+      </button>
+      {whatsapp ? (
+        <a className="mf-wa" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          {labels.want_whatsapp}
+        </a>
+      ) : null}
+      {error ? <p className="mf-error">{error}</p> : null}
+    </form>
+  );
+}
+

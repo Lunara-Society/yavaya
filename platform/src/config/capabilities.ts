@@ -312,6 +312,35 @@ export const CAPABILITIES: readonly Capability[] = [
     blockedBy: 'Media storage (MEDIA_STORAGE_PROVIDER=s3 and the MEDIA_S3_* keys) and ffmpeg in the image. Members see it once the owner turns on mirador.open.',
   },
   {
+    key: 'mirador_offers',
+    nameKey: 'capability.mirador_offers.name',
+    detailKey: 'capability.mirador_offers.detail',
+    /*
+     * Built (docs/mirador/README.md, "Offers"): photos turned into a video,
+     * an offer on a video (sell, give, pay what you like, for food kitchens),
+     * "Lo quiero" requests the creator accepts or declines, food rules and
+     * expiry. Payment is in person; nothing here takes money. Measured from
+     * media storage, like Mirador itself.
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'Media storage (MEDIA_STORAGE_PROVIDER=s3 and the MEDIA_S3_* keys), as for Mirador.',
+  },
+  {
+    key: 'mirador_voice',
+    nameKey: 'capability.mirador_voice.name',
+    detailKey: 'capability.mirador_voice.detail',
+    /*
+     * Built (docs/mirador/README.md, "Voiceover"): a creator's script spoken
+     * in Roxi's voice by ElevenLabs, mixed over the video, with captions;
+     * paid in tokens, refunded once if it cannot be made. Measured: it needs
+     * the ElevenLabs key and the media bucket; the button is absent without them.
+     */
+    state: 'REQUIRES_CONFIGURATION',
+    group: 'platform',
+    blockedBy: 'ELEVENLABS_API_KEY (text to speech) and media storage.',
+  },
+  {
     key: 'board_districts',
     nameKey: 'capability.board_districts.name',
     detailKey: 'capability.board_districts.detail',

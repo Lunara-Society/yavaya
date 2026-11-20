@@ -282,6 +282,38 @@ export const MIRADOR_RULES = {
   trendingMinViews: 5,
   /** Distinct members reporting a video before it is hidden until a moderator looks. */
   reportsToHide: 3,
+  /** Photos instead of a video: at most this many, each shown this long, crossfading. Turning them into a video is free. */
+  maxPhotos: 4,
+  photoSeconds: 3,
+  photoFadeSeconds: 0.5,
+  /**
+   * Offers (docs/mirador/README.md, "Offers"), Yavaya's defaults under the
+   * owner's delegation of 20 November 2026: free to post, a few open at once
+   * so the feed is not flooded, food for a day at most (leftovers sooner,
+   * by the creator's choice), anything else for a week at most.
+   */
+  openOffersPerMember: 5,
+  offerTitleMaxLength: 80,
+  offerMaxQuantity: 99,
+  offerIngredientsMaxLength: 300,
+  offerPickupMaxLength: 300,
+  offerHours: [3, 6, 12, 24, 72, 168],
+  foodMaxHours: 24,
+  /**
+   * Voiceover in Roxi's voice (ElevenLabs), priced by the owner's delegation
+   * of 20 November 2026 ("cover the cost, cheap for Central America, a tiny
+   * profit"): 1 token up to about 30 seconds of speech, 2 up to 90 (the
+   * prices are the billable actions `mirador.voiceover` and
+   * `mirador.voiceover_long`). ElevenLabs bills $0.08 per 1,000 characters
+   * (v4, its API price page on 20 November 2026), so 450 characters cost
+   * $0.036 and 1,350 cost $0.108, against a token sold at $0.30–$0.50.
+   */
+  voiceShortChars: 450,
+  voiceMaxChars: 1350,
+  /** Spoken Spanish runs about this many characters a second: a script longer than its video allows is refused before charging. */
+  voiceCharsPerSecond: 17,
+  voiceCostMicrosPerChar: 80,
+  voiceAttempts: 2,
 } as const;
 
 export const DEMO_CONTENT_RULES = {

@@ -1881,11 +1881,38 @@ shares 5, comments 2, watched to the end 2, a prior of 20 views, 72-hour
 freshness, ×1.5 near, ×2 followed, ×1.3 chosen topics, ×1.2 same language),
 seen videos pushed back for 7 days, Tendencias over 48 hours from 5 views.
 
+**Offers, photos and voiceover (built 20 November 2026).** Nothing new to
+configure beyond what Mirador already needs, except that the voiceover uses
+`ELEVENLABS_API_KEY` with text-to-speech permission (the key Roxi's WhatsApp
+voice notes already use). Without it the voiceover button is absent and
+`/status` shows `mirador_voice` as needing configuration; offers and photos
+are measured from the bucket (`mirador_offers`).
+
+**Prices set by the owner's delegation** (20 November: "cover the cost, have
+it somewhat cheap for central america but also be able to make a tiny
+profit"), as `billable_actions` rows, retunable in Admin:
+`mirador.voiceover` 1 token (scripts up to 450 characters, ElevenLabs cost at
+most $0.036) and `mirador.voiceover_long` 2 tokens (up to 1,350 characters, at
+most $0.108). Photos to video, offers and requests are free. Reasoning in
+`docs/mirador/README.md`, "Pricing".
+
+**Yavaya's own defaults for offers and voiceover** (`MIRADOR_RULES`): up to 4
+photos, 3 seconds each with half-second fades; 5 open offers per member;
+titles of 80 characters, ingredients and pickup details of 300, at most 99
+of a thing; offers last 3, 6, 12, 24, 72 or 168 hours, food 24 at most; a
+script carries 17 characters per second of video; two tries before a
+refund; ElevenLabs' cost kept at 80 millionths of a dollar per character
+($0.08 per 1,000, its public price on 20 November) — if ElevenLabs changes
+its price, change `voiceCostMicrosPerChar` so Admin's cost figure stays true.
+
 **Decisions open (the owner's):**
-- Prices for Roxi-made videos and Roxi narration (phases 5 and 6, not built):
-  the verified provider costs and a suggestion are in the README. Building
-  them also needs `HEYGEN_API_KEY` (a HeyGen API key with videos and assets
-  scopes) and API credits on HeyGen.
+- Roxi-made videos (phase 5, not built): they need `HEYGEN_API_KEY` (a HeyGen
+  API key with videos and assets scopes) and API credits on HeyGen; the
+  verified cost and a price that follows the voiceover's margin are in the
+  README.
+- Whether "Para comedores" should also be open to registered food banks or
+  shelters that are not churches: today only an approved Santuario church can
+  ask for it, because that is the only verified organisation Yavaya has.
 - Featured videos and business promotion (paid visibility): not built; their
   price and rules are the owner's.
 - Creator earnings: not built and not to be built before accounting, tax and

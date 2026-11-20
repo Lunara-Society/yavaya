@@ -150,3 +150,40 @@ export async function expireUploads(executor: Executor, params: { now?: Date; li
   }
   return rows.length;
 }
+
+/**
+ * Photos instead of a video (docs/mirador/README.md, "Photos"): up to four,
+ * each read and re-encoded by sharp — turned upright, at most 2160 pixels,
+ * and stripped of the place and phone it was taken with — then kept until
+ * processing turns them into a short video. Free.
+ */
+export async function startPhotoVideo(tx: Executor, params: { userId: string; photos: Buffer[]; language: string; now?: Date }): Promise<{ videoId: string }> {
+  const storage = mediaStorage();
+  if (!storage) throw errors.validation('mirador.error.unavailable');
+  if (params.photos.length < 1 || params.photos.length > MIRADOR_RULES.maxPhotos) throw errors.validation('mirador.error.photo_count', { max: MIRADOR_RULES.maxPhotos });
+  const { default: sharp } = await import('sharp');
+  const cleaned: Buffer[] = [];
+  for (const photo of params.photos) {
+    try {
+      // `rotate()` applies the camera's orientation; sharp writes no metadata unless asked, so the GPS position goes.
+      // Plain JPEG, not mozjpeg: ffmpeg's decoder refuses mozjpeg's progressive scans (found by the tests).
+      cleaned.push(await sharp(photo, { limitInputPixels: 50_000_000 }).rotate().resize({ width: 2160, height: 2160, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 88 }).toBuffer());
+    } catch {
+      throw errors.validation('mirador.error.not_photo');
+    }
+  }
+  const id = randomUUID();
+  const keys = cleaned.map((_, i) => `mirador/photos/${id}/${i + 1}.jpg`);
+  for (const [i, body] of cleaned.entries()) await storage.put(keys[i]!, body, 'image/jpeg');
+  await tx.insert(miradorVideos).values({
+    id,
+    creatorUserId: params.userId,
+    status: 'processing',
+    inputKind: 'photos',
+    photoKeys: keys,
+    language: params.language === 'en' ? 'en' : 'es',
+    createdAt: params.now ?? new Date(),
+  });
+  await recordAudit(tx, { actorType: 'user', actorUserId: params.userId, action: 'mirador.photos_uploaded', subjectType: 'mirador_video', subjectId: id, metadata: { photos: keys.length } });
+  return { videoId: id };
+}

@@ -1,4 +1,4 @@
-import { boolean, date, index, integer, jsonb, pgTable, primaryKey, smallint, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { bigint, boolean, char, date, index, integer, jsonb, pgTable, primaryKey, smallint, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 import { locations } from './geography';
 
@@ -40,6 +40,14 @@ export const miradorVideos = pgTable(
     linkType: text('link_type'),
     linkId: uuid('link_id'),
 
+    /** `video` (filmed) or `photos` (up to four photos Yavaya turns into a short video, free). */
+    inputKind: text('input_kind').notNull().default('video'),
+    /** The photos, while `photos` waits to be turned into a video; deleted after. */
+    photoKeys: text('photo_keys').array().notNull().default([]),
+    /** Captions (WebVTT) of a narration, when it has one. */
+    captionsKey: text('captions_key'),
+    /** Bumped when its files change (a narration), so no phone plays a cached old one. */
+    version: smallint('version').notNull().default(1),
     /** The member's file, until it is encoded; deleted then, the encodings kept. */
     originalKey: text('original_key'),
     originalBytes: integer('original_bytes'),
@@ -205,3 +213,107 @@ export const miradorPreferences = pgTable('mirador_preferences', {
   resetAt: timestamp('reset_at', { withTimezone: true }),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * An offer on a video (docs/mirador/README.md, "Offers"): what the video
+ * shows can be had — sold, given away, given for whatever the other person
+ * wants to give, or given to a soup kitchen — and a viewer asks for it with
+ * "Lo quiero". Yavaya takes no part in the money: buyer and seller settle at
+ * the pickup, as in Mercadito.
+ *
+ * `remaining` falls only when the creator accepts a request, inside that
+ * transaction; an offer past `available_until` closes itself. The pickup
+ * details are shown only to someone whose request was accepted.
+ */
+export const miradorOffers = pgTable(
+  'mirador_offers',
+  {
+    videoId: uuid('video_id')
+      .primaryKey()
+      .references(() => miradorVideos.id, { onDelete: 'cascade' }),
+    creatorUserId: uuid('creator_user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    /** `sale`, `free`, `contribution` (what the other person wants to give) or `donation` (for soup kitchens). */
+    kind: text('kind').notNull(),
+    /** `food`, `baked`, `crafts`, `clothes`, `plants` or `other`. */
+    category: text('category').notNull(),
+    title: text('title').notNull(),
+    priceMinor: bigint('price_minor', { mode: 'number' }),
+    currency: char('currency', { length: 3 }).notNull(),
+    unit: text('unit'),
+    quantity: smallint('quantity').notNull(),
+    remaining: smallint('remaining').notNull(),
+    /** Food only: what is in it and what someone allergic must know. */
+    ingredients: text('ingredients'),
+    /** Food only: the moment the creator confirmed the food rules (made today, kept safe, nothing on the not-allowed list). */
+    foodRulesAt: timestamp('food_rules_at', { withTimezone: true }),
+    pickupLocationId: uuid('pickup_location_id')
+      .notNull()
+      .references(() => locations.id, { onDelete: 'restrict' }),
+    /** Where and when exactly: shown only to someone whose request was accepted. */
+    pickupDetails: text('pickup_details').notNull().default(''),
+    availableUntil: timestamp('available_until', { withTimezone: true }).notNull(),
+    /** `open`, `closed` (by its creator) or `expired`. */
+    status: text('status').notNull().default('open'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    closedAt: timestamp('closed_at', { withTimezone: true }),
+  },
+  (table) => [index('mirador_offers_open_idx').on(table.status, table.kind, table.availableUntil), index('mirador_offers_creator_idx').on(table.creatorUserId, table.status)],
+);
+
+/** "Lo quiero": one member asking for some of an offer. `pending` → `accepted` / `declined`, or `cancelled` by the one who asked. */
+export const miradorOfferRequests = pgTable(
+  'mirador_offer_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    videoId: uuid('video_id')
+      .notNull()
+      .references(() => miradorOffers.videoId, { onDelete: 'cascade' }),
+    requesterUserId: uuid('requester_user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    quantity: smallint('quantity').notNull(),
+    note: text('note'),
+    status: text('status').notNull().default('pending'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+  },
+  (table) => [index('mirador_offer_requests_video_idx').on(table.videoId, table.status), index('mirador_offer_requests_requester_idx').on(table.requesterUserId, table.createdAt)],
+);
+
+/**
+ * A narration in Roxi's voice (ElevenLabs), paid in tokens
+ * (docs/mirador/README.md, "Voiceover"). Charged when it is asked for, in
+ * the same transaction as this row; refunded, once, if it could not be made.
+ * The provider's cost is kept so Admin sees the margin.
+ */
+export const miradorVoiceJobs = pgTable(
+  'mirador_voice_jobs',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    videoId: uuid('video_id')
+      .notNull()
+      .references(() => miradorVideos.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    script: text('script').notNull(),
+    voice: text('voice').notNull(),
+    /** How loud the video's own sound stays under the voice, 0–100. */
+    originalVolume: smallint('original_volume').notNull(),
+    characters: integer('characters').notNull(),
+    actionKey: text('action_key').notNull(),
+    tokens: integer('tokens').notNull(),
+    /** The provider's price for these characters, in millionths of a dollar. */
+    providerCostMicros: integer('provider_cost_micros').notNull(),
+    /** `charged` → `done`, or `refunded` when it could not be made. */
+    status: text('status').notNull().default('charged'),
+    attempts: smallint('attempts').notNull().default(0),
+    startedAt: timestamp('started_at', { withTimezone: true }),
+    failure: text('failure'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    finishedAt: timestamp('finished_at', { withTimezone: true }),
+  },
+  (table) => [index('mirador_voice_jobs_status_idx').on(table.status, table.createdAt), index('mirador_voice_jobs_video_idx').on(table.videoId)],
+);

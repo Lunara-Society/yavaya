@@ -26,6 +26,8 @@ import { runWatches, sendDailyOpportunities } from '@/server/domains/roxi/world'
 import { expireListingDrafts } from '@/server/domains/roxi/drafts';
 import { sweepProcessing } from '@/server/domains/mirador/process';
 import { expireUploads } from '@/server/domains/mirador/upload';
+import { expireOffers } from '@/server/domains/mirador/offers';
+import { sweepVoiceovers } from '@/server/domains/mirador/voice';
 import { discardStored } from '@/server/domains/media/service';
 import { flushJobReporting, reportJobError, reportJobFailure, startJobReporting } from '@/server/observability/jobs';
 
@@ -202,8 +204,10 @@ const JOBS: Record<string, () => Promise<JobOutcome>> = {
   'mirador-upkeep': async () => {
     const swept = await sweepProcessing(db());
     const expired = await expireUploads(db());
-    if (swept.processed + swept.failed + expired === 0) return { summary: 'no Mirador upkeep needed' };
-    return { summary: `processed ${swept.processed} video(s), failed ${swept.failed}, cleared ${expired} unfinished upload(s)` };
+    const offers = await expireOffers(db());
+    const voices = await sweepVoiceovers(db());
+    if (swept.processed + swept.failed + expired + offers + voices.done + voices.refunded === 0) return { summary: 'no Mirador upkeep needed' };
+    return { summary: `processed ${swept.processed} video(s), failed ${swept.failed}, cleared ${expired} unfinished upload(s), closed ${offers} offer(s) past their time; ${voices.done} narration(s) made, ${voices.refunded} refunded` };
   },
 
   /** Days 1 to 6 of the starter tokens, for members verified in the last 7 days. */

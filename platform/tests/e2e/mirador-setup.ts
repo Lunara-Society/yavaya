@@ -6,7 +6,8 @@ import { register } from '@/server/domains/identity/service';
 import { grantRole } from '@/server/domains/access/authorize';
 
 /**
- * Two people for Mirador's browser test (tests/e2e/mirador.cjs), in a LOCAL
+ * Two people for Mirador's browser tests (tests/e2e/mirador.cjs and
+ * mirador-offers.cjs, which sets MIRADOR_OPEN=1), in a LOCAL
  * database only: the owner (an administrator, who sees Mirador while it is
  * closed) with a Mercadito listing to link a video to, and a member who
  * only sees it once the owner opens it. Mirador starts closed.
@@ -38,6 +39,8 @@ async function main() {
   const listing = crypto.randomUUID();
   await db().insert(mercaditoListings).values({ id: listing, sellerUserId: owner.userId, title: 'Moto Honda Navi 2021', description: 'Moto en muy buen estado, papeles al día.', priceMinor: 6_500_000, currencyCode: 'NIO', category: 'vehicles', condition: 'used', locationId: place!.id });
   await db().delete(featureFlags).where(eq(featureFlags.key, 'mirador.open'));
+  // The offers test (mirador-offers.cjs) starts with Mirador already open to members.
+  if (process.env.MIRADOR_OPEN === '1') await db().insert(featureFlags).values({ key: 'mirador.open', enabled: true });
   await db().delete(rateLimitCounters).where(or(like(rateLimitCounters.key, 'login:%'), like(rateLimitCounters.key, 'mirador%')));
   console.log(JSON.stringify({ password: PASSWORD, owner, member, listing }));
 }

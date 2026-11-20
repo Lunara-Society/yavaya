@@ -34,7 +34,13 @@ export function billingReadiness(): BillingReadiness {
 
 /** Whether credits are counted at all: without metering, Roxi works as before (daily conversation limit only). */
 export function meteringOn(): boolean {
-  return Boolean(serverEnv().ELEVENLABS_API_KEY);
+  try {
+    return Boolean(serverEnv().ELEVENLABS_API_KEY);
+  } catch {
+    // The scheduler may run without the web application's secrets (docs/DEPLOYMENT.md):
+    // then nothing is metered and the conversations wait, still open, for a tick that can.
+    return false;
+  }
 }
 
 async function assertCanPay(database: Database, userId: string): Promise<void> {

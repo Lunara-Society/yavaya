@@ -1,7 +1,7 @@
 import 'server-only';
 import { spawn } from 'node:child_process';
-import { createWriteStream } from 'node:fs';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { createWriteStream, existsSync } from 'node:fs';
+import { mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
@@ -130,6 +130,60 @@ async function poster(input: string, durationMs: number): Promise<Buffer> {
   return sharp(png).resize({ width: 720, height: 1280, fit: 'inside', withoutEnlargement: true }).webp({ quality: 76 }).toBuffer();
 }
 
+/** Mirador's end card (Blender + HyperFrames, tools/mirador-endcard), closing every video made from photos. */
+const END_CARD = join(process.cwd(), 'public', 'mirador', 'endcard.mp4');
+const END_CARD_SECONDS = 2.6;
+
+/**
+ * A member's photos as a short video: each one with a slow push-in or pull-back
+ * (so a still photo feels alive), crossfading into the next, then the end
+ * card; a silent track so a narration can be laid over it later. Free: it
+ * costs a few seconds of this server, nothing from a provider.
+ */
+export async function slideshow(photos: string[], output: string): Promise<void> {
+  const fps = 30;
+  const fade = MIRADOR_RULES.photoFadeSeconds;
+  // One photo alone stays long enough to read.
+  const each = photos.length === 1 ? MIRADOR_RULES.photoSeconds * 2 : MIRADOR_RULES.photoSeconds;
+  const frames = Math.round(each * fps);
+  const card = existsSync(END_CARD);
+  const inputs: string[] = [];
+  const filters: string[] = [];
+  photos.forEach((photo, i) => {
+    inputs.push('-i', photo);
+    const zoom = i % 2 === 0 ? `1+0.0009*on` : `1.16-0.0009*on`;
+    filters.push(`[${i}:v]scale=1440:2560:force_original_aspect_ratio=increase,crop=1440:2560,zoompan=z='${zoom}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${frames}:s=720x1280:fps=${fps},setsar=1,format=yuv420p[v${i}]`);
+  });
+  let last = 'v0';
+  let offset = each - fade;
+  for (let i = 1; i < photos.length; i++) {
+    filters.push(`[${last}][v${i}]xfade=transition=fade:duration=${fade}:offset=${offset.toFixed(2)}[x${i}]`);
+    last = `x${i}`;
+    offset += each - fade;
+  }
+  let total = offset + fade;
+  if (card) {
+    inputs.push('-i', END_CARD);
+    filters.push(`[${photos.length}:v]scale=720:1280,fps=${fps},format=yuv420p,setsar=1[card]`, `[${last}][card]xfade=transition=fade:duration=${fade}:offset=${offset.toFixed(2)}[out]`);
+    total = offset + END_CARD_SECONDS;
+  } else {
+    filters.push(`[${last}]null[out]`);
+  }
+  await run('ffmpeg', [
+    '-nostdin', '-hide_banner', '-loglevel', 'error', '-y',
+    ...PROTOCOLS,
+    ...inputs,
+    '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
+    '-filter_complex', filters.join(';'),
+    '-map', '[out]', '-map', `${photos.length + (card ? 1 : 0)}:a`,
+    '-t', total.toFixed(2),
+    '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p',
+    '-c:a', 'aac', '-b:a', '64k',
+    '-threads', '2',
+    output,
+  ]);
+}
+
 async function download(key: string, file: string): Promise<void> {
   const storage = mediaStorage();
   if (!storage) throw new Error('media storage not configured');
@@ -164,7 +218,7 @@ async function claim(database: Database, id: string, now: Date) {
         or(isNull(miradorVideos.processingStartedAt), lt(miradorVideos.processingStartedAt, stale)),
       ),
     )
-    .returning({ id: miradorVideos.id, originalKey: miradorVideos.originalKey, publishedAt: miradorVideos.publishedAt });
+    .returning({ id: miradorVideos.id, originalKey: miradorVideos.originalKey, publishedAt: miradorVideos.publishedAt, inputKind: miradorVideos.inputKind, photoKeys: miradorVideos.photoKeys });
   return row ?? null;
 }
 
@@ -183,12 +237,27 @@ async function processNow(database: Database, id: string): Promise<ProcessOutcom
   const now = new Date();
   const row = await claim(database, id, now);
   if (!row) return { status: 'skipped' };
-  if (!row.originalKey) return fail(database, id, 'mirador.error.processing');
+  const fromPhotos = row.inputKind === 'photos';
+  if (fromPhotos ? row.photoKeys.length === 0 : !row.originalKey) return fail(database, id, 'mirador.error.processing');
+  // What to delete once it is encoded (or refused): the member's file, or their photos.
+  const sources = fromPhotos ? row.photoKeys : [row.originalKey!];
 
   const dir = await mkdtemp(join(tmpdir(), 'mirador-'));
   const input = join(dir, 'original');
   try {
-    await download(row.originalKey, input);
+    if (fromPhotos) {
+      const photos: string[] = [];
+      for (const [i, key] of row.photoKeys.entries()) {
+        const file = join(dir, `photo-${i}.jpg`);
+        await download(key, file);
+        photos.push(file);
+      }
+      await slideshow(photos, `${input}.mp4`);
+      // The slideshow becomes the input the encoder reads, like an uploaded file.
+      await rename(`${input}.mp4`, input);
+    } else {
+      await download(row.originalKey!, input);
+    }
     const found = await probe(input);
     checkProbe(found);
     const [high, low] = [join(dir, '720.mp4'), join(dir, '360.mp4')];
@@ -216,6 +285,7 @@ async function processNow(database: Database, id: string): Promise<ProcessOutcom
         height: out.height,
         hasAudio: out.hasAudio,
         originalKey: null,
+        photoKeys: [],
         failureReason: null,
         readyAt: ready,
         // Asked to be published while it was being processed: it goes up now, at the top of the newest.
@@ -229,11 +299,11 @@ async function processNow(database: Database, id: string): Promise<ProcessOutcom
       await Promise.all([keys.high, keys.low, keys.poster].map((key) => storage.delete(key).catch(() => undefined)));
       return { status: 'skipped' };
     }
-    await storage.delete(row.originalKey).catch(() => undefined);
+    await Promise.all(sources.map((key) => storage.delete(key).catch(() => undefined)));
     return { status: 'ready' };
   } catch (error) {
     if (error instanceof Refused) {
-      await storage.delete(row.originalKey).catch(() => undefined);
+      await Promise.all(sources.map((key) => storage.delete(key).catch(() => undefined)));
       return fail(database, id, error.reason);
     }
     console.error('mirador.process', id, error instanceof Error ? error.message.slice(0, 300) : 'failed');
@@ -246,7 +316,7 @@ async function processNow(database: Database, id: string): Promise<ProcessOutcom
 async function fail(database: Database, id: string, reason: string): Promise<ProcessOutcome> {
   await database
     .update(miradorVideos)
-    .set({ status: 'failed', failureReason: reason, originalKey: null, updatedAt: new Date() })
+    .set({ status: 'failed', failureReason: reason, originalKey: null, photoKeys: [], updatedAt: new Date() })
     .where(and(eq(miradorVideos.id, id), eq(miradorVideos.status, 'processing')));
   return { status: 'failed', reason };
 }
@@ -258,11 +328,11 @@ async function fail(database: Database, id: string, reason: string): Promise<Pro
 export async function sweepProcessing(database: Database, now = new Date()): Promise<{ processed: number; failed: number }> {
   const stale = new Date(now.getTime() - MIRADOR_RULES.processingStaleMinutes * 60_000);
   const exhausted = await database
-    .select({ id: miradorVideos.id, key: miradorVideos.originalKey })
+    .select({ id: miradorVideos.id, key: miradorVideos.originalKey, photos: miradorVideos.photoKeys })
     .from(miradorVideos)
     .where(and(eq(miradorVideos.status, 'processing'), sql`${miradorVideos.processingAttempts} >= ${MIRADOR_RULES.processingAttempts}`, lt(miradorVideos.processingStartedAt, stale)));
   for (const row of exhausted) {
-    if (row.key) await mediaStorage()?.delete(row.key).catch(() => undefined);
+    for (const key of [row.key, ...row.photos]) if (key) await mediaStorage()?.delete(key).catch(() => undefined);
     await fail(database, row.id, 'mirador.error.processing');
   }
   const waiting = await database

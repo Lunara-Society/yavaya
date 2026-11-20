@@ -34,6 +34,9 @@ export default async function MiradorUploadPage() {
               choices={choices}
               maxSeconds={MIRADOR_RULES.maxDurationSeconds}
               maxBytes={MIRADOR_RULES.maxUploadBytes}
+              maxPhotos={MIRADOR_RULES.maxPhotos}
+              offerHours={MIRADOR_RULES.offerHours}
+              foodMaxHours={MIRADOR_RULES.foodMaxHours}
               placePicker={<PlacePicker name="locationId" labels={placePickerLabels(t)} />}
               locale={locale}
             />

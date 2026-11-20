@@ -11,6 +11,7 @@ import { hasPermission } from '@/server/domains/access/authorize';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { moderationQueue } from '@/server/domains/mirador/videos';
 import { mediaUrls } from '@/server/domains/mirador/feed';
+import { voiceTotals } from '@/server/domains/mirador/voice';
 import { moderateMiradorAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,9 @@ export default async function MiradorModerationPage() {
   const queue = await moderationQueue(db(), session ? { userId, status: session.user.status } : null);
   const creators = queue.length ? await db().select({ id: users.id, name: users.displayName, yayId: users.yayId }).from(users).where(inArray(users.id, [...new Set(queue.map((item) => item.creatorUserId))])) : [];
   const byId = new Map(creators.map((creator) => [creator.id, creator]));
+  // What narrations earned against what ElevenLabs charged: for whoever may read the token economy, not every moderator.
+  const voice = (await hasPermission(db(), userId, 'tokens.read_any')) ? await voiceTotals(db()) : null;
+  const n = (value: number) => new Intl.NumberFormat(locale).format(value);
 
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member}>
@@ -39,6 +43,34 @@ export default async function MiradorModerationPage() {
           <p>
             <Link href="/admin">← {t('nav.panel')}</Link>
           </p>
+          {voice ? (
+            <>
+              <h2>{t('mirador.mod.voice_title')}</h2>
+              <dl className="ms-stats">
+                <div>
+                  <dt>{t('mirador.mod.voice_done')}</dt>
+                  <dd>{n(voice.done)}</dd>
+                </div>
+                <div>
+                  <dt>{t('mirador.mod.voice_refunded')}</dt>
+                  <dd>{n(voice.refunded)}</dd>
+                </div>
+                <div>
+                  <dt>{t('mirador.mod.voice_running')}</dt>
+                  <dd>{n(voice.running)}</dd>
+                </div>
+                <div>
+                  <dt>{t('mirador.mod.voice_tokens')}</dt>
+                  <dd>{n(voice.tokens)}</dd>
+                </div>
+                <div>
+                  <dt>{t('mirador.mod.voice_cost')}</dt>
+                  <dd>{new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(voice.costUsd)}</dd>
+                </div>
+              </dl>
+              <p className="muted">{t('mirador.mod.voice_note')}</p>
+            </>
+          ) : null}
           <h1>{t('mirador.mod.title')}</h1>
           <p className="muted">{t('mirador.mod.lead')}</p>
           {queue.length === 0 ? (

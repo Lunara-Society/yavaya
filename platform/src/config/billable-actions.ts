@@ -32,4 +32,7 @@ export const BILLABLE_ACTIONS: ReadonlyArray<{ key: string; district: string | n
   { key: 'sanctuary.publish_devotional', district: 'sanctuary', cost: 0, description: 'Publish a church prayer or word for the day (free)' },
   { key: 'impact.publish_cause', district: 'community', cost: 0, description: 'Submit a cause for review (free)' },
   { key: 'animals.publish_listing', district: 'animals', cost: 0, description: 'Publish an animal welfare listing (free)' },
+  // Mirador's voiceover in Roxi's voice (owner's delegation, 20 November 2026; MIRADOR_RULES has the arithmetic).
+  { key: 'mirador.voiceover', district: null, cost: 1, description: 'Mirador: narrate a video in Roxi\'s voice, up to about 30 seconds of speech' },
+  { key: 'mirador.voiceover_long', district: null, cost: 2, description: 'Mirador: narrate a video in Roxi\'s voice, up to about 90 seconds of speech' },
 ];

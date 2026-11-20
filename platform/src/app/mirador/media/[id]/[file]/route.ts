@@ -22,7 +22,12 @@ export const dynamic = 'force-dynamic';
  * front of the bucket is the step for when traffic asks for it
  * (docs/mirador/README.md, "Delivery").
  */
-const FILES = { '720.mp4': { column: 'playbackKey', type: 'video/mp4' }, '360.mp4': { column: 'lowKey', type: 'video/mp4' }, 'poster.webp': { column: 'posterKey', type: 'image/webp' } } as const;
+const FILES = {
+  '720.mp4': { column: 'playbackKey', type: 'video/mp4' },
+  '360.mp4': { column: 'lowKey', type: 'video/mp4' },
+  'poster.webp': { column: 'posterKey', type: 'image/webp' },
+  'captions.vtt': { column: 'captionsKey', type: 'text/vtt; charset=utf-8' },
+} as const;
 type FileName = keyof typeof FILES;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
