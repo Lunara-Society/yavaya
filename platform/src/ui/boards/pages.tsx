@@ -16,6 +16,7 @@ import { loginHref } from '@/server/auth/return-path';
 import { signInPath } from '@/server/auth/sign-in-path';
 import { ANY_PLACE, browsePlace, widenWhenEmpty } from '@/server/place-choice';
 import { WidenedNote } from '@/ui/site/widened-note';
+import { utilityReports } from '@/server/domains/boards/service';
 import { alertHref, BOARD_REPORT_CATEGORIES, getBoardPost, listBoardPosts, markBoardAlertSeen, myBoardAlerts, myBoardPosts, subdistrictCounts, type BoardPostView } from '@/server/domains/boards/service';
 import { closeBoardPostAction, deleteBoardAlertAction, reportBoardPostAction, saveBoardAlertAction } from '@/app/boards/actions';
 import { mediaStorage } from '@/server/domains/media/storage';
@@ -93,6 +94,58 @@ export function PostRow({ post, base, t, locale, own, extra }: { post: BoardPost
   );
 }
 
+/** How long ago, said the live ticker's way ("hace 3 h"): right in any time zone, which a clock time rendered on the server would not be. */
+function ago(t: T, date: Date): string {
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60_000);
+  if (minutes < 1) return t('live.ago_now');
+  if (minutes < 60) return t('live.ago_minutes', { count: minutes });
+  return t('live.ago_hours', { count: Math.floor(minutes / 60) });
+}
+
+/**
+ * Barrio's board of cuts (docs/DISTRICT-FOCUS.md): the water, power and
+ * internet cuts neighbours reported in the last hours, where and how long ago,
+ * with one way to report another. Members' reports, said as such.
+ */
+function CutsBoard({ cuts, base, publish, t }: { cuts: { items: BoardPostView[]; near: boolean }; base: string; publish: string; t: T }) {
+  const hours = BOARD_RULES.cutsWindowHours;
+  const report = publish.includes('?') ? publish : `${publish}?sub=utilities`;
+  return (
+    <section className="bd-cuts" aria-labelledby="bd-cuts-title">
+      <div className="bd-cuts-head">
+        <h2 id="bd-cuts-title">
+          <span className="bd-cuts-dot" aria-hidden="true" />
+          {t('board.cuts.title')}
+          {cuts.near ? <span className="bd-cuts-near"> · {t('board.cuts.near')}</span> : null}
+        </h2>
+        <Link className="btn btn-line bd-cuts-report" href={report}>
+          {t('board.cuts.report')}
+        </Link>
+      </div>
+      <p className="muted bd-cuts-lead">{t('board.cuts.lead', { hours })}</p>
+      {cuts.items.length === 0 ? (
+        <p className="bd-cuts-none">{t('board.cuts.none', { hours })}</p>
+      ) : (
+        <ul className="bd-cuts-list">
+          {cuts.items.map((post) => (
+            <li key={post.id}>
+              <Link href={`${base}/${post.id}`}>
+                <strong>{post.title}</strong>
+                <span>
+                  {post.placeName} · {ago(t, post.createdAt)}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link className="bd-cuts-all" href={`${base}?sub=utilities`}>
+        {t('board.cuts.all')}
+      </Link>
+    </section>
+  );
+}
+
 export async function boardTitle(district: BoardDistrict): Promise<{ title: string; description: string }> {
   const { t } = await siteContext();
   return { title: t(DISTRICTS[district].nameKey as MessageKey), description: t(DISTRICTS[district].taglineKey as MessageKey) };
@@ -132,6 +185,8 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
   };
   const filtered = Boolean(subdistrict || kind || query || placeCode);
   const focus = await lookEnabled(db(), 'focus');
+  // Barrio's board of cuts, above its feed (docs/DISTRICT-FOCUS.md): only on the whole district's front, with the look on.
+  const cuts = focus && district === 'barrio' && !mine && !subdistrict && !kind && !query ? await utilityReports(db(), { locale, placeCode, viewerId: userId }) : null;
   const publish = userId ? `${base}/new${subdistrict ? `?sub=${subdistrict}` : ''}` : loginHref(`${base}/new`);
 
   return (
@@ -255,6 +310,7 @@ export async function BoardHome({ district, searchParams }: { district: BoardDis
                     </Link>
                   ))}
                 </nav>
+                {cuts && feed!.items.length > 0 ? <CutsBoard cuts={cuts} base={base} publish={publish} t={t} /> : null}
                 {feed!.items.length === 0 && focus && !subdistrict && !kind && !query ? (
                   // Nothing posted anywhere yet (the place widens on its own when empty): one "be the first" block.
                   <FirstBlock

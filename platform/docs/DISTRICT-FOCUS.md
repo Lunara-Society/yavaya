@@ -100,3 +100,20 @@ own sentence, instead of an "Ilustración" stamp on every card.
 
 Without Roxi on the page (signed out, or not configured) each button is a
 plain link to the form that does the same by hand, so it never leads nowhere.
+
+## Barrio's board of cuts (`CutsBoard` in `ui/boards/pages.tsx`)
+
+On Barrio's front page, above its feed, while the look is on: the water,
+power and internet cuts neighbours reported in the last
+`BOARD_RULES.cutsWindowHours` (48), newest first, at most `cutsLimit` (6),
+each with its place and how long ago ("hace 3 h", the live ticker's own words:
+a clock time rendered on the server would be wrong in another time zone).
+Inside the visitor's chosen place when anything was reported there ("cerca de
+ti"), otherwise everywhere. It says what it is: members' reports, which Yavaya
+does not verify. "Reportar un corte" opens the form in that subdistrict.
+
+It is built from the posts neighbours already file under "Cortes de agua, luz
+e internet" (`utilityReports` in `server/domains/boards/service.ts`); nothing
+new is stored. It does not show while the whole board is empty (the "be the
+first" block is there instead), nor on a filtered list. Tests:
+`tests/integration/barrio-cuts.test.ts`.

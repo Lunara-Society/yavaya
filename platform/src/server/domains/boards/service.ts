@@ -1,5 +1,5 @@
 import 'server-only';
-import { and, desc, eq, gt, ilike, inArray, ne, or, sql, isNotNull } from 'drizzle-orm';
+import { and, desc, eq, gt, gte, ilike, inArray, ne, or, sql, isNotNull } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Executor } from '@/server/db/client';
 import { boardAlerts, boardPostPhotos, boardPosts, locations, moderationActions, reports, tickets, userProfiles, users } from '@/server/db/schema';
@@ -346,6 +346,38 @@ export async function nearbyBoardPosts(
 export async function placePoint(executor: Executor, code: string): Promise<{ latitude: number; longitude: number } | null> {
   const [row] = await executor.select({ latitude: locations.latitude, longitude: locations.longitude }).from(locations).where(eq(locations.code, code)).limit(1);
   return row?.latitude != null && row.longitude != null ? { latitude: row.latitude, longitude: row.longitude } : null;
+}
+
+/**
+ * Barrio's board of cuts (docs/DISTRICT-FOCUS.md): water, power and internet
+ * cuts neighbours reported in the last BOARD_RULES.cutsWindowHours, newest
+ * first, inside the visitor's place when anything was reported there
+ * (`near`), otherwise everywhere. They are members' reports, not verified:
+ * the page says so, as the board's own notice does.
+ */
+export async function utilityReports(
+  executor: Executor,
+  params: { locale: string; placeCode?: string | null; viewerId?: string | null; now?: Date },
+): Promise<{ items: BoardPostView[]; near: boolean }> {
+  const since = new Date((params.now ?? new Date()).getTime() - BOARD_RULES.cutsWindowHours * 60 * 60 * 1000);
+  const recent = [eq(boardPosts.district, 'barrio'), eq(boardPosts.subdistrict, 'utilities'), live(), gte(boardPosts.createdAt, since)];
+  const read = async (placeIds: string[] | null) =>
+    (
+      await executor
+        .select(columns)
+        .from(boardPosts)
+        .innerJoin(users, eq(users.id, boardPosts.authorUserId))
+        .innerJoin(locations, eq(locations.id, boardPosts.locationId))
+        .where(and(...recent, ...(placeIds ? [inArray(boardPosts.locationId, placeIds)] : [])))
+        .orderBy(desc(boardPosts.createdAt))
+        .limit(BOARD_RULES.cutsLimit)
+    ).map((row) => view(row, params.viewerId ?? null, params.locale));
+  if (params.placeCode) {
+    const ids = await subtreeIds(executor, params.placeCode);
+    const local = ids.length ? await read(ids) : [];
+    if (local.length) return { items: local, near: true };
+  }
+  return { items: await read(null), near: false };
 }
 
 /** How many open posts each subdistrict holds, for the district's own navigation. Only real posts are counted. */

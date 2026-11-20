@@ -650,6 +650,14 @@ export const BOARD_RULES = {
   /** "Avísame" alerts one member may keep per district. */
   maxAlertsPerDistrict: 5,
   pageSize: 20,
+  /**
+   * Barrio's board of cuts (docs/DISTRICT-FOCUS.md): reports of water, power
+   * and internet cuts filed in the last this-many hours, at most this many.
+   * Yavaya's own default (20 November 2026), not the owner's: a cut is news
+   * for a day or two, and older reports stay in the feed below.
+   */
+  cutsWindowHours: 48,
+  cutsLimit: 6,
 } as const;
 
 /**

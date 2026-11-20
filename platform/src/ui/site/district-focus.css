@@ -64,3 +64,19 @@
 /* A district's film: its poster's title sits above the player's controls, in a dark band left for them, instead of under them. */
 .site[data-focus] .gv-media { aspect-ratio: 16 / 10.4; background: #050407; }
 .site[data-focus] .gv-media .gv-video { aspect-ratio: auto; object-fit: contain; object-position: 50% 0; background: #050407; }
+
+/* Barrio's board of cuts (ui/boards/pages.tsx CutsBoard): what neighbours reported in the last hours, where, how long ago. */
+.bd-cuts { display: grid; gap: 10px; margin: 0 0 22px; padding: clamp(16px, 3vw, 22px); border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--line)); border-radius: 20px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, var(--surface)), var(--surface) 70%); }
+.bd-cuts-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.bd-cuts h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-family: var(--serif); font-size: clamp(1.15rem, 2.6vw, 1.4rem); }
+.bd-cuts-dot { width: 9px; height: 9px; flex: none; border-radius: 50%; background: #e0a43c; box-shadow: 0 0 0 4px rgba(224, 164, 60, 0.2); }
+.bd-cuts-near { font-family: var(--sans); font-size: 0.85rem; font-weight: 600; color: var(--accent); }
+.bd-cuts-report { min-height: 36px; padding: 0 14px; font-size: 0.88rem; }
+.bd-cuts-lead { margin: 0; font-size: 0.86rem; }
+.bd-cuts-none { margin: 4px 0; color: var(--text-2); }
+.bd-cuts-list { display: grid; gap: 6px; margin: 2px 0 0; padding: 0; list-style: none; }
+.bd-cuts-list a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); color: var(--text); text-decoration: none; }
+.bd-cuts-list a:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.bd-cuts-list strong { font-size: 0.98rem; line-height: 1.3; }
+.bd-cuts-list span { color: var(--text-2); font-size: 0.84rem; }
+.bd-cuts-all { justify-self: start; font-size: 0.88rem; font-weight: 600; }
