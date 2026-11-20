@@ -1,8 +1,10 @@
 import 'server-only';
 import { and, desc, eq, inArray, lt, sql } from 'drizzle-orm';
 import type { Executor } from '@/server/db/client';
-import { miradorBlocks, miradorOfferRequests, miradorOffers, miradorVideos, sanctuaryChurches, userProfiles, users } from '@/server/db/schema';
+import { miradorBlocks, miradorOfferRequests, miradorOffers, miradorVideos, userProfiles, users } from '@/server/db/schema';
+import { verifiedHelperRoles, type Helper } from '@/server/domains/aid/service';
 import { MIRADOR_RULES } from '@/config/business-rules';
+import { FOOD_CATEGORIES, KIND_CATEGORIES, OFFER_CATEGORIES, OFFER_KINDS, type OfferCategory, type OfferKind } from '@/config/offers';
 import { errors } from '@/server/errors';
 import { notify } from '@/server/domains/notifications/service';
 import { recordAudit } from '@/server/domains/audit/service';
@@ -13,14 +15,23 @@ import { placeById } from '@/server/domains/geography/places';
  * or photographs something they made — a dish, a cake, a craft — or have,
  * and whoever sees it can ask for it at once with "Lo quiero".
  *
- * Four kinds, each an honest promise:
+ * Six kinds, each an honest promise:
  * - `sale` — at a price, paid between them at the pickup (Yavaya holds no
  *   money, as in Mercadito);
  * - `free` — given away, to any member who asks first;
  * - `contribution` — given for whatever the other person wants to give;
- * - `donation` — for soup kitchens: only a verified Santuario church may ask
- *   for it, because they are the ones who feed people living on the street;
- *   Yavaya cannot check a stranger who says they will.
+ * - `donation` — for soup kitchens: only an approved Santuario church or an
+ *   approved food bank, soup kitchen or shelter (aid/service.ts) may ask for
+ *   it, because they are the ones who feed people living on the street;
+ *   Yavaya cannot check a stranger who says they will;
+ * - `animals` — food, care or a hand for animals in need: only a rescuer
+ *   approved in Animales may ask for it;
+ * - `need` — the other way round: an approved church, organisation or
+ *   rescuer says what it needs and how many ("Pido ayuda"), and neighbours
+ *   offer with "Yo ayudo". The requests are then offers of help, accepting
+ *   one counts it against what is still needed, and where to bring it is
+ *   told only to the one accepted. Goods and time only: Yavaya collects no
+ *   money for anyone.
  *
  * Food is the case that needs care: the creator writes what is in it, says
  * when it may be had (a day at most), and confirms the food rules (made
@@ -30,13 +41,8 @@ import { placeById } from '@/server/domains/geography/places';
  * The exact pickup place and time are told only to someone whose request
  * was accepted; the public sees the area.
  */
-export const OFFER_KINDS = ['sale', 'free', 'contribution', 'donation'] as const;
-export type OfferKind = (typeof OFFER_KINDS)[number];
-export const OFFER_CATEGORIES = ['food', 'baked', 'crafts', 'clothes', 'plants', 'other'] as const;
-export type OfferCategory = (typeof OFFER_CATEGORIES)[number];
-const FOOD: readonly string[] = ['food', 'baked'];
-
-export const isFood = (category: string) => FOOD.includes(category);
+export { KIND_CATEGORIES, OFFER_CATEGORIES, OFFER_KINDS, type OfferCategory, type OfferKind };
+export const isFood = (category: string) => (FOOD_CATEGORIES as readonly string[]).includes(category);
 
 export type OfferInput = {
   kind?: unknown;
@@ -84,7 +90,9 @@ export async function saveOffer(tx: Executor, params: { userId: string; videoId:
   const input = params.input;
   const kind = OFFER_KINDS.find((k) => k === input.kind);
   const category = OFFER_CATEGORIES.find((c) => c === input.category);
-  if (!kind || !category) throw errors.validation('mirador.offer.error.kind');
+  if (!kind || !category || !KIND_CATEGORIES[kind].includes(category)) throw errors.validation('mirador.offer.error.kind');
+  const need = kind === 'need';
+  if (need && !(await verifiedHelperRoles(tx, params.userId)).length) throw errors.validation('mirador.offer.error.helpers_only');
   const title = text(input.title, MIRADOR_RULES.offerTitleMaxLength);
   if (title.length < 3) throw errors.validation('mirador.offer.error.title');
   const quantity = Number.parseInt(String(input.quantity ?? ''), 10);
@@ -95,10 +103,13 @@ export async function saveOffer(tx: Executor, params: { userId: string; videoId:
   const place = await placeById(tx, video.locationId);
   if (!place) throw errors.validation('mirador.offer.error.place');
 
-  const food = isFood(category);
+  // A call for help gives no food, so the food rules are the giver's to keep, not the one asking.
+  const food = isFood(category) && !need;
   const ingredients = text(input.ingredients, MIRADOR_RULES.offerIngredientsMaxLength);
   if (food && ingredients.length < 3) throw errors.validation('mirador.offer.error.ingredients');
   if (food && input.foodRules !== true) throw errors.validation('mirador.offer.error.food_rules');
+  // Animal food: what exactly it is (brand, sealed or not, for which animal) — the rescuer must know what they feed.
+  if (category === 'animal_food' && !need && ingredients.length < 3) throw errors.validation('mirador.offer.error.animal_food');
   const hours = Number(input.hours);
   if (!(MIRADOR_RULES.offerHours as readonly number[]).includes(hours) || (food && hours > MIRADOR_RULES.foodMaxHours)) throw errors.validation('mirador.offer.error.hours', { max: MIRADOR_RULES.foodMaxHours });
 
@@ -124,7 +135,7 @@ export async function saveOffer(tx: Executor, params: { userId: string; videoId:
     unit: text(input.unit, 30) || null,
     quantity,
     remaining: quantity - promised,
-    ingredients: food ? ingredients : text(input.ingredients, MIRADOR_RULES.offerIngredientsMaxLength) || null,
+    ingredients: ingredients || null,
     foodRulesAt: food ? now : null,
     pickupLocationId: place.id,
     pickupDetails: text(input.pickupDetails, MIRADOR_RULES.offerPickupMaxLength),
@@ -145,15 +156,6 @@ export async function closeOffer(tx: Executor, params: { userId: string; videoId
     .where(and(eq(miradorOffers.videoId, params.videoId), eq(miradorOffers.creatorUserId, params.userId), eq(miradorOffers.status, 'open')))
     .returning({ id: miradorOffers.videoId });
   if (!closed.length) throw errors.notFound('mirador_offer');
-}
-
-async function verifiedKitchen(executor: Executor, userId: string): Promise<boolean> {
-  const [church] = await executor
-    .select({ id: sanctuaryChurches.id })
-    .from(sanctuaryChurches)
-    .where(and(eq(sanctuaryChurches.ownerUserId, userId), eq(sanctuaryChurches.status, 'approved')))
-    .limit(1);
-  return Boolean(church);
 }
 
 /**
@@ -179,7 +181,11 @@ export async function requestOffer(tx: Executor, params: { userId: string; video
     .where(sql`(${miradorBlocks.blockerUserId} = ${params.userId} and ${miradorBlocks.blockedUserId} = ${o.creatorUserId}) or (${miradorBlocks.blockerUserId} = ${o.creatorUserId} and ${miradorBlocks.blockedUserId} = ${params.userId})`)
     .limit(1);
   if (blocked) throw errors.notFound('mirador_offer');
-  if (o.kind === 'donation' && !(await verifiedKitchen(tx, params.userId))) throw errors.validation('mirador.offer.error.kitchens_only');
+  if (o.kind === 'donation' || o.kind === 'animals') {
+    const roles = await verifiedHelperRoles(tx, params.userId);
+    if (o.kind === 'donation' && !roles.some((role) => role.kind === 'church' || role.kind === 'organisation')) throw errors.validation('mirador.offer.error.kitchens_only');
+    if (o.kind === 'animals' && !roles.some((role) => role.kind === 'rescuer')) throw errors.validation('mirador.offer.error.rescuers_only');
+  }
   const quantity = Number.parseInt(String(params.quantity ?? '1'), 10);
   if (!Number.isInteger(quantity) || quantity < 1) throw errors.validation('mirador.offer.error.quantity', { max: o.remaining });
   if (quantity > o.remaining) throw errors.conflict('mirador.offer.error.not_enough', { count: o.remaining });
@@ -206,7 +212,7 @@ export async function requestOffer(tx: Executor, params: { userId: string; video
       userId: o.creatorUserId,
       category: 'mirador',
       type: 'mirador.offer_request',
-      titleKey: 'mirador.notify.offer_request',
+      titleKey: o.kind === 'need' ? 'mirador.notify.help_offered' : 'mirador.notify.offer_request',
       params: { name: who?.name ?? '', count: quantity, title: o.title },
       href: '/mirador/estudio#pedidos',
       dedupeKey: `mirador.offer_request:${id}:${quantity}`,
@@ -242,7 +248,7 @@ export async function decideRequest(tx: Executor, params: { userId: string; requ
       userId: row.request.requesterUserId,
       category: 'mirador',
       type: params.accept ? 'mirador.offer_accepted' : 'mirador.offer_declined',
-      titleKey: params.accept ? 'mirador.notify.offer_accepted' : 'mirador.notify.offer_declined',
+      titleKey: row.offer.kind === 'need' ? (params.accept ? 'mirador.notify.help_accepted' : 'mirador.notify.help_declined') : params.accept ? 'mirador.notify.offer_accepted' : 'mirador.notify.offer_declined',
       params: { title: row.offer.title },
       href: '/mirador/estudio#pedidos',
       dedupeKey: `mirador.offer_decided:${row.request.id}`,
@@ -294,6 +300,8 @@ export type OfferView = {
   mine: { id: string; status: string; quantity: number } | null;
   /** The creator's WhatsApp, for a signed-in viewer, when the creator shares it on their listings. */
   whatsapp: string | null;
+  /** On a call for help: who Yavaya checked is asking (church, organisation or rescuer, and its name). */
+  verified: Helper | null;
 };
 
 /** The offers of these videos, for this viewer. */
@@ -313,6 +321,8 @@ export async function offerViews(executor: Executor, params: { videoIds: string[
         .where(and(eq(miradorOfferRequests.requesterUserId, params.viewerId), inArray(miradorOfferRequests.videoId, params.videoIds), inArray(miradorOfferRequests.status, ['pending', 'accepted'])))
     : [];
   const mineBy = new Map(mine.map((row) => [row.videoId, row]));
+  const askers = [...new Set(rows.filter((row) => row.offer.kind === 'need').map((row) => row.offer.creatorUserId))];
+  const helperOf = new Map(await Promise.all(askers.map(async (id) => [id, (await verifiedHelperRoles(executor, id))[0] ?? null] as const)));
   for (const { offer, whatsapp } of rows) {
     const request = mineBy.get(offer.videoId);
     out.set(offer.videoId, {
@@ -330,6 +340,7 @@ export async function offerViews(executor: Executor, params: { videoIds: string[
       mine: request ? { id: request.id, status: request.status, quantity: request.quantity } : null,
       // As in Mercadito: only to signed-in members, and only a number the creator chose to give.
       whatsapp: params.viewerId && params.viewerId !== offer.creatorUserId ? whatsapp ?? null : null,
+      verified: offer.kind === 'need' ? helperOf.get(offer.creatorUserId) ?? null : null,
     });
   }
   return out;
@@ -342,7 +353,7 @@ export async function offerViews(executor: Executor, params: { videoIds: string[
  */
 export async function incomingRequests(executor: Executor, userId: string) {
   return executor
-    .select({ id: miradorOfferRequests.id, videoId: miradorOfferRequests.videoId, title: miradorOffers.title, quantity: miradorOfferRequests.quantity, note: miradorOfferRequests.note, status: miradorOfferRequests.status, createdAt: miradorOfferRequests.createdAt, name: users.displayName, yayId: users.yayId, remaining: miradorOffers.remaining })
+    .select({ id: miradorOfferRequests.id, videoId: miradorOfferRequests.videoId, kind: miradorOffers.kind, title: miradorOffers.title, quantity: miradorOfferRequests.quantity, note: miradorOfferRequests.note, status: miradorOfferRequests.status, createdAt: miradorOfferRequests.createdAt, name: users.displayName, yayId: users.yayId, remaining: miradorOffers.remaining })
     .from(miradorOfferRequests)
     .innerJoin(miradorOffers, eq(miradorOffers.videoId, miradorOfferRequests.videoId))
     .innerJoin(users, eq(users.id, miradorOfferRequests.requesterUserId))
@@ -354,7 +365,7 @@ export async function incomingRequests(executor: Executor, userId: string) {
 /** The asking side: what the member asked for, and for accepted ones where and when to pick it up. */
 export async function outgoingRequests(executor: Executor, userId: string) {
   const rows = await executor
-    .select({ id: miradorOfferRequests.id, videoId: miradorOfferRequests.videoId, title: miradorOffers.title, quantity: miradorOfferRequests.quantity, status: miradorOfferRequests.status, createdAt: miradorOfferRequests.createdAt, pickupDetails: miradorOffers.pickupDetails, name: users.displayName, whatsapp: userProfiles.whatsappE164 })
+    .select({ id: miradorOfferRequests.id, videoId: miradorOfferRequests.videoId, kind: miradorOffers.kind, title: miradorOffers.title, quantity: miradorOfferRequests.quantity, status: miradorOfferRequests.status, createdAt: miradorOfferRequests.createdAt, pickupDetails: miradorOffers.pickupDetails, name: users.displayName, whatsapp: userProfiles.whatsappE164 })
     .from(miradorOfferRequests)
     .innerJoin(miradorOffers, eq(miradorOffers.videoId, miradorOfferRequests.videoId))
     .innerJoin(users, eq(users.id, miradorOffers.creatorUserId))

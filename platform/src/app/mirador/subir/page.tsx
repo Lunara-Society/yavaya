@@ -6,6 +6,7 @@ import { signInPath } from '@/server/auth/sign-in-path';
 import { mediaStorage } from '@/server/domains/media/storage';
 import { miradorOpen } from '@/server/domains/mirador/access';
 import { linkChoices } from '@/server/domains/mirador/links';
+import { verifiedHelperRoles } from '@/server/domains/aid/service';
 import { siteContext } from '@/ui/site/context';
 import { SiteShell } from '@/ui/site/site-shell';
 import { PlacePicker } from '@/ui/components/place-picker';
@@ -21,7 +22,7 @@ export default async function MiradorUploadPage() {
   const { c, t, locale, language, theme, member, userId } = await siteContext();
   if (!userId) redirect(await signInPath());
   if (!(await miradorOpen(db(), userId))) notFound();
-  const choices = await linkChoices(db(), userId);
+  const [choices, roles] = await Promise.all([linkChoices(db(), userId), verifiedHelperRoles(db(), userId)]);
   return (
     <SiteShell c={c} t={t} language={language} theme={theme} member={member}>
       <div className="mu-page">
@@ -37,6 +38,7 @@ export default async function MiradorUploadPage() {
               maxPhotos={MIRADOR_RULES.maxPhotos}
               offerHours={MIRADOR_RULES.offerHours}
               foodMaxHours={MIRADOR_RULES.foodMaxHours}
+              helper={roles.length > 0}
               placePicker={<PlacePicker name="locationId" labels={placePickerLabels(t)} />}
               locale={locale}
             />

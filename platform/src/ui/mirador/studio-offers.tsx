@@ -39,7 +39,7 @@ export type OfferEditorLabels = {
   offer: OfferLabels;
 };
 
-export function OfferEditor({ videoId, initial, summary, labels, hoursList, foodMaxHours }: { videoId: string; initial: OfferDraft; summary: string | null; labels: OfferEditorLabels; hoursList: readonly number[]; foodMaxHours: number }) {
+export function OfferEditor({ videoId, initial, summary, labels, hoursList, foodMaxHours, helper = false }: { videoId: string; initial: OfferDraft; summary: string | null; labels: OfferEditorLabels; hoursList: readonly number[]; foodMaxHours: number; helper?: boolean }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<OfferDraft>(initial.kind ? initial : { ...initial, kind: 'sale' });
   const [busy, setBusy] = useState(false);
@@ -78,7 +78,7 @@ export function OfferEditor({ videoId, initial, summary, labels, hoursList, food
         if (draft.kind) void run('POST', { offer: draft });
       }}
     >
-      <OfferFields value={draft} onChange={setDraft} labels={labels.offer} hoursList={hoursList} foodMaxHours={foodMaxHours} required />
+      <OfferFields value={draft} onChange={setDraft} labels={labels.offer} hoursList={hoursList} foodMaxHours={foodMaxHours} helper={helper} required />
       <div className="mu-row">
         <button type="submit" className="mf-cta" disabled={busy || !draft.kind}>
           {labels.save}

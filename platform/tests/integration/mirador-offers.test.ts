@@ -6,7 +6,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import sharp from 'sharp';
 import { closeDb, db } from '@/server/db/client';
-import { locations, miradorOffers, miradorVideos, miradorVoiceJobs, notifications, sanctuaryChurches, userProfiles, users } from '@/server/db/schema';
+import { aidOrganisations, animalsRescuers, locations, miradorOffers, miradorVideos, miradorVoiceJobs, notifications, sanctuaryChurches, userProfiles, users } from '@/server/db/schema';
+import { grantRole } from '@/server/domains/access/authorize';
+import { applyAsOrganisation, organisationInputSchema, reviewOrganisation } from '@/server/domains/aid/service';
 import { register } from '@/server/domains/identity/service';
 import { useMediaStorageForTests } from '@/server/domains/media/storage';
 import { MIRADOR_RULES } from '@/config/business-rules';
@@ -79,6 +81,72 @@ afterAll(async () => {
   useMediaStorageForTests(null);
   rmSync(dir, { recursive: true, force: true });
   await closeDb();
+});
+
+describe('Animals, food banks and calls for help', () => {
+  const rescuer = async (userId: string) =>
+    db().insert(animalsRescuers).values({ userId, kind: 'organisation', name: 'Refugio Patitas', about: 'Rescatamos perros y gatos de la calle desde 2019.', locationId: place.id, whatsappE164: '+50588880000', status: 'approved' });
+
+  it('gives things for animals in need only to an approved rescuer, and asks what the animal food is', async () => {
+    const giver = await person('Vecina');
+    const neighbour = await person('Vecino');
+    const refuge = await person('Rescatista');
+    const { videoId } = await dish(giver);
+    const kibble = { kind: 'animals', category: 'animal_food', title: 'Croquetas para perro', price: '', unit: 'bolsa', quantity: 2, ingredients: '', pickupDetails: 'Portón negro, después de las 5', hours: 72 };
+    await expect(db().transaction((tx) => saveOffer(tx, { userId: giver, videoId, input: kibble }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.animal_food' });
+    // What each kind may offer is held: animals' things go to rescuers, never human food or a sale of helping hands.
+    await expect(db().transaction((tx) => saveOffer(tx, { userId: giver, videoId, input: { ...kibble, category: 'food' } }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.kind' });
+    await expect(db().transaction((tx) => saveOffer(tx, { userId: giver, videoId, input: { ...kibble, kind: 'sale', price: '50', category: 'help' } }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.kind' });
+    await db().transaction((tx) => saveOffer(tx, { userId: giver, videoId, input: { ...kibble, ingredients: 'Dog Chow adulto, bolsa cerrada de 2 kg' } }));
+    await expect(db().transaction((tx) => requestOffer(tx, { userId: neighbour, videoId, quantity: 1 }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.rescuers_only' });
+    await rescuer(refuge);
+    expect((await db().transaction((tx) => requestOffer(tx, { userId: refuge, videoId, quantity: 2 }))).status).toBe('pending');
+    expect((await feedPage(db(), { tab: 'regalos', viewer: { userId: null, placeCode: null, language: 'es' } })).items.map((item) => item.id)).toEqual([videoId]);
+  });
+
+  it('checks food banks before they can ask for food given to soup kitchens', async () => {
+    const cook = await person('Cocinera');
+    const bank = await person('Banco');
+    const reviewer = await person('Revisora');
+    const { videoId } = await dish(cook);
+    await db().transaction((tx) => saveOffer(tx, { userId: cook, videoId, input: { ...food, kind: 'donation', price: '', hours: 3 } }));
+    const input = organisationInputSchema.parse({ kind: 'food_bank', name: 'Banco de Alimentos León', about: 'Repartimos comida a 120 familias cada semana desde 2015.', registration: 'ONG-1234', locationId: place.id, whatsapp: '+505 8777 1234' });
+    await db().transaction((tx) => applyAsOrganisation(tx, { userId: bank, input }));
+    // Applying is not enough: until a reviewer approves, it may not ask.
+    await expect(db().transaction((tx) => requestOffer(tx, { userId: bank, videoId, quantity: 1 }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.kitchens_only' });
+    await expect(db().transaction((tx) => reviewOrganisation(tx, { actor: { userId: cook, status: 'active' }, organisationUserId: bank, decision: 'approve', note: null }))).rejects.toMatchObject({ code: 'forbidden' });
+    await db().transaction((tx) => grantRole(tx, { userId: reviewer, roleKey: 'district_reviewer', grantedBy: null }));
+    await expect(db().transaction((tx) => reviewOrganisation(tx, { actor: { userId: reviewer, status: 'active' }, organisationUserId: bank, decision: 'reject', note: null }))).rejects.toMatchObject({ messageKey: 'aid.error.review_note' });
+    await db().transaction((tx) => reviewOrganisation(tx, { actor: { userId: reviewer, status: 'active' }, organisationUserId: bank, decision: 'approve', note: null }));
+    expect((await db().transaction((tx) => requestOffer(tx, { userId: bank, videoId, quantity: 2 }))).status).toBe('pending');
+    // Changing who it is sends it back to review.
+    await db().transaction((tx) => applyAsOrganisation(tx, { userId: bank, input: { ...input, name: 'Otro nombre' } }));
+    expect((await db().select({ status: aidOrganisations.status }).from(aidOrganisations).where(eq(aidOrganisations.userId, bank)))[0]!.status).toBe('pending');
+  });
+
+  it('lets only a checked helper ask for help, and tells a helping neighbour where to bring it once accepted', async () => {
+    const refuge = await person('Rescatista');
+    const stranger = await person('Desconocido');
+    const neighbour = await person('Vecina');
+    const { videoId } = await dish(refuge);
+    const call = { kind: 'need', category: 'animal_food', title: 'Croquetas para 12 perros', price: '', unit: 'bolsa', quantity: 5, ingredients: '', pickupDetails: 'Refugio Patitas, sábado de 9 a 12', hours: 168 };
+    await expect(db().transaction((tx) => saveOffer(tx, { userId: refuge, videoId, input: call }))).rejects.toMatchObject({ messageKey: 'mirador.offer.error.helpers_only' });
+    await rescuer(refuge);
+    await db().transaction((tx) => saveOffer(tx, { userId: refuge, videoId, input: call }));
+    const [video] = await videosByIds(db(), { ids: [videoId], viewerId: neighbour, locale: 'es' });
+    expect(video!.offer).toMatchObject({ kind: 'need', remaining: 5, verified: { kind: 'rescuer', name: 'Refugio Patitas' } });
+    expect((await feedPage(db(), { tab: 'ayudar', viewer: { userId: null, placeCode: null, language: 'es' } })).items.map((item) => item.id)).toEqual([videoId]);
+
+    const offer = await db().transaction((tx) => requestOffer(tx, { userId: neighbour, videoId, quantity: 2, note: 'Llevo dos bolsas' }));
+    expect((await outgoingRequests(db(), neighbour))[0]!.pickupDetails).toBeNull();
+    expect((await db().select({ titleKey: notifications.titleKey }).from(notifications).where(eq(notifications.userId, refuge))).map((n) => n.titleKey)).toContain('mirador.notify.help_offered');
+    await db().transaction((tx) => decideRequest(tx, { userId: refuge, requestId: offer.id, accept: true }));
+    expect((await outgoingRequests(db(), neighbour))[0]).toMatchObject({ kind: 'need', status: 'accepted', pickupDetails: 'Refugio Patitas, sábado de 9 a 12' });
+    expect((await db().select({ remaining: miradorOffers.remaining }).from(miradorOffers).where(eq(miradorOffers.videoId, videoId)))[0]!.remaining).toBe(3);
+    expect((await db().select({ titleKey: notifications.titleKey }).from(notifications).where(eq(notifications.userId, neighbour))).map((n) => n.titleKey)).toContain('mirador.notify.help_accepted');
+    // A stranger may still offer to help; it is the asking that is checked.
+    expect((await db().transaction((tx) => requestOffer(tx, { userId: stranger, videoId, quantity: 1 }))).status).toBe('pending');
+  });
 });
 
 describe('Photos become a video, free', () => {

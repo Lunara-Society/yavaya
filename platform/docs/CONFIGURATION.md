@@ -1910,15 +1910,31 @@ its price, change `voiceCostMicrosPerChar` so Admin's cost figure stays true.
   API key with videos and assets scopes) and API credits on HeyGen; the
   verified cost and a price that follows the voiceover's margin are in the
   README.
-- Whether "Para comedores" should also be open to registered food banks or
-  shelters that are not churches: today only an approved Santuario church can
-  ask for it, because that is the only verified organisation Yavaya has.
+- (Decided 20 November: yes.) Food banks, soup kitchens and shelters that are
+  not churches register at `/mirador/organizacion` and a reviewer with
+  `causes.review` approves them at `/admin/organizaciones`; approved, they may
+  ask for "para comedores" food and post calls for help. Animal rescuers
+  approved in Animales may ask for things "para animales" and post calls for
+  help. Yavaya's own defaults for the form (`MIRADOR_RULES`): names of 3 to
+  80 characters, a description of 20 to 600, a registration number up to 60.
 - Featured videos and business promotion (paid visibility): not built; their
   price and rules are the owner's.
 - Creator earnings: not built and not to be built before accounting, tax and
   fraud controls exist.
 - HeyGen's commercial-use terms and a trademark search for "Mirador" before
   spending on the brand.
+
+---
+
+## Santuario — a candle for someone (built 20 November 2026, live)
+
+What it is and how it works: `docs/sanctuary/CANDLE.md`. Nothing to
+configure: the film is in `/public/velas`, the prayer is the daily light's.
+Free, members only to light, anyone with the link to see.
+
+**Yavaya's own defaults, not the owner's** (`SANCTUARY_RULES`): a candle burns
+7 days (like the region's seven-day veladoras); a name of 40 characters and an
+intention of 140, no links; 20 candles a day per member; reports 10 an hour.
 
 ---
 

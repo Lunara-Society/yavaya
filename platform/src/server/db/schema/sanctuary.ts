@@ -1,4 +1,4 @@
-import { date, index, pgTable, primaryKey, smallint, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { boolean, date, index, pgTable, primaryKey, smallint, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { users } from './identity';
 import { locations } from './geography';
 import { sanctuaryChurchStatusEnum, sanctuaryDevotionalStatusEnum } from './enums';
@@ -101,4 +101,33 @@ export const sanctuaryFollows = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [primaryKey({ columns: [table.churchId, table.userId] }), index('sanctuary_follows_user_idx').on(table.userId)],
+);
+
+/**
+ * "Encender una vela por alguien" (docs/sanctuary/CANDLE.md): a member lights
+ * a candle for someone and sends it to them. The page it opens is reachable
+ * only by its link (the id), shows the prayer of the day it was lit, and
+ * the candle burns until `burns_until`. The name and intention are the
+ * member's words, short and without links; the sender may stay unnamed.
+ */
+export const sanctuaryCandles = pgTable(
+  'sanctuary_candles',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    /** Who it is for, as the sender wrote it ("Mamá", "Don Julio"); may be empty. */
+    forName: text('for_name'),
+    intention: text('intention'),
+    /** True: the page says "someone lit this candle for you", without the sender's name. */
+    anonymous: boolean('anonymous').notNull().default(false),
+    /** The daily light's day when it was lit: the page shows that day's prayer, the one the sender saw. */
+    lightDate: date('light_date').notNull(),
+    /** `lit`, or `removed` by moderation. */
+    status: text('status').notNull().default('lit'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    burnsUntil: timestamp('burns_until', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('sanctuary_candles_day_idx').on(table.createdAt), index('sanctuary_candles_user_idx').on(table.userId, table.createdAt)],
 );

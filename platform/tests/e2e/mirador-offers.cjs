@@ -57,8 +57,13 @@ async function signIn(browser, email) {
   await page.fill('.mu-field textarea', 'Nacatamales de cerdo, recién salidos #comida');
   await page.fill('[role="combobox"]', 'Mana');
   await page.locator('[role="listbox"] [role="option"]').first().click();
-  await page.locator('.mu-kind', { hasText: 'Lo vendo' }).click();
   const offer = page.locator('fieldset.mu-offer');
+  check('“Pido ayuda” is only for checked helpers', (await page.locator('.mu-kind', { hasText: 'Pido ayuda' }).count()) === 0);
+  await page.locator('.mu-kind', { hasText: 'Para animales' }).click();
+  const animalCategories = await offer.locator('select').first().locator('option').allTextContents();
+  check('things for animals offer only animal categories and helping hands', animalCategories.length === 3 && animalCategories.every((c) => /animal|Manos/i.test(c)), animalCategories);
+  check('and say only approved rescuers can ask', /rescatistas aprobados/.test((await offer.locator('.mu-note').first().textContent()) ?? ''));
+  await page.locator('.mu-kind', { hasText: 'Lo vendo' }).click();
   await offer.locator('select').first().selectOption('food');
   await offer.locator('label', { hasText: '¿Qué ofreces?' }).locator('input').fill('Nacatamales');
   await offer.locator('label', { hasText: 'Precio' }).locator('input').fill('80');
@@ -123,6 +128,10 @@ async function signIn(browser, email) {
   const after = page.locator('.mf-item[data-index="0"] .mf-offer');
   await after.waitFor({ timeout: 30_000 }).catch(() => undefined);
   check('in the feed it now reads “Apartado para ti” and 8 left', /Apartado para ti/.test((await after.textContent()) ?? '') && /Quedan 8/.test((await after.textContent()) ?? ''), await after.textContent());
+
+  // --- Food banks and shelters can apply to be checked --------------------------
+  await page.goto(`${BASE}/mirador/organizacion`, { timeout: 120_000 });
+  check('the organisation form is there for a food bank or shelter', (await page.locator('form select[name="kind"] option').count()) === 5 && (await page.locator('form textarea[name="about"]').count()) === 1);
 
   // --- Before acceptance, nobody saw the pickup spot ---------------------------
   const stranger = await browser.newContext({ ...devices['Pixel 7'] });

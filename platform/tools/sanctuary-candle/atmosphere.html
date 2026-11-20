@@ -1,0 +1,96 @@
+<!doctype html>
+<!--
+  The candle's surroundings (docs/sanctuary/CANDLE.md): the warm dark of a chapel at night, distant candles out of
+  focus, a faint light from above, and small lights rising like prayers. Drawn behind Blender's candle (README.md).
+
+  MODE is set by make.sh: 'light' warms everything as the flame catches (4 s, catching at 1.7 s); 'loop' is the
+  steady state (4 s). Every movement repeats exactly every 4 s, so the loop's last frame runs into its first and
+  the lighting's last frame into the loop's first. Movements are GSAP keyframes sampled from those periodic
+  functions — no callbacks, so the render does not depend on how the renderer seeks.
+-->
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #040302; }
+      #root { position: relative; width: 100%; height: 100%; }
+      .clip { position: absolute; inset: 0; }
+      #ground { background: radial-gradient(80% 55% at 50% 52%, #24140a 0%, #120a05 45%, #040302 80%); }
+      #halo { background: radial-gradient(42% 30% at 50.2% 49%, rgba(255, 150, 62, 0.32), rgba(255, 120, 40, 0.10) 45%, rgba(0, 0, 0, 0) 75%); }
+      #rays { background: linear-gradient(170deg, rgba(255, 214, 150, 0) 30%, rgba(255, 214, 150, 0.07) 44%, rgba(255, 214, 150, 0) 56%), linear-gradient(190deg, rgba(255, 214, 150, 0) 36%, rgba(255, 214, 150, 0.05) 48%, rgba(255, 214, 150, 0) 60%); transform-origin: 50% 0; }
+      .bokeh { position: absolute; border-radius: 50%; left: 0; top: 0; }
+      .mote { position: absolute; left: 0; top: 0; width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle, #fff3d0 0%, rgba(255, 196, 110, 0.9) 35%, rgba(255, 160, 70, 0) 70%); }
+      #vignette { background: radial-gradient(75% 60% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.55) 100%); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4" data-width="1080" data-height="1920">
+      <div id="ground" class="clip" data-start="0" data-duration="4" data-track-index="0"></div>
+      <div id="rays" class="clip" data-start="0" data-duration="4" data-track-index="1"></div>
+      <div id="bokeh" class="clip" data-start="0" data-duration="4" data-track-index="2"></div>
+      <div id="halo" class="clip" data-start="0" data-duration="4" data-track-index="3"></div>
+      <div id="motes" class="clip" data-start="0" data-duration="4" data-track-index="4"></div>
+      <div id="vignette" class="clip" data-start="0" data-duration="4" data-track-index="5"></div>
+    </div>
+    <script>
+      const MODE = 'loop';
+      const T = 4, CATCH = 1.7, STEP = 0.1, TAU = Math.PI * 2;
+      // How alight the world is: dim before the flame catches, warming over a second and a half after.
+      const warmth = (t) => (MODE === 'loop' ? 1 : t < CATCH ? 0.22 : Math.min(1, 0.22 + 0.78 * Math.pow((t - CATCH) / 1.5, 0.8)));
+      const ease = (x) => x * x * (3 - 2 * x);
+      // A fixed random so every render is the same.
+      let seed = 7;
+      const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+      const tl = gsap.timeline({ paused: true });
+      const samples = Math.round(T / STEP);
+      function animate(el, at) {
+        gsap.set(el, at(0));
+        const frames = [];
+        for (let i = 1; i <= samples; i++) frames.push({ ...at(i * STEP), duration: STEP, ease: 'none' });
+        tl.to(el, { keyframes: frames }, 0);
+      }
+
+      animate('#halo', (t) => ({ opacity: warmth(t) * (0.92 + 0.08 * Math.sin(TAU * 3 * t / T)) }));
+      animate('#ground', (t) => ({ opacity: 0.55 + 0.45 * warmth(t) }));
+      animate('#rays', (t) => ({ opacity: 0.25 + 0.75 * warmth(t), rotate: 1.2 * Math.sin(TAU * t / T) }));
+
+      // Distant candles out of focus, in a band around the flame's height, never over the prayer at the top.
+      const bokeh = document.getElementById('bokeh');
+      for (let i = 0; i < 20; i++) {
+        const size = 34 + rand() * 130;
+        const x = rand() * 1080, y = 760 + rand() * 760;
+        const warm = rand();
+        const b = document.createElement('div');
+        b.className = 'bokeh';
+        b.style.width = b.style.height = size + 'px';
+        b.style.background = `radial-gradient(circle, rgba(255, ${170 + warm * 50}, ${80 + warm * 60}, 0.85) 0%, rgba(255, ${150 + warm * 40}, 70, 0.35) 45%, rgba(255, 140, 60, 0) 70%)`;
+        b.style.filter = `blur(${2 + rand() * 6}px)`;
+        bokeh.appendChild(b);
+        const base = 0.12 + rand() * 0.38, ax = 6 + rand() * 18, ay = 4 + rand() * 10, p1 = rand() * TAU, p2 = rand() * TAU, k = 1 + Math.floor(rand() * 3);
+        animate(b, (t) => ({ x: x - size / 2 + ax * Math.sin(TAU * t / T + p1), y: y - size / 2 + ay * Math.cos(TAU * t / T + p2), opacity: base * warmth(t) * (0.8 + 0.2 * Math.sin(TAU * k * t / T + p2)) }));
+      }
+
+      // Small lights rising from the flame like prayers: each crosses once per loop, entering and leaving unseen.
+      const motes = document.getElementById('motes');
+      for (let i = 0; i < 9; i++) {
+        const m = document.createElement('div');
+        m.className = 'mote';
+        motes.appendChild(m);
+        const x0 = 470 + rand() * 140, drift = (rand() - 0.5) * 220, offset = i / 9 + rand() * 0.05, s = 0.6 + rand() * 0.9, sway = 10 + rand() * 18, ph = rand() * TAU;
+        animate(m, (t) => {
+          const p = (t / T + offset) % 1;
+          const shown = MODE === 'loop' ? 1 : t < CATCH + 0.4 ? 0 : Math.min(1, (t - CATCH - 0.4) / 1.2);
+          return { x: x0 + drift * p + sway * Math.sin(TAU * 2 * t / T + ph), y: 900 - 620 * ease(p), scale: s * (1 - 0.4 * p), opacity: Math.sin(Math.PI * p) * 0.85 * shown };
+        });
+      }
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

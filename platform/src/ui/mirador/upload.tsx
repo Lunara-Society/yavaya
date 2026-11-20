@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { MIRADOR_RULES } from '@/config/business-rules';
+import { KIND_CATEGORIES, OFFER_CATEGORIES, OFFER_KINDS, type OfferCategory, type OfferKind } from '@/config/offers';
 
 /**
  * Putting something on Mirador (docs/mirador/README.md, "Upload").
@@ -23,7 +24,9 @@ import { MIRADOR_RULES } from '@/config/business-rules';
 
 export type OfferLabels = Record<
   | 'heading' | 'none' | 'kind_sale' | 'kind_free' | 'kind_contribution' | 'kind_donation' | 'kind_donation_hint' | 'what' | 'price' | 'price_hint' | 'unit' | 'unit_hint'
-  | 'quantity' | 'category' | 'ingredients' | 'ingredients_hint' | 'rules' | 'rules_list' | 'pickup' | 'pickup_hint' | 'until' | 'place_needed' | 'free_note',
+  | 'quantity' | 'category' | 'ingredients' | 'ingredients_hint' | 'rules' | 'rules_list' | 'pickup' | 'pickup_hint' | 'until' | 'place_needed' | 'free_note'
+  | 'kind_animals' | 'kind_animals_hint' | 'kind_need' | 'kind_need_hint' | 'organisation_link' | 'what_need' | 'quantity_need' | 'pickup_need' | 'pickup_need_hint'
+  | 'animal_food' | 'animal_food_hint',
   string
 > & { categories: Record<string, string>; hours: Record<string, string> };
 
@@ -48,37 +51,52 @@ function api(url: string, init: RequestInit) {
 }
 
 /** The offer's fields: the same on the upload page and in the studio. */
-export function OfferFields({ value, onChange, labels, hoursList, foodMaxHours, required = false }: { value: OfferDraft; onChange: (next: OfferDraft) => void; labels: OfferLabels; hoursList: readonly number[]; foodMaxHours: number; /** In the studio an offer is closed with its own button, so "nothing" is not offered. */ required?: boolean }) {
+export function OfferFields({ value, onChange, labels, hoursList, foodMaxHours, required = false, helper = false }: { value: OfferDraft; onChange: (next: OfferDraft) => void; labels: OfferLabels; hoursList: readonly number[]; foodMaxHours: number; /** In the studio an offer is closed with its own button, so "nothing" is not offered. */ required?: boolean; /** A checked church, organisation or rescuer may also ask for help. */ helper?: boolean }) {
+  const kind = (OFFER_KINDS as readonly string[]).includes(value.kind) ? (value.kind as OfferKind) : null;
+  const need = kind === 'need';
+  const allowed = kind ? KIND_CATEGORIES[kind] : OFFER_CATEGORIES;
   const set = (change: Partial<OfferDraft>) => onChange({ ...value, ...change });
-  const food = FOOD.includes(value.category);
+  const food = FOOD.includes(value.category) && !need;
   const hours = hoursList.filter((h) => !food || h <= foodMaxHours);
+  const kinds = ['sale', 'free', 'contribution', 'donation', 'animals', ...(helper ? ['need'] : [])];
+  const choose = (next: string) => {
+    const categories = (OFFER_KINDS as readonly string[]).includes(next) ? KIND_CATEGORIES[next as OfferKind] : OFFER_CATEGORIES;
+    const category = categories.includes(value.category as OfferCategory) ? value.category : categories[0]!;
+    set({ kind: next, category, hours: FOOD.includes(category) && next !== 'need' ? Math.min(value.hours, foodMaxHours) : value.hours });
+  };
   return (
     <fieldset className="mu-offer">
       <legend>{labels.heading}</legend>
       <div className="mu-kinds" role="radiogroup">
-        {(required ? ['sale', 'free', 'contribution', 'donation'] : ['', 'sale', 'free', 'contribution', 'donation']).map((kind) => (
-          <label key={kind || 'none'} className="mu-kind" data-on={value.kind === kind ? '' : undefined}>
-            <input type="radio" name="offer-kind" checked={value.kind === kind} onChange={() => set({ kind })} />
-            {kind ? labels[`kind_${kind}` as 'kind_sale'] : labels.none}
+        {(required ? kinds : ['', ...kinds]).map((option) => (
+          <label key={option || 'none'} className="mu-kind" data-on={value.kind === option ? '' : undefined}>
+            <input type="radio" name="offer-kind" checked={value.kind === option} onChange={() => choose(option)} />
+            {option ? labels[`kind_${option}` as 'kind_sale'] : labels.none}
           </label>
         ))}
       </div>
-      {value.kind === 'donation' ? <p className="mu-note">{labels.kind_donation_hint}</p> : null}
+      {value.kind === 'donation' ? (
+        <p className="mu-note">
+          {labels.kind_donation_hint} <a href="/mirador/organizacion">{labels.organisation_link}</a>
+        </p>
+      ) : null}
+      {value.kind === 'animals' ? <p className="mu-note">{labels.kind_animals_hint}</p> : null}
+      {need ? <p className="mu-note">{labels.kind_need_hint}</p> : null}
       {value.kind === 'free' || value.kind === 'contribution' ? <p className="mu-note">{labels.free_note}</p> : null}
       {value.kind ? (
         <>
           <label className="mu-field">
             {labels.category}
-            <select value={value.category} onChange={(event) => set({ category: event.target.value, hours: FOOD.includes(event.target.value) ? Math.min(value.hours, foodMaxHours) : value.hours })}>
-              {Object.entries(labels.categories).map(([key, text]) => (
+            <select value={value.category} onChange={(event) => set({ category: event.target.value, hours: FOOD.includes(event.target.value) && !need ? Math.min(value.hours, foodMaxHours) : value.hours })}>
+              {allowed.map((key) => (
                 <option key={key} value={key}>
-                  {text}
+                  {labels.categories[key]}
                 </option>
               ))}
             </select>
           </label>
           <label className="mu-field">
-            {labels.what}
+            {need ? labels.what_need : labels.what}
             <input value={value.title} onChange={(event) => set({ title: event.target.value })} maxLength={MIRADOR_RULES.offerTitleMaxLength} required />
           </label>
           <div className="mu-pair">
@@ -90,7 +108,7 @@ export function OfferFields({ value, onChange, labels, hoursList, foodMaxHours, 
               </label>
             ) : null}
             <label className="mu-field">
-              {labels.quantity}
+              {need ? labels.quantity_need : labels.quantity}
               <input type="number" min={1} max={MIRADOR_RULES.offerMaxQuantity} value={value.quantity} onChange={(event) => set({ quantity: Math.max(1, Math.min(MIRADOR_RULES.offerMaxQuantity, Number(event.target.value) || 1)) })} />
             </label>
             <label className="mu-field">
@@ -113,6 +131,13 @@ export function OfferFields({ value, onChange, labels, hoursList, foodMaxHours, 
               </div>
             </>
           ) : null}
+          {value.category === 'animal_food' && !need ? (
+            <label className="mu-field">
+              {labels.animal_food}
+              <textarea value={value.ingredients} onChange={(event) => set({ ingredients: event.target.value })} maxLength={MIRADOR_RULES.offerIngredientsMaxLength} rows={2} required />
+              <small>{labels.animal_food_hint}</small>
+            </label>
+          ) : null}
           <label className="mu-field">
             {labels.until}
             <select value={value.hours} onChange={(event) => set({ hours: Number(event.target.value) })}>
@@ -124,9 +149,9 @@ export function OfferFields({ value, onChange, labels, hoursList, foodMaxHours, 
             </select>
           </label>
           <label className="mu-field">
-            {labels.pickup}
+            {need ? labels.pickup_need : labels.pickup}
             <input value={value.pickupDetails} onChange={(event) => set({ pickupDetails: event.target.value })} maxLength={MIRADOR_RULES.offerPickupMaxLength} />
-            <small>{labels.pickup_hint}</small>
+            <small>{need ? labels.pickup_need_hint : labels.pickup_hint}</small>
           </label>
           <p className="mu-note">{labels.place_needed}</p>
         </>
@@ -143,6 +168,8 @@ export function MiradorUpload(props: {
   maxPhotos: number;
   offerHours: readonly number[];
   foodMaxHours: number;
+  /** A checked church, organisation or rescuer: may also ask for help. */
+  helper?: boolean;
   placePicker: ReactNode;
   locale: string;
 }) {
@@ -384,7 +411,7 @@ export function MiradorUpload(props: {
         <span>{labels.place}</span>
         {props.placePicker}
       </div>
-      <OfferFields value={offer} onChange={setOffer} labels={labels.offer} hoursList={props.offerHours} foodMaxHours={props.foodMaxHours} />
+      <OfferFields value={offer} onChange={setOffer} labels={labels.offer} hoursList={props.offerHours} foodMaxHours={props.foodMaxHours} helper={props.helper} />
       {props.choices.length && !offer.kind ? (
         <label className="mu-field">
           {labels.link}

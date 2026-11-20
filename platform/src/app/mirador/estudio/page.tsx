@@ -13,6 +13,7 @@ import { myBlocks, savedIds } from '@/server/domains/mirador/social';
 import { creatorTotals, myVideos } from '@/server/domains/mirador/videos';
 import { incomingRequests, outgoingRequests } from '@/server/domains/mirador/offers';
 import { maxCharsFor, voiceAvailable, voiceJobsFor, voicePrices } from '@/server/domains/mirador/voice';
+import { verifiedHelperRoles } from '@/server/domains/aid/service';
 import { getBalance } from '@/server/domains/tokens/service';
 import { formatPrice } from '@/ui/mercadito/format';
 import { offerLabels } from '@/ui/mirador/labels';
@@ -44,13 +45,14 @@ export default async function StudioPage() {
   ]);
   const ids = videos.map((video) => video.id);
   const voiceOn = voiceAvailable();
-  const [offers, incoming, outgoing, jobs, prices, balance] = await Promise.all([
+  const [offers, incoming, outgoing, jobs, prices, balance, roles] = await Promise.all([
     db().select().from(miradorOffers).where(and(eq(miradorOffers.creatorUserId, userId))),
     incomingRequests(db(), userId),
     outgoingRequests(db(), userId),
     voiceOn ? voiceJobsFor(db(), { userId, videoIds: ids }) : Promise.resolve([]),
     voicePrices(db()),
     getBalance(db(), userId),
+    verifiedHelperRoles(db(), userId),
   ]);
   const offerOf = new Map(offers.map((offer) => [offer.videoId, offer]));
   // Newest first, so the first one met is the video's latest narration.
@@ -61,6 +63,8 @@ export default async function StudioPage() {
     date.toDateString() === now.toDateString() ? date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' }) : date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   const deal = (offer: (typeof offers)[number]) =>
     offer.kind === 'sale' && offer.priceMinor !== null ? formatPrice(offer.priceMinor, offer.currency, locale) : t(`mirador.feed.offer_${offer.kind === 'sale' ? 'free' : offer.kind}` as MessageKey);
+  // A request on a call for help is an offer of help: it reads that way.
+  const helpWord = (kind: string, key: 'incoming_line' | 'outgoing_line' | 'request_accepted' | 'request_declined') => (kind === 'need' ? (`mirador.studio.${key}_help` as MessageKey) : (`mirador.studio.${key}` as MessageKey));
   const draftOf = (offer: (typeof offers)[number] | undefined): OfferDraft =>
     offer
       ? { kind: offer.kind, category: offer.category, title: offer.title, price: offer.priceMinor !== null ? String(offer.priceMinor / 100) : '', unit: offer.unit ?? '', quantity: offer.quantity, ingredients: offer.ingredients ?? '', foodRules: false, pickupDetails: offer.pickupDetails, hours: EMPTY_OFFER.hours }
@@ -76,7 +80,7 @@ export default async function StudioPage() {
     save: t('mirador.studio.offer_save'),
     cancel: t('mirador.upload.cancel'),
     error: t('mirador.feed.error'),
-    errors: errorsFor(['kind', 'title', 'quantity', 'price', 'place', 'ingredients', 'food_rules', 'hours', 'too_many', 'quantity_promised'].map((key) => `mirador.offer.error.${key}`)),
+    errors: errorsFor(['kind', 'title', 'quantity', 'price', 'place', 'ingredients', 'food_rules', 'hours', 'too_many', 'quantity_promised', 'helpers_only', 'animal_food'].map((key) => `mirador.offer.error.${key}`)),
     offer: offerLabels(t),
   };
   const requestLabels = {
@@ -192,6 +196,7 @@ export default async function StudioPage() {
                               labels={offerEditorLabels}
                               hoursList={MIRADOR_RULES.offerHours}
                               foodMaxHours={MIRADOR_RULES.foodMaxHours}
+                              helper={roles.length > 0}
                             />
                           );
                         })()
@@ -226,6 +231,10 @@ export default async function StudioPage() {
 
           <h2 id="pedidos">{t('mirador.studio.requests')}</h2>
           <p className="muted">{t('mirador.studio.requests_lead')}</p>
+          <p className="mu-note">
+            {roles.length ? t('mirador.studio.helper', { name: roles.map((role) => role.name).join(', ') }) : t('mirador.studio.helper_none')}{' '}
+            <Link href="/mirador/organizacion">{t('mirador.studio.helper_link')}</Link>
+          </p>
           <h3>{t('mirador.studio.incoming')}</h3>
           {incoming.length === 0 ? (
             <p className="muted">{t('mirador.studio.incoming_none')}</p>
@@ -235,16 +244,16 @@ export default async function StudioPage() {
                 <li key={request.id} className="ms-request" data-status={request.status}>
                   <p>
                     <span className="ms-badge" data-tone={request.status === 'accepted' ? 'ok' : undefined}>
-                      {t(`mirador.studio.request_${request.status}` as MessageKey)}
+                      {request.status === 'pending' ? t('mirador.studio.request_pending') : t(helpWord(request.kind, 'request_accepted'))}
                     </span>{' '}
-                    {t('mirador.studio.incoming_line', { name: request.name, count: request.quantity, title: request.title })}
+                    {t(helpWord(request.kind, 'incoming_line'), { name: request.name, count: request.quantity, title: request.title })}
                   </p>
                   {request.note ? <p className="ms-request-note">“{request.note}”</p> : null}
                   <p className="ms-numbers">
                     {when(request.createdAt)} · {t('mirador.studio.request_left', { count: request.remaining })} ·{' '}
                     <Link href={`/mirador/v/${request.videoId}`}>{t('mirador.studio.view')}</Link>
                   </p>
-                  <RequestActions id={request.id} side="incoming" status={request.status} labels={requestLabels} />
+                  <RequestActions id={request.id} side="incoming" status={request.status} labels={request.kind === 'need' ? { ...requestLabels, accept: t('mirador.studio.request_accept_help') } : requestLabels} />
                 </li>
               ))}
             </ul>
@@ -258,13 +267,13 @@ export default async function StudioPage() {
                 <li key={request.id} className="ms-request" data-status={request.status}>
                   <p>
                     <span className="ms-badge" data-tone={request.status === 'accepted' ? 'ok' : request.status === 'declined' ? 'bad' : undefined}>
-                      {t(`mirador.studio.request_${request.status}` as MessageKey)}
+                      {request.status === 'pending' ? t('mirador.studio.request_pending') : t(helpWord(request.kind, request.status === 'declined' ? 'request_declined' : 'request_accepted'))}
                     </span>{' '}
-                    {t('mirador.studio.outgoing_line', { name: request.name, count: request.quantity, title: request.title })}
+                    {t(helpWord(request.kind, 'outgoing_line'), { name: request.name, count: request.quantity, title: request.title })}
                   </p>
                   {request.status === 'accepted' ? (
                     <p className="ms-pickup">
-                      <strong>{t('mirador.studio.pickup')}</strong> {request.pickupDetails || t('mirador.studio.pickup_ask')}
+                      <strong>{t(request.kind === 'need' ? 'mirador.studio.dropoff' : 'mirador.studio.pickup')}</strong> {request.pickupDetails || t('mirador.studio.pickup_ask')}
                     </p>
                   ) : null}
                   <p className="ms-numbers">

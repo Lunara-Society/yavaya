@@ -50,3 +50,74 @@
 /* A prayer request's candle (ui/community/post-card.tsx, docs/DISTRICT-FOCUS.md): warm light once lit. Here, not in site.css, because only this district's pages show it. */
 .cm-candle.on { border-color: rgba(240, 190, 110, 0.7); background: radial-gradient(120% 140% at 20% 50%, rgba(255, 196, 110, 0.32), rgba(255, 196, 110, 0.08)); box-shadow: 0 0 18px rgba(255, 186, 96, 0.28); }
 .cm-candles { color: #d9a85a; font-weight: 700; }
+
+/* ── A candle for someone (docs/sanctuary/CANDLE.md, ui/sanctuary/candle.tsx) ──
+   The candle is seen through the chapel's own arched window: a window onto
+   night inside the ivory page. The day's prayer is real text over the dark
+   above the flame; the film underneath was made once (tools/sanctuary-candle). */
+.site[data-tone="sanctuary"] .vela-page { padding: 18px 0 56px; background: radial-gradient(110% 60% at 50% 0%, #fdf9ef, #f4ead4 70%); }
+.site[data-tone="sanctuary"] .vela-wrap { max-width: 560px; }
+.site[data-tone="sanctuary"] .vela-back { margin: 0 0 6px; }
+.site[data-tone="sanctuary"] .vela-back a { color: #7a5410; }
+.site[data-tone="sanctuary"] .vela-title { margin: 4px 0 6px; text-align: center; font-family: var(--font-serif); font-size: clamp(1.75rem, 6.4vw, 2.5rem); color: #3a2a10; text-shadow: 0 0 30px rgba(255, 210, 130, 0.8); }
+.site[data-tone="sanctuary"] .vela-lead { margin: 0 auto 18px; max-width: 38ch; text-align: center; color: #5b4524; }
+.site[data-tone="sanctuary"] .vela-stage {
+  position: relative; isolation: isolate; overflow: hidden; width: 100%; aspect-ratio: 9 / 14; max-height: 78svh; margin: 0 auto;
+  border-radius: 280px 280px 26px 26px / 130px 130px 26px 26px; background: #070504;
+  box-shadow: 0 0 0 1px rgba(201, 161, 78, 0.5), 0 0 0 7px #fffaf0, 0 0 0 8px rgba(201, 161, 78, 0.35), 0 30px 80px rgba(70, 44, 10, 0.38), 0 0 140px rgba(255, 190, 110, 0.25);
+}
+.site[data-tone="sanctuary"] .vela-film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; opacity: 0; transition: opacity 0.3s ease; }
+.site[data-tone="sanctuary"] .vela-film[data-on] { opacity: 1; }
+.site[data-tone="sanctuary"] .vela-prayer { position: absolute; z-index: 2; left: 10%; right: 10%; top: 11%; text-align: center; animation: vela-rise 1.8s ease both; }
+.site[data-tone="sanctuary"] .vela-eyebrow { margin: 0 0 10px; color: #e2c27a; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; text-shadow: 0 0 14px rgba(0, 0, 0, 0.9); }
+.site[data-tone="sanctuary"] .vela-prayer blockquote { margin: 0; color: #f6ecd8; font-family: var(--font-serif); font-size: clamp(1.05rem, 4.5vw, 1.4rem); line-height: 1.5; text-shadow: 0 0 18px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 0.8); }
+.site[data-tone="sanctuary"] .vela-below { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; display: grid; gap: 12px; justify-items: center; padding: 48px 8% 7%; text-align: center; background: linear-gradient(180deg, rgba(5, 3, 2, 0), rgba(5, 3, 2, 0.72) 45%, rgba(5, 3, 2, 0.85)); animation: vela-rise 1.4s ease both; }
+.site[data-tone="sanctuary"] .vela-below .vela-from { margin: 0; color: #f6ecd8; text-shadow: 0 0 16px rgba(0, 0, 0, 0.95); }
+.site[data-tone="sanctuary"] .vela-send { width: min(100%, 300px); }
+.site[data-tone="sanctuary"] .vela-for { margin: 0; color: #f3d77b; font-family: var(--font-serif); font-size: clamp(1.35rem, 5.4vw, 1.8rem); text-shadow: 0 0 22px rgba(0, 0, 0, 0.95), 0 0 34px rgba(255, 170, 80, 0.5); animation: vela-rise 1.4s ease both; }
+.site[data-tone="sanctuary"] .vela-after { margin: 20px auto 0; max-width: 440px; text-align: center; animation: vela-rise 1.6s ease both; }
+.site[data-tone="sanctuary"] .vela-after .vela-for { color: #8a5d12; text-shadow: 0 0 26px rgba(255, 200, 120, 0.7); }
+.site[data-tone="sanctuary"] .vela-from { margin: 0 0 4px; color: #3a2a10; font-weight: 700; font-size: 1.05rem; }
+.site[data-tone="sanctuary"] .vela-intention { margin: 8px 0 0; color: #4a3719; font-family: var(--font-serif); font-style: italic; font-size: 1.12rem; }
+.site[data-tone="sanctuary"] .vela-when, .site[data-tone="sanctuary"] .vela-hidden { margin: 10px 0 0; color: #6b5532; font-size: 0.92rem; }
+
+.site[data-tone="sanctuary"] .vela-form { display: grid; gap: 12px; max-width: 440px; margin: 22px auto 0; }
+.site[data-tone="sanctuary"] .vela-field { display: grid; gap: 6px; color: #3a2a10; font-weight: 600; }
+.site[data-tone="sanctuary"] .vela-field input { padding: 13px 14px; border-radius: 14px; border: 1px solid rgba(201, 161, 78, 0.6); background: #fffdf7; color: #2a1d08; font: inherit; font-weight: 400; }
+.site[data-tone="sanctuary"] .vela-field input:focus-visible { outline: 2px solid #c9a14e; outline-offset: 2px; }
+.site[data-tone="sanctuary"] .vela-check { display: flex; gap: 8px; align-items: center; color: #5b4524; }
+.site[data-tone="sanctuary"] .vela-light {
+  display: block; padding: 16px 22px; border: 0; border-radius: 999px; text-align: center; text-decoration: none; cursor: pointer;
+  background: linear-gradient(180deg, #f6dd8a, #d9a85a); color: #2a1a05; font: inherit; font-weight: 800; font-size: 1.05rem;
+  box-shadow: 0 12px 30px rgba(217, 168, 90, 0.45), 0 0 0 1px rgba(160, 110, 30, 0.35) inset;
+}
+.site[data-tone="sanctuary"] .vela-light:disabled { opacity: 0.6; cursor: progress; }
+.site[data-tone="sanctuary"] .vela-light:focus-visible, .site[data-tone="sanctuary"] .vela-line:focus-visible { outline: 3px solid #8a5d12; outline-offset: 3px; }
+.site[data-tone="sanctuary"] .vela-line { display: block; padding: 14px 22px; border-radius: 999px; border: 1px solid rgba(160, 110, 30, 0.55); background: #fffaf0; color: #5b3d08; text-align: center; text-decoration: none; font: inherit; font-weight: 700; cursor: pointer; }
+.site[data-tone="sanctuary"] .vela-link { padding: 0; border: 0; background: none; color: #7a5410; font: inherit; text-decoration: underline; cursor: pointer; }
+.site[data-tone="sanctuary"] .vela-error { margin: 0; color: #9b2c1c; }
+.site[data-tone="sanctuary"] .vela-sent { max-width: 440px; margin: 22px auto 0; text-align: center; animation: vela-rise 1.4s ease both; }
+.site[data-tone="sanctuary"] .vela-sent h2 { margin: 0 0 6px; font-family: var(--font-serif); color: #3a2a10; font-size: 1.5rem; }
+.site[data-tone="sanctuary"] .vela-sent p { margin: 0 0 16px; color: #5b4524; }
+.site[data-tone="sanctuary"] .vela-actions { display: grid; gap: 10px; }
+.site[data-tone="sanctuary"] .vela-more { display: flex; gap: 18px; justify-content: center; margin-top: 16px; }
+.site[data-tone="sanctuary"] .vela-more a { color: #7a5410; }
+.site[data-tone="sanctuary"] .vela-count, .site[data-tone="sanctuary"] .vela-small { margin: 18px 0 0; text-align: center; color: #6b5532; font-size: 0.9rem; }
+
+/* On the prayer wall: the door to it, a small window onto the lit candle. */
+.site[data-tone="sanctuary"] .vela-card {
+  display: grid; grid-template-columns: 92px 1fr; gap: 16px; align-items: center; margin: 4px 0 24px; padding: 14px 18px 14px 14px; text-decoration: none;
+  border-radius: 26px; background: radial-gradient(90% 120% at 15% 40%, #2b1a0b, #0d0906 70%); color: #f6ecd8;
+  box-shadow: 0 0 0 1px rgba(201, 161, 78, 0.5), 0 18px 44px rgba(70, 44, 10, 0.3), 0 0 60px rgba(255, 180, 90, 0.18);
+}
+.site[data-tone="sanctuary"] .vela-card-art { width: 92px; height: 142px; object-fit: cover; object-position: 50% 42%; border-radius: 60px 60px 12px 12px / 34px 34px 12px 12px; box-shadow: 0 0 30px rgba(255, 180, 90, 0.35); }
+.site[data-tone="sanctuary"] .vela-card-text { display: grid; gap: 6px; }
+.site[data-tone="sanctuary"] .vela-card-text strong { font-family: var(--font-serif); font-size: 1.25rem; color: #f3d77b; }
+.site[data-tone="sanctuary"] .vela-card-text span { color: #e9dcc2; font-size: 0.92rem; line-height: 1.45; }
+.site[data-tone="sanctuary"] .vela-card-text .vela-card-button { justify-self: start; margin-top: 4px; padding: 8px 16px; border-radius: 999px; background: linear-gradient(180deg, #f6dd8a, #d9a85a); color: #2a1a05; font-weight: 800; font-size: 0.9rem; }
+
+@keyframes vela-rise { from { opacity: 0; translate: 0 10px; filter: blur(3px); } to { opacity: 1; translate: none; filter: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .site[data-tone="sanctuary"] :is(.vela-prayer, .vela-for, .vela-after, .vela-sent) { animation: none; }
+  .site[data-tone="sanctuary"] .vela-film { transition: none; }
+}

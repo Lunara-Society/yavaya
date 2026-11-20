@@ -341,6 +341,14 @@ export const CAPABILITIES: readonly Capability[] = [
     blockedBy: 'ELEVENLABS_API_KEY (text to speech) and media storage.',
   },
   {
+    key: 'sanctuary_candle',
+    nameKey: 'capability.sanctuary_candle.name',
+    detailKey: 'capability.sanctuary_candle.detail',
+    /* Built (docs/sanctuary/CANDLE.md): the film is a file in /public, the prayer is the daily light's, sharing is the phone's own. Nothing external. */
+    state: 'REAL',
+    group: 'district',
+  },
+  {
     key: 'board_districts',
     nameKey: 'capability.board_districts.name',
     detailKey: 'capability.board_districts.detail',

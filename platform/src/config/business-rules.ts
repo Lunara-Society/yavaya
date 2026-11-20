@@ -298,6 +298,12 @@ export const MIRADOR_RULES = {
   offerIngredientsMaxLength: 300,
   offerPickupMaxLength: 300,
   offerHours: [3, 6, 12, 24, 72, 168],
+  /** Food banks, soup kitchens and shelters that apply to be checked (aid/service.ts). Yavaya's own defaults. */
+  organisationNameMinLength: 3,
+  organisationNameMaxLength: 80,
+  organisationAboutMinLength: 20,
+  organisationAboutMaxLength: 600,
+  organisationRegistrationMaxLength: 60,
   foodMaxHours: 24,
   /**
    * Voiceover in Roxi's voice (ElevenLabs), priced by the owner's delegation
@@ -912,6 +918,16 @@ export const SANCTUARY_RULES = {
   dailyLightFallbackUtcHour: 14,
   /** Members notified per scheduler run; the rest follow on the next tick. */
   dailyLightBatchSize: 500,
+  /**
+   * "Encender una vela por alguien" (docs/sanctuary/CANDLE.md), Yavaya's own
+   * defaults: a candle burns seven days, like the seven-day veladoras lit in
+   * churches across the region; the name of the person it is for and the
+   * intention are short; a member may light this many a day.
+   */
+  candleBurnDays: 7,
+  candleNameMaxLength: 40,
+  candleIntentionMaxLength: 140,
+  candlesPerDay: 20,
 } as const;
 
 /**

@@ -662,6 +662,30 @@ through the application rather than a CDN. Food offered between neighbours
 is not inspected by anyone: the rules the cook confirms and the notice
 viewers see are the protection, and moderation acts on reports.
 
+## Checked helpers and calls for help
+
+Who may ask for food "para comedores", things "para animales", or post a call
+for help is decided on the server from three registries a person approved:
+Santuario's churches (`sanctuary.review`), Animales' rescuers
+(`adoptions.review`) and food banks, soup kitchens and shelters
+(`causes.review`, `aid_organisations`). An application alone grants nothing;
+changing an organisation's name, description or place sends it back to
+review; a suspended one cannot reapply by editing. The organisation's
+registration number and WhatsApp are shown to the reviewer only. Calls for
+help collect goods and time, never money; where to bring things is shown only
+to a neighbour whose offer was accepted.
+
+## Candles
+
+A candle's page (`/sanctuary/vela/<id>`) is public to whoever holds its link
+— the person it is for may have no account — and shows a member's words. So
+the words are short, links are refused on the server (`candles.ts`), lighting
+is members-only and rate-limited (20 a day), the sender is always on record
+even when unnamed on the page (audit `sanctuary.candle_lit`), the pages are
+`noindex`, and anyone with the link can report what is written: the words are
+hidden in the same transaction that opens a high-priority ticket. The preview
+image is cached for minutes, not days, so a hidden name leaves it too.
+
 ## Known gaps
 
 - **Session tokens are not rotated yet.** The session layer computes when a

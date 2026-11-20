@@ -15,7 +15,7 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - `npm run build`
   - `node scripts/check-budget.mjs` (JS budget 139 KB since 20 Nov; styles 60 KB, the home page at 59.9)
   - **Watch the Railway deploy after pushing** (`list-deployments`): production builds come out a few bytes heavier than local ones, and on 20 Nov six deploys failed at the budget check unnoticed until checked.
-  - At last count 840 tests, all passing. (`jobs.test.ts`, "runs without the web application secrets", used to fail because `roxi-upkeep` read `serverEnv()`; fixed 20 Nov: metering and Stripe read as unavailable when the scheduler has no web secrets, as mail already did.)
+  - At last count 846 tests, all passing. (`jobs.test.ts`, "runs without the web application secrets", used to fail because `roxi-upkeep` read `serverEnv()`; fixed 20 Nov: metering and Stripe read as unavailable when the scheduler has no web secrets, as mail already did.)
 - **Commit trailer, and no model names in commits:**
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
@@ -35,6 +35,28 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Authorization is checked on the server.
   - Audit inside the same transaction.
   - Never print secrets.
+
+## A candle for someone, and help for animals (20 November, owner's requests)
+
+- **"Enciende una vela por alguien"** — live on the prayer wall (not behind a
+  switch: free, nothing external). A card on `/sanctuary/prayer` opens
+  `/sanctuary/vela`: the day's prayer above an unlit candle in the chapel's
+  arched window; optional name and intention; *Encender* plays a film (Blender
+  candle + HyperFrames light descending from the prayer) that runs into a
+  seamless burning loop; *Enviársela* opens the phone's own share sheet (the
+  person picks the app, then whom), *Enviar el video* sends the film as a file.
+  The link `/sanctuary/vela/<id>` needs no account, lights itself, shows who
+  lit it and for whom, burns 7 days, has its own WhatsApp preview, and can be
+  reported (words hidden at once). Doc: `platform/docs/sanctuary/CANDLE.md`;
+  film sources and how to remake: `platform/tools/sanctuary-candle/`.
+- **Mirador offers, wider** (still behind `mirador.open`): food banks, soup
+  kitchens and shelters register at `/mirador/organizacion`, reviewed at
+  `/admin/organizaciones` (`causes.review`); "para comedores" open to them
+  and to churches. New kinds: **para animales** (only approved Animales
+  rescuers can ask: animal food — what it is required —, care, helping
+  hands) and **Pido ayuda** (a checked church/organisation/rescuer asks for
+  what it needs; neighbours tap *Yo ayudo*; no money, goods and time only);
+  new **Ayudar** tab.
 
 ## Mirador: short videos (20 November, owner's brief "Yavaya Pulse")
 

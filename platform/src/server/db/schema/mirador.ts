@@ -234,9 +234,13 @@ export const miradorOffers = pgTable(
     creatorUserId: uuid('creator_user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    /** `sale`, `free`, `contribution` (what the other person wants to give) or `donation` (for soup kitchens). */
+    /**
+     * `sale`, `free`, `contribution` (what the other person wants to give), `donation` (for soup kitchens,
+     * food banks and shelters), `animals` (for approved rescuers) or `need` (a verified helper asking for help;
+     * its requests are offers to help, and `quantity` is how many are needed).
+     */
     kind: text('kind').notNull(),
-    /** `food`, `baked`, `crafts`, `clothes`, `plants` or `other`. */
+    /** `food`, `baked`, `crafts`, `clothes`, `plants`, `animal_food`, `animal_care`, `help` or `other`. */
     category: text('category').notNull(),
     title: text('title').notNull(),
     priceMinor: bigint('price_minor', { mode: 'number' }),
@@ -244,7 +248,7 @@ export const miradorOffers = pgTable(
     unit: text('unit'),
     quantity: smallint('quantity').notNull(),
     remaining: smallint('remaining').notNull(),
-    /** Food only: what is in it and what someone allergic must know. */
+    /** Food: what is in it and what someone allergic must know. Animal food: what exactly it is (brand, sealed, for which animal). */
     ingredients: text('ingredients'),
     /** Food only: the moment the creator confirmed the food rules (made today, kept safe, nothing on the not-allowed list). */
     foodRulesAt: timestamp('food_rules_at', { withTimezone: true }),

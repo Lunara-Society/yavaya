@@ -27,7 +27,7 @@ import { offerViews, type OfferView } from './offers';
  * The weights are MIRADOR_RULES.ranking; with no data yet, Para ti is simply
  * the newest videos, nearest first — which is the truth.
  */
-export const FEED_TABS = ['para_ti', 'cerca', 'siguiendo', 'negocios', 'mercadito', 'regalos', 'tendencias'] as const;
+export const FEED_TABS = ['para_ti', 'cerca', 'siguiendo', 'negocios', 'mercadito', 'regalos', 'ayudar', 'tendencias'] as const;
 export type FeedTab = (typeof FEED_TABS)[number];
 
 export function isFeedTab(value: unknown): value is FeedTab {
@@ -138,8 +138,13 @@ export async function feedPage(
       );
       break;
     case 'regalos':
-      // Given away, or for soup kitchens; the ones ending soonest first, so nothing is left to spoil.
-      conditions.push(sql`exists (select 1 from mirador_offers o where o.video_id = ${miradorVideos.id} and o.status = 'open' and o.available_until > ${now.toISOString()} and o.remaining > 0 and o.kind in ('free', 'donation'))`);
+      // Given away, for soup kitchens or for animals in need; the ones ending soonest first, so nothing is left to spoil.
+      conditions.push(sql`exists (select 1 from mirador_offers o where o.video_id = ${miradorVideos.id} and o.status = 'open' and o.available_until > ${now.toISOString()} and o.remaining > 0 and o.kind in ('free', 'donation', 'animals'))`);
+      order = [sql`(select o.available_until from mirador_offers o where o.video_id = ${miradorVideos.id}) asc`, sql`${miradorVideos.publishedAt} desc`];
+      break;
+    case 'ayudar':
+      // Calls for help from approved churches, organisations and rescuers that still need something, soonest-ending first.
+      conditions.push(sql`exists (select 1 from mirador_offers o where o.video_id = ${miradorVideos.id} and o.status = 'open' and o.available_until > ${now.toISOString()} and o.remaining > 0 and o.kind = 'need')`);
       order = [sql`(select o.available_until from mirador_offers o where o.video_id = ${miradorVideos.id}) asc`, sql`${miradorVideos.publishedAt} desc`];
       break;
     case 'tendencias': {

@@ -105,6 +105,8 @@ export async function resetTransactionalData(): Promise<void> {
       play_stats,
       vault_owned,
       mirador_voice_jobs,
+      aid_organisations,
+      sanctuary_candles,
       mirador_offer_requests,
       mirador_offers,
       mirador_views,

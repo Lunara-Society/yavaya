@@ -1,0 +1,93 @@
+<!doctype html>
+<!--
+  The light that lights the candle (docs/sanctuary/CANDLE.md): a small golden light is born under the day's prayer,
+  comes down in a gentle curve with a trail of sparks, and touches the wick at 1.7 s — the frame Blender's flame
+  catches — where it blooms. Drawn on black and laid over the film with a screen blend, so only its light adds.
+  WICK_X / WICK_Y are where the wick falls in the picture (positions.json from candle.py, scaled to 1080 × 1920).
+-->
+<html lang="es" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+      #root { position: relative; width: 100%; height: 100%; }
+      .clip { position: absolute; inset: 0; }
+      .dot { position: absolute; left: 0; top: 0; border-radius: 50%; }
+      #halo { width: 170px; height: 170px; background: radial-gradient(circle, rgba(255, 214, 140, 0.55) 0%, rgba(255, 170, 80, 0.18) 40%, rgba(255, 150, 60, 0) 70%); }
+      #core { width: 22px; height: 22px; background: radial-gradient(circle, #ffffff 0%, #fff1c8 40%, rgba(255, 200, 110, 0) 72%); }
+      .spark { width: 9px; height: 9px; background: radial-gradient(circle, #fff6dc 0%, rgba(255, 200, 120, 0.85) 40%, rgba(255, 170, 80, 0) 72%); }
+      #bloom { width: 520px; height: 520px; background: radial-gradient(circle, rgba(255, 236, 190, 0.9) 0%, rgba(255, 180, 90, 0.35) 30%, rgba(255, 150, 60, 0) 68%); }
+      #ring { width: 260px; height: 260px; border: 3px solid rgba(255, 214, 150, 0.6); box-shadow: 0 0 30px rgba(255, 190, 110, 0.5); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="4" data-width="1080" data-height="1920">
+      <div id="light" class="clip" data-start="0" data-duration="4" data-track-index="0">
+        <div id="bloom" class="dot"></div>
+        <div id="ring" class="dot"></div>
+        <div id="halo" class="dot"></div>
+        <div id="core" class="dot"></div>
+      </div>
+    </div>
+    <script>
+      const WICK_X = 542, WICK_Y = 1002, START_X = 540, START_Y = 330;
+      const T = 4, BORN = 0.15, LEAVE = 0.45, CATCH = 1.7, STEP = 1 / 30, TAU = Math.PI * 2;
+      const smooth = (x) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
+      // The path: down from under the prayer, swaying once each way, arriving exactly on the wick.
+      function at(t) {
+        const p = smooth((t - LEAVE) / (CATCH - LEAVE));
+        return { x: START_X + (WICK_X - START_X) * p + 46 * Math.sin(Math.PI * 1.6 * p) * (1 - p), y: START_Y + (WICK_Y - START_Y) * p };
+      }
+      const tl = gsap.timeline({ paused: true });
+      const samples = Math.round(T / STEP);
+      function animate(el, state) {
+        gsap.set(el, state(0));
+        const frames = [];
+        for (let i = 1; i <= samples; i++) frames.push({ ...state(i * STEP), duration: STEP, ease: 'none' });
+        tl.to(el, { keyframes: frames }, 0);
+      }
+      const centred = (el, size) => (t, s = at(t)) => ({ x: s.x - size / 2, y: s.y - size / 2 });
+      // Born small under the prayer, bright on the way, gone into the flame on touching it.
+      const life = (t) => (t < BORN ? 0 : t < LEAVE ? smooth((t - BORN) / (LEAVE - BORN)) : t < CATCH ? 1 : Math.max(0, 1 - (t - CATCH) / 0.12));
+      animate('#core', (t) => ({ ...centred('#core', 22)(t), opacity: life(t), scale: 0.6 + 0.4 * life(t) + 0.08 * Math.sin(TAU * 6 * t) }));
+      animate('#halo', (t) => ({ ...centred('#halo', 170)(t), opacity: life(t) * (0.85 + 0.15 * Math.sin(TAU * 4 * t)), scale: 0.7 + 0.3 * life(t) }));
+
+      // The trail: sparks where the light was a moment ago, fading behind it.
+      const light = document.getElementById('light');
+      for (let i = 1; i <= 16; i++) {
+        const s = document.createElement('div');
+        s.className = 'dot spark';
+        light.appendChild(s);
+        const lag = i * 0.03, jitter = (i % 2 ? 1 : -1) * (4 + (i * 7) % 9);
+        animate(s, (t) => {
+          const back = at(Math.max(LEAVE, t - lag));
+          const moving = t > LEAVE && t < CATCH + 0.05 ? 1 : 0;
+          return { x: back.x - 4.5 + jitter, y: back.y - 4.5, opacity: moving * (1 - i / 17) * 0.75 * life(t - lag), scale: 1 - i / 22 };
+        });
+      }
+
+      // Touching the wick: a bloom of warm light and a ring that opens and fades.
+      const after = (t) => Math.max(0, t - CATCH);
+      animate('#bloom', (t) => ({ x: WICK_X - 260, y: WICK_Y - 300, opacity: t < CATCH ? 0 : Math.max(0, 1 - after(t) / 0.9) * 0.95, scale: t < CATCH ? 0.2 : 0.2 + 1.6 * Math.min(1, after(t) / 0.5) }));
+      animate('#ring', (t) => ({ x: WICK_X - 130, y: WICK_Y - 150, opacity: t < CATCH ? 0 : Math.max(0, 1 - after(t) / 1.1) * 0.8, scale: t < CATCH ? 0.1 : 0.1 + 2.6 * smooth(after(t) / 1.1) }));
+      // A few sparks thrown upward as it catches.
+      for (let i = 0; i < 12; i++) {
+        const s = document.createElement('div');
+        s.className = 'dot spark';
+        light.appendChild(s);
+        const angle = -Math.PI / 2 + (i / 11 - 0.5) * 2.2, reach = 90 + ((i * 37) % 120);
+        animate(s, (t) => {
+          const k = smooth(after(t) / 0.9);
+          return { x: WICK_X - 4.5 + Math.cos(angle) * reach * k, y: WICK_Y - 30 - 4.5 + Math.sin(angle) * reach * k, opacity: t < CATCH ? 0 : Math.max(0, 1 - after(t) / 0.9), scale: 1 - 0.5 * k };
+        });
+      }
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

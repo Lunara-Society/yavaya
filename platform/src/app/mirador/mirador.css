@@ -1096,3 +1096,16 @@ body:has(.mf-sheet) .roxi-launch {
 .ms-actions button:disabled {
   opacity: 0.45;
 }
+/* On a call for help: who Yavaya checked is asking. */
+.mf-offer-verified {
+  color: var(--mr-gold);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mf-offer-verified::before {
+  content: '✓ ';
+}

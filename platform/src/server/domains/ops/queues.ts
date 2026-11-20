@@ -20,6 +20,7 @@ export type QueueKey =
   | 'services_reports'
   | 'animals_rescuers'
   | 'animals_reports'
+  | 'aid_organisations'
   | 'work_employers'
   | 'work_reports'
   | 'mercadito_reports'
@@ -48,6 +49,7 @@ QUEUES.push(
   { key: 'services_reports', href: '/admin/services', permission: 'services.review', query: openTickets('services') },
   { key: 'animals_rescuers', href: '/admin/animals', permission: 'adoptions.review', query: pending('animals_rescuers', 'pending') },
   { key: 'animals_reports', href: '/admin/animals', permission: 'adoptions.review', query: openTickets('animals') },
+  { key: 'aid_organisations', href: '/admin/organizaciones', permission: 'causes.review', query: pending('aid_organisations', 'pending') },
   { key: 'work_employers', href: '/admin/work#employers', permission: 'work.review', query: pending('work_employers', 'pending') },
   { key: 'work_reports', href: '/admin/work', permission: 'work.moderate', query: openTickets('works') },
   { key: 'mercadito_reports', href: '/admin/mercadito', permission: 'listings.moderate', query: openTickets('mercadito') },

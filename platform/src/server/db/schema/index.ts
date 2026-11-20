@@ -32,3 +32,4 @@ export * from './whatsapp';
 export * from './boards';
 export * from './play';
 export * from './mirador';
+export * from './aid';

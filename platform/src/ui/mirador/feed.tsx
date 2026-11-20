@@ -27,7 +27,8 @@ export type FeedLabels = Record<
   | 'sign_in' | 'copied' | 'copy_link' | 'whatsapp' | 'report_title' | 'report_sent' | 'report_note' | 'loading' | 'error' | 'empty_title' | 'empty_text'
   | 'upload' | 'back' | 'needs_place' | 'choose_place' | 'views' | 'end' | 'data_saver' | 'brand'
   | 'want' | 'want_title' | 'want_quantity' | 'want_note' | 'want_send' | 'want_sent' | 'want_pending' | 'want_accepted' | 'want_whatsapp' | 'want_whatsapp_message' | 'want_less' | 'want_more'
-  | 'offer_left' | 'offer_sold_out' | 'offer_closed' | 'offer_until' | 'offer_free' | 'offer_contribution' | 'offer_donation' | 'offer_food_notice' | 'offer_pay_note' | 'offer_ingredients' | 'captions',
+  | 'offer_left' | 'offer_sold_out' | 'offer_closed' | 'offer_until' | 'offer_free' | 'offer_contribution' | 'offer_donation' | 'offer_food_notice' | 'offer_pay_note' | 'offer_ingredients' | 'captions'
+  | 'offer_animals' | 'offer_need' | 'offer_needed' | 'offer_verified' | 'offer_complete' | 'help' | 'help_title' | 'help_quantity' | 'help_send' | 'help_sent' | 'help_pending' | 'help_accepted' | 'help_note',
   string
 > & {
   tabs: Record<string, string>;
@@ -542,7 +543,7 @@ function SheetView(props: {
   const roots = (comments ?? []).filter((c) => !c.parentId);
   const replies = (id: string) => (comments ?? []).filter((c) => c.parentId === id);
   const title =
-    sheet.kind === 'comments' ? labels.comments : sheet.kind === 'share' ? labels.share : sheet.kind === 'report' ? labels.report_title : sheet.kind === 'why' ? labels.why_title : sheet.kind === 'want' ? labels.want_title : labels.more;
+    sheet.kind === 'comments' ? labels.comments : sheet.kind === 'share' ? labels.share : sheet.kind === 'report' ? labels.report_title : sheet.kind === 'why' ? labels.why_title : sheet.kind === 'want' ? (sheet.video.offer?.kind === 'need' ? labels.help_title : labels.want_title) : labels.more;
 
   const line = (c: Comment) => (
     <li key={c.id} className="mf-comment" data-reply={c.parentId ? '' : undefined}>
@@ -691,28 +692,33 @@ function OfferChip({ video, labels, locale, onWant }: { video: FeedVideo; labels
   const offer = video.offer!;
   const until = new Date(offer.until).toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
   const sameDay = new Date(offer.until).toDateString() === new Date().toDateString();
+  const need = offer.kind === 'need';
   const deal =
-    offer.kind === 'sale' && offer.price ? formatPrice(offer.price.minor, offer.price.currency, locale) : offer.kind === 'free' ? labels.offer_free : offer.kind === 'contribution' ? labels.offer_contribution : labels.offer_donation;
+    offer.kind === 'sale' && offer.price
+      ? formatPrice(offer.price.minor, offer.price.currency, locale)
+      : { free: labels.offer_free, contribution: labels.offer_contribution, donation: labels.offer_donation, animals: labels.offer_animals, need: labels.offer_need, sale: '' }[offer.kind];
   const soldOut = offer.open && offer.remaining === 0;
+  const left = (need ? labels.offer_needed : labels.offer_left).replace('{count}', String(offer.remaining));
   return (
     <div className="mf-offer" data-kind={offer.kind}>
       <div className="mf-offer-text">
+        {offer.verified ? <span className="mf-offer-verified">{labels.offer_verified.replace('{name}', offer.verified.name)}</span> : null}
         <span className="mf-offer-title">{offer.title}</span>
         <span className="mf-offer-deal">
           {deal}
           {offer.unit ? ` / ${offer.unit}` : ''}
         </span>
         <span className="mf-offer-meta">
-          {!offer.open ? labels.offer_closed : soldOut ? labels.offer_sold_out : `${labels.offer_left.replace('{count}', String(offer.remaining))} · ${labels.offer_until.replace('{time}', sameDay ? until : new Date(offer.until).toLocaleDateString(locale, { weekday: 'short', hour: 'numeric' }))}`}
+          {!offer.open ? labels.offer_closed : soldOut ? (need ? labels.offer_complete : labels.offer_sold_out) : `${left} · ${labels.offer_until.replace('{time}', sameDay ? until : new Date(offer.until).toLocaleDateString(locale, { weekday: 'short', hour: 'numeric' }))}`}
         </span>
       </div>
       {video.own ? null : offer.mine ? (
         <button type="button" className="mf-want is-mine" onClick={onWant}>
-          {offer.mine.status === 'accepted' ? labels.want_accepted : labels.want_pending}
+          {offer.mine.status === 'accepted' ? (need ? labels.help_accepted : labels.want_accepted) : need ? labels.help_pending : labels.want_pending}
         </button>
       ) : offer.open && offer.remaining > 0 ? (
         <button type="button" className="mf-want" onClick={onWant}>
-          {labels.want}
+          {need ? labels.help : labels.want}
         </button>
       ) : null}
     </div>
@@ -739,7 +745,7 @@ function WantForm({ video, labels, locale, close, flash, update }: { video: Feed
       return setError(message ? message.replace(/\{(\w+)\}/g, (all, key: string) => (key in details ? String(details[key]) : all)) : labels.error);
     }
     update(video.id, (v) => ({ ...v, offer: v.offer ? { ...v.offer, mine: { id: String(result.body?.id), status: 'pending', quantity } } : v.offer }));
-    flash(labels.want_sent.replace('{name}', video.creator.name));
+    flash((offer.kind === 'need' ? labels.help_sent : labels.want_sent).replace('{name}', video.creator.name));
     close();
   }
   return (
@@ -759,10 +765,11 @@ function WantForm({ video, labels, locale, close, flash, update }: { video: Feed
           {labels.offer_ingredients}: {offer.ingredients}
         </p>
       ) : null}
-      {offer.food ? <p className="mf-notice">{labels.offer_food_notice}</p> : null}
+      {offer.food && offer.kind !== 'need' ? <p className="mf-notice">{labels.offer_food_notice}</p> : null}
       {offer.kind === 'sale' || offer.kind === 'contribution' ? <p className="mf-muted">{labels.offer_pay_note}</p> : null}
+      {offer.kind === 'need' ? <p className="mf-muted">{labels.help_note}</p> : null}
       <label className="mf-qty">
-        {labels.want_quantity}
+        {offer.kind === 'need' ? labels.help_quantity : labels.want_quantity}
         <span>
           <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} aria-label={labels.want_less}>
             −
@@ -775,7 +782,7 @@ function WantForm({ video, labels, locale, close, flash, update }: { video: Feed
       </label>
       <textarea value={note} onChange={(event) => setNote(event.target.value)} maxLength={200} placeholder={labels.want_note} aria-label={labels.want_note} />
       <button type="submit" disabled={busy || offer.mine?.status === 'accepted'}>
-        {labels.want_send}
+        {offer.kind === 'need' ? labels.help_send : labels.want_send}
       </button>
       {whatsapp ? (
         <a className="mf-wa" href={whatsapp} target="_blank" rel="noopener noreferrer">

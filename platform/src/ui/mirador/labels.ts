@@ -17,10 +17,11 @@ const FEED_KEYS = [
   'upload', 'back', 'needs_place', 'choose_place', 'views', 'end', 'data_saver', 'brand',
   'want', 'want_title', 'want_quantity', 'want_note', 'want_send', 'want_sent', 'want_pending', 'want_accepted', 'want_whatsapp', 'want_whatsapp_message', 'want_less', 'want_more',
   'offer_left', 'offer_sold_out', 'offer_closed', 'offer_until', 'offer_free', 'offer_contribution', 'offer_donation', 'offer_food_notice', 'offer_pay_note', 'offer_ingredients', 'captions',
+  'offer_animals', 'offer_need', 'offer_needed', 'offer_verified', 'offer_complete', 'help', 'help_title', 'help_quantity', 'help_send', 'help_sent', 'help_pending', 'help_accepted', 'help_note',
 ] as const;
 
 /** Refusals a viewer can meet when asking for an offer. */
-const WANT_ERRORS = ['mirador.offer.error.own', 'mirador.offer.error.closed', 'mirador.offer.error.not_enough', 'mirador.offer.error.kitchens_only', 'mirador.offer.error.already_accepted', 'mirador.offer.error.quantity', 'mirador.error.slow_down'] as const;
+const WANT_ERRORS = ['mirador.offer.error.own', 'mirador.offer.error.closed', 'mirador.offer.error.not_enough', 'mirador.offer.error.kitchens_only', 'mirador.offer.error.rescuers_only', 'mirador.offer.error.already_accepted', 'mirador.offer.error.quantity', 'mirador.error.slow_down'] as const;
 
 const WHY = ['following', 'near', 'interest', 'new'] as const;
 const ACTIONS = ['view_listing', 'order', 'view_services', 'view_post'] as const;
@@ -51,6 +52,7 @@ const UPLOAD_KEYS = [
 const OFFER_KEYS = [
   'heading', 'none', 'kind_sale', 'kind_free', 'kind_contribution', 'kind_donation', 'kind_donation_hint', 'what', 'price', 'price_hint', 'unit', 'unit_hint',
   'quantity', 'category', 'ingredients', 'ingredients_hint', 'rules', 'rules_list', 'pickup', 'pickup_hint', 'until', 'place_needed', 'free_note',
+  'kind_animals', 'kind_animals_hint', 'kind_need', 'kind_need_hint', 'organisation_link', 'what_need', 'quantity_need', 'pickup_need', 'pickup_need_hint', 'animal_food', 'animal_food_hint',
 ] as const;
 
 export function offerLabels(t: Translator): OfferLabels {
@@ -67,7 +69,7 @@ export const MIRADOR_ERRORS = [
   'mirador.error.upload_done', 'mirador.error.upload_limit', 'mirador.error.processing', 'mirador.error.link', 'mirador.error.place', 'mirador.error.slow_down',
   'mirador.error.not_photo', 'mirador.error.photo_count',
   'mirador.offer.error.kind', 'mirador.offer.error.title', 'mirador.offer.error.quantity', 'mirador.offer.error.price', 'mirador.offer.error.place', 'mirador.offer.error.ingredients',
-  'mirador.offer.error.food_rules', 'mirador.offer.error.hours', 'mirador.offer.error.too_many', 'mirador.offer.error.quantity_promised',
+  'mirador.offer.error.food_rules', 'mirador.offer.error.hours', 'mirador.offer.error.too_many', 'mirador.offer.error.quantity_promised', 'mirador.offer.error.helpers_only', 'mirador.offer.error.animal_food',
 ] as const;
 
 export function uploadLabels(t: Translator): UploadLabels {

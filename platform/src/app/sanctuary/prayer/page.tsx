@@ -53,6 +53,16 @@ export default async function PrayerWallPage({ searchParams }: { searchParams: P
       </section>
 
       <div className="wrap cm-column" style={{ paddingBottom: 56 }}>
+        {/* "Encender una vela por alguien" (docs/sanctuary/CANDLE.md): open to anyone's eyes; lighting one asks to sign in. */}
+        <Link href="/sanctuary/vela" className="vela-card">
+          {/* eslint-disable-next-line @next/next/no-img-element -- a still from the candle film, in /public */}
+          <img src="/velas/encendida.webp" alt="" className="vela-card-art" width={720} height={1280} loading="lazy" />
+          <span className="vela-card-text">
+            <strong>{t('sanctuary.candle.cta_title')}</strong>
+            <span>{t('sanctuary.candle.cta_text')}</span>
+            <span className="vela-card-button">{t('sanctuary.candle.cta_button')}</span>
+          </span>
+        </Link>
         {!feed ? (
           <div className="cm-gate card">
             <p>{t('sanctuary.prayer.members_only')}</p>

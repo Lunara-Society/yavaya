@@ -34,7 +34,7 @@ for everyone once it is open and for the owner before that.
 | 4. Links to Mercadito, YavayaGo, Servicios and the boards | **Built and tested** |
 | 5. Roxi creates videos (HeyGen) | Not built yet — needs a HeyGen API key (below) |
 | 6. Paid narration (ElevenLabs) | **Built and tested** — "Voiceover", priced by the owner's delegation (below) |
-| Offers: sell, give, pay what you like, for food kitchens | **Built and tested** — "Offers" (owner's request, 20 November) |
+| Offers: sell, give, pay what you like, for food kitchens, for animals, calls for help | **Built and tested** — "Offers" (owner's requests, 20 November) |
 | Photos instead of a video | **Built and tested** — "Photos" |
 | 7. Discovery, recommendations, creator analytics | **Built** (six tabs, transparent ranking, studio numbers); achievements not built |
 | 8. Monetisation, moderation, performance | Moderation and performance built; paid features (featured videos, business tools) not built |
@@ -210,16 +210,39 @@ nothing. Made valid like this:
   `foodMaxHours` (24) at most. Viewers see a plain notice that it is home
   food from a neighbour, not an inspected business.
 - **For food kitchens** is the "food for the homeless" idea made safe: only
-  an owner of a church approved in Santuario can ask for it, so donated food
-  goes to someone who will share it, not to whoever is fastest.
+  a church approved in Santuario, or a food bank, soup kitchen or shelter
+  approved by a Yavaya reviewer, can ask for it, so donated food goes to
+  someone who will share it, not to whoever is fastest.
+- **For animals in need** (owner, 20 November: "give food for animals and
+  collect food for them and help in general with animals in need"): food for
+  animals (what exactly it is — brand, sealed, for which animal — is
+  required), animal care (medicine, blankets, beds) or helping hands
+  (transport, volunteering, a temporary home). Only a rescuer approved in
+  Animales can ask for it.
+- **Pido ayuda** — collecting, the other way round: an approved church,
+  organisation or rescuer says what it needs and how many ("croquetas para 12
+  perros: 5 bolsas"). Neighbours tap **Yo ayudo** with how many they bring;
+  accepting one counts it against what is still needed; where and when to
+  bring it is shown only to the one accepted. The video shows who Yavaya
+  checked is asking ("Refugio Patitas · verificado por Yavaya"). Goods and
+  time only: Yavaya collects no money for anyone. A new **Ayudar** tab lists
+  calls for help, soonest-ending first.
+- **What each kind may offer** is held on both sides (`src/config/offers.ts`):
+  helping hands are never sold (that is Servicios); animals' things go to
+  rescuers; soup kitchens get what feeds or clothes people.
+- **Organisations** apply at `/mirador/organizacion` (kind, name, whom they
+  serve, an optional registration number, place, WhatsApp for the reviewer)
+  and are approved, rejected or suspended at `/admin/organizaciones`
+  (`causes.review`); the queue shows on the Admin panel. Changing the name,
+  description or place sends one back to review.
 - **Limits.** At most `openOffersPerMember` (5) open at once, so the feed is
   not one person's shop; offers close themselves when their time ends
   (`mirador-upkeep`), and the creator can close one early — accepted
   requests stand.
 - **Where they show.** On the video (price or kind, how many are left, until
   when, and the button), in *Mercadito* (items for sale or for a
-  contribution) and in a new *Regalos* tab (free and for food kitchens,
-  soonest-ending first).
+  contribution), in *Regalos* (free, for food kitchens and for animals,
+  soonest-ending first) and in *Ayudar* (calls for help).
 
 ### Voiceover
 
@@ -357,11 +380,11 @@ idempotency key, a refund if HeyGen fails, cost per job in Admin, and
 
 | | |
 | --- | --- |
-| Schema | `src/server/db/schema/mirador.ts`, migrations `drizzle/0054_mirador.sql`, `0055_mirador_offers.sql` |
-| Domain | `src/server/domains/mirador/` — `upload`, `process`, `feed`, `social`, `videos`, `links`, `text`, `access`, `offers`, `voice` |
+| Schema | `src/server/db/schema/mirador.ts`, `aid.ts`; migrations `drizzle/0054_mirador.sql`, `0055_mirador_offers.sql`, `0056_aid_organisations.sql` |
+| Domain | `src/server/domains/mirador/` — `upload`, `process`, `feed`, `social`, `videos`, `links`, `text`, `access`, `offers`, `voice`; `src/server/domains/aid/service.ts` (organisations, who is a checked helper); `src/config/offers.ts` |
 | Routes | `src/app/api/mirador/**` (also `photos`, `requests/[id]`, `videos/[id]/offer`, `/want`, `/voice`), `src/app/mirador/media/[id]/[file]` |
-| Pages | `src/app/mirador/` (feed, `v/[id]`, `subir`, `creador/[yayId]`, `estudio`), `src/app/admin/mirador` |
+| Pages | `src/app/mirador/` (feed, `v/[id]`, `subir`, `creador/[yayId]`, `estudio`, `organizacion`), `src/app/admin/mirador`, `src/app/admin/organizaciones` |
 | Client | `src/ui/mirador/` — `feed.tsx`, `upload.tsx`, `studio-actions.tsx`, `studio-offers.tsx`, `labels.ts` |
 | Rules | `MIRADOR_RULES` in `src/config/business-rules.ts`; `mirador.voiceover` and `mirador.voiceover_long` in `src/config/billable-actions.ts`; switch `mirador.open` |
 | End card | `public/mirador/endcard.mp4`; sources in `tools/mirador-endcard/` |
-| Tests | `tests/integration/mirador.test.ts` (14, real ffmpeg files); `tests/integration/mirador-offers.test.ts` (9: photos, prices, food rules, requests, donations, limits, voiceover charge/refund, captions); `tests/e2e/mirador.cjs` (16 checks on a phone); `tests/e2e/mirador-offers.cjs` (17 checks on a phone) |
+| Tests | `tests/integration/mirador.test.ts` (14, real ffmpeg files); `tests/integration/mirador-offers.test.ts` (12: photos, prices, food rules, requests, donations, animals, organisations, calls for help, limits, voiceover charge/refund, captions); `tests/e2e/mirador.cjs` (16 checks on a phone); `tests/e2e/mirador-offers.cjs` (21 checks on a phone) |
