@@ -2028,6 +2028,9 @@ a.live-text:hover { text-decoration: underline; }
 /* Panel. */
 .roxi-panel {
   position: fixed; z-index: 2; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  /* One column no wider than the panel: an implicit `auto` column grows to its widest child's minimum, which on a
+     360 px phone pushed the header's close button and the right edge of the conversation ~30 px off screen. */
+  grid-template-columns: minmax(0, 1fr);
   overflow: hidden; isolation: isolate; color: var(--rx-ink);
   border: 1px solid transparent;
   background:
