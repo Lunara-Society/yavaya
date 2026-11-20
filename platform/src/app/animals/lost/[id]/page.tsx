@@ -13,6 +13,8 @@ import { ANIMALS_REPORT_CATEGORIES } from '@/server/domains/animals/service';
 import { getLostFound } from '@/server/domains/animals/lost-found';
 import { closeLostFoundAction, reportLostFoundAction } from '../../actions';
 import { loginHref } from '@/server/auth/return-path';
+import { siteUrl } from '@/server/seo';
+import { PosterShare } from '@/ui/animals/poster-share';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +27,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { t, locale } = await siteContext();
   const found = await getLostFound(db(), { postId: id, viewerId: null, viewerIsReviewer: false, locale });
   if (!found) return { robots: { index: false } };
-  return { title: `${t(`animals.lost.kind.${found.post.kind}` as MessageKey)} · ${found.post.placeName}`, description: found.post.description.slice(0, 160) };
+  const title = `${t(`animals.lost.kind.${found.post.kind}` as MessageKey)} · ${found.post.placeName}`;
+  // Shared on WhatsApp, the link shows the notice's own poster (./poster): the photo, the name, the place.
+  const poster = found.post.status === 'open' ? [{ url: `/animals/lost/${id}/poster`, width: 1080, height: 1350, alt: title }] : undefined;
+  return { title, description: found.post.description.slice(0, 160), openGraph: poster ? { title, images: poster } : undefined };
 }
 
 export default async function LostFoundPostPage({ params, searchParams }: Params) {
@@ -67,6 +72,17 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
             </p>
             <p className="cm-body">{post.description}</p>
             <p className="sv-meta">{t('animals.lost.posted_by', { name: authorName, date: formatDate(post.createdAt, locale) })}</p>
+            {/* The poster, for WhatsApp groups (docs/DISTRICT-FOCUS.md): anyone can spread an open notice, not only its author. */}
+            {post.status === 'open' ? (
+              <p className="btn-row an-poster">
+                <PosterShare
+                  posterUrl={`/animals/lost/${post.id}/poster`}
+                  fileName={`${t(post.kind === 'lost' ? 'animals.poster.lost_title' : 'animals.poster.found_title')}-${post.id.slice(0, 8)}.png`}
+                  text={t('animals.poster.share_text', { title: post.name ?? t(`animals.species.${post.species}` as MessageKey), place: post.placeName, url: `${siteUrl()}/animals/lost/${post.id}` })}
+                  label={t('animals.poster.share')}
+                />
+              </p>
+            ) : null}
 
             <div className="an-apply-box card">
               {isAuthor ? (

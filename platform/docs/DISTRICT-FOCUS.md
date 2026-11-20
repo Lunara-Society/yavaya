@@ -117,3 +117,23 @@ e internet" (`utilityReports` in `server/domains/boards/service.ts`); nothing
 new is stored. It does not show while the whole board is empty (the "be the
 first" block is there instead), nor on a filtered list. Tests:
 `tests/integration/barrio-cuts.test.ts`.
+
+## "SE BUSCA": a poster for every open lost or found notice
+
+`app/animals/lost/[id]/poster` makes the notice into one portrait image
+(1080 × 1350): "SE BUSCA" in red (or "ENCONTRADO" in green) over obsidian,
+the first photo, the name or species, the place and the day, the start of the
+description, and the page's address. Lost-pet posters already travel through
+WhatsApp groups; this is that poster, made in a second.
+
+- **On the notice page**, "Compartir cartel": on a phone that can share files
+  the image itself goes to WhatsApp (or anywhere the member chooses); anywhere
+  else the poster opens to save or forward (`ui/animals/poster-share.tsx`).
+  Anyone can spread an open notice, not only its author.
+- **As the page's preview**: the notice's link shared on WhatsApp shows the
+  poster (`og:image`).
+- **Only what the public page shows**, read as a visitor: never the WhatsApp
+  number, which the page gives only to signed-in members (a number on a
+  poster invites the ransom scam). A closed, reunited or removed notice has no
+  poster (404).
+- Not behind the look: it adds a door, it changes nothing that was there.
