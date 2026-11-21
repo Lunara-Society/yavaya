@@ -8,8 +8,11 @@
  */
 export const GUIDE_VERSION = 1;
 
-/** The day this version of the films went up, for search engines' video listings. */
-export const GUIDE_PUBLISHED = '2026-10-18';
+/**
+ * When this version of the films went up, for search engines' video listings. A full date and time with its offset
+ * (Managua): Google flags a bare date in VideoObject.uploadDate as invalid and missing its time zone.
+ */
+export const GUIDE_PUBLISHED = '2026-10-18T00:00:00-06:00';
 
 export const GUIDE_KEYS = ['guia', 'mercadito', 'servicios', 'trabajo', 'yavayago', 'comunidad', 'violeta', 'santuario', 'animales', 'confianza'] as const;
 export type GuideKey = (typeof GUIDE_KEYS)[number];

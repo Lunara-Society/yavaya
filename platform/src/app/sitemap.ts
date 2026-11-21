@@ -3,11 +3,15 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/server/db/client';
 import { siteUrl } from '@/server/seo';
 import { PAGE_PATHS } from '@/ui/site/blocks';
+import { DISTRICTS } from '@/config/districts';
+import { BOARD_DISTRICT_KEYS } from '@/config/boards';
 
 /**
- * Every public page Google should know about: the site's own pages, and the
- * real public content behind them — approved churches, published listings,
- * animals waiting for a home, lost and found posts, open job posts and
+ * Every public page Google should know about: the site's own pages, every
+ * district that is open (read from the register, so a district that opens is
+ * listed without touching this file), and the real public content behind them
+ * — approved churches, published listings, animals waiting for a home, lost
+ * and found posts, open job posts, open posts on the board districts and
  * approved YavayaGo stores.
  *
  * Demo content is never listed (CLAUDE.md: it is excluded from everything
@@ -16,7 +20,7 @@ import { PAGE_PATHS } from '@/ui/site/blocks';
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
-type Row = { id: string; updated_at: string | Date };
+type Row = { id: string; updated_at: string | Date; district?: string };
 
 const notDemo = (table: string) => sql.raw(`not exists (select 1 from demo_content d where d.subject_id = ${table}.id::text and d.removed_at is null)`);
 
@@ -33,8 +37,10 @@ async function rows(query: ReturnType<typeof sql>): Promise<Row[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
   const now = new Date();
-  const important = new Set(['/', '/districts', '/mercadito', '/services', '/work', '/sanctuary', '/animals', '/community']);
-  const pages: MetadataRoute.Sitemap = [...new Set(Object.values(PAGE_PATHS))].map((path) => ({
+  // Open districts are as important as the original ones: the board districts (Hogar … Diáspora) were missing here.
+  const districtPaths = Object.values(DISTRICTS).filter((d) => d.status === 'available').map((d) => `/${d.slug}`);
+  const important = new Set(['/', '/districts', ...districtPaths]);
+  const pages: MetadataRoute.Sitemap = [...new Set([...Object.values(PAGE_PATHS), ...districtPaths, '/cerca'])].map((path) => ({
     url: `${base}${path === '/' ? '' : path}`,
     lastModified: now,
     changeFrequency: important.has(path) ? 'daily' : 'weekly',
@@ -49,14 +55,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  const [listings, churches, animals, lost, posts, stores] = await Promise.all([
+  const [listings, churches, animals, lost, posts, stores, boards] = await Promise.all([
     rows(sql`select l.id, l.updated_at from mercadito_listings l where l.status = 'published' and ${notDemo('l')} order by l.updated_at desc limit 5000`),
     rows(sql`select c.id, c.updated_at from sanctuary_churches c where c.status = 'approved' and ${notDemo('c')} limit 5000`),
     rows(sql`select a.id, a.updated_at from animals_listings a where a.status = 'available' and ${notDemo('a')} limit 5000`),
     rows(sql`select f.id, f.updated_at from animals_lost_found f where f.status = 'open' and ${notDemo('f')} limit 5000`),
     rows(sql`select p.id, p.updated_at from work_posts p where p.status = 'open' and p.expires_at > now() and ${notDemo('p')} limit 5000`),
     rows(sql`select s.id, s.updated_at from go_stores s where s.status = 'approved' and ${notDemo('s')} limit 5000`),
+    rows(sql`select b.id, b.district, b.updated_at from board_posts b where b.status = 'open' and b.expires_at > now() and ${notDemo('b')} order by b.updated_at desc limit 5000`),
   ]);
+  const boardDistricts = new Set<string>(BOARD_DISTRICT_KEYS);
   const entries = (list: Row[], prefix: string, priority: number) =>
     list.map((row) => ({ url: `${base}${prefix}/${row.id}`, lastModified: new Date(row.updated_at), changeFrequency: 'weekly' as const, priority }));
 
@@ -68,5 +76,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries(lost, '/animals/lost', 0.6),
     ...entries(posts, '/work/posts', 0.6),
     ...entries(stores, '/yavayago/stores', 0.6),
+    ...boards
+      .filter((row) => row.district && boardDistricts.has(row.district))
+      .map((row) => ({ url: `${base}/${row.district}/${row.id}`, lastModified: new Date(row.updated_at), changeFrequency: 'weekly' as const, priority: 0.5 })),
   ];
 }
