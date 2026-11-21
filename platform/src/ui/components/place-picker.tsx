@@ -360,7 +360,11 @@ export function PlacePicker({
             >
               {place ? (
                 <>
-                  <span className="pp-name">{place.name}</span>
+                  <span className="pp-name">
+                    {/* The country's flag first: a dozen villages share a big city's name, and the flag tells them apart at a glance. */}
+                    {flagOf(place.countryCode) ? <span className="pp-flag" aria-hidden="true">{flagOf(place.countryCode)} </span> : null}
+                    {place.name}
+                  </span>
                   <span className="pp-meta">
                     {place.kind}
                     {place.context ? ` · ${place.context}` : ''}
@@ -377,4 +381,11 @@ export function PlacePicker({
       ) : null}
     </div>
   );
+}
+
+/** A country's flag from its code (`ca.ni` → 🇳🇮): two regional-indicator letters. Empty for anything else. */
+function flagOf(countryCode: string | null | undefined): string {
+  const iso = countryCode?.split('.')[1];
+  if (!iso || !/^[a-z]{2}$/.test(iso)) return '';
+  return String.fromCodePoint(...[...iso.toUpperCase()].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }

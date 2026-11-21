@@ -14,7 +14,7 @@ import { isFlagEnabled, setFlag } from './settings';
  * Changing one needs `flags.manage` (administrators), checked here, on the
  * server, inside the transaction that writes the flag and its audit record.
  */
-export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials', 'vault_collectibles', 'genesis', 'roxi_review', 'roxi_halo', 'focus', 'mirador'] as const;
+export const LOOK_KEYS = ['home', 'worlds', 'guardian', 'logo', 'depth', 'play', 'trials', 'vault_collectibles', 'roxi_review', 'roxi_halo', 'focus', 'mirador'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 const FLAG: Record<LookKey, string> = {
@@ -29,8 +29,6 @@ const FLAG: Record<LookKey, string> = {
   trials: 'play.trials',
   // Whether the Vault sells collectibles not usable yet (docs/PLAY.md, "The Vault"): off until the owner approves their refund terms.
   vault_collectibles: 'play.vault_collectibles',
-  // Whether every player sees the Genesis character (docs/GENESIS.md); off, only the owner's preview.
-  genesis: 'play.genesis',
   // Roxi's listing flagship: drafts on the server, the review card, the receipt (docs/roxi/FLAGSHIP.md); off, only the owner's preview.
   roxi_review: 'roxi.review',
   // Roxi's face: the Halo (ui/roxi/halo.tsx, docs/roxi/HALO.md); off, the gold orb as it was.

@@ -216,6 +216,12 @@ function withSecurityHeaders(request: NextRequest, existing: NextResponse | null
   requestHeaders.set('x-nonce', nonce);
   // The path, for the canonical tag the root layout renders.
   requestHeaders.set('x-pathname', request.nextUrl.pathname);
+  // `?lang=en` (or `es`): this page in that language, whatever the visitor's preference. It gives English an
+  // address a search engine can index and a link can carry (server/preferences.ts, resolveLocale). Only these
+  // two values pass; anything a client sends as the header itself is dropped.
+  const lang = request.nextUrl.searchParams.get('lang');
+  if (lang === 'en' || lang === 'es') requestHeaders.set('x-lang', lang);
+  else requestHeaders.delete('x-lang');
   requestHeaders.set('content-security-policy', csp);
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });

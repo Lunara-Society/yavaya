@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AppShell } from '@/ui/components/app-shell';
 import { shellContext } from '@/ui/shell-context';
 
 export const dynamic = 'force-dynamic';
+
+/** Its own title, so a broken address does not read as a copy of the home page. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await shellContext();
+  return { title: t('error.page.title') };
+}
 
 /**
  * 404.

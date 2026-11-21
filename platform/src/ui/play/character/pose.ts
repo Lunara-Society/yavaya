@@ -1,13 +1,12 @@
-import type { Emote, MotionState } from './build';
+import type { Emote, MotionState } from './types';
 
 /**
  * How the character moves (docs/PLAY.md), apart from what it is made of: from
  * the player's state, the angle of every joint, eased toward where it should
  * be so one pose flows into the next (idle, walk and run, jump and fall, a
  * squash on landing, a cheer, two emotes, the mastery moves) and the face
- * (a blink, a grin). Both characters wear the same moves: the drawn one
- * (build.ts) turns its pivots by these angles, Genesis (genesis/character.ts)
- * its bones.
+ * (a blink, a grin). Genesis (genesis/character.ts) turns its bones by
+ * these angles.
  *
  * Angles in radians in the character's own axes (x across, y up, z forward):
  * an arm's x swings it forward (negative) and back, its z raises it sideways;

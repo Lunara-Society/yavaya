@@ -200,13 +200,6 @@ export const SITE_LOOK_RULES = {
    */
   vault_collectibles: false,
   /**
-   * Yavaya Genesis, the anatomical character (docs/GENESIS.md): off until the
-   * owner has reviewed it (decision of 19 November 2026: "only you see it
-   * until you approve it"). While off, someone who may change this switch
-   * sees it at /play?genesis=1; everyone else keeps the drawn character.
-   */
-  genesis: false,
-  /**
    * Roxi's listing flagship (docs/roxi/FLAGSHIP.md): drafts kept on the
    * server, the review card in her panel, and the receipt after publishing.
    * On for everyone: the owner's decision of 20 November 2026 ("let's do all

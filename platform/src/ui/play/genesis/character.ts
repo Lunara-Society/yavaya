@@ -4,14 +4,14 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import { GENESIS_ASSETS_VERSION, genesisInfluences } from '@/config/genesis';
 import { genesisFromLook, type GenesisLook } from '@/config/genesis-looks';
 import type { Look } from '@/config/play-looks';
-import type { Character, MotionState } from '../character/build';
+import type { Character, MotionState } from '../character/types';
 import { createPoser, type Pose } from '../character/pose';
 
 /**
  * A Yavaya Genesis character (docs/GENESIS.md): the anatomical body, its
- * fitted parts and clothes, posed by the same moves as the drawn character
- * (character/pose.ts), behind the same `Character` interface so every game
- * draws either one.
+ * fitted parts and clothes, posed by the shared moves
+ * (character/pose.ts), behind the `Character` interface every game uses
+ * (character/types.ts).
  *
  * The files load on demand and are shared by every character on the page
  * (core.glb once; a hairstyle, garment or pair of shoes only when someone
@@ -22,7 +22,7 @@ import { createPoser, type Pose } from '../character/pose';
  */
 
 const ROOT = `/play/genesis/v${GENESIS_ASSETS_VERSION}`;
-/** Genesis is built at 1.67 m; the game's body is drawn a little smaller, like the drawn character. */
+/** Genesis is built at 1.67 m; the game's body is drawn a little smaller, the size the courses were built for. */
 const DRAWN = 0.96;
 /** Where a roll or an air-dodge turns the body: about the hips. */
 const PIVOT = 0.9;
@@ -303,7 +303,7 @@ export function buildGenesisCharacter(initial: Look): Character {
 
   let last: Pose = poser(0);
 
-  /** The moves, as the drawn character makes them, turned onto the bones. */
+  /** The moves (character/pose.ts), turned onto the bones. */
   function pose(p: Pose) {
     // Until the first shape is in (its files still loading), there is nothing to pose yet.
     if (!skeleton || correction.size === 0) return;
@@ -317,9 +317,9 @@ export function buildGenesisCharacter(initial: Look): Character {
     set('neck01', p.headX * 0.35, p.headY * 0.35, 0);
     set('head', p.headX * 0.65, p.headY * 0.65, 0);
     /*
-     * A limb: its upper segment turned as the drawn character's (x swings, z
-     * raises) from hanging straight down; its lower segment bent about the
-     * same axis the drawn elbow or knee bends about. The rest pose has the
+     * A limb: its upper segment turned by the pose's angles (x swings, z
+     * raises) from hanging straight down; its lower segment bent about x,
+     * as an elbow or knee bends. The rest pose has the
      * arms out (an A), so each segment first turns down by its correction.
      */
     const limb = (upper: Limb, lower: Limb, upperBone: string, lowerBone: string, swing: number, raise: number, bend: number) => {

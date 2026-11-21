@@ -135,7 +135,7 @@ export const siteEn: SiteContent = {
       ctaPrimary: 'Explore Yavaya',
       ctaSecondary: 'What works today',
       gatesEyebrow: 'Choose your district',
-      gatesTitle: 'Seven districts. One identity.',
+      gatesTitle: 'Fifteen districts. One identity.',
       trustEyebrow: 'The trust layer',
       trustTitle: 'Yavaya competes on trust',
       trustLead:
@@ -152,11 +152,11 @@ export const siteEn: SiteContent = {
 
     districts: {
       eyebrow: 'Districts',
-      title: 'Seven distinct places, one Yavaya',
-      description: 'Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals: the districts of Yavaya and the trust layer that connects them.',
+      title: 'Fifteen distinct places, one Yavaya',
+      description: 'Mercadito, Services, Work, YavayaGo, Community, Sanctuary, Animals, Home, Mobility, Health and Wellness, Learn, Business, Countryside, Neighbourhood and Diaspora: the districts of Yavaya and the trust layer that connects them.',
       lead: 'Each district has its own atmosphere, its own design and its own purpose. All of them share your account, your identity and your reputation.',
       layer: {
-        eyebrow: 'Beneath all seven',
+        eyebrow: 'Beneath all fifteen',
         title: 'The trust layer',
         lead: 'It is invisible and it holds everything else up. It is the most important system in Yavaya.',
         items: [
@@ -793,8 +793,8 @@ export const siteEn: SiteContent = {
       lead: 'If your question is not here, it probably has no answer yet: Yavaya is under construction.',
       faq: [
         { q: 'What is Yavaya?', a: 'A digital ecosystem for Central America: buying and selling, ordering delivery, finding work, supporting causes, adopting animals and being there for each other in community — all with one account and one reputation.' },
-        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can use every open district: Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals.' },
-        { q: 'When does Yavaya open?', a: 'It is open, with seven districts working. The Status page shows what works today and what is missing, plainly; the roadmap shows what comes next. We do not give dates we cannot keep.' },
+        { q: 'Can I create an account yet?', a: 'Yes. Sign up with your email and we will send you a 6-digit code to verify it. With your account you can use every open district: Mercadito, Services, Work, YavayaGo, Community, Sanctuary, Animals, Home, Mobility, Health and Wellness, Learn, Business, Countryside, Neighbourhood and Diaspora.' },
+        { q: 'When does Yavaya open?', a: 'It is open, with all fifteen districts working. The Status page shows what works today and what is missing, plainly; the roadmap shows what comes next. We do not give dates we cannot keep.' },
         { q: 'What does it cost?', a: ['Signing up, creating an account, viewing listings, reading content and receiving donations are **always free**.', 'What is paid is optional. Today only tokens can be bought, by card: to feature a listing or to have more listings open than the free ones. Work subscriptions cannot be paid for yet.'] },
         { q: 'Are tokens cryptocurrency?', a: 'No. They are credits for taking part in the platform: posting, featuring, being seen. They are not an investment, cannot be traded, and there is no token market.' },
         { q: 'Do I have to use tokens?', a: 'Never. Cash is always the default and tokens are always optional.' },
@@ -812,11 +812,11 @@ export const siteEn: SiteContent = {
       title: 'The rules of Yavaya',
       description: 'The Yavaya terms of use: your account, how we treat each other, reputation, tokens, moderation, and what Yavaya does not do yet.',
       lead: 'Yavaya works because people trust people. These rules exist to protect that trust. They are written to be understood.',
-      version: 'Version of 2 October 2026.',
+      version: 'Version of 21 November 2026.',
       sections: [
         {
           title: '1. What Yavaya is today',
-          text: 'Yavaya is opening in stages. Today you can create your account, verify it, hold your identity and reputation, and use all seven districts: Mercadito, Services, Work, YavayaGo, Community, Sanctuary and Animals. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
+          text: 'Yavaya is opening in stages. Today you can create your account, verify it, hold your identity and reputation, and use all fifteen districts: Mercadito, Services, Work, YavayaGo, Community, Sanctuary, Animals, Home, Mobility, Health and Wellness, Learn, Business, Countryside, Neighbourhood and Diaspora. The Status page always says what works and what does not; if something is not shown there as working, we do not offer it.',
         },
         {
           title: '2. Your account',

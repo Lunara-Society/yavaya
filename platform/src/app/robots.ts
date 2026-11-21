@@ -15,8 +15,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        disallow: ['/account', '/admin', '/api/', '/violeta', '/notifications', '/settings', '/login', '/register', '/verify', '/reset', '/*/mine', '/*/new', '/*/publish', '/*?*'],
+        // A page's English address (`?lang=en`) is crawlable; other query strings (filters, sort orders) are not.
+        allow: ['/', '/*?lang='],
+        // `/login` covers the password reset (/login/nueva-clave); the old `/reset` address never existed.
+        disallow: ['/account', '/admin', '/api/', '/violeta', '/notifications', '/settings', '/login', '/register', '/verify', '/*/mine', '/*/new', '/*/publish', '/*?*'],
       },
     ],
     sitemap: `${base}/sitemap.xml`,

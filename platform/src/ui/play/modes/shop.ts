@@ -1,7 +1,8 @@
 import * as THREE from 'three';
-import { ACHIEVEMENTS, earnedItems, lookImage, lookOption, withoutClash, type Look, type LookPart, type Unlock } from '@/config/play-looks';
+import { ACHIEVEMENTS, earnedItems, lookOption, type Look, type LookPart, type Unlock } from '@/config/play-looks';
+import { genesisDraws } from '@/config/genesis-looks';
 import { PLAY_RULES } from '@/config/business-rules';
-import { type Emote } from '../character/build';
+import { type Emote } from '../character/types';
 import { makeCharacter } from '../character/make';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { el, type PlayContext } from '../context';
@@ -16,19 +17,21 @@ import { el, type PlayContext } from '../context';
  * Looks are bought with Play Coins earned by playing, or the exclusive ones
  * with gems; some are not sold at all but won. Nothing tried on is kept
  * until "Ponérmelo", and only what the player owns can be kept.
+ *
+ * Only looks Genesis draws are shown (config/genesis-looks.ts): nothing is
+ * sold or won here that the character would not wear. What a player owns
+ * of the rest stays theirs.
  */
 
-type Category = 'all' | 'ropa' | 'cara' | 'pelo' | 'extras' | 'logros';
+type Category = 'all' | 'ropa' | 'pelo' | 'logros';
 const CATEGORIES: Array<[Category, LookPart[] | null]> = [
   ['all', null],
-  ['ropa', ['top', 'print', 'bottom', 'shoes']],
-  ['cara', ['face', 'beard', 'paint']],
+  ['ropa', ['top', 'bottom', 'shoes']],
   ['pelo', ['hair', 'hairColor']],
-  ['extras', ['glasses', 'accessory']],
   ['logros', []],
 ];
 /** Looks worn on the head: the camera comes in close for them. */
-const HEAD: LookPart[] = ['face', 'beard', 'paint', 'hair', 'hairColor', 'glasses'];
+const HEAD: LookPart[] = ['face', 'hair', 'hairColor'];
 
 type Item = { item: string; part: LookPart; id: string; unlock: Unlock };
 
@@ -103,7 +106,7 @@ export function createShop(play: PlayContext, first: 'shop' | 'gems' = 'shop'): 
   close.addEventListener('click', () => play.go('plaza'));
 
   const owned = () => new Set(play.account?.owned ?? []);
-  const items: Item[] = earnedItems().filter((e) => e.unlock !== 'vault');
+  const items: Item[] = earnedItems().filter((e) => e.unlock !== 'vault' && genesisDraws(e.part, e.id));
   const priceOf = (item: Item): { coins: number } | { gems: number } | null => (item.unlock === 'shop' ? { coins: PLAY_RULES.shop[item.item] ?? 0 } : item.unlock === 'gems' ? { gems: PLAY_RULES.gems[item.item] ?? 0 } : null);
   const nameOf = (item: Item) => text(`play.look.${item.part}.${item.id}`);
   const howOf = (item: Item) => (item.unlock === 'founder' ? text('play.unlock.founder') : text('play.unlock.achievement', { name: text(`play.achievement.${item.unlock}`) }));
@@ -114,16 +117,8 @@ export function createShop(play: PlayContext, first: 'shop' | 'gems' = 'shop'): 
     gems.hidden = !play.account;
   };
 
-  // --- Picture of a look: its artwork, or its colours ---
+  // --- Picture of a look: its colours ---
   const picture = (item: Item) => {
-    const url = lookImage(item.part, item.id);
-    if (url) {
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = '';
-      img.loading = 'lazy';
-      return img;
-    }
     const option = lookOption(item.part, item.id);
     const swatch = el('yp-bq-swatch');
     const c = `#${new THREE.Color(option.color ?? 0x888888).getHexString()}`;
@@ -199,7 +194,7 @@ export function createShop(play: PlayContext, first: 'shop' | 'gems' = 'shop'): 
   const select = (item: Item) => {
     if (selected?.item === item.item) return reset();
     selected = item;
-    preview = withoutClash({ ...wearing, [item.part]: item.id }, item.part);
+    preview = { ...wearing, [item.part]: item.id };
     hero.dress(preview);
     facing = 2.5;
     hint.classList.add('is-gone');

@@ -71,6 +71,12 @@ describe('A look a player already has', () => {
     }
   });
 
+  it('has a choice for every Genesis hairstyle, and red sneakers stay red', () => {
+    const worn = new Set(LOOK_OPTIONS.hair.map((o) => genesisFromLook({ ...DEFAULT_LOOK, hair: o.id }).hair));
+    for (const hair of GENESIS_HAIR) expect(worn.has(hair), hair).toBe(true);
+    expect(genesisFromLook({ ...DEFAULT_LOOK, shoes: 'tenis_rojos' }).shoes).toEqual({ id: 'sneaker', color: LOOK_OPTIONS.shoes.find((o) => o.id === 'tenis_rojos')!.color });
+  });
+
   it('keeps what the player chose: colours, sleeves and shorts', () => {
     const look = genesisFromLook({ ...DEFAULT_LOOK, top: 'sudadera', bottom: 'short', skin: 'ebano', hair: 'largo', hairColor: 'turquesa' });
     expect(look).toMatchObject({ top: { garment: 'longsleeve' }, bottom: { garment: 'shorts' }, hair: 'long01' });

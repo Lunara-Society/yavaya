@@ -58,7 +58,7 @@ export default async function LostFoundPostPage({ params, searchParams }: Params
           <div className="an-gallery">
             {photos.map((photo, index) => (
               // eslint-disable-next-line @next/next/no-img-element -- served from /media, pre-sized
-              <img key={photo} src={`/media/${photo}`} alt="" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+              <img key={photo} src={`/media/${photo}`} alt={index === 0 ? (post.name ?? t(`animals.species.${post.species}` as MessageKey)) : ''} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
             ))}
           </div>
           <div>

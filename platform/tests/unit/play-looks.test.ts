@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_LOOK, LOOK_OPTIONS, LOOK_PARTS, lookImage, parseLook, withoutClash } from '@/config/play-looks';
+import { DEFAULT_LOOK, LOOK_OPTIONS, LOOK_PARTS, earnedItems, parseLook, withoutClash } from '@/config/play-looks';
+import { GENESIS_PARTS, genesisDraws, genesisOptions } from '@/config/genesis-looks';
 import { PLAY_RULES } from '@/config/business-rules';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 
 describe('looks', () => {
   it('never wears the sunglasses accessory and a pair of glasses at once: the one just chosen wins', () => {
@@ -13,14 +12,34 @@ describe('looks', () => {
     expect(withoutClash(hat, 'accessory')).toEqual(hat);
   });
 
-  it('has a picture for every option that says it has one, and a price for every one sold for gems', () => {
+  it('has a price for every option sold for gems', () => {
     for (const part of LOOK_PARTS) {
       for (const option of LOOK_OPTIONS[part]) {
-        const url = lookImage(part, option.id);
-        if (url) expect(existsSync(join(process.cwd(), 'public', url)), url).toBe(true);
         if (option.unlock === 'gems') expect(PLAY_RULES.gems[`${part}:${option.id}`], `${part}:${option.id}`).toBeGreaterThan(0);
       }
     }
+  });
+
+  it('offers only what Genesis draws, and something for every part it draws', () => {
+    for (const part of LOOK_PARTS) expect(genesisOptions(part).length > 0, part).toBe(GENESIS_PARTS.includes(part));
+    // Not drawn yet: beards, glasses, patterned tops, and faces named after a painted feature.
+    expect(genesisDraws('beard', 'completa')).toBe(false);
+    expect(genesisDraws('glasses', 'aviador')).toBe(false);
+    expect(genesisDraws('top', 'galaxia')).toBe(false);
+    expect(genesisDraws('face', 'pecas')).toBe(false);
+    expect(genesisDraws('face', 'ojos_claros')).toBe(true);
+    expect(genesisDraws('top', 'guayabera_oro')).toBe(true);
+    expect(genesisDraws('top', 'tirantes')).toBe(false);
+    expect(genesisDraws('shoes', 'sandalias')).toBe(false);
+    // Every default is offered, so a new player starts on something the Studio shows.
+    for (const part of GENESIS_PARTS) expect(genesisDraws(part, DEFAULT_LOOK[part]), part).toBe(true);
+  });
+
+  it('keeps every earned option on the catalogue, offered or not, so nothing owned is lost', () => {
+    const items = earnedItems().map((e) => e.item);
+    expect(items).toContain('beard:charro');
+    expect(items).toContain('accessory:sombrero_fundador');
+    expect(parseLook({ ...DEFAULT_LOOK, beard: 'charro', accessory: 'sombrero_fundador' })).toMatchObject({ beard: 'charro', accessory: 'sombrero_fundador' });
   });
 
   it('keeps a saved look that wore a print since taken out, without the print', () => {

@@ -216,8 +216,9 @@ export function HomeBody({ c, t, signedIn, location, depth, play, pulse }: HomeP
             </button>
           </form>
           {/* Yavaya Play's door, the owner's request: easy to find, right under the search, only while the game is open. */}
+          {/* A plain link, not <Link>: /play needs its own document. Its security policy alone allows the WebAssembly and blob: textures Genesis needs, and a client-side visit would keep this page's stricter one (Sentry YAVAYA-WEB-J, 21 November 2026). */}
           {play ? (
-            <Link className="hx-play" href="/play">
+            <a className="hx-play" href="/play">
               <span className="hx-play-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" focusable="false">
                   <path d="M6.5 8h11a4 4 0 0 1 3.9 4.8l-.9 4.4a2.2 2.2 0 0 1-3.8 1L14.5 16h-5l-2.2 2.2a2.2 2.2 0 0 1-3.8-1l-.9-4.4A4 4 0 0 1 6.5 8Z" />
@@ -231,7 +232,7 @@ export function HomeBody({ c, t, signedIn, location, depth, play, pulse }: HomeP
                 <span>{t('home.play.line')}</span>
               </span>
               <Arrow />
-            </Link>
+            </a>
           ) : null}
           {/*
            * "¿Qué necesitas hoy?" (the Roxi proposal of 6 November 2026): for a
@@ -276,9 +277,9 @@ export function HomeBody({ c, t, signedIn, location, depth, play, pulse }: HomeP
               {t('nearby.home_link')} <Arrow />
             </Link>
             {play ? (
-              <Link className="hx-pill" href="/play">
+              <a className="hx-pill" href="/play">
                 {t('home.play.title')} <Arrow />
-              </Link>
+              </a>
             ) : null}
             {/* The cards' sounds can be turned off here. Hidden until the depth is running: a device that is not given it makes no sound to turn off. */}
             {depth ? (

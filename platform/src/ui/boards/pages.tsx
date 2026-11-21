@@ -524,9 +524,10 @@ export async function BoardPost({ district, params, searchParams }: { district: 
           </p>
           {post.photoIds.length > 0 ? (
             <div className="bd-photos">
-              {post.photoIds.map((id) => (
+              {post.photoIds.map((id, index) => (
                 // eslint-disable-next-line @next/next/no-img-element -- served already sized from /media
-                <img key={id} src={`/media/${id}`} alt="" loading="lazy" decoding="async" />
+                // The first photo is the post's picture and is named by its title; the others add nothing a reader misses.
+                <img key={id} src={`/media/${id}`} alt={index === 0 ? post.title : ''} loading="lazy" decoding="async" />
               ))}
             </div>
           ) : null}

@@ -50,10 +50,15 @@ export async function readThemePreference(): Promise<ThemePreference> {
  * are in Central America — not English.
  */
 export async function resolveLocale(): Promise<Locale> {
+  const headerStore = await headers();
+  // An address that names its language (`?lang=en`, set by middleware.ts) wins: a shared or indexed link opens
+  // in the language it was made in. It is not remembered; the visitor's own preference is untouched.
+  const named = headerStore.get('x-lang');
+  if (named === 'en' || named === 'es') return named;
+
   const preference = await readLanguagePreference();
   if (preference !== 'auto') return preference;
 
-  const headerStore = await headers();
   return negotiateLocale(headerStore.get('accept-language')) ?? DEFAULT_LOCALE;
 }
 

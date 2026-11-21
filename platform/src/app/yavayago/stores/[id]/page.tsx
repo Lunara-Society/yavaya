@@ -52,7 +52,7 @@ export default async function StorePage({ params, searchParams }: { params: Prom
           <Link href="/yavayago">← {t('go.back_to_stores')}</Link>
         </p>
         <header className="go-store-head">
-          {store.photoMediaId ? <img className="go-store-hero" src={`/media/${store.photoMediaId}`} alt="" /> : null}
+          {store.photoMediaId ? <img className="go-store-hero" src={`/media/${store.photoMediaId}`} alt={store.name} /> : null}
           <div>
             <p className="eyebrow">
               {t(`go.category.${store.category}` as MessageKey)} · {store.placeName}

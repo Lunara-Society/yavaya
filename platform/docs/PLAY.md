@@ -29,15 +29,13 @@ Roxi's House, any paid service.
   obstacle run: a street, stepping stones over a fountain, swinging market
   signs, steps to the roofs, two moving carts, a wide wall or a narrow golden
   one, a finish arch. A timer, twenty coins, four checkpoints, a best time.
-- **The character.** One model for every game, built in code
-  (`character/build.ts`): smooth tapered limbs with real joints, a head a
-  little large for the body, a drawn face that blinks and grins, cel shading
-  with a thin outline. Nine choices from `config/play-looks.ts`: 2 bodies,
-  6 skin tones, 4 faces, 5 hairstyles, 8 hair colours, 6 tops (the
-  guayabera among them), 4 bottoms, 4 shoes, 4 accessories and none.
-  Animated by code: idle (breathing, weight shift, glances, blinks), walk and
-  run blended by speed, rising and falling, a squash on landing, a cheer,
-  and two emotes (Saludar, Bailar).
+- **The character.** Yavaya Genesis (docs/GENESIS.md), one anatomical
+  body for every game, made through `character/make.ts`. Its choices are
+  the parts of `config/play-looks.ts` it draws (`genesisDraws` in
+  `config/genesis-looks.ts`): body, skin, face, hairstyle, hair colour, top,
+  bottom and shoes. Animated by code (`character/pose.ts`): idle (breathing,
+  weight shift, glances, blinks), walk and run blended by speed, rising and
+  falling, a squash on landing, a cheer, and two emotes (Saludar, Bailar).
 - **The Character Studio** (`modes/studio.ts`). The first visit opens here
   ("Crea tu personaje"); later, "Personaje" in the course opens it. A finger
   turns the character; the head's choices bring the camera close;
@@ -188,7 +186,33 @@ ran at about 24 frames a second with or without the processor slowed four
 times: the drawing, not the game's logic, was the limit there. Real phones
 are measured with `/play?debug`, not claimed.
 
+## Genesis only (21 November 2026)
+
+The owner asked for the new characters alone: "if anything remains with
+old characters, remove that". The drawn character (`character/build.ts`,
+`character/face.ts`), its switch and its artwork (`public/play/looks/`,
+in git history before this date) are gone; Genesis is every game's
+character.
+
+- **What is offered** is what Genesis draws: its parts, and their options
+  it wears as named. Not offered until Genesis draws them: beards, face
+  paint, prints, glasses, accessories, patterned tops, and the faces named
+  after a painted feature (Pecas, Delineado, Guiño, Perilla).
+- **Nothing owned is lost.** Those options stay in the catalogue and on the
+  accounts that own or wear them (the owner's decision of 19 November: paid
+  and earned items get Genesis equivalents of the same standing). A part
+  the Studio does not show keeps whatever the player had.
+- **The shop** sells only what Genesis draws, so its face and accessories
+  tabs are gone for now; the Vault's wearable editions are tops it draws.
+- **Arriving from another page** (the home page's door): /play is a plain
+  link, because only /play's own security policy allows the WebAssembly and
+  `blob:` textures Genesis needs, and a client-side visit keeps the previous
+  page's policy (the character never appeared: Sentry YAVAYA-WEB-J). If a
+  visit still arrives that way, the loader reloads the page once.
+
 ## Looks from the owner's artwork, proezas and gems (14 November 2026)
+
+*Drawn on the first character, removed with it on 21 November (above).*
 
 The owner sent twenty sheets of artwork (faces, beards, face paint, glasses,
 hair, hats, clothes) and asked for most to be free, some won by very hard

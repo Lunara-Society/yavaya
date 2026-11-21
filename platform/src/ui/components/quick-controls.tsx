@@ -41,10 +41,12 @@ export function QuickControls({
         role="group"
         aria-label={t('controls.title')}
       >
+        {/* Labels, not headings: this panel comes first in every page's markup, and headings here would put "Idioma",
+            "Tema" and "Accesos directos" ahead of the page's own h1 in its outline. Each control names itself (a legend). */}
         <section>
-          <h2 className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
+          <p className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
             {t('common.language')}
-          </h2>
+          </p>
           <div className="mt-2">
             <SegmentedControl
               action={setLanguageAction}
@@ -66,9 +68,9 @@ export function QuickControls({
         </section>
 
         <section className="mt-4">
-          <h2 className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
+          <p className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
             {t('common.theme')}
-          </h2>
+          </p>
           <div className="mt-2">
             <SegmentedControl
               action={setThemeAction}
@@ -85,10 +87,10 @@ export function QuickControls({
         </section>
 
         <section className="mt-4">
-          <h2 className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
+          <p className="text-2xs font-semibold tracking-[0.14em] text-[var(--text-muted)] uppercase">
             {t('controls.shortcuts')}
-          </h2>
-          <ul className="mt-2 space-y-0.5">
+          </p>
+          <ul className="mt-2 space-y-0.5" aria-label={t('controls.shortcuts')}>
             {SHORTCUTS.map((shortcut) => (
               <li key={shortcut.href}>
                 <Link

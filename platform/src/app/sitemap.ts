@@ -5,6 +5,7 @@ import { siteUrl } from '@/server/seo';
 import { PAGE_PATHS } from '@/ui/site/blocks';
 import { DISTRICTS } from '@/config/districts';
 import { BOARD_DISTRICT_KEYS } from '@/config/boards';
+import { lookEnabled } from '@/server/domains/platform/looks';
 
 /**
  * Every public page Google should know about: the site's own pages, every
@@ -36,22 +37,31 @@ async function rows(query: ReturnType<typeof sql>): Promise<Row[]> {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const now = new Date();
+  /*
+   * The site's own pages carry no lastmod: they have no date of their own to give, and stamping the time of the
+   * request made every URL "changed" on every fetch, which teaches crawlers to ignore the field. Content rows keep
+   * theirs (their real updated_at). Each page names its English address (`?lang=en`, middleware.ts).
+   */
+  const withEnglish = (url: string) => ({ languages: { es: url, en: `${url}${url.includes('?') ? '&' : '?'}lang=en` } });
   // Open districts are as important as the original ones: the board districts (Hogar … Diáspora) were missing here.
   const districtPaths = Object.values(DISTRICTS).filter((d) => d.status === 'available').map((d) => `/${d.slug}`);
   const important = new Set(['/', '/districts', ...districtPaths]);
   const pages: MetadataRoute.Sitemap = [...new Set([...Object.values(PAGE_PATHS), ...districtPaths, '/cerca'])].map((path) => ({
     url: `${base}${path === '/' ? '' : path}`,
-    lastModified: now,
     changeFrequency: important.has(path) ? 'daily' : 'weekly',
     priority: path === '/' ? 1 : important.has(path) ? 0.9 : 0.6,
+    alternates: withEnglish(`${base}${path === '/' ? '' : path}`),
   }));
+  // Mirador, while its switch has it open to everyone (otherwise the page does not exist for visitors).
+  const mirador = await lookEnabled(db(), 'mirador').catch(() => false);
+  if (mirador) pages.push({ url: `${base}/mirador`, changeFrequency: 'daily', priority: 0.8, alternates: withEnglish(`${base}/mirador`) });
+  // Not the prayer wall: it is for members only and marked noindex, so listing it only contradicted itself.
   pages.push(
-    ...['/mercadito/about', '/services/about', '/work/about', '/yavayago/about', '/yavayago/viajes', '/community/about', '/animals/about', '/animals/learn', '/animals/lost', '/sanctuary/prayer'].map((path) => ({
+    ...['/mercadito/about', '/services/about', '/work/about', '/yavayago/about', '/yavayago/viajes', '/community/about', '/animals/about', '/animals/learn', '/animals/lost'].map((path) => ({
       url: `${base}${path}`,
-      lastModified: now,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
+      alternates: withEnglish(`${base}${path}`),
     })),
   );
 

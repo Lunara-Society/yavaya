@@ -147,7 +147,7 @@ export const siteEs = {
       ctaPrimary: 'Explorar Yavaya',
       ctaSecondary: 'Qué funciona hoy',
       gatesEyebrow: 'Elige tu distrito',
-      gatesTitle: 'Siete distritos. Una sola identidad.',
+      gatesTitle: 'Quince distritos. Una sola identidad.',
       trustEyebrow: 'La capa de confianza',
       trustTitle: 'Yavaya compite por confianza',
       trustLead:
@@ -164,11 +164,11 @@ export const siteEs = {
 
     districts: {
       eyebrow: 'Distritos',
-      title: 'Siete lugares distintos, un solo Yavaya',
-      description: 'Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales: los distritos de Yavaya y la capa de confianza que los une.',
+      title: 'Quince lugares distintos, un solo Yavaya',
+      description: 'Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario, Animales, Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo, Barrio y Diáspora: los distritos de Yavaya y la capa de confianza que los une.',
       lead: 'Cada distrito tiene su propio ambiente, su propio diseño y su propio propósito. Todos comparten tu cuenta, tu identidad y tu reputación.',
       layer: {
-        eyebrow: 'Debajo de los siete',
+        eyebrow: 'Debajo de los quince',
         title: 'La capa de confianza',
         lead: 'Es invisible y sostiene todo lo demás. Es el sistema más importante de Yavaya.',
         items: [
@@ -806,8 +806,8 @@ export const siteEs = {
       lead: 'Si tu pregunta no está aquí, probablemente todavía no tiene respuesta: Yavaya está en construcción.',
       faq: [
         { q: '¿Qué es Yavaya?', a: 'Un ecosistema digital para Centroamérica: comprar y vender, pedir a domicilio, encontrar trabajo, apoyar causas, adoptar animales y acompañarse en comunidad, todo con una sola cuenta y una sola reputación.' },
-        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes usar todos los distritos abiertos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales.' },
-        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta, con siete distritos funcionando. La página de Estado muestra qué funciona hoy y qué falta, sin adornos; la hoja de ruta, lo que viene. No damos fechas que no podamos cumplir.' },
+        { q: '¿Ya puedo crear una cuenta?', a: 'Sí. Regístrate con tu correo y te enviaremos un código de 6 dígitos para verificarla. Con tu cuenta ya puedes usar todos los distritos abiertos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario, Animales, Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo, Barrio y Diáspora.' },
+        { q: '¿Cuándo abre Yavaya?', a: 'Ya está abierta, con sus quince distritos funcionando. La página de Estado muestra qué funciona hoy y qué falta, sin adornos; la hoja de ruta, lo que viene. No damos fechas que no podamos cumplir.' },
         { q: '¿Cuánto cuesta?', a: ['Registrarse, crear una cuenta, ver publicaciones, leer contenido y recibir donaciones es **siempre gratis**.', 'Lo que se paga es opcional. Hoy solo se compran tokens, con tarjeta: para destacar una publicación o tener más publicaciones activas que las gratuitas. Las suscripciones de Trabajo todavía no se pueden pagar.'] },
         { q: '¿Los tokens son criptomoneda?', a: 'No. Son créditos para participar en la plataforma: publicar, destacar, aparecer. No son una inversión, no se intercambian y no hay mercado de tokens.' },
         { q: '¿Tengo que usar tokens?', a: 'Nunca. El efectivo es siempre la opción por defecto y los tokens son siempre opcionales.' },
@@ -825,11 +825,11 @@ export const siteEs = {
       title: 'Las reglas de Yavaya',
       description: 'Los términos de uso de Yavaya: tu cuenta, cómo nos tratamos, reputación, tokens, moderación y lo que Yavaya todavía no hace.',
       lead: 'Yavaya funciona porque la gente confía en la gente. Estas reglas existen para proteger esa confianza. Están escritas para que se entiendan.',
-      version: 'Versión del 2 de octubre de 2026.',
+      version: 'Versión del 21 de noviembre de 2026.',
       sections: [
         {
           title: '1. Qué es Yavaya hoy',
-          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla, tener tu identidad y tu reputación, y usar los siete distritos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario y Animales. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
+          text: 'Yavaya abre por etapas. Hoy puedes crear tu cuenta, verificarla, tener tu identidad y tu reputación, y usar los quince distritos: Mercadito, Servicios, Trabajo, YavayaGo, Comunidad, Santuario, Animales, Hogar, Movilidad, Salud y Bienestar, Aprender, Negocios, Campo, Barrio y Diáspora. La página de Estado dice siempre qué funciona y qué no; si algo no aparece allí como funcionando, no lo ofrecemos.',
         },
         {
           title: '2. Tu cuenta',

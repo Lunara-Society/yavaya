@@ -1,7 +1,8 @@
 import * as THREE from 'three';
-import { LOOK_OPTIONS, LOOK_PARTS, lockedParts, lookImage, lookOption, unlockOf, withoutClash, type Look, type LookPart } from '@/config/play-looks';
+import { lockedParts, lookOption, unlockOf, type Look, type LookPart } from '@/config/play-looks';
+import { GENESIS_PARTS, genesisOptions } from '@/config/genesis-looks';
 import { PLAY_RULES } from '@/config/business-rules';
-import { type Emote } from '../character/build';
+import { type Emote } from '../character/types';
 import { makeCharacter } from '../character/make';
 import { disposeScene, type Mode } from '../engine/runtime';
 import { el, type PlayContext } from '../context';
@@ -12,12 +13,16 @@ import { el, type PlayContext } from '../context';
  * across the character turns it; the face and hair tabs bring the camera
  * close. Nothing is kept until "Guardar".
  *
+ * Only what Genesis draws is offered (config/genesis-looks.ts): its parts,
+ * and their options it wears as named. A part it does not draw yet keeps
+ * whatever the player already had.
+ *
  * The first visit opens here ("Crea tu personaje") and goes on to play;
  * later visits come from the game and go back to it.
  */
 
 /** Parts whose choices are about the head: the camera comes in close for them. */
-const HEAD_PARTS: LookPart[] = ['skin', 'face', 'hair', 'hairColor', 'beard', 'paint', 'glasses'];
+const HEAD_PARTS: LookPart[] = ['skin', 'face', 'hair', 'hairColor'];
 
 export function createStudio(play: PlayContext, options: { first: boolean }): Mode {
   const { runtime, controls, text } = play;
@@ -100,7 +105,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
   const swatch = (which: LookPart, id: string) => (['body', 'face', 'hair'].includes(which) ? null : (lookOption(which, id).color ?? null));
   const renderTabs = () => {
     tabs.replaceChildren(
-      ...LOOK_PARTS.map((each) => {
+      ...GENESIS_PARTS.map((each) => {
         const tab = el('yp-tab', text(`play.look.part.${each}`), 'button');
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-selected', String(each === part));
@@ -127,21 +132,12 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
   const renderOptions = () => {
     const have = owned();
     grid.replaceChildren(
-      ...LOOK_OPTIONS[part].map((option) => {
+      ...genesisOptions(part).map((option) => {
         const button = el('yp-option', '', 'button');
         if (option.unlock && !have.has(`${part}:${option.id}`)) button.classList.add('is-locked');
         button.setAttribute('aria-pressed', String(look[part] === option.id));
-        const thumb = lookImage(part, option.id);
-        const color = thumb ? null : swatch(part, option.id);
-        if (thumb) {
-          // The option's own picture, fetched only when this tab is opened.
-          const img = document.createElement('img');
-          img.className = 'yp-thumb';
-          img.src = thumb;
-          img.alt = '';
-          img.loading = 'lazy';
-          button.append(img);
-        } else if (color !== null) {
+        const color = swatch(part, option.id);
+        if (color !== null) {
           const dot = el('yp-dot');
           dot.style.background = `#${new THREE.Color(color).getHexString()}`;
           button.append(dot);
@@ -153,7 +149,7 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
     );
   };
   const choose = (which: LookPart, id: string) => {
-    look = withoutClash({ ...look, [which]: id }, which);
+    look = { ...look, [which]: id };
     hero.dress(look);
     renderOptions();
     note.textContent = unlockOf(which, id) && !owned().has(`${which}:${id}`) ? howToGet(which, id) : '';
@@ -183,12 +179,12 @@ export function createStudio(play: PlayContext, options: { first: boolean }): Mo
   listen(random, 'click', () => {
     const next = { ...look };
     const have = owned();
-    for (const each of LOOK_PARTS) {
-      // A surprise from what the player may wear.
-      const choices = LOOK_OPTIONS[each].filter((o) => !o.unlock || have.has(`${each}:${o.id}`));
+    for (const each of GENESIS_PARTS) {
+      // A surprise from what the player may wear and Genesis draws; the other parts stay as they are.
+      const choices = genesisOptions(each).filter((o) => !o.unlock || have.has(`${each}:${o.id}`));
       next[each] = choices[Math.floor(Math.random() * choices.length)]!.id;
     }
-    look = withoutClash(next, 'glasses');
+    look = next;
     hero.dress(look);
     renderOptions();
     play2('saludo');

@@ -29,12 +29,18 @@ export async function generateMetadata(): Promise<Metadata> {
    * sort orders (`?category=…`) count as the page they filter. Rendered as a
    * tag, not a header: the host's edge merges duplicate Link headers.
    */
-  const [pathname, locale, newLogo] = await Promise.all([(async () => (await headers()).get('x-pathname') ?? '/')(), resolveLocale(), lookEnabled(db(), 'logo')]);
+  const [[pathname, named], locale, newLogo] = await Promise.all([(async () => { const h = await headers(); return [h.get('x-pathname') ?? '/', h.get('x-lang')] as const; })(), resolveLocale(), lookEnabled(db(), 'logo')]);
   // The owner's new logo while its switch is on (Admin → Diseño del sitio); the seal's files otherwise, untouched.
   const brand = newLogo
     ? { favicon: '/logo-favicon.ico', icon: '/logo-icon-192.png', apple: '/logo-apple-touch-icon.png', card: '/og-logo.jpg' }
     : { favicon: '/favicon.ico', icon: '/icon-192.png', apple: '/apple-touch-icon.png', card: '/og.jpg' };
-  const canonical = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
+  const path = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
+  /*
+   * Each language its own address (hreflang): Spanish, the default, at the bare path; English at `?lang=en`
+   * (middleware.ts). An English page names itself as canonical, so the two are not folded into one.
+   */
+  const english = `${path}?lang=en`;
+  const canonical = named === 'en' ? english : path;
   // The default title and description speak the visitor's language, like the page under them.
   const t = createTranslator(locale);
   return {
@@ -52,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: [{ url: brand.apple, sizes: '180x180' }],
     },
     manifest: '/manifest.webmanifest',
-    alternates: { canonical },
+    alternates: { canonical, languages: { es: path, en: english, 'x-default': path } },
     applicationName: 'Yavaya',
     formatDetection: { telephone: false },
     openGraph: {

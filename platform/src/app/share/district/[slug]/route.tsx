@@ -20,7 +20,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   const { slug } = await params;
   const district = /^[a-z]{3,20}$/.test(slug) ? districtBySlug(slug) : null;
   if (!district) return new Response('Not found', { status: 404 });
-  const { t } = await getTranslator();
+  const { t, locale } = await getTranslator();
+  const key = `${slug}:${locale}`;
+  const kept = made.get(key);
+  if (kept) return jpegResponse(kept);
 
   // The website districts' own photograph, or the board districts' card picture: both are served from /public/art.
   let photo: string | null = null;
@@ -35,7 +38,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   }
   const host = siteUrl().replace(/^https?:\/\//, '');
 
-  return new ImageResponse(
+  const card = new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', position: 'relative', background: '#0b0a10', color: '#f6eedd' }}>
         {photo ? <img src={photo} width={1200} height={630} style={{ position: 'absolute', left: 0, top: 0, objectFit: 'cover' }} alt="" /> : null}
@@ -53,6 +56,18 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
         {photo ? <div style={{ position: 'absolute', right: 28, bottom: 26, display: 'flex', padding: '6px 14px', borderRadius: 999, background: 'rgba(11,10,16,0.62)', color: '#f6eedd', fontSize: 20, letterSpacing: 2 }}>{t('art.note')}</div> : null}
       </div>
     ),
-    { width: 1200, height: 630, headers: { 'cache-control': 'public, max-age=3600, s-maxage=86400' } },
+    { width: 1200, height: 630 },
   );
+  // The renderer makes a PNG of about a megabyte; the same card as a JPEG is a tenth of that, which is what a
+  // phone on a slow connection downloads before WhatsApp can show the preview (audit of 21 November 2026).
+  const jpeg = await sharp(Buffer.from(await card.arrayBuffer())).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+  made.set(key, jpeg);
+  return jpegResponse(jpeg);
+}
+
+/** Each card is made once per server and language: the photograph, name and promise only change with a deploy. */
+const made = new Map<string, Buffer>();
+
+function jpegResponse(jpeg: Buffer): Response {
+  return new Response(new Uint8Array(jpeg), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=3600, s-maxage=86400' } });
 }

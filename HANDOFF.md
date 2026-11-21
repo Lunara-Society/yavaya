@@ -1,4 +1,4 @@
-# Handoff: state of Yavaya work (updated November 20, 2026)
+# Handoff: state of Yavaya work (updated November 21, 2026)
 
 **A new chat reads this first.** There are no secrets here: they live in Railway
 variables. Then read `platform/docs/ARCHITECTURE.md`, `platform/docs/SECURITY.md`
@@ -35,6 +35,31 @@ and `platform/docs/CONFIGURATION.md`, which are kept current with every change.
   - Authorization is checked on the server.
   - Audit inside the same transaction.
   - Never print secrets.
+
+## Play is Genesis only; Sentry; the audit of 21 November (owner's requests)
+- **The missing character:** Genesis was on for everyone, but the home page's Play buttons were client-side links, so /play kept the home page's security policy, which refuses the WebAssembly and `blob:` textures Genesis needs (Sentry YAVAYA-WEB-J). The buttons are plain links now, and the loader reloads /play once if a visit still arrives that way.
+- **Old character removed** (owner: "keep only our new upgrade"): the drawn character's code, its `play.genesis` switch and its artwork (`public/play/looks/`) are gone. The Studio and the shop offer only what Genesis draws (`genesisDraws`, `config/genesis-looks.ts`). Beards, paint, prints, glasses, accessories, patterned tops, the tank top, sandals and four painted-feature faces stay on accounts but are not offered. New hairstyles: Corto clásico, Melena; the bun is named Trenza (it was always drawn as one). Red sneakers draw red. Details in `platform/docs/PLAY.md`, "Genesis only".
+- **Sentry:**
+  - Fixed: the Play one.
+  - Owner action: YAVAYA-WEB-F (14–17 Nov) was Stripe refusing an **expired live key** on `yavaya-scheduler`; it stopped only because the stuck payment aged out of the 3-day window. Check that the scheduler's Stripe key is the new one.
+  - Not code: one-off stream abort, a stale Server Action after a deploy, a Safari network blip, and the Roxi voice diagnostics of 11–12 Nov (none since).
+- **Audit fixes:**
+  - Counts and copy: Terms (version 21 Nov), Help, Districts and Status now say fifteen districts / eight board districts (a test ties the words to the register). Live tracking no longer claims "no approved stores".
+  - Titles: Mirador's title is no longer doubled, and the 404 page has its own title.
+  - Play: /play has an h1.
+  - Language and indexing:
+    - English has an address: `?lang=en` on any page, with hreflang both ways and in the sitemap, allowed in robots.txt.
+    - The sitemap has no fake lastmod, lists Mirador while it is open, and drops the noindex prayer wall.
+    - robots.txt no longer names `/reset`.
+  - Accessibility: the settings drawer has labels, not h2s. The first photo is named on lost-animal, board and store pages.
+  - Images and places: district share cards are JPEG (60 KB, was 0.97 MB). Place options show the country's flag.
+- **Not changed, on purpose:**
+  - Violeta's plain "Yavaya" title is for safety.
+  - www and the apex are one service (each custom domain has its own Railway target).
+  - The home page already has JSON-LD.
+  - Brotli needs a CDN in front of Railway.
+  - The Managua result didn't reproduce: Nicaragua's city ranks first.
+- **Owner decision:** the only approved YavayaGo store is a test ("Prueba Rosario", Nandaime). It is public and in the sitemap; suspend it in Admin → YavayaGo if it is not real.
 
 ## A candle for someone, and help for animals (20 November, owner's requests)
 

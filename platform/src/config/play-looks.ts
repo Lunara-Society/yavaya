@@ -33,11 +33,13 @@ export type Look = Record<LookPart, string>;
 export type Unlock = 'shop' | 'gems' | 'founder' | 'vault' | AchievementId;
 
 /**
- * `image`: a picture in /play/looks/<part>/<id>.webp (a painted face, a beard,
- * face paint, glasses, a print), drawn from the owner's own artwork.
- * `pattern`: a cloth picture tiled over a whole top (/play/looks/pattern/<pattern>.webp).
+ * `pattern`: a cloth pattern over a whole top. The first, drawn character
+ * printed the owner's artwork for these, and for the painted faces, beards,
+ * face paint, glasses and prints; Genesis does not draw them yet
+ * (config/genesis-looks.ts, `genesisDraws`), so they stay on the accounts
+ * that have them and are not offered until it does.
  */
-type Option = { id: string; color?: number; accent?: number; shape?: string; unlock?: Unlock; image?: boolean; pattern?: string };
+type Option = { id: string; color?: number; accent?: number; shape?: string; unlock?: Unlock; pattern?: string };
 
 /**
  * Achievements (docs/PLAY.md): each said in both languages as
@@ -109,27 +111,28 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
     { id: 'tranquila' },
     { id: 'decidido' },
     { id: 'picara' },
-    // Painted faces, from the owner's artwork: their features over the character's own skin.
-    ...['mirada', 'pecas', 'serena', 'sonrisa', 'radiante', 'delineado', 'ojos_claros', 'firme', 'sereno', 'franco', 'tranquilo'].map((id) => ({ id, image: true })),
-    { id: 'guino', image: true, unlock: 'gems' as const },
-    { id: 'perilla', image: true, unlock: 'gems' as const },
+    // Painted faces, from the owner's artwork for the first character: Genesis draws them as identities (config/genesis-looks.ts).
+    ...['mirada', 'pecas', 'serena', 'sonrisa', 'radiante', 'delineado', 'ojos_claros', 'firme', 'sereno', 'franco', 'tranquilo'].map((id) => ({ id })),
+    { id: 'guino', unlock: 'gems' as const },
+    { id: 'perilla', unlock: 'gems' as const },
   ],
-  hair: [{ id: 'corto' }, { id: 'rizos' }, { id: 'coleta' }, { id: 'largo' }, { id: 'mono' }],
+  // `mono` was a bun on the first character; Genesis ties it as a braid, and names it so. `melena` and `clasico` are Genesis's own.
+  hair: [{ id: 'corto' }, { id: 'clasico' }, { id: 'rizos' }, { id: 'coleta' }, { id: 'largo' }, { id: 'melena' }, { id: 'mono' }],
   hairColor: HAIR_COLOR,
   beard: [
     { id: 'ninguna' },
-    ...['sombra', 'completa', 'candado', 'bigote_perilla', 'blanca', 'rubia'].map((id) => ({ id, image: true })),
-    { id: 'charro', image: true, unlock: 'gems' as const },
-    { id: 'pelirroja', image: true, unlock: 'gems' as const },
+    ...['sombra', 'completa', 'candado', 'bigote_perilla', 'blanca', 'rubia'].map((id) => ({ id })),
+    { id: 'charro', unlock: 'gems' as const },
+    { id: 'pelirroja', unlock: 'gems' as const },
   ],
   paint: [
     { id: 'ninguna' },
-    ...['tribal', 'olas', 'estrellas'].map((id) => ({ id, image: true })),
-    { id: 'tigre', image: true, unlock: 'proeza_bronce' as const },
-    { id: 'copo', image: true, unlock: 'proeza_plata' as const },
-    { id: 'llamas_doradas', image: true, unlock: 'proeza_oro' as const },
-    { id: 'neon', image: true, unlock: 'proeza_obsidiana' as const },
-    ...['rayos', 'leopardo', 'cerezo', 'gato', 'fuego'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
+    ...['tribal', 'olas', 'estrellas'].map((id) => ({ id })),
+    { id: 'tigre', unlock: 'proeza_bronce' as const },
+    { id: 'copo', unlock: 'proeza_plata' as const },
+    { id: 'llamas_doradas', unlock: 'proeza_oro' as const },
+    { id: 'neon', unlock: 'proeza_obsidiana' as const },
+    ...['rayos', 'leopardo', 'cerezo', 'gato', 'fuego'].map((id) => ({ id, unlock: 'gems' as const })),
   ],
   // `color` is the cloth, `accent` a detail (collar, stripe, cuffs).
   top: [
@@ -152,11 +155,11 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
   ],
   print: [
     { id: 'ninguno' },
-    ...['lobo', 'atardecer', 'mariposa', 'ola'].map((id) => ({ id, image: true })),
+    ...['lobo', 'atardecer', 'mariposa', 'ola'].map((id) => ({ id })),
     // The dragon, lightning, tribal and claw prints were taken out (14 November 2026): broken cut-outs, and
     // the claw read as blood. The Ruta proeza gives the tree instead; no one could have paid for the others.
-    { id: 'arbol', image: true, unlock: 'proeza_ruta' as const },
-    { id: 'lobo_dorado', image: true, unlock: 'proeza_total' as const },
+    { id: 'arbol', unlock: 'proeza_ruta' as const },
+    { id: 'lobo_dorado', unlock: 'proeza_total' as const },
   ],
   bottom: [
     { id: 'jeans', color: 0x2b3a67, accent: 0x3c4f86 },
@@ -173,11 +176,11 @@ export const LOOK_OPTIONS: Record<LookPart, Option[]> = {
   ],
   glasses: [
     { id: 'ninguno' },
-    ...['clasicos', 'aviador', 'redondos', 'transparentes', 'carey'].map((id) => ({ id, image: true })),
-    { id: 'steampunk', image: true, unlock: 'proeza_barrio' as const },
-    { id: 'sol_y_luna', image: true, unlock: 'proeza_diaspora' as const },
-    { id: 'visor', image: true, unlock: 'proeza_guardian' as const },
-    ...['arcoiris', 'persiana', 'neon', 'corazon'].map((id) => ({ id, image: true, unlock: 'gems' as const })),
+    ...['clasicos', 'aviador', 'redondos', 'transparentes', 'carey'].map((id) => ({ id })),
+    { id: 'steampunk', unlock: 'proeza_barrio' as const },
+    { id: 'sol_y_luna', unlock: 'proeza_diaspora' as const },
+    { id: 'visor', unlock: 'proeza_guardian' as const },
+    ...['arcoiris', 'persiana', 'neon', 'corazon'].map((id) => ({ id, unlock: 'gems' as const })),
   ],
   accessory: [
     { id: 'ninguno' },
@@ -206,13 +209,6 @@ export const DEFAULT_LOOK: Look = {
   glasses: 'ninguno',
   accessory: 'ninguno',
 };
-
-/** Where an option's picture is, if it has one. */
-export function lookImage(part: LookPart, id: string): string | null {
-  const option = LOOK_OPTIONS[part].find((o) => o.id === id);
-  if (option?.pattern) return `/play/looks/pattern/${option.pattern}.webp`;
-  return option?.image ? `/play/looks/${part}/${id}.webp` : null;
-}
 
 export function lookOption(part: LookPart, id: string): Option {
   return LOOK_OPTIONS[part].find((option) => option.id === id) ?? LOOK_OPTIONS[part].find((option) => option.id === DEFAULT_LOOK[part])!;

@@ -200,6 +200,13 @@ snappier toggle.
 is mirrored onto the account so it follows the member to another device. The
 fallback for an unsupported device language is Spanish, never English.
 
+An address can name its language: `?lang=en` (or `es`) on any page renders
+it in that language for that request, ahead of the preference, which it does
+not change (`middleware.ts`, `resolveLocale`). It gives English pages an
+address to index and share; each page names both versions with hreflang
+(the root layout, the sitemap), and robots.txt allows `?lang=` while other
+query strings stay blocked.
+
 **Appearance** defaults to `system`. The theme is resolved on the server before
 the first byte and written as `data-theme` on `<html>`, so the correct palette
 is in the first paint — no flash, and no render-blocking inline script.

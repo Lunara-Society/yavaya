@@ -1,4 +1,4 @@
-import { lookOption, type Look } from './play-looks';
+import { LOOK_OPTIONS, lookOption, type Look, type LookPart } from './play-looks';
 import type { GenesisGarment, GenesisHair, GenesisShoes } from './genesis';
 
 /**
@@ -51,8 +51,8 @@ const BODY: Record<string, Record<string, number>> = {
   fuerte: { 'body.muscle': 0.7, 'body.weight': 0.3 },
 };
 
-/** Today's hairstyles to the nearest Genesis ones (a bun has no Genesis match yet: the braid is tied back too). */
-const HAIR: Record<string, GenesisHair> = { corto: 'short02', rizos: 'afro01', coleta: 'ponytail01', largo: 'long01', mono: 'braid01' };
+/** The hairstyles: every Genesis one has a choice (`mono`, a bun on the first character, is the braid and is named so). */
+const HAIR: Record<string, GenesisHair> = { corto: 'short02', clasico: 'short04', rizos: 'afro01', coleta: 'ponytail01', largo: 'long01', melena: 'bob02', mono: 'braid01' };
 
 const LONG_SLEEVES = new Set(['chaqueta', 'sudadera', 'camisa']);
 const SHOES: Record<string, GenesisShoes> = { tenis: 'sneaker', botas: 'boot', sandalias: 'dress' };
@@ -73,6 +73,39 @@ export function genesisFromLook(look: Look): GenesisLook {
     hairColor: lookOption('hairColor', look.hairColor).color!,
     top: { garment: LONG_SLEEVES.has(topShape) ? 'longsleeve' : 'tee', color: top.color! },
     bottom: { garment: look.bottom === 'short' ? 'shorts' : 'trousers', color: bottom.color! },
-    shoes: { id: SHOES[shoeShape] ?? 'sneaker', color: shoeShape === 'tenis' ? shoes.color! : 0xffffff },
+    // Sneakers take the shoe's colour (white, red, gold); boots and dress shoes keep their own leather.
+    shoes: { id: SHOES[shoeShape] ?? 'sneaker', color: (SHOES[shoeShape] ?? 'sneaker') === 'sneaker' ? shoes.color! : 0xffffff },
   };
+}
+
+/** The parts of a look Genesis draws today; the rest (beards, face paint, prints, glasses, accessories) come in later phases (docs/GENESIS.md). */
+export const GENESIS_PARTS: readonly LookPart[] = ['body', 'skin', 'face', 'hair', 'hairColor', 'top', 'bottom', 'shoes'];
+
+/**
+ * Faces named after a painted feature Genesis does not draw yet (freckles,
+ * eyeliner, a wink, a goatee): offered again when it does. Whoever wears or
+ * owns one keeps it; their character has the face's identity meanwhile.
+ */
+const UNDRAWN_FACES = new Set(['pecas', 'delineado', 'guino', 'perilla']);
+
+/** Clothes Genesis draws as something else: a tank top as a T-shirt, sandals as dress shoes. Back when it has their garments. */
+const UNDRAWN: Partial<Record<LookPart, Set<string>>> = { top: new Set(['tirantes']), shoes: new Set(['sandalias']) };
+
+/**
+ * Whether Genesis draws this option as it is named. Only these are offered in
+ * the Studio and the shop: nothing is shown, sold or won that the character
+ * does not wear. Options it does not draw stay on the accounts that have them.
+ */
+export function genesisDraws(part: LookPart, id: string): boolean {
+  if (!GENESIS_PARTS.includes(part)) return false;
+  if (part === 'face') return !UNDRAWN_FACES.has(id);
+  if (UNDRAWN[part]?.has(id)) return false;
+  // A patterned top would be a plain one: its print is not drawn yet.
+  if (part === 'top') return !lookOption('top', id).pattern;
+  return true;
+}
+
+/** The options of a part that Genesis draws, in catalogue order. */
+export function genesisOptions(part: LookPart) {
+  return LOOK_OPTIONS[part].filter((option) => genesisDraws(part, option.id));
 }
