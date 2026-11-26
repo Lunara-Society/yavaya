@@ -31,7 +31,7 @@ changed in this chapter, so its own test suite was not re-run.
 | JavaScript bundle | `npx expo export --platform android` | builds; the worklet transform applied; Roxi's three assets packed (46 KB) |
 | Dependency health | `npx expo-doctor` | 20 of 20 |
 | Install-time behaviour of new packages | Kenwea notary on Skia 2.14.0, Reanimated 4.7.1, Worklets 0.13.0, AsyncStorage 2.2.0, Haptics 58.0.8, meshy-cli 0.4.0 | nothing runs at install for any of them |
-| Preview build | EAS | CH01_BUILD |
+| Preview builds | EAS | `61ed3bd9` (code at fad77cc) finished 15:49 UTC: native Skia, Reanimated and Worklets compiled; Roxi's three images found in the APK byte for byte. `0cda7886` (code at 871b834, with the cover safeguard) finished 16:22 UTC, version 0.2.0: 132 MB; the bundle inside carries the bridge's `cover` safeguard and the Spanish hint, checked in the downloaded APK. [Build page](https://expo.dev/accounts/yavaya/projects/yavaya/builds/0cda7886-cff2-4496-93b2-a766ea0b820c) (Expo sign-in); install link valid until 10 Dec 2026 |
 | The film | Blender 4.5 Cycles (CPU), 144 frames, 720 × 1280 (about 15 s a frame, 36 min), then HyperFrames | "Roxi se materializa", 9.0 s, 1080 × 1920, H.264, 8.9 MB; HyperFrames check passed; six frames pulled back out of the final file and looked at. Delivered to the owner; not published |
 
 Not tested in Chapter 01: anything on a phone (frame rate, battery, touch,
