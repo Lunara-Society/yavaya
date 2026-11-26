@@ -35,6 +35,7 @@ all sound; no essential function requires the full graphics tier.
 | --- | --- | --- | --- | --- |
 | 26 Nov 2026 | Chapter 00 preview | — | APK size | 71 MB (universal) |
 | 26 Nov 2026 | Chapter 01 | build machine | JavaScript bundle (Hermes bytecode) | 3.2 MB |
+| 26 Nov 2026 | Chapter 01 preview (build 61ed3bd9) | EAS | APK size | 132 MB universal (four CPU types); native code for one modern phone (arm64) 32.7 MB. Skia, Reanimated and Worklets account for most of the growth from 71 MB. Google Play's per-device delivery from the app bundle will be far smaller; to be measured on the first bundle |
 | 26 Nov 2026 | Chapter 01 | build machine | Roxi's assets in the app | 46 KB (figure 36, depth 3, face 8) |
 | 26 Nov 2026 | Chapter 01 | by design | Reconstruction cost per pixel | 4 texture reads (2 picture, 2 depth) and, while forming, up to 2 layers of inflowing light (an atan and a log); constant whatever the phone |
 | 26 Nov 2026 | Chapter 01 | by design | GPU when idle | none: the reconstruction unmounts when done; the Presence animates only while Roxi is active |
