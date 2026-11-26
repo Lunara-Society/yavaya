@@ -69,3 +69,50 @@ The service account key the owner uploaded to the Expo account
 (`yavaya-expo@…`) is assigned to `yavaya.lat` as its Google Play submission
 key, so `eas submit` needs no file. Nothing has been submitted.
 See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for its verified state.
+
+### D-012 · 26 Nov 2026 · Roxi's approved image
+The owner gave a full-length image of Roxi and confirmed it is AI-generated and
+Yavaya's own, not a real person, so it may be used freely for 3D, video and the
+app. Stored at `mobile/art/roxi/roxi-source.png`. A real person's likeness would
+have needed their consent first.
+
+### D-013 · 26 Nov 2026 · The reconstruction is one GPU shader, not CPU particles
+Each pixel works out which cell of Roxi it belongs to and whether that cell has
+arrived, so the cost is a few texture reads per pixel whatever the phone, and
+nothing is computed per particle on the JavaScript thread. Considered: a Skia
+atlas of thousands of sprites moved each frame (cost grows with count, risky on
+a 2 GB phone); a 3D engine (heavier start, more native code for one screen).
+
+### D-014 · 26 Nov 2026 · Her progress is the page's real progress
+The reconstruction is the loading screen, so it follows the WebView's load
+progress, never shows her complete before the page has loaded, never goes
+backwards, lets a tap go straight in, and shows the page anyway after 12 s.
+A fast page still gets 0.9 s of formation so it reads as one, not a flash.
+`mobile/src/synapse/timeline.ts`, with tests.
+
+### D-015 · 26 Nov 2026 · The Presence replaces the web button without changing the website
+A script injected into Yavaya's pages forwards Roxi's state (the site's own
+`roxi:state` event) and the web button's position. The Presence is drawn there
+and opens her by clicking that same button. The web button is hidden only when
+the app confirms the Presence is on screen, so a failure anywhere leaves Roxi
+reachable. Considered: changing the website to expose an app API (a production
+change for no gain at this stage).
+
+### D-016 · 26 Nov 2026 · The Presence moves only when Roxi is doing something
+Its ring breathes while she listens, speaks or works and is still when she is
+idle. That keeps the GPU asleep most of the time, and makes the light an honest
+signal, including that the microphone is open.
+
+### D-017 · 26 Nov 2026 · Synapse is on by default in preview builds
+So the owner sees it; Classic is one long press away and remembered. Whether a
+public release starts in Synapse or Classic is the owner's decision.
+
+### D-018 · 26 Nov 2026 · Blender here instead of Unreal; Meshy blocked
+The owner chose Blender in the cloud over connecting a computer with Unreal.
+Meshy was signed in but refuses model creation on the free plan; upgrading is a
+paid change for the owner.
+
+### D-019 · 26 Nov 2026 · Shaders are checked off the phone with Skia's own compiler
+`mobile/tools/synapse/render-frames.mjs` compiles the app's shader source with
+CanvasKit and renders each stage to PNG. It caught a reserved word (`flat`)
+that would have failed on every phone, and the black box around her picture.

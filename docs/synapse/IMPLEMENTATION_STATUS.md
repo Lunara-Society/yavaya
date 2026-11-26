@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated at the end of Chapter 00, 26 November 2026.
+Last updated in Chapter 01, 26 November 2026.
 
 States: **REAL** works and was verified · **DEMO** works with sample content,
 labelled · **MOCK** simulated, never shown as real · **BLOCKED** cannot work
@@ -35,13 +35,20 @@ until something outside the code changes · **NOT IMPLEMENTED** not built.
 
 ## Synapse (master directive, section 4)
 
-| Capability | State |
-| --- | --- |
-| Digital reconstruction, particle materialisation and dissolution | NOT IMPLEMENTED |
-| Spatial holographic information | NOT IMPLEMENTED |
-| Continuous environmental transitions, cinematic lighting, interactive depth | NOT IMPLEMENTED |
-| Original sound design, synchronised haptics | NOT IMPLEMENTED |
-| Roxi as a persistent native presence | NOT IMPLEMENTED (her current panel, voice and tools are REAL on the website) |
-| Guardian brand integration in native screens | NOT IMPLEMENTED (icon and splash only) |
-| Adaptive graphics quality tiers | NOT IMPLEMENTED |
-| Native design tokens | NOT IMPLEMENTED |
+| Capability | State | Evidence / what is missing |
+| --- | --- | --- |
+| Digital reconstruction: Roxi forming from light as the app opens | REAL (code); NOT TESTED on a phone | `mobile/src/synapse/` (Chapter 01). One Skia shader; its progress is the page's real loading; tap to skip; reference frames rendered with Skia's own compiler ([TEST_REPORTS.md](TEST_REPORTS.md)) |
+| Particle materialisation and dissolution | REAL (code); NOT TESTED on a phone | cells arrive from her heart outward as points of light and come apart from the head down as the page appears |
+| Interactive depth (parallax with the phone's tilt) | REAL (code); NOT TESTED on a phone | the near parts of her move more, from the estimated depth map |
+| Roxi as a persistent native presence | REAL (code); NOT TESTED on a phone | the Presence pill: her face where her web button is, lit by her real state (listening, speaking, working, waiting, problem), opening her real panel; idle means still |
+| Classic switch | REAL (code) | long press on Roxi; remembered on the phone; Classic is the Chapter 00 app |
+| Adaptive quality | Partly REAL | reduced motion turns the reconstruction into a fade; slow frames switch off the inflowing light. Device tiers are not measured yet |
+| Synchronised haptics | Partly REAL | a light tap when entering or opening Roxi, a firmer one on long press; nothing else yet |
+| Original sound design | NOT IMPLEMENTED | — |
+| Spatial holographic information | NOT IMPLEMENTED | — |
+| Continuous environmental transitions between screens | NOT IMPLEMENTED | there is one native screen so far |
+| Native design tokens | NOT IMPLEMENTED | colours are repeated in the two native components |
+| Roxi's film ("Roxi materialises", Blender) | see [TEST_REPORTS.md](TEST_REPORTS.md) | rendered here; not published anywhere |
+| 3D model of Roxi (Meshy) | BLOCKED | Meshy refuses to create models on the free plan through its API (HTTP 402, 26 Nov 2026); signed in, 75 credits, nothing charged. Needs a paid Meshy plan, the owner's decision |
+| Unreal Engine / MetaHuman | NOT IMPLEMENTED | needs the owner's own computer with Unreal; the owner chose Blender here for now |
+| Talking Roxi video (HeyGen) | NOT IMPLEMENTED | 21 HeyGen credits until 4 Dec; her established voice is ElevenLabs, whose connector needs reconnecting with more permissions |

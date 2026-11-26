@@ -17,8 +17,14 @@ an entry that is no longer true is worse than no entry.
   the Synapse experience. The directive rules out "a website wrapped inside a
   mobile container" as the result, so later chapters replace it screen by
   screen with native Synapse screens.
-- **Synapse itself**, the Living Interface Engine in the master directive, is
-  **not implemented**. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+- **Synapse's first layer** (Chapter 01, `mobile/src/synapse/`): Roxi forms
+  from light while the website loads beneath, then stays as her Presence in
+  place of her web button, lit by her real state. Classic turns it off. The
+  rest of the Living Interface Engine is not built yet; see
+  [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+- **Roxi's look** is the owner's full-length image (`mobile/art/roxi/`,
+  AI-generated, Yavaya's own). Use it for her in every medium; generate
+  everything else from it (`mobile/tools/roxi/`).
 
 ## Identifiers (not secrets)
 
@@ -73,11 +79,26 @@ the measurements ([PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md)), the open
 problems; update this file and [CHAPTER_INDEX.md](CHAPTER_INDEX.md); commit;
 write the next handoff. A chapter is not complete because code exists.
 
+## Resources and their limits (26 Nov 2026)
+
+| Tool | State |
+| --- | --- |
+| Blender 4.5, HyperFrames, Skia (CanvasKit) in the cloud container | free, unlimited |
+| HeyGen | Pro plan, 21 premium credits until 4 Dec 2026; no Roxi avatar yet |
+| Higgsfield | free plan, 2 credits |
+| Kling | 0 credits |
+| ElevenLabs connector | needs reconnecting with more permissions |
+| Meshy | signed in; free plan cannot create models through the API |
+| Unreal Engine | needs the owner's own computer |
+
 ## Working commands
 
 ```bash
 cd mobile
 npm run check            # TypeScript, unit tests, expo-doctor
+node tools/synapse/render-frames.mjs <out>   # Roxi's shader rendered by Skia, off the phone
+python3 -I tools/roxi/make-roxi.py <depth-model.onnx> .   # her assets from the source image
+blender -b --python tools/roxi/film.py -- . <out> [all|30,70,120]   # her film
 npx expo start           # local development (needs a dev client build)
 eas build -p android --profile preview      # installable APK (internal)
 eas build -p android --profile production   # app bundle for Google Play

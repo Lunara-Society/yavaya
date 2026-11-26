@@ -47,7 +47,29 @@ not repeated here.
 releases it in Play Console. Version numbers live on EAS
 (`appVersionSource: remote`); the first version code is 1.
 
-## Direction for Synapse (not built; to be decided chapter by chapter)
+### Synapse's first layer (Chapter 01)
+
+```
+ App.tsx ── YavayaWeb.tsx
+             ├─ WebView (yavaya.lat) ◄── injected bridge script (synapse/bridge.ts)
+             │     │  roxi:state, where .roxi-launch is  ──►  onMessage (checked, yavaya.lat only)
+             │     ◄── open Roxi (clicks her button), cover/uncover her button
+             ├─ PresenceDock (synapse/PresenceDock.tsx)   her face, lit by her state
+             └─ Reconstruction (synapse/Reconstruction.tsx), over everything while loading
+                   Skia canvas ── RECONSTRUCT_SKSL (synapse/reconstruct.ts)
+                   UI-thread frame loop ── step() (synapse/timeline.ts) ← real load progress
+```
+
+- The reconstruction's inputs are shared values set by the WebView's events
+  (progress, loaded, failed) and a tap (skip); a frame callback on the UI
+  thread advances the timeline and feeds the shader's uniforms. When it is
+  done it unmounts, so nothing keeps drawing.
+- Slow frames (over 34 ms, twelve in a row) switch off the inflowing light;
+  reduced motion replaces the cells with a fade.
+- The look (Synapse or Classic) is read from the phone before the first frame;
+  the splash covers the read.
+
+## Direction for Synapse (to be decided chapter by chapter)
 
 The directive asks for an operating environment, not a wrapped website. The
 intended path, to be confirmed by measurement before any of it is adopted:

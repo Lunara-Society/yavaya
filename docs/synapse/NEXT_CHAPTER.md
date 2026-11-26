@@ -1,46 +1,40 @@
 # Next chapter: handoff
 
-## Before Chapter 01 (owner)
+## Before Chapter 02 (owner)
 
-1. Install the preview APK from the link in [TEST_REPORTS.md](TEST_REPORTS.md)
-   on the Samsung (allow "install unknown apps" for the browser when Android
-   asks), and report what works and what does not: signing in, Roxi's voice,
-   a photo upload, a payment screen, Play.
-2. Decide whether the package name stays `yavaya.lat` (it cannot change after
-   the first Play upload; see [KNOWN_ISSUES.md](KNOWN_ISSUES.md) 4).
-3. When ready for Google Play: approve a production build and an `eas submit`
-   to the internal track as a draft, then set up the closed test with 12+
-   testers for 14 days.
-4. Authorise Chapter 01 and say what it should cover. The directive does not
-   define it.
+1. Install the Chapter 01 preview APK (link in the latest report) on the
+   Samsung. Watch Roxi form as Yavaya opens, tilt the phone while she holds,
+   tap during the formation to skip, then use her Presence (bottom right, her
+   face) to talk to her. Long-press her to try Classic and back.
+2. Report: did she form smoothly or stutter, did the page appear cleanly after
+   her, does the Presence sit exactly where her button was, does it light up
+   when she listens and speaks.
+3. Decide on paid tools if wanted: a Meshy plan for a 3D Roxi, more HeyGen or
+   Kling credits for talking or moving video of her. None is needed for Chapter 02.
+4. Reconnect the ElevenLabs connector (claude.ai, Settings, Connectors) so her
+   own voice can be used in films made here.
+5. Authorise Chapter 02.
 
-## Proposed Chapter 01: Synapse foundation (not authorised)
+## Proposed Chapter 02: measure, then spatial information (not authorised)
 
-A proposal only, for the owner to accept, change or replace.
-
-1. **Baseline.** Measure the bridge on the owner's Samsung and a low-end
-   Android phone: cold start, memory, frame rate, APK size. Record it in
-   [PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md).
-2. **Session between web and native.** Decide how a native screen uses the
-   member's session (shared cookie or a token issued by the platform) with
-   server-side authorisation unchanged; fix Google sign-in in the app the same
-   way.
-3. **Rendering spike.** One reconstruction transition (content materialising
-   from light as it loads, driven by real loading state) built with two
-   candidate stacks, measured against the budget on the low-end phone, with
-   reduced and static fallbacks. Adopt one, record the decision.
-4. **Native tokens.** Colour, type and spacing from
-   [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) as one shared module.
-5. **A first native surface behind a Classic switch:** for example the opening
-   of the app and a persistent Presence dock for Roxi over the web pages,
-   reaching the same agent and tools she has today.
+1. **Measure Chapter 01 on phones**: frame rate, memory and battery on the
+   Samsung and on a low-end Android, recorded in PERFORMANCE_BUDGET.md, with
+   fixes for anything over budget.
+2. **Native design tokens**, one module for colour, type and spacing.
+3. **Session between web and native**, and Google sign-in fixed in the app.
+4. **The first spatial information surface**: Roxi's replies and the cards she
+   prepares (a listing draft, a reminder) shown natively in depth around her
+   Presence, from the same data the website uses; the web panel stays behind
+   the Classic switch.
+5. **Sound**: an original, quiet set for her arrival and her states, silent in
+   silent mode.
 
 Out of scope until authorised: replacing district screens, any store release,
 paid services.
 
-## Files to read first in Chapter 01
+## Files to read first in Chapter 02
 
 [MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md), [PROJECT_MEMORY.md](PROJECT_MEMORY.md),
 [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md), [ARCHITECTURE.md](ARCHITECTURE.md),
-[KNOWN_ISSUES.md](KNOWN_ISSUES.md), `mobile/src/YavayaWeb.tsx`, `mobile/src/links.ts`,
+[KNOWN_ISSUES.md](KNOWN_ISSUES.md), `mobile/src/synapse/`, `mobile/src/YavayaWeb.tsx`,
 and the platform's [`platform/docs/roxi/README.md`](../../platform/docs/roxi/README.md).

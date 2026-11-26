@@ -50,3 +50,25 @@ chapter record that fixed it, with the evidence.
 11. **The preview APK is 71 MB** because it carries code for four CPU types.
     Play delivers per-device splits from the app bundle; measure that size
     when the first production bundle is built.
+
+12. **Chapter 01 has not run on a phone yet.** The reconstruction, the parallax,
+    the Presence and the Classic switch are typechecked, unit-tested and (the
+    shader) rendered with Skia's own compiler, but frame rate, battery and touch
+    feel are unmeasured until the owner installs the build.
+
+13. **A thin dark edge at her boots** when she is fully formed: the depth matte
+    reaches a pixel or two past her outline where the source is black. Barely
+    visible on the app's night background; a sharper matte would remove it.
+
+14. **The reconstruction is always dark**, even when the phone is in light mode,
+    because her picture is lit for a dark room. The website after it follows
+    the phone's theme as before.
+
+15. **The Presence can be a step behind on in-page navigation.** Its position
+    is checked every 0.7 s; when the website's own button moves (for example
+    when a page adds a floating button), the Presence follows within that time.
+
+16. **Meshy is blocked** (free plan; see IMPLEMENTATION_STATUS). **The
+    ElevenLabs connector needs reconnecting** with more permissions before Roxi's
+    voice can be used for films from here; her live voice in the app is not
+    affected (it is the website's).
