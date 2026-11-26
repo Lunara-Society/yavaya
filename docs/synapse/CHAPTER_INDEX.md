@@ -3,7 +3,8 @@
 | Chapter | Title | Authorised | Status | Checkpoint |
 | --- | --- | --- | --- | --- |
 | 00 | Master directive and persistent project memory; Android app connected to EAS | 26 Nov 2026 | Done, with open items in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | see the commit that adds this file |
-| 01 | Roxi materialises: the first native Synapse layer | 26 Nov 2026 ("Let's get started", with Roxi's image) | Built and tested off the phone; on-phone test pending | the commits "Synapse Chapter 01…" |
+| P-01 | Pre-audit prototype: Roxi materialises, the first native Synapse layer (built as "Chapter 01" before the audit was asked for; relabelled, D-020) | 26 Nov 2026 ("Let's get started", with Roxi's image) | Built and tested off the phone; on-phone test pending | the commits "Synapse Chapter 01: …" up to `c468e5b` |
+| 01 | Existing architecture audit: verified technical baseline, preservation matrix, risks, Android/iOS architecture recommendation | 26 Nov 2026 | **Done** (documents only; no production change) | the commit "Synapse Chapter 01: the existing architecture audit" |
 | 02 | Proposed, see [NEXT_CHAPTER.md](NEXT_CHAPTER.md) | not yet | Not started | — |
 
 A chapter is marked done only when its end-of-chapter record exists in these
@@ -24,7 +25,7 @@ files and its claims are backed by tests or measurements in
 - Not done in Chapter 00, by the directive: no redesign, no replacement of the
   production website, nothing published to Google Play.
 
-## Chapter 01: what was delivered
+## Pre-audit prototype (P-01): what was delivered
 
 - Roxi's assets from the owner's image (AI-generated, Yavaya's own, confirmed
   26 Nov 2026): the figure, a depth map estimated on this machine, a matte and
@@ -38,3 +39,20 @@ files and its claims are backed by tests or measurements in
 - A film of her materialising, rendered in Blender (`mobile/tools/roxi/film.py`)
   and cut in HyperFrames with an end card.
 - Tried and blocked: a 3D model with Meshy (free plan refused).
+
+## Chapter 01 (the audit): what was delivered
+
+- [BASELINE_AUDIT.md](BASELINE_AUDIT.md): the verified inventory, the
+  functionality preservation matrix (every website system classified REAL /
+  DEMO / MOCK / BLOCKED / NOT IMPLEMENTED, with reuse / adapt / new-native for
+  the app), the security baseline, phone measurements of twelve live pages, the
+  production risks and technical debt, and the recommended Android/iOS
+  architecture.
+- Evidence gathered: platform typecheck clean; platform suite 94 files, 851
+  tests, all pass; live `/status` 56 REAL, 8 requiring configuration, 1 DEMO,
+  0 MOCK; Railway and Sentry healthy (one scanner-made issue); `npm audit`
+  findings recorded.
+- Memory updated: decisions D-020 to D-024, known issues 17 to 24, the
+  measurements, the status table, the architecture direction, and the handoff.
+- Not done, by the directive: no production code, configuration, data or
+  deployment changed; no dependency upgraded; nothing published.

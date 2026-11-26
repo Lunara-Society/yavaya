@@ -24,7 +24,7 @@ for example [`platform/docs/FIRST-LIGHT.md`](../../platform/docs/FIRST-LIGHT.md)
 [`DISTRICTS-3D.md`](../../platform/docs/DISTRICTS-3D.md) and
 [`GENESIS.md`](../../platform/docs/GENESIS.md).
 
-## Chapter 01: Roxi
+## Pre-audit prototype (P-01): Roxi
 
 | File | What | Source | Owner / licence | Notes |
 | --- | --- | --- | --- | --- |

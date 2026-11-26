@@ -17,7 +17,13 @@ an entry that is no longer true is worse than no entry.
   the Synapse experience. The directive rules out "a website wrapped inside a
   mobile container" as the result, so later chapters replace it screen by
   screen with native Synapse screens.
-- **Synapse's first layer** (Chapter 01, `mobile/src/synapse/`): Roxi forms
+- **The verified baseline** (Chapter 01, [BASELINE_AUDIT.md](BASELINE_AUDIT.md)):
+  what the website does today, each system classified REAL / DEMO / MOCK /
+  BLOCKED / NOT IMPLEMENTED, how the app should carry it (reuse, adapt, new
+  native), the production risks, and the recommended Android/iOS architecture.
+  Read it before touching any system.
+- **Synapse's first layer** (the pre-audit prototype P-01, built before the
+  audit was asked for, `mobile/src/synapse/`): Roxi forms
   from light while the website loads beneath, then stays as her Presence in
   place of her web button, lit by her real state. Classic turns it off. The
   rest of the Living Interface Engine is not built yet; see
@@ -40,6 +46,21 @@ an entry that is no longer true is worse than no entry.
 
 Secrets live in Railway variables (web) and on Expo's servers (Android
 keystore, Play key). None are in the repository, and none may be.
+
+## Facts from the baseline that constrain every chapter
+
+- The website writes data through 176 Server Actions and same-origin API
+  routes. Native code cannot call either; native screens need the versioned
+  mobile API recommended in BASELINE_AUDIT §7, wrapping the same domain
+  functions. Never re-implement a business rule in the app.
+- Sessions are httpOnly cookies. Native calls need revocable token sessions in
+  the same sessions table; the WebView keeps its cookie.
+- Tokens, Play gems, Vault items and Roxi plans are digital goods sold through
+  Stripe. The store builds need the owner's billing decision first (R1).
+- Railway has one environment (production) in US East. A staging environment
+  should exist before a mobile API does.
+- The admin area stays on the web.
+- The live `/status` page is the website's own truth; the app never claims more.
 
 ## The owner's standing rules (apply to every chapter)
 

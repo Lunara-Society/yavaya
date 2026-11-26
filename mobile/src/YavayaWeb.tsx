@@ -16,7 +16,7 @@ import { readLook, saveLook, type Look } from './synapse/settings';
 
 /**
  * The live yavaya.lat in a native frame (Chapter 00's bridge, docs/synapse/ARCHITECTURE.md),
- * with Synapse's first layer over it (Chapter 01): Roxi forming from light while the page
+ * with Synapse's first layer over it (pre-audit prototype P-01): Roxi forming from light while the page
  * loads beneath, then her Presence in place of her web button. Every working system —
  * accounts, the districts, Roxi's voice and tools, payments, Play — is still the website's
  * own; the app adds the back button, links that leave Yavaya opening in their own apps, the

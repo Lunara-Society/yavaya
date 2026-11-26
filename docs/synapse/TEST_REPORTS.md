@@ -21,7 +21,7 @@ Run in the cloud development environment, from `mobile/`.
 Not tested in Chapter 00: anything on a phone. The website itself was not
 changed in this chapter, so its own test suite was not re-run.
 
-## Chapter 01 · 26 November 2026
+## Pre-audit prototype (P-01) · 26 November 2026
 
 | Check | How | Result |
 | --- | --- | --- |
@@ -34,6 +34,24 @@ changed in this chapter, so its own test suite was not re-run.
 | Preview builds | EAS | `61ed3bd9` (code at fad77cc) finished 15:49 UTC: native Skia, Reanimated and Worklets compiled; Roxi's three images found in the APK byte for byte. `0cda7886` (code at 871b834, with the cover safeguard) finished 16:22 UTC, version 0.2.0: 132 MB; the bundle inside carries the bridge's `cover` safeguard and the Spanish hint, checked in the downloaded APK. [Build page](https://expo.dev/accounts/yavaya/projects/yavaya/builds/0cda7886-cff2-4496-93b2-a766ea0b820c) (Expo sign-in); install link valid until 10 Dec 2026 |
 | The film | Blender 4.5 Cycles (CPU), 144 frames, 720 × 1280 (about 15 s a frame, 36 min), then HyperFrames | "Roxi se materializa", 9.0 s, 1080 × 1920, H.264, 8.9 MB; HyperFrames check passed; six frames pulled back out of the final file and looked at. Delivered to the owner; not published |
 
-Not tested in Chapter 01: anything on a phone (frame rate, battery, touch,
+Not tested in the prototype: anything on a phone (frame rate, battery, touch,
 tilt, the Presence over the real website, Classic switching). That is the
 owner's first step with the new build.
+
+## Chapter 01: the existing architecture audit · 26 November 2026
+
+Nothing in production was changed; these checks describe the website as it is.
+
+| Check | How | Result |
+| --- | --- | --- |
+| Platform types | `npm run typecheck` in `platform/` | pass, 0 errors |
+| Platform test suite | `npm test` (Vitest) in `platform/`, local Postgres 16 | 94 files, 851 tests, all pass (524 s) |
+| Live capability register | `/status` on yavaya.lat | 65 rows: 56 REAL, 8 requiring configuration, 1 DEMO, 0 MOCK |
+| Phones, rendering and speed | Playwright, Chromium, 360 × 780, 12 public pages, mid and low tiers | every page renders; no sideways scrolling; low-tier largest paint 0.99–3.44 s; cold data 282–618 KB (BASELINE_AUDIT §5) |
+| Security headers | response headers of the home page | strict nonce CSP, HSTS preload, `X-Frame-Options: DENY`, `Permissions-Policy: camera=(), microphone=(self), payment=(), geolocation=(self)` |
+| Production deploys | Railway | last web deploy succeeded 21 Nov (`a4117771`); later commits skipped by the `platform/**` watch, as designed |
+| Production errors | Railway HTTP log since 25 Nov; Sentry, 14 days | 2 HTTP 500s, both scanner requests; 1 unresolved Sentry issue, the same |
+| Dependencies | `npm audit` | platform production: 8 (6 moderate, 2 high); full tree 18 (2 critical, test tooling only); mobile production: 3 moderate |
+
+Not tested: anything signed in on the live site, real payments or deliveries,
+and the app on a phone.

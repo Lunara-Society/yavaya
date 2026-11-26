@@ -51,7 +51,7 @@ chapter record that fixed it, with the evidence.
     Play delivers per-device splits from the app bundle; measure that size
     when the first production bundle is built.
 
-12. **Chapter 01 has not run on a phone yet.** The reconstruction, the parallax,
+12. **The pre-audit prototype (P-01) has not run on a phone yet.** The reconstruction, the parallax,
     the Presence and the Classic switch are typechecked, unit-tested and (the
     shader) rendered with Skia's own compiler, but frame rate, battery and touch
     feel are unmeasured until the owner installs the build.
@@ -72,3 +72,39 @@ chapter record that fixed it, with the evidence.
     ElevenLabs connector needs reconnecting** with more permissions before Roxi's
     voice can be used for films from here; her live voice in the app is not
     affected (it is the website's).
+
+The entries below come from the Chapter 01 audit; the evidence and the
+recommended fix for each are in [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §6.
+
+17. **Digital goods and the stores (R1, release-blocking).** Tokens, Play gems,
+    Vault items and Roxi Pro/Max are sold through Stripe. Google Play and the
+    App Store expect their own billing for digital goods bought in an app. The
+    owner decides before any store release: store billing for those items, or
+    no purchase of them in the store builds.
+
+18. **Native code cannot write to the platform (R2).** Writes are Server
+    Actions or same-origin API routes; a native request has no browser origin.
+    Native screens wait for the mobile API.
+
+19. **Dictation may not work inside the app (R4).** The posting forms use the
+    browser's speech recognition; Android's WebView is not known to provide it.
+    First check on the phone.
+
+20. **Driver location stops with the screen off (R5).** YavayaGo tracking comes
+    from the driver's browser location. A native foreground service is needed
+    for a dependable driver app.
+
+21. **Known advisories in the website's dependencies (R6).** Next.js, Zod and
+    the Sentry plugin chain have published fixes; 8 advisories in production
+    packages (6 moderate, 2 high). Upgrading is a production change, so it
+    waits for the owner's go-ahead and runs with the full test suite.
+
+22. **One Railway environment, in US East (R7, R8).** Changes go straight to
+    production; Central American latency is unmeasured.
+
+23. **Scanner requests answer 500 (R9).** `POST` to made-up paths reaches the
+    action parser and fails (Sentry YAVAYA-WEB-K). Harmless, but noisy.
+
+24. **Small details seen in phone screenshots, to confirm on a device.** On
+    district pages one header button renders as an empty circle; the Mercadito
+    subtitle runs under its sign illustration.

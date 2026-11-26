@@ -116,3 +116,38 @@ paid change for the owner.
 `mobile/tools/synapse/render-frames.mjs` compiles the app's shader source with
 CanvasKit and renders each stage to PNG. It caught a reserved word (`flat`)
 that would have failed on every phone, and the black box around her picture.
+
+### D-020 · 26 Nov 2026 · The owner's numbering wins: Chapter 01 is the audit
+The owner's directive named Chapter 01 "Existing architecture audit" after the
+Roxi layer had been built under that number. The Roxi work is relabelled the
+**pre-audit prototype (P-01)**; its code, builds and records stay as they were.
+Undo: none needed; labels only.
+
+### D-021 · 26 Nov 2026 · The baseline is measured, not described
+The audit ran the platform's own checks (typecheck; 94 test files, 851 tests on
+a local Postgres), read the live `/status` register, measured twelve pages on
+emulated phones, and read Railway, Sentry and `npm audit`. Statements without
+such evidence are marked NOT TESTED. Considered: a code-reading audit only
+(cheaper, but it would have repeated the code's claims without checking them).
+
+### D-022 · 26 Nov 2026 · Recommended architecture: one Expo codebase, the website as fallback, a thin mobile API
+Android and iOS stay in the existing Expo project. Native screens replace web
+screens one at a time; every screen not rebuilt stays the web page. Native data
+goes through a versioned mobile API on the same server whose endpoints wrap the
+existing domain functions, with revocable token sessions. Reason: the website's
+writes are Server Actions and same-origin routes that native code cannot call,
+and rewriting rules in the app would split the source of truth. Considered:
+calling Server Actions from native code (their identifiers are build artefacts,
+not a stable interface); fully native rewrite first (duplicates 31 domains and
+loses the fallback); staying a bridge (ruled out by the directive). This is a
+recommendation; building it needs the owner's authorisation.
+
+### D-023 · 26 Nov 2026 · Store billing is decided before the first store release
+Digital items sold through Stripe inside a store app conflict with store
+billing rules. Nothing about it is built or changed now; the decision is the
+owner's and blocks the first store submission (KNOWN_ISSUES 17).
+
+### D-024 · 26 Nov 2026 · The admin area stays on the web
+Eighteen admin sections with server-side checks already work in a browser and
+in the app's WebView for staff. A native admin would duplicate them for few
+users. Undo: build native admin screens on the mobile API later if needed.

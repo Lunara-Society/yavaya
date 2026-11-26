@@ -42,7 +42,7 @@ The app's own native screen (the offline screen) uses the same tokens: night
    glassmorphism, no clutter. The full list is in
    [MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md) section 3.
 
-## Motion and accessibility tiers (proposed, to be measured in Chapter 01)
+## Motion and accessibility tiers (proposed, to be measured on phones)
 
 | Tier | When | What renders |
 | --- | --- | --- |

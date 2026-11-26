@@ -47,7 +47,7 @@ not repeated here.
 releases it in Play Console. Version numbers live on EAS
 (`appVersionSource: remote`); the first version code is 1.
 
-### Synapse's first layer (Chapter 01)
+### Synapse's first layer (pre-audit prototype P-01)
 
 ```
  App.tsx ── YavayaWeb.tsx
@@ -77,11 +77,13 @@ intended path, to be confirmed by measurement before any of it is adopted:
 1. **Keep the bridge as the fallback.** Every native Synapse screen replaces
    one web screen; any screen not yet rebuilt stays the web page. The Classic
    switch can always return to it.
-2. **Data through the existing platform API.** Native screens call the same
-   server endpoints the website uses, with the same server-side authorisation.
-   No new backend behaviour is invented in the app. Sharing the member's
-   session between the WebView and native code (cookie or token) is the first
-   design decision of Chapter 01.
+2. **Data through the existing platform, by a thin mobile API.** The audit
+   (Chapter 01) found that the website writes through Server Actions and
+   same-origin routes that native code cannot call. Native screens therefore
+   call a versioned mobile API on the same server, each endpoint wrapping the
+   domain function the website already uses, with token sessions. See
+   [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §7, the recommendation this
+   direction now follows.
 3. **A rendering layer chosen by measurement.** Candidates to evaluate against
    [PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md) on a low-end Android phone:
    React Native Skia, Reanimated, and a GPU 3D layer (expo-gl / three.js), with
