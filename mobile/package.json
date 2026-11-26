@@ -10,7 +10,7 @@
     "@expo/metro-runtime": "~58.0.17",
     "@livekit/react-native": "2.12.0",
     "@livekit/react-native-expo-plugin": "1.0.3",
-    "@livekit/react-native-webrtc": "144.2.0",
+    "@livekit/react-native-webrtc": "144.1.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@shopify/react-native-skia": "2.14.0",
     "expo": "~58.1.0",
@@ -58,5 +58,8 @@
     "check": "npm run typecheck && npm test && npm run doctor",
     "check:shaders": "node tools/synapse/check-shaders.mjs"
   },
-  "private": true
+  "private": true,
+  "overrides": {
+    "@livekit/react-native-webrtc": "144.1.2"
+  }
 }
