@@ -8,6 +8,8 @@ El hogar digital de Centroamérica. Una cuenta. Una reputación. Un ecosistema.
 | --- | --- |
 | [`platform/`](platform/) | **The Yavaya platform and website**: accounts, identity, reputation, tokens, trust, and every public page. Next.js + PostgreSQL, deployed on Railway at **yavaya.lat**. Start with [`platform/CLAUDE.md`](platform/CLAUDE.md) and [`platform/docs/`](platform/docs/). |
 | [`docs/YAVAYA_MASTER_BIBLE.md`](docs/YAVAYA_MASTER_BIBLE.md) | The product specification. Product rules come from here. |
+| [`mobile/`](mobile/) | **The Android app** (Expo, EAS project `@yavaya/yavaya`, package `yavaya.lat`). Today it opens yavaya.lat in a native frame; Synapse replaces it screen by screen. `cd mobile && npm run check`. |
+| [`docs/synapse/`](docs/synapse/) | **Yavaya Synapse**, the mobile interface project: the owner's master directive, project memory, status, decisions and the next chapter. Read [`PROJECT_MEMORY.md`](docs/synapse/PROJECT_MEMORY.md) first. |
 | [`scripts/spaceship-dns.mjs`](scripts/spaceship-dns.mjs) | DNS for yavaya.lat, run through the **DNS (Spaceship)** workflow. |
 | `index.html`, `404.html`, `CNAME` | GitHub Pages serves only a redirect: `www.yavaya.lat` (and old Pages addresses) go to `https://yavaya.lat`, keeping the path. |
 
