@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { FLAG_DEFAULTS, mergeFlags, parseRemoteConfig, type Flags } from './flags';
-import { IS_DEV_VARIANT, SERVER_URL } from './env';
+import { IS_INTERNAL_VARIANT, SERVER_URL } from './env';
 import { KEYS, readJson, writeJson } from './store';
 import { getJson } from '../business/api';
 
@@ -12,7 +12,7 @@ type ConfigState = { flags: Flags; prefs: Prefs; setPrefs: (next: Partial<Prefs>
 
 const ConfigContext = createContext<ConfigState | null>(null);
 
-const BASE: Flags = { ...FLAG_DEFAULTS, lab: IS_DEV_VARIANT };
+const BASE: Flags = { ...FLAG_DEFAULTS, lab: IS_INTERNAL_VARIANT };
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
   const [flags, setFlags] = useState<Flags>(BASE);

@@ -23,3 +23,6 @@ export const VARIANT: Variant = localWeb
 export const SERVER_URL: string = localWeb ? window.location.origin : extra.webUrl ?? 'https://yavaya.lat';
 
 export const IS_DEV_VARIANT = VARIANT === 'development';
+
+/** Internal builds (development and preview, never the store build) show the laboratory. */
+export const IS_INTERNAL_VARIANT = VARIANT !== 'production';
