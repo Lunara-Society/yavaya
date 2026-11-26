@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Yavaya",
+    "slug": "yavaya",
+    "owner": "yavaya",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "yavaya",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0B0A10",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "yavaya.lat",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "backgroundColor": "#2D2131"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#0B0A10"
+        }
+      ],
+      "expo-localization"
+    ],
+    "extra": {
+      "webUrl": "https://yavaya.lat",
+      "eas": {
+        "projectId": "9e779c70-bbec-48c5-ac71-ca8a45debf66"
+      }
+    }
+  }
+}

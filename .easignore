@@ -1,0 +1,26 @@
+# What EAS CLI uploads for a build of the mobile app (mobile/). This file replaces every
+# .gitignore for that upload, so it starts by leaving out the whole repository — the
+# website (platform/) is not part of the app — and then lets mobile/ back in.
+/*
+!/mobile
+
+# mobile/.gitignore, repeated here (EAS reads only this file).
+/mobile/node_modules/
+/mobile/.expo/
+/mobile/dist/
+/mobile/web-build/
+/mobile/expo-env.d.ts
+/mobile/.kotlin/
+/mobile/**/*.orig.*
+/mobile/**/*.jks
+/mobile/**/*.p8
+/mobile/**/*.p12
+/mobile/**/*.key
+/mobile/**/*.mobileprovision
+/mobile/**/*.pem
+/mobile/.metro-health-check*
+/mobile/**/npm-debug.*
+/mobile/**/.env*.local
+/mobile/**/*.tsbuildinfo
+/mobile/android/
+/mobile/ios/
