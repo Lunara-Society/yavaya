@@ -52,11 +52,14 @@ export function Button({ label, onPress, kind = 'primary', icon, accent, disable
   );
 }
 
-export function IconButton({ icon, label, onPress, tint = color.text, size = 48, lit = false }: { icon: IconName; label: string; onPress: () => void; tint?: string; size?: number; lit?: boolean }) {
+/** A control that cannot act right now stays visible but dimmed, and says so to screen readers. */
+const DISABLED_OPACITY = 0.35;
+
+export function IconButton({ icon, label, onPress, tint = color.text, size = 48, lit = false, disabled = false }: { icon: IconName; label: string; onPress: () => void; tint?: string; size?: number; lit?: boolean; disabled?: boolean }) {
   const p = usePress();
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} hitSlop={8} onPressIn={p.onPressIn} onPressOut={p.onPressOut} onPress={() => { cue('tap'); onPress(); }}>
-      <Animated.View style={[{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: lit ? 1 : 0, borderColor: tint }, p.style]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ disabled }} disabled={disabled} hitSlop={8} onPressIn={p.onPressIn} onPressOut={p.onPressOut} onPress={() => { cue('tap'); onPress(); }}>
+      <Animated.View style={[{ width: size, height: size, borderRadius: size / 2, alignItems: 'center', justifyContent: 'center', borderWidth: lit ? 1 : 0, borderColor: tint, opacity: disabled ? DISABLED_OPACITY : 1 }, p.style]}>
         <Icon name={icon} tint={tint} />
       </Animated.View>
     </Pressable>

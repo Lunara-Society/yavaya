@@ -14,7 +14,7 @@ type Depth = keyof typeof depthTokens;
  * are drawn by the GPU. The panel leans with the phone (parallax by depth) and
  * toward the finger when pressed. `focus` lights its edge in the accent.
  */
-export function HoloPanel({ children, accent = color.signal, depth = 'panel', focus = false, tilt, onPress, style, radius = radii.panel, accessibilityLabel }: {
+export function HoloPanel({ children, accent = color.signal, depth = 'panel', focus = false, tilt, onPress, style, radius = radii.panel, accessibilityLabel, lite = false }: {
   children: ReactNode;
   accent?: string;
   depth?: Depth;
@@ -24,6 +24,12 @@ export function HoloPanel({ children, accent = color.signal, depth = 'panel', fo
   style?: StyleProp<ViewStyle>;
   radius?: number;
   accessibilityLabel?: string;
+  /**
+   * Glass without a GPU canvas: the same body and edge, drawn by plain views.
+   * For grids and lists, where dozens of canvases would cost memory on a
+   * modest phone (and browsers allow only 16 at once).
+   */
+  lite?: boolean;
 }) {
   const [size, setSize] = useState({ w: 0, h: 0 });
   const press = useSharedValue({ x: 0, y: 0, on: 0 });
@@ -54,14 +60,14 @@ export function HoloPanel({ children, accent = color.signal, depth = 'panel', fo
   const onLayout = (e: LayoutChangeEvent) => setSize({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height });
   const body = (
     <Animated.View style={[{ borderRadius: radius }, lean, style]} onLayout={onLayout}>
-      {FX.edge && size.w > 0 ? (
+      {!lite && FX.edge && size.w > 0 ? (
         <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
           <Fill>
             <Shader source={FX.edge} uniforms={uniforms} />
           </Fill>
         </Canvas>
       ) : (
-        <View style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: color.glass, borderWidth: 1, borderColor: focus ? accent : color.hairline }]} />
+        <View style={[StyleSheet.absoluteFill, { borderRadius: radius, backgroundColor: color.glass, borderWidth: 1, borderColor: focus ? accent : lite ? `${accent}55` : color.hairline, borderTopColor: focus ? accent : lite ? `${accent}99` : color.hairlineStrong }]} />
       )}
       {children}
     </Animated.View>

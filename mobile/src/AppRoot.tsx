@@ -31,6 +31,9 @@ import { Dock } from './screens/Dock';
 import { Awakening } from './screens/Awakening';
 import WebScreen from './screens/WebScreen';
 import Classic from './screens/Classic';
+import { AuthProvider } from './business/auth';
+import { RoxiVoiceProvider } from './roxi/RoxiVoiceProvider';
+import { RoxiIsland } from './roxi/RoxiIsland';
 
 /**
  * The app's root (Chapter 02): providers in dependency order, then either the
@@ -53,7 +56,9 @@ export default function AppRoot() {
         <StatusBar style="light" />
         <ConfigProvider>
           <QualityProvider>
-            <Shell fonts={fonts} />
+            <AuthProvider>
+              <Shell fonts={fonts} />
+            </AuthProvider>
           </QualityProvider>
         </ConfigProvider>
       </SafeAreaProvider>
@@ -85,9 +90,11 @@ function Shell({ fonts }: { fonts: boolean }) {
   if (!flags.synapseShell || prefs.look === 'classic') return <Classic />;
   return (
     <NavigationProvider>
-      <ToastProvider>
-        <Synapse />
-      </ToastProvider>
+      <RoxiVoiceProvider>
+        <ToastProvider>
+          <Synapse />
+        </ToastProvider>
+      </RoxiVoiceProvider>
     </NavigationProvider>
   );
 }
@@ -141,7 +148,7 @@ function Synapse() {
       case 'profile': return <SampleProfile />;
       case 'search': return <Search q={route.q} />;
       case 'map': return <MapScreen iso={route.iso} />;
-      case 'roxi': return <RoxiScreen />;
+      case 'roxi': return <RoxiScreen tilt={tilt} />;
       case 'settings': return <Settings onReplayAwakening={() => setAwaken(true)} />;
       case 'lab': return <Lab section={route.section} tilt={tilt} />;
       case 'web': return <WebScreen path={route.path} />;
@@ -153,6 +160,7 @@ function Synapse() {
       <Environment width={width} height={height} accent={accent} accentMix={accentMix} tilt={tilt} dust={budget.dust / 400} />
       <SceneHost render={render} width={width} height={height} />
       {nav.top.name !== 'web' ? <Dock /> : null}
+      <RoxiIsland />
       {awaken ? (
         <Awakening
           onDone={() => {

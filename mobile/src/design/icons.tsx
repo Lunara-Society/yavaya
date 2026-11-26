@@ -6,6 +6,10 @@ import { color } from './tokens';
  * round joins. Drawn for this app; no third-party icon font.
  */
 export const ICONS = {
+  mic: 'M12 4a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V7a3 3 0 0 0-3-3zM6 11.5a6 6 0 0 0 12 0M12 17.5V20M9 20h6',
+  micOff: 'M9 9v3a3 3 0 0 0 5.1 2.1M15 10.5V7a3 3 0 0 0-5.8-1.1M6 11.5a6 6 0 0 0 9.9 4.6M18 11.5a6 6 0 0 1-.4 2.1M12 17.5V20M9 20h6M4 4l16 16',
+  keyboard: 'M3.5 7h17v10h-17zM7 10h1M10 10h1M13 10h1M16 10h1M7 13.5h10',
+  send: 'M4 12 20 5l-4 15-4-6.5zM12 13.5 20 5',
   home: 'M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5h-5v5H5a1 1 0 0 1-1-1z',
   search: 'M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5 20 20',
   map: 'M9 5 4 7v12l5-2 6 2 5-2V5l-5 2-6-2zM9 5v12M15 7v12',

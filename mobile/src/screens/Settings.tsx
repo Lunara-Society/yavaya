@@ -11,6 +11,7 @@ import { SERVER_URL, VARIANT } from '../core/env';
 import { useNav } from '../navigation/Navigator';
 import { KEYS, writeJson } from '../core/store';
 import { cue } from '../motion/cues';
+import { AccountPanel } from './Account';
 
 /** Sound, vibration and the look are the person's choice; nothing is mandatory. */
 export function Settings({ onReplayAwakening }: { onReplayAwakening: () => void }) {
@@ -18,6 +19,7 @@ export function Settings({ onReplayAwakening }: { onReplayAwakening: () => void 
   const nav = useNav();
   return (
     <Screen overline="Ajustes" title="Tu Yavaya">
+      <AccountPanel />
       <HoloPanel depth="panel" style={{ paddingHorizontal: space[4] }}>
         <Toggle label="Sonidos" icon="sound" value={prefs.sound} onChange={(sound) => setPrefs({ sound })} />
         {prefs.sound ? (

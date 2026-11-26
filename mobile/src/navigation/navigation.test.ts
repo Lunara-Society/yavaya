@@ -48,3 +48,8 @@ test('the stack pushes, returns, ignores duplicate pushes and never pops past ho
   s = reduce(s, { type: 'reset', route: { name: 'map' } });
   assert.deepEqual(s.stack.map((r) => r.name), ['home', 'map']);
 });
+
+test('the sign-in return address is never a place to navigate to', () => {
+  assert.equal(parseUrl('yavaya://auth?code=abc&state=xyz'), null);
+  assert.equal(parseUrl('yavaya-dev://auth?code=abc&state=xyz'), null);
+});

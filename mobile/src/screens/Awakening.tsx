@@ -5,6 +5,7 @@ import Animated, { Easing, cancelAnimation, runOnJS, useAnimatedStyle, useDerive
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FX } from '../render/effects';
 import { ReconstructCanvas } from '../render/Reconstruct';
+import { RoxiHologram } from '../render/RoxiHologram';
 import { T } from '../design/Text';
 import { color, rgb01, space } from '../design/tokens';
 import { cue } from '../motion/cues';
@@ -20,6 +21,11 @@ import { useQuality } from '../performance/Quality';
  * are never waiting for it.
  */
 const TOTAL = 5000;
+/** Roxi forms as her hologram from 3.1 s, whole by 4.5 s, as the home appears behind her. */
+const ROXI_FROM_MS = 3100;
+const ROXI_FORM_MS = 1400;
+const ROXI_HEIGHT = 0.58;
+const ROXI_TOP = 0.16;
 const clamp01 = (v: number) => {
   'worklet';
   return Math.max(0, Math.min(1, v));
@@ -77,7 +83,9 @@ export function Awakening({ onDone }: { onDone: () => void }) {
   }));
   const gIn = useDerivedValue(() => (t.value < 2700 ? clamp01((t.value - 2000) / 700) : 0));
   const gOut = useDerivedValue(() => (t.value >= 2700 ? 1 - clamp01((t.value - 2700) / 600) : 0));
-  const rIn = useDerivedValue(() => clamp01((t.value - 3300) / 1000));
+  const rIn = useDerivedValue(() => clamp01((t.value - ROXI_FROM_MS) / ROXI_FORM_MS));
+  const roxiLevel = useSharedValue(0);
+  const roxiState = useSharedValue(0);
   const veilStyle = useAnimatedStyle(() => ({ opacity: veil.value }));
   const g = Math.min(width, height) * 0.46;
 
@@ -98,8 +106,8 @@ export function Awakening({ onDone }: { onDone: () => void }) {
           <View style={styles.centre} pointerEvents="none">
             <ReconstructCanvas image={guardian} progress={gOut} technique="molecular" accent={color.metal} width={g} height={g} fit="contain" />
           </View>
-          <View style={styles.centre} pointerEvents="none">
-            <ReconstructCanvas image={roxi} progress={rIn} technique="light" accent={color.roxi} width={g * 0.9} height={g * 1.4} fit="contain" origin={[0.5, 0.3]} />
+          <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            <RoxiHologram width={width} height={height} figureHeight={height * ROXI_HEIGHT} top={height * ROXI_TOP} level={roxiLevel} state={roxiState} form={rIn} />
           </View>
         </>
       )}

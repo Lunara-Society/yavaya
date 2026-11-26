@@ -70,3 +70,13 @@ test('haptics: patterns are short and ordered; shaders avoid SkSL reserved words
   }
   for (const [name, src] of Object.entries(SHADERS)) assert.ok(!/\b(flat|smooth|noperspective)\s+[a-z]/.test(src.replace(/smoothstep/g, '')), name);
 });
+
+test('the app offers Roxi exactly the tools her agent is told about (platform/docs/roxi/tools.json)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const toolsJson = JSON.parse(readFileSync(new URL('../../platform/docs/roxi/tools.json', import.meta.url), 'utf8')) as Array<{ name?: string; tool_config?: { name?: string } }> | { tools: Array<{ name?: string; tool_config?: { name?: string } }> };
+  const list = Array.isArray(toolsJson) ? toolsJson : toolsJson.tools;
+  const told = list.map((tool) => tool.name ?? tool.tool_config?.name).filter(Boolean).sort();
+  const source = readFileSync(new URL('./roxi/tools.ts', import.meta.url), 'utf8');
+  const offered = [...source.matchAll(/^    async ([a-z_]+)\(/gm)].map((m) => m[1]).sort();
+  assert.deepEqual(offered, told);
+});

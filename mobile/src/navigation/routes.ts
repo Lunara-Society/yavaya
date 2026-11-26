@@ -68,6 +68,9 @@ export function parseUrl(url: string, allowedHosts: readonly string[] = ['yavaya
   const parts = path.split('/').filter(Boolean);
   if (parts.length === 0) return { name: 'home' };
   const [head, a, b] = parts;
+  // The sign-in return address (business/auth.tsx) belongs to the browser hand-off, never to navigation:
+  // opening it as a page would hand its one-time code to a screen.
+  if (head === 'auth') return null;
   if (head === 'district' && a && NATIVE_DISTRICTS.has(a)) return { name: 'district', id: a };
   if (NATIVE_DISTRICTS.has(head) && parts.length === 1) return { name: 'district', id: head };
   if (head === 'search') return { name: 'search', q: new URLSearchParams(query).get('q') ?? undefined };

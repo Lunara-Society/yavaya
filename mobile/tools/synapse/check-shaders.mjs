@@ -48,4 +48,34 @@ const names = ['particles', 'data', 'fragments', 'light', 'mesh', 'wave', 'molec
 for (let t = 0; t < 7; t += 1) for (const p of [0.35, 0.7]) {
   render(`recon-${t}-${names[t]}-${Math.round(p * 100)}`, effects.RECON_SKSL, [W, H, p, t, 1.2, 4, 0.5, 0.5, ...accent, 1], child);
 }
+// Phone-sized frames of the environment and of Roxi's hologram (her picture and depth map as the two children).
+function renderPhone(name, effect, uniforms, children = []) {
+  const PW = 390, PH = 844;
+  const surface = CK.MakeSurface(PW, PH);
+  const canvas = surface.getCanvas();
+  canvas.clear(CK.BLACK);
+  if (name.startsWith('roxi')) {
+    const bg = new CK.Paint();
+    bg.setShader(effects.ATMOSPHERE_SKSL.makeShader([PW, PH, 4.0, 0.72, 0.64, 1.0, 1.0, 0, 0, 0.25, 1]));
+    canvas.drawRect(CK.LTRBRect(0, 0, PW, PH), bg);
+  }
+  const shader = children.length ? effect.makeShaderWithChildren(uniforms, children) : effect.makeShader(uniforms);
+  const paint = new CK.Paint(); paint.setShader(shader);
+  canvas.drawRect(CK.LTRBRect(0, 0, PW, PH), paint);
+  writeFileSync(join(out, `${name}.png`), surface.makeImageSnapshot().encodeToBytes());
+  surface.delete();
+}
+renderPhone('phone-atmosphere-neutral', effects.ATMOSPHERE_SKSL, [390, 844, 6.0, 0.61, 0.79, 1.0, 0.0, 0, 0, 0.25, 1]);
+renderPhone('phone-atmosphere-mercadito', effects.ATMOSPHERE_SKSL, [390, 844, 6.0, ...accent, 1.0, 0, 0, 0.25, 1]);
+const figure = CK.MakeImageFromEncoded(readFileSync(join(here, '../../assets/roxi/roxi.webp')));
+const depthImg = CK.MakeImageFromEncoded(readFileSync(join(here, '../../assets/roxi/roxi-depth.webp')));
+if (figure && depthImg) {
+  // Her box: 82% of the screen's height, centred, as RoxiScreen places her.
+  const bh = 844 * 0.62, bw = bh * (figure.width() / figure.height()), bx = (390 - bw) / 2, by = 110;
+  const fit = (img) => img.makeShaderOptions(CK.TileMode.Decal, CK.TileMode.Decal, CK.FilterMode.Linear, CK.MipmapMode.None,
+    CK.Matrix.multiply(CK.Matrix.translated(bx, by), CK.Matrix.scaled(bw / img.width(), bh / img.height())));
+  for (const [label, level, state, form] of [['resting', 0.0, 0, 1], ['speaking', 0.8, 3, 1], ['forming', 0.0, 0, 0.55]]) {
+    renderPhone(`roxi-holo-${label}`, effects.ROXI_HOLO_SKSL, [390, 844, bx, by, bw, bh, 7.3, level, state, form, 0, 0], [fit(figure), fit(depthImg)]);
+  }
+}
 console.log(`frames in ${out}`);
