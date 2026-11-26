@@ -34,7 +34,16 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     name: v.name,
     slug: 'yavaya',
     scheme: v.scheme,
-    ios: { ...config.ios, bundleIdentifier: v.ios, supportsTablet: true, infoPlist: { UIBackgroundModes: [] } },
+    ios: {
+      ...config.ios,
+      bundleIdentifier: v.ios,
+      supportsTablet: true,
+      infoPlist: {
+        // Voice stays in the foreground: talking to Roxi ends when the app leaves the screen.
+        UIBackgroundModes: [],
+        NSMicrophoneUsageDescription: 'Yavaya usa el micrófono cuando hablas con Roxi o dictas un texto.',
+      },
+    },
     android: { ...config.android, package: v.android },
     // Rollback: an EAS Update can be republished or rolled back per channel; the
     // runtime version follows the native fingerprint, so a JS update never lands
@@ -42,7 +51,13 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     runtimeVersion: { policy: 'fingerprint' },
     updates: { url: `https://u.expo.dev/${PROJECT_ID}`, checkAutomatically: 'ON_LOAD', fallbackToCacheTimeout: 0 },
     web: { bundler: 'metro', output: 'single', backgroundColor: '#000000' },
-    plugins: [...(config.plugins ?? []), ['expo-notifications', { color: '#C9B48A' }]],
+    plugins: [
+      ...(config.plugins ?? []),
+      ['expo-notifications', { color: '#C9B48A' }],
+      // Roxi's voice: ElevenLabs over WebRTC (LiveKit), echo cancellation included.
+      '@livekit/react-native-expo-plugin',
+      '@config-plugins/react-native-webrtc',
+    ],
     extra: { ...config.extra, variant, webUrl: v.webUrl, eas: { projectId: PROJECT_ID } },
   } as ExpoConfig;
 };

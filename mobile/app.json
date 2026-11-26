@@ -3,7 +3,7 @@
     "name": "Yavaya",
     "slug": "yavaya",
     "owner": "yavaya",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "yavaya",
