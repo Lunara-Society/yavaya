@@ -9,7 +9,7 @@ import { WebView, type WebViewMessageEvent, type WebViewNavigation } from 'react
 import type { ShouldStartLoadRequest, WebViewProgressEvent } from 'react-native-webview/lib/WebViewTypes';
 import { decide, isYavaya, openableUrl } from './links';
 import { strings } from './strings';
-import { injectedScript, OPEN_ROXI, parseMessage, setSynapseScript, type LauncherRect, type RoxiState } from './synapse/bridge';
+import { coverScript, injectedScript, OPEN_ROXI, parseMessage, setSynapseScript, type LauncherRect, type RoxiState } from './synapse/bridge';
 import { PresenceDock } from './synapse/PresenceDock';
 import { Reconstruction, RECONSTRUCTION_AVAILABLE } from './synapse/Reconstruction';
 import { readLook, saveLook, type Look } from './synapse/settings';
@@ -140,10 +140,15 @@ export function YavayaWeb() {
     skip.value = true;
   }, [skip]);
 
+  const showDock = synapse && !showReconstruction && launcher !== null && !roxi.open && !failed;
+
+  // The web button hides only while the Presence is actually on screen over it (bridge.ts).
+  useEffect(() => {
+    web.current?.injectJavaScript(coverScript(showDock));
+  }, [showDock]);
+
   // The settings are read before anything is shown, so the first screen is the right one; the splash covers it.
   if (!look) return <View style={[styles.root, { backgroundColor: '#0B0A10' }]} />;
-
-  const showDock = synapse && !showReconstruction && launcher !== null && !roxi.open && !failed;
 
   return (
     <View style={styles.root}>

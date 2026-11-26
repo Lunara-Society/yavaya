@@ -116,7 +116,8 @@ function fakePage(host: string, withButton: boolean) {
   const intervals: (() => void)[] = [];
   let clicked = 0;
   const button = { getBoundingClientRect: () => F.launcher, click: () => (clicked += 1) };
-  const head = { appendChild: () => undefined };
+  const style = { textContent: '', parentNode: null as unknown };
+  const head = { appendChild: () => (style.parentNode = head) };
   const on = (name: string, fn: (e: unknown) => void) => (listeners[name] ??= []).push(fn);
   const window: Record<string, unknown> = {
     ReactNativeWebView: { postMessage: (m: string) => posted.push(JSON.parse(m)) },
@@ -126,7 +127,7 @@ function fakePage(host: string, withButton: boolean) {
   const document = {
     head,
     hidden: false,
-    createElement: () => ({ textContent: '', parentNode: null }),
+    createElement: () => style,
     querySelector: (sel: string) => (sel === '.roxi-launch' && withButton ? button : null),
     addEventListener: on,
   };
@@ -146,6 +147,7 @@ function fakePage(host: string, withButton: boolean) {
     tick: () => intervals.forEach((fn) => fn()),
     posted,
     clicks: () => clicked,
+    hidden: () => style.textContent.includes('visibility:hidden'),
     window,
   };
 }
@@ -164,6 +166,20 @@ test('the injected script reports the button and Roxi state, and opens her by he
   assert.equal(state.orb, 'speaking');
   (page.window.__yavayaApp as { openRoxi: () => void }).openRoxi();
   assert.equal(page.clicks(), 1);
+});
+
+test("the web button is hidden only when the app says its Presence covers it", () => {
+  const page = fakePage('yavaya.lat', true);
+  page.run(injectedScript(true));
+  page.tick();
+  assert.equal(page.hidden(), false, 'never hidden by the page on its own');
+  const app = page.window.__yavayaApp as { cover: (on: boolean) => void; set: (on: boolean) => void };
+  app.cover(true);
+  assert.equal(page.hidden(), true);
+  app.set(false); // Classic
+  assert.equal(page.hidden(), false);
+  app.cover(true);
+  assert.equal(page.hidden(), false, 'Classic never hides it');
 });
 
 test('the injected script does nothing on pages that are not Yavaya', () => {

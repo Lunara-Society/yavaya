@@ -8,6 +8,10 @@
  * Presence can take its place. Tapping the Presence clicks that same button,
  * so she opens exactly as she does on the web. Every message is checked here
  * before anything acts on it: page content is not trusted.
+ *
+ * The web button is hidden only when the app says its Presence is on screen
+ * (`cover`), never by the page on its own: if anything in the bridge failed,
+ * Roxi's own button stays, so she can never become unreachable.
  */
 
 export type RoxiVisual = 'idle' | 'listening' | 'speaking' | 'thinking' | 'awaiting' | 'error';
@@ -75,8 +79,8 @@ export function parseMessage(data: string): BridgeMessage | null {
 
 /**
  * Injected before every page's own scripts. It only listens and measures; the
- * one thing it changes is hiding the web button while the app shows Roxi's
- * Presence in its place (and putting it back in Classic).
+ * one thing it changes is hiding the web button while the app's Presence is
+ * covering it, and only once the app has said so.
  */
 export function injectedScript(synapse: boolean): string {
   return `(function () {
@@ -85,9 +89,10 @@ export function injectedScript(synapse: boolean): string {
   if (host !== 'yavaya.lat' && host !== 'www.yavaya.lat') return;
   var post = function (m) { try { window.ReactNativeWebView.postMessage(JSON.stringify(m)); } catch (e) {} };
   var synapse = ${synapse};
+  var covered = false;
   var style = document.createElement('style');
   function paint() {
-    style.textContent = synapse ? '.roxi-launch{visibility:hidden!important}' : '';
+    style.textContent = covered ? '.roxi-launch{visibility:hidden!important}' : '';
     if (!style.parentNode && document.head) document.head.appendChild(style);
   }
   window.addEventListener('roxi:state', function (e) {
@@ -121,7 +126,8 @@ export function injectedScript(synapse: boolean): string {
     if (swallow) { swallow = false; e.stopPropagation(); e.preventDefault(); }
   }, true);
   window.__yavayaApp = {
-    set: function (on) { synapse = !!on; last = ''; measure(); },
+    set: function (on) { synapse = !!on; if (!synapse) covered = false; last = ''; measure(); },
+    cover: function (on) { covered = !!on && synapse; paint(); },
     openRoxi: function () {
       var el = document.querySelector('.roxi-launch');
       if (el) el.click(); else window.dispatchEvent(new CustomEvent('roxi:ask', { detail: {} }));
@@ -133,4 +139,9 @@ export function injectedScript(synapse: boolean): string {
 export const OPEN_ROXI = 'window.__yavayaApp && window.__yavayaApp.openRoxi(); true;';
 export function setSynapseScript(on: boolean): string {
   return `window.__yavayaApp && window.__yavayaApp.set(${on}); true;`;
+}
+
+/** Hide (or show again) the web button under the app's Presence. */
+export function coverScript(on: boolean): string {
+  return `window.__yavayaApp && window.__yavayaApp.cover(${on}); true;`;
 }
