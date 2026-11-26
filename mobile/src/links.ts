@@ -32,6 +32,15 @@ export function decide(url: string, isTopFrame = true): LinkDecision {
   return 'external';
 }
 
+/** Yavaya's own website: the only pages allowed to send the app messages. */
+const YAVAYA_HOSTS: readonly string[] = ['yavaya.lat', 'www.yavaya.lat'];
+
+export function isYavaya(url: string): boolean {
+  const match = SCHEME_AND_HOST.exec(url.trim());
+  if (!match) return false;
+  return match[1]!.toLowerCase() === 'https' && YAVAYA_HOSTS.includes((match[2] ?? '').toLowerCase());
+}
+
 /**
  * Android "intent:" links cannot be opened as they are; their browser fallback
  * can (S.browser_fallback_url). Anything else is returned unchanged.

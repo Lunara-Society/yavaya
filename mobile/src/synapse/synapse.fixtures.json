@@ -1,0 +1,25 @@
+{
+  "frameMs": 16,
+  "epsilon": 1e-6,
+  "longWaitMs": 5000,
+  "settleMs": 3000,
+  "briefMs": 200,
+  "stalledFrameMs": 60000,
+  "almostWhole": 0.9,
+  "partly": 0.4,
+  "outOfOrder": 0.2,
+  "barely": 0.1,
+  "slowPage": 0.3,
+  "stalledCeiling": 0.2,
+  "veilMid": { "at": 0.5, "min": 0.4, "max": 0.6 },
+  "veilLate": 0.9,
+  "phones": [[360, 640], [412, 915], [800, 1280], [1024, 600]],
+  "launcher": { "left": 240, "top": 690, "width": 156, "height": 62 },
+  "messages": {
+    "launcher": { "raw": "{\"type\":\"launcher\",\"x\":300,\"y\":700,\"width\":160,\"height\":60}", "rect": { "x": 300, "y": 700, "width": 160, "height": 60 } },
+    "noButton": "{\"type\":\"launcher\"}",
+    "farAway": "{\"type\":\"launcher\",\"x\":1e9,\"y\":0,\"width\":10,\"height\":10}",
+    "negative": "{\"type\":\"launcher\",\"x\":0,\"y\":0,\"width\":-5,\"height\":10}",
+    "state": "{\"type\":\"roxi-state\",\"available\":true,\"open\":\"yes\",\"orb\":\"listening\"}"
+  }
+}

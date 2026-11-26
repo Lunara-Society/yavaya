@@ -24,3 +24,7 @@
 /mobile/**/*.tsbuildinfo
 /mobile/android/
 /mobile/ios/
+
+# Source art and offline tools are not part of the app build
+/mobile/art/
+/mobile/tools/
