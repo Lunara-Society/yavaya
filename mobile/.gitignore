@@ -44,3 +44,7 @@ yarn-error.*
 *.keystore
 google-service-account*.json
 credentials.json
+
+# Skia web runtime (copied from node_modules for the web check: cp node_modules/canvaskit-wasm/bin/full/canvaskit.wasm public/)
+public/canvaskit.wasm
+.env.eas-simulator

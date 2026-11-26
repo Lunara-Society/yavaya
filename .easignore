@@ -28,3 +28,7 @@
 # Source art and offline tools are not part of the app build
 /mobile/art/
 /mobile/tools/
+
+# Web-check only files
+/mobile/public/
+/mobile/dist/

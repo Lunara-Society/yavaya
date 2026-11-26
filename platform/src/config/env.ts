@@ -269,6 +269,18 @@ const serverSchema = z.object({
 
   /** IP → coarse location. Unset => geolocation falls back to manual selection. */
   GEOIP_PROVIDER: z.enum(['none', 'unconfigured']).default('unconfigured'),
+
+  /**
+   * Mobile app remote configuration (GET /api/mobile/v1/config). A JSON object
+   * of boolean feature flags the app knows; unknown keys are ignored by the app.
+   * Unset => the app keeps its built-in defaults. Changing it is the rollback
+   * lever for a native feature without shipping a new binary.
+   */
+  MOBILE_FLAGS: z.preprocess((value) => (value === '' ? undefined : value), z.string().max(4000).optional()),
+  /** Oldest app build number still supported; older builds are asked to update. */
+  MOBILE_MIN_BUILD: z.coerce.number().int().min(0).default(0),
+  /** A short notice shown in the app (for example during an incident). */
+  MOBILE_MESSAGE: z.preprocess((value) => (value === '' ? undefined : value), z.string().max(280).optional()),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;

@@ -1,16 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { YavayaWeb } from './src/YavayaWeb';
+import AppRoot from './src/AppRoot';
 
-// The Guardian stays on screen until Yavaya's first page has painted (or a short limit passes).
-SplashScreen.preventAutoHideAsync();
+// The Guardian (splash) stays until the first frame of the app is ready.
+SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
-export default function App() {
-  return (
-    <SafeAreaProvider>
-      <StatusBar style="auto" />
-      <YavayaWeb />
-    </SafeAreaProvider>
-  );
-}
+export default AppRoot;
