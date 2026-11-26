@@ -22,7 +22,7 @@ phones and either confirms them or replaces them with evidence.
 | Splash time limit (already enforced) | 8 s | 8 s |
 | JS heap while idle | ≤ 150 MB | ≤ 250 MB |
 | GPU while idle (no animation running) | none | none |
-| Download size of the preview APK | measure in Chapter 01; record here | — |
+| Download size | preview APK: 71 MB measured (universal, four CPU types); the Play app bundle is split per device and will be smaller, to be measured | — |
 | Data for the first screen on a cold cache | ≤ 1.5 MB | ≤ 1.5 MB |
 
 Rules that are not numbers: rendering pauses when the app is in the

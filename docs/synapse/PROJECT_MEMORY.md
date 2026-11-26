@@ -29,6 +29,7 @@ an entry that is no longer true is worse than no entry.
 | Android package | `yavaya.lat` (permanent once uploaded to Google Play) |
 | Google service account for Play submissions | `yavaya-expo@yavaya.iam.gserviceaccount.com` (its key is stored at Expo, never in this repo) |
 | Google Play developer account | personal account, verified November 2026 |
+| Upload key certificate (EAS keystore), SHA-256 | `1C:5E:C5:7B:7A:17:6D:C5:21:5F:D6:2B:39:F4:2E:9F:C0:1B:69:D6:3E:89:C7:9B:A7:BA:49:55:72:46:E6:E9` (public; needed for App Links, with Google Play's app-signing fingerprint once the app is on Play) |
 | Web URL the app opens | `https://yavaya.lat`, set in `mobile/app.json` → `extra.webUrl` |
 
 Secrets live in Railway variables (web) and on Expo's servers (Android

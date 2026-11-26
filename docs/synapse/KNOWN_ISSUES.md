@@ -40,3 +40,13 @@ chapter record that fixed it, with the evidence.
 
 9. **EAS free-plan builds wait in a queue**, sometimes for a long time. A paid
    EAS plan shortens it; that is a paid change and needs the owner's approval.
+
+10. **Storage permissions arrive from libraries.** The APK's manifest has
+    READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE although the app does not
+    declare them (Android ignores them from Android 13). Before the first Play
+    upload, decide whether to block them in `app.json` (`blockedPermissions`);
+    blocking WRITE could stop WebView downloads on Android 9 and older.
+
+11. **The preview APK is 71 MB** because it carries code for four CPU types.
+    Play delivers per-device splits from the app bundle; measure that size
+    when the first production bundle is built.

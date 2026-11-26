@@ -15,7 +15,8 @@ Run in the cloud development environment, from `mobile/`.
 | EAS build profile | `eas config --platform android --profile preview` | distribution `internal`, build type `apk` |
 | Keystore | first `eas build`, non-interactive | "Created keystore" on EAS; JKS, created 26 Nov 2026 |
 | Play service account | EAS GraphQL after assignment | `yavaya.lat` → `yavaya-expo@yavaya.iam.gserviceaccount.com` |
-| Preview APK build | `eas build -p android --profile preview` | BUILD_RESULT |
+| Preview APK build | `eas build -p android --profile preview` | finished on EAS, 26 Nov 2026, 13:59 → 14:16 UTC (build `3fcf9a8a-38fa-4b10-904f-160f1583b3b0`, version 0.1.0, version code 1, SDK 58); [build page](https://expo.dev/accounts/yavaya/projects/yavaya/builds/3fcf9a8a-38fa-4b10-904f-160f1583b3b0) (Expo sign-in) |
+| The APK itself | downloaded and opened | 71 MB universal APK (arm64-v8a, armeabi-v7a, x86, x86_64); package `yavaya.lat`; manifest holds INTERNET, RECORD_AUDIO, MODIFY_AUDIO_SETTINGS, CAMERA, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION; SYSTEM_ALERT_WINDOW absent. READ/WRITE_EXTERNAL_STORAGE come in from libraries (see KNOWN_ISSUES 10) |
 
 Not tested in Chapter 00: anything on a phone. The website itself was not
 changed in this chapter, so its own test suite was not re-run.
