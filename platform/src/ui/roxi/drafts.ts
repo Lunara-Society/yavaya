@@ -32,3 +32,27 @@ export function onDraft(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
+
+/**
+ * A draft Roxi prepared in the Yavaya app. The app's web view sets it on the
+ * window before the form's page loads (it has no photos: those stay on the
+ * phone), and it is adopted here once, like any other draft, for the form to
+ * take. Anything that is not a known form with plain text or yes/no fields is
+ * ignored: the page treats it as the member typing, nothing more.
+ */
+function adoptAppDraft(): void {
+  if (typeof window === 'undefined') return;
+  const holder = window as unknown as { __YAVAYA_APP_DRAFT__?: unknown };
+  const handed = holder.__YAVAYA_APP_DRAFT__ as { form?: unknown; fields?: unknown } | undefined;
+  delete holder.__YAVAYA_APP_DRAFT__;
+  if (!handed || typeof handed.form !== 'string' || !(ROXI_FORMS as readonly string[]).includes(handed.form)) return;
+  if (!handed.fields || typeof handed.fields !== 'object') return;
+  const fields = Object.fromEntries(
+    Object.entries(handed.fields as Record<string, unknown>).filter(
+      (entry): entry is [string, string | boolean] => typeof entry[1] === 'boolean' || (typeof entry[1] === 'string' && entry[1].length <= 4000),
+    ),
+  );
+  putDraft({ form: handed.form as RoxiForm, fields, files: [] });
+}
+
+adoptAppDraft();

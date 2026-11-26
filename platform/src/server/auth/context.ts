@@ -8,6 +8,7 @@ import type { RequestContext } from '@/server/domains/identity/service';
 import { SESSION_RULES } from '@/config/business-rules';
 import { touchSession, validateSession, type ValidatedSession } from './session';
 import { readSessionCookie } from './cookies';
+import { bearerToken } from './bearer';
 
 /**
  * Per-request context.
@@ -39,14 +40,17 @@ export async function requestContext(): Promise<RequestContext> {
 }
 
 /**
- * The signed-in user, or null. Never throws.
+ * The signed-in user, or null. Never throws. From the session cookie, or
+ * from the app's `Authorization: Bearer` header when one is sent.
  *
  * Reading the session is also what keeps it alive: the idle window runs from
  * the last activity, so each visit pushes it forward (at most every few
  * minutes, to spare the database).
  */
 export async function currentSession(): Promise<ValidatedSession | null> {
-  const token = await readSessionCookie();
+  // The Yavaya app sends its session in a header (bearer.ts); when it does,
+  // that is the only credential read.
+  const token = bearerToken((await headers()).get('authorization')) ?? (await readSessionCookie());
   if (!token) return null;
   const session = await validateSession(db(), token);
   if (session && Date.now() - session.lastUsedAt.getTime() >= SESSION_RULES.touchAfterMinutes * 60_000) {

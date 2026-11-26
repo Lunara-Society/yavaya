@@ -5606,5 +5606,10 @@ export const en: Dictionary = {
   "capability.sanctuary_candle.detail": "From the prayer wall, you light a candle for someone — with the day's prayer above it — and send it through whichever app you like. They watch it light and burn for seven days, no account needed.",
   "settings.notify.mirador": "Mirador",
   "settings.notify.mirador_detail": "New followers, comments on your videos and replies to yours.",
+  "mobile.auth.title": "Back to Yavaya",
+  "mobile.auth.returning": "You are signed in. Going back to the app…",
+  "mobile.auth.open_app": "Open Yavaya",
+  "mobile.auth.expired": "This sign-in is no longer valid. Go back to the app and tap it again.",
+  "mobile.auth.back": "Go to Yavaya",
   ...identityAssetsEn,
 };

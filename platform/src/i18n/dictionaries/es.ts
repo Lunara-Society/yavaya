@@ -5633,6 +5633,12 @@ export const es = {
   "capability.sanctuary_candle.detail": "Desde el muro de oración, enciendes una vela por alguien —con la oración del día encima— y se la envías por la app que quieras. La ve encenderse y arder siete días, sin necesitar cuenta.",
   "settings.notify.mirador": "Mirador",
   "settings.notify.mirador_detail": "Nuevos seguidores, comentarios en tus videos y respuestas a los tuyos.",
+  // --- The app's sign-in hand-off ---------------------------------------
+  'mobile.auth.title': 'Volviendo a Yavaya',
+  'mobile.auth.returning': 'Ya entraste. Volviendo a la app…',
+  'mobile.auth.open_app': 'Abrir Yavaya',
+  'mobile.auth.expired': 'Este inicio de sesión ya no es válido. Vuelve a la app y tócalo otra vez.',
+  'mobile.auth.back': 'Ir a Yavaya',
   ...identityAssetsEs,
 } as const;
 

@@ -243,6 +243,26 @@ export async function signedConversation(agentId: string): Promise<{ signedUrl: 
   return { signedUrl: body.signed_url, conversationId: body.conversation_id ?? fromUrl };
 }
 
+/**
+ * The app's voice runs over WebRTC (the ElevenLabs React Native SDK), which
+ * opens with a conversation token instead of a signed link. ElevenLabs names
+ * the conversation when it issues the token, so the app's conversations are
+ * recorded and metered exactly like the website's.
+ */
+export async function conversationToken(agentId: string): Promise<{ token: string; conversationId: string | null } | null> {
+  const key = serverEnv().ELEVENLABS_API_KEY;
+  if (!key) return null;
+  const response = await fetch(`https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=${encodeURIComponent(agentId)}`, {
+    headers: { 'xi-api-key': key },
+    signal: AbortSignal.timeout(8000),
+    cache: 'no-store',
+  }).catch(() => null);
+  if (!response?.ok) return null;
+  const body = (await response.json().catch(() => null)) as { token?: string; conversation_id?: string } | null;
+  if (!body?.token) return null;
+  return { token: body.token, conversationId: body.conversation_id ?? null };
+}
+
 export async function recordConversationStart(database: Database, params: { conversationId: string; userId: string }): Promise<void> {
   await database.insert(roxiConversations).values({ conversationId: params.conversationId, userId: params.userId }).onConflictDoNothing();
 }

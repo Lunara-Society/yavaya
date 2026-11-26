@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MEDIA_RULES } from '@/config/business-rules';
+import { bearerToken } from '@/server/auth/bearer';
 
 /** Shared plumbing for YavayaGo's photo forms: plain multipart posts that answer with a redirect. */
 
@@ -9,6 +10,9 @@ export function go(path: string) {
 
 /** A browser always sends `Origin` on a form POST; it must be this site. */
 export function sameOrigin(request: Request): boolean {
+  // The app's bearer header cannot be sent cross-site (src/server/auth/bearer.ts),
+  // so such a request needs no origin to prove it is not a forgery.
+  if (bearerToken(request.headers.get('authorization'))) return true;
   const origin = request.headers.get('origin');
   if (!origin) return false;
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
