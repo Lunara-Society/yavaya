@@ -13,13 +13,13 @@ test("Yavaya's pages and Stripe's checkout stay in the app", () => {
 });
 
 test('other sites and app links open outside', () => {
-  assert.equal(decide('https://wa.me/50558365522'), 'external');
+  assert.equal(decide('https://wa.me/50500000000'), 'external');
   assert.equal(decide('https://www.instagram.com/yavayago/'), 'external');
   assert.equal(decide('https://yavaya.lat.evil.example/'), 'external');
   assert.equal(decide('https://evil.example/?u=https://yavaya.lat'), 'external');
   assert.equal(decide('https://user@evil.example/'), 'external');
   assert.equal(decide('whatsapp://send?text=hola'), 'external');
-  assert.equal(decide('tel:+50558365522'), 'external');
+  assert.equal(decide('tel:+50500000000'), 'external');
   assert.equal(decide('mailto:hola@example.com'), 'external');
 });
 
