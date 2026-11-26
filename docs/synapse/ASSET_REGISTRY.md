@@ -37,3 +37,12 @@ for example [`platform/docs/FIRST-LIGHT.md`](../../platform/docs/FIRST-LIGHT.md)
 
 Fonts in the film's end card: Fraunces and Plus Jakarta Sans (SIL Open Font
 Licence), the ones the earlier promotional films used. No music in this cut.
+
+## Chapters 02–08: the native app
+
+| File | What | Source | Owner / licence | Notes |
+| --- | --- | --- | --- | --- |
+| `mobile/assets/audio/*.m4a` | the twelve interface sounds (awaken, init, reconstruct, dissolve, emerge, roxi, guardian, expand, confirm, back, notify, error), 164 KB in all | synthesised from code by `mobile/tools/audio/make-sounds.py`; no samples, no recordings | Yavaya, original | nothing taken from any game or film; regenerate with the script |
+| `mobile/src/districts/geo.ts` | outlines of the 8 home countries, 573 points | Natural Earth 1:50m admin-0 countries, simplified | public domain | the map hologram |
+| Geist, Geist Mono (6 weights bundled) | interface and figure type | `@expo-google-fonts/geist`, `@expo-google-fonts/geist-mono` | SIL Open Font Licence 1.1 | each weight required by file, not the whole family |
+| shaders in `mobile/src/render/shaders.ts` | atmosphere, glass edge light, district object, reconstruction, awakening | written for Yavaya | Yavaya, original | checked by `npm run check:shaders` |

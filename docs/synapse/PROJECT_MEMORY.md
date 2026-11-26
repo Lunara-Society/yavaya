@@ -11,23 +11,29 @@ an entry that is no longer true is worse than no entry.
   [`platform/CLAUDE.md`](../../platform/CLAUDE.md) and its documentation in
   [`platform/docs/`](../../platform/docs/). Everything Synapse builds must keep
   that platform working: it is the source of truth for accounts, data and money.
-- **The mobile app** is `mobile/`, created in Chapter 00. It is a *bridge*: the
-  live website inside a native Android frame (back button, outside links,
-  microphone, camera, location, offline screen). It is the starting point, not
-  the Synapse experience. The directive rules out "a website wrapped inside a
-  mobile container" as the result, so later chapters replace it screen by
-  screen with native Synapse screens.
+- **The mobile app** is `mobile/`: since Chapters 02–08 a native Synapse
+  application (Expo SDK 58, React Native, Skia shaders, Reanimated), not a
+  website in a frame. Layers in `mobile/src/` (core, business, navigation,
+  render, motion, audio, haptics, performance, a11y, design, districts,
+  screens); the record is [CHAPTERS_02_08.md](CHAPTERS_02_08.md). District
+  screens are native hubs that open the full website screen for the rest
+  (KNOWN_ISSUES 29); Classic in Settings restores the Chapter 00 bridge.
+- **Three variants**: development (`Yavaya Dev`, `yavaya.lat.dev`, talks to
+  staging), preview (internal APK, yavaya.lat, laboratory on) and production
+  (Google Play, yavaya.lat). Remote switches come from
+  `GET /api/mobile/v1/config` (Railway variable `MOBILE_FLAGS`).
+- **Staging** is the Railway project `yavaya-staging`, built from the work
+  branch, with its own empty database and no payment, email, WhatsApp or
+  media credentials. Pushing the work branch deploys staging; pushing `main`
+  deploys production.
 - **The verified baseline** (Chapter 01, [BASELINE_AUDIT.md](BASELINE_AUDIT.md)):
   what the website does today, each system classified REAL / DEMO / MOCK /
   BLOCKED / NOT IMPLEMENTED, how the app should carry it (reuse, adapt, new
   native), the production risks, and the recommended Android/iOS architecture.
   Read it before touching any system.
-- **Synapse's first layer** (the pre-audit prototype P-01, built before the
-  audit was asked for, `mobile/src/synapse/`): Roxi forms
-  from light while the website loads beneath, then stays as her Presence in
-  place of her web button, lit by her real state. Classic turns it off. The
-  rest of the Living Interface Engine is not built yet; see
-  [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+- **The pre-audit prototype P-01** (`mobile/src/synapse/`): Roxi forming from
+  light over the website bridge. It now lives on only inside Classic; the
+  native shell replaced it. See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
 - **Roxi's look** is the owner's full-length image (`mobile/art/roxi/`,
   AI-generated, Yavaya's own). Use it for her in every medium; generate
   everything else from it (`mobile/tools/roxi/`).
@@ -117,6 +123,9 @@ write the next handoff. A chapter is not complete because code exists.
 ```bash
 cd mobile
 npm run check            # TypeScript, unit tests, expo-doctor
+npm run check:shaders    # every SkSL shader compiled and rendered by Skia (CanvasKit)
+npx expo export -p web && node tools/web-proxy.mjs   # the app in a browser at phone size, real data
+eas update --channel preview --environment preview --platform android   # JS to installed preview APKs (set APP_VARIANT=preview)
 node tools/synapse/render-frames.mjs <out>   # Roxi's shader rendered by Skia, off the phone
 python3 -I tools/roxi/make-roxi.py <depth-model.onnx> .   # her assets from the source image
 blender -b --python tools/roxi/film.py -- . <out> [all|30,70,120]   # her film

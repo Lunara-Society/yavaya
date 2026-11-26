@@ -1,50 +1,57 @@
 # Next chapter: handoff
 
-## Before Chapter 02 (owner)
+## Now (owner): the first phone test of the native app
 
-1. **Install the prototype preview APK** (0.2.0, build `0cda7886`; install link
-   valid until 10 Dec 2026) on the Samsung, and while it is open check the
-   three things the audit could not check off the phone:
-   - posting form: tap the microphone to dictate (does text appear?);
-   - posting form: add a photo with the camera (does the camera open?);
-   - Roxi: talk to her through the Presence (bottom right).
-   Report what worked. A few words are enough.
-2. **Decide store billing** (KNOWN_ISSUES 17): for the store builds, either
-   sell tokens, gems, Vault items and Roxi plans through Google Play and Apple
-   billing, or leave their purchase out of the store builds (members buy on the
-   website). Nothing ships to a store until this is decided.
-3. **Say yes or no to a Railway staging environment** (it uses Railway
-   resources, so it is a paid change).
-4. **Say yes or no to the dependency upgrades** (Next.js, Zod, Sentry plugins;
-   production change, full test suite before and after).
-5. Authorise Chapter 02.
+1. **Install the preview APK 0.3.0** on the Samsung: [download](https://expo.dev/artifacts/eas/ArVKb_rVZ0bhsYQtpjx7TFCs7GyVgoBTJE9pk9sqR6Q.apk)
+   (build `6d7af8c1`, link valid until 10 Dec 2026). It replaces the 0.2.0
+   prototype (same package, `yavaya.lat`).
+2. **Open it, close it fully, open it again.** The first launch plays the
+   awakening and downloads an update in the background; the second launch
+   applies it and adds **Ajustes → Laboratorio**.
+3. **Look at these and answer yes or no** (a few words are enough):
+   - Awakening: about 5 s from darkness to Roxi; "Saltar" stops it at once; it
+     does not play again on the next launch.
+   - Home: the district objects follow the phone's tilt; opening a district
+     grows out of the tile you touched; a swipe from the left edge goes back
+     (and can be abandoned halfway); the Android back button works.
+   - Roxi (dock), Buscar, Mapa: each opens and closes smoothly.
+   - Sound with the speaker, with headphones, and with the phone on vibrate or
+     silent; Ajustes → Sonido off silences everything.
+   - Vibration on touches and on the awakening's pulses.
+   - **Laboratorio → Movimiento, Holograma and Arranque:** a screenshot of each
+     (they show frames per second, slow frames, the device tier and the start-up
+     time on the phone, the numbers this machine cannot produce).
 
-## Proposed Chapter 02: the bridge between web and native (not authorised)
+The development build (`Yavaya Dev`, staging data) needs a computer running
+`npx expo start`; the owner does not need it.
 
-Taken from the audit's recommendation (BASELINE_AUDIT §7), smallest first:
+## Waiting on the owner
 
-1. **App Links**: `/.well-known/assetlinks.json` on the website and intent
-   filters in the app, so Yavaya links (invites, shares, the candle) open the
-   app. This is the only website change in the chapter, and it is additive.
-2. **Google sign-in in the app** through the system browser, returning by App
-   Link.
-3. **Mobile sessions**: a token issued from the existing sessions table, kept
-   in secure storage; the WebView and native code share one sign-in.
-4. **The first endpoints of the mobile API** (`/api/mobile/v1`): read-only
-   (me, notifications), each wrapping an existing domain function.
-5. **Push notifications** for the bell's categories and Roxi's reminders:
-   device registry, sending from the scheduler, the same preferences.
-6. Fixes for whatever the owner's phone test in step 1 above shows (dictation,
-   camera hand-off), and the prototype's frame rate and memory on the phone.
+- HeyGen API key in the app (#57); ElevenLabs connector reconnect; Meshy plan.
+- Apple Developer Program, only if iOS devices are wanted (KNOWN_ISSUES 28).
+- A Firebase project for Android push notifications (KNOWN_ISSUES 27).
 
-Out of scope until authorised: native district screens, any store release,
-dependency upgrades, staging, paid services.
+## Proposed Chapter 09: connect the app to the person (not authorised)
 
-## Files to read first in Chapter 02
+From BASELINE_AUDIT §7 and the open items of Chapters 02–08:
 
-[MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md), [PROJECT_MEMORY.md](PROJECT_MEMORY.md),
-[BASELINE_AUDIT.md](BASELINE_AUDIT.md), [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md),
-[ARCHITECTURE.md](ARCHITECTURE.md), [KNOWN_ISSUES.md](KNOWN_ISSUES.md),
-`platform/src/server/auth/`, `platform/src/app/api/go/upload.ts` (the
-`sameOrigin` guard), `mobile/src/YavayaWeb.tsx`, and the platform's
+1. **Mobile sessions and the first mobile API**: token sessions from the
+   existing sessions table (the secure-store slot exists in
+   `mobile/src/business/session.ts`); read-only endpoints first (me,
+   notifications), each wrapping the domain function the website uses.
+2. **Google sign-in through the system browser**, returning by App Link
+   (`/.well-known/assetlinks.json`, the one additive website change).
+3. **Push notifications**: device registry, sending from the scheduler, the
+   bell's preferences; needs the Firebase credentials above.
+4. **Store billing** for digital items through Google Play and Apple billing
+   (D-031; KNOWN_ISSUES 17), still release-blocking.
+5. **The phone numbers** from step 3 above recorded in
+   [PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md), and fixes for what they show.
+
+## Files to read first
+
+[CHAPTERS_02_08.md](CHAPTERS_02_08.md), [MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md),
+[PROJECT_MEMORY.md](PROJECT_MEMORY.md), [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §7,
+[KNOWN_ISSUES.md](KNOWN_ISSUES.md), `mobile/src/business/`,
+`platform/src/server/auth/`, and
 [`platform/docs/SECURITY.md`](../../platform/docs/SECURITY.md).

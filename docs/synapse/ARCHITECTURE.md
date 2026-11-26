@@ -2,6 +2,14 @@
 
 ## Today
 
+Since Chapters 02–08 the app is native: one stack of scenes in a single
+rendered environment, with Skia shaders, Reanimated motion, sound and
+vibration cues, device tiers, and remote switches from
+`/api/mobile/v1/config`. Its architecture, layers and evidence are in
+[CHAPTERS_02_08.md](CHAPTERS_02_08.md) (decisions D-025 to D-031 in
+[DECISION_LOG.md](DECISION_LOG.md)). The diagram below is the Chapter 00
+bridge, which remains as Classic and as the fallback for every website screen.
+
 ```
  Samsung / Android phone
  ┌──────────────────────────────────────────────┐
@@ -87,7 +95,8 @@ intended path, to be confirmed by measurement before any of it is adopted:
 3. **A rendering layer chosen by measurement.** Candidates to evaluate against
    [PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md) on a low-end Android phone:
    React Native Skia, Reanimated, and a GPU 3D layer (expo-gl / three.js), with
-   a static fallback for each effect. None is adopted yet.
+   a static fallback for each effect. Adopted in Chapter 02: Skia + Reanimated
+   (D-026); phone measurement still pending.
 4. **Roxi as a persistent presence.** Her voice and tools already run on the
    website (`platform/docs/roxi/`); a native Presence layer would host the
    same agent and the same tools rather than a second Roxi.

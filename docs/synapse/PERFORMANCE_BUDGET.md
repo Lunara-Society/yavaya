@@ -63,3 +63,24 @@ Playwright with real Chromium, 360 × 780, cache off, from the cloud machine
 | Sideways scrolling at 360 px | none on 12 pages | none | within |
 
 These are the web baseline every native screen is compared with.
+
+### The native app in a browser (Chapters 02–08, 26 Nov 2026)
+
+The Expo web build in Chromium at 360 × 780 on this machine, with **software
+rendering (no GPU)**. Durations, start-up and correctness count; frame rates do
+not. Phone figures come from the laboratory (NEXT_CHAPTER step 3).
+
+| Measure | Result | Budget |
+| --- | --- | --- |
+| JavaScript start → first frame, first launch (awakening mounting) | 445–652 ms | — (native cold start ≤ 4 s) |
+| JavaScript start → first frame, relaunch | 181–303 ms | — |
+| Opening a district (planned 460 ms) | 467–650 ms | — (recorded) |
+| Touch → first moving frame | 26–55 ms | ≤ 100 ms |
+| Return home / search / settings / map / Roxi | 300–567 ms against 300–480 ms planned | — (recorded) |
+| Dropped frames per transition | not measurable here | ≤ 2 |
+| Holographic scene frame rate | 6–16 fps (software rendering only) | tier budget: 17.5 ms high, 20 ms mid, 34 ms low |
+
+Device tiers (`mobile/src/performance/tier.ts`): **high** 3.5 px reconstruction
+cells, two light layers, 48 dust motes, parallax; **mid** 5 px, one layer, 24
+motes, parallax; **low** 7 px, no light layers, no dust, no parallax. A
+device steps down a tier after 24 slow frames.

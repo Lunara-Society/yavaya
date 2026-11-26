@@ -5,7 +5,14 @@
 | 00 | Master directive and persistent project memory; Android app connected to EAS | 26 Nov 2026 | Done, with open items in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | see the commit that adds this file |
 | P-01 | Pre-audit prototype: Roxi materialises, the first native Synapse layer (built as "Chapter 01" before the audit was asked for; relabelled, D-020) | 26 Nov 2026 ("Let's get started", with Roxi's image) | Built and tested off the phone; on-phone test pending | the commits "Synapse Chapter 01: …" up to `c468e5b` |
 | 01 | Existing architecture audit: verified technical baseline, preservation matrix, risks, Android/iOS architecture recommendation | 26 Nov 2026 | **Done** (documents only; no production change) | the commit "Synapse Chapter 01: the existing architecture audit" |
-| 02 | Proposed, see [NEXT_CHAPTER.md](NEXT_CHAPTER.md) | not yet | Not started | — |
+| 02 | Mobile application foundation: architecture, layers, environments, flags, rollback, builds | 26 Nov 2026 ("Yes to everything and continue building") | Built; verified by tests, Skia's compiler, a browser run and EAS builds; phone test pending | "Synapse Chapters 02–08 foundation…" |
+| 03 | Visual identity: tokens, typography, colour, district accents, components, demo | 26 Nov 2026 | Built and tested off the phone | same |
+| 04 | Holographic rendering engine | 26 Nov 2026 | Built; shaders compiled by Skia; phone frame rate pending | same |
+| 05 | Digital reconstruction engine: seven techniques, controller, signature | 26 Nov 2026 | Built; phone frame rate pending | same |
+| 06 | Cinematic motion engine | 26 Nov 2026 | Built; durations measured in the browser; phone pending | same |
+| 07 | Cinematic audio and haptics: twelve original sounds, engine, patterns | 26 Nov 2026 | Built; speaker, headphone and silent-mode test pending | same |
+| 08 | Application awakening | 26 Nov 2026 | Built; browser start-up measured; phone cold/warm start pending | same |
+| 09 | Proposed, see [NEXT_CHAPTER.md](NEXT_CHAPTER.md) | not yet | Not started | — |
 
 A chapter is marked done only when its end-of-chapter record exists in these
 files and its claims are backed by tests or measurements in
@@ -56,3 +63,21 @@ files and its claims are backed by tests or measurements in
   measurements, the status table, the architecture direction, and the handoff.
 - Not done, by the directive: no production code, configuration, data or
   deployment changed; no dependency upgraded; nothing published.
+
+## Chapters 02–08: what was delivered
+
+The full record (architecture evaluation, layers, environments, rollback,
+platform limitations, design system, engines, sounds, awakening, every
+measurement and what is still unverified) is
+[CHAPTERS_02_08.md](CHAPTERS_02_08.md). In short:
+
+- `mobile/` is now a native Synapse app with independent layers; the website is
+  only its fallback screen, and Classic restores the Chapter 00 bridge.
+- Development, preview and production variants; a separate staging project on
+  Railway; remote feature flags (`GET /api/mobile/v1/config`); EAS Update
+  channels for rollback.
+- The design system, the holographic engine, seven reconstruction techniques
+  with a chosen signature, the spatial motion engine, twelve original sounds
+  with an audio engine and haptic patterns, and the optional awakening, all
+  demonstrated in the Laboratory (development builds).
+- Platform: security upgrades deployed (production npm audit: 0).

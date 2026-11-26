@@ -55,3 +55,26 @@ Nothing in production was changed; these checks describe the website as it is.
 
 Not tested: anything signed in on the live site, real payments or deliveries,
 and the app on a phone.
+
+## Chapters 02–08: the native app · 26 November 2026
+
+Detail and the measured numbers: [CHAPTERS_02_08.md](CHAPTERS_02_08.md).
+
+| Check | How | Result |
+| --- | --- | --- |
+| Platform security upgrades | typecheck; Vitest with local Postgres; `next build` and the size budget; production deploy | 0 errors; 94 files, 851 tests pass; build and budget pass; `38eab99` live |
+| Production dependencies after the upgrades | `npm audit --omit=dev` in `platform/` | 0 (was 8) |
+| App configuration endpoint | 4 unit tests; `GET /api/mobile/v1/config` on both servers | pass; production `{"flags":{},"minBuild":0,"message":null}`; staging `{"flags":{"lab":true},"minBuild":0,"message":"Staging: datos de prueba"}` |
+| Staging | Railway project `yavaya-staging` | up at `yavaya-web-staging.up.railway.app`; own database; no payment, email, WhatsApp or media credentials |
+| Mobile types and logic | `npm run typecheck`, `npm test` in `mobile/` | 0 errors; 39 tests pass |
+| Expo project health | `npm run doctor` | 20/20 |
+| Shaders | `npm run check:shaders` (Skia's own compiler, CanvasKit) | 5/5 compile and render; the seven reconstruction techniques render visibly different |
+| The app at phone size | Expo web build in Chromium, 360 × 780, Playwright through 10 scenes, real server data | 10/10 steps pass; start-up and transition durations recorded; frame rates are software-rendered and not representative |
+| Android preview build | EAS `6d7af8c1`, from `c932565` | finished; [APK](https://expo.dev/artifacts/eas/ArVKb_rVZ0bhsYQtpjx7TFCs7GyVgoBTJE9pk9sqR6Q.apk) (link valid until 10 Dec 2026) |
+| iOS simulator build | EAS `1b695433` | finished: the native code compiles for iOS |
+| Android development build | EAS `69d48d21` | canceled after 53 minutes, no reason recorded; rerun as `d2a5bee8` |
+| Over-the-air update | `eas update --channel preview` (group `f1c7eb2f`, laboratory in preview builds) | published on runtime `d5cccf65…`, the preview build's own fingerprint; arrival on the phone NOT TESTED |
+
+Not tested: anything on a phone, which means frame rate, memory, vibration,
+sound through the speaker, headphones and silent mode, native cold and warm
+start, and the update arriving.

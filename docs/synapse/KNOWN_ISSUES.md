@@ -108,3 +108,25 @@ recommended fix for each are in [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §6.
 24. **Small details seen in phone screenshots, to confirm on a device.** On
     district pages one header button renders as an empty circle; the Mercadito
     subtitle runs under its sign illustration.
+
+From Chapters 02–08 (details in [CHAPTERS_02_08.md](CHAPTERS_02_08.md)):
+
+25. **Nothing native has run on a phone yet.** The app was verified by tests,
+    Skia's compiler, a browser run and EAS builds. Frame rate, memory, battery,
+    haptics, sound on speakers and headphones, silent mode, tilt and native
+    start-up times are measured only on a device (the Laboratory shows them).
+
+26. **Browser frame numbers are not phone numbers.** The browser check renders
+    the shaders on the CPU (no GPU here): 6–16 fps there means nothing for a
+    phone.
+
+27. **Push notifications need credentials** (Firebase for Android, APNs for
+    iOS) and a device registry before they can work.
+
+28. **No Apple Developer account**: iOS is limited to simulator builds.
+
+29. **District screens are hubs**: each opens its full website screen for the
+    real functions until the mobile API serves native data. Listing and profile
+    scenes are labelled examples.
+
+30. **Positional (3D) sound is not implemented**; layered, prioritised sound is.

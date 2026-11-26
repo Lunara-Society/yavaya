@@ -1,6 +1,8 @@
 # Implementation status
 
-Last updated in Chapter 01 (the existing architecture audit), 26 November 2026.
+Last updated after Chapters 02–08, 26 November 2026. The full record of the native app is [CHAPTERS_02_08.md](CHAPTERS_02_08.md).
+
+_Earlier: Chapter 01 (the existing architecture audit)._
 
 The complete classification of the **website's** systems (accounts, districts,
 publishing, YavayaGo, Roxi, payments, tokens, notifications, admin) and how the
@@ -63,3 +65,23 @@ until something outside the code changes · **NOT IMPLEMENTED** not built.
 | 3D model of Roxi (Meshy) | BLOCKED | Meshy refuses to create models on the free plan through its API (HTTP 402, 26 Nov 2026); signed in, 75 credits, nothing charged. Needs a paid Meshy plan, the owner's decision |
 | Unreal Engine / MetaHuman | NOT IMPLEMENTED | needs the owner's own computer with Unreal; the owner chose Blender here for now |
 | Talking Roxi video (HeyGen) | NOT IMPLEMENTED | 21 HeyGen credits until 4 Dec; her established voice is ElevenLabs, whose connector needs reconnecting with more permissions |
+
+## The native Synapse app (Chapters 02–08)
+
+| Capability | State | Evidence / what is missing |
+| --- | --- | --- |
+| Layered native app (business, navigation, rendering, animation, audio, haptics, Roxi, districts, performance, accessibility) | REAL (code) | `mobile/src/`; typecheck; 39 unit tests; ran through ten scenes in a browser |
+| Development / preview / production variants | REAL (config) | `app.config.ts`, `eas.json`; development installs beside the real app and uses staging |
+| Staging server | REAL | Railway project `yavaya-staging`, https://yavaya-web-staging.up.railway.app |
+| Remote feature flags | REAL | `GET /api/mobile/v1/config` live on staging (lab flag and a notice set) and production |
+| Rollback (EAS Update channels, flags, Classic) | REAL (config); an update has not been published yet | `updates` + `runtimeVersion` in the app config; channels per profile |
+| Installable development build | see TEST_REPORTS | EAS build of the development profile |
+| Design system (tokens, type, colour, accents, icons, controls) | REAL (code, tested) | `design/`, `design.test.ts`; Laboratorio → Diseño |
+| Holographic engine (environment, glass panels, district object, map, toasts, adaptive quality) | REAL (code); phone frame rate NOT TESTED | `render/`; shaders compiled by Skia |
+| Reconstruction engine (seven techniques, reversible, interruptible, signature) | REAL (code); phone frame rate NOT TESTED | `render/`; Laboratorio → Reconstrucción |
+| Motion engine (spatial transitions, shared element, swipe back, measurement) | REAL (code); durations measured in the browser | `motion/`; Laboratorio → Movimiento |
+| Original sounds and audio engine | REAL (assets and code); NOT TESTED on speakers, headphones or silent mode | `assets/audio/`, `audio/` |
+| Haptic patterns | REAL (code); NOT TESTED on a phone | `haptics/` |
+| Awakening (≤ 5 s, skippable, once) | REAL (code); browser start-up measured | `screens/Awakening.tsx` |
+| Real data in native screens | REAL for public reads (live activity, YavayaGo live map, places); NOT IMPLEMENTED for anything signed in | `business/public.ts` |
+| Mobile sessions, mobile write API, push, store billing, positional sound, 3D Roxi | NOT IMPLEMENTED | KNOWN_ISSUES 17–30 |
