@@ -1,0 +1,588 @@
+{
+ "threshold_same_person_cosine": 0.363,
+ "min_face_px": 60,
+ "source": "roxi-source.png",
+ "references": [
+  {
+   "ref": "C1",
+   "file": "C1-film-grade.png",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 110,
+     "cosine": 0.952
+    }
+   ],
+   "cosine_median": 0.952,
+   "cosine_min": 0.952,
+   "cosine_max": 0.952,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "C2",
+   "file": "C2-face-crop.webp",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 191,
+     "cosine": 0.99
+    }
+   ],
+   "cosine_median": 0.99,
+   "cosine_min": 0.99,
+   "cosine_max": 0.99,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R03",
+   "file": "R03-1000192798.gif",
+   "frames": 9,
+   "faces_scored": 9,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 71,
+     "cosine": 0.388
+    },
+    {
+     "frame": 1,
+     "face_px": 71,
+     "cosine": 0.318
+    },
+    {
+     "frame": 2,
+     "face_px": 71,
+     "cosine": 0.347
+    },
+    {
+     "frame": 3,
+     "face_px": 73,
+     "cosine": 0.35
+    },
+    {
+     "frame": 4,
+     "face_px": 75,
+     "cosine": 0.351
+    },
+    {
+     "frame": 5,
+     "face_px": 71,
+     "cosine": 0.262
+    },
+    {
+     "frame": 6,
+     "face_px": 75,
+     "cosine": 0.174
+    },
+    {
+     "frame": 7,
+     "face_px": 77,
+     "cosine": 0.06
+    },
+    {
+     "frame": 8,
+     "face_px": 85,
+     "cosine": 0.354
+    }
+   ],
+   "cosine_median": 0.347,
+   "cosine_min": 0.06,
+   "cosine_max": 0.388,
+   "same_person_share": 0.11
+  },
+  {
+   "ref": "R08",
+   "file": "R08-1000192801.gif",
+   "frames": 6,
+   "faces_scored": 3,
+   "faces_too_small": 1,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 86,
+     "cosine": -0.103
+    },
+    {
+     "frame": 4,
+     "face_px": 89,
+     "cosine": 0.228
+    },
+    {
+     "frame": 4,
+     "face_px": 156,
+     "cosine": 0.066
+    }
+   ],
+   "cosine_median": 0.066,
+   "cosine_min": -0.103,
+   "cosine_max": 0.228,
+   "same_person_share": 0.0
+  },
+  {
+   "ref": "R10",
+   "file": "R10-1000192805.png",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 1,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 270,
+     "cosine": 0.477
+    }
+   ],
+   "cosine_median": 0.477,
+   "cosine_min": 0.477,
+   "cosine_max": 0.477,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R13",
+   "file": "R13-1000192809.gif",
+   "frames": 6,
+   "faces_scored": 2,
+   "faces_too_small": 6,
+   "scores": [
+    {
+     "frame": 4,
+     "face_px": 75,
+     "cosine": 0.376
+    },
+    {
+     "frame": 5,
+     "face_px": 71,
+     "cosine": 0.244
+    }
+   ],
+   "cosine_median": 0.31,
+   "cosine_min": 0.244,
+   "cosine_max": 0.376,
+   "same_person_share": 0.5
+  },
+  {
+   "ref": "R19",
+   "file": "R19-1000192812.gif",
+   "frames": 6,
+   "faces_scored": 1,
+   "faces_too_small": 3,
+   "scores": [
+    {
+     "frame": 4,
+     "face_px": 98,
+     "cosine": 0.402
+    }
+   ],
+   "cosine_median": 0.402,
+   "cosine_min": 0.402,
+   "cosine_max": 0.402,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R26",
+   "file": "R26-1000192822.gif",
+   "frames": 6,
+   "faces_scored": 1,
+   "faces_too_small": 2,
+   "scores": [
+    {
+     "frame": 2,
+     "face_px": 90,
+     "cosine": 0.379
+    }
+   ],
+   "cosine_median": 0.379,
+   "cosine_min": 0.379,
+   "cosine_max": 0.379,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R27",
+   "file": "R27-1000192826.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R28",
+   "file": "R28-1000192827.gif",
+   "frames": 12,
+   "faces_scored": 2,
+   "faces_too_small": 7,
+   "scores": [
+    {
+     "frame": 10,
+     "face_px": 62,
+     "cosine": 0.568
+    },
+    {
+     "frame": 11,
+     "face_px": 71,
+     "cosine": 0.619
+    }
+   ],
+   "cosine_median": 0.593,
+   "cosine_min": 0.568,
+   "cosine_max": 0.619,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R29",
+   "file": "R29-1000192831.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 5,
+   "scores": []
+  },
+  {
+   "ref": "R30",
+   "file": "R30-1000192830.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R31",
+   "file": "R31-1000192829.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R32",
+   "file": "R32-1000192828.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 5,
+   "scores": []
+  },
+  {
+   "ref": "R33",
+   "file": "R33-1000192834.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R34",
+   "file": "R34-1000192833.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R35",
+   "file": "R35-1000192832.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R36",
+   "file": "R36-1000192835.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R37",
+   "file": "R37-1000192839.gif",
+   "frames": 12,
+   "faces_scored": 12,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 123,
+     "cosine": 0.451
+    },
+    {
+     "frame": 1,
+     "face_px": 120,
+     "cosine": 0.448
+    },
+    {
+     "frame": 2,
+     "face_px": 123,
+     "cosine": 0.377
+    },
+    {
+     "frame": 3,
+     "face_px": 129,
+     "cosine": 0.337
+    },
+    {
+     "frame": 4,
+     "face_px": 125,
+     "cosine": 0.377
+    },
+    {
+     "frame": 5,
+     "face_px": 134,
+     "cosine": 0.365
+    },
+    {
+     "frame": 6,
+     "face_px": 135,
+     "cosine": 0.273
+    },
+    {
+     "frame": 7,
+     "face_px": 143,
+     "cosine": 0.377
+    },
+    {
+     "frame": 8,
+     "face_px": 135,
+     "cosine": 0.308
+    },
+    {
+     "frame": 9,
+     "face_px": 130,
+     "cosine": 0.371
+    },
+    {
+     "frame": 10,
+     "face_px": 129,
+     "cosine": 0.322
+    },
+    {
+     "frame": 11,
+     "face_px": 129,
+     "cosine": 0.344
+    }
+   ],
+   "cosine_median": 0.368,
+   "cosine_min": 0.273,
+   "cosine_max": 0.451,
+   "same_person_share": 0.58
+  },
+  {
+   "ref": "R38",
+   "file": "R38-1000192838.gif",
+   "frames": 12,
+   "faces_scored": 12,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 93,
+     "cosine": 0.288
+    },
+    {
+     "frame": 1,
+     "face_px": 92,
+     "cosine": 0.16
+    },
+    {
+     "frame": 2,
+     "face_px": 91,
+     "cosine": 0.217
+    },
+    {
+     "frame": 3,
+     "face_px": 94,
+     "cosine": 0.172
+    },
+    {
+     "frame": 4,
+     "face_px": 95,
+     "cosine": 0.211
+    },
+    {
+     "frame": 5,
+     "face_px": 98,
+     "cosine": 0.199
+    },
+    {
+     "frame": 6,
+     "face_px": 96,
+     "cosine": 0.281
+    },
+    {
+     "frame": 7,
+     "face_px": 98,
+     "cosine": 0.194
+    },
+    {
+     "frame": 8,
+     "face_px": 101,
+     "cosine": 0.334
+    },
+    {
+     "frame": 9,
+     "face_px": 98,
+     "cosine": 0.175
+    },
+    {
+     "frame": 10,
+     "face_px": 98,
+     "cosine": 0.277
+    },
+    {
+     "frame": 11,
+     "face_px": 94,
+     "cosine": 0.305
+    }
+   ],
+   "cosine_median": 0.214,
+   "cosine_min": 0.16,
+   "cosine_max": 0.334,
+   "same_person_share": 0.0
+  },
+  {
+   "ref": "R39",
+   "file": "R39-1000192837.gif",
+   "frames": 12,
+   "faces_scored": 12,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 76,
+     "cosine": 0.327
+    },
+    {
+     "frame": 1,
+     "face_px": 78,
+     "cosine": 0.33
+    },
+    {
+     "frame": 2,
+     "face_px": 78,
+     "cosine": 0.335
+    },
+    {
+     "frame": 3,
+     "face_px": 82,
+     "cosine": 0.332
+    },
+    {
+     "frame": 4,
+     "face_px": 85,
+     "cosine": 0.285
+    },
+    {
+     "frame": 5,
+     "face_px": 86,
+     "cosine": 0.309
+    },
+    {
+     "frame": 6,
+     "face_px": 80,
+     "cosine": 0.269
+    },
+    {
+     "frame": 7,
+     "face_px": 85,
+     "cosine": 0.238
+    },
+    {
+     "frame": 8,
+     "face_px": 88,
+     "cosine": 0.381
+    },
+    {
+     "frame": 9,
+     "face_px": 85,
+     "cosine": 0.349
+    },
+    {
+     "frame": 10,
+     "face_px": 86,
+     "cosine": 0.271
+    },
+    {
+     "frame": 11,
+     "face_px": 87,
+     "cosine": 0.307
+    }
+   ],
+   "cosine_median": 0.318,
+   "cosine_min": 0.238,
+   "cosine_max": 0.381,
+   "same_person_share": 0.08
+  }
+ ],
+ "pairwise_mean_faces": {
+  "C1-C2": 0.951,
+  "C1-R03": 0.388,
+  "C1-R08": 0.108,
+  "C1-R10": 0.48,
+  "C1-R13": 0.324,
+  "C1-R19": 0.403,
+  "C1-R26": 0.392,
+  "C1-R28": 0.66,
+  "C1-R37": 0.48,
+  "C1-R38": 0.31,
+  "C1-R39": 0.416,
+  "C2-R03": 0.381,
+  "C2-R08": 0.106,
+  "C2-R10": 0.497,
+  "C2-R13": 0.355,
+  "C2-R19": 0.429,
+  "C2-R26": 0.379,
+  "C2-R28": 0.651,
+  "C2-R37": 0.423,
+  "C2-R38": 0.285,
+  "C2-R39": 0.382,
+  "R03-R08": 0.3,
+  "R03-R10": 0.658,
+  "R03-R13": 0.498,
+  "R03-R19": 0.501,
+  "R03-R26": 0.66,
+  "R03-R28": 0.364,
+  "R03-R37": 0.476,
+  "R03-R38": 0.494,
+  "R03-R39": 0.605,
+  "R08-R10": 0.156,
+  "R08-R13": 0.139,
+  "R08-R19": 0.105,
+  "R08-R26": 0.281,
+  "R08-R28": 0.204,
+  "R08-R37": 0.195,
+  "R08-R38": 0.254,
+  "R08-R39": 0.21,
+  "R10-R13": 0.504,
+  "R10-R19": 0.551,
+  "R10-R26": 0.462,
+  "R10-R28": 0.462,
+  "R10-R37": 0.365,
+  "R10-R38": 0.415,
+  "R10-R39": 0.428,
+  "R13-R19": 0.54,
+  "R13-R26": 0.333,
+  "R13-R28": 0.293,
+  "R13-R37": 0.291,
+  "R13-R38": 0.226,
+  "R13-R39": 0.321,
+  "R19-R26": 0.418,
+  "R19-R28": 0.373,
+  "R19-R37": 0.317,
+  "R19-R38": 0.397,
+  "R19-R39": 0.434,
+  "R26-R28": 0.372,
+  "R26-R37": 0.355,
+  "R26-R38": 0.449,
+  "R26-R39": 0.481,
+  "R28-R37": 0.372,
+  "R28-R38": 0.336,
+  "R28-R39": 0.299,
+  "R37-R38": 0.507,
+  "R37-R39": 0.564,
+  "R38-R39": 0.712
+ }
+}

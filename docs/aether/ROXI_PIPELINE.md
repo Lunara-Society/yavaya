@@ -23,6 +23,13 @@ Missing: any other view (profile, three-quarter, back), the back of her hair
 and jacket, hands in detail, any expression other than a slight smile, her
 height or scale.
 
+The owner's second send (R27–R39) adds side, back and walking silhouettes,
+gestures and expressions of a Roxi-like woman. They are movement references:
+the faces measure as other faces and the clothes drift (REFERENCE_MATRIX §7),
+so they do not replace the identity-true views S0 needs. The back of the
+jacket and hair in R29 and R32 can guide the unseen back only if the owner
+confirms them as hers.
+
 ## 2. What one front image can and cannot give
 
 | Can | Cannot |
@@ -96,7 +103,7 @@ Scores 1 (poor) to 5 (strong). "Identity" means fidelity to R09.
 | --- | --- | --- |
 | S0 Inputs | a reference sheet of Roxi in the same outfit and light: three-quarter left and right, profile left and right, back; face close-ups (front, three-quarter, profile); hands; back of hair; jacket details | each view passes a landmark comparison with R09 and the owner approves the sheet |
 | S1 Body | MPFB base with her proportions, matched to the front image with an orthographic camera | silhouette overlap with the R09 matte ≥ 95 % (target) |
-| S2 Head | sculpt over the base from the views | face landmark error against R09 within the T-ID-01 tolerance |
+| S2 Head | sculpt over the base from the views | front and three-quarter renders score at least 0.80 against her source (T-ID-01) and the owner recognises her |
 | S3 Texture | project, de-light, inpaint; skin PBR maps | 2k master; renders side by side with R09 approved |
 | S4 Hair | strand master, baked to cards | silhouette matches front; cards under the LOD budget |
 | S5 Clothing | jacket (with its piping), top, trousers, boots; corrective shapes | no clipping through the standard animation set |
@@ -138,7 +145,7 @@ canvas budget, D-036).
 3. **Paid tools** (Character Creator and Headshot; a paid Meshy plan): not
    used without approval.
 4. **Her outfit:** the constitution keeps her recognisable clothing (the
-   purple jacket); the palette rule wants violet only as a faint glow.
+   purple jacket); the palette avoids purple, and her glow is now gold (AX-D013).
    Recommendation: keep her outfit as her identity, and use the gold-light and
    crystal looks as material states.
 5. **Where masters live:** the repository is public, so a 3D master of Roxi

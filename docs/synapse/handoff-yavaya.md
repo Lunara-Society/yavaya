@@ -1,6 +1,6 @@
 # active-memory handoff: Yavaya app 0.4.0 and the black-and-gold look
 
-**Handoff #3** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits FINISHED 27 Nov 02:32 UTC; APK sent to the owner.; #2 (2026-11-27): ten epic directions proposed, the owner's reference video analysed, palette set to obsidian black and gold, concept film "Presencia Oro" made and sent as a private page; owner moving to a new chat.; #3 (2026-11-27): the owner sent the Aether × Roxi Anima constitution and 20 references; AX-00 to AX-03 done as documents and analysis in `docs/aether/` (capability register, reference matrix, Roxi 3D pipeline chosen, no 3D master made); references kept on a private page because the repo is public; no product change.
+**Handoff #4** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits FINISHED 27 Nov 02:32 UTC; APK sent to the owner.; #2 (2026-11-27): ten epic directions proposed, the owner's reference video analysed, palette set to obsidian black and gold, concept film "Presencia Oro" made and sent as a private page; owner moving to a new chat.; #3 (2026-11-27): the owner sent the Aether × Roxi Anima constitution and 20 references; AX-00 to AX-03 done as documents and analysis in `docs/aether/` (capability register, reference matrix, Roxi 3D pipeline chosen, no 3D master made); references kept on a private page because the repo is public; no product change.; #4 (2026-11-27): the owner sent 20 more GIFs to set Roxi's movement (1 duplicate of R20 dropped, R21–R39 kept); faces measured against her source: none is hers, so her identity stays with her source image; Roxi's glow changed to gold (owner); more GIFs coming, then the seven questions.
 
 ## 0. Instructions for Claude (read first)
 
@@ -55,6 +55,8 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 15. Session tokens never appear in URLs (sealed values are signed, not encrypted).
 16. Palette for the new look: "Color Black, obsidian black Gold That's our theme If we can avoid purple, it would be great, just maybe just a tiny bit of purple glow on Roxi, that's pretty much it And disassemble stuff should be ultra smooth and realistic. Any color or glow that fits will be good."
 17. The owner's reference video is "a major direction of how the app can look", "not to do exactly the design the video shows": take its language, never its world, logo, helix, cyan, glitch or white flash.
+18. Roxi's glow (27 Nov, updates rule 16): "Roxi should have a glow in in gold instead of purple."
+19. The owner's GIFs (27 Nov): "What I give is close to what we shall have, but it's your job to make sure what we will have will be Roxi. I'm just giving you the direction of her movement" · "If you receive a duplicate of a gif. Make sure you keep only one" · "After all has been sent. Then we will go over the 7 questions."
 
 ## 5. Corrections log
 | # | Claude did | The user wanted |
@@ -66,6 +68,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | 5 | Sent files as file cards in chat | "I couldn't download what you sent, it's kot possible to click on": send tappable links instead |
 | 6 | Recommended violet as the main light for the new look | obsidian black and gold; violet only as a tiny glow on Roxi (rule 16) |
 | 7 | (Owner's belief, 27 Nov) the default new-session repo `Lunara-Society.github.io` "is Yavaya" | Checked: it is the Lunara Society website; Yavaya is `Lunara-Society/yavaya`. Attach that one |
+| 8 | Planned a faint violet rim on Roxi (AX-D011) | "Roxi should have a glow in in gold instead of purple" (AX-D013) |
 
 ## 6. Decisions
 | Decision | Why |
@@ -78,7 +81,8 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | "Lite" glass panels (views only) for grids and lists (D-036) | one Skia canvas per panel exceeded the 16 WebGL contexts; panels went white |
 | Android builds only `armeabi-v7a,arm64-v8a` (D-037) | four ABIs ran the EAS build server out of memory once WebRTC came in |
 | Kotlin daemon `-Xmx2g`, `org.gradle.workers.max=2` (D-038), in `app.config.ts` `withBuildLimits` | build `258b7ac1` stalled in native compiles and was canceled at 45 min; paid `large` class not used without approval |
-| New look: obsidian black and gold, violet only as a faint rim on Roxi | owner's call (rule 16) |
+| New look: obsidian black and gold; Roxi's glow gold, no violet (AX-D013) | owner's call (rules 16, 18) |
+| Roxi-like GIFs set movement only; identity comes from her source image; any rendering of Roxi must score SFace ≥ 0.80 against it and be recognised by the owner (AX-D015, AX-D016) | measured: no GIF face is hers (closest 0.59; hers 0.95–0.99) |
 | Concept film shows direction 1 (Roxi presents from her hand) + "el hilo" signature | Claude's assumption, stated to the owner; open question 2 |
 | Film cards use real district names, no invented listings | production has no listings; never fake data |
 | Film sound from HeyGen's catalog (free with sign-in) instead of synthesising it | better quality; credited on the page |
@@ -92,6 +96,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 - ❌ Expo "build from repository" (`build_run` MCP tool): the Expo project has no GitHub repository connected
 - ❌ App Links for the return address (deferred to Chapter 10; custom scheme + PKCE for now)
 - New look palette: violet main light + gold accents (Claude's proposal), and the Halo prototype's obsidian + violet + champagne gold → obsidian black + gold, violet only a tiny glow on Roxi (owner, 27 Nov). The app's current Halo stays as built until the owner approves the new look.
+- Roxi's violet rim (rule 16, AX-D011) → gold glow (owner, 27 Nov; AX-D013)
 - Roxi's purple outfit in the film → graded to obsidian with gold piping (open question 1 asks the owner to confirm)
 - Film sound synthesised by us (stated assumption) → HeyGen catalog music and effects
 - Phone copy of the film at 5200k (gritty in the release) → 6000k tune grain, 14.6 MB
@@ -101,7 +106,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | What | Value |
 | --- | --- |
 | Repo | Lunara-Society/yavaya, checked out at `/home/user/yavaya` (`platform/`, `mobile/`, `docs/synapse/`) |
-| Latest commits on branch and `main` | `146d2ea` build memory limits · `0ba2ff5` this handoff · `18cef41` "Chapter 09 record; app sign-in returns by redirect" (last platform change, deployed) |
+| Latest commits | branch `claude/yavaya-lat-migration-uzwusm`: the second-send commit on top of `44dfb50` (Aether AX-00 to AX-03); `main`: `46d73ac` (the Aether commits wait for the owner's "push main": the push to `main` was refused by the session's permission check). Earlier: `146d2ea` build memory limits · `18cef41` "Chapter 09 record; app sign-in returns by redirect" (last platform change, deployed) |
 | Earlier commits this chapter | `4c6894a` platform endpoints · `0ac7b5f` voice deps · `6c78bab` WebRTC pin · `a889c1f` mobile 0.4.0 · `c3fbcd7` phone ABIs only |
 | App version | 0.4.0 (`mobile/package.json`, `app.json`) |
 | Expo project | `@yavaya/yavaya`, ID `9e779c70-bbec-48c5-ac71-ca8a45debf66`, Android package `yavaya.lat` |
@@ -118,12 +123,14 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | Stack | Expo SDK 58, RN 0.88.1, `@elevenlabs/react-native` 1.3.0, `@livekit/react-native` 2.12.0, `@livekit/react-native-webrtc` 144.1.2, `livekit-client` 2.25.0, `@livekit/react-native-expo-plugin` 1.0.3, `@config-plugins/react-native-webrtc` 15.0.2, `expo-crypto` ~58.0.9 |
 | Docs placeholders | filled (APK link in NEXT_CHAPTER.md and TEST_REPORTS.md) |
 | Concept film | "Presencia Oro", `design/films/oro/` (commit `a28411d`), 19.0 s, 1080×1920, 30 fps, 570 frames; private page https://claude.ai/artifact/JLZ1LkLch8aUbRz4hQxVDf |
-| Film palette | ground `#050505`; gold `#E2C27A` / `#F6DDA0` / `#FFF3D6`; violet `#8E7CFF` rim 0.12–0.18 only; Geist Light/Regular/SemiBold |
+| Film palette | ground `#050505`; gold `#E2C27A` / `#F6DDA0` / `#FFF3D6`; violet `#8E7CFF` rim 0.12–0.18 only (the film as made; Roxi's glow is now gold); Geist Light/Regular/SemiBold |
 | Film files kept out of git | `renders/` (master 52.9 MB), `assets/audio/` (re-fetch by the HeyGen catalog ids in `SPEC.md`), `.hyperframes/`, `node_modules/` |
 | Film sound (measured, not heard) | eagle hit 15.00 s, whooshes from 6.35 s, release 11.75 s, breath −23 to −35 dB, −12.9 LUFS, true peak −1 dBTP |
 | Owner's reference video | "Ideas.mp4" (17 s Assassin's Creed fan animation by @MadebyGuille); not in the repo; its breakdown is in `VISUAL_DIRECTION.md` |
 | Aether × Roxi Anima memory | `docs/aether/` (README, CONSTITUTION, CHAPTER_STATUS, MASTER_ARCHITECTURE, REFERENCE_MATRIX, ROXI_CAPABILITIES, ROXI_PIPELINE, VISUAL_CONSTITUTION, ASSET_REGISTRY, TECHNICAL_DECISIONS, PRODUCTION_TESTS) |
-| Owner's references of 27 Nov (R01–R20) | private page https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe holds the originals (`refs/…`) and frame sheets (`sheets/…`); hashes in `docs/aether/ASSET_REGISTRY.md` §3; measurements in `design/references/aether/metrics.json` |
+| Owner's references of 27 Nov (R01–R39, two sends) | private page https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe (version 3, 81 files) holds the originals (`refs/…`) and frame sheets (`sheets/…`); hashes in `docs/aether/ASSET_REGISTRY.md` §3 and §3b; measurements in `design/references/aether/metrics.json` and `metrics-batch2.json`; face scores in `identity-2026-11-27.json` |
+| Second send facts | 20 files, 1 duplicate of R20 dropped; R21–R26 6 frames; R27 12 frames held 0.65 s; R28–R39 12 frames held 0.22–0.24 s, 358 × 358; 0 flashes; the Roxi GIFs glow violet (hers will be gold); face match with her source: her images 0.95–0.99, R28 0.59, close-ups R37 0.37, R39 0.32, R38 0.21, other women 0.07–0.48 |
+| Identity check | `design/references/aether/tools/identity_check.py <models> <source> <out> <files>`; needs `opencv-python-headless` and the YuNet (MIT) and SFace (Apache-2.0) models from huggingface.co/opencv, kept outside the repo; bar 0.80 |
 | Reference facts | GIFs are keyframe boards: 6–9 frames held 0.85–1.8 s; flash check max 0.5/s; gold medians `#DEA258` (highlight) and `#895E2F` (body); R09 = Roxi's source pixels; women in R03, R08, R10 are not Roxi |
 | Repository visibility | `Lunara-Society/yavaya` is **public** (checked 27 Nov) |
 | Default new-session repo | `Lunara-Society/Lunara-Society.github.io` = the Lunara Society website, NOT Yavaya; do not work there (rule 12) |
@@ -163,19 +170,19 @@ npx hyperframes check --json; npx hyperframes snapshot --at 1.5,4,7.7,10,12.3,15
 | Development build | none current | — | owner doesn't need it |
 | Task list | #92–#99 completed; #57 (HeyGen AI video) pending on HEYGEN_API_KEY | — | — |
 | Visual direction notes | written | `docs/synapse/VISUAL_DIRECTION.md` | palette, reference breakdown, 8 build ideas, 10 epic directions, commands |
-| Aether AX-00 to AX-03 | done (documents and analysis; no product change) | `docs/aether/`; private page above | AX-03: pipeline chosen, 3D master NOT made (needs the owner's decisions) |
+| Aether AX-00 to AX-03 | done (documents and analysis; no product change); AX-02 second send R21–R39 done | `docs/aether/`; private page above | AX-03: pipeline chosen, 3D master NOT made (needs the owner's decisions); more GIFs coming |
 | Concept film "Presencia Oro" | first cut delivered | `design/films/oro/` + private page above; `REVIEW.md` | waiting for the owner's three answers |
 
 ## 11. Next steps
 0. **If `/home/user/yavaya` is missing:** attach the repo with the `add_repo` tool (owner `Lunara-Society`, repo `yavaya`, access `push`), clone it to `/home/user/yavaya` as the tool says, call `register_repo_root`, then `git checkout claude/yavaya-lat-migration-uzwusm`. Never work in `Lunara-Society.github.io`.
-1. **Next action:** wait for (a) the owner's answers to the seven decisions on the private page https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe (also in `docs/aether/ROXI_PIPELINE.md` §9 and `REFERENCE_MATRIX.md` §4), (b) the AX-04 text or approval of the proposed AX-04 (`docs/aether/CHAPTER_STATUS.md` §3), and (c) the owner's results from the 0.4.0 phone test (steps in `docs/synapse/NEXT_CHAPTER.md`); if they say the Google sign-in stops on a browser page, ask for a screenshot of that page first.
+1. **Next action:** take the owner's further GIFs: keep one copy of any duplicate (SHA-256, then frame correlation ≥ 0.8), read every frame (`analyse_refs.py`), measure faces (`identity_check.py`), record them in `REFERENCE_MATRIX.md`, `ASSET_REGISTRY.md` and the private page. Only when the owner says all GIFs are sent: go over (a) the seven decisions on the private page https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe (also in `docs/aether/ROXI_PIPELINE.md` §9 and `REFERENCE_MATRIX.md` §4), (b) the AX-04 text or approval of the proposed AX-04 (`docs/aether/CHAPTER_STATUS.md` §3), and (c) the owner's results from the 0.4.0 phone test (steps in `docs/synapse/NEXT_CHAPTER.md`); if they say the Google sign-in stops on a browser page, ask for a screenshot of that page first.
 2. Fix what the phone test shows, re-run the checks (mobile `npm test`, `npx tsc`, platform `npx vitest run`), build a new preview APK the same way, push to the branch and `main`.
 3. When the owner answers the film questions (section 12), turn the chosen moment into a design with `/superpowers:brainstorming`, behind the Classic switch, smooth on a mid-range phone.
 4. Record results in TEST_REPORTS.md, KNOWN_ISSUES.md and CHAPTER_09.md §6; Chapter 10 (proposed in NEXT_CHAPTER.md) needs the owner's go.
 
 ## 12. Open questions ⚠️
 - 0.4.0 phone test: no results yet (steps in `docs/synapse/NEXT_CHAPTER.md`).
-- Aether decisions (numbered as on the private page): 1 gold amber `#DEA258` or champagne `#E2C27A`; 2 Roxi's outfit kept (recommended) or black and gold; 3 new Roxi views made by the owner or generated; 4 may her image go to outside services; 5 paid tools; 6 which reference-only features to build (saved hearts, likes, messages, booking, enrolment, business requests, fixed fares); 7 AX-04 text or the proposed AX-04.
+- Aether decisions (numbered as on the private page): 1 gold amber `#DEA258` or champagne `#E2C27A`; 2 Roxi's outfit kept (recommended) or black and gold; 3 new Roxi views made by the owner or generated; 4 may her image go to outside services; 5 paid tools; 6 which reference-only features to build (saved hearts, likes, messages, booking, enrolment, business requests, fixed fares; from the second send: country communities, turn-by-turn with live traffic, trip ratings); 7 AX-04 text or the proposed AX-04.
 - Film 1: Roxi in black and gold, keep it or back to her purple outfit?
 - Film 2: which moment should the app do first: Roxi assembling, the arc of cards from her hand, or the eagle signature ("el hilo")?
 - Film 3: anything too much or too little?
@@ -189,4 +196,4 @@ npx hyperframes check --json; npx hyperframes snapshot --at 1.5,4,7.7,10,12.3,15
 - [ ] The 27 Nov references are on the private page (originals and sheets); re-attach them only if that page is lost.
 
 ---
-<sub>Audit: 13/13 sections · 17 rules · 7 corrections · 41 data points · secrets removed: none found · generated by active-memory</sub>
+<sub>Audit: 13/13 sections · 19 rules · 8 corrections · 43 data points · secrets removed: none found · generated by active-memory</sub>

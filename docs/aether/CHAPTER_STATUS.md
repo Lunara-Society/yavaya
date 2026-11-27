@@ -8,7 +8,7 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | --- | --- | --- | --- |
 | AX-00 | The Master Constitution | 27 Nov 2026 | **Done**: stored word for word ([CONSTITUTION.md](CONSTITUTION.md)) |
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
-| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done** (analysis; references kept private) |
+| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done for R01–R39** (analysis; references kept private); more GIFs are coming |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
 | AX-04 onward | not received yet | — | proposal in §3 until the owner's texts arrive |
 
@@ -65,6 +65,13 @@ mobile API to grow, not 3D Roxi.
   approved per capability when it is built.
 - Needs: the missing assets in ASSET_REGISTRY §5; the owner's decisions on
   the features in REFERENCE_MATRIX §4.
+- Second send (27 Nov): 20 files; 1 duplicate of R20 dropped; 19 kept
+  (R21–R39); every frame read; 13 capabilities added (C53–C65); the platform
+  differences listed (REFERENCE_MATRIX §6). Faces measured against Roxi's
+  source (§7): none is hers (closest 0.59; her own images 0.95–0.99), so
+  these GIFs set her movement only (AX-D016). Her glow is gold (AX-D013).
+- Waiting: more GIFs from the owner. When all are sent, the owner goes over
+  the seven questions on the private page.
 
 ### AX-03 · Roxi digital human pipeline
 
@@ -85,7 +92,7 @@ mobile API to grow, not 3D Roxi.
 
 | Proposed | What | Gate |
 | --- | --- | --- |
-| AX-04 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her front image; the same test GLB in both renderers on two phones; identity test method | the owner's decisions 1, 2 and 5 in ROXI_PIPELINE §9 |
+| AX-04 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her front image; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's decisions 1, 2 and 5 in ROXI_PIPELINE §9 |
 | AX-05 | Aether tokens and the black-and-gold look behind Classic (tokens, glass, ribbons, icons) | the owner confirms the gold (AX-D011) |
 | AX-06 | Mobile API v1 expansion: content descriptors for every district, search, filters, item pages | none (reuses the website's domain functions) |
 | AX-07 | INFINITY flows on real data: home, search, district hero → list → page → action, per the reference patterns | AX-05, AX-06 |

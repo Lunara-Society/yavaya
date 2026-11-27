@@ -16,8 +16,16 @@ behaviours (primitives) every chapter builds on. States as in
   jacket becomes black and gold is the owner's open decision
   ([ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9); until then the source outfit
   rules.
-- **Not her:** the women in references R03, R08 and R10. Their staging,
-  gestures and materials are references; their faces and hair are not.
+- **Not her:** the women in references R03, R08, R10 and R26, and the faces
+  in R27–R39. The second send (R27–R39) shows a Roxi-like woman in a purple
+  jacket; measured against her source, the closest face scores 0.59 and the
+  close-ups 0.21–0.37, where her own images score 0.95–0.99
+  ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) §7). Their movements, gestures
+  and expressions are references; their faces, hair and clothes are not
+  (they drift to black cargo trousers, combat boots and a belt).
+- **Her glow is gold** (the owner, 27 Nov: "Roxi should have a glow in gold
+  instead of purple"): rim light, particles and material states use the gold
+  tokens, never violet.
 - **What she is not:** she is an assistant, not a person. She does not claim
   to be conscious or to feel. She never publishes, pays or sends anything for
   a member: she prepares, the member confirms.
@@ -69,6 +77,23 @@ never from a specific product. A new kind of listing needs no new animation.
 | `materialise` / `dematerialise` | forms from light, dissolves | — | reconstruction techniques | IMPOSSIBILIS shaders | R02, R06 |
 | `react` | smiles, nods, concern | sentiment | glow colour | facial shapes | R03 f8 |
 | `listen`, `think`, `speak`, `problem` | visible state | voice state | Presence glow | face, posture, lips | Presence |
+
+Movement references for the primitives (second send; motion only, never the
+face):
+
+| Primitive | Reference |
+| --- | --- |
+| `materialise` | R28: particles, silhouette, hologram, solid; the camera moves in; a smile |
+| `reach_and_hold`, `present`, `guide_to_action`, `dematerialise` | R27: the photo pulled from its card, held on her palm, the facts open with Contactar, the photo dissolves back |
+| walk in and face (new) | R31 |
+| exit: turn and walk away (new) | R29, R32 |
+| welcome (new) | R30 |
+| `speak` while explaining | R33, R34 |
+| `listen` | R34 |
+| `look_at`, `point_at` | R35 |
+| `think` | R36 |
+| `react`: joy, concern, surprise | R37, R38, R39 |
+| `dock`, summoned by a central button | R26 |
 
 Planner rules (shape-based, never category-based):
 

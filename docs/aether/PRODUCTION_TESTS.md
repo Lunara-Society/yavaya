@@ -14,6 +14,7 @@ run in each chapter. Earlier runs (Chapters 00–09) are in
 | Shaders compiled and rendered by Skia | `cd mobile && npm run check:shaders` | 6 of 6 | Chapter 09 |
 | Local end-to-end sign-in | production build on port 3100 (script was in the old session's scratchpad) | 18 of 18 | Chapter 09 |
 | Reference measurements | `python3 -I design/references/aether/tools/analyse_refs.py <out> <files>` | reproduces `design/references/aether/metrics.json` | AX-02 |
+| Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json` | AX-02, second send |
 
 ## 2. Acceptance tests for the programme
 
@@ -22,7 +23,7 @@ the app: on a phone).
 
 | ID | Test | Passes when |
 | --- | --- | --- |
-| T-ID-01 | Roxi identity | renders of the 3D Roxi beside the source image: face landmark distances (normalised) within a tolerance set in AX-04, and the owner recognises her without prompting |
+| T-ID-01 | Roxi identity | front and three-quarter renders of any Roxi (3D, 2.5D or video) score at least 0.80 SFace cosine against her source with `design/references/aether/tools/identity_check.py` (her own images score 0.95–0.99, other generated women 0.07–0.48, the closest reference 0.62), and the owner recognises her without prompting |
 | T-ID-02 | Guardian identity | any new Guardian rendering matches the approved artwork in pose, silhouette and palette; the owner approves |
 | T-CONTENT-01 | Unseen content (the piano test) | a test database (never production) gets listings Roxi has never seen (an antique piano, a tractor, a wedding dress, a farm machine); she presents each with no code change |
 | T-CONTENT-02 | Incomplete content | listings without photo, price or place: she adapts, invents nothing, the page still opens |
@@ -50,3 +51,13 @@ the app: on a phone).
 | Live capability register | `/status` on yavaya.lat | 56 real, 8 needing configuration, 1 demo, 0 mock (same as 26 Nov) |
 | Repository visibility | GitHub, through the session's tools | public |
 | Platform, mobile, shader suites | not re-run | this chapter changed no app or platform code (only `docs/` and `design/references/`) |
+
+### AX-02, second send (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Duplicates | SHA-256 and frame correlation against both sends | 1 duplicate dropped (the same file as R20); the Diáspora pair kept (different animations) |
+| Frames read | contact sheets of all 19 new GIFs | done (REFERENCE_MATRIX §6) |
+| Measurements | analysis script | `metrics-batch2.json`; 0 flash failures |
+| Identity | `identity_check.py` on 13 Roxi-like GIFs, with 2 positive and 6 negative controls | closest 0.59; close-ups 0.21–0.37; her own images 0.95–0.99 (REFERENCE_MATRIX §7) |
+| Suites | not re-run | no app or platform code changed |

@@ -11,7 +11,7 @@ ecosystem for Android and iPhone: AETHER (the look and rendering) and ANIMA
 2. [CHAPTER_STATUS.md](CHAPTER_STATUS.md): where the programme is and what comes next.
 3. [MASTER_ARCHITECTURE.md](MASTER_ARCHITECTURE.md): the rules, the capability register, the thirteen systems on the code.
 4. Then what the chapter needs:
-   - [REFERENCE_MATRIX.md](REFERENCE_MATRIX.md): the 20 references, what each asks for and how to build it
+   - [REFERENCE_MATRIX.md](REFERENCE_MATRIX.md): the 39 references (two sends), what each asks for and how to build it
    - [ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md) and [ROXI_PIPELINE.md](ROXI_PIPELINE.md): Roxi today, her primitives, how her 3D self gets made
    - [VISUAL_CONSTITUTION.md](VISUAL_CONSTITUTION.md): colour, materials, motion, safety
    - [ASSET_REGISTRY.md](ASSET_REGISTRY.md): every asset and where it is kept

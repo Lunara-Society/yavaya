@@ -15,8 +15,9 @@ In order of precedence:
    nothing published without approval; no secrets in the repository; no
    redesign of production functionality; visible redesigns ship behind
    **Classic**; Roxi prepares, the member confirms (she never publishes,
-   pays or sends); obsidian black and gold, violet only as a faint glow on
-   Roxi; the owner's email and phone number never repeated.
+   pays or sends); obsidian black and gold, and Roxi's glow is gold, not
+   violet (the owner, 27 Nov); the owner's email and phone number never
+   repeated.
 2. The [constitution](CONSTITUTION.md): production software, not mockups;
    references are behaviour, never data; Roxi composes behaviour from
    content, never per-item animations; never invent facts; the app works

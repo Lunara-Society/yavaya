@@ -17,8 +17,11 @@ visible change ships behind **Classic**.
 2. The owner's reference video: "a major direction of how the app can look",
    "not to do exactly the design the video shows" (its breakdown:
    VISUAL_DIRECTION.md).
-3. The 20 references of 27 Nov ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md)).
+3. The 39 references of 27 Nov, in two sends ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md)).
 4. The identity assets: Roxi's source image and the approved Guardian.
+5. The owner on the second send of references (27 Nov 2026): "I'm just
+   giving you the direction of her movement and Roxi should have a glow in
+   gold instead of purple."
 
 ## 2. Colour
 
@@ -63,7 +66,7 @@ body `#895E2F`.
 | `gold.hot` | `#FFF3D6` | the hottest point of a glow | — |
 | `champagne` | `#E2C27A` | the concept film's gold, kept as an alternative | 11.87:1 |
 | `light.white` | `#E8ECF2` | white-silver light ribbons, body text | 17.19:1 |
-| `roxi.rim` | `#8E7CFF` at 0.12–0.18 opacity | the only violet: a faint rim on Roxi | — |
+| `roxi.glow` | `#F6DDA0` core, `#DEA258` edge | Roxi's glow, rim light and particles: gold (the owner, 27 Nov); no violet anywhere | — |
 
 Gold text keeps at least 4.5:1 against what is behind it (WCAG AA):
 `gold.core` and lighter for words, `gold.deep` never for words.
@@ -73,7 +76,10 @@ one and Negocios chrome. The owner allowed "any color or glow that fits", so
 a district may have its own glow, but gold stays the brand's light on every
 screen, and **no district uses purple**. Today the website's Comunidad
 accent is purple (`config/districts.ts`); in the new app look Comunidad uses
-gold (as R18 does). The website does not change.
+gold (as R18 does). The website does not change. The second send glows
+violet in Diáspora (R21, R25) and cyan in Movilidad (R22): in the app,
+Diáspora takes gold or blue instead of violet, and Movilidad's cyan stays
+only if the owner confirms it fits.
 
 ## 3. Materials
 
@@ -91,7 +97,8 @@ gold (as R18 does). The website does not change.
 
 ## 4. Identity
 
-- **Roxi** looks as in her source image in every tier ([ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md) §1).
+- **Roxi** looks as in her source image in every tier ([ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md) §1),
+  and her glow is gold.
 - **The Guardian** is the approved artwork (`platform/public/first-light/guardian2-*`,
   6 Nov 2026; logo `platform/public/brand/logo-1080.webp`). The references'
   eagles match it; any new rendering of it (a head close-up, a 3D model)

@@ -18,7 +18,8 @@ This replaces the earlier proposal of violet as the main light (and the Halo
 prototype's obsidian + violet + champagne gold) for the new direction. The
 values used in the concept film: ground `#050505`, gold `#E2C27A` (lines,
 edges), `#F6DDA0` (light), `#FFF3D6` (hottest point), violet `#8E7CFF` only as
-a faint rim on Roxi (0.12–0.18).
+a faint rim on Roxi (0.12–0.18). Later the same day the owner changed it:
+"Roxi should have a glow in in gold instead of purple" (now AX-D013).
 
 ## The reference video (owner's upload "Ideas.mp4", not in the repo)
 

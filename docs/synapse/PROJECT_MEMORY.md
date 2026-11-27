@@ -41,8 +41,8 @@ an entry that is no longer true is worse than no entry.
 - **Roxi's look** is the owner's full-length image (`mobile/art/roxi/`,
   AI-generated, Yavaya's own). Use it for her in every medium; generate
   everything else from it (`mobile/tools/roxi/`).
-- **The next look (design only, 27 Nov 2026):** obsidian black and gold, with
-  violet only as a faint glow on Roxi (the owner's call). Direction, reference
+- **The next look (design only, 27 Nov 2026):** obsidian black and gold, and
+  Roxi's glow is gold, not violet (the owner's call; updated 27 Nov). Direction, reference
   breakdown and ten proposed ideas: [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md).
   Concept film: `design/films/oro/` ("Presencia Oro"). Not in the app yet.
 - **Aether × Roxi Anima (from 27 Nov 2026):** the owner's constitution for the

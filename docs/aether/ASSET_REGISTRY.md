@@ -18,11 +18,12 @@ The repository `Lunara-Society/yavaya` is **public**. So:
   gallery).
 - **Where private files live today:** the owner's private claude.ai page for
   this programme, https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe, which
-  holds the originals as `refs/R01-1000192794.gif` … `refs/R20-1000192811.gif`
+  holds the originals as `refs/R01-1000192794.gif` … `refs/R39-1000192837.gif`
   and the frame sheets as `sheets/R01.jpg` … (a later session reads them with
   the Artifact tool's `read` action and the file's path). Every file is
-  identified below by its SHA-256, so a copy can always be checked; the 42
-  stored files were listed back and matched on 27 Nov.
+  identified below by its SHA-256, so a copy can always be checked; after
+  the second send the page holds 81 files (the page, 39 originals, 41
+  sheets), listed back and matched on 27 Nov.
 
 No asset from a third-party game, film or brand is allowed; AI-generated
 assets are declared as such.
@@ -76,6 +77,56 @@ Seen but not received: the owner's gallery (R10) shows more Guardian emblems,
 a circular emblem animation and the logo on a pedestal; send them if they
 should be references.
 
+### 3b. Second send, 27 November 2026 (private)
+
+Received with the owner's words: "I'm just giving you the direction of her
+movement and Roxi should have a glow in gold instead of purple." Analysed in
+[REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) §6 and §7; measurements in
+`design/references/aether/metrics-batch2.json` (full hashes there); face
+scores in `design/references/aether/identity-2026-11-27.json`. AI-generated
+design material, Yavaya's own. **Illustrative content only: none of it is
+data.** The women in R26–R39 are not Roxi: they give movement, gesture and
+expression, never her face, hair or clothes (AX-D016).
+
+| Ref | Owner file | SHA-256 (first 16) | Bytes | Pixels | Frames | Loop (s) | Shows |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R21 | `1000192820.gif` | `e8a304ab86e64957` | 563,284 | 504 × 508 | 6 | 7.8 | Diáspora: globe to country communities |
+| R22 | `1000192819.gif` | `4d4fbe3f3e22dafd` | 554,496 | 337 × 764 | 6 | 7.8 | Movilidad: route, directions, arrival (tall) |
+| R23 | `1000192818.gif` | `46437871cdd5157f` | 562,537 | 506 × 508 | 6 | 7.8 | Barrio: places on a 3D neighbourhood map |
+| R24 | `1000192817.gif` | `a330e9fc8ed185b2` | 543,072 | 335 × 764 | 6 | 7.8 | Campo: crystal sprout to land listings (tall, gold) |
+| R25 | `1000192821.gif` | `4cb4ef4f43d7de0c` | 588,630 | 505 × 495 | 6 | 10.8 | Diáspora: tap the globe, map of Nicaragua |
+| R26 | `1000192822.gif` | `c0b56ea8cd573544` | 631,592 | 501 × 508 | 6 | 10.8 | the app with Roxi at its centre (montage) |
+| R27 | `1000192826.gif` | `797004c34a02fd5a` | 605,902 | 358 × 358 | 12 | 7.8 | Roxi-like: presents a listing from a glass card |
+| R28 | `1000192827.gif` | `d358efec2802e62e` | 509,642 | 358 × 357 | 12 | 2.88 | Roxi-like: materialises from particles |
+| R29 | `1000192831.gif` | `f015914bfa9fe4eb` | 222,162 | 357 × 358 | 12 | 2.64 | Roxi-like: turns and walks away (back view) |
+| R30 | `1000192830.gif` | `73b0ea25b908edfe` | 193,450 | 358 × 358 | 12 | 2.64 | Roxi-like: welcome gesture |
+| R31 | `1000192829.gif` | `d5b9c26984b704b9` | 196,010 | 358 × 358 | 12 | 2.64 | Roxi-like: walks in, turns to face |
+| R32 | `1000192828.gif` | `cb3c42fde8fcbcb2` | 189,682 | 358 × 358 | 12 | 2.64 | Roxi-like: walks away into depth |
+| R33 | `1000192834.gif` | `fa4d14924cf319b6` | 218,186 | 358 × 358 | 12 | 2.64 | Roxi-like: explaining gestures |
+| R34 | `1000192833.gif` | `fc1b4978081dc0b6` | 210,872 | 357 × 358 | 12 | 2.64 | Roxi-like: listening, nod, explain |
+| R35 | `1000192832.gif` | `9c81e587c5698007` | 240,596 | 357 × 358 | 12 | 2.64 | Roxi-like: looks and points off-screen |
+| R36 | `1000192835.gif` | `a80e803c5691dc7d` | 216,150 | 357 × 358 | 12 | 2.64 | Roxi-like: thinking pose |
+| R37 | `1000192839.gif` | `b44f023a3da20b75` | 557,518 | 358 × 356 | 12 | 2.76 | Roxi-like close-up: joy |
+| R38 | `1000192838.gif` | `d8fedfdf79eb5f46` | 435,651 | 358 × 356 | 12 | 2.76 | Roxi-like close-up: concern |
+| R39 | `1000192837.gif` | `4bc62858e8c1790e` | 439,032 | 358 × 357 | 12 | 2.76 | Roxi-like close-up: surprise |
+
+Duplicate dropped (AX-D014): the send's first file, `1000192811.gif`
+(SHA-256 `f418352a44b5f5ab…`), is byte-identical to R20, so only R20 is kept.
+The two Diáspora GIFs (R21, R25) are different animations and both stay.
+
+Kept on the private page: `refs/R21-1000192820.gif` …
+`refs/R39-1000192837.gif`, sheets `sheets/R21.jpg` … `sheets/R39.jpg`, and
+`sheets/faces-b2.jpg` (Roxi's source, two more images of her, and the closest
+frame of R28, R37, R38 and R39, each with its score).
+
+Face models for the identity check: a measuring tool, never shipped, not in
+the repository (download from https://huggingface.co/opencv when needed).
+
+| File | SHA-256 | Bytes | Licence (OpenCV model zoo) |
+| --- | --- | --- | --- |
+| `face_detection_yunet_2023mar.onnx` | `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4` | 232,589 | MIT |
+| `face_recognition_sface_2021dec.onnx` | `0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79` | 38,696,353 | Apache-2.0 |
+
 ## 4. App assets carried from Synapse (unchanged)
 
 Icons and splash (from the Guardian icon), Roxi's figure, depth and face,
@@ -90,7 +141,7 @@ out of git; the audio licence for public use is unverified).
 
 | Needed | For | Who can provide | State |
 | --- | --- | --- | --- |
-| Roxi reference sheet: three-quarter, profile, back, face close-ups, hands, hair back, jacket details (same outfit and light) | 3D master (S0), identity tests | the owner, or generated with approval | NEEDS CONFIGURATION (owner decision) |
+| Roxi reference sheet: three-quarter, profile, back, face close-ups, hands, hair back, jacket details (same outfit and light) | 3D master (S0), identity tests | the owner, or generated with approval | NEEDS CONFIGURATION (owner decision); the second send does not fill it (other faces) |
 | Guardian head close-up master, at least 2048 px | C01, C06 (R01, R05) | the owner's artwork, or rendered from a 3D Guardian | missing |
 | 3D Guardian | real-time C02, C04, C05 | Blender, from the approved artwork | missing; optional (video tier first) |
 | District hero art for all 15 districts in black and gold | C23 | generated or drawn, approved by the owner | 7 older "worlds" exist on the website; board districts have none |
@@ -98,7 +149,7 @@ out of git; the audio licence for public use is unverified).
 | Official wordmark, vector | headers | the owner | raster logos only |
 | Map style for the light-map, and its tile source | C32, C51 | made for Yavaya on the platform's map data | missing |
 | Sounds for the new motions | GENESIS, TRANSCENDENCE | `mobile/tools/audio/make-sounds.py` (synthesised) | to make |
-| Motion clips for Roxi (walk, gesture, present) | CORPUS | licensed library or the owner's phone motion capture | owner decision on sources |
+| Motion clips for Roxi (walk, gesture, present) | CORPUS (direction: R27–R39) | licensed library or the owner's phone motion capture | owner decision on sources |
 
 ## 6. Adding an asset
 

@@ -294,3 +294,156 @@ Technical limits:
   share one canvas.
 - The camera flights in R01 and R02 are 3D; on phones they become 2.5D
   layers or the video tier.
+
+## 6. Second send (27 Nov 2026): R21–R39
+
+Twenty more files arrived, with the owner's words: "What I give is close to
+what we shall have, but it's your job to make sure what we will have will be
+Roxi. I'm just giving you the direction of her movement and Roxi should have a
+glow in gold instead of purple." Measurements:
+`design/references/aether/metrics-batch2.json`; face scores:
+`design/references/aether/identity-2026-11-27.json`.
+
+- **Duplicates:** the first file (`1000192811.gif`) is byte-identical to R20,
+  so only R20 is kept. The two Diáspora GIFs (R21, R25) are different
+  animations (no frame pair correlates above 0.8), so both are kept
+  (decision AX-D014).
+- **Files:** R21–R26 have 6 frames held 1.3 or 1.8 s (R22 and R24 are tall,
+  about 336 × 764). R27 has 12 frames held 0.65 s. R28–R39 have 12 frames held
+  0.22–0.24 s (loops of 2.6–2.9 s), 358 × 358: smoother than the first send,
+  but still twelve stills per clip, so they give poses and timing, not motion
+  capture.
+- **Flashes:** all pass (0 general flashes).
+- **Colour:** the Roxi GIFs glow violet (20–90 % of their lit pixels). From
+  now on her glow is gold (decision AX-D013). Diáspora glows violet and blue,
+  Movilidad cyan, Campo gold.
+- **Identity:** measured in §7. No face in these GIFs is Roxi's. They give
+  her movement; her face, hair and clothes come from her source image.
+
+### What each one shows
+
+**R21 Diáspora, globe to communities.** A globe of night lights; arcs leave
+Central America; member pins appear; country chips (MX, US, ES, CR);
+community cards with member counts; a card opens into a community page with
+"Unirme" and tabs.
+
+**R22 Movilidad.** A glass map pin with a car over a cyan light-road; service
+bubbles (Viaje, Envío, Mandado, Reservar); a route form over a cyan city;
+"Calculando ruta… tráfico en tiempo real"; turn-by-turn directions with time
+and distance; "Has llegado" with a five-star rating.
+
+**R23 Barrio.** A glass map pin over a colonial street at night; place icons
+orbit a 3D block; a 3D neighbourhood map with pins and distances; a list of
+places (a bakery, a clinic, a corner shop); a place page (open now, closing
+time, call, WhatsApp, directions, follow); a walking route.
+
+**R24 Campo (gold).** A crystal sprout over a gold wireframe terrain; the
+crystal opens onto a farm under a volcano; six categories; land listings in
+manzanas with prices; a listing page.
+
+**R25 Diáspora, tap the globe.** A finger taps Nicaragua; the globe becomes a
+3D map of Nicaragua with Managua's community; a country hub; a community card
+with "Unirme"; a feed of posts.
+
+**R26 The app with Roxi at its centre.** Home with a globe and a central orb
+button; a district carousel on a glass platform; Roxi appears with "¡Hola!
+Soy Roxi" and quick actions (Buscar cerca, Publicar anuncio, Ver mapa, Mis
+mensajes, Comprar tokens); Mercadito; YavayaGo directions; Santuario. The
+woman here is labelled Roxi but has another face and a black outfit.
+
+**R27 Roxi presents a listing.** Beside a glass card she reaches in, pulls
+the photo out, holds it on her open hand while the details open beside it
+with "Contactar", then the photo dissolves back into the card.
+
+**R28 Roxi materialises.** A column of particles on a mirror floor becomes a
+silhouette, then a translucent body, then her solid self; the camera moves
+in; she smiles and closes her eyes.
+
+**R29 Turn and walk away.** From the front she turns to her left and walks
+until we see her back.
+
+**R30 Welcome.** A hand to the waist, an open hand, both arms wide, back to
+rest.
+
+**R31 Walk in and face.** She walks across in profile and turns to face the
+camera.
+
+**R32 Walk away into depth.** She turns and walks away until she is small.
+
+**R33 Explaining.** Both hands open to the sides while she talks, then back
+to clasped hands.
+
+**R34 Listening.** Hands clasped, a nod, a one-hand explanation, a smile.
+
+**R35 Look and point.** She looks up to her left, points at something
+off-screen, and comes back.
+
+**R36 Thinking.** She looks down, folds an arm, and puts a hand to her chin.
+
+**R37 Joy.** Close-up: a smile becomes a laugh; the head tilts back, the eyes
+close; a gentle smile.
+
+**R38 Concern.** Close-up: brows knit, an open hand towards the viewer, then a
+soft smile.
+
+**R39 Surprise.** Close-up: eyes widen, the mouth opens, a palm rises, then a
+smile.
+
+### New capabilities
+
+| ID | Capability | System | Seen in | Technique | Real data and rules | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| C53 | Roxi forms from a particle column into her solid self, in gold | IMPOSSIBILIS | R28 | 3D + SHD + PTC; 2.5D tier with the existing reconstruction | — | NOT IMPLEMENTED (2D reconstruction INCOMPLETE) |
+| C54 | Roxi pulls an item's photo out of its card, presents it, opens its facts, returns it | SYMBIOSIS | R27 | SKL + IK, UI shared element, SHD | content descriptor: only the item's real fields | NOT IMPLEMENTED |
+| C55 | Walk in, turn to face, turn and walk away | CORPUS | R29, R31, R32 | SKL (root motion, foot contacts) | — | NOT IMPLEMENTED |
+| C56 | Body language: welcome, explain, listen, think | CORPUS, SENTIENCE | R30, R33, R34, R36 | SKL clips blended by state | Roxi's real state (listening, speaking, working) | NOT IMPLEMENTED |
+| C57 | Look at and point to a real element on screen | SYMBIOSIS | R35 | SKL + look-at and arm IK to layout targets | layout geometry | NOT IMPLEMENTED |
+| C58 | Expressions with gestures: joy, concern, surprise | SENTIENCE, VOX | R37–R39 | facial shapes + SKL | — | NOT IMPLEMENTED |
+| C59 | A central button summons Roxi with a greeting and quick actions | OMNIPRAESENTIA, SYMBIOSIS | R26 | UI + Roxi tier | quick actions only for features that exist | NOT IMPLEMENTED |
+| C60 | Globe of night lights with arcs; tap a country for its 3D map | AETHER | R21, R25, R26 | 3D (sphere, night-lights texture) or VID; SHD | places, district data | NOT IMPLEMENTED |
+| C61 | Glass map pin hero; 3D neighbourhood map with pins | AETHER | R22, R23 | vector map with 3D buildings, SHD | places; distance needs the phone's location with permission | NOT IMPLEMENTED |
+| C62 | Turn-by-turn directions and live traffic | INFINITY | R22, R26 | navigation provider | **none in the platform** | NOT IMPLEMENTED (owner decision) |
+| C63 | District emblem crystal over a wireframe terrain | TRANSCENDENCE | R24 | SHD, CMP | district registry | NOT IMPLEMENTED |
+| C64 | Country communities with membership | INFINITY | R21, R25 | UI | **community groups are not built** | NOT IMPLEMENTED (owner decision) |
+| C65 | Trip rating after arrival | INFINITY | R22 | UI | not in the data | NOT IMPLEMENTED (owner decision) |
+
+### Where the second send differs from the platform
+
+| Reference shows | The platform today | Until the owner decides |
+| --- | --- | --- |
+| Diáspora as communities by country, with members and "Unirme" (R21, R25) | Diáspora is the family bridge: help at home arranged from abroad (repairs, errands, elder care, medical visits, deliveries, paperwork, celebrations, property care); community groups are not built | the real subdistricts |
+| Movilidad as trip booking with live traffic, turn-by-turn and a rating (R22) | Movilidad is a board (shared rides, routes, freight, vehicle rental, vehicles, parts, workshops); trips are YavayaGo, with offers; no navigation provider | the board; YavayaGo for trips |
+| Barrio as a directory of places with distances, opening hours and "Seguir" (R23) | Barrio is a board (notices, utilities, events, fairs, lost and found, giveaways, neighbour help, groups); no opening hours in the data | the board's categories |
+| Campo categories Tierras, Productos, Insumos, Maquinaria, Servicios, Oportunidades (R24) | subdistricts: harvest, buyers, livestock, supplies, machinery, land lease, farm work, farm transport; land for sale is in Hogar | the real subdistricts |
+| Roxi's quick actions "Mis mensajes" and "Comprar tokens" (R26) | no member messages; buying tokens inside the app waits for the store-billing decision (R1) | messages hidden; tokens open the website |
+| A listing's year, mileage and condition on Roxi's card (R27) | only the fields the listing has | only real fields |
+
+## 7. Is it Roxi? (identity check, 27 Nov 2026)
+
+Method: every frame of every Roxi-like reference, faces found with the
+OpenCV YuNet detector, aligned, and compared with her source image by SFace
+cosine similarity (`design/references/aether/tools/identity_check.py`).
+OpenCV's published same-person threshold for SFace is 0.363, but on these
+AI-generated women it is too loose: four clearly different women from the
+references pass it. So the scale is read against controls:
+
+| Faces | Score against Roxi's source |
+| --- | --- |
+| Roxi's own images (film grade, face crop) | **0.95–0.99** |
+| R28, materialising (closest of the new GIFs) | 0.57–0.62 (median 0.59) |
+| R37 joy, close-up | median 0.37 (0.27–0.45) |
+| R39 surprise, close-up | median 0.32 (0.24–0.38) |
+| R38 concern, close-up | median 0.21 (0.16–0.33) |
+| other women in the references (R03, R08, R10, R13, R19, R26) | 0.07–0.48 |
+| R27, R29–R36 (full body) | faces under 60 px: not measured |
+
+Reading: R28 is the closest but still far from her own images. The three
+close-ups score in the range of different women, and R38 and R39 resemble
+each other (0.71) more than they resemble Roxi: a different face. The
+full-body GIFs are close in hair and jacket but drift in clothes (black cargo
+trousers with a side pocket and lace-up combat boots, against her dark purple
+trousers and ankle boots; a belt in some).
+
+So: these GIFs set **how she moves**; **who she is** comes from her source
+image, and every rendering of her must pass the identity bar in
+PRODUCTION_TESTS T-ID-01 (decisions AX-D015, AX-D016).
