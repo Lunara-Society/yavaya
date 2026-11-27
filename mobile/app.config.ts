@@ -28,19 +28,29 @@ function variantOf(value: string | undefined): Variant {
 }
 
 /**
- * Phones only. Android phones run arm64-v8a (every recent one) or armeabi-v7a
- * (older ones); the x86 pair exists for emulators. Compiling native code for
- * all four ran the build server out of memory once WebRTC came in (EAS build
- * 91a52595: "Gradle build daemon disappeared"), and each set adds the WebRTC
- * libraries to the APK again.
+ * Android builds that fit the build server (4 vCPUs, 16 GB on EAS's medium
+ * class). Since WebRTC came in, the server ran out of memory twice: build
+ * 91a52595 ("Gradle build daemon disappeared") and 258b7ac1 (no output after
+ * five minutes in native compiles, canceled at the 45-minute limit).
+ *
+ * - Phones only: arm64-v8a (every recent phone) and armeabi-v7a (older ones).
+ *   The x86 pair serves emulators, and each set adds the WebRTC libraries again.
+ * - The Kotlin compiler runs as its own Java process and by default takes as
+ *   much memory as Gradle (4 GB); 2 GB is enough for these modules.
+ * - At most two Gradle tasks at once, so native compiles (each running several
+ *   compilers itself) do not pile up beside both Java processes.
  */
-const PHONE_ARCHITECTURES = 'armeabi-v7a,arm64-v8a';
-const ARCHITECTURES_KEY = 'reactNativeArchitectures';
+const BUILD_PROPERTIES: Record<string, string> = {
+  reactNativeArchitectures: 'armeabi-v7a,arm64-v8a',
+  'kotlin.daemon.jvmargs': '-Xmx2g',
+  'org.gradle.workers.max': '2',
+};
 
-function withPhoneArchitectures(config: ExpoConfig): ExpoConfig {
+function withBuildLimits(config: ExpoConfig): ExpoConfig {
   return withGradleProperties(config, (mod) => {
-    mod.modResults = mod.modResults.filter((item) => !(item.type === 'property' && item.key === ARCHITECTURES_KEY));
-    mod.modResults.push({ type: 'property', key: ARCHITECTURES_KEY, value: PHONE_ARCHITECTURES });
+    const keys = Object.keys(BUILD_PROPERTIES);
+    mod.modResults = mod.modResults.filter((item) => !(item.type === 'property' && keys.includes(item.key)));
+    mod.modResults.push(...keys.map((key) => ({ type: 'property' as const, key, value: BUILD_PROPERTIES[key] ?? '' })));
     return mod;
   });
 }
@@ -48,7 +58,7 @@ function withPhoneArchitectures(config: ExpoConfig): ExpoConfig {
 export default ({ config }: ConfigContext): ExpoConfig => {
   const variant = variantOf(process.env.APP_VARIANT);
   const v = VARIANTS[variant];
-  return withPhoneArchitectures({
+  return withBuildLimits({
     ...config,
     name: v.name,
     slug: 'yavaya',
