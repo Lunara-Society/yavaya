@@ -689,3 +689,19 @@ by zone (Managua, Granada, León, Masaya) and the results update.
 | Santuario sections "Reflexiones", "Paz interior", "Bienestar" (R59, R61, R63, R65) | the word for the day exists; these sections do not | the district's real sections |
 | Ratings such as "4.8 (327)" on places and restaurants (R57, R66) | ratings only where the platform has reviews | real data only |
 | A gold "V" beside "Yavaya" (R57–R71) | the official logo in `platform/public/brand/` | the official logo (AX-D017) |
+
+## 10. The logo and the typography (27 Nov 2026)
+
+The owner closed the sends ("All has been sent.") with two images: "its our
+logo" (the gold and black eagle, wings spread before the sun, over mountains)
+and "the typography of Yavaya" (the gold lettering on its pedestal). Both
+match the brand already in the repository: the eagle is the one in
+`platform/public/brand/logo-1080.webp` (on its pedestal) and in `logo-mark-*`
+(its head, the app icon), here on its own; the lettering is the logo's gold
+Roman capitals. Measured (`design/references/aether/metrics-brand.json`): the
+logo's gold `#F0920C` (highlight) and `#973D05` (shadow); the lettering's
+`#F89511` and `#923C03`. The closest free font for the lettering is Cinzel,
+bold (SIL Open Font License 1.1); the owner's letters are heavier and
+bevelled. The "V" and the other marks drawn in the GIFs are not used
+(AX-D017, AX-D018).
+

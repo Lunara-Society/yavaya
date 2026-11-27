@@ -8,7 +8,7 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | --- | --- | --- | --- |
 | AX-00 | The Master Constitution | 27 Nov 2026 | **Done**: stored word for word ([CONSTITUTION.md](CONSTITUTION.md)) |
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
-| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done for R01–R71** (analysis; references kept private); more GIFs are coming |
+| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done** for all 71 references (analysis; references kept private); the owner's logo and typography recorded (AX-D018) |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
 | AX-04 onward | not received yet | — | proposal in §3 until the owner's texts arrive |
 
@@ -81,8 +81,10 @@ mobile API to grow, not 3D Roxi.
   not Roxi (0.18–0.38; Roxi's own images at GIF size 0.88–0.90). Gold glow,
   a gold "V" mark (AX-D017), and flows for features the platform doesn't
   have (REFERENCE_MATRIX §9).
-- Waiting: more GIFs from the owner. When all are sent, the owner goes over
-  the seven questions on the private page.
+- All references are in (the owner, 27 Nov: "All has been sent."), with the
+  logo and the typography last (REFERENCE_MATRIX §10, AX-D018). The seven
+  questions, updated with what the four sends showed, were sent on 27 Nov
+  (chat and the private page); answers awaited.
 
 ### AX-03 · Roxi digital human pipeline
 

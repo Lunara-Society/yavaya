@@ -82,7 +82,9 @@ Diáspora takes gold or blue instead of violet, and Movilidad's cyan stays
 only if the owner confirms it fits. The third send's interface scenes glow
 violet and blue; in the app they are black glass and gold. The fourth send
 already glows gold: its opening (R68) measures `#DEA473`, close to
-`gold.core`.
+`gold.core`. The owner's logo measures `#F0920C` (highlight) and `#973D05`
+(shadow), warmer and more orange than `gold.core`; which gold leads is the
+owner's question 1.
 
 ## 3. Materials
 
@@ -102,8 +104,10 @@ already glows gold: its opening (R68) measures `#DEA473`, close to
 
 - **Roxi** looks as in her source image in every tier ([ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md) §1),
   and her glow is gold.
-- **The logo** is Yavaya's own (`platform/public/brand/`); the marks drawn in
-  the owner's GIFs are not it (AX-D017).
+- **The logo** is the gold and black eagle (the owner's master of 27 Nov;
+  also `platform/public/brand/`), and the lettering is the gold Roman
+  capitals of "YAVAYA", set in Cinzel bold where it is typed (AX-D018). The
+  marks drawn in the owner's GIFs are not used (AX-D017).
 - **The Guardian** is the approved artwork (`platform/public/first-light/guardian2-*`,
   6 Nov 2026; logo `platform/public/brand/logo-1080.webp`). The references'
   eagles match it; any new rendering of it (a head close-up, a 3D model)

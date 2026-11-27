@@ -25,7 +25,9 @@ The repository `Lunara-Society/yavaya` is **public**. So:
   the second send the page held 81 files (the page, 39 originals, 41
   sheets), listed back and matched on 27 Nov; the third send added 35
   (17 originals, 17 sheets and one faces sheet; page version 4) and the
-  fourth 31 (15 originals, 15 sheets and one faces sheet; version 5).
+  fourth 31 (15 originals, 15 sheets and one faces sheet; version 5). The owner's logo
+  and typography masters are kept there too, as `brand/L01-1000192935.png`
+  and `brand/L02-1000192939.png`.
 
 No asset from a third-party game, film or brand is allowed; AI-generated
 assets are declared as such.
@@ -38,6 +40,8 @@ assets are declared as such.
 | Roxi, derived | `mobile/art/roxi/roxi-matte.png`; `mobile/assets/roxi/{roxi,roxi-depth,roxi-face}.webp`; `design/films/oro/assets/roxi*.{png,js}` | figure 720 × 1544, depth 240 × 515 (estimated), face 320 × 320, film grade and points | Yavaya |
 | The Guardian (wings spread, 6 Nov 2026) | `platform/public/first-light/guardian2-{body,wing-l,wing-r,tail}-{560,840,1240}.*` | four layers at up to 1240 px, RGBA | Yavaya, the owner's approved artwork |
 | The first Guardian | `platform/public/first-light/guardian-*` with gold and violet light maps | 560–1240 px layers | Yavaya |
+| **The logo: the gold and black eagle** (the owner, 27 Nov: "its our logo") | private page `brand/L01-1000192935.png`; the same eagle as `platform/public/brand/logo-1080.webp` (on its pedestal) and `logo-mark-*` (the head, the app icon) | 1440 × 3088 phone image, the emblem in a 1440 × 1440 square; SHA-256 `20384672cf28dac5…`; gold `#F0920C` (highlight), `#973D05` (shadow) | Yavaya; AI-generated |
+| **The typography: gold Roman capitals "YAVAYA"** (the owner, 27 Nov: "the typography of Yavaya") | private page `brand/L02-1000192939.png`; the same lettering as `logo-1080.webp` | 1440 × 3088, the lettering on its pedestal; SHA-256 `52f471cdb9f5c18e…`; gold `#F89511`, `#923C03` | Yavaya; AI-generated. Closest free font: Cinzel (SIL Open Font License 1.1), bold |
 | Logo, seal, sun | `platform/public/brand/` (`logo-1080.webp`, `logo-mark-*`, `seal-*`, `sun-*`); app icon from `logo-icon-maskable-512.png` | raster only; no vector wordmark in the repository | Yavaya |
 | Guardian point cloud | `design/films/oro/assets/eagle_points.js`, `eagle.png` | particle targets for assembly (C02) | Yavaya |
 
@@ -225,7 +229,7 @@ out of git; the audio licence for public use is unverified).
 | 3D Guardian | real-time C02, C04, C05 | Blender, from the approved artwork | missing; optional (video tier first) |
 | District hero art for all 15 districts in black and gold | C23 | generated or drawn, approved by the owner | 7 older "worlds" exist on the website; board districts have none |
 | Gold line icon set (districts, actions) | C05, C20, C21 | drawn for Yavaya | the app has icons in the older palette |
-| Official wordmark, vector | headers | the owner | raster logos only |
+| Official wordmark, vector | headers | the owner, or traced from the owner's lettering (§2) | raster only; the closest free font is Cinzel, bold (SIL OFL 1.1) |
 | Map style for the light-map, and its tile source | C32, C51 | made for Yavaya on the platform's map data | missing |
 | Sounds for the new motions | GENESIS, TRANSCENDENCE | `mobile/tools/audio/make-sounds.py` (synthesised) | to make |
 | Motion clips for Roxi (walk, gesture, present) | CORPUS (direction: R27–R39) | licensed library or the owner's phone motion capture | owner decision on sources |

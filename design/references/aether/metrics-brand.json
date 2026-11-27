@@ -1,0 +1,78 @@
+[
+ {
+  "ref": "L01",
+  "owner_file": "1000192935.png",
+  "sha256": "20384672cf28dac58038210e9200540edd2dca5b6beb2a0a9d20ee22b1b9edf7",
+  "bytes": 3517799,
+  "size_px": [
+   1440,
+   3088
+  ],
+  "frames": 1,
+  "duration_s": 0,
+  "mean_fps": null,
+  "frame_ms_min_max": null,
+  "loop_flag": null,
+  "colour": {
+   "lit_share_pct": 25.8,
+   "dark_background_pct": 65.1,
+   "lit_pixels_by_family_pct": {
+    "gold_amber": 67.1,
+    "red": 25.1,
+    "white_silver": 3.2,
+    "grey": 2.1,
+    "violet_purple": 1.3,
+    "magenta": 0.9,
+    "blue": 0.3,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#F0920C",
+   "gold_body_hex": "#973D05"
+  },
+  "motion": {
+   "animated": false
+  },
+  "sheet_frames": [
+   0
+  ]
+ },
+ {
+  "ref": "L02",
+  "owner_file": "1000192939.png",
+  "sha256": "52f471cdb9f5c18eb390f676decc421d30a351e0abdb1ca71c5d937f61d2170c",
+  "bytes": 5324673,
+  "size_px": [
+   1440,
+   3088
+  ],
+  "frames": 1,
+  "duration_s": 0,
+  "mean_fps": null,
+  "frame_ms_min_max": null,
+  "loop_flag": null,
+  "colour": {
+   "lit_share_pct": 65.9,
+   "dark_background_pct": 16.0,
+   "lit_pixels_by_family_pct": {
+    "gold_amber": 75.2,
+    "red": 19.0,
+    "white_silver": 3.2,
+    "grey": 1.0,
+    "yellow_green": 0.7,
+    "magenta": 0.6,
+    "violet_purple": 0.4,
+    "blue": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#F89511",
+   "gold_body_hex": "#923C03"
+  },
+  "motion": {
+   "animated": false
+  },
+  "sheet_frames": [
+   0
+  ]
+ }
+]

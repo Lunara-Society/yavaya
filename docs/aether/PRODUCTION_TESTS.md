@@ -82,3 +82,12 @@ the app: on a phone).
 | Identity | `identity_check.py` on the 15, with the 2 positive controls | one woman (0.6–0.9 to each other); 0.18–0.38 against Roxi; R65, R66, R68 too small |
 | Size control | Roxi's source and film grade shrunk to faces of 65–87 px, saved with 256 colours | 0.88–0.90 (`identity-small-controls.json`) |
 | Suites | not re-run | no app or platform code changed |
+
+### The logo and the typography (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Same eagle as the brand files? | side by side with `platform/public/brand/logo-1080.webp` and `logo-mark-384.webp` | the same eagle, here alone with the sun and mountains |
+| Gold | analysis script (`metrics-brand.json`) | logo `#F0920C` / `#973D05`; lettering `#F89511` / `#923C03` |
+| Free font for the lettering | "YAVAYA" set in Cinzel beside the owner's lettering | close match at the bold weight; Cinzel's licence checked in its `OFL.txt` (SIL OFL 1.1) |
+
