@@ -12,7 +12,7 @@
 | 06 | Cinematic motion engine | 26 Nov 2026 | Built; durations measured in the browser; phone pending | same |
 | 07 | Cinematic audio and haptics: twelve original sounds, engine, patterns | 26 Nov 2026 | Built; speaker, headphone and silent-mode test pending | same |
 | 08 | Application awakening | 26 Nov 2026 | Built; browser start-up measured; phone cold/warm start pending | same |
-| 09 | Proposed, see [NEXT_CHAPTER.md](NEXT_CHAPTER.md) | not yet | Not started | — |
+| 09 | The app knows the person: sign-in in the phone's browser, bearer sessions, Roxi's voice and hologram, stronger visuals, native district lists (app 0.4.0) | 26 Nov 2026 ("Make the ultimate and best version… push hard on everything") | Built; tests, a local end-to-end sign-in, live endpoints, Skia, a browser run and EAS builds; phone test pending | [CHAPTER_09.md](CHAPTER_09.md); commits `4c6894a`, `a889c1f`, `c3fbcd7` |
 
 A chapter is marked done only when its end-of-chapter record exists in these
 files and its claims are backed by tests or measurements in

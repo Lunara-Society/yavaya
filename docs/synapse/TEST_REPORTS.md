@@ -78,3 +78,24 @@ Detail and the measured numbers: [CHAPTERS_02_08.md](CHAPTERS_02_08.md).
 Not tested: anything on a phone, which means frame rate, memory, vibration,
 sound through the speaker, headphones and silent mode, native cold and warm
 start, and the update arriving.
+
+## Chapter 09: app 0.4.0 · 26–27 November 2026
+
+Detail: [CHAPTER_09.md](CHAPTER_09.md).
+
+| Check | How | Result |
+| --- | --- | --- |
+| Sign-in code, PKCE, redirects, bearer | 8 unit tests (`platform/tests/unit/mobile-auth.test.ts`): round trip, wrong verifier, tampering, expiry, no readable account id, secret rotation, redirect allowlist, bearer format | pass |
+| Platform as a whole | typecheck; Vitest with local Postgres | 0 errors; 96 files, 863 tests pass |
+| Sign-in end to end, locally | start → website sign-in → finish → `yavaya://auth` → exchange → bearer request → WebView hand-off → sign out (18 checks), on a local production build; rerun 27 Nov after `finish` became a 303 redirect | pass both times; finish answers `303 See Other` to `yavaya://auth?code=…&state=…` with `Cache-Control: no-store`, the state comes back unchanged, a second visit gets the expired page |
+| Live endpoints, production and staging | `GET` config, auth/session, feeds; `auth/start` with bad and valid parameters (27 Nov) | all 200; bad parameters 400; valid start 303 to `/auth/google?next=/api/mobile/v1/auth/finish` |
+| Production feeds | `/api/mobile/v1/feed/{mercadito,work,animals}` against the website pages | 0 items each; the website pages say the same ("Todavía no hay publicaciones"): no content yet, not a fault |
+| Mobile types and logic | `npm run typecheck`, `npm test` in `mobile/` | 0 errors; 41 tests pass (two new: the sign-in return is never navigated to; Roxi's tools match the agent's list) |
+| Shaders | `npm run check:shaders` | 6/6 compile and render; Roxi's hologram rendered at phone size from her picture and depth map |
+| The app at phone size | Expo web build, Chromium, Playwright: home, Roxi, Mercadito, Ajustes with production data | pass after the lite-glass fix (white panels came from more than 16 WebGL contexts) |
+| Android prebuild | `expo prebuild` locally (preview variant) | `reactNativeArchitectures=armeabi-v7a,arm64-v8a`; microphone permissions and the `yavaya` scheme in the manifest |
+| Android preview builds | EAS | `61e55061` failed (WebRTC 144.2.0 prefixed build, fixed by pinning); `91a52595` failed (build server out of memory); `258b7ac1` from `c3fbcd7`: BUILD_RESULT |
+
+Not tested: anything on a phone, which means the browser tab returning to the
+app, Roxi's voice, the microphone, frame rates, and a website screen opening
+signed in on Android's WebView.

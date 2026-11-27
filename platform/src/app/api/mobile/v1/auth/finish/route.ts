@@ -17,21 +17,23 @@ const MARKUP = /[&<>"']/g;
 const escape = (value: string) => value.replace(MARKUP, (c) => `&#${c.charCodeAt(0)};`);
 
 /**
- * The last page of signing in from the app. The website has just signed the
+ * The last step of signing in from the app. The website has just signed the
  * person in on this browser; this turns that into a one-time code for the app
  * and sends the browser back to the app's own address.
  *
- * Answered as a small page rather than a bare redirect: a browser may decline
- * to leave for an app without a tap, so the page also offers the tap.
+ * A server redirect, not a page that refreshes itself: Android's browser tab
+ * opens an app from a redirect at the end of a chain the person started with a
+ * tap (as Google's own sign-in for installed apps returns), while a page that
+ * leaves by itself can be refused for lacking a tap.
  */
 export async function GET() {
   const base = siteUrl();
   const { t, locale } = await getTranslator();
   const handoff = await readHandoff();
-  const page = (body: string, refresh?: string) =>
+  const page = (body: string) =>
     new NextResponse(
       `<!doctype html><html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
-        `<meta name="color-scheme" content="dark">${refresh ? `<meta http-equiv="refresh" content="0;url=${escape(refresh)}">` : ''}` +
+        `<meta name="color-scheme" content="dark">` +
         `<title>${escape(t('mobile.auth.title'))}</title>` +
         `<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#000;color:#eceff6;font:16px/1.5 system-ui,sans-serif;text-align:center;padding:24px}` +
         `a{display:inline-block;margin-top:20px;padding:14px 28px;border:1px solid #9cc9ff;border-radius:14px;color:#eceff6;text-decoration:none}</style>` +
@@ -46,5 +48,7 @@ export async function GET() {
 
   const address = returnAddress(handoff, mobileCode({ userId: session.user.userId, challenge: handoff.challenge }));
   await dropHandoff();
-  return page(`<p>${escape(t('mobile.auth.returning'))}</p><a href="${escape(address)}">${escape(t('mobile.auth.open_app'))}</a>`, address);
+  const back = NextResponse.redirect(address, HTTP.seeOther);
+  back.headers.set('Cache-Control', 'no-store');
+  return back;
 }

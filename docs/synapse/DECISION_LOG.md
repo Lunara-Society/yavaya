@@ -188,3 +188,39 @@ required directly so unused weights never ship.
 From the owner's "yes to everything": tokens, gems, Vault items and Roxi plans
 will be sold through Google Play / Apple billing in store builds. Not built
 yet; it blocks the first store release (KNOWN_ISSUES 17).
+
+### D-032 · 26 Nov 2026 · The app signs in through the phone's browser (RFC 8252)
+Google refuses sign-in inside an app's WebView, so the app opens the website's
+own sign-in in a browser tab and comes back to `yavaya://auth` with a one-time
+code bound to a PKCE challenge. A private-use scheme works on every Android
+without domain verification. A code caught by another app is useless without
+the verifier, which never leaves the phone. App Links (`assetlinks.json`) can
+replace the scheme later without changing the server.
+
+### D-033 · 26 Nov 2026 · App sessions are ordinary sessions, sent as a bearer
+The app's token is a row in the existing sessions table, remembered like the
+website's "keep me signed in". `currentSession()` reads `Authorization: Bearer`
+first, so every API route serves the app unchanged. A token never travels in a
+URL: sealed values are signed, not encrypted. The WebView gets the session as a
+cookie from a header on its first request.
+
+### D-034 · 26 Nov 2026 · Roxi speaks in the app over WebRTC, opened by the server
+The same ElevenLabs agent as the website, through its React Native SDK, so the
+phone's echo cancellation applies. The server opens each conversation like the
+website's (allowance, credits, status) and meters it at the end.
+
+### D-035 · 26 Nov 2026 · WebRTC pinned at 144.1.2
+LiveKit React Native 2.12 compiles against the unprefixed `org.webrtc` build;
+144.2.0 is LiveKit's `livekit.org.webrtc` build and breaks the Android compile.
+The npm override in `mobile/package.json` holds it until LiveKit moves.
+
+### D-036 · 26 Nov 2026 · Repeated panels use lite glass
+A Skia canvas per panel ran out of GPU contexts in grids and lists. Repeated
+panels are views with an accent border; heroes and Roxi's stage keep the
+shader. `HoloPanel lite`.
+
+### D-037 · 27 Nov 2026 · Android builds carry phone processors only
+`arm64-v8a` and `armeabi-v7a`, set by a config step in `app.config.ts`. The two
+x86 sets serve emulators only, made the build server run out of memory once
+WebRTC came in, and doubled the APK's native libraries. Add `x86_64` back for an
+emulator build if one is ever needed.

@@ -83,5 +83,9 @@ until something outside the code changes · **NOT IMPLEMENTED** not built.
 | Original sounds and audio engine | REAL (assets and code); NOT TESTED on speakers, headphones or silent mode | `assets/audio/`, `audio/` |
 | Haptic patterns | REAL (code); NOT TESTED on a phone | `haptics/` |
 | Awakening (≤ 5 s, skippable, once) | REAL (code); browser start-up measured | `screens/Awakening.tsx` |
-| Real data in native screens | REAL for public reads (live activity, YavayaGo live map, places); NOT IMPLEMENTED for anything signed in | `business/public.ts` |
-| Mobile sessions, mobile write API, push, store billing, positional sound, 3D Roxi | NOT IMPLEMENTED | KNOWN_ISSUES 17–30 |
+| Real data in native screens | REAL: public reads (live activity, YavayaGo live map, places) and the newest items of Mercadito, Trabajo, Animales and Comunidad (Chapter 09) | `business/public.ts`, `business/feed.ts`, `/api/mobile/v1/feed/<district>` live on both servers |
+| Mobile sessions (sign-in in the phone's browser, PKCE, bearer, signed-in website screens, sign out) | REAL (code, local end-to-end test, endpoints live); NOT TESTED on a phone | [CHAPTER_09.md](CHAPTER_09.md) §1 |
+| Roxi's voice in the app (WebRTC, her tools, metered) | REAL (code, builds); NOT TESTED on a phone | CHAPTER_09 §2 |
+| Roxi's hologram | REAL (shader compiled and rendered from her picture); phone frame rate NOT TESTED | `render/RoxiHologram.tsx` |
+| Native writes | API routes REAL with the bearer; Server Actions stay website-only | KNOWN_ISSUES 18 |
+| Push, store billing, positional sound, 3D Roxi | NOT IMPLEMENTED | KNOWN_ISSUES 17, 27, 30 |

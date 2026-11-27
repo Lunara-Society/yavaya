@@ -1,29 +1,28 @@
 # Next chapter: handoff
 
-## Now (owner): the first phone test of the native app
+## Now (owner): test app 0.4.0 on the phone
 
-1. **Install the preview APK 0.3.0** on the Samsung: [download](https://expo.dev/artifacts/eas/ArVKb_rVZ0bhsYQtpjx7TFCs7GyVgoBTJE9pk9sqR6Q.apk)
-   (build `6d7af8c1`, link valid until 10 Dec 2026). It replaces the 0.2.0
-   prototype (same package, `yavaya.lat`).
-2. **Open it, close it fully, open it again.** The first launch plays the
-   awakening and downloads an update in the background; the second launch
-   applies it and adds **Ajustes → Laboratorio**.
-3. **Look at these and answer yes or no** (a few words are enough):
-   - Awakening: about 5 s from darkness to Roxi; "Saltar" stops it at once; it
-     does not play again on the next launch.
-   - Home: the district objects follow the phone's tilt; opening a district
-     grows out of the tile you touched; a swipe from the left edge goes back
-     (and can be abandoned halfway); the Android back button works.
-   - Roxi (dock), Buscar, Mapa: each opens and closes smoothly.
-   - Sound with the speaker, with headphones, and with the phone on vibrate or
-     silent; Ajustes → Sonido off silences everything.
-   - Vibration on touches and on the awakening's pulses.
-   - **Laboratorio → Movimiento, Holograma and Arranque:** a screenshot of each
-     (they show frames per second, slow frames, the device tier and the start-up
-     time on the phone, the numbers this machine cannot produce).
-
-The development build (`Yavaya Dev`, staging data) needs a computer running
-`npx expo start`; the owner does not need it.
+1. **Install the preview APK 0.4.0** on the Samsung: [download](APK_LINK)
+   (build `258b7ac1`, link valid until 11 Dec 2026). It installs over 0.3.0
+   (same package, `yavaya.lat`).
+2. **Sign in:** Ajustes → "Continuar con Google". The phone's browser opens
+   Yavaya's sign-in. After choosing the Google account it should come straight
+   back to the app with "Hola, <nombre>" on the home screen. If it stops on a
+   browser page instead, a screenshot of that page is the most useful thing to
+   send.
+3. **Roxi:** open her (the stage at the top of home), tap the round button,
+   allow the microphone, and talk to her. Check: she answers aloud, her
+   hologram brightens while she speaks, "Tú:" lines appear as you speak, and
+   asking her to open Mercadito opens it inside the app while she keeps
+   talking. The round button ends the call.
+4. **Look:** does home look like a lit space now (light rays, a coloured haze,
+   the floor grid, Roxi standing in light)? Do panels in the district grid stay
+   visible while scrolling?
+5. **Districts:** open Mercadito: an empty list that says so is correct today
+   (the website has no listings yet). "Publicar un anuncio" should open the
+   form already signed in.
+6. **Answer yes or no for each step** (a few words are enough), plus
+   screenshots of anything that looks wrong.
 
 ## Waiting on the owner
 
@@ -31,26 +30,25 @@ The development build (`Yavaya Dev`, staging data) needs a computer running
 - Apple Developer Program, only if iOS devices are wanted (KNOWN_ISSUES 28).
 - A Firebase project for Android push notifications (KNOWN_ISSUES 27).
 
-## Proposed Chapter 09: connect the app to the person (not authorised)
+## Proposed Chapter 10 (not authorised)
 
-From BASELINE_AUDIT §7 and the open items of Chapters 02–08:
+From what Chapter 09 left open ([CHAPTER_09.md](CHAPTER_09.md) §6):
 
-1. **Mobile sessions and the first mobile API**: token sessions from the
-   existing sessions table (the secure-store slot exists in
-   `mobile/src/business/session.ts`); read-only endpoints first (me,
-   notifications), each wrapping the domain function the website uses.
-2. **Google sign-in through the system browser**, returning by App Link
-   (`/.well-known/assetlinks.json`, the one additive website change).
-3. **Push notifications**: device registry, sending from the scheduler, the
+1. **Fix what the phone test shows**, first of all.
+2. **Push notifications**: device registry, sending from the scheduler, the
    bell's preferences; needs the Firebase credentials above.
-4. **Store billing** for digital items through Google Play and Apple billing
+3. **Native publishing** for Mercadito (photos, price, place) on the API
+   routes the bearer now reaches, instead of the website form.
+4. **App Links** (`/.well-known/assetlinks.json`) so only Yavaya can receive
+   the sign-in return (KNOWN_ISSUES 33).
+5. **Store billing** for digital items through Google Play and Apple billing
    (D-031; KNOWN_ISSUES 17), still release-blocking.
-5. **The phone numbers** from step 3 above recorded in
+6. **The phone numbers** from the Laboratorio recorded in
    [PERFORMANCE_BUDGET.md](PERFORMANCE_BUDGET.md), and fixes for what they show.
 
 ## Files to read first
 
-[CHAPTERS_02_08.md](CHAPTERS_02_08.md), [MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md),
+[CHAPTER_09.md](CHAPTER_09.md), [CHAPTERS_02_08.md](CHAPTERS_02_08.md), [MASTER_DIRECTIVE.md](MASTER_DIRECTIVE.md),
 [PROJECT_MEMORY.md](PROJECT_MEMORY.md), [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §7,
 [KNOWN_ISSUES.md](KNOWN_ISSUES.md), `mobile/src/business/`,
 `platform/src/server/auth/`, and

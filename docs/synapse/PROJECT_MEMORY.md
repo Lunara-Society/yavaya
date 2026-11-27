@@ -15,9 +15,13 @@ an entry that is no longer true is worse than no entry.
   application (Expo SDK 58, React Native, Skia shaders, Reanimated), not a
   website in a frame. Layers in `mobile/src/` (core, business, navigation,
   render, motion, audio, haptics, performance, a11y, design, districts,
-  screens); the record is [CHAPTERS_02_08.md](CHAPTERS_02_08.md). District
-  screens are native hubs that open the full website screen for the rest
-  (KNOWN_ISSUES 29); Classic in Settings restores the Chapter 00 bridge.
+  screens, roxi); the records are [CHAPTERS_02_08.md](CHAPTERS_02_08.md) and
+  [CHAPTER_09.md](CHAPTER_09.md). Since 0.4.0 the person signs in through the
+  phone's browser and the app holds a bearer session (`business/auth.tsx`);
+  website screens open signed in; Roxi speaks over WebRTC with her website
+  tools; Mercadito, Trabajo, Animales and Comunidad list their items natively,
+  the other districts open their website screen (KNOWN_ISSUES 29). Classic in
+  Settings restores the Chapter 00 bridge.
 - **Three variants**: development (`Yavaya Dev`, `yavaya.lat.dev`, talks to
   staging), preview (internal APK, yavaya.lat, laboratory on) and production
   (Google Play, yavaya.lat). Remote switches come from

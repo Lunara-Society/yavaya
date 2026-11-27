@@ -47,8 +47,9 @@ chapter record that fixed it, with the evidence.
     upload, decide whether to block them in `app.json` (`blockedPermissions`);
     blocking WRITE could stop WebView downloads on Android 9 and older.
 
-11. **The preview APK is 71 MB** because it carries code for four CPU types.
-    Play delivers per-device splits from the app bundle; measure that size
+11. **APK size.** 0.3.0 was 71 MB with code for four CPU types. From 0.4.0
+    Android builds carry the two phone types only (D-037), and WebRTC adds its
+    libraries. Measure the 0.4.0 APK, and the Play bundle's per-device size
     when the first production bundle is built.
 
 12. **The pre-audit prototype (P-01) has not run on a phone yet.** The reconstruction, the parallax,
@@ -82,9 +83,10 @@ recommended fix for each are in [BASELINE_AUDIT.md](BASELINE_AUDIT.md) §6.
     owner decides before any store release: store billing for those items, or
     no purchase of them in the store builds.
 
-18. **Native code cannot write to the platform (R2).** Writes are Server
-    Actions or same-origin API routes; a native request has no browser origin.
-    Native screens wait for the mobile API.
+18. **Native code can call API routes but not Server Actions (R2).** Since
+    Chapter 09 a bearer request passes the same-origin check, so native code can
+    use every API route signed in. Server Actions stay website-only; native
+    screens that need them open the website screen, signed in.
 
 19. **Dictation may not work inside the app (R4).** The posting forms use the
     browser's speech recognition; Android's WebView is not known to provide it.
@@ -125,8 +127,31 @@ From Chapters 02–08 (details in [CHAPTERS_02_08.md](CHAPTERS_02_08.md)):
 
 28. **No Apple Developer account**: iOS is limited to simulator builds.
 
-29. **District screens are hubs**: each opens its full website screen for the
-    real functions until the mobile API serves native data. Listing and profile
-    scenes are labelled examples.
+29. **Four districts have native lists; the rest are hubs.** Mercadito,
+    Trabajo, Animales and Comunidad show their newest items natively
+    (Chapter 09); the others open their full website screen, signed in.
 
 30. **Positional (3D) sound is not implemented**; layered, prioritised sound is.
+
+From Chapter 09 (details in [CHAPTER_09.md](CHAPTER_09.md)):
+
+31. **The 0.4.0 work has not run on a phone.** Above all: the browser tab
+    returning to the app after Google, Roxi's voice (microphone, echo
+    cancellation, her tools in a real conversation), and a website screen
+    opening signed in on Android's WebView.
+
+32. **Production districts are empty.** The native lists show nothing because
+    the website has nothing yet in Mercadito, Trabajo or Animales. Not a fault;
+    the screens say so honestly.
+
+33. **The `yavaya://` scheme can be claimed by another app.** PKCE makes a
+    stolen code useless; App Links would also stop the other app from seeing
+    it (D-032).
+
+34. **No current development build.** The last one (`d2a5bee8`, 0.3.0) was
+    canceled. The owner does not need it; rebuild before using `Yavaya Dev`.
+
+35. **Cloud builds start from this machine only.** The Expo project has no
+    GitHub repository connected, so Expo cannot build from the repository on
+    its own; the EAS CLI here uses the Expo credential saved in the session
+    environment.
