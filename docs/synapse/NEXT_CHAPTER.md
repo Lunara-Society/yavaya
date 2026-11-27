@@ -2,7 +2,7 @@
 
 ## Now (owner): test app 0.4.0 on the phone
 
-1. **Install the preview APK 0.4.0** on the Samsung: [download](APK_LINK)
+1. **Install the preview APK 0.4.0** on the Samsung: [download](https://expo.dev/artifacts/eas/WULe2u76i-w-fKRaBMYryUYJ6aYBkvQJNxB_WaF8Q2k.apk)
    (build `27cc5ff7`, link valid until 11 Dec 2026). It installs over 0.3.0
    (same package, `yavaya.lat`).
 2. **Sign in:** Ajustes → "Continuar con Google". The phone's browser opens

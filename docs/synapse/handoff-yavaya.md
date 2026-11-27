@@ -1,6 +1,6 @@
 # active-memory handoff: Yavaya app 0.4.0 (Synapse Chapter 09)
 
-**Handoff #1** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits started 27 Nov ~02:20 UTC.
+**Handoff #1** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits FINISHED 27 Nov 02:32 UTC; APK sent to the owner.
 
 ## 0. Instructions for Claude (read first)
 
@@ -88,7 +88,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | Earlier commits this chapter | `4c6894a` platform endpoints · `0ac7b5f` voice deps · `6c78bab` WebRTC pin · `a889c1f` mobile 0.4.0 · `c3fbcd7` phone ABIs only |
 | App version | 0.4.0 (`mobile/package.json`, `app.json`) |
 | Expo project | `@yavaya/yavaya`, ID `9e779c70-bbec-48c5-ac71-ca8a45debf66`, Android package `yavaya.lat` |
-| Preview build in progress | `27cc5ff7-4724-4f42-a331-0271f3f54f9c` (from `146d2ea`, channel `preview`); logs https://expo.dev/accounts/yavaya/projects/yavaya/builds/27cc5ff7-4724-4f42-a331-0271f3f54f9c |
+| Preview APK 0.4.0 | build `27cc5ff7-4724-4f42-a331-0271f3f54f9c` (from `146d2ea`, channel `preview`), FINISHED in 15 min, 95.6 MB, https://expo.dev/artifacts/eas/WULe2u76i-w-fKRaBMYryUYJ6aYBkvQJNxB_WaF8Q2k.apk (valid until 2026-12-11T02:17:49Z); checked: arm64-v8a + armeabi-v7a (28 libs each), WebRTC, `yavaya` scheme, RECORD_AUDIO |
 | Failed builds | `61e55061` (WebRTC prefix) · `91a52595` ("Gradle build daemon disappeared", out of memory) · `258b7ac1` (stalled 5 min into native compiles, canceled at the 45-minute limit) · `61a280db` canceled · `d2a5bee8` dev 0.3.0 canceled at 45 min |
 | EAS limits (docs) | medium Android class 4 vCPUs, 16 GB, Gradle `-Xmx4g`, `org.gradle.parallel=true`; `large` 8 vCPUs, 32 GB (paid); builds over the plan's maximum duration are canceled (observed 45:00) |
 | Last good APK (0.3.0) | build `6d7af8c1` |
@@ -99,7 +99,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | Sign-in code | AES-256-GCM, key = HMAC(SESSION_SECRET, 'yavaya mobile sign-in code v1'), 120 s, bound to PKCE; hand-off cookie `yav_mobile_auth`, path `/api/mobile/v1/auth`, 15 min |
 | App session storage | SecureStore key `yavaya.session.v1`; WebView cookie `yav_session` |
 | Stack | Expo SDK 58, RN 0.88.1, `@elevenlabs/react-native` 1.3.0, `@livekit/react-native` 2.12.0, `@livekit/react-native-webrtc` 144.1.2, `livekit-client` 2.25.0, `@livekit/react-native-expo-plugin` 1.0.3, `@config-plugins/react-native-webrtc` 15.0.2, `expo-crypto` ~58.0.9 |
-| Docs placeholders still to fill | `APK_LINK` in `docs/synapse/NEXT_CHAPTER.md`; `BUILD_RESULT` in `docs/synapse/TEST_REPORTS.md` |
+| Docs placeholders | filled (APK link in NEXT_CHAPTER.md and TEST_REPORTS.md) |
 
 Commands that work in this environment:
 ```bash
@@ -123,17 +123,16 @@ cd ../platform && npx vitest run    # full suite, local Postgres (service postgr
 |---|---|---|---|
 | Server endpoints (sign-in, bearer, Roxi start, feeds) | live | `18cef41` on yavaya.lat and staging | not exercised from a phone yet |
 | Mobile 0.4.0 code | done, pushed | `c3fbcd7` | typecheck + 41 tests |
-| Preview APK 0.4.0 | building | EAS `27cc5ff7` | when finished: link to owner; if it stalls or fails again, read the log and tell the owner the paid `large` class is the next option |
+| Preview APK 0.4.0 | finished, link sent to owner | EAS `27cc5ff7` | waiting for the owner's phone test |
 | Chapter 09 record | written, pushed | `docs/synapse/CHAPTER_09.md` + index, tests, decisions D-032–D-037, known issues 31–35, status, memory | two placeholders above |
 | Owner phone test of 0.4.0 | not started | steps in `docs/synapse/NEXT_CHAPTER.md` | waits for the APK |
 | Development build | none current | — | owner doesn't need it |
 | Task list | #92–#95 completed; #96 "Ship" in progress; #57 (HeyGen) pending on HEYGEN_API_KEY | — | — |
 
 ## 11. Next steps
-1. **Next action:** check EAS build `27cc5ff7` (`build:view`). If FINISHED, take `artifacts.applicationArchiveUrl`. If ERRORED, download its log with `curl --compressed`, fix, rebuild.
-2. Replace `APK_LINK` (NEXT_CHAPTER.md) and `BUILD_RESULT` (TEST_REPORTS.md: e.g. "finished; [APK](…) (link valid until <expirationDate>)"); fix the expiry date in NEXT_CHAPTER.md to the build's `expirationDate`. Commit and push to the branch and `main`.
-3. Send the owner a short, phone-friendly report: APK link; steps (install over 0.3.0; Ajustes → "Continuar con Google" and come back; talk to Roxi; look at home; open Mercadito); what changed; what is unverified (browser tab return, WebRTC voice, frame rate, signed-in WebView); production districts are empty because the website has no content yet.
-4. Wait for the owner's phone results; fix what they show (proposed Chapter 10 in NEXT_CHAPTER.md is not authorised).
+1. **Next action:** wait for the owner's results from the 0.4.0 phone test (steps in `docs/synapse/NEXT_CHAPTER.md`); if they say the Google sign-in stops on a browser page, ask for a screenshot of that page first.
+2. Fix what the phone test shows, re-run the checks (mobile `npm test`, `npx tsc`, platform `npx vitest run`), build a new preview APK the same way, push to the branch and `main`.
+3. Record results in TEST_REPORTS.md, KNOWN_ISSUES.md and CHAPTER_09.md §6; Chapter 10 (proposed in NEXT_CHAPTER.md) needs the owner's go.
 
 ## 12. Open questions ⚠️
 None.

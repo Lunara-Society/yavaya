@@ -47,10 +47,10 @@ chapter record that fixed it, with the evidence.
     upload, decide whether to block them in `app.json` (`blockedPermissions`);
     blocking WRITE could stop WebView downloads on Android 9 and older.
 
-11. **APK size.** 0.3.0 was 71 MB with code for four CPU types. From 0.4.0
-    Android builds carry the two phone types only (D-037), and WebRTC adds its
-    libraries. Measure the 0.4.0 APK, and the Play bundle's per-device size
-    when the first production bundle is built.
+11. **APK size.** 0.3.0 was 71 MB with code for four CPU types. The 0.4.0 APK
+    is 95.6 MB with two (D-037): WebRTC's libraries are large. Play delivers
+    per-device splits from the app bundle; measure that size when the first
+    production bundle is built.
 
 12. **The pre-audit prototype (P-01) has not run on a phone yet.** The reconstruction, the parallax,
     the Presence and the Classic switch are typechecked, unit-tested and (the

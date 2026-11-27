@@ -147,7 +147,7 @@ website screen inside the app, signed in.
 | `61e55061` (0.4.0) | failed: Kotlin type mismatch, `livekit.org.webrtc` against `org.webrtc`. WebRTC 144.2.0 is LiveKit's prefixed build. Fixed by pinning 144.1.2 with an npm override |
 | `91a52595` (0.4.0, `a889c1f`) | failed: "Gradle build daemon disappeared", the build server out of memory compiling native code for four processor types once WebRTC came in |
 | `258b7ac1` (0.4.0, `c3fbcd7`) | phones only; no output after five minutes in native compiles, canceled at the plan's 45-minute limit (memory again) |
-| `27cc5ff7` (0.4.0, `146d2ea`) | Kotlin compiler capped at 2 GB, at most two Gradle tasks at once (D-038); see [TEST_REPORTS.md](TEST_REPORTS.md) for the result |
+| `27cc5ff7` (0.4.0, `146d2ea`) | Kotlin compiler capped at 2 GB, at most two Gradle tasks at once (D-038): **finished** in 15 minutes, [APK](https://expo.dev/artifacts/eas/WULe2u76i-w-fKRaBMYryUYJ6aYBkvQJNxB_WaF8Q2k.apk), 95.6 MB |
 
 ## 6. What is still unverified
 
