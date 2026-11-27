@@ -30,7 +30,10 @@ export function Settings({ onReplayAwakening }: { onReplayAwakening: () => void 
           </View>
         ) : null}
         <Toggle label="Vibración" icon="haptic" value={prefs.haptics} onChange={(haptics) => setPrefs({ haptics })} />
-        <Toggle label="Synapse (apágalo para la vista Clásica)" icon="lab" value={prefs.look === 'synapse'} onChange={(on) => setPrefs({ look: on ? 'synapse' : 'classic' })} />
+        <Toggle label="Synapse (apágalo para la vista Clásica)" icon="lab" value={prefs.look !== 'classic'} onChange={(on) => setPrefs({ look: on ? 'synapse' : 'classic' })} />
+        {prefs.look !== 'classic' ? (
+          <Toggle label="Aspecto nuevo Aether (prueba)" icon="lab" value={prefs.look === 'aether'} onChange={(on) => setPrefs({ look: on ? 'aether' : 'synapse' })} />
+        ) : null}
       </HoloPanel>
       <HoloPanel depth="panel" style={{ paddingHorizontal: space[4] }}>
         <Row icon="roxi" title="Ver el despertar otra vez" onPress={() => { void writeJson(KEYS.awakened, { done: false }); onReplayAwakening(); }} />

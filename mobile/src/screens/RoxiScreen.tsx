@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton } from '../design/controls';
 import { Icon } from '../design/icons';
 import { T } from '../design/Text';
+import { usePalette } from '../design/palette';
 import { color, font, radius, space } from '../design/tokens';
 import { HoloPanel } from '../render/HoloPanel';
 import { RoxiHologram } from '../render/RoxiHologram';
@@ -44,6 +45,7 @@ const LINE_COLOR: Record<'roxi' | 'you' | 'note', string> = { roxi: color.text, 
 const STATUS: Record<string, string> = { idle: 'Lista para hablar', starting: 'Conectando…', live: 'En conversación', unsupported: 'Solo en la app instalada' };
 
 export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number }> }) {
+  const palette = usePalette();
   const nav = useNav();
   const auth = useAuth();
   const roxi = useRoxi();
@@ -72,9 +74,9 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
       <View style={{ paddingTop: insets.top + space[2], paddingHorizontal: space[4], flexDirection: 'row', alignItems: 'center', gap: space[2], minHeight: HEADER }}>
         {nav.state.stack.length > 1 ? <IconButton icon="back" label="Volver" onPress={() => nav.back()} /> : null}
         <View style={{ flex: 1 }}>
-          <T variant="micro" color={color.roxi}>Presencia</T>
+          <T variant="micro" color={palette.roxi}>Presencia</T>
           <T variant="title" accessibilityRole="header">Roxi</T>
-          <T variant="caption" color={live ? color.roxi : color.textSecondary} accessibilityLiveRegion="polite">{STATUS[roxi.phase]}</T>
+          <T variant="caption" color={live ? palette.roxi : color.textSecondary} accessibilityLiveRegion="polite">{STATUS[roxi.phase]}</T>
         </View>
       </View>
 
@@ -82,7 +84,7 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
 
       <View style={{ paddingHorizontal: space[4], paddingBottom: insets.bottom + DOCK_SPACE, gap: space[3] }}>
         {lines.length > 0 ? (
-          <HoloPanel depth="overlay" accent={color.roxi} style={{ padding: space[3], gap: space[2] }}>
+          <HoloPanel depth="overlay" accent={palette.roxi} style={{ padding: space[3], gap: space[2] }}>
             {lines.map((line, i) => (
               <T
                 key={line.id}
@@ -99,7 +101,7 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
         {roxi.results.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space[2] }}>
             {roxi.results.map((card) => (
-              <HoloPanel key={card.url} lite depth="panel" accent={color.roxi} onPress={() => nav.push({ name: 'web', path: card.url })} accessibilityLabel={card.title} style={{ padding: space[3], width: width * RESULT_WIDTH, gap: space[1] }}>
+              <HoloPanel key={card.url} lite depth="panel" accent={palette.roxi} onPress={() => nav.push({ name: 'web', path: card.url })} accessibilityLabel={card.title} style={{ padding: space[3], width: width * RESULT_WIDTH, gap: space[1] }}>
                 <T variant="label" numberOfLines={1}>{card.title}</T>
                 <T variant="caption" tone="secondary" numberOfLines={2}>{card.detail}</T>
               </HoloPanel>
@@ -114,7 +116,7 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
         ) : (
           <>
             {writing && live ? (
-              <HoloPanel depth="overlay" accent={color.roxi} style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: space[3] }}>
+              <HoloPanel depth="overlay" accent={palette.roxi} style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: space[3] }}>
                 <TextInput
                   value={draft}
                   onChangeText={setDraft}
@@ -127,7 +129,7 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
                     setDraft('');
                   }}
                 />
-                <IconButton icon="send" label="Enviar" onPress={() => { roxi.say(draft); setDraft(''); }} tint={color.roxi} />
+                <IconButton icon="send" label="Enviar" onPress={() => { roxi.say(draft); setDraft(''); }} tint={palette.roxi} />
               </HoloPanel>
             ) : null}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4] }}>
@@ -152,17 +154,17 @@ export function RoxiScreen({ tilt }: { tilt?: SharedValue<{ x: number; y: number
                     justifyContent: 'center',
                     backgroundColor: live ? 'rgba(185,163,255,0.22)' : 'rgba(185,163,255,0.10)',
                     borderWidth: ORB_RING,
-                    borderColor: color.roxi,
-                    shadowColor: color.roxi,
+                    borderColor: palette.roxi,
+                    shadowColor: palette.roxi,
                     shadowOpacity: ORB_GLOW.opacity,
                     shadowRadius: ORB_GLOW.radius,
                     elevation: ORB_GLOW.elevation,
                   }}
                 >
-                  <Icon name={live ? 'close' : 'roxi'} size={ORB_ICON} tint={color.roxi} />
+                  <Icon name={live ? 'close' : 'roxi'} size={ORB_ICON} tint={palette.roxi} />
                 </Pressable>
               </Animated.View>
-              <IconButton icon="keyboard" label="Escribirle" onPress={() => setWriting((w) => !w)} tint={writing ? color.roxi : color.textSecondary} disabled={!live} />
+              <IconButton icon="keyboard" label="Escribirle" onPress={() => setWriting((w) => !w)} tint={writing ? palette.roxi : color.textSecondary} disabled={!live} />
             </View>
             <T variant="caption" tone="tertiary" style={{ textAlign: 'center' }}>
               {live ? 'Habla con naturalidad. Ella prepara; tú decides y publicas.' : 'Toca para hablar. Nunca publica ni paga por ti.'}

@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * ships behind this switch and Classic (the Chapter 00 app) is one long press
  * away (docs/synapse/PROJECT_MEMORY.md, the owner's rules).
  */
-export type Look = 'synapse' | 'classic';
+export type Look = 'synapse' | 'aether' | 'classic';
 
 const KEY = 'yavaya.look';
 export const DEFAULT_LOOK: Look = 'synapse';
@@ -13,7 +13,7 @@ export const DEFAULT_LOOK: Look = 'synapse';
 export async function readLook(): Promise<Look> {
   try {
     const value = await AsyncStorage.getItem(KEY);
-    return value === 'classic' || value === 'synapse' ? value : DEFAULT_LOOK;
+    return value === 'classic' || value === 'synapse' || value === 'aether' ? value : DEFAULT_LOOK;
   } catch {
     // Storage unavailable: the default, rather than no app.
     return DEFAULT_LOOK;

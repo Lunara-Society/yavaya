@@ -40,6 +40,14 @@ render('atmosphere', effects.ATMOSPHERE_SKSL, [W, H, 3.0, ...accent, 0.4, 0.2, -
 render('edge', effects.EDGE_SKSL, [W, H, 18, 0.3, -0.2, ...accent, 1, 0.5, 0]);
 render('object', effects.OBJECT_SKSL, [W, H, 1.0, 0.6, 0.35, ...accent, 1, 72, 0.25]);
 render('awaken', effects.AWAKEN_SKSL, [W, H, 2.0, 0.8, 0.7, 0.72, 0.64, 1.0]);
+// Aether glass (AX-04): at rest, a district card (accent-tinted edge), focused, and pressed (highlight under the finger).
+const champagneLit = [0.886, 0.761, 0.478];
+for (const [label, tint, focus, press, acc] of [
+  ['rest', 0, 0, [0, 0, 0], champagneLit],
+  ['district', 0.5, 0, [0, 0, 0], accent],
+  ['focus', 0, 1, [0, 0, 0], champagneLit],
+  ['pressed', 0, 0, [0.2, -0.3, 1], champagneLit],
+]) render(`aether-glass-${label}`, effects.AETHER_GLASS_SKSL, [W, H, 18, ...acc, tint, focus, ...press]);
 const roxi = CK.MakeImageFromEncoded(readFileSync(join(here, '../../assets/roxi/roxi-face.webp')));
 const child = roxi
   ? roxi.makeShaderOptions(CK.TileMode.Decal, CK.TileMode.Decal, CK.FilterMode.Linear, CK.MipmapMode.None, CK.Matrix.scaled(W / roxi.width(), H / roxi.height()))
@@ -54,7 +62,8 @@ function renderPhone(name, effect, uniforms, children = []) {
   const surface = CK.MakeSurface(PW, PH);
   const canvas = surface.getCanvas();
   canvas.clear(CK.BLACK);
-  if (name.startsWith('roxi')) {
+  // Synapse draws her over the atmosphere; the Aether look (AX-04) is absolute black.
+  if (name.startsWith('roxi') && !name.includes('aether')) {
     const bg = new CK.Paint();
     bg.setShader(effects.ATMOSPHERE_SKSL.makeShader([PW, PH, 4.0, 0.72, 0.64, 1.0, 1.0, 0, 0, 0.25, 1]));
     canvas.drawRect(CK.LTRBRect(0, 0, PW, PH), bg);
@@ -75,7 +84,9 @@ if (figure && depthImg) {
   const fit = (img) => img.makeShaderOptions(CK.TileMode.Decal, CK.TileMode.Decal, CK.FilterMode.Linear, CK.MipmapMode.None,
     CK.Matrix.multiply(CK.Matrix.translated(bx, by), CK.Matrix.scaled(bw / img.width(), bh / img.height())));
   for (const [label, level, state, form] of [['resting', 0.0, 0, 1], ['speaking', 0.8, 3, 1], ['forming', 0.0, 0, 0.55]]) {
-    renderPhone(`roxi-holo-${label}`, effects.ROXI_HOLO_SKSL, [390, 844, bx, by, bw, bh, 7.3, level, state, form, 0, 0], [fit(figure), fit(depthImg)]);
+    renderPhone(`roxi-holo-${label}`, effects.ROXI_HOLO_SKSL, [390, 844, bx, by, bw, bh, 7.3, level, state, form, 0, 0, 0], [fit(figure), fit(depthImg)]);
+    // The Aether look (AX-04): champagne light instead of violet and cyan.
+    renderPhone(`roxi-holo-aether-${label}`, effects.ROXI_HOLO_SKSL, [390, 844, bx, by, bw, bh, 7.3, level, state, form, 0, 0, 1], [fit(figure), fit(depthImg)]);
   }
 }
 console.log(`frames in ${out}`);

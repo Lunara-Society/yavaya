@@ -17,4 +17,5 @@ export const FX = {
   recon: compile(SHADERS.RECON_SKSL),
   awaken: compile(SHADERS.AWAKEN_SKSL),
   roxi: compile(SHADERS.ROXI_HOLO_SKSL),
+  aetherGlass: compile(SHADERS.AETHER_GLASS_SKSL),
 };

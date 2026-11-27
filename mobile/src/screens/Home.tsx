@@ -5,9 +5,11 @@ import { Screen } from './Screen';
 import { Button } from '../design/controls';
 import { Icon } from '../design/icons';
 import { T } from '../design/Text';
-import { color, radius, space } from '../design/tokens';
+import { easing, radius, space } from '../design/tokens';
+import { usePalette } from '../design/palette';
 import { DISTRICTS, type District } from '../districts/registry';
 import { DistrictObject } from '../render/DistrictObject';
+import { CrystalEmblem } from '../render/CrystalEmblem';
 import { HoloPanel } from '../render/HoloPanel';
 import { RoxiHologram } from '../render/RoxiHologram';
 import { useNav, type Rect } from '../navigation/Navigator';
@@ -35,13 +37,16 @@ const GRID_COLUMNS = 3;
 const FORM_MS = 1500;
 const FORM_DELAY_MS = 300;
 /** Her arrival curve: quick to begin, long to settle. */
-const ARRIVE = Easing.bezier(0.2, 0, 0, 1);
+const [ARRIVE_X1, ARRIVE_Y1, ARRIVE_X2, ARRIVE_Y2] = easing.standard;
+const ARRIVE = Easing.bezier(ARRIVE_X1, ARRIVE_Y1, ARRIVE_X2, ARRIVE_Y2);
 /** Roxi stands in the left of her stage; her words take the right. */
 const ROXI_SHIFT = 0.22;
 const ROXI_TEXT_SHARE = 0.42;
 const SIDE_GUTTERS = 2;
 const LIVE_LINES = 4;
 const NEW_ITEMS = 10;
+const ICON_ROW = 20;
+const ICON_CHEVRON = 16;
 
 export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) {
   const nav = useNav();
@@ -53,6 +58,7 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
   const [go, setGo] = useState<GoLiveMap | null>(null);
   const [fresh, setFresh] = useState<FeedItem[] | null>(null);
   const form = useSharedValue(reducedMotion ? 1 : 0);
+  const palette = usePalette();
 
   useEffect(() => {
     const load = async () => {
@@ -74,17 +80,17 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
 
   return (
     <Screen overline={IS_DEV_VARIANT ? 'YAVAYA · STAGING' : 'YAVAYA'} title={name ? `Hola, ${name}` : '¿Qué necesitas hoy?'}>
-      <HoloPanel tilt={tilt} accent={color.roxi} focus={talking} onPress={() => nav.push({ name: 'roxi' })} accessibilityLabel="Roxi. Toca para hablar con ella" style={{ height: ROXI_STAGE, overflow: 'hidden' }}>
+      <HoloPanel tilt={tilt} accent={palette.roxi} focus={talking} onPress={() => nav.push({ name: 'roxi' })} accessibilityLabel="Roxi. Toca para hablar con ella" style={{ height: ROXI_STAGE, overflow: 'hidden' }}>
         <View style={{ position: 'absolute', left: -width * ROXI_SHIFT, top: 0 }} pointerEvents="none">
           <RoxiHologram width={width} height={ROXI_STAGE} figureHeight={ROXI_FIGURE} top={space[2]} level={roxi.level} state={roxi.state} form={form} tilt={tilt} />
         </View>
         <View style={{ position: 'absolute', right: space[4], top: space[4], bottom: space[4], width: width * ROXI_TEXT_SHARE, justifyContent: 'space-between' }}>
           <View style={{ gap: space[1] }}>
-            <T variant="micro" color={color.roxi}>Roxi</T>
+            <T variant="micro" color={palette.roxi}>Roxi</T>
             <T variant="headline">{talking ? 'Te está escuchando' : 'Pídeme lo que necesites'}</T>
             <T variant="caption" tone="secondary">Busco, preparo tus publicaciones y te llevo a donde vas. Tú decides.</T>
           </View>
-          <Button label={talking ? 'Volver con Roxi' : 'Hablar'} icon="roxi" accent={color.roxi} onPress={() => nav.push({ name: 'roxi' })} />
+          <Button label={talking ? 'Volver con Roxi' : 'Hablar'} icon="roxi" accent={palette.roxi} onPress={() => nav.push({ name: 'roxi' })} />
         </View>
       </HoloPanel>
 
@@ -97,7 +103,7 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
       <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' }}>
         <T variant="micro" tone="tertiary">Nuevo en Mercadito</T>
         <Pressable accessibilityRole="button" onPress={() => nav.push({ name: 'district', id: 'mercadito' })}>
-          <T variant="caption" color={color.signal}>Ver todo</T>
+          <T variant="caption" color={palette.link} style={palette.linkUnderline ? { textDecorationLine: 'underline' } : undefined}>Ver todo</T>
         </Pressable>
       </View>
       {fresh === null ? <T variant="caption" tone="secondary">Consultando…</T> : null}
@@ -107,9 +113,9 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
           {fresh.map((item) => (
             <Pressable key={item.id} accessibilityRole="button" accessibilityLabel={`${item.title}. ${item.detail}`} onPress={() => nav.push({ name: 'web', path: item.path })} style={{ width: NEW_TILE, gap: space[1] }}>
               {item.image ? (
-                <Image source={{ uri: item.image }} style={{ width: NEW_TILE, height: NEW_TILE, borderRadius: radius.panel, borderWidth: 1, borderColor: color.hairlineStrong }} resizeMode="cover" />
+                <Image source={{ uri: item.image }} style={{ width: NEW_TILE, height: NEW_TILE, borderRadius: radius.panel, borderWidth: 1, borderColor: palette.hairlineStrong }} resizeMode="cover" />
               ) : (
-                <View style={{ width: NEW_TILE, height: NEW_TILE, borderRadius: radius.panel, backgroundColor: color.deep }} />
+                <View style={{ width: NEW_TILE, height: NEW_TILE, borderRadius: radius.panel, backgroundColor: palette.deep }} />
               )}
               <T variant="caption" numberOfLines={1}>{item.title}</T>
               <T variant="data" color={DISTRICTS[0]!.accent} numberOfLines={1}>{item.detail}</T>
@@ -135,11 +141,11 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
         {live?.slice(0, LIVE_LINES).map((item) => <T key={item.id} variant="caption">{item.text}</T>)}
         {go ? (
           <Pressable accessibilityRole="button" onPress={() => nav.push({ name: 'map' })} style={{ flexDirection: 'row', alignItems: 'center', gap: space[2], paddingTop: space[2] }}>
-            <Icon name="go" size={20} tint={color.textSecondary} />
+            <Icon name="go" size={ICON_ROW} tint={palette.textSecondary} />
             <T variant="data" tone="secondary" style={{ flex: 1 }}>
               {go.stores.length} tiendas · {go.activeDeliveries} entregas activas
             </T>
-            <Icon name="chevron" size={16} tint={color.textTertiary} />
+            <Icon name="chevron" size={ICON_CHEVRON} tint={palette.textTertiary} />
           </Pressable>
         ) : null}
       </HoloPanel>
@@ -149,6 +155,8 @@ export function Home({ tilt }: { tilt: SharedValue<{ x: number; y: number }> }) 
 
 function EssentialCard({ d, width, tilt }: { d: District; width: number; tilt: SharedValue<{ x: number; y: number }> }) {
   const nav = useNav();
+  // Aether lights only what is touched or selected, so the cards rest unlit, each with its crystal.
+  const aether = usePalette().look === 'aether';
   const ref = useRef<ViewRef>(null);
   const open = () => {
     const view = ref.current;
@@ -157,8 +165,8 @@ function EssentialCard({ d, width, tilt }: { d: District; width: number; tilt: S
   };
   return (
     <View ref={ref} collapsable={false} style={{ width }}>
-      <HoloPanel tilt={tilt} accent={d.accent} focus onPress={open} accessibilityLabel={`${d.name.es}. ${d.line.es}`} style={{ padding: space[4], gap: space[2], alignItems: 'center' }}>
-        <DistrictObject accent={d.accent} size={CARD_OBJECT} focus={1} interactive={false} />
+      <HoloPanel tilt={tilt} accent={d.accent} focus={!aether} onPress={open} accessibilityLabel={`${d.name.es}. ${d.line.es}`} style={{ padding: space[4], gap: space[2], alignItems: 'center' }}>
+        {aether ? <CrystalEmblem accent={d.accent} glyph={d.glyph} size={CARD_OBJECT} /> : <DistrictObject accent={d.accent} size={CARD_OBJECT} focus={1} interactive={false} />}
         <T variant="headline">{d.name.es}</T>
         <T variant="caption" tone="secondary" numberOfLines={2} style={{ textAlign: 'center' }}>{d.line.es}</T>
         <T variant="micro" color={d.accent}>Entrar</T>

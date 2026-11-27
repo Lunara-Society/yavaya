@@ -5,7 +5,8 @@ import { KEYS, readJson, writeJson } from './store';
 import { getJson } from '../business/api';
 
 /** Person-controlled preferences. Sound and haptics are never mandatory. */
-export type Prefs = { sound: boolean; volume: number; haptics: boolean; look: 'synapse' | 'classic' };
+/** The look: Synapse (default), Aether (the AX-04 look, opt-in until the owner approves it) or Classic. */
+export type Prefs = { sound: boolean; volume: number; haptics: boolean; look: 'synapse' | 'aether' | 'classic' };
 export const PREF_DEFAULTS: Prefs = { sound: true, volume: 0.6, haptics: true, look: 'synapse' };
 
 type ConfigState = { flags: Flags; prefs: Prefs; setPrefs: (next: Partial<Prefs>) => void; ready: boolean };

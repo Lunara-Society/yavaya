@@ -3,9 +3,11 @@ import { ActivityIndicator, Image, View } from 'react-native';
 import { Screen } from './Screen';
 import { Button, Field } from '../design/controls';
 import { T } from '../design/Text';
-import { color, radius, space } from '../design/tokens';
+import { radius, space } from '../design/tokens';
+import { usePalette } from '../design/palette';
 import { districtById, type District as DistrictInfo } from '../districts/registry';
 import { DistrictObject } from '../render/DistrictObject';
+import { CrystalEmblem } from '../render/CrystalEmblem';
 import { HoloPanel } from '../render/HoloPanel';
 import { useNav } from '../navigation/Navigator';
 import { ago, fetchFeed, hasFeed, type FeedItem } from '../business/feed';
@@ -33,13 +35,14 @@ const LINE_GAP = 2;
 
 export function District({ id, tilt }: { id: string; tilt: SharedValue<{ x: number; y: number }> }) {
   const nav = useNav();
+  const palette = usePalette();
   const d = districtById(id);
   if (!d) return <Screen title="Distrito"><T>No encontrado.</T></Screen>;
   const publish = PUBLISH[d.id];
   return (
     <Screen overline="Distrito" title={d.name.es} accent={d.accent}>
       <HoloPanel tilt={tilt} accent={d.accent} focus style={{ padding: space[4], flexDirection: 'row', alignItems: 'center', gap: space[3] }}>
-        <DistrictObject accent={d.accent} size={HERO_OBJECT} focus={1} />
+        {palette.look === 'aether' ? <CrystalEmblem accent={d.accent} glyph={d.glyph} size={HERO_OBJECT} lit /> : <DistrictObject accent={d.accent} size={HERO_OBJECT} focus={1} />}
         <View style={{ flex: 1, gap: space[2] }}>
           <T variant="headline">{d.line.es}</T>
           {publish ? <Button label={publish.label} accent={d.accent} onPress={() => nav.push({ name: 'web', path: publish.path })} /> : null}
@@ -53,6 +56,7 @@ export function District({ id, tilt }: { id: string; tilt: SharedValue<{ x: numb
 
 function DistrictFeed({ d, tilt }: { d: DistrictInfo; tilt: SharedValue<{ x: number; y: number }> }) {
   const nav = useNav();
+  const palette = usePalette();
   const auth = useAuth();
   const [items, setItems] = useState<FeedItem[] | null>(null);
   const [page, setPage] = useState(1);
@@ -92,7 +96,7 @@ function DistrictFeed({ d, tilt }: { d: DistrictInfo; tilt: SharedValue<{ x: num
       ) : null}
       <T variant="micro" tone="tertiary">{query ? `Resultados para “${query}”` : 'Lo más nuevo'}</T>
       {items === null ? <ActivityIndicator color={d.accent} /> : null}
-      {failed ? <T variant="caption" color={color.caution}>No se pudo cargar. Revisa tu conexión y vuelve a intentarlo.</T> : null}
+      {failed ? <T variant="caption" color={palette.caution}>No se pudo cargar. Revisa tu conexión y vuelve a intentarlo.</T> : null}
       {signedOut ? <T variant="caption" tone="secondary">Comunidad muestra sus publicaciones a vecinos con cuenta. Entra desde Ajustes para verlas.</T> : null}
       {items && items.length === 0 && !failed && !signedOut ? (
         <HoloPanel depth="structure" style={{ padding: space[4], gap: space[2] }}>
@@ -115,13 +119,14 @@ function DistrictFeed({ d, tilt }: { d: DistrictInfo; tilt: SharedValue<{ x: num
 }
 
 function PhotoCard({ item, accent, tilt, onOpen }: { item: FeedItem; accent: string; tilt: SharedValue<{ x: number; y: number }>; onOpen: () => void }) {
+  const palette = usePalette();
   return (
     <View style={{ width: '47.5%' }}>
       <HoloPanel lite tilt={tilt} accent={accent} focus={item.featured} onPress={onOpen} accessibilityLabel={`${item.title}. ${item.detail}`} style={{ padding: space[2], gap: space[2] }}>
         {item.image ? (
-          <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: PHOTO_RATIO, borderRadius: radius.control, backgroundColor: color.deep }} resizeMode="cover" />
+          <Image source={{ uri: item.image }} style={{ width: '100%', aspectRatio: PHOTO_RATIO, borderRadius: radius.control, backgroundColor: palette.deep }} resizeMode="cover" />
         ) : (
-          <View style={{ width: '100%', aspectRatio: PHOTO_RATIO, borderRadius: radius.control, backgroundColor: color.deep }} />
+          <View style={{ width: '100%', aspectRatio: PHOTO_RATIO, borderRadius: radius.control, backgroundColor: palette.deep }} />
         )}
         <View style={{ paddingHorizontal: space[1], paddingBottom: space[1], gap: LINE_GAP }}>
           <T variant="label" numberOfLines={1}>{item.title}</T>

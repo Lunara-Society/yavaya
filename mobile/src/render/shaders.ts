@@ -117,6 +117,46 @@ half4 main(float2 xy) {
   return half4(half3(min(rgb, float3(a))), a);
 }`;
 
+/**
+ * Aether glass (AX-04, VISUAL_LANGUAGE §5 and §6): an obsidian panel with a
+ * champagne hairline. Light is state: the edge is quiet at rest, lit when
+ * focused, and a soft highlight sits under the finger while pressed. No time
+ * uniform: it draws only when its state changes, so an idle screen is still.
+ */
+export const AETHER_GLASS_SKSL = `
+uniform float2 size; uniform float radius; uniform float3 accent; uniform float tint; uniform float focus; uniform float3 press;
+const float3 CHAMP_DEEP = float3(0.541, 0.455, 0.282);
+const float3 CHAMP_HOT = float3(0.957, 0.902, 0.769);
+float sdRound(float2 p, float2 b, float r) { float2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+half4 main(float2 xy) {
+  float2 c = xy - size * 0.5;
+  float d = sdRound(c, size * 0.5 - 1.0, radius);
+  if (d > 1.0) { return half4(0.0); }
+  float inside = smoothstep(0.75, -0.75, d);
+  float2 uv = xy / size;
+  // Deep obsidian, a slow vertical lift from #18181B to #0A0A0B; never grey.
+  float3 body = mix(float3(0.094, 0.094, 0.106), float3(0.039, 0.039, 0.043), uv.y);
+  float alpha = 0.90 * inside;
+  // The hairline: champagne in shadow at rest (tinted by a district accent), the accent lit when focused.
+  float rim = smoothstep(1.6, 0.0, abs(d + 0.6));
+  float3 restTint = mix(CHAMP_DEEP, accent, tint);
+  float3 edgeTint = mix(restTint, accent, focus);
+  float edgeA = mix(0.40, 0.95, focus) + press.z * 0.30;
+  // One key light from the top left: the upper edge reads brighter.
+  float2 n = normalize(c + float2(0.0001));
+  float facing = clamp(dot(n, normalize(float2(-0.45, -1.0))) * 0.5 + 0.5, 0.0, 1.0);
+  float3 edge = edgeTint * rim * edgeA * (0.55 + 0.75 * facing * facing);
+  // Under the finger: a soft champagne highlight, only while pressed.
+  float2 at = (press.xy * 0.5 + 0.5) * size;
+  float2 dp = xy - at;
+  float spec = exp(-dot(dp, dp) / 1568.0) * press.z * 0.10 * inside;
+  // Selected elements are lit: a faint sheen under the top edge.
+  float sheen = exp(-pow((uv.y - 0.06) * 9.0, 2.0)) * 0.05 * focus * inside;
+  float a = clamp(alpha + rim * edgeA * 0.8, 0.0, 1.0);
+  float3 rgb = body * alpha + edge + CHAMP_HOT * spec + accent * sheen;
+  return half4(half3(min(rgb, float3(a))), a);
+}`;
+
 /** A district object: a real-time ray-marched faceted crystal and orbit ring, lit and rotatable. */
 export const OBJECT_SKSL = `
 uniform float2 size; uniform float time; uniform float2 rot; uniform float3 accent; uniform float focus; uniform float quality; uniform float spin;
@@ -315,8 +355,11 @@ half4 main(float2 xy) {
 export const ROXI_HOLO_SKSL = `
 uniform shader image;
 uniform shader depthMap;
-uniform float2 size; uniform float4 box; uniform float time; uniform float level; uniform float state; uniform float form; uniform float2 tilt;
+uniform float2 size; uniform float4 box; uniform float time; uniform float level; uniform float state; uniform float form; uniform float2 tilt; uniform float aether;
 const float3 VIOLET = float3(0.66, 0.50, 1.0);
+// Aether (AX-04): her light is champagne gold, steady, with no spinning ring and no sweep.
+const float3 CHAMP_LIT = float3(0.886, 0.761, 0.478);
+const float3 CHAMP_HOT = float3(0.957, 0.902, 0.769);
 const float3 CYAN = float3(0.55, 0.85, 1.0);
 const float3 GOLD = float3(0.98, 0.84, 0.52);
 float hash(float2 p) { p = fract(p * float2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
@@ -332,14 +375,16 @@ half4 main(float2 xy) {
   float alpha = 0.0;
   float pulse = 0.5 + 0.5 * sin(time * 2.2);
   float energy = 0.35 + 0.65 * level + (state > 2.5 ? 0.25 : 0.0) + (state > 0.5 && state < 1.5 ? 0.12 * pulse : 0.0);
-  float3 hue = mix(VIOLET, CYAN, state > 1.5 && state < 2.5 ? 0.5 + 0.5 * sin(time * 3.0) : 0.15);
+  float3 hueSynapse = mix(VIOLET, CYAN, state > 1.5 && state < 2.5 ? 0.5 + 0.5 * sin(time * 3.0) : 0.15);
+  float3 hueAether = state > 1.5 && state < 2.5 ? CHAMP_HOT : CHAMP_LIT;
+  float3 hue = mix(hueSynapse, hueAether, aether);
 
   // The projector: a lit disc under her feet and a cone of light rising from it.
   float2 base = float2(box.x + box.z * 0.5, box.y + box.w * 0.985);
   float2 e = (xy - base) / float2(box.z * 0.42, box.z * 0.075);
   float ring = exp(-pow((length(e) - 1.0) * 6.0, 2.0)) + 0.5 * exp(-dot(e, e) * 1.2);
   float spin = 0.6 + 0.4 * sin(atan(e.y, e.x) * 6.0 + time * 1.6);
-  rgb += hue * ring * spin * (0.55 + 0.45 * energy) * smoothstep(1.4, 0.2, length(e) * 0.7);
+  rgb += hue * ring * spin * (0.55 + 0.45 * energy) * smoothstep(1.4, 0.2, length(e) * 0.7) * (1.0 - aether);
   float up = clamp((base.y - xy.y) / box.w, 0.0, 1.0);
   float halfWidth = box.z * (0.32 + up * 0.22);
   float beam = smoothstep(halfWidth, halfWidth * 0.2, abs(xy.x - base.x)) * (1.0 - up) * step(xy.y, base.y);
@@ -375,7 +420,7 @@ half4 main(float2 xy) {
     float sweep = exp(-pow((local.y - sweepY) * 9.0, 2.0));
     float band = step(0.985, hash(float2(floor(time * 9.0), floor(local.y * 40.0))));
     holo *= scan;
-    holo += hue * sweep * 0.35 + hue * band * 0.25;
+    holo += hue * sweep * 0.35 * (1.0 - aether) + hue * band * 0.25;
     holo += hue * edge * (0.9 + 0.8 * energy);
     holo *= 0.92 + 0.22 * energy;
     float a = m * arrive * (0.88 + 0.08 * sin(time * 30.0 + local.y * 6.0) * band);
@@ -389,4 +434,5 @@ half4 main(float2 xy) {
 }`;
 
 export const SHADERS = {
-  ROXI_HOLO_SKSL, ATMOSPHERE_SKSL, EDGE_SKSL, OBJECT_SKSL, RECON_SKSL, AWAKEN_SKSL } as const;
+  ROXI_HOLO_SKSL, ATMOSPHERE_SKSL, EDGE_SKSL, OBJECT_SKSL, RECON_SKSL, AWAKEN_SKSL, AETHER_GLASS_SKSL,
+} as const;

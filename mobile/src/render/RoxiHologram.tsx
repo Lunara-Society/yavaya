@@ -1,4 +1,5 @@
 import { Canvas, Fill, ImageShader, Shader, useClock, useImage } from '@shopify/react-native-skia';
+import { usePalette } from '../design/palette';
 import { Image, View } from 'react-native';
 import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 import { FX } from './effects';
@@ -28,6 +29,8 @@ export function RoxiHologram({ width, height, figureHeight, top, level, state, f
   const figure = useImage(FIGURE);
   const depth = useImage(DEPTH);
   const clock = useClock();
+  // In the Aether look her light is champagne gold (the owner: "a glow in gold instead of purple").
+  const aether = usePalette().look === 'aether' ? 1 : 0;
   const fw = figureHeight * ROXI_ASPECT;
   const box = { x: (width - fw) / 2, y: top, width: fw, height: figureHeight };
   const uniforms = useDerivedValue(() => ({
@@ -38,6 +41,7 @@ export function RoxiHologram({ width, height, figureHeight, top, level, state, f
     state: state.value,
     form: form.value,
     tilt: tilt ? [tilt.value.x * 14, tilt.value.y * 10] : [0, 0],
+    aether,
   }));
   // Without the shader (a device that cannot compile it) she is still there, as her picture.
   if (!FX.roxi || !figure || !depth) {

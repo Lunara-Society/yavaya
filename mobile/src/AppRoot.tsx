@@ -12,6 +12,7 @@ import { QualityProvider, useQuality } from './performance/Quality';
 import { NavigationProvider, useNav } from './navigation/Navigator';
 import type { Route } from './navigation/routes';
 import { Environment, neutralAccent } from './render/Environment';
+import { PaletteProvider } from './design/palette';
 import { ToastProvider } from './render/SpatialToast';
 import { useTilt } from './render/useTilt';
 import { SceneHost } from './motion/SceneHost';
@@ -88,14 +89,17 @@ function Shell({ fonts }: { fonts: boolean }) {
   }, []);
   if (!ready || !fonts) return null;
   if (!flags.synapseShell || prefs.look === 'classic') return <Classic />;
+  // Aether (AX-04) is the new look, chosen in Settings; Synapse stays the default.
   return (
-    <NavigationProvider>
-      <RoxiVoiceProvider>
-        <ToastProvider>
-          <Synapse />
-        </ToastProvider>
-      </RoxiVoiceProvider>
-    </NavigationProvider>
+    <PaletteProvider look={prefs.look === 'aether' ? 'aether' : 'synapse'}>
+      <NavigationProvider>
+        <RoxiVoiceProvider>
+          <ToastProvider>
+            <Synapse />
+          </ToastProvider>
+        </RoxiVoiceProvider>
+      </NavigationProvider>
+    </PaletteProvider>
   );
 }
 
@@ -107,9 +111,12 @@ function accentOf(route: Route): [number, number, number] | null {
   return null;
 }
 
+/** Converts the quality budget's dust count to the atmosphere shader's density. */
+const DUST_SCALE = 400;
+
 function Synapse() {
   const { width, height } = useWindowDimensions();
-  const { flags } = useConfig();
+  const { flags, prefs } = useConfig();
   const { budget } = useQuality();
   const nav = useNav();
   const tilt = useTilt(flags.parallax && budget.parallax);
@@ -157,7 +164,8 @@ function Synapse() {
 
   return (
     <View style={{ flex: 1, backgroundColor: color.void }} onLayout={onLayout}>
-      <Environment width={width} height={height} accent={accent} accentMix={accentMix} tilt={tilt} dust={budget.dust / 400} />
+      {/* Aether starts from absolute black: no atmosphere, no dust (VISUAL_LANGUAGE §1). */}
+      {prefs.look === 'aether' ? null : <Environment width={width} height={height} accent={accent} accentMix={accentMix} tilt={tilt} dust={budget.dust / DUST_SCALE} />}
       <SceneHost render={render} width={width} height={height} />
       {nav.top.name !== 'web' ? <Dock /> : null}
       <RoxiIsland />

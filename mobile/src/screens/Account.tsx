@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Button } from '../design/controls';
 import { T } from '../design/Text';
+import { usePalette } from '../design/palette';
 import { color, space } from '../design/tokens';
 import { HoloPanel } from '../render/HoloPanel';
 import { useAuth } from '../business/auth';
@@ -12,6 +13,7 @@ import { useAuth } from '../business/auth';
  * back here signed in; the website screens share the same session.
  */
 export function AccountPanel({ compact = false, reason }: { compact?: boolean; reason?: string }) {
+  const palette = usePalette();
   const auth = useAuth();
   const [busy, setBusy] = useState<'google' | 'any' | 'out' | null>(null);
   const [note, setNote] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export function AccountPanel({ compact = false, reason }: { compact?: boolean; r
   if (auth.status === 'checking') {
     return (
       <HoloPanel depth="panel" style={{ padding: space[4], alignItems: 'center' }}>
-        <ActivityIndicator color={color.signal} />
+        <ActivityIndicator color={palette.focus} />
       </HoloPanel>
     );
   }
@@ -60,13 +62,13 @@ export function AccountPanel({ compact = false, reason }: { compact?: boolean; r
   }
 
   return (
-    <HoloPanel depth="panel" accent={color.signal} focus style={{ padding: space[4], gap: space[3] }}>
+    <HoloPanel depth="panel" accent={palette.focus} focus style={{ padding: space[4], gap: space[3] }}>
       <View style={{ gap: space[1] }}>
-        <T variant="micro" color={color.signal}>Tu cuenta</T>
+        <T variant="micro" color={palette.focus}>Tu cuenta</T>
         <T variant="headline">Entra a Yavaya</T>
         <T variant="caption" tone="secondary">{reason ?? 'Una sola cuenta para todo: publicar, escribir, Roxi y tus distritos.'}</T>
       </View>
-      <Button label={busy === 'google' ? 'Abriendo Google…' : 'Continuar con Google'} icon="external" accent={color.signal} onPress={() => void signIn('google')} disabled={busy !== null} />
+      <Button label={busy === 'google' ? 'Abriendo Google…' : 'Continuar con Google'} icon="external" accent={palette.focus} onPress={() => void signIn('google')} disabled={busy !== null} />
       <Button label={busy === 'any' ? 'Abriendo…' : 'Correo, contraseña u otra forma'} kind="secondary" onPress={() => void signIn('any')} disabled={busy !== null} />
       {note ? <T variant="caption" color={color.caution}>{note}</T> : null}
       <T variant="caption" tone="tertiary">Se abre el navegador del teléfono con la página de Yavaya y vuelves aquí ya dentro.</T>
