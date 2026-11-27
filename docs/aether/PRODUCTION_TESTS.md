@@ -10,8 +10,8 @@ run in each chapter. Earlier runs (Chapters 00–09) are in
 | Suite | Command | Last result | When |
 | --- | --- | --- | --- |
 | Platform typecheck, tests (Vitest, real Postgres), build, release step | `cd platform && npm run typecheck && npm test && npm run build` (CI runs all of it on every push) | 96 files, 863 tests pass | Chapter 09 |
-| Mobile typecheck and unit tests | `cd mobile && npx tsc --noEmit -p . && npm test` | 41 pass | Chapter 09 |
-| Shaders compiled and rendered by Skia | `cd mobile && npm run check:shaders` | 6 of 6 | Chapter 09 |
+| Mobile typecheck and unit tests | `cd mobile && npx tsc --noEmit -p . && npm test` | 46 pass | AX-04a |
+| Shaders compiled and rendered by Skia | `cd mobile && npm run check:shaders` | 7 of 7 (Aether glass added; Roxi rendered in both looks) | AX-04a |
 | Local end-to-end sign-in | production build on port 3100 (script was in the old session's scratchpad) | 18 of 18 | Chapter 09 |
 | Reference measurements | `python3 -I design/references/aether/tools/analyse_refs.py <out> <files>` | reproduces `design/references/aether/metrics.json` | AX-02 |
 | Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json`, `identity-batch3.json`, `identity-batch4.json`, `identity-small-controls.json` | AX-02, second to fourth sends |
@@ -35,7 +35,7 @@ the app: on a phone).
 | T-TRANS-01 | Interruptible transformations | a touch at any progress stops a transformation; back at any progress reverses it; the destination takes touches from the first frame |
 | T-STATE-01 | Continuity | scroll, filters, search, tab and drafts come back after back, after a deep link and after the screen was unmounted; nothing kept after sign-out |
 | T-IDLE-01 | Calm when idle | an untouched screen draws no new frames after its last transition (frame counter) |
-| T-COLOUR-01 | Permanent palette | the contrast values of VISUAL_LANGUAGE §2 hold as assertions in a test like `design.test.ts` |
+| T-COLOUR-01 | Permanent palette | the contrast values of VISUAL_LANGUAGE §2 hold as assertions in a test like `design.test.ts`; REAL as tests in `mobile/src/design/design.test.ts` (AX-04a) |
 | T-RX-01 | Roxi's channels | each channel changes alone; a stronger layer overrides only its body regions (unit tests) |
 | T-RX-02 | Roxi does several things at once | she speaks while moving, listens while her material changes, gestures while her scale changes and keeps talking across five route changes, at full frame rate on the Samsung |
 | T-GESTURE-01 | No accidental gestures | no custom gesture starts in the system gesture zones; every gesture has a button; phone motion triggers nothing |
@@ -113,3 +113,16 @@ the app: on a phone).
 | Permanent palette contrast | WCAG relative luminance, on `#000000` and `#18181B` | champagne 4.67 (deep, edges only) to 16.96; silver 13.28 and 18.24; titanium 3.42 (lines only) to 10.65 |
 | 3D candidates | npm registry, 27 Nov | versions, peers and New Architecture support as in PRODUCTION_ARCHITECTURE §4.2; nothing installed |
 | Builds and suites | none run: this chapter changes documents only | — |
+
+### AX-04a, the Aether look (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Types | `npx tsc --noEmit -p .` (dependencies installed with `npm ci`) | clean, before and after |
+| Unit tests | `npm test` | 41 before, 46 after (5 new: Synapse palette equals tokens, Aether contrast, no words in champagne shadow or violet light, materials within limits, levels by tier) |
+| Shaders | `npm run check:shaders` | 7 of 7 compile, including `AETHER_GLASS_SKSL` and Roxi's champagne mode; frames rendered for glass (rest, district, focused, pressed) and Roxi in both looks |
+| The look at phone size | the web build (`npx expo export --platform web`) in Chromium, 390 × 844 | home, Mercadito, Roxi and Settings in Aether; Synapse screens unchanged; no page errors (live data unreachable from the container, so lists show their honest empty or error states) |
+| Lint hook | the TypeScript patterns hook on every new or rewritten file | clean |
+| Preview build 0.5.0 | EAS `969b96c4` from `19bcf93` (`b12a8b54` canceled at once: it still read version 0.4.0 from `app.json`) | finished in 17 minutes; [APK](https://expo.dev/artifacts/eas/nX6S5cyr6IjwVqbueNm9SwHab9fOsRvLJIs-qma1OOY.apk) (91.2 MB, link valid until 11 Dec 2026); checked: version 0.5.0, native code for `arm64-v8a` and `armeabi-v7a` (28 libraries each) |
+| Phone | — | not yet: waits for the owner's test of 0.5.0 |
+

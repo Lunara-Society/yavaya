@@ -87,7 +87,8 @@ Rules:
   inside the eagle and the wordmark images and on brand moments (start
   screen, About); interface materials use champagne. This reconciles the
   owner's answer 1A (logo gold) with the AX-04 text ("restrained champagne
-  gold"); the owner can still choose logo gold everywhere (AX-D026).
+  gold"); the owner left the final choice to Claude, and champagne stays
+  (AX-D026, AX-D038).
 - **Roxi's glow is champagne gold**: `champagne.lit` core, `champagne.rest`
   edge (the owner: "Roxi should have a glow in gold instead of purple"). Her
   violet clothing is part of who she is ([IDENTITY_SPEC.md](IDENTITY_SPEC.md)),
@@ -218,7 +219,7 @@ things are. Each has its crystal emblem and its accent.
 
 - **Moving:** drag to pan, pinch to zoom, tap a district to enter it by
   contextual reconstruction. The plane remembers where the member left it.
-- **Proposed arrangement (the owner decides before it is built):** four
+- **Arrangement (adopted, AX-D038; built in AX-04c):** four
   neighbourhoods, the first holding the four districts the registry already
   marks essential. *Lo esencial*: Mercadito, YavayaGo, Servicios, Trabajo.
   *Casa y vida diaria*: Hogar, Movilidad, Salud y Bienestar, Negocios.

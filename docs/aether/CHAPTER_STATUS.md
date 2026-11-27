@@ -10,7 +10,7 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
 | AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done** for all 71 references (analysis; references kept private); the owner's logo and typography recorded (AX-D018) |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
-| AX-04 | Production architecture, the permanent visual language and Roxi's identity (the owner's text, answer 7c) | 27 Nov 2026 | **Design done** ([PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md), [VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md), [ROXI_ENGINE.md](ROXI_ENGINE.md), [IDENTITY_SPEC.md](IDENTITY_SPEC.md); AX-D026 to AX-D037). **Build next**: stages AX-04a to AX-04e behind Classic; the first build waits for the 0.4.0 phone test (AX-D025) |
+| AX-04 | Production architecture, the permanent visual language and Roxi's identity (the owner's text, answer 7c) | 27 Nov 2026 | **Design done** ([PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md), [VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md), [ROXI_ENGINE.md](ROXI_ENGINE.md), [IDENTITY_SPEC.md](IDENTITY_SPEC.md); AX-D026 to AX-D037). **AX-04a built**: the Aether look as an opt-in switch in Settings, app 0.5.0 (AX-D038 to AX-D042); not yet tried on a phone. **Next**: the owner's phone test of 0.5.0, then AX-04b |
 | AX-05 onward | — | — | proposal in §3 |
 
 Still open from Synapse: the owner's phone test of app 0.4.0
@@ -126,11 +126,32 @@ mobile API to grow, not 3D Roxi.
   test before the first AX-04 build; Roxi's views for AX-05 (AX-D021); an
   Apple developer account before any iPhone build.
 
+### AX-04a · The Aether look, first slice (app 0.5.0)
+
+- Done: the permanent palette, rendering levels, light limits and the ten
+  materials as data (`mobile/src/design/aether.ts`); colours by role through
+  a palette context, Synapse exactly as before (tested); the shared
+  components (text, controls, screen, panels, dock, Roxi's island and screen,
+  account panel) follow the look; Aether glass (a clock-free SkSL shader);
+  Roxi's hologram in champagne; crystal emblems for districts; absolute black
+  behind everything; the switch in Settings. Home, Mercadito (every district
+  screen), Roxi and Settings checked at phone size in the web build.
+- Tested: types (`tsc`) clean; unit tests 46 of 46 (5 new); shaders 7 of 7
+  compile, Aether glass and Roxi in champagne rendered; lint hook clean on
+  every new file; preview build 0.5.0 on EAS (see PRODUCTION_TESTS).
+- Incomplete: not yet tried on a phone (T-PERF-01, T-IDLE-01 unmeasured);
+  most materials exist as data only (glass and crystal are drawn);
+  transformations, continuity, the district plane and gestures are AX-04b
+  to AX-04d; other screens (search, map, listings, the website pages) still
+  use Synapse colours inside the Aether look.
+- Needs the owner: install 0.5.0, turn on "Aspecto nuevo Aether (prueba)" in
+  Ajustes, and say what to keep or change.
+
 ## 3. Proposed next chapters (until the owner's texts arrive)
 
 | Proposed | What | Gate |
 | --- | --- | --- |
-| AX-04a to AX-04e | Build the AX-04 design in five stages: look and materials; transformations and continuity; district plane; touch and gestures; Roxi's channels on the 2.5D renderer (PRODUCTION_ARCHITECTURE §10) | the 0.4.0 phone test; the owner's approval after each stage (AX-D037) |
+| AX-04a to AX-04e | Build the AX-04 design in five stages (AX-04a built, app 0.5.0): look and materials; transformations and continuity; district plane; touch and gestures; Roxi's channels on the 2.5D renderer (PRODUCTION_ARCHITECTURE §10) | the 0.4.0 phone test; the owner's approval after each stage (AX-D037) |
 | AX-05 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her views; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's views (AX-D021), each face 0.80 or more; spike S9's pass marks (AX-D029) |
 | AX-06 | Mobile API v1 expansion: content descriptors for every district, search, filters, item pages | none (reuses the website's domain functions) |
 | AX-07 | INFINITY flows on real data: home, search, district hero → list → page → action, per the reference patterns | AX-04, AX-06 |
