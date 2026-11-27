@@ -1,0 +1,74 @@
+{
+ "threshold_same_person_cosine": 0.363,
+ "min_face_px": 60,
+ "source": "roxi-source.png",
+ "references": [
+  {
+   "ref": "S65",
+   "file": "S65-source.gif",
+   "frames": 1,
+   "faces_scored": 0,
+   "faces_too_small": 1,
+   "scores": []
+  },
+  {
+   "ref": "S85",
+   "file": "S85-source.gif",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 74,
+     "cosine": 0.882
+    }
+   ],
+   "cosine_median": 0.882,
+   "cosine_min": 0.882,
+   "cosine_max": 0.882,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "F65",
+   "file": "F65-film.gif",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 68,
+     "cosine": 0.902
+    }
+   ],
+   "cosine_median": 0.902,
+   "cosine_min": 0.902,
+   "cosine_max": 0.902,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "F85",
+   "file": "F85-film.gif",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 87,
+     "cosine": 0.895
+    }
+   ],
+   "cosine_median": 0.895,
+   "cosine_min": 0.895,
+   "cosine_max": 0.895,
+   "same_person_share": 1.0
+  }
+ ],
+ "pairwise_mean_faces": {
+  "F65-S85": 0.846,
+  "F65-F85": 0.916,
+  "F85-S85": 0.884
+ }
+}

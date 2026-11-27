@@ -18,13 +18,14 @@ The repository `Lunara-Society/yavaya` is **public**. So:
   gallery).
 - **Where private files live today:** the owner's private claude.ai page for
   this programme, https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe, which
-  holds the originals as `refs/R01-1000192794.gif` … `refs/R56-1000192856.gif`
+  holds the originals as `refs/R01-1000192794.gif` … `refs/R71-1000192871.gif`
   and the frame sheets as `sheets/R01.jpg` … (a later session reads them with
   the Artifact tool's `read` action and the file's path). Every file is
   identified below by its SHA-256, so a copy can always be checked; after
   the second send the page held 81 files (the page, 39 originals, 41
   sheets), listed back and matched on 27 Nov; the third send added 35
-  (17 originals, 17 sheets and one faces sheet; page version 4).
+  (17 originals, 17 sheets and one faces sheet; page version 4) and the
+  fourth 31 (15 originals, 15 sheets and one faces sheet; version 5).
 
 No asset from a third-party game, film or brand is allowed; AI-generated
 assets are declared as such.
@@ -167,6 +168,43 @@ Kept on the private page: `refs/R40-1000192836.gif` …
 `refs/R56-1000192856.gif`, sheets `sheets/R40.jpg` … `sheets/R56.jpg`, and
 `sheets/faces-b3.jpg` (Roxi's source, two more images of her, R40 and R56,
 each with its score).
+
+### 3d. Fourth send, 27 November 2026 (private)
+
+Received with the owner's words "More is coming, these are the last ones we
+have now". Analysed in [REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) §9;
+measurements in `design/references/aether/metrics-batch4.json` (full hashes
+there); face scores in `design/references/aether/identity-batch4.json` and the
+size control in `identity-small-controls.json`. AI-generated design material,
+Yavaya's own. **Illustrative content only: none of it is data.** The woman in
+R57–R71 is one consistent character but not Roxi, and the gold "V" beside
+"Yavaya" is not Yavaya's logo unless the owner adopts it (AX-D016, AX-D017).
+
+| Ref | Owner file | SHA-256 (first 16) | Bytes | Pixels | Frames | Loop (s) | Shows |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R57 | `1000192862.gif` | `a5086d2fb1866019` | 811,308 | 354 × 358 | 12 | 3.6 | light map to Granada, restaurants |
+| R58 | `1000192861.gif` | `0a4c054f51561c33` | 734,743 | 354 × 354 | 12 | 3.6 | tile into layered glass cards |
+| R59 | `1000192860.gif` | `7d8c6919b13f63ca` | 908,486 | 353 × 354 | 12 | 3.6 | into Santuario through particles |
+| R60 | `1000192859.gif` | `f6efa14b24eadb18` | 862,401 | 355 × 357 | 12 | 3.6 | walks through the glass into Santuario |
+| R61 | `1000192866.gif` | `c2228c5ea35b5053` | 1,002,859 | 354 × 357 | 12 | 5.4 | into Santuario, gold variant of R59 |
+| R62 | `1000192865.gif` | `bfc9a2ebbb1b2fc0` | 935,252 | 356 × 356 | 12 | 5.4 | Mercadito product turns in her hand; checkout |
+| R63 | `1000192870.gif` | `7ef496ffc3dd876e` | 1,014,595 | 356 × 358 | 12 | 5.4 | into Santuario, points at Paz interior |
+| R64 | `1000192869.gif` | `1092c3b2c4ab809d` | 937,727 | 354 × 356 | 12 | 5.4 | light map of Central America to Managua |
+| R65 | `1000192868.gif` | `a3ec3021d58f6d35` | 946,539 | 358 × 358 | 12 | 5.4 | seated, breathing calmly in Santuario |
+| R66 | `1000192867.gif` | `c97a2bb78103558c` | 832,637 | 356 × 356 | 12 | 5.4 | YavayaGo route to a restaurant |
+| R67 | `1000192875.gif` | `f1c72fd468ca39c6` | 953,279 | 355 × 358 | 12 | 7.8 | guided listing creation |
+| R68 | `1000192874.gif` | `3d6a27a1025ecb1c` | 698,013 | 356 × 356 | 12 | 7.8 | opening: spark, mark, Roxi forms, app assembles |
+| R69 | `1000192873.gif` | `a03e3c32c6f96cae` | 939,984 | 356 × 357 | 12 | 7.8 | token vault and token purchase |
+| R70 | `1000192872.gif` | `edf58013b9c9ae98` | 857,109 | 357 × 355 | 12 | 7.8 | voice search with stages, filters |
+| R71 | `1000192871.gif` | `00f522edc338c9b6` | 884,687 | 358 × 357 | 12 | 7.8 | messages inbox and chat |
+
+No duplicates in this send. R61 is a gold variant of R59 (a different
+animation of the same journey), kept and labelled (AX-D014).
+
+Kept on the private page: `refs/R57-1000192862.gif` …
+`refs/R71-1000192871.gif`, sheets `sheets/R57.jpg` … `sheets/R71.jpg`, and
+`sheets/faces-b4.jpg` (Roxi's source, Roxi shrunk to GIF size, and the faces
+of R59, R62, R67 and R70, each with its score).
 
 ## 4. App assets carried from Synapse (unchanged)
 

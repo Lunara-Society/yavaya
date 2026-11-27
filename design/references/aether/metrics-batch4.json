@@ -1,0 +1,969 @@
+[
+ {
+  "ref": "R57",
+  "owner_file": "1000192862.gif",
+  "sha256": "a5086d2fb1866019d7a5da1378908a35cddee4449924182808c987c05f3ffb49",
+  "bytes": 811308,
+  "size_px": [
+   354,
+   358
+  ],
+  "frames": 12,
+  "duration_s": 3.6,
+  "mean_fps": 3.3,
+  "frame_ms_min_max": [
+   300,
+   300
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 53.3,
+   "dark_background_pct": 1.7,
+   "lit_pixels_by_family_pct": {
+    "blue": 43.9,
+    "grey": 18.4,
+    "violet_purple": 16.2,
+    "red": 9.4,
+    "white_silver": 6.7,
+    "gold_amber": 4.3,
+    "magenta": 1.1,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D7A57C",
+   "gold_body_hex": "#996E4C"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 20.15,
+   "max_change_per_frame": 36.83,
+   "change_peaks_s": [
+    0.3
+   ],
+   "loop_seam_ratio": 2.23,
+   "mean_rel_luminance_min_max": [
+    0.0631,
+    0.0908
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R58",
+  "owner_file": "1000192861.gif",
+  "sha256": "0a4c054f51561c330a89cae5d48a08d54723cdb28fed59555f4b34efa111d558",
+  "bytes": 734743,
+  "size_px": [
+   354,
+   354
+  ],
+  "frames": 12,
+  "duration_s": 3.6,
+  "mean_fps": 3.3,
+  "frame_ms_min_max": [
+   300,
+   300
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 34.5,
+   "dark_background_pct": 12.6,
+   "lit_pixels_by_family_pct": {
+    "violet_purple": 38.1,
+    "red": 33.4,
+    "grey": 13.7,
+    "magenta": 5.4,
+    "white_silver": 3.9,
+    "gold_amber": 3.7,
+    "blue": 1.9,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D3A179",
+   "gold_body_hex": "#A37860"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 27.78,
+   "max_change_per_frame": 35.28,
+   "change_peaks_s": [
+    0.9,
+    1.2
+   ],
+   "loop_seam_ratio": 0.85,
+   "mean_rel_luminance_min_max": [
+    0.0426,
+    0.0701
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R59",
+  "owner_file": "1000192860.gif",
+  "sha256": "7d8c6919b13f63ca50325531fb32e9de1e86fe6d130303724e2306ae65282fc9",
+  "bytes": 908486,
+  "size_px": [
+   353,
+   354
+  ],
+  "frames": 12,
+  "duration_s": 3.6,
+  "mean_fps": 3.3,
+  "frame_ms_min_max": [
+   300,
+   300
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 59.9,
+   "dark_background_pct": 4.9,
+   "lit_pixels_by_family_pct": {
+    "violet_purple": 52.8,
+    "red": 18.8,
+    "blue": 8.4,
+    "magenta": 7.2,
+    "grey": 6.9,
+    "white_silver": 4.0,
+    "gold_amber": 1.8,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#DBA57C",
+   "gold_body_hex": "#A6745A"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 32.35,
+   "max_change_per_frame": 48.61,
+   "change_peaks_s": [
+    3.0
+   ],
+   "loop_seam_ratio": 1.45,
+   "mean_rel_luminance_min_max": [
+    0.053,
+    0.1361
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R60",
+  "owner_file": "1000192859.gif",
+  "sha256": "f6efa14b24eadb1897e189594883946c690a98fe7128185483147b9e318bad0c",
+  "bytes": 862401,
+  "size_px": [
+   355,
+   357
+  ],
+  "frames": 12,
+  "duration_s": 3.6,
+  "mean_fps": 3.3,
+  "frame_ms_min_max": [
+   300,
+   300
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 75.0,
+   "dark_background_pct": 3.6,
+   "lit_pixels_by_family_pct": {
+    "grey": 34.1,
+    "violet_purple": 23.5,
+    "red": 17.4,
+    "blue": 14.5,
+    "white_silver": 6.1,
+    "magenta": 3.9,
+    "gold_amber": 0.5,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#E3AA8D",
+   "gold_body_hex": null
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 37.99,
+   "max_change_per_frame": 53.11,
+   "change_peaks_s": [
+    1.5,
+    2.1
+   ],
+   "loop_seam_ratio": 1.35,
+   "mean_rel_luminance_min_max": [
+    0.0907,
+    0.1501
+   ],
+   "flash_transitions": 1,
+   "max_general_flashes_per_s": 0.5,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R61",
+  "owner_file": "1000192866.gif",
+  "sha256": "c2228c5ea35b5053461168adaebb6da66079db8d278efa33518b123e6990911d",
+  "bytes": 1002859,
+  "size_px": [
+   354,
+   357
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 71.1,
+   "dark_background_pct": 1.9,
+   "lit_pixels_by_family_pct": {
+    "red": 52.4,
+    "grey": 21.5,
+    "gold_amber": 15.1,
+    "violet_purple": 5.7,
+    "magenta": 2.6,
+    "white_silver": 2.6,
+    "blue": 0.0,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#DBA078",
+   "gold_body_hex": "#9B694F"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 28.32,
+   "max_change_per_frame": 46.83,
+   "change_peaks_s": [
+    2.7
+   ],
+   "loop_seam_ratio": 1.63,
+   "mean_rel_luminance_min_max": [
+    0.0776,
+    0.1527
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R62",
+  "owner_file": "1000192865.gif",
+  "sha256": "bfc9a2ebbb1b2fc0fe49cd14398f538fbda251e98021f13799ef0732dc8204ab",
+  "bytes": 935252,
+  "size_px": [
+   356,
+   356
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 58.2,
+   "dark_background_pct": 5.8,
+   "lit_pixels_by_family_pct": {
+    "red": 54.5,
+    "grey": 16.1,
+    "gold_amber": 15.5,
+    "violet_purple": 5.2,
+    "white_silver": 4.8,
+    "magenta": 3.8,
+    "green_teal": 0.1,
+    "blue": 0.1,
+    "yellow_green": 0.0
+   },
+   "gold_highlight_hex": "#DAA378",
+   "gold_body_hex": "#976B51"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 29.26,
+   "max_change_per_frame": 37.19,
+   "change_peaks_s": [
+    4.95
+   ],
+   "loop_seam_ratio": 1.17,
+   "mean_rel_luminance_min_max": [
+    0.0811,
+    0.1302
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R63",
+  "owner_file": "1000192870.gif",
+  "sha256": "7ef496ffc3dd876eb95689128f3d85cfe87398c0fb286050565f7a9ccebc431a",
+  "bytes": 1014595,
+  "size_px": [
+   356,
+   358
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 68.9,
+   "dark_background_pct": 4.9,
+   "lit_pixels_by_family_pct": {
+    "red": 45.0,
+    "violet_purple": 17.1,
+    "grey": 16.7,
+    "gold_amber": 8.2,
+    "magenta": 7.8,
+    "white_silver": 4.9,
+    "blue": 0.2,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#DCA47D",
+   "gold_body_hex": "#A47157"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 34.89,
+   "max_change_per_frame": 52.22,
+   "change_peaks_s": [],
+   "loop_seam_ratio": 1.31,
+   "mean_rel_luminance_min_max": [
+    0.0806,
+    0.1573
+   ],
+   "flash_transitions": 2,
+   "max_general_flashes_per_s": 0.5,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R64",
+  "owner_file": "1000192869.gif",
+  "sha256": "1092c3b2c4ab809da5d97c655280966e3e12f6655272a9b719bd8bf6b8e75d27",
+  "bytes": 937727,
+  "size_px": [
+   354,
+   356
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 59.7,
+   "dark_background_pct": 2.8,
+   "lit_pixels_by_family_pct": {
+    "red": 46.5,
+    "violet_purple": 18.2,
+    "grey": 12.8,
+    "gold_amber": 10.6,
+    "magenta": 7.2,
+    "white_silver": 4.5,
+    "blue": 0.2,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D7A57D",
+   "gold_body_hex": "#A27459"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 28.49,
+   "max_change_per_frame": 36.09,
+   "change_peaks_s": [],
+   "loop_seam_ratio": 0.96,
+   "mean_rel_luminance_min_max": [
+    0.0613,
+    0.1415
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R65",
+  "owner_file": "1000192868.gif",
+  "sha256": "a3ec3021d58f6d3588d782d1e27cff256e14153e03a737ca25bf606fd370bdd8",
+  "bytes": 946539,
+  "size_px": [
+   358,
+   358
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 71.7,
+   "dark_background_pct": 5.6,
+   "lit_pixels_by_family_pct": {
+    "red": 42.2,
+    "gold_amber": 34.0,
+    "grey": 15.7,
+    "white_silver": 7.9,
+    "magenta": 0.3,
+    "yellow_green": 0.0,
+    "green_teal": 0.0,
+    "blue": 0.0,
+    "violet_purple": 0.0
+   },
+   "gold_highlight_hex": "#D8A27A",
+   "gold_body_hex": "#90674A"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 8.83,
+   "max_change_per_frame": 12.54,
+   "change_peaks_s": [
+    4.95
+   ],
+   "loop_seam_ratio": 2.17,
+   "mean_rel_luminance_min_max": [
+    0.1495,
+    0.1624
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R66",
+  "owner_file": "1000192867.gif",
+  "sha256": "c97a2bb78103558c675834f69d03671d4f7133b5f40e1663badd733f5ff6cd96",
+  "bytes": 832637,
+  "size_px": [
+   356,
+   356
+  ],
+  "frames": 12,
+  "duration_s": 5.4,
+  "mean_fps": 2.2,
+  "frame_ms_min_max": [
+   450,
+   450
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 55.7,
+   "dark_background_pct": 5.7,
+   "lit_pixels_by_family_pct": {
+    "blue": 47.2,
+    "grey": 19.6,
+    "red": 16.6,
+    "gold_amber": 6.2,
+    "white_silver": 4.9,
+    "violet_purple": 2.6,
+    "green_teal": 2.2,
+    "magenta": 0.7,
+    "yellow_green": 0.0
+   },
+   "gold_highlight_hex": "#DCA976",
+   "gold_body_hex": "#976B4F"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 25.66,
+   "max_change_per_frame": 34.82,
+   "change_peaks_s": [],
+   "loop_seam_ratio": 0.48,
+   "mean_rel_luminance_min_max": [
+    0.0676,
+    0.1004
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R67",
+  "owner_file": "1000192875.gif",
+  "sha256": "f1c72fd468ca39c670266d03bfb9a951748a0ecb8daa0802452f94a64803a7d8",
+  "bytes": 953279,
+  "size_px": [
+   355,
+   358
+  ],
+  "frames": 12,
+  "duration_s": 7.8,
+  "mean_fps": 1.5,
+  "frame_ms_min_max": [
+   650,
+   650
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 60.1,
+   "dark_background_pct": 2.1,
+   "lit_pixels_by_family_pct": {
+    "red": 49.5,
+    "gold_amber": 28.0,
+    "grey": 14.8,
+    "white_silver": 4.4,
+    "violet_purple": 2.2,
+    "magenta": 1.2,
+    "blue": 0.0,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#DEA772",
+   "gold_body_hex": "#865B3F"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 28.83,
+   "max_change_per_frame": 37.09,
+   "change_peaks_s": [],
+   "loop_seam_ratio": 1.27,
+   "mean_rel_luminance_min_max": [
+    0.078,
+    0.1195
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R68",
+  "owner_file": "1000192874.gif",
+  "sha256": "3d6a27a1025ecb1cf2262bde5e19932356ae32a1959641033164c957525d168a",
+  "bytes": 698013,
+  "size_px": [
+   356,
+   356
+  ],
+  "frames": 12,
+  "duration_s": 7.8,
+  "mean_fps": 1.5,
+  "frame_ms_min_max": [
+   650,
+   650
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 41.6,
+   "dark_background_pct": 29.4,
+   "lit_pixels_by_family_pct": {
+    "gold_amber": 77.0,
+    "red": 17.7,
+    "white_silver": 3.3,
+    "grey": 0.8,
+    "magenta": 0.7,
+    "violet_purple": 0.5,
+    "yellow_green": 0.0,
+    "green_teal": 0.0,
+    "blue": 0.0
+   },
+   "gold_highlight_hex": "#DEA473",
+   "gold_body_hex": "#865C42"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 23.48,
+   "max_change_per_frame": 45.97,
+   "change_peaks_s": [
+    5.2
+   ],
+   "loop_seam_ratio": 2.99,
+   "mean_rel_luminance_min_max": [
+    0.0003,
+    0.12
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R69",
+  "owner_file": "1000192873.gif",
+  "sha256": "a03e3c32c6f96caeeb57ae39d0747ede7932cf05f0022af7ffd82e040a6dbddf",
+  "bytes": 939984,
+  "size_px": [
+   356,
+   357
+  ],
+  "frames": 12,
+  "duration_s": 7.8,
+  "mean_fps": 1.5,
+  "frame_ms_min_max": [
+   650,
+   650
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 43.0,
+   "dark_background_pct": 3.8,
+   "lit_pixels_by_family_pct": {
+    "red": 53.1,
+    "gold_amber": 19.8,
+    "grey": 14.7,
+    "white_silver": 5.0,
+    "violet_purple": 4.2,
+    "magenta": 3.2,
+    "blue": 0.0,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D9A575",
+   "gold_body_hex": "#8B6046"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 24.83,
+   "max_change_per_frame": 37.91,
+   "change_peaks_s": [
+    2.6
+   ],
+   "loop_seam_ratio": 1.33,
+   "mean_rel_luminance_min_max": [
+    0.0646,
+    0.1107
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R70",
+  "owner_file": "1000192872.gif",
+  "sha256": "edf58013b9c9ae982e7ea624513b1004ca4f156341fb5d87f5df3e19fec4bf65",
+  "bytes": 857109,
+  "size_px": [
+   357,
+   355
+  ],
+  "frames": 12,
+  "duration_s": 7.8,
+  "mean_fps": 1.5,
+  "frame_ms_min_max": [
+   650,
+   650
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 51.5,
+   "dark_background_pct": 3.9,
+   "lit_pixels_by_family_pct": {
+    "red": 46.6,
+    "gold_amber": 28.1,
+    "grey": 20.4,
+    "white_silver": 4.5,
+    "violet_purple": 0.2,
+    "blue": 0.1,
+    "magenta": 0.0,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D5A376",
+   "gold_body_hex": "#815E46"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 27.62,
+   "max_change_per_frame": 31.19,
+   "change_peaks_s": [],
+   "loop_seam_ratio": 1.0,
+   "mean_rel_luminance_min_max": [
+    0.0694,
+    0.0964
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ },
+ {
+  "ref": "R71",
+  "owner_file": "1000192871.gif",
+  "sha256": "00f522edc338c9b6c4d250c877c001ce29f93b6f2c6d4d8913b5e6c4c9d73fa2",
+  "bytes": 884687,
+  "size_px": [
+   358,
+   357
+  ],
+  "frames": 12,
+  "duration_s": 7.8,
+  "mean_fps": 1.5,
+  "frame_ms_min_max": [
+   650,
+   650
+  ],
+  "loop_flag": 0,
+  "colour": {
+   "lit_share_pct": 50.5,
+   "dark_background_pct": 4.6,
+   "lit_pixels_by_family_pct": {
+    "red": 50.7,
+    "gold_amber": 23.3,
+    "grey": 17.5,
+    "white_silver": 3.7,
+    "violet_purple": 2.5,
+    "magenta": 2.4,
+    "blue": 0.0,
+    "yellow_green": 0.0,
+    "green_teal": 0.0
+   },
+   "gold_highlight_hex": "#D4A67B",
+   "gold_body_hex": "#8A634B"
+  },
+  "motion": {
+   "animated": true,
+   "mean_change_per_frame": 17.63,
+   "max_change_per_frame": 37.1,
+   "change_peaks_s": [
+    3.25
+   ],
+   "loop_seam_ratio": 2.12,
+   "mean_rel_luminance_min_max": [
+    0.0634,
+    0.0927
+   ],
+   "flash_transitions": 0,
+   "max_general_flashes_per_s": 0.0,
+   "wcag_2_3_1_heuristic": "pass"
+  },
+  "sheet_frames": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ]
+ }
+]

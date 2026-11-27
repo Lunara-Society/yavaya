@@ -14,7 +14,7 @@ run in each chapter. Earlier runs (Chapters 00–09) are in
 | Shaders compiled and rendered by Skia | `cd mobile && npm run check:shaders` | 6 of 6 | Chapter 09 |
 | Local end-to-end sign-in | production build on port 3100 (script was in the old session's scratchpad) | 18 of 18 | Chapter 09 |
 | Reference measurements | `python3 -I design/references/aether/tools/analyse_refs.py <out> <files>` | reproduces `design/references/aether/metrics.json` | AX-02 |
-| Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json`, `identity-batch3.json` | AX-02, second and third sends |
+| Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json`, `identity-batch3.json`, `identity-batch4.json`, `identity-small-controls.json` | AX-02, second to fourth sends |
 
 ## 2. Acceptance tests for the programme
 
@@ -23,7 +23,7 @@ the app: on a phone).
 
 | ID | Test | Passes when |
 | --- | --- | --- |
-| T-ID-01 | Roxi identity | front and three-quarter renders of any Roxi (3D, 2.5D or video) score at least 0.80 SFace cosine against her source with `design/references/aether/tools/identity_check.py` (her own images score 0.95–0.99, other generated women 0.07–0.48, the closest reference 0.62), and the owner recognises her without prompting |
+| T-ID-01 | Roxi identity | front and three-quarter renders of any Roxi (3D, 2.5D or video) score at least 0.80 SFace cosine against her source with `design/references/aether/tools/identity_check.py` (her own images score 0.95–0.99, and 0.88–0.90 shrunk to a GIF-size face of 68–87 px; other generated women 0.07–0.48; the closest reference 0.62), and the owner recognises her without prompting |
 | T-ID-02 | Guardian identity | any new Guardian rendering matches the approved artwork in pose, silhouette and palette; the owner approves |
 | T-CONTENT-01 | Unseen content (the piano test) | a test database (never production) gets listings Roxi has never seen (an antique piano, a tractor, a wedding dress, a farm machine); she presents each with no code change |
 | T-CONTENT-02 | Incomplete content | listings without photo, price or place: she adapts, invents nothing, the page still opens |
@@ -70,4 +70,15 @@ the app: on a phone).
 | Frames read | contact sheets of all 17 new GIFs | done (REFERENCE_MATRIX §8) |
 | Measurements | analysis script | `metrics-batch3.json`; 0 flash failures |
 | Identity | `identity_check.py` on the 17, with the 2 positive controls | R40 0.37 (0.30–0.46); R56 one face 0.18; the rest under 60 px |
+| Suites | not re-run | no app or platform code changed |
+
+### AX-02, fourth send (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Duplicates | SHA-256 and frame correlation against R01–R56 and within the send | none (best frame-by-frame match 0.28); R61 kept as a variant of R59 |
+| Frames read | contact sheets of all 15 GIFs | done (REFERENCE_MATRIX §9) |
+| Measurements | analysis script | `metrics-batch4.json`; 0 flash failures (at most 0.5 per second) |
+| Identity | `identity_check.py` on the 15, with the 2 positive controls | one woman (0.6–0.9 to each other); 0.18–0.38 against Roxi; R65, R66, R68 too small |
+| Size control | Roxi's source and film grade shrunk to faces of 65–87 px, saved with 256 colours | 0.88–0.90 (`identity-small-controls.json`) |
 | Suites | not re-run | no app or platform code changed |

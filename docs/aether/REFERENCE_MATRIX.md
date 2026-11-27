@@ -439,6 +439,8 @@ references pass it. So the scale is read against controls:
 | R40 thinking, close-up (third send) | median 0.37 (0.30–0.46) |
 | R56, the one measurable face (third send) | 0.18 |
 | R41–R55 (third send) | faces under 60 px: not measured |
+| R57–R71 (fourth send: one woman throughout) | medians 0.18–0.38 |
+| Roxi's own images shrunk to a GIF-size face (68–87 px, 256 colours) | 0.88–0.90 |
 
 Reading: R28 is the closest but still far from her own images. The three
 close-ups score in the range of different women, and R38 and R39 resemble
@@ -563,3 +565,127 @@ R40 adds a thinking face to C58.
 | Tabs "Distritos" and "Mi Yavaya", a "Buscar" field (R50, R54, R56) | "Distritos" exists; there is no "Mi Yavaya" | the app's own navigation |
 | A district card with a market photo (R50) | real content only | real listings or the district's own art |
 | Roxi presses a tile herself (R50) | she opens pages for the member (website tools) | she opens pages; anything that publishes, pays or sends waits for the member's tap |
+
+## 9. Fourth send (27 Nov 2026): R57–R71
+
+Fifteen more files arrived ("More is coming, these are the last ones we have
+now"). Measurements: `design/references/aether/metrics-batch4.json`; face
+scores: `design/references/aether/identity-batch4.json`; the size control:
+`design/references/aether/identity-small-controls.json`.
+
+- **Duplicates:** none (best frame-by-frame match 0.28; no frame pair above
+  0.68). R61 is a gold variant of R59, kept and labelled (AX-D014).
+- **Files:** 12 frames each, held 0.30–0.65 s (loops of 3.6–7.8 s), about
+  356 × 356; every one shows her with the app on glass panels.
+- **Flashes:** all pass (at most 0.5 per second).
+- **Colour:** the glow is gold now (gold is 15–77 % of the lit pixels; the
+  warm reds are skin and lamplight). The opening, R68, measures `#DEA473`
+  (highlight) and `#865C42` (body), close to `gold.core` `#DEA258` and
+  `gold.deep` `#895E2F`. Violet stays in some particles (R58, R59: 16–53 %);
+  the map and route scenes are blue (R57, R66: 44–47 %).
+- **Identity:** one woman throughout. Her faces match each other at 0.6–0.9
+  (R59–R70 mostly 0.77–0.90) and Roxi's source at 0.18–0.38 (faces of 60–87
+  px; R65, R66 and R68 too small). **Size control:** Roxi's source (crop
+  (370, 0)–(1090, 720)) scaled so her face is 85 px, and her film grade scaled
+  to 65 and 85 px, all saved with 256 colours like a GIF, score 0.88, 0.90 and
+  0.90 (at 65 px the source face fell under the 60 px limit). So she is a
+  consistent new character, **not Roxi**. Her outfit is not Roxi's either: a
+  brown-black leather jacket without purple or lilac piping, and wavy brown
+  hair.
+- **Interface marks:** a gold "V" beside "Yavaya" in every GIF: not Yavaya's
+  logo unless the owner adopts it (AX-D017).
+
+### What each one shows
+
+**R57 A light map to Granada.** Beside a glass Yavaya panel she points at the
+viewer; the scene becomes a light map; she walks a gold route to Granada,
+opens its card (Restaurantes, Alojamiento, Servicios, Atracciones), picks
+restaurants, sits on the map and ends in a close-up with an open hand.
+
+**R58 Cards in layers.** She pulls a tile out of a glass grid; it opens into
+stacked glass cards (a listing, a place, a route with a pin); she browses
+them, taps the pin and folds them back into the grid.
+
+**R59 Into Santuario with you.** She taps the Santuario tile; her body
+dissolves into gold and violet particles that stream into the emblem; through
+a ring she arrives in a courtyard with a church tower at sunset, re-forms and
+presents Santuario's sections.
+
+**R60 Through the glass.** Walking down a glass corridor, she touches the
+Santuario tile, walks through the layers of glass and comes out the other
+side, offering her hand.
+
+**R61 Into Santuario, in gold.** The journey of R59 in warmer gold, with
+ribbons.
+
+**R62 Mercadito: a product in her hand.** She taps Mercadito; a product floats
+out of the listing and turns in her hand (360°); its page shows features,
+"4.9 (127 reseñas)", "Vendedor verificado", "C$ 1,650", "Envío disponible"
+and "Comprar"; "¡Listo! Tu compra se registró en Mercadito" follows, then
+suggestions and a glass shopping bag.
+
+**R63 Into Santuario: Paz interior.** The journey again, through a courtyard
+with candles and flowers, ending with her pointing at "Paz interior".
+
+**R64 Choosing a place on the map.** She taps a glowing platform; a glass dome
+shows a light map of Central America with a list of countries; she walks on
+it, picks Nicaragua, then Managua, whose card opens.
+
+**R65 Calm in Santuario.** Seated cross-legged in a courtyard at sunset, with
+a volcano and a colonial town behind her, she breathes slowly with her eyes
+closed beside the Santuario panel, then opens a hand.
+
+**R66 YavayaGo: a route.** On the YavayaGo panel (Viajes, Paquetes, Mandados,
+Restaurantes, Rutas) she taps Rutas; the map zooms to Managua; a route of
+8.4 km and 16 minutes leads to a restaurant; she walks it to arrival; the
+card offers "Llamar", "Ir ahora" and "Guardar".
+
+**R67 Creating a listing.** In Mercadito she opens "Crear publicación": title,
+description and category, photos (camera or gallery, up to 10), preview,
+price, "Publicar"; "¡Publicación creada!" appears, then her listings (Activas,
+Borradores, Finalizadas), and she gives a thumbs up.
+
+**R68 The opening.** Darkness; a spark of gold light grows into a ring; a gold
+"V" emblem rises with the word Yavaya; she forms from gold particles beside it;
+the district grid assembles and she presents it.
+
+**R69 A token vault.** She taps a "Bóveda Digital" tile; a vault door opens on
+a balance and tokens; she buys a package (2, 10, 25, 50, 100 or 500 tokens),
+confirms, "Compra realizada" appears; then the history of movements.
+
+**R70 Voice search.** She taps the microphone: "Te escucho…", "Analizando tu
+solicitud…", "Organizando resultados…"; the query "Restaurantes en Managua"
+opens results with tabs (Restaurantes, A domicilio, Servicios), a dish, a map
+view and her message ("Puedes llamar, escribir o ver en el mapa"); she filters
+by zone (Managua, Granada, León, Masaya) and the results update.
+
+**R71 Messages.** She taps a "Mensajes" tile: "Nuevo mensaje", an inbox
+(Todos, No leídos, Archivos), then a chat thread with a message being typed.
+
+### New capabilities
+
+| ID | Capability | System | Seen in | Technique | Real data and rules | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| C74 | Roxi goes into a district with the member: she dissolves into particles that carry her through a ring to the district's place, or walks through the glass, and re-forms beside its sections | IMPOSSIBILIS, INFINITY | R59, R60, R61, R63 | PTC + SHD + CMP, shared element into the district hero | the district's real sections and art | NOT IMPLEMENTED |
+| C75 | Light-map travel: she walks a light map to a country and a city and opens its card | AETHER, INFINITY | R57, R64, R66 | vector map with a light style, SHD; her walk on the map | places are rows; ratings only where reviews exist | NOT IMPLEMENTED |
+| C76 | Layered glass cards: a tile pulled out into stacked cards to browse, then folded back | INFINITY | R58 | UI shared elements, depth | real items only | NOT IMPLEMENTED |
+| C77 | An item rises out of its listing and turns in her hand | SYMBIOSIS | R62 | SKL + IK, card in 3D | only the listing's own photos, never an invented 3D model | NOT IMPLEMENTED |
+| C78 | She guides a listing, step by step: details, photos, preview, price, publish | SYMBIOSIS | R67 | UI + Roxi tools | the platform's real form; she prepares, the member taps Publicar | REAL as drafts on the website; NOT IMPLEMENTED in the app |
+| C79 | Voice search with her stages shown (listening, analysing, organising), then results, map and filters | VOX, SENTIENCE, SYMBIOSIS | R70 | Presence states + search UI | real search; services that exist | INCOMPLETE (voice REAL on the website) |
+| C80 | Opening: a spark becomes the mark, she forms from gold particles, the app assembles around her | GENESIS | R68 | PTC + SHD + CMP | the official logo (AX-D017) | NOT IMPLEMENTED |
+| C81 | Calm presence: seated, breathing slowly with her eyes closed | VITALIS | R65 | idle loop (breath, blink, micro-motion) | — | NOT IMPLEMENTED |
+
+### Where the fourth send differs from the platform
+
+| Reference shows | The platform today | Until the owner decides |
+| --- | --- | --- |
+| Buying in Mercadito: "Comprar", "¡Listo! Tu compra se registró", "Ver pedido" (R62) | listings with contact; no checkout; a purchase is never shown as done unless it happened | listings with contact (question 6) |
+| Rating, reviews, "Vendedor verificado" and "Envío disponible" on a listing (R62) | only what the listing and the seller really have | real fields only |
+| Buying tokens inside the app: packages, "Confirmar", "Compra realizada" (R69) | tokens are bought on the website; in-app buying waits for the store-billing decision (R1); packages and prices come from the business rules | tokens open the website |
+| "Bóveda Digital" as the token wallet (R69) | "La Bóveda" is the play vault of collectible pieces | the website's token page; the name stays with the play vault |
+| "Mensajes", an inbox and a chat (R71); "escribir" in results (R70) | no member messages | hidden (question 6) |
+| YavayaGo "Restaurantes" and "Rutas", with a route, arrival, "Guardar" (R66) | YavayaGo trip kinds: ride, parcel, errand, personal help, with drivers' offers; no navigation provider; no saved places | trips, parcels and errands only |
+| "Comida a domicilio" (R70) | not a Yavaya service | hidden |
+| Santuario sections "Reflexiones", "Paz interior", "Bienestar" (R59, R61, R63, R65) | the word for the day exists; these sections do not | the district's real sections |
+| Ratings such as "4.8 (327)" on places and restaurants (R57, R66) | ratings only where the platform has reviews | real data only |
+| A gold "V" beside "Yavaya" (R57–R71) | the official logo in `platform/public/brand/` | the official logo (AX-D017) |

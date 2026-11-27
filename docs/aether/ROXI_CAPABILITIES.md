@@ -17,7 +17,7 @@ behaviours (primitives) every chapter builds on. States as in
   ([ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9); until then the source outfit
   rules.
 - **Not her:** the women in references R03, R08, R10 and R26, and the faces
-  in R27–R56. The second send (R27–R39) shows a Roxi-like woman in a purple
+  in R27–R71. The second send (R27–R39) shows a Roxi-like woman in a purple
   jacket; measured against her source, the closest face scores 0.59 and the
   close-ups 0.21–0.37, where her own images score 0.95–0.99
   ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) §7). Their movements, gestures
@@ -25,7 +25,10 @@ behaviours (primitives) every chapter builds on. States as in
   (they drift to black cargo trousers, combat boots and a belt). The third
   send (R40–R56) adds tactical items (thigh pouches or a holster, harness
   straps, fingerless gloves, tall combat boots) and wavy hair with violet
-  streaks: none of it is hers.
+  streaks: none of it is hers. The fourth send (R57–R71) is one consistent
+  woman with another face (0.18–0.38 against her source, where her own
+  images shrunk to the same size score 0.88–0.90), in a brown leather jacket,
+  with wavy brown hair.
 - **Her glow is gold** (the owner, 27 Nov: "Roxi should have a glow in gold
   instead of purple"): rim light, particles and material states use the gold
   tokens, never violet.
@@ -81,12 +84,12 @@ never from a specific product. A new kind of listing needs no new animation.
 | `react` | smiles, nods, concern | sentiment | glow colour | facial shapes | R03 f8 |
 | `listen`, `think`, `speak`, `problem` | visible state | voice state | Presence glow | face, posture, lips | Presence |
 
-Movement references for the primitives (second and third sends; motion only,
+Movement references for the primitives (second to fourth sends; motion only,
 never the face):
 
 | Primitive | Reference |
 | --- | --- |
-| `materialise` | R28: particles, silhouette, hologram, solid; the camera moves in; a smile. R52 from strands of light, R53 out of a line of light, R51 climbing out of the screen |
+| `materialise` | R28: particles, silhouette, hologram, solid; the camera moves in; a smile. R52 from strands of light, R53 out of a line of light, R51 climbing out of the screen, R68 from gold particles beside the mark |
 | `reach_and_hold`, `present`, `guide_to_action`, `dematerialise` | R27: the photo pulled from its card, held on her palm, the facts open with Contactar, the photo dissolves back |
 | walk in and face (new) | R31 |
 | exit (new) | R29, R32 walk away; R46 walk away in glass; R47 a line of light; R48 fade |
@@ -102,6 +105,13 @@ never the face):
 | celebrate (new; only after a real success) | R42 |
 | working on several things (echoes) | R44 |
 | interface scale and touch (new): walks on the app, a tile lights under her hand, taps with the member | R49, R50, R54, R55, R56 |
+| `idle`: calm breathing, eyes closed | R65 |
+| into a district with the member (new) | R59, R60, R61, R63 |
+| walking a light map (new) | R57, R64, R66 |
+| `fan_out`: layered glass cards | R58 |
+| `reach_and_hold`, `present`: an item turning in her hand | R62 |
+| guiding a form step by step (new; the member publishes) | R67 |
+| `listen`, `think`, `speak` as visible stages | R70 |
 | `dock`, summoned by a central button | R26; R52 sitting on the district bar |
 
 Planner rules (shape-based, never category-based):

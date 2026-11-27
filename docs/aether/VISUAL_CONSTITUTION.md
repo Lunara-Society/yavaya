@@ -17,7 +17,7 @@ visible change ships behind **Classic**.
 2. The owner's reference video: "a major direction of how the app can look",
    "not to do exactly the design the video shows" (its breakdown:
    VISUAL_DIRECTION.md).
-3. The 56 references of 27 Nov, in three sends ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md)).
+3. The 71 references of 27 Nov, in four sends ([REFERENCE_MATRIX.md](REFERENCE_MATRIX.md)).
 4. The identity assets: Roxi's source image and the approved Guardian.
 5. The owner on the second send of references (27 Nov 2026): "I'm just
    giving you the direction of her movement and Roxi should have a glow in
@@ -80,7 +80,9 @@ gold (as R18 does). The website does not change. The second send glows
 violet in Diáspora (R21, R25) and cyan in Movilidad (R22): in the app,
 Diáspora takes gold or blue instead of violet, and Movilidad's cyan stays
 only if the owner confirms it fits. The third send's interface scenes glow
-violet and blue; in the app they are black glass and gold.
+violet and blue; in the app they are black glass and gold. The fourth send
+already glows gold: its opening (R68) measures `#DEA473`, close to
+`gold.core`.
 
 ## 3. Materials
 
