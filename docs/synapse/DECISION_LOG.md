@@ -224,3 +224,14 @@ shader. `HoloPanel lite`.
 x86 sets serve emulators only, made the build server run out of memory once
 WebRTC came in, and doubled the APK's native libraries. Add `x86_64` back for an
 emulator build if one is ever needed.
+
+### D-038 · 27 Nov 2026 · Android builds stay inside the free build server's memory
+Build `258b7ac1` printed nothing after five minutes in native compiles and was
+canceled at the plan's 45-minute limit ("If your build takes longer to run than
+the maximum duration allowed for your plan, it will be canceled", Expo's build
+limitations page). The C++ libraries are the versions that built 0.3.0; 0.4.0
+adds Kotlin and Java. The Kotlin compiler's process now gets 2 GB
+(`kotlin.daemon.jvmargs`) instead of inheriting Gradle's 4 GB, and Gradle runs
+at most two tasks at once (`org.gradle.workers.max=2`), set beside the phone
+architectures in `app.config.ts`. The `large` class (8 vCPUs, 32 GB) would also
+fix it, but it is a paid upgrade and the owner's decision.

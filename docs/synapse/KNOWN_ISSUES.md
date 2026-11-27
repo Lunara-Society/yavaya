@@ -151,7 +151,12 @@ From Chapter 09 (details in [CHAPTER_09.md](CHAPTER_09.md)):
 34. **No current development build.** The last one (`d2a5bee8`, 0.3.0) was
     canceled. The owner does not need it; rebuild before using `Yavaya Dev`.
 
-35. **Cloud builds start from this machine only.** The Expo project has no
+35. **Android builds run close to the free build server's limits** (4 vCPUs,
+    16 GB, 45 minutes). Two 0.4.0 builds ran out of memory; D-038 caps the
+    Kotlin compiler and Gradle's parallel tasks. If builds fail again, the paid
+    `large` class (8 vCPUs, 32 GB) is the next step, the owner's decision.
+
+36. **Cloud builds start from this machine only.** The Expo project has no
     GitHub repository connected, so Expo cannot build from the repository on
     its own; the EAS CLI here uses the Expo credential saved in the session
     environment.

@@ -94,7 +94,7 @@ Detail: [CHAPTER_09.md](CHAPTER_09.md).
 | Shaders | `npm run check:shaders` | 6/6 compile and render; Roxi's hologram rendered at phone size from her picture and depth map |
 | The app at phone size | Expo web build, Chromium, Playwright: home, Roxi, Mercadito, Ajustes with production data | pass after the lite-glass fix (white panels came from more than 16 WebGL contexts) |
 | Android prebuild | `expo prebuild` locally (preview variant) | `reactNativeArchitectures=armeabi-v7a,arm64-v8a`; microphone permissions and the `yavaya` scheme in the manifest |
-| Android preview builds | EAS | `61e55061` failed (WebRTC 144.2.0 prefixed build, fixed by pinning); `91a52595` failed (build server out of memory); `258b7ac1` from `c3fbcd7`: BUILD_RESULT |
+| Android preview builds | EAS | `61e55061` failed (WebRTC 144.2.0 prefixed build, fixed by pinning); `91a52595` failed (build server out of memory); `258b7ac1` from `c3fbcd7` canceled at the 45-minute limit after stalling in native compiles; `27cc5ff7` from `146d2ea` (memory limits, D-038): BUILD_RESULT |
 
 Not tested: anything on a phone, which means the browser tab returning to the
 app, Roxi's voice, the microphone, frame rates, and a website screen opening

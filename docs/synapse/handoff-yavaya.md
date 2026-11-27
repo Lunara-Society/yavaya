@@ -1,6 +1,6 @@
 # active-memory handoff: Yavaya app 0.4.0 (Synapse Chapter 09)
 
-**Handoff #1** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); preview APK build `258b7ac1` was still compiling when this was written.
+**Handoff #1** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits started 27 Nov ~02:20 UTC.
 
 ## 0. Instructions for Claude (read first)
 
@@ -69,6 +69,7 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | WebRTC pinned at 144.1.2 via npm override (D-035) | 144.2.0 is LiveKit's `livekit.org.webrtc` prefixed build; Kotlin compile fails |
 | "Lite" glass panels (views only) for grids and lists (D-036) | one Skia canvas per panel exceeded the 16 WebGL contexts; panels went white |
 | Android builds only `armeabi-v7a,arm64-v8a` (D-037) | four ABIs ran the EAS build server out of memory once WebRTC came in |
+| Kotlin daemon `-Xmx2g`, `org.gradle.workers.max=2` (D-038), in `app.config.ts` `withBuildLimits` | build `258b7ac1` stalled in native compiles and was canceled at 45 min; paid `large` class not used without approval |
 | Deploy the additive server endpoints to production after staging | Claude's stated assumption from "push hard on everything"; done, no existing route changed behaviour |
 
 ## 7. Changed / rejected
@@ -83,12 +84,13 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | What | Value |
 | --- | --- |
 | Repo | Lunara-Society/yavaya, checked out at `/home/user/yavaya` (`platform/`, `mobile/`, `docs/synapse/`) |
-| Latest commit on branch and `main` | `18cef41` "Chapter 09 record; app sign-in returns by redirect" |
+| Latest commits on branch and `main` | `146d2ea` build memory limits · `0ba2ff5` this handoff · `18cef41` "Chapter 09 record; app sign-in returns by redirect" (last platform change, deployed) |
 | Earlier commits this chapter | `4c6894a` platform endpoints · `0ac7b5f` voice deps · `6c78bab` WebRTC pin · `a889c1f` mobile 0.4.0 · `c3fbcd7` phone ABIs only |
 | App version | 0.4.0 (`mobile/package.json`, `app.json`) |
 | Expo project | `@yavaya/yavaya`, ID `9e779c70-bbec-48c5-ac71-ca8a45debf66`, Android package `yavaya.lat` |
-| Preview build in progress | `258b7ac1-f6b7-44de-9267-80f940e2c4d0` (from `c3fbcd7`, runtime `516bf964a363efb291cd51b46670588fe1a456d8`, channel `preview`), artifact expires 2026-12-11T01:29:49Z; logs https://expo.dev/accounts/yavaya/projects/yavaya/builds/258b7ac1-f6b7-44de-9267-80f940e2c4d0 |
-| Failed builds | `61e55061` (WebRTC prefix) · `91a52595` ("Gradle build daemon disappeared", out of memory) · `61a280db` canceled · `d2a5bee8` dev 0.3.0 canceled |
+| Preview build in progress | `27cc5ff7-4724-4f42-a331-0271f3f54f9c` (from `146d2ea`, channel `preview`); logs https://expo.dev/accounts/yavaya/projects/yavaya/builds/27cc5ff7-4724-4f42-a331-0271f3f54f9c |
+| Failed builds | `61e55061` (WebRTC prefix) · `91a52595` ("Gradle build daemon disappeared", out of memory) · `258b7ac1` (stalled 5 min into native compiles, canceled at the 45-minute limit) · `61a280db` canceled · `d2a5bee8` dev 0.3.0 canceled at 45 min |
+| EAS limits (docs) | medium Android class 4 vCPUs, 16 GB, Gradle `-Xmx4g`, `org.gradle.parallel=true`; `large` 8 vCPUs, 32 GB (paid); builds over the plan's maximum duration are canceled (observed 45:00) |
 | Last good APK (0.3.0) | build `6d7af8c1` |
 | Production | https://yavaya.lat · Railway project `yavaya` `682b2a31-cad5-4e80-a863-51a4dd23f012`; deploys of `18cef41` SUCCESS (services `d49a2cfb…` ams, `6fbb30af…` iad; `e907c02f…` skipped) |
 | Staging | https://yavaya-web-staging.up.railway.app · Railway project `yavaya-staging` `c9521f3e-2be0-4a82-8787-dd17f9287cce`; deploy of `18cef41` SUCCESS |
@@ -121,15 +123,15 @@ cd ../platform && npx vitest run    # full suite, local Postgres (service postgr
 |---|---|---|---|
 | Server endpoints (sign-in, bearer, Roxi start, feeds) | live | `18cef41` on yavaya.lat and staging | not exercised from a phone yet |
 | Mobile 0.4.0 code | done, pushed | `c3fbcd7` | typecheck + 41 tests |
-| Preview APK 0.4.0 | building | EAS `258b7ac1` | when finished: link to owner |
+| Preview APK 0.4.0 | building | EAS `27cc5ff7` | when finished: link to owner; if it stalls or fails again, read the log and tell the owner the paid `large` class is the next option |
 | Chapter 09 record | written, pushed | `docs/synapse/CHAPTER_09.md` + index, tests, decisions D-032–D-037, known issues 31–35, status, memory | two placeholders above |
 | Owner phone test of 0.4.0 | not started | steps in `docs/synapse/NEXT_CHAPTER.md` | waits for the APK |
 | Development build | none current | — | owner doesn't need it |
 | Task list | #92–#95 completed; #96 "Ship" in progress; #57 (HeyGen) pending on HEYGEN_API_KEY | — | — |
 
 ## 11. Next steps
-1. **Next action:** check EAS build `258b7ac1` (`build:view`). If FINISHED, take `artifacts.applicationArchiveUrl`. If ERRORED, download its log with `curl --compressed`, fix, rebuild.
-2. Replace `APK_LINK` (NEXT_CHAPTER.md) and `BUILD_RESULT` (TEST_REPORTS.md: e.g. "finished; [APK](…) (link valid until 11 Dec 2026)"). Commit and push to the branch and `main`.
+1. **Next action:** check EAS build `27cc5ff7` (`build:view`). If FINISHED, take `artifacts.applicationArchiveUrl`. If ERRORED, download its log with `curl --compressed`, fix, rebuild.
+2. Replace `APK_LINK` (NEXT_CHAPTER.md) and `BUILD_RESULT` (TEST_REPORTS.md: e.g. "finished; [APK](…) (link valid until <expirationDate>)"); fix the expiry date in NEXT_CHAPTER.md to the build's `expirationDate`. Commit and push to the branch and `main`.
 3. Send the owner a short, phone-friendly report: APK link; steps (install over 0.3.0; Ajustes → "Continuar con Google" and come back; talk to Roxi; look at home; open Mercadito); what changed; what is unverified (browser tab return, WebRTC voice, frame rate, signed-in WebView); production districts are empty because the website has no content yet.
 4. Wait for the owner's phone results; fix what they show (proposed Chapter 10 in NEXT_CHAPTER.md is not authorised).
 
