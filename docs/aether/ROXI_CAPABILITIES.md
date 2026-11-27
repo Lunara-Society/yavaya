@@ -31,7 +31,9 @@ behaviours (primitives) every chapter builds on. States as in
   with wavy brown hair.
 - **Her glow is gold** (the owner, 27 Nov: "Roxi should have a glow in gold
   instead of purple"): rim light, particles and material states use the gold
-  tokens, never violet.
+  tokens, never violet. In the interface that gold is champagne (AX-D026);
+  her engine and identity are specified in [ROXI_ENGINE.md](ROXI_ENGINE.md)
+  and [IDENTITY_SPEC.md](IDENTITY_SPEC.md).
 - **What she is not:** she is an assistant, not a person. She does not claim
   to be conscious or to feel. She never publishes, pays or sends anything for
   a member: she prepares, the member confirms.

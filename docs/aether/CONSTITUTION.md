@@ -223,3 +223,181 @@ Maintain identical facial identity and recognizable clothing across variants.
 Do not claim exact 3D reconstruction from insufficient reference images. Identify where additional views, manual modeling or specialist assets are required.
 
 Choose the final pipeline according to visual fidelity, performance, licensing and production feasibility.
+
+---
+
+[AX-04 — production architecture, the permanent visual language and Roxi's identity. Received 27 November 2026, after the owner's answers to the seven questions; stored exactly as sent. Answered by PRODUCTION_ARCHITECTURE.md, VISUAL_LANGUAGE.md, ROXI_ENGINE.md and IDENTITY_SPEC.md]
+
+Design the production architecture for Android and iOS based on the existing Yavaya source code.
+
+Evaluate native rendering, cross-platform rendering, embedded 3D engines and hybrid approaches.
+
+Select technologies only after evaluating their compatibility with the existing application.
+
+Separate:
+
+- Functional application UI
+- Visual rendering engine
+- Roxi character engine
+- Intelligence orchestration
+- Animation system
+- Voice system
+- Backend services
+- Asset delivery
+- User preferences
+
+The functional application must never depend on successful 3D rendering.
+
+Support progressive asset loading, caching, adaptive rendering and graceful degradation.
+
+Avoid unnecessary engine duplication, excessive application size and architectural lock-in.
+
+Establish Yavaya's permanent visual language.
+
+Use absolute black, deep obsidian, transparent optical materials, restrained champagne gold, optical silver, titanium and contextual district accents.
+
+Create extraordinary depth, precision and visual clarity.
+
+Take inspiration from advanced holographic technology and immersive Animus-like interaction principles without copying Assassin's Creed branding, characters or proprietary assets.
+
+Avoid generic cyberpunk, excessive neon, conventional science-fiction dashboards, repetitive glowing rings and unnecessary decorative particles.
+
+Preserve authentic Yavaya branding.
+
+All interfaces must feel like parts of the same technological ecosystem.
+
+Create a reusable material engine supporting:
+
+- Transparent optical crystal
+- Liquid glass
+- Obsidian
+- Optical titanium
+- Champagne-gold metallic surfaces
+- Frosted transparency
+- Refractive materials
+- Spectral matter
+- Adaptive opacity
+- Microscopic luminous structures
+
+Materials must respond to interaction, focus, depth, environmental lighting and rendering quality.
+
+Implement lightweight alternatives for lower-performance devices.
+
+Do not use heavy blur or transparency effects indiscriminately.
+
+Implement a coherent optical system supporting realistic highlights, controlled reflections, depth perception, refraction, selective illumination and visual hierarchy.
+
+Lighting should communicate interaction state rather than exist purely as decoration.
+
+Selected elements receive controlled illumination.
+
+Background elements become visually quieter.
+
+Preserve typography readability under every lighting condition.
+
+Avoid excessive bloom, lens flares and continuous light animations.
+
+Use physically inspired effects where practical and optimized approximations where necessary.
+
+Create a reusable interface transformation engine.
+
+Support:
+
+- Expansion
+- Compression
+- Folding
+- Unfolding
+- Optical separation
+- Material transformation
+- Shape interpolation
+- Shared-element transitions
+- Contextual reconstruction
+
+Elements should preserve spatial continuity when moving between screens.
+
+All transformations must be interruptible and reversible where appropriate.
+
+Functional navigation must occur immediately regardless of cinematic animation state.
+
+Reconstruct district navigation as a coherent, mobile-first spatial environment.
+
+Support all 15 existing Yavaya districts and YavayaGo.
+
+District selection should feel like entering a different environment while remaining inside the same application.
+
+Preserve direct navigation, search, back navigation and deep links.
+
+Use spatial organization, intelligent focus and contextual atmosphere.
+
+Do not force users to navigate through elaborate animations or three-dimensional environments to reach ordinary content.
+
+Implement visual continuity throughout the application.
+
+Preserve the apparent relationship between selected content, its destination screen, Roxi and the surrounding interface.
+
+Support continuous transitions between districts, listings, profiles, conversations, maps and account screens.
+
+Maintain scroll positions, drafts, filters and relevant user state.
+
+Avoid unnecessary screen resets.
+
+Support immediate interruption and navigation reversal.
+
+Implement precise touch-responsive optical behavior.
+
+Support tap, long press, scrolling, dragging and selection using existing mobile interaction conventions.
+
+Visual materials should respond locally to touch.
+
+Use subtle deformation, controlled highlights, depth changes and appropriate haptic feedback.
+
+Target immediate perceived responsiveness.
+
+Never require cinematic gestures to perform ordinary actions.
+
+Do not imply that ordinary touchscreens can detect approaching fingers before contact.
+
+Implement optional advanced gesture interactions where they improve usability.
+
+Support pinch, zoom, rotation, dragging and contextual expansion for suitable content.
+
+Maintain conventional accessible alternatives.
+
+Evaluate device-motion-based perspective changes only when supported and useful.
+
+Avoid accidental activation and conflicts with operating-system gestures.
+
+Advanced gestures must never become mandatory for essential application functionality.
+
+Create Roxi as a persistent digital human with independent control over:
+
+- Position
+- Scale
+- Orientation
+- Material
+- Transparency
+- Locomotion
+- Attention
+- Facial expression
+- Emotional expression
+- Speech
+- Gestures
+- Environmental interaction
+
+These properties must operate concurrently.
+
+Roxi must be capable of speaking while walking, listening while transforming, gesturing while changing scale and maintaining conversational continuity while navigating.
+
+Do not implement her as a fixed sequence of prerecorded animations.
+
+Establish the original Roxi photograph as the canonical identity reference.
+
+Preserve her facial geometry, proportions, skin appearance, eyes, hair and original violet-and-black clothing.
+
+Remove unrequested tactical gloves, holsters, combat accessories and clothing modifications introduced by generated references.
+
+Create an identity consistency specification.
+
+All character assets, materials, facial animations and rendering variants must preserve the same recognizable identity.
+
+Push main 

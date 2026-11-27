@@ -25,6 +25,20 @@ the app: on a phone).
 | --- | --- | --- |
 | T-ID-01 | Roxi identity | front and three-quarter renders of any Roxi (3D, 2.5D or video) score at least 0.80 SFace cosine against her source with `design/references/aether/tools/identity_check.py` (her own images score 0.95–0.99, and 0.88–0.90 shrunk to a GIF-size face of 68–87 px; other generated women 0.07–0.48; the closest reference 0.62), and the owner recognises her without prompting |
 | T-ID-02 | Guardian identity | any new Guardian rendering matches the approved artwork in pose, silhouette and palette; the owner approves |
+| T-ID-03 | Roxi's proportions | front renders: the five YuNet landmark ratios each within ±6 % of her source (IDENTITY_SPEC §5); NOT IMPLEMENTED |
+| T-ID-04 | Roxi's colours | ΔE2000 against her measured colours: skin and hair ≤ 5, clothing and boots ≤ 8; NOT IMPLEMENTED |
+| T-ID-05 | Roxi's silhouette | front render's matte against `roxi-matte.png`, IoU ≥ 0.95; NOT IMPLEMENTED |
+| T-ID-06 | Nothing that is not hers | the IDENTITY_SPEC §3 list ticked for every view (manual) |
+| T-ID-07 | The owner recognises her | a sheet of renders shown without prompting; the owner says it is Roxi |
+| T-LAYER-01 | Function without rendering | with every visual flag off and no 3D pack on the phone, every flow completes (PRODUCTION_ARCHITECTURE §2) |
+| T-DEGRADE-01 | Degradation | an engine that throws or draws nothing for 1.5 s is replaced by the next level down; the screen stays usable |
+| T-TRANS-01 | Interruptible transformations | a touch at any progress stops a transformation; back at any progress reverses it; the destination takes touches from the first frame |
+| T-STATE-01 | Continuity | scroll, filters, search, tab and drafts come back after back, after a deep link and after the screen was unmounted; nothing kept after sign-out |
+| T-IDLE-01 | Calm when idle | an untouched screen draws no new frames after its last transition (frame counter) |
+| T-COLOUR-01 | Permanent palette | the contrast values of VISUAL_LANGUAGE §2 hold as assertions in a test like `design.test.ts` |
+| T-RX-01 | Roxi's channels | each channel changes alone; a stronger layer overrides only its body regions (unit tests) |
+| T-RX-02 | Roxi does several things at once | she speaks while moving, listens while her material changes, gestures while her scale changes and keeps talking across five route changes, at full frame rate on the Samsung |
+| T-GESTURE-01 | No accidental gestures | no custom gesture starts in the system gesture zones; every gesture has a button; phone motion triggers nothing |
 | T-CONTENT-01 | Unseen content (the piano test) | a test database (never production) gets listings Roxi has never seen (an antique piano, a tractor, a wedding dress, a farm machine); she presents each with no code change |
 | T-CONTENT-02 | Incomplete content | listings without photo, price or place: she adapts, invents nothing, the page still opens |
 | T-FACTS-01 | Never invents | every number, price, place, rating, availability and credential in her transcript appears in the descriptor or a tool answer (automatic transcript check) |
@@ -91,3 +105,11 @@ the app: on a phone).
 | Gold | analysis script (`metrics-brand.json`) | logo `#F0920C` / `#973D05`; lettering `#F89511` / `#923C03` |
 | Free font for the lettering | "YAVAYA" set in Cinzel beside the owner's lettering | close match at the bold weight; Cinzel's licence checked in its `OFL.txt` (SIL OFL 1.1) |
 
+### AX-04 design (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Code paths named in the four documents | each checked to exist in the repository | all exist (`mobile/tools/synapse/check-shaders.mjs` corrected) |
+| Permanent palette contrast | WCAG relative luminance, on `#000000` and `#18181B` | champagne 4.67 (deep, edges only) to 16.96; silver 13.28 and 18.24; titanium 3.42 (lines only) to 10.65 |
+| 3D candidates | npm registry, 27 Nov | versions, peers and New Architecture support as in PRODUCTION_ARCHITECTURE §4.2; nothing installed |
+| Builds and suites | none run: this chapter changes documents only | — |

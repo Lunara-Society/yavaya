@@ -237,6 +237,12 @@ Guards that make "never invent" testable:
 
 ## 7. Rendering tiers
 
+Refined in AX-04 into the degradation ladder L4 Full, L3 Balanced, L2 Lite,
+L1 Basic and L0 Classic, per layer
+([PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md) §6, AX-D030);
+decorative particles are out (VISUAL_LANGUAGE §1). The table below is the
+AX-01 view.
+
 | Tier | What draws | Who gets it |
 | --- | --- | --- |
 | Classic | the previous app (website bridge) | anyone who switches; always one tap away |
@@ -274,7 +280,10 @@ ship first as video tier with stills, then move to real time.
 | Chapters and their state | [CHAPTER_STATUS.md](CHAPTER_STATUS.md) |
 | References and what they ask for | [REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) |
 | Roxi: capabilities and pipeline | [ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md), [ROXI_PIPELINE.md](ROXI_PIPELINE.md) |
-| Look and motion | [VISUAL_CONSTITUTION.md](VISUAL_CONSTITUTION.md) |
+| Production architecture for Android and iOS (AX-04) | [PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md) |
+| The permanent visual language (AX-04) | [VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md) |
+| Roxi's character engine and identity (AX-04) | [ROXI_ENGINE.md](ROXI_ENGINE.md), [IDENTITY_SPEC.md](IDENTITY_SPEC.md) |
+| Look and motion (references, identity, safety) | [VISUAL_CONSTITUTION.md](VISUAL_CONSTITUTION.md) |
 | Assets | [ASSET_REGISTRY.md](ASSET_REGISTRY.md) |
 | Decisions | [TECHNICAL_DECISIONS.md](TECHNICAL_DECISIONS.md) (AX-D…); earlier D-001–D-038 in [DECISION_LOG.md](../synapse/DECISION_LOG.md) |
 | Tests | [PRODUCTION_TESTS.md](PRODUCTION_TESTS.md); earlier runs in [TEST_REPORTS.md](../synapse/TEST_REPORTS.md) |

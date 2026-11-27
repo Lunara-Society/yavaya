@@ -7,6 +7,13 @@ keep them safe and fast. It replaces, for new work, the design notes in
 Written 27 Nov 2026 (AX-01, AX-02). Nothing here is in the app yet; every
 visible change ships behind **Classic**.
 
+**From AX-04 (27 Nov 2026):** interface colour, materials, light,
+transformations, district navigation and touch are set by
+[VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md), which rules where the two disagree
+(AX-D026: restrained champagne for the interface; the logo keeps its own
+gold). This file keeps the measurements of the references, Yavaya's
+identity, safety and the never list.
+
 ## 1. Sources, in order
 
 1. The owner's palette, word for word (27 Nov 2026): "Color / Black, obsidian

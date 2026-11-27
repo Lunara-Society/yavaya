@@ -10,7 +10,7 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
 | AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done** for all 71 references (analysis; references kept private); the owner's logo and typography recorded (AX-D018) |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
-| AX-04 | The black-and-gold look in the app, behind Classic | 27 Nov 2026 (the owner's answer 7a) | **Next**: colours set from the logo (AX-D019); the owner's chapter text (answer 7c) is coming; the new app build waits for the 0.4.0 phone test (AX-D025) |
+| AX-04 | Production architecture, the permanent visual language and Roxi's identity (the owner's text, answer 7c) | 27 Nov 2026 | **Design done** ([PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md), [VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md), [ROXI_ENGINE.md](ROXI_ENGINE.md), [IDENTITY_SPEC.md](IDENTITY_SPEC.md); AX-D026 to AX-D037). **Build next**: stages AX-04a to AX-04e behind Classic; the first build waits for the 0.4.0 phone test (AX-D025) |
 | AX-05 onward | — | — | proposal in §3 |
 
 Still open from Synapse: the owner's phone test of app 0.4.0
@@ -102,12 +102,36 @@ mobile API to grow, not 3D Roxi.
   sending her image outside; paid tools; her outfit; private storage for
   masters).
 
+### AX-04 · Production architecture and the permanent visual language (design)
+
+- Done: the owner's text stored word for word (CONSTITUTION); the nine
+  layers mapped on today's code, with contracts between them; approaches and
+  candidates evaluated against React Native 0.88 (New Architecture), Expo
+  SDK 58 and Reanimated 4, then chosen (Skia as the only 2D engine; one 3D
+  engine by spike S9 with pass marks; no game engines); the degradation
+  ladder L4 to L0; asset delivery and size budgets; the permanent palette
+  with its contrast computed; the material, optical and transformation
+  engines; the district plane; continuity; touch, gestures and device
+  motion; Roxi's twelve-channel engine; her identity specification.
+  Decisions AX-D026 to AX-D037; tests T-ID-03 to T-ID-07, T-LAYER-01,
+  T-DEGRADE-01, T-TRANS-01, T-STATE-01, T-IDLE-01, T-COLOUR-01, T-RX-01,
+  T-RX-02 and T-GESTURE-01.
+- Tested: every code path the documents name exists; the palette's contrast
+  is computed. Nothing is built yet, so nothing has run on a phone.
+- Incomplete: everything designed is NOT IMPLEMENTED until its stage is
+  built, including the tools for T-ID-03 to T-ID-05 and the asset manifest
+  endpoint.
+- Needs the owner: champagne for the interface, or the logo's gold
+  everywhere (AX-D026); the district arrangement (AX-D036); the 0.4.0 phone
+  test before the first AX-04 build; Roxi's views for AX-05 (AX-D021); an
+  Apple developer account before any iPhone build.
+
 ## 3. Proposed next chapters (until the owner's texts arrive)
 
 | Proposed | What | Gate |
 | --- | --- | --- |
-| AX-04 | The black-and-gold look behind Classic: the logo's gold (AX-D019), Cinzel for display type (AX-D018), black glass, gold lines and the eagle, on today's screens | chosen (AX-D025); the owner's text; the new build after the 0.4.0 phone test |
-| AX-05 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her views; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's views (AX-D021), each face 0.80 or more |
+| AX-04a to AX-04e | Build the AX-04 design in five stages: look and materials; transformations and continuity; district plane; touch and gestures; Roxi's channels on the 2.5D renderer (PRODUCTION_ARCHITECTURE §10) | the 0.4.0 phone test; the owner's approval after each stage (AX-D037) |
+| AX-05 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her views; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's views (AX-D021), each face 0.80 or more; spike S9's pass marks (AX-D029) |
 | AX-06 | Mobile API v1 expansion: content descriptors for every district, search, filters, item pages | none (reuses the website's domain functions) |
 | AX-07 | INFINITY flows on real data: home, search, district hero → list → page → action, per the reference patterns | AX-04, AX-06 |
 | AX-08+ | CORPUS, VITALIS, VOX, SENTIENCE, IMPOSSIBILIS, OMNIPRAESENTIA, SYMBIOSIS, ABSOLUTA, GENESIS | AX-05 result |

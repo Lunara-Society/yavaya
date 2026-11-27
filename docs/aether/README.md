@@ -13,7 +13,10 @@ ecosystem for Android and iPhone: AETHER (the look and rendering) and ANIMA
 4. Then what the chapter needs:
    - [REFERENCE_MATRIX.md](REFERENCE_MATRIX.md): the 71 references (four sends), what each asks for and how to build it
    - [ROXI_CAPABILITIES.md](ROXI_CAPABILITIES.md) and [ROXI_PIPELINE.md](ROXI_PIPELINE.md): Roxi today, her primitives, how her 3D self gets made
-   - [VISUAL_CONSTITUTION.md](VISUAL_CONSTITUTION.md): colour, materials, motion, safety
+   - [PRODUCTION_ARCHITECTURE.md](PRODUCTION_ARCHITECTURE.md): the nine layers on the code, the technology choice, degradation, assets (AX-04)
+   - [VISUAL_LANGUAGE.md](VISUAL_LANGUAGE.md): the permanent look: colour, materials, light, transformations, districts, touch (AX-04)
+   - [ROXI_ENGINE.md](ROXI_ENGINE.md) and [IDENTITY_SPEC.md](IDENTITY_SPEC.md): Roxi's twelve channels and what keeps her Roxi (AX-04)
+   - [VISUAL_CONSTITUTION.md](VISUAL_CONSTITUTION.md): the references' measurements, identity, safety
    - [ASSET_REGISTRY.md](ASSET_REGISTRY.md): every asset and where it is kept
    - [TECHNICAL_DECISIONS.md](TECHNICAL_DECISIONS.md) (AX-D…) and [PRODUCTION_TESTS.md](PRODUCTION_TESTS.md)
 
