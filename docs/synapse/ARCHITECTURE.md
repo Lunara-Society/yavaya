@@ -1,5 +1,7 @@
 # Architecture
 
+> **From 27 Nov 2026:** The current architecture map and capability register live in [docs/aether/MASTER_ARCHITECTURE.md](../aether/MASTER_ARCHITECTURE.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 ## Today
 
 Since Chapters 02–08 the app is native: one stack of scenes in a single

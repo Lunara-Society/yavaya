@@ -1,5 +1,7 @@
 # Decision log
 
+> **From 27 Nov 2026:** New decisions (AX-D001 onward) live in [docs/aether/TECHNICAL_DECISIONS.md](../aether/TECHNICAL_DECISIONS.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 Newest last. Each entry: what was decided, why, what else was considered, and
 how to undo it.
 

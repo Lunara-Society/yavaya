@@ -1,5 +1,7 @@
 # Chapter index
 
+> **From 27 Nov 2026:** Chapters from AX-00 onward live in [docs/aether/CHAPTER_STATUS.md](../aether/CHAPTER_STATUS.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 | Chapter | Title | Authorised | Status | Checkpoint |
 | --- | --- | --- | --- | --- |
 | 00 | Master directive and persistent project memory; Android app connected to EAS | 26 Nov 2026 | Done, with open items in [KNOWN_ISSUES.md](KNOWN_ISSUES.md) | see the commit that adds this file |

@@ -1,5 +1,7 @@
 # Visual direction: the next look (27 Nov 2026)
 
+> **From 27 Nov 2026:** The look for new work lives in [docs/aether/VISUAL_CONSTITUTION.md](../aether/VISUAL_CONSTITUTION.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 Design notes only. Nothing here is built into the app yet, and each item needs
 the owner's go before it is.
 

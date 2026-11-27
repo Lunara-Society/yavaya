@@ -45,6 +45,13 @@ an entry that is no longer true is worse than no entry.
   violet only as a faint glow on Roxi (the owner's call). Direction, reference
   breakdown and ten proposed ideas: [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md).
   Concept film: `design/films/oro/` ("Presencia Oro"). Not in the app yet.
+- **Aether × Roxi Anima (from 27 Nov 2026):** the owner's constitution for the
+  production app and Roxi as a digital human. Its memory is in
+  [`docs/aether/`](../aether/README.md): start there. Decisions, tests, assets,
+  chapter status, the architecture map and the visual rules now live there;
+  the Synapse files keep the record of Chapters 00–09.
+- **The repository is public** (GitHub, checked 27 Nov 2026). Unreleased
+  design and brand masters are kept privately (docs/aether/ASSET_REGISTRY.md §1).
 - **The repository** is `Lunara-Society/yavaya`. New Claude Code sessions on
   this account open on `Lunara-Society/Lunara-Society.github.io` by default:
   that is the Lunara Society website, not Yavaya. Attach `yavaya` instead.

@@ -1,5 +1,7 @@
 # Implementation status
 
+> **From 27 Nov 2026:** The current capability register (section 4) lives in [docs/aether/MASTER_ARCHITECTURE.md](../aether/MASTER_ARCHITECTURE.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 Last updated after Chapters 02–08, 26 November 2026. The full record of the native app is [CHAPTERS_02_08.md](CHAPTERS_02_08.md).
 
 _Earlier: Chapter 01 (the existing architecture audit)._

@@ -1,5 +1,7 @@
 # Asset registry
 
+> **From 27 Nov 2026:** New assets live in [docs/aether/ASSET_REGISTRY.md](../aether/ASSET_REGISTRY.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 Every file the app ships that is not code, with where it came from and who
 owns it. No asset from a third-party game, film or brand is allowed (master
 directive, section 2).

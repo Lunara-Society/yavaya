@@ -1,5 +1,7 @@
 # Design system for Synapse
 
+> **From 27 Nov 2026:** The look for new work lives in [docs/aether/VISUAL_CONSTITUTION.md](../aether/VISUAL_CONSTITUTION.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 ## Inherited, real today
 
 Synapse starts from Yavaya's existing design system, which the website already

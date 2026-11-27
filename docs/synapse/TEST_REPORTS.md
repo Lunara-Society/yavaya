@@ -1,5 +1,7 @@
 # Test reports
 
+> **From 27 Nov 2026:** New test records and the acceptance tests live in [docs/aether/PRODUCTION_TESTS.md](../aether/PRODUCTION_TESTS.md) (Aether × Roxi Anima). This file is kept as the record of Synapse Chapters 00–09.
+
 ## Chapter 00 · 26 November 2026
 
 Run in the cloud development environment, from `mobile/`.
