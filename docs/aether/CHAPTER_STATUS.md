@@ -8,7 +8,7 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | --- | --- | --- | --- |
 | AX-00 | The Master Constitution | 27 Nov 2026 | **Done**: stored word for word ([CONSTITUTION.md](CONSTITUTION.md)) |
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
-| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done for R01–R39** (analysis; references kept private); more GIFs are coming |
+| AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done for R01–R56** (analysis; references kept private); more GIFs are coming |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
 | AX-04 onward | not received yet | — | proposal in §3 until the owner's texts arrive |
 
@@ -70,6 +70,12 @@ mobile API to grow, not 3D Roxi.
   differences listed (REFERENCE_MATRIX §6). Faces measured against Roxi's
   source (§7): none is hers (closest 0.59; her own images 0.95–0.99), so
   these GIFs set her movement only (AX-D016). Her glow is gold (AX-D013).
+- Third send (27 Nov): 20 files; 3 duplicates of R37–R39 dropped; 17 kept
+  (R40–R56); every frame read; 8 capabilities added (C66–C73): her
+  transformations, entrances, exits, and how she lives on the interface.
+  Faces: R40 0.37, R56 0.18, the rest too small; the outfit drifts further
+  (tactical items). The GIFs' logo marks and "Mi Yavaya" tab are not
+  Yavaya's (AX-D017).
 - Waiting: more GIFs from the owner. When all are sent, the owner goes over
   the seven questions on the private page.
 

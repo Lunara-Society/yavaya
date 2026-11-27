@@ -18,12 +18,13 @@ The repository `Lunara-Society/yavaya` is **public**. So:
   gallery).
 - **Where private files live today:** the owner's private claude.ai page for
   this programme, https://claude.ai/artifact/SDQpvaaspuA2gMJeyDEKoe, which
-  holds the originals as `refs/R01-1000192794.gif` … `refs/R39-1000192837.gif`
+  holds the originals as `refs/R01-1000192794.gif` … `refs/R56-1000192856.gif`
   and the frame sheets as `sheets/R01.jpg` … (a later session reads them with
   the Artifact tool's `read` action and the file's path). Every file is
   identified below by its SHA-256, so a copy can always be checked; after
-  the second send the page holds 81 files (the page, 39 originals, 41
-  sheets), listed back and matched on 27 Nov.
+  the second send the page held 81 files (the page, 39 originals, 41
+  sheets), listed back and matched on 27 Nov; the third send added 35
+  (17 originals, 17 sheets and one faces sheet; page version 4).
 
 No asset from a third-party game, film or brand is allowed; AI-generated
 assets are declared as such.
@@ -126,6 +127,46 @@ the repository (download from https://huggingface.co/opencv when needed).
 | --- | --- | --- | --- |
 | `face_detection_yunet_2023mar.onnx` | `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4` | 232,589 | MIT |
 | `face_recognition_sface_2021dec.onnx` | `0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79` | 38,696,353 | Apache-2.0 |
+
+### 3c. Third send, 27 November 2026 (private)
+
+Received with the owner's words "Sending more gifs now". Analysed in
+[REFERENCE_MATRIX.md](REFERENCE_MATRIX.md) §8; measurements in
+`design/references/aether/metrics-batch3.json` (full hashes there); face
+scores in `design/references/aether/identity-batch3.json`. AI-generated design
+material, Yavaya's own. **Illustrative content only: none of it is data.** The
+woman in R40–R56 is not Roxi, and the "YAVAYA" marks on the panels are not
+Yavaya's logo (AX-D016, AX-D017).
+
+| Ref | Owner file | SHA-256 (first 16) | Bytes | Pixels | Frames | Loop (s) | Shows |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| R40 | `1000192836.gif` | `107df2ca6c981c36` | 490,596 | 358 × 358 | 12 | 2.76 | close-up: thinking |
+| R41 | `1000192840.gif` | `90841f8058c3f029` | 271,857 | 357 × 357 | 12 | 2.64 | crystal arm while reaching out |
+| R42 | `1000192842.gif` | `2e546ee536533f25` | 287,045 | 357 × 358 | 12 | 2.64 | rises in light, lands |
+| R43 | `1000192841.gif` | `ff80bf103e86b3bd` | 364,261 | 358 × 358 | 12 | 2.64 | breaks into shards, re-forms walking |
+| R44 | `1000192847.gif` | `69e4c8cb46a36ca1` | 440,596 | 355 × 357 | 12 | 3 | glass echoes merge back |
+| R45 | `1000192846.gif` | `7cd9ca21a39e9cc5` | 415,952 | 355 × 356 | 12 | 3 | liquid glass while offering a hand |
+| R46 | `1000192845.gif` | `1c989c10215cb9e3` | 240,823 | 355 × 356 | 12 | 3 | walks away in glass |
+| R47 | `1000192844.gif` | `914d9e4f7628c278` | 292,201 | 358 × 358 | 12 | 3 | turns into a line of light and back |
+| R48 | `1000192843.gif` | `355e57d5a62c44a6` | 242,946 | 356 × 356 | 12 | 3 | fades while offering a hand |
+| R49 | `1000192852.gif` | `629b99c5504eef4f` | 626,734 | 358 × 357 | 12 | 2.64 | touches a glass menu panel |
+| R50 | `1000192851.gif` | `4113fa34a5a12b0f` | 590,774 | 354 × 358 | 12 | 2.64 | small figure opens Mercadito on the app |
+| R51 | `1000192850.gif` | `f2655478f3aecef3` | 595,964 | 357 × 356 | 12 | 2.64 | climbs out of the screen |
+| R52 | `1000192849.gif` | `6fe93b5c532dbd4e` | 476,659 | 357 × 355 | 12 | 2.64 | sits on the district bar, talks |
+| R53 | `1000192848.gif` | `208d61b7ecab2c63` | 394,902 | 357 × 357 | 12 | 2.64 | steps out of a line of light |
+| R54 | `1000192853.gif` | `78eb770074e2d213` | 594,721 | 353 × 358 | 12 | 4.2 | taps a tile with the member's finger |
+| R55 | `1000192857.gif` | `b82634021cde9c57` | 772,456 | 355 × 354 | 12 | 4.2 | touches a glass wall menu |
+| R56 | `1000192856.gif` | `9a3a5f86afa37db9` | 738,550 | 353 × 355 | 12 | 4.2 | walks in, shrinks, points at Santuario |
+
+Duplicates dropped (AX-D014): `1000192839.gif`, `1000192838.gif` and
+`1000192837.gif` are byte-identical to R37, R38 and R39 (SHA-256
+`b44f023a3da20b75…`, `d8fedfdf79eb5f46…`, `4bc62858e8c1790e…`); the earlier
+copies are kept.
+
+Kept on the private page: `refs/R40-1000192836.gif` …
+`refs/R56-1000192856.gif`, sheets `sheets/R40.jpg` … `sheets/R56.jpg`, and
+`sheets/faces-b3.jpg` (Roxi's source, two more images of her, R40 and R56,
+each with its score).
 
 ## 4. App assets carried from Synapse (unchanged)
 

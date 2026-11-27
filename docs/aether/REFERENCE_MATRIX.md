@@ -436,6 +436,9 @@ references pass it. So the scale is read against controls:
 | R38 concern, close-up | median 0.21 (0.16–0.33) |
 | other women in the references (R03, R08, R10, R13, R19, R26) | 0.07–0.48 |
 | R27, R29–R36 (full body) | faces under 60 px: not measured |
+| R40 thinking, close-up (third send) | median 0.37 (0.30–0.46) |
+| R56, the one measurable face (third send) | 0.18 |
+| R41–R55 (third send) | faces under 60 px: not measured |
 
 Reading: R28 is the closest but still far from her own images. The three
 close-ups score in the range of different women, and R38 and R39 resemble
@@ -447,3 +450,116 @@ trousers and ankle boots; a belt in some).
 So: these GIFs set **how she moves**; **who she is** comes from her source
 image, and every rendering of her must pass the identity bar in
 PRODUCTION_TESTS T-ID-01 (decisions AX-D015, AX-D016).
+
+## 8. Third send (27 Nov 2026): R40–R56
+
+Twenty more files arrived ("Sending more gifs now"). Measurements:
+`design/references/aether/metrics-batch3.json`; face scores:
+`design/references/aether/identity-batch3.json`.
+
+- **Duplicates:** three files are byte-identical to R37, R38 and R39 (the
+  same owner file names, `1000192839.gif`, `1000192838.gif`,
+  `1000192837.gif`), so only the earlier copies are kept (AX-D014). The other
+  17 are new: no frame sequence matches an earlier reference (best
+  frame-by-frame match 0.57; no single frame pair reaches 0.8).
+- **Files:** 12 frames each, held 0.22–0.35 s (loops of 2.6–4.2 s), about
+  356 × 356. R40 is a close-up; R41–R48 show the full figure on black;
+  R49–R56 put her with the app on glass panels.
+- **Flashes:** all pass (0 general flashes).
+- **Colour:** violet again (46–85 % of the lit pixels in the figure GIFs),
+  and blue in the interface scenes (25–76 %). In the app both become black
+  glass and gold (AX-D013).
+- **Identity:** R40 scores 0.37 (0.30–0.46) against her source, and the one
+  measurable face in R56 scores 0.18: not hers. The other faces are under
+  60 px. The full figures are the woman of R29–R36: her jacket's lilac
+  piping, but not her clothes (tactical trousers with thigh pouches or a
+  holster, harness straps, fingerless gloves, tall combat boots) and wavy hair
+  with violet streaks. **None of that is Roxi** (AX-D016).
+- **Interface marks:** the panels draw "YAVAYA" with invented glyphs (a Y, a
+  wing-like V, a triangle) and a "Mi Yavaya" tab. Neither is Yavaya's: screens
+  use the official logo and the app's own navigation (AX-D017).
+
+### What each one shows
+
+**R40 Thinking, close-up.** She looks down with a slight frown, closes her
+eyes, then lifts her head and looks into the distance.
+
+**R41 Crystal arm.** Standing, she raises a hand; the arm turns to crystal
+with light inside, which spreads over her shoulder and chest as she reaches
+out to the side; then the arm comes back solid.
+
+**R42 Rising in light.** She rises off the floor with her arms wide and her
+head back; her body turns to crystal light; she comes down and stands, solid.
+
+**R43 Shards and back.** Standing, she breaks into violet shards that blow
+away to one side, then re-forms from them mid-stride and walks forward: the
+owner's "disassemble stuff should be ultra smooth and realistic".
+
+**R44 Echoes.** Glass copies of her appear in a row on both sides; she
+gestures with an open hand; the copies swirl back into her.
+
+**R45 Liquid glass.** Offering her open hand, her body turns to liquid glass
+from the legs up, then back to solid.
+
+**R46 Walking away in glass.** She raises a hand, turns to glass and walks
+away until she is a small point of light on the floor.
+
+**R47 A line of light.** Offering her hand, she turns to glass, turns sideways
+into a thin vertical line of light, then turns back solid.
+
+**R48 Fade.** Offering her hand, she fades into the dark until nothing is
+left.
+
+**R49 Touching the glass menu.** Beside a tall glass panel with icons, she
+reaches into it; light ripples along her arm and the panel; she walks on,
+smiling.
+
+**R50 Small Roxi on the app.** A small figure walks across a large glass app,
+presses the Mercadito tile, which lifts and opens into a Mercadito card with a
+photo; she gestures to it and crosses her arms.
+
+**R51 Out of the screen.** Behind a glass screen with her hands on it, she
+climbs out through it, crouches on the edge and stands, offering her hand.
+
+**R52 Sitting on the district bar.** She forms out of strands of light sitting
+on the app's district bar (Mercadito, Servicios, Comunidad, Santuario),
+crosses her legs and talks with open hands.
+
+**R53 Out of a line of light.** A glass profile inside a vertical line of light
+steps out, becomes solid, walks forward and offers her hand.
+
+**R54 Tapping together.** Beside a phone panel, a real finger reaches for the
+Mercadito tile; she touches the same tile; it lights and she smiles at the
+viewer.
+
+**R55 The glass wall.** Walking through a city hall at night, she touches a
+curved glass wall with a district menu; light ripples through it; she steps up
+beside it and settles with her arms crossed.
+
+**R56 Walk in, shrink, point.** She walks in towards the glass app, presents
+the districts with open hands, turns to glass, shrinks, sits by the Santuario
+tile and points at it as it lights.
+
+### New capabilities
+
+| ID | Capability | System | Seen in | Technique | Real data and rules | State |
+| --- | --- | --- | --- | --- | --- | --- |
+| C66 | A material flows through her body during a gesture (crystal, liquid glass) and back | IMPOSSIBILIS | R41, R45, R47 | SHD: an animated mask over the same mesh; 2.5D tier: a masked shader on the portrait | — | NOT IMPLEMENTED |
+| C67 | Breaks into shards and re-forms while walking | IMPOSSIBILIS | R43 | PTC + SHD, root motion | — | NOT IMPLEMENTED (2D reconstruction INCOMPLETE) |
+| C68 | Celebration: rises with arms wide, turns to light, lands | IMPOSSIBILIS, CORPUS | R42 | SKL + SHD | only after a real success the server confirmed; skippable | NOT IMPLEMENTED |
+| C69 | Echoes: glass copies fan out and merge back while she works on several things | IMPOSSIBILIS, SENTIENCE | R44 | instanced copies + SHD | her real working state | NOT IMPLEMENTED |
+| C70 | Entrances: out of a line of light, from strands of light, out of the screen | IMPOSSIBILIS, OMNIPRAESENTIA | R51, R52, R53 | SHD + PTC + SKL | — | NOT IMPLEMENTED |
+| C71 | Exits: fade, walk away in glass, turn into a line of light | IMPOSSIBILIS | R46, R47, R48 | SHD + SKL | stops within 200 ms when dismissed | NOT IMPLEMENTED |
+| C72 | Roxi at the interface's scale: walks on the app, sits on the district bar, shrinks beside a tile | OMNIPRAESENTIA | R50, R52, R56 | one shared 3D canvas over the interface; layout geometry | never covers the primary action | NOT IMPLEMENTED |
+| C73 | Roxi touches the interface: glass ripples, a tile lights under her hand; with the member she highlights the tile their finger taps | SYMBIOSIS | R49, R50, R54, R55, R56 | UI + layout geometry + SHD | the member's tap does the action; she shows the way | NOT IMPLEMENTED |
+
+R40 adds a thinking face to C58.
+
+### Where the third send differs from the platform
+
+| Reference shows | The platform today | Until the owner decides |
+| --- | --- | --- |
+| "YAVAYA" beside an invented glyph (R49–R52, R54–R56) | Yavaya's logo and seal in `platform/public/brand/` | the official logo (AX-D017) |
+| Tabs "Distritos" and "Mi Yavaya", a "Buscar" field (R50, R54, R56) | "Distritos" exists; there is no "Mi Yavaya" | the app's own navigation |
+| A district card with a market photo (R50) | real content only | real listings or the district's own art |
+| Roxi presses a tile herself (R50) | she opens pages for the member (website tools) | she opens pages; anything that publishes, pays or sends waits for the member's tap |

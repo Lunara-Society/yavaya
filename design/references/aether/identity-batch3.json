@@ -1,0 +1,262 @@
+{
+ "threshold_same_person_cosine": 0.363,
+ "min_face_px": 60,
+ "source": "roxi-source.png",
+ "references": [
+  {
+   "ref": "C1",
+   "file": "C1-film-grade.png",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 110,
+     "cosine": 0.952
+    }
+   ],
+   "cosine_median": 0.952,
+   "cosine_min": 0.952,
+   "cosine_max": 0.952,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "C2",
+   "file": "C2-face-crop.webp",
+   "frames": 1,
+   "faces_scored": 1,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 191,
+     "cosine": 0.99
+    }
+   ],
+   "cosine_median": 0.99,
+   "cosine_min": 0.99,
+   "cosine_max": 0.99,
+   "same_person_share": 1.0
+  },
+  {
+   "ref": "R40",
+   "file": "R40-1000192836.gif",
+   "frames": 12,
+   "faces_scored": 12,
+   "faces_too_small": 0,
+   "scores": [
+    {
+     "frame": 0,
+     "face_px": 137,
+     "cosine": 0.334
+    },
+    {
+     "frame": 1,
+     "face_px": 135,
+     "cosine": 0.339
+    },
+    {
+     "frame": 2,
+     "face_px": 138,
+     "cosine": 0.306
+    },
+    {
+     "frame": 3,
+     "face_px": 139,
+     "cosine": 0.349
+    },
+    {
+     "frame": 4,
+     "face_px": 138,
+     "cosine": 0.296
+    },
+    {
+     "frame": 5,
+     "face_px": 138,
+     "cosine": 0.41
+    },
+    {
+     "frame": 6,
+     "face_px": 134,
+     "cosine": 0.407
+    },
+    {
+     "frame": 7,
+     "face_px": 133,
+     "cosine": 0.339
+    },
+    {
+     "frame": 8,
+     "face_px": 126,
+     "cosine": 0.464
+    },
+    {
+     "frame": 9,
+     "face_px": 124,
+     "cosine": 0.416
+    },
+    {
+     "frame": 10,
+     "face_px": 125,
+     "cosine": 0.389
+    },
+    {
+     "frame": 11,
+     "face_px": 129,
+     "cosine": 0.389
+    }
+   ],
+   "cosine_median": 0.369,
+   "cosine_min": 0.296,
+   "cosine_max": 0.464,
+   "same_person_share": 0.5
+  },
+  {
+   "ref": "R41",
+   "file": "R41-1000192840.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R42",
+   "file": "R42-1000192842.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 10,
+   "scores": []
+  },
+  {
+   "ref": "R43",
+   "file": "R43-1000192841.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 10,
+   "scores": []
+  },
+  {
+   "ref": "R44",
+   "file": "R44-1000192847.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 31,
+   "scores": []
+  },
+  {
+   "ref": "R45",
+   "file": "R45-1000192846.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R46",
+   "file": "R46-1000192845.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 9,
+   "scores": []
+  },
+  {
+   "ref": "R47",
+   "file": "R47-1000192844.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 10,
+   "scores": []
+  },
+  {
+   "ref": "R48",
+   "file": "R48-1000192843.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 8,
+   "scores": []
+  },
+  {
+   "ref": "R49",
+   "file": "R49-1000192852.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R50",
+   "file": "R50-1000192851.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 11,
+   "scores": []
+  },
+  {
+   "ref": "R51",
+   "file": "R51-1000192850.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R52",
+   "file": "R52-1000192849.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R53",
+   "file": "R53-1000192848.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 11,
+   "scores": []
+  },
+  {
+   "ref": "R54",
+   "file": "R54-1000192853.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 12,
+   "scores": []
+  },
+  {
+   "ref": "R55",
+   "file": "R55-1000192857.gif",
+   "frames": 12,
+   "faces_scored": 0,
+   "faces_too_small": 9,
+   "scores": []
+  },
+  {
+   "ref": "R56",
+   "file": "R56-1000192856.gif",
+   "frames": 12,
+   "faces_scored": 1,
+   "faces_too_small": 11,
+   "scores": [
+    {
+     "frame": 4,
+     "face_px": 66,
+     "cosine": 0.185
+    }
+   ],
+   "cosine_median": 0.185,
+   "cosine_min": 0.185,
+   "cosine_max": 0.185,
+   "same_person_share": 0.0
+  }
+ ],
+ "pairwise_mean_faces": {
+  "C1-C2": 0.951,
+  "C1-R40": 0.439,
+  "C1-R56": 0.22,
+  "C2-R40": 0.447,
+  "C2-R56": 0.179,
+  "R40-R56": 0.153
+ }
+}

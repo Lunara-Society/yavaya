@@ -14,7 +14,7 @@ run in each chapter. Earlier runs (Chapters 00–09) are in
 | Shaders compiled and rendered by Skia | `cd mobile && npm run check:shaders` | 6 of 6 | Chapter 09 |
 | Local end-to-end sign-in | production build on port 3100 (script was in the old session's scratchpad) | 18 of 18 | Chapter 09 |
 | Reference measurements | `python3 -I design/references/aether/tools/analyse_refs.py <out> <files>` | reproduces `design/references/aether/metrics.json` | AX-02 |
-| Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json` | AX-02, second send |
+| Face identity check | `python3 design/references/aether/tools/identity_check.py <models> <source> <out> <files>` (OpenCV, with the YuNet and SFace models from huggingface.co/opencv) | `design/references/aether/identity-2026-11-27.json`, `identity-batch3.json` | AX-02, second and third sends |
 
 ## 2. Acceptance tests for the programme
 
@@ -60,4 +60,14 @@ the app: on a phone).
 | Frames read | contact sheets of all 19 new GIFs | done (REFERENCE_MATRIX §6) |
 | Measurements | analysis script | `metrics-batch2.json`; 0 flash failures |
 | Identity | `identity_check.py` on 13 Roxi-like GIFs, with 2 positive and 6 negative controls | closest 0.59; close-ups 0.21–0.37; her own images 0.95–0.99 (REFERENCE_MATRIX §7) |
+| Suites | not re-run | no app or platform code changed |
+
+### AX-02, third send (27 Nov 2026)
+
+| What | How | Result |
+| --- | --- | --- |
+| Duplicates | SHA-256 and frame correlation against R01–R39 and within the send | 3 dropped (the same files as R37, R38, R39); 17 new (best frame-by-frame match 0.57; no frame pair reaches 0.8) |
+| Frames read | contact sheets of all 17 new GIFs | done (REFERENCE_MATRIX §8) |
+| Measurements | analysis script | `metrics-batch3.json`; 0 flash failures |
+| Identity | `identity_check.py` on the 17, with the 2 positive controls | R40 0.37 (0.30–0.46); R56 one face 0.18; the rest under 60 px |
 | Suites | not re-run | no app or platform code changed |
