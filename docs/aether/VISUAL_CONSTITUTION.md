@@ -54,22 +54,24 @@ Measured from the 18 GIFs (pixels classified by hue, every other frame):
 interface's dark glass. Medians over the 18 GIFs: highlight `#DEA258`,
 body `#895E2F`.
 
-**Proposed tokens** (decision AX-D011; the owner confirms the gold):
+**Tokens** (decision AX-D019: the gold of the owner's logo, chosen on 27 Nov):
 
 | Token | Value | Use | Contrast on `#050505` |
 | --- | --- | --- | --- |
 | `ground` | `#050505` | background (the film's black) | — |
 | `obsidian` | `#14110F` glass at 60–80 % | panels, bars, sheets | — |
-| `gold.deep` | `#895E2F` | gold in shadow, borders at rest | 3.6:1, decorative only |
-| `gold.core` | `#DEA258` | icons, active outlines, prices | 9.14:1 |
-| `gold.light` | `#F6DDA0` | light, glow cores, headings on dark | 15.3:1 |
-| `gold.hot` | `#FFF3D6` | the hottest point of a glow | — |
-| `champagne` | `#E2C27A` | the concept film's gold, kept as an alternative | 11.87:1 |
+| `gold.deep` | `#973D05` | the logo's gold in shadow: borders at rest, glows | 2.90:1, never for words |
+| `gold.core` | `#F0920C` | the logo's gold: icons, active outlines, prices, headings | 8.56:1 |
+| `gold.light` | `#FAE172` | the logo's bright gold: light, glow cores | 15.60:1 |
+| `gold.hot` | `#FDF3CB` | the logo's white-gold: the hottest point of a glow | 18.30:1 |
 | `light.white` | `#E8ECF2` | white-silver light ribbons, body text | 17.19:1 |
-| `roxi.glow` | `#F6DDA0` core, `#DEA258` edge | Roxi's glow, rim light and particles: gold (the owner, 27 Nov); no violet anywhere | — |
+| `roxi.glow` | `#FAE172` core, `#F0920C` edge | Roxi's glow, rim light and particles: gold (the owner, 27 Nov); no violet anywhere | — |
 
 Gold text keeps at least 4.5:1 against what is behind it (WCAG AA):
-`gold.core` and lighter for words, `gold.deep` never for words.
+`gold.core` and lighter for words, `gold.deep` never for words. `gold.light`
+and `gold.hot` are the medians of the logo's brightest gold pixels; superseded
+on 27 Nov (AX-D019): the GIF amber (`#DEA258`, `#895E2F`, `#F6DDA0`,
+`#FFF3D6`) and the film's champagne (`#E2C27A`).
 
 **District glows.** The references give Aprender a blue glow, Salud a green
 one and Negocios chrome. The owner allowed "any color or glow that fits", so
@@ -83,8 +85,8 @@ only if the owner confirms it fits. The third send's interface scenes glow
 violet and blue; in the app they are black glass and gold. The fourth send
 already glows gold: its opening (R68) measures `#DEA473`, close to
 `gold.core`. The owner's logo measures `#F0920C` (highlight) and `#973D05`
-(shadow), warmer and more orange than `gold.core`; which gold leads is the
-owner's question 1.
+(shadow), warmer and more orange than the GIFs' amber; the owner chose it
+(question 1, answer a; AX-D019).
 
 ## 3. Materials
 
@@ -112,10 +114,11 @@ owner's question 1.
   6 Nov 2026; logo `platform/public/brand/logo-1080.webp`). The references'
   eagles match it; any new rendering of it (a head close-up, a 3D model)
   must match it too and needs the owner's approval before use.
-- **The wordmark:** the references show a gold serif "YAVAYA.LAT"; the app
-  uses Geist and the website its own logo images. We do not invent a
-  wordmark font: the official lettering, as a vector, comes from the owner,
-  or the existing logo image is used.
+- **The wordmark** is the owner's own gold lettering (27 Nov), used as an
+  image until a vector exists; it is never retyped in another font. Cinzel
+  bold (SIL OFL 1.1) is for typed display words such as headings, because it
+  is the closest free match to that lettering; body text stays in Geist
+  (AX-D018).
 
 ## 5. Motion
 

@@ -10,7 +10,8 @@ their end-of-chapter record. Synapse Chapters 00–09 are in
 | AX-01 | Persistent project memory and capability classification | 27 Nov 2026 | **Done** (documents; no product change) |
 | AX-02 | Reference analysis and reference-to-capability matrix | 27 Nov 2026 | **Done** for all 71 references (analysis; references kept private); the owner's logo and typography recorded (AX-D018) |
 | AX-03 | Roxi digital human pipeline | 27 Nov 2026 | **Evaluation done; master character not made**: needs the inputs and decisions in [ROXI_PIPELINE.md](ROXI_PIPELINE.md) §9 |
-| AX-04 onward | not received yet | — | proposal in §3 until the owner's texts arrive |
+| AX-04 | The black-and-gold look in the app, behind Classic | 27 Nov 2026 (the owner's answer 7a) | **Next**: colours set from the logo (AX-D019); the owner's chapter text (answer 7c) is coming; the new app build waits for the 0.4.0 phone test (AX-D025) |
+| AX-05 onward | — | — | proposal in §3 |
 
 Still open from Synapse: the owner's phone test of app 0.4.0
 ([../synapse/NEXT_CHAPTER.md](../synapse/NEXT_CHAPTER.md)); its results come
@@ -105,8 +106,8 @@ mobile API to grow, not 3D Roxi.
 
 | Proposed | What | Gate |
 | --- | --- | --- |
-| AX-04 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her front image; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's decisions 1, 2 and 5 in ROXI_PIPELINE §9 |
-| AX-05 | Aether tokens and the black-and-gold look behind Classic (tokens, glass, ribbons, icons) | the owner confirms the gold (AX-D011) |
+| AX-04 | The black-and-gold look behind Classic: the logo's gold (AX-D019), Cinzel for display type (AX-D018), black glass, gold lines and the eagle, on today's screens | chosen (AX-D025); the owner's text; the new build after the 0.4.0 phone test |
+| AX-05 | Roxi reference sheet (S0) and the 3D runtime spike: Blender + MPFB base fitted to her views; the same test GLB in both renderers on two phones; the identity test (T-ID-01) on every render | the owner's views (AX-D021), each face 0.80 or more |
 | AX-06 | Mobile API v1 expansion: content descriptors for every district, search, filters, item pages | none (reuses the website's domain functions) |
-| AX-07 | INFINITY flows on real data: home, search, district hero → list → page → action, per the reference patterns | AX-05, AX-06 |
-| AX-08+ | CORPUS, VITALIS, VOX, SENTIENCE, IMPOSSIBILIS, OMNIPRAESENTIA, SYMBIOSIS, ABSOLUTA, GENESIS | AX-04 result |
+| AX-07 | INFINITY flows on real data: home, search, district hero → list → page → action, per the reference patterns | AX-04, AX-06 |
+| AX-08+ | CORPUS, VITALIS, VOX, SENTIENCE, IMPOSSIBILIS, OMNIPRAESENTIA, SYMBIOSIS, ABSOLUTA, GENESIS | AX-05 result |

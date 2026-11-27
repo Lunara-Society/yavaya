@@ -139,15 +139,18 @@ canvas budget, D-036).
 
 1. **New reference views (S0):** made by the owner, or generated with an
    image tool that keeps her identity (which tool, and its cost, to be
-   proposed first).
+   proposed first). **Answered 27 Nov: the owner makes them from her
+   original image; each face must score 0.80 or more (AX-D021).**
 2. **Sending her image outside** (image-to-3D services, motion libraries,
-   commercial character tools): allowed or not.
+   commercial character tools): allowed or not. **Answered: allowed, each
+   service only with the owner's OK (AX-D022).**
 3. **Paid tools** (Character Creator and Headshot; a paid Meshy plan): not
-   used without approval.
+   used without approval. **Answered: none for now; paid later (AX-D023).**
 4. **Her outfit:** the constitution keeps her recognisable clothing (the
    purple jacket); the palette avoids purple, and her glow is now gold (AX-D013).
    Recommendation: keep her outfit as her identity, and use the gold-light and
-   crystal looks as material states.
+   crystal looks as material states. **Answered: the purple jacket stays
+   (AX-D020).**
 5. **Where masters live:** the repository is public, so a 3D master of Roxi
    committed there could be downloaded and reused by anyone.
    Recommendation: masters in private storage; only optimised runtime files
