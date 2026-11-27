@@ -1,0 +1,7 @@
+# Renders and the CLI's working files are rebuilt; keep them out of git.
+renders/
+.hyperframes/
+node_modules/
+# Music and effects come from HeyGen's catalog (ids in SPEC.md, "Sound");
+# they are fetched again for a render rather than redistributed here.
+assets/audio/
