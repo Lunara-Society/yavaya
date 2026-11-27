@@ -1,4 +1,5 @@
 import type { ConfigContext, ExpoConfig } from 'expo/config';
+import { withGradleProperties } from 'expo/config-plugins';
 
 /**
  * One codebase, three isolated app variants. Development installs beside the
@@ -26,10 +27,28 @@ function variantOf(value: string | undefined): Variant {
   return value === 'development' || value === 'preview' ? value : 'production';
 }
 
+/**
+ * Phones only. Android phones run arm64-v8a (every recent one) or armeabi-v7a
+ * (older ones); the x86 pair exists for emulators. Compiling native code for
+ * all four ran the build server out of memory once WebRTC came in (EAS build
+ * 91a52595: "Gradle build daemon disappeared"), and each set adds the WebRTC
+ * libraries to the APK again.
+ */
+const PHONE_ARCHITECTURES = 'armeabi-v7a,arm64-v8a';
+const ARCHITECTURES_KEY = 'reactNativeArchitectures';
+
+function withPhoneArchitectures(config: ExpoConfig): ExpoConfig {
+  return withGradleProperties(config, (mod) => {
+    mod.modResults = mod.modResults.filter((item) => !(item.type === 'property' && item.key === ARCHITECTURES_KEY));
+    mod.modResults.push({ type: 'property', key: ARCHITECTURES_KEY, value: PHONE_ARCHITECTURES });
+    return mod;
+  });
+}
+
 export default ({ config }: ConfigContext): ExpoConfig => {
   const variant = variantOf(process.env.APP_VARIANT);
   const v = VARIANTS[variant];
-  return {
+  return withPhoneArchitectures({
     ...config,
     name: v.name,
     slug: 'yavaya',
@@ -59,5 +78,5 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       '@config-plugins/react-native-webrtc',
     ],
     extra: { ...config.extra, variant, webUrl: v.webUrl, eas: { projectId: PROJECT_ID } },
-  } as ExpoConfig;
+  } as ExpoConfig);
 };
