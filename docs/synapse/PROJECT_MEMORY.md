@@ -41,6 +41,13 @@ an entry that is no longer true is worse than no entry.
 - **Roxi's look** is the owner's full-length image (`mobile/art/roxi/`,
   AI-generated, Yavaya's own). Use it for her in every medium; generate
   everything else from it (`mobile/tools/roxi/`).
+- **The next look (design only, 27 Nov 2026):** obsidian black and gold, with
+  violet only as a faint glow on Roxi (the owner's call). Direction, reference
+  breakdown and ten proposed ideas: [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md).
+  Concept film: `design/films/oro/` ("Presencia Oro"). Not in the app yet.
+- **The repository** is `Lunara-Society/yavaya`. New Claude Code sessions on
+  this account open on `Lunara-Society/Lunara-Society.github.io` by default:
+  that is the Lunara Society website, not Yavaya. Attach `yavaya` instead.
 
 ## Identifiers (not secrets)
 
@@ -92,7 +99,7 @@ keystore, Play key). None are in the repository, and none may be.
   Roxi plans (Stripe subscriptions in `platform/src/server/domains/roxi/billing.ts`)
   are how earners pay.
 - The owner works from a phone: keep reports short and give links that open
-  on a phone.
+  on a phone. File cards sent in chat don't open there; send links.
 - Never ask the owner to paste a secret into chat; credentials go through a
   secure form or the provider's own settings.
 

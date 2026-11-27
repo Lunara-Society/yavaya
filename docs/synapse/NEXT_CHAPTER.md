@@ -24,6 +24,16 @@
 6. **Answer yes or no for each step** (a few words are enough), plus
    screenshots of anything that looks wrong.
 
+## Also waiting (owner): the black-and-gold look
+
+- Watch the concept film "Presencia Oro" (private page:
+  https://claude.ai/artifact/JLZ1LkLch8aUbRz4hQxVDf) and answer its three
+  questions: keep Roxi in black and gold? which moment first? too much or too
+  little? Notes: [VISUAL_DIRECTION.md](VISUAL_DIRECTION.md),
+  [`design/films/oro/REVIEW.md`](../../design/films/oro/REVIEW.md).
+- Choose two or three of the ten directions in VISUAL_DIRECTION.md.
+  Noche de Luz has a fixed date: 7 December.
+
 ## Waiting on the owner
 
 - HeyGen API key in the app (#57); ElevenLabs connector reconnect; Meshy plan.

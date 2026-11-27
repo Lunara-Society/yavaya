@@ -1,6 +1,6 @@
-# active-memory handoff: Yavaya app 0.4.0 (Synapse Chapter 09)
+# active-memory handoff: Yavaya app 0.4.0 and the black-and-gold look
 
-**Handoff #1** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits FINISHED 27 Nov 02:32 UTC; APK sent to the owner.
+**Handoff #2** · 2026-11-27 · Lineage: #1 (2026-11-27): Chapter 09 built and shipped to staging and production (sign-in that returns to the app, Roxi's voice and hologram, stronger visuals, native district lists); build `258b7ac1` canceled at the 45-minute limit (memory); build `27cc5ff7` with memory limits FINISHED 27 Nov 02:32 UTC; APK sent to the owner.; #2 (2026-11-27): ten epic directions proposed, the owner's reference video analysed, palette set to obsidian black and gold, concept film "Presencia Oro" made and sent as a private page; owner moving to a new chat.
 
 ## 0. Instructions for Claude (read first)
 
@@ -16,17 +16,19 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 ## 1. Mission
 - **Goal:** Yavaya's native Android app (Expo, `mobile/`) working for real on the owner's phone: Google sign-in that comes back to the app, Roxi talking in the app with a visible hologram, strong visuals, native district screens with real data. The website (`platform/`, https://yavaya.lat) keeps working throughout.
 - **Done looks like:** the owner installs the new preview APK on the Samsung, signs in with Google and lands back in the app, talks to Roxi aloud, sees a lit holographic space, and districts show real items (or an honest empty state).
+- **Second track (design, not built):** the next look in obsidian black and gold, from the owner's reference video; see `docs/synapse/VISUAL_DIRECTION.md` and the concept film in `design/films/oro/`.
 - **Why it matters / context:** owner's words: "Time to forget about prototype now. We need to do the real thing. […] It's the only way we succeed completely. Make the ultimate and best version you can use and push hard on everything."
 
 ## 2. About the user (as relevant to this work)
 - Owner of Yavaya.lat (Lunara Society). Works from a phone (Samsung, Android).
 - Not a developer in this work: tests on the phone and answers yes/no with screenshots.
+- Can't open file cards sent in chat on the phone: deliver everything as links that open with one tap (Artifact pages, GitHub links, expo.dev links).
 - Has approved upgrades, staging and the chapters ("yes to everything") and asked to "push hard on everything".
 
 ## 3. Style & communication
 - **Language:** English replies. App and website text is Spanish first, English beside it (i18n dictionaries; no hard-coded user-facing strings in the platform).
 - **Tone:** direct, plain, honest; say what is unverified.
-- **Reply length:** short and phone-friendly; links that open on a phone.
+- **Reply length:** short and phone-friendly; links that open on a phone, never file attachments.
 - **Formatting:** short sections and bullets; tables only where useful.
 - **Working style:** do the work, verify it, ship it; ask only before irreversible actions, production deploys or paid changes not already approved.
 - **Avoid:** claiming something works when it is untested; model names in repo artifacts (only the commit trailer below); repeating private details (the owner's email or phone number) from tool output.
@@ -50,6 +52,8 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 13. Don't buy assets or add paid services without approval.
 14. Visible redesigns ship behind a **Classic** switch. Roxi's visual system is called **Presence**. Roxi never publishes, pays or sends for a member; she prepares, the member confirms.
 15. Session tokens never appear in URLs (sealed values are signed, not encrypted).
+16. Palette for the new look: "Color Black, obsidian black Gold That's our theme If we can avoid purple, it would be great, just maybe just a tiny bit of purple glow on Roxi, that's pretty much it And disassemble stuff should be ultra smooth and realistic. Any color or glow that fits will be good."
+17. The owner's reference video is "a major direction of how the app can look", "not to do exactly the design the video shows": take its language, never its world, logo, helix, cyan, glitch or white flash.
 
 ## 5. Corrections log
 | # | Claude did | The user wanted |
@@ -58,6 +62,9 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | 2 | 0.3.0 had no way to talk to Roxi in the app | "Can test Roxi yet" (meaning: cannot test Roxi yet): Roxi's voice working in the app |
 | 3 | 0.3.0 visuals tuned too faint for a phone | "all visual stuff seems to be almost non existing": strong, visible visuals |
 | 4 | Treated the app as a prototype stage | "Time to forget about prototype now. We need to do the real thing." |
+| 5 | Sent files as file cards in chat | "I couldn't download what you sent, it's kot possible to click on": send tappable links instead |
+| 6 | Recommended violet as the main light for the new look | obsidian black and gold; violet only as a tiny glow on Roxi (rule 16) |
+| 7 | (Owner's belief, 27 Nov) the default new-session repo `Lunara-Society.github.io` "is Yavaya" | Checked: it is the Lunara Society website; Yavaya is `Lunara-Society/yavaya`. Attach that one |
 
 ## 6. Decisions
 | Decision | Why |
@@ -70,6 +77,10 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | "Lite" glass panels (views only) for grids and lists (D-036) | one Skia canvas per panel exceeded the 16 WebGL contexts; panels went white |
 | Android builds only `armeabi-v7a,arm64-v8a` (D-037) | four ABIs ran the EAS build server out of memory once WebRTC came in |
 | Kotlin daemon `-Xmx2g`, `org.gradle.workers.max=2` (D-038), in `app.config.ts` `withBuildLimits` | build `258b7ac1` stalled in native compiles and was canceled at 45 min; paid `large` class not used without approval |
+| New look: obsidian black and gold, violet only as a faint rim on Roxi | owner's call (rule 16) |
+| Concept film shows direction 1 (Roxi presents from her hand) + "el hilo" signature | Claude's assumption, stated to the owner; open question 2 |
+| Film cards use real district names, no invented listings | production has no listings; never fake data |
+| Film sound from HeyGen's catalog (free with sign-in) instead of synthesising it | better quality; credited on the page |
 | Deploy the additive server endpoints to production after staging | Claude's stated assumption from "push hard on everything"; done, no existing route changed behaviour |
 
 ## 7. Changed / rejected
@@ -79,6 +90,11 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 - One Skia canvas per panel everywhere → lite glass in grids/lists
 - ❌ Expo "build from repository" (`build_run` MCP tool): the Expo project has no GitHub repository connected
 - ❌ App Links for the return address (deferred to Chapter 10; custom scheme + PKCE for now)
+- New look palette: violet main light + gold accents (Claude's proposal), and the Halo prototype's obsidian + violet + champagne gold → obsidian black + gold, violet only a tiny glow on Roxi (owner, 27 Nov). The app's current Halo stays as built until the owner approves the new look.
+- Roxi's purple outfit in the film → graded to obsidian with gold piping (open question 1 asks the owner to confirm)
+- Film sound synthesised by us (stated assumption) → HeyGen catalog music and effects
+- Phone copy of the film at 5200k (gritty in the release) → 6000k tune grain, 14.6 MB
+- ❌ The reference's cyan, glitch, scanlines, DNA helix, logo, armour and full-frame white flash
 
 ## 8. Data & facts (exact)
 | What | Value |
@@ -100,6 +116,13 @@ You are continuing work from a previous chat. That chat is gone; this file is th
 | App session storage | SecureStore key `yavaya.session.v1`; WebView cookie `yav_session` |
 | Stack | Expo SDK 58, RN 0.88.1, `@elevenlabs/react-native` 1.3.0, `@livekit/react-native` 2.12.0, `@livekit/react-native-webrtc` 144.1.2, `livekit-client` 2.25.0, `@livekit/react-native-expo-plugin` 1.0.3, `@config-plugins/react-native-webrtc` 15.0.2, `expo-crypto` ~58.0.9 |
 | Docs placeholders | filled (APK link in NEXT_CHAPTER.md and TEST_REPORTS.md) |
+| Concept film | "Presencia Oro", `design/films/oro/` (commit `a28411d`), 19.0 s, 1080×1920, 30 fps, 570 frames; private page https://claude.ai/artifact/JLZ1LkLch8aUbRz4hQxVDf |
+| Film palette | ground `#050505`; gold `#E2C27A` / `#F6DDA0` / `#FFF3D6`; violet `#8E7CFF` rim 0.12–0.18 only; Geist Light/Regular/SemiBold |
+| Film files kept out of git | `renders/` (master 52.9 MB), `assets/audio/` (re-fetch by the HeyGen catalog ids in `SPEC.md`), `.hyperframes/`, `node_modules/` |
+| Film sound (measured, not heard) | eagle hit 15.00 s, whooshes from 6.35 s, release 11.75 s, breath −23 to −35 dB, −12.9 LUFS, true peak −1 dBTP |
+| Owner's reference video | "Ideas.mp4" (17 s Assassin's Creed fan animation by @MadebyGuille); not in the repo; its breakdown is in `VISUAL_DIRECTION.md` |
+| Default new-session repo | `Lunara-Society/Lunara-Society.github.io` = the Lunara Society website, NOT Yavaya; do not work there (rule 12) |
+| Session environment | "Full": holds the network secret for api.expo.dev that EAS builds need ("Default" doesn't) |
 
 Commands that work in this environment:
 ```bash
@@ -110,12 +133,18 @@ curl -s --compressed -o build.txt '<logFileUrls[0] from build:view>'   # build l
 npm test; npx tsc --noEmit -p .; npm run check:shaders
 cd ../platform && npx vitest run    # full suite, local Postgres (service postgresql start)
 ```
+Film (HyperFrames; skills in `/root/.claude/skills/hyperframes`, CLI via its `scripts/plugin-cli.mjs`):
+```bash
+cd /home/user/yavaya/design/films/oro
+python3 -I tools/prep.py /home/user/yavaya/mobile   # Roxi grade + particle data into assets/
+npx hyperframes check --json; npx hyperframes snapshot --at 1.5,4,7.7,10,12.3,15.4,18.7; npx hyperframes render
+```
 - `npx expo prebuild` rewrites `package.json` scripts (changes the fingerprint): revert with `git checkout mobile/package.json` and delete `android/`.
 - The local end-to-end sign-in check needs a production build (`next build && next start -p 3100`); its env sets `NODE_ENV=production`, so `next dev` fails with an EvalError. The script and env were in the old session's scratchpad and may be gone.
 
 ## 9. People, terms & names
 - **People:** the owner (Yavaya / Lunara Society), phone tester.
-- **Terms & nicknames:** Synapse = the native app programme; Presence = Roxi's visual system; Classic = switch back to the previous look; "lite" glass = canvas-free `HoloPanel lite`; Laboratorio = in-app lab screens (preview builds).
+- **Terms & nicknames:** Presencia Oro = the concept film; el hilo = two strands of light forming the Yavaya mark ("Lo que nos une"); La señal = proposed assembling transition; Noche de Luz, La Ciudad Viva, Roxi en tu mundo… = the ten directions in `VISUAL_DIRECTION.md`; Synapse = the native app programme; Presence = Roxi's visual system; Classic = switch back to the previous look; "lite" glass = canvas-free `HoloPanel lite`; Laboratorio = in-app lab screens (preview builds).
 - **Names in use:** routes `platform/src/app/api/mobile/v1/auth/{start,finish,exchange,session,web}`, `…/roxi/start`, `…/feed/[district]` (mercadito, work, animals, community); `platform/src/server/auth/{mobile,bearer,context}.ts`; mobile `src/business/{api,auth.tsx,feed}.ts`, `src/roxi/{RoxiVoiceProvider.tsx,tools.ts,RoxiIsland.tsx}`, `src/render/{shaders.ts,RoxiHologram.tsx,HoloPanel.tsx}`, `src/screens/{Home,District,RoxiScreen,WebScreen,Account,Settings}.tsx`; `app.config.ts` `withPhoneArchitectures`.
 
 ## 10. Work state
@@ -123,23 +152,33 @@ cd ../platform && npx vitest run    # full suite, local Postgres (service postgr
 |---|---|---|---|
 | Server endpoints (sign-in, bearer, Roxi start, feeds) | live | `18cef41` on yavaya.lat and staging | not exercised from a phone yet |
 | Mobile 0.4.0 code | done, pushed | `c3fbcd7` | typecheck + 41 tests |
-| Preview APK 0.4.0 | finished, link sent to owner | EAS `27cc5ff7` | waiting for the owner's phone test |
+| Preview APK 0.4.0 | finished, link sent to owner | EAS `27cc5ff7` | waiting for the owner's phone test (no results yet) |
 | Chapter 09 record | written, pushed | `docs/synapse/CHAPTER_09.md` + index, tests, decisions D-032–D-037, known issues 31–35, status, memory | two placeholders above |
 | Owner phone test of 0.4.0 | not started | steps in `docs/synapse/NEXT_CHAPTER.md` | waits for the APK |
 | Development build | none current | — | owner doesn't need it |
-| Task list | #92–#95 completed; #96 "Ship" in progress; #57 (HeyGen) pending on HEYGEN_API_KEY | — | — |
+| Task list | #92–#99 completed; #57 (HeyGen AI video) pending on HEYGEN_API_KEY | — | — |
+| Visual direction notes | written | `docs/synapse/VISUAL_DIRECTION.md` | palette, reference breakdown, 8 build ideas, 10 epic directions, commands |
+| Concept film "Presencia Oro" | first cut delivered | `design/films/oro/` + private page above; `REVIEW.md` | waiting for the owner's three answers |
 
 ## 11. Next steps
+0. **If `/home/user/yavaya` is missing:** attach the repo with the `add_repo` tool (owner `Lunara-Society`, repo `yavaya`, access `push`), clone it to `/home/user/yavaya` as the tool says, call `register_repo_root`, then `git checkout claude/yavaya-lat-migration-uzwusm`. Never work in `Lunara-Society.github.io`.
 1. **Next action:** wait for the owner's results from the 0.4.0 phone test (steps in `docs/synapse/NEXT_CHAPTER.md`); if they say the Google sign-in stops on a browser page, ask for a screenshot of that page first.
 2. Fix what the phone test shows, re-run the checks (mobile `npm test`, `npx tsc`, platform `npx vitest run`), build a new preview APK the same way, push to the branch and `main`.
-3. Record results in TEST_REPORTS.md, KNOWN_ISSUES.md and CHAPTER_09.md §6; Chapter 10 (proposed in NEXT_CHAPTER.md) needs the owner's go.
+3. When the owner answers the film questions (section 12), turn the chosen moment into a design with `/superpowers:brainstorming`, behind the Classic switch, smooth on a mid-range phone.
+4. Record results in TEST_REPORTS.md, KNOWN_ISSUES.md and CHAPTER_09.md §6; Chapter 10 (proposed in NEXT_CHAPTER.md) needs the owner's go.
 
 ## 12. Open questions ⚠️
-None.
+- 0.4.0 phone test: no results yet (steps in `docs/synapse/NEXT_CHAPTER.md`).
+- Film 1: Roxi in black and gold, keep it or back to her purple outfit?
+- Film 2: which moment should the app do first: Roxi assembling, the arc of cards from her hand, or the eagle signature ("el hilo")?
+- Film 3: anything too much or too little?
+- Which two or three of the ten directions to design first? Noche de Luz is tied to 7 December 2026.
+- Unverified: whether HeyGen catalog music may be used in public videos; check its licence before anything is published.
 
 ## 13. Re-attach checklist
 - [ ] This file (`docs/synapse/handoff-yavaya.md`, also in the repo).
+- [ ] "Ideas.mp4", the owner's reference video, only if the new chat must watch it again (its breakdown is in `VISUAL_DIRECTION.md`).
 - [ ] The repository Lunara-Society/yavaya must be attached to the new session (the code, docs and this file live there).
 
 ---
-<sub>Audit: 13/13 sections · 15 rules · 4 corrections · 32 data points · secrets removed: none found · generated by active-memory</sub>
+<sub>Audit: 13/13 sections · 17 rules · 7 corrections · 41 data points · secrets removed: none found · generated by active-memory</sub>
